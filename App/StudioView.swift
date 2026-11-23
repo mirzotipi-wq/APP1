@@ -8,6 +8,7 @@ struct StudioView: View {
     @State private var library: ProjectLibrary?
     @State private var showProjects = false
     @State private var showReference = false
+    @State private var showRoomPlacement = false
     @State private var history: [LightingScene] = []
     @State private var future: [LightingScene] = []
     @State private var editStart: LightingScene?
@@ -51,6 +52,12 @@ struct StudioView: View {
                         .buttonStyle(.bordered)
                         .accessibilityIdentifier("openReference")
                         workspace
+                        Button { showRoomPlacement = true } label: {
+                            Label("Room placement", systemImage: "ruler")
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityIdentifier("openRoomPlacement")
                         meter
                         rack
                         if let light = scene.lights.first(where: { $0.id == selected }) {
@@ -83,6 +90,9 @@ struct StudioView: View {
             .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) { rig in
                 replace(rig); mode = "Study"
             } }
+            .sheet(isPresented: $showRoomPlacement) {
+                ManualRoomPlacementView(scene: scene)
+            }
             .sheet(isPresented: $showProjects) {
                 ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
                                    onSave: persistScene, onApply: applyLibrary)
