@@ -1,5 +1,29 @@
 # Current handoff
 
+**Stage:** M01 active; M02–M07 pending. No milestone complete. M01 native/persistence revalidation remains mandatory.
+
+## Latest integrated cycle
+
+- Baseline: e372d52dae6241b0688f3e48264e46520623f37c.
+- cd4062fdb7954e4e7ea56781233f4a4bd3950e15: correct iOS 17 XCTest compilation: use the exact FileRepresentation callback's bounded reader on all supported versions and exercise the Transferable URL initializer on iOS 18.2+. Keep original file, metadata, bounds, and derivative checks. [89-test CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45274080732/job/138041191178) passed both configurations; native pending.
+- 2f5a225f50ee8439a28064e2cf9f516eacc75577: explicit full-width accessible meter expansion button, independent child accessibility IDs, expanded/collapsed value, wait for actual lux and unchanged lux after balance update; new portable default portrait regression. [90 tests in Debug and Release](https://github.com/mirzotipi-wq/APP1/actions/runs/45274202947/job/138041617075), zero failures, and complete portable workflow passed.
+- f64d425344a2a4bef02ce80599a21442a3f103ed: confirmed permanent removal of an archived, inactive library record, capacity feedback and explicit disclosure about retained migration backups/exports. Domain checks archive status and stable ID; existing atomic stale-snapshot save and unsaved edits boundary remain. Two portable tests and one native UI cancellation/delete/relaunch scenario added.
+- **Current exact source CI:** [run 45274350597](https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597), 92/92 Debug and Release, zero failures; completed core job; simulator in_progress, current step: Record Apple toolchain and test the portable package on macOS; conclusion pending. No physical-device or signed build claims.
+- **Recovered actual native evidence:** [reference source job](https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/job/138025048902) on 3628de66bbd2e03e890194c44c55120f572b7ede built and uploaded unsigned Debug app successfully (Xcode 26.6, iOS simulator SDK 26.5, macOS 26.6.1). 89 macOS package tests passed; native XCTest target compilation failed at ReferencePhotoTests.swift:72 on iOS 18.2-only initializer; no UI execution, Release skipped. [Unsigned app artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/artifacts/14866090129), [failed-run evidence](https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/artifacts/14865027449).
+- [Older library simulator job](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016896671) at b8d0ef90a690e80686fd6821981ec97da163dfa4: five native XCTest cases passed (two PDFKit, three renderer including actual simulator Metal six-fixture parity). Eight of nine UI scenarios passed, including create/edit/save/relaunch, corruption protection, multi-project create/duplicate/rename/switch/relaunch, unsaved boundary, PDF preview, camera and optics undo/relaunch and Study. Meter test failed to find combinedLux following disclosure tap. Native evidence is historical, not a current full gate pass. [XCTest artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14865356504) exists; its screenshots have not been inspected in this session. Simulator Metal max channel error 1/255, zero >4, all six invalid counts matched; not physical hardware or calibrated portrait evidence.
+- [Cycle evidence](../docs/evidence/m01-native-repair-library-removal-2026-11-23.md). Evidence score floor remains 20/100; no unsupported promotion, no independent reviewer or parallel workers.
+
+## Next executable packet
+
+1. Fetch job-level outcomes and logs for current run 45274350597, core 138042140558, simulator 138042140002; also examine earlier corrected runs 45274202947 and 45274080732. Fix observed SDK or test errors only. Confirm meter expansion/value/undo/relaunch, import pipeline and guided comparison, project deletion/cancel/relaunch, persistence/corruption and unsigned Debug/Release. Do not advance M01 until exact current source gates pass.
+2. Retrieve genuine screenshots/XCTest attachments for all native scenarios and inspect visual layout, accessibility and PDF readability. Exercise actual PhotosPicker using authorized local photos, permission/cancel/remove and inactive snapshots; FileRepresentation test alone is not actual picker verification. Check native PDF share/open.
+3. Continue production RealityKit spatial interaction, calibrated portraits, actual iPhone performance/accessibility, controlled reference dataset and held-out evaluation, AR, StoreKit, privacy and customer validation as eligible. App deletion removes a library record, not secure erasure of legacy backups/exported copies; low storage/interruption and privacy audits remain.
+4. No paid services, App Store submission or release without explicit owner approval. Sequential self-review only.
+
+## Previous handoff retained
+
+# Current handoff
+
 **Stage:** M01 active; M02–M07 pending. No milestone complete. Latest source implements independent M04 work without advancing dependency gates.
 
 ## Latest integrated cycle

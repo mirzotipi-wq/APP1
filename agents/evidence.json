@@ -484,6 +484,138 @@
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/artifacts/14864311985",
       "reviewer": "Assistant self-review and actual CI; no independent product reviewer",
       "notes": "89 tests in each configuration, zero failures or unexpected failures; all five new tonal-summary tests passed. Core workflow success, native simulator still queued. No claim about actual iOS UI, device or automatic inference."
+    },
+    {
+      "gate": "native_build",
+      "result": "pass",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Observed successful unsigned Debug simulator build and app upload; 89 macOS core tests passed",
+      "environment": "macOS 26.6.1, Xcode 26.6, iOS 26.5 simulator SDK",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/artifacts/14866090129",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "Native test target failed at ReferencePhotoTests.swift:72; iOS 18.2-only initializer incompatible with iOS 17 deployment. Release step skipped. Historical source only."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "pass",
+      "revision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
+      "date": "2026-11-23",
+      "method": "Observed successful testRecipeEditSaveAndReopen and testCorruptProjectBlocksSavingAcrossRelaunch, plus two project-library UI tests",
+      "environment": "macOS 26.6.1, Xcode 26.6, iOS 26.5 simulator SDK",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016896671",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "Historical source. Other UI test failed (meter). No full current regression or physical-device evidence."
+    },
+    {
+      "gate": "rendering",
+      "result": "unverified",
+      "revision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
+      "date": "2026-11-23",
+      "method": "Observed 3 native renderer tests and six Metal fixture parity outputs",
+      "environment": "macOS 26.6.1, Xcode 26.6, iOS 26.5 simulator SDK",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016896671",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "Simulator actual Metal selected, all six fixtures pass, max channel error 1, zero outliers above four, all invalid counts match; 12 physical controlled portrait comparisons and reviewer missing."
+    },
+    {
+      "gate": "export",
+      "result": "unverified",
+      "revision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
+      "date": "2026-11-23",
+      "method": "Observed two native PDFKit tests and native PDF preview UI pass",
+      "environment": "macOS 26.6.1, Xcode 26.6, iOS 26.5 simulator SDK",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016896671",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "PDFKit opens documents both sizes, native preview path passed; actual share/open and screenshot readability not reviewed; current revision unverified."
+    },
+    {
+      "gate": "editing",
+      "result": "fail",
+      "revision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
+      "date": "2026-11-23",
+      "method": "Observed testMeterBalanceSaveUndoAndRelaunch failure locating combinedLux after disclosure button tap",
+      "environment": "macOS 26.6.1, Xcode 26.6, iOS 26.5 simulator SDK",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016896671",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "Eight of nine native UI scenarios passed; specific meter UI defect fixed at source, current CI required."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "cd4062fdb7954e4e7ea56781233f4a4bd3950e15",
+      "date": "2026-11-23",
+      "method": "Actual completed portable CI job 138041191178; Debug and Release XCTest, state/syntax and fixture/host parity checks",
+      "environment": "Ubuntu 24.04.5, Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274080732/job/138041191178",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "89 tests passed in each configuration, zero failures. Native test SDK and UI not verified by Linux syntax."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "2f5a225f50ee8439a28064e2cf9f516eacc75577",
+      "date": "2026-11-23",
+      "method": "Actual completed portable CI job 138041617075; Debug and Release XCTest, state/syntax and fixture/host parity checks",
+      "environment": "Ubuntu 24.04.5, Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274202947/artifacts/14866068696",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "90 tests each, zero failures; default portrait meter regression passes both configurations. Actual expanded native UI remains pending."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "f64d425344a2a4bef02ce80599a21442a3f103ed",
+      "date": "2026-11-23",
+      "method": "Completed portable workflow; inspected actual test log totals in Debug and Release",
+      "environment": "Ubuntu 24.04.5 standard GitHub runner",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597/artifacts/14865369722",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "92/92 Debug and Release, zero failures; completed core job"
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "f64d425344a2a4bef02ce80599a21442a3f103ed",
+      "date": "2026-11-23",
+      "method": "Current simulator job status; historical unsigned Debug build passed at prior source",
+      "environment": "macos-26-intel GitHub Actions",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597/job/138042140002",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "simulator in_progress, current step: Record Apple toolchain and test the portable package on macOS; conclusion pending"
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "f64d425344a2a4bef02ce80599a21442a3f103ed",
+      "date": "2026-11-23",
+      "method": "Current native UI run pending; historical save/relaunch/corruption passed",
+      "environment": "iOS simulator CI",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597/job/138042140002",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "New archive deletion, save boundary, corrupt-data and re-open tests require current execution."
+    },
+    {
+      "gate": "editing",
+      "result": "unverified",
+      "revision": "f64d425344a2a4bef02ce80599a21442a3f103ed",
+      "date": "2026-11-23",
+      "method": "Accessible meter expansion and stable actual lux waits; confirmed archived deletion UI authored",
+      "environment": "SwiftUI native source and simulator CI",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597/job/138042140002",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "Do not claim UI fix until verified; no independent design review."
+    },
+    {
+      "gate": "persistence",
+      "result": "unverified",
+      "revision": "f64d425344a2a4bef02ce80599a21442a3f103ed",
+      "date": "2026-11-23",
+      "method": "Archive-only deletion and capacity recovery with stale-snapshot prevention, two new portable cases and native cancellation/relaunch test authored",
+      "environment": "Portable Swift and iOS simulator CI",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597",
+      "reviewer": "Assistant sequential self-review; actual CI where specified; no independent product reviewer",
+      "notes": "Existing backups and exports not erased; interruption/low storage, current native and privacy evidence remain missing."
     }
   ]
 }
