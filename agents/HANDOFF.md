@@ -1,5 +1,12 @@
 # Current handoff
 
+## Privacy packaging and regression checkpoint (2026-11-23)
+
+- Exact source `e88e57a93defa758675f436415a6d3db2957fe7c` passed **109/109 portable Debug and Release, zero failures**; [core run 45279651313, artifact 14869580476](https://github.com/mirzotipi-wq/APP1/actions/runs/45279651313/artifacts/14869580476). New PNG tests, fixed precision and existing room/recovery tests included; the prior Swift fixture compile error is resolved. Native job 138060415154 queued, not passed.
+- Source audit of native app, local package dependency graph and file-store/read paths: no app-owned network or tracking integration found, type/size checks on sandbox project files and user-selected reference provider files. Added source privacy manifest, explicit XcodeGen resource membership, Python source and Debug/Release bundle checks, and draft data-handling review `docs/PRIVACY.md`. Uses Apple file metadata reasons C617.1 and 3B52.1 for scoped paths only; actual signed archive, linked API and physical privacy behavior unverified. No owner approval, public policy or App Store submission.
+- Next: inspect latest core packaging checks and queued native simulator run; resolve actual native failures before closing M01. Confirm icon and manifest in actual Debug/Release bundles, native rename/persistence recovery, real picker privacy, guided confirmation, camera undo, meter, manual room and PDF. Preserve all existing quality contracts; no physical or independent review.
+- Evidence-only score floor remains 20/100. Sequential specialist work; no parallel worker claims.
+
 ## Native regression repair packet (2026-11-23)
 
 - Session baseline `88f7c2d321568090b6caad06f840b68d1799745b`; recovery, manual placement, exact measurements, and original app icon committed. Exact icon source `f6f70b99cd8300f819969464af9de09fbccc7af2` passed 105/105 portable Debug and Release with zero failures; [core artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45278876185/artifacts/14868713105). Its native job 138057748930 was queued at observation.
