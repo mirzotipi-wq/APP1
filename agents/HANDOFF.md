@@ -1,5 +1,10 @@
 # Current handoff
 
+## End-of-session CI checkpoint
+
+- Latest executable source `f19339177e92125e6d0bcb0a96ca5d1a85f31f4c`; [workflow 45280053852](https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852), core job 138061841002 in_progress (Portable debug tests), simulator 138061840386 queued. Source state/syntax/icon/privacy validation success. Prior exact regression source e88e57a9 passed 109/109 in both configurations. The latest native queue remains the blocker. This checkpoint is documentation-only and does not change executable code.
+- Resume by checking the current exact-source workflow; fix real failures and obtain actual Debug/Release bundle, persistence smoke and current UI evidence. No milestone or score promotion.
+
 ## Privacy packaging and regression checkpoint (2026-11-23)
 
 - Exact source `e88e57a93defa758675f436415a6d3db2957fe7c` passed **109/109 portable Debug and Release, zero failures**; [core run 45279651313, artifact 14869580476](https://github.com/mirzotipi-wq/APP1/actions/runs/45279651313/artifacts/14869580476). New PNG tests, fixed precision and existing room/recovery tests included; the prior Swift fixture compile error is resolved. Native job 138060415154 queued, not passed.
