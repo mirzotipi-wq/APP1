@@ -123,25 +123,24 @@ struct ProjectLibraryView: View {
 
     private func projectRow(_ project: LightingProject, active: Bool) -> some View {
         HStack(spacing: 12) {
-            Button {
-                change { try $0.select(project.id) }
-            } label: {
-                HStack {
-                    Image(systemName: active ? "checkmark.circle.fill" : "square.stack")
-                        .foregroundStyle(active ? Color.accentColor : Color.secondary)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(project.name).font(.headline).foregroundStyle(.primary)
-                        Text("\(project.scene.lights.count) lights" + (active ? " · Open" : ""))
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
+            if active {
+                // This is a status row, not a disabled action. Keep the active
+                // project's name readable and expose its selection to VoiceOver.
+                projectRowLabel(project, active: true)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("Current project: \(project.name)")
+                    .accessibilityValue("\(project.scene.lights.count) lights")
+                    .accessibilityAddTraits(.isSelected)
+                    .accessibilityIdentifier("activeProjectRow")
+            } else {
+                Button {
+                    change { try $0.select(project.id) }
+                } label: {
+                    projectRowLabel(project, active: false)
                 }
-                .contentShape(Rectangle())
-                .frame(minHeight: 44)
+                .buttonStyle(.borderless).disabled(!canMutate)
+                .accessibilityLabel("Open \(project.name)")
             }
-            .buttonStyle(.borderless).disabled(!canMutate || active)
-            .accessibilityLabel("Open \(project.name)")
-            .accessibilityAddTraits(active ? [.isSelected] : [])
             Menu {
                 Button("Rename", systemImage: "pencil") {
                     naming = Naming(kind: .rename(project.id), title: "Rename project", initial: project.name)
@@ -160,6 +159,21 @@ struct ProjectLibraryView: View {
             .disabled(!canMutate)
             .accessibilityLabel("Options for \(project.name)")
         }
+    }
+
+    private func projectRowLabel(_ project: LightingProject, active: Bool) -> some View {
+        HStack {
+            Image(systemName: active ? "checkmark.circle.fill" : "square.stack")
+                .foregroundStyle(active ? Color.accentColor : Color.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(project.name).font(.headline).foregroundStyle(.primary)
+                Text("\(project.scene.lights.count) lights" + (active ? " · Open" : ""))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .contentShape(Rectangle())
+        .frame(minHeight: 44)
     }
 
     private func apply(_ edit: (inout ProjectLibrary) throws -> Void) throws {

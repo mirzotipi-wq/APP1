@@ -18,6 +18,7 @@ struct StudioView: View {
     @State private var loaded = false
     @State private var saveBlocked = false
     @State private var message: String?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private let store = ProjectStore()
     private let amber = Color(red: 0.96, green: 0.65, blue: 0.30)
     private let charcoal = Color(red: 0.075, green: 0.085, blue: 0.10)
@@ -95,23 +96,56 @@ struct StudioView: View {
 
     private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
 
+    // Keep the editing canvas above the fold on compact phones. Fall back to
+    // two rows for long names, narrow widths and accessibility text sizes.
     private var header: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
-                Text(saveBlocked ? "Project unavailable" : projectName)
-                    .font(.title2.bold()).lineLimit(2).accessibilityIdentifier("projectName")
-                Text(saveBlocked ? "Saved data protected" : (saved == scene ? "Saved locally" : "Unsaved changes"))
-                    .font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("projectStatus")
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    projectHeading
+                    projectActions
+                }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .center, spacing: 8) {
+                        projectHeading.fixedSize(horizontal: true, vertical: false)
+                        Spacer(minLength: 0)
+                        projectActions
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        projectHeading
+                        projectActions
+                    }
+                }
             }
-            Spacer()
-            VStack(alignment: .trailing, spacing: 4) {
-                Button("Projects", systemImage: "folder") { showProjects = true }
-                    .font(.subheadline).frame(minHeight: 44)
-                    .disabled(!loaded || saveBlocked).accessibilityIdentifier("openProjectLibrary")
-                LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
-                    .disabled(!loaded || saveBlocked)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var projectHeading: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
+            Text(saveBlocked ? "Project unavailable" : projectName)
+                .font(.title2.bold())
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                .accessibilityIdentifier("projectName")
+            Text(saveBlocked ? "Saved data protected" : (saved == scene ? "Saved locally" : "Unsaved changes"))
+                .font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("projectStatus")
+        }
+    }
+
+    private var projectActions: some View {
+        HStack(spacing: 8) {
+            Button { showProjects = true } label: {
+                Label("Projects", systemImage: "folder")
+                    .font(.subheadline)
+                    .padding(.horizontal, 8)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
             }
+            .disabled(!loaded || saveBlocked).accessibilityIdentifier("openProjectLibrary")
+            LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
+                .disabled(!loaded || saveBlocked)
         }
     }
 

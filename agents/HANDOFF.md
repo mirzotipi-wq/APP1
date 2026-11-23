@@ -1,5 +1,16 @@
 # Current handoff
 
+## Current visual refinement packet (2026-11-23)
+
+- Baseline: `f46ec3b73d2f4c716009c1eb32447e0ba26bec23`.
+- Verified portable run 45276217297, core job 138048582160: 95/95 Debug and 95/95 Release, zero failures; all three concurrent tests passed; native syntax and state validation, portable fixture rendering, Float32 host parity and artifact upload passed. Simulator job 138048582525 in progress, macOS package step. [Portable evidence](https://github.com/mirzotipi-wq/APP1/actions/runs/45276217297/artifacts/14868515676).
+- Downloaded historical iPhone 17 Pro simulator artifact 14865356504 (b8d0ef90a690e80686fd6821981ec97da163dfa4). Read manifest and visually inspected six genuine PNGs (1206×2622): PDF preview, plan, study, camera, projects, optics. Current project title was washed out by disabled-button styling; two stacked header controls cost canvas height. Four-page native Letter PDF fixture opened with Poppler; inspected diagram and equipment-page renders, legible at rendered size; no current-source or physical-device inference. SceneKit subject remains primitive; no quality promotion. [Historical screenshot artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14865356504).
+- Compact adaptive project header (44-point action targets, fallback for long titles/accessibility text size) and represent current project as readable selected status, not a disabled button. Extend the existing native library flow to assert current project status, switch identity and enabled project actions. Native changes and updated UI assertions pending current CI; self-review, not independently reviewed.
+- Next: inspect all in-progress source workflows, latest UI selection and project header (including Dynamic Type and long titles), meter and reference tests, native Release and persistence smoke. Keep M01 open until current source verified; preserve failing logs, do not mark physical device gates passed.
+- Evidence score remains conservative 20/100 floor. No owner-approved release.
+
+## Prior handoff
+
 ## Current transaction-safety packet (2026-11-23)
 
 - Baseline: `0d0b7e855a9de034e04d0d4169845407124025bb`.

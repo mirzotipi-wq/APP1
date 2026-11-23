@@ -24,6 +24,11 @@ final class ProjectLibraryUITests: XCTestCase {
         waitUntilEnabled(app.buttons["saveProject"])
         app.buttons["saveProject"].tap()
         projects.tap()
+        let activeRow = app.descendants(matching: .any)["activeProjectRow"].firstMatch
+        XCTAssertTrue(activeRow.waitForExistence(timeout: 10))
+        XCTAssertEqual(activeRow.label, "Current project: Portrait setup")
+        XCTAssertFalse(app.buttons["Open Portrait setup"].exists)
+        waitUntilEnabled(app.buttons["Options for Portrait setup"])
         let create = app.buttons["newProject"]
         waitUntilEnabled(create)
         create.tap()
@@ -50,6 +55,10 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["confirmProjectName"].tap()
         XCTAssertTrue(app.buttons["Options for Campaign"].waitForExistence(timeout: 10))
         app.buttons["Open Editorial"].tap()
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", "Current project: Editorial"), object: activeRow)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
+        XCTAssertFalse(app.buttons["Open Editorial"].exists)
+        waitUntilEnabled(app.buttons["Options for Editorial"])
         app.buttons["Done"].tap()
         waitForTitle("Editorial", in: app)
         app.terminate()
