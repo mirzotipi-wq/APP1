@@ -54,7 +54,8 @@ jobs:
             study-render.log
             study-artifacts/
   simulator:
-    runs-on: macos-15
+    # Standard public-repository Intel pool: test an alternative after repeated arm64 queue cancellations.
+    runs-on: macos-26-intel
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
