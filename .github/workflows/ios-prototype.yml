@@ -42,6 +42,13 @@ jobs:
           set -euo pipefail
           swiftc -O Sources/LightingCore/*.swift scripts/render-study-fixtures.swift -o "$RUNNER_TEMP/render-study"
           "$RUNNER_TEMP/render-study" study-artifacts | tee study-render.log
+      - name: Compare shared Float32 kernel math against Swift CPU oracle
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/prepare-kernel-fixtures.swift -o "$RUNNER_TEMP/prepare-kernel-fixtures"
+          "$RUNNER_TEMP/prepare-kernel-fixtures" "$RUNNER_TEMP/kernel-fixtures"
+          clang++ -std=c++17 -O2 -Wall -Wextra -Werror scripts/verify-kernel-host.cpp -o "$RUNNER_TEMP/verify-kernel-host"
+          "$RUNNER_TEMP/verify-kernel-host" "$RUNNER_TEMP"/kernel-fixtures/*.bin | tee study-kernel.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -52,6 +59,7 @@ jobs:
             core-tests.log
             core-release-tests.log
             study-render.log
+            study-kernel.log
             study-artifacts/
   simulator:
     # Standard public-repository Intel pool: test an alternative after repeated arm64 queue cancellations.
