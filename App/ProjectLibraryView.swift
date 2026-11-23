@@ -212,7 +212,7 @@ private struct ProjectNameEditor: View {
                 Section("Project name") {
                     HStack {
                         TextField("Name", text: $name).focused($focused)
-                            .textInputAutocapitalization(.sentences).submitLabel(.done)
+                            .textInputAutocapitalization(.never).autocorrectionDisabled().submitLabel(.done)
                             .accessibilityIdentifier("projectNameInput")
                             .onSubmit { submit() }
                         if !name.isEmpty {

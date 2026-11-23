@@ -2,6 +2,7 @@ import CoreGraphics
 import CoreTransferable
 import Foundation
 import ImageIO
+import LightingCore
 import UniformTypeIdentifiers
 import XCTest
 @testable import KeyAndFill
@@ -48,7 +49,15 @@ final class ReferencePhotoTests: XCTestCase {
         XCTAssertEqual(CGImageSourceGetType(output).map { $0 as String }, UTType.png.identifier)
         XCTAssertNil(after[kCGImagePropertyGPSDictionary as String])
         XCTAssertNil(after[kCGImagePropertyTIFFDictionary as String])
-        XCTAssertNil(after[kCGImagePropertyExifDictionary as String])
+        // ImageIO may synthesize dimensions and color space when reading a PNG;
+        // prove no stored EXIF/text chunks and permit only these generated values.
+        XCTAssertEqual(try ReferencePNG.metadataFree(result.png), result.png)
+        if let exif = after[kCGImagePropertyExifDictionary as String] as? [String: Any] {
+            let generated = Set([kCGImagePropertyExifColorSpace as String,
+                                 kCGImagePropertyExifPixelXDimension as String,
+                                 kCGImagePropertyExifPixelYDimension as String])
+            XCTAssertTrue(Set(exif.keys).isSubset(of: generated), "Unexpected EXIF fields: \(exif.keys)")
+        }
         let image = try XCTUnwrap(CGImageSourceCreateImageAtIndex(output, 0, nil))
         XCTAssertEqual(image.width, result.width); XCTAssertEqual(image.height, result.height)
     }

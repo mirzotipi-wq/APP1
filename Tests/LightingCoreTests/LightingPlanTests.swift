@@ -10,6 +10,13 @@ final class LightingPlanTests: XCTestCase {
         XCTAssertEqual(PlanPaper.a4.width, 595.28, accuracy: 0.01)
     }
 
+    func testFixedPrecisionAndNegativeZero() {
+        XCTAssertEqual(PlanUnits.number(1234.56, decimals: 0), "1235")
+        XCTAssertEqual(PlanUnits.number(1234.56, decimals: 1), "1234.6")
+        XCTAssertEqual(PlanUnits.number(-0.0001, decimals: 2), "0.00")
+        XCTAssertEqual(PlanUnits.number(0.125, decimals: 3), "0.125")
+    }
+
     func testEquipmentRowsPreserveSceneValuesAndAimSemantics() throws {
         var scene = LightingScene.portrait()
         scene.lights[0].optics = .init(kind: .rectangle, aimTarget: .init(x: 2, y: 1.8, z: -0.3), widthMeters: 1.2, heightMeters: 0.65)

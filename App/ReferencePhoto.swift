@@ -28,9 +28,13 @@ struct ReferencePhoto: Transferable, Sendable {
     let tones: ReferenceTonalSummary?
 
     static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(importedContentType: .image) { received in
-            try Self.read(file: received.file)
-        }
+        // Prefer the exact types accepted by the bounded decoder. A provider
+        // may also advertise the abstract image type; inspect its actual bytes.
+        FileRepresentation(importedContentType: .jpeg) { try Self.read(file: $0.file) }
+        FileRepresentation(importedContentType: .png) { try Self.read(file: $0.file) }
+        FileRepresentation(importedContentType: .heic) { try Self.read(file: $0.file) }
+        FileRepresentation(importedContentType: .heif) { try Self.read(file: $0.file) }
+        FileRepresentation(importedContentType: .image) { try Self.read(file: $0.file) }
     }
 
     static func read(file: URL) throws -> Self {
@@ -98,7 +102,12 @@ struct ReferencePhoto: Transferable, Sendable {
             throw ReferenceImportError.unreadable
         }
         try Task.checkCancellation()
-        return Self(png: encoded as Data, width: pixels.width, height: pixels.height, tones: Self.measure(pixels))
+        // ImageIO may emit ancillary metadata even for a newly drawn bitmap.
+        // Retain only structural, transparency and color-management PNG chunks.
+        let clean: Data
+        do { clean = try ReferencePNG.metadataFree(encoded as Data, maximumBytes: byteLimit) }
+        catch { throw ReferenceImportError.unreadable }
+        return Self(png: clean, width: pixels.width, height: pixels.height, tones: Self.measure(pixels))
     }
 
     /// Fixed, aspect-preserving thumbnail, explicit RGBA8 byte order. No source

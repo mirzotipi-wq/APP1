@@ -89,13 +89,13 @@ struct ReferenceComparisonView: View {
                     Button("Done") { clear(); dismiss() }.accessibilityIdentifier("closeReference")
                 }
             }
-            .confirmationDialog("Replace the current lights?", isPresented: $confirmApply, titleVisibility: .visible) {
+            .alert("Replace the current lights?", isPresented: $confirmApply) {
                 Button("Apply rig") {
                     guard let rig = selectedRig else { return }
                     onApply(rig.scene)
                     clear()
                     dismiss()
-                }.accessibilityIdentifier("confirmApplyRig")
+                }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("The studio camera and subject stay unchanged. Undo restores your previous lights. Save separately to persist the edit.")

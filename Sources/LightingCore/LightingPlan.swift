@@ -11,8 +11,12 @@ public enum PlanUnits: String, CaseIterable, Sendable {
         return "(\(values.joined(separator: ", "))) \(symbol)"
     }
     public static func number(_ value: Double, decimals: Int = 1) -> String {
-        let threshold = 0.5 * pow(10.0, -Double(decimals))
-        return String(format: "%.*f", locale: Locale(identifier: "en_US_POSIX"), decimals, abs(value) < threshold ? 0 : value)
+        // Foundation on Apple SDKs rejects the dynamic-precision vararg
+        // signature used here previously. A fixed, bounded format has one Double.
+        let precision = min(12, max(0, decimals))
+        let threshold = 0.5 * pow(10.0, -Double(precision))
+        let normalized: Double = abs(value) < threshold ? 0.0 : value
+        return String(format: "%.\(precision)f", locale: Locale(identifier: "en_US_POSIX"), normalized)
     }
 }
 

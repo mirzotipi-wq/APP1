@@ -64,7 +64,11 @@ final class ReferenceComparisonUITests: XCTestCase {
         let apply = app.buttons["applyReferenceRig"]
         reveal(apply)
         apply.tap()
-        app.buttons["confirmApplyRig"].tap()
+        let confirmation = app.alerts["Replace the current lights?"]
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        let confirm = confirmation.buttons["Apply rig"]
+        XCTAssertTrue(confirm.isHittable)
+        confirm.tap()
         XCTAssertTrue(open.waitForExistence(timeout: 10))
         let undo = app.buttons["undo"]
         reveal(undo, up: false)

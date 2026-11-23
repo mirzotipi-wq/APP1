@@ -73,6 +73,25 @@ struct StudioView: View {
                 }
                 .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
             }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if loaded && !saveBlocked {
+                    HStack(spacing: 12) {
+                        Text("Edit history").font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Button { undo() } label: {
+                            Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
+                                .frame(width: 44, height: 44)
+                        }
+                        .disabled(history.isEmpty).accessibilityLabel("Undo").accessibilityIdentifier("undo")
+                        Button { redo() } label: {
+                            Label("Redo", systemImage: "arrow.uturn.forward").labelStyle(.iconOnly)
+                                .frame(width: 44, height: 44)
+                        }
+                        .disabled(future.isEmpty).accessibilityLabel("Redo").accessibilityIdentifier("redo")
+                    }
+                    .padding(.horizontal, 16).background(.bar)
+                }
+            }
             .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Key & Fill")
             .navigationBarTitleDisplayMode(.inline)
@@ -195,10 +214,6 @@ struct StudioView: View {
             HStack {
                 Label("Scene", systemImage: "viewfinder").font(.headline)
                 Spacer()
-                Button { undo() } label: { Image(systemName: "arrow.uturn.backward").frame(width: 44, height: 44) }
-                    .disabled(history.isEmpty).accessibilityLabel("Undo").accessibilityIdentifier("undo")
-                Button { redo() } label: { Image(systemName: "arrow.uturn.forward").frame(width: 44, height: 44) }
-                    .disabled(future.isEmpty).accessibilityLabel("Redo").accessibilityIdentifier("redo")
             }
             Picker("View", selection: $mode) {
                 Text("Plan").tag("Plan")
