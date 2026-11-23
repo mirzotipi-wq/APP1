@@ -4,7 +4,9 @@
 
 Key & Fill is a native iOS lighting studio for photographers and independent filmmakers. Import a reference, explore plausible lighting arrangements, design a scene in 3D, place equipment in a real room using AR, and export a practical lighting plan.
 
-**Status:** foundation / pre-alpha. The current starter implements an editable overhead lighting plan and a small tested-domain-design lighting model; physical 3D rendering, reference inference, AR, purchases and release readiness are NOT implemented or verified. The name is provisional pending trademark and App Store checks.
+**Status:** interactive prototype / pre-alpha. The native studio now includes an editable overhead plan, illustrative orbitable 3D view, four lighting recipes, undo/redo, light management, local save/reopen and shareable text. All 11 portable domain tests passed locally at the prototype revision. The first macOS simulator CI run must complete before the native build and UI smoke can be claimed verified. Physically calibrated rendering, reference inference, AR, purchases and release readiness remain outstanding. The name is provisional pending trademark and App Store checks.
+
+[Prototype guide](docs/PROTOTYPE.md) · [GitHub Actions](https://github.com/mirzotipi-wq/APP1/actions) · [Local domain test evidence](docs/evidence/core-2026-11-23.md)
 
 ## Start here
 
