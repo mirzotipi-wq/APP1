@@ -66,6 +66,61 @@
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45256267785",
       "reviewer": "Assistant self-review",
       "notes": "Added UUID-isolated save/reopen and corrupt-project relaunch test cases; not executed on simulator."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "d306e64f7e53a514e23f720bc3af3eb9e463be9a",
+      "date": "2026-11-23",
+      "method": "swift test --jobs 2; all 14 package/source/test Git blob hashes verified against 6adcc366 tree; identical portable inputs at d306e64",
+      "environment": "Debian GNU/Linux 13 x86_64; Swift 6.2.1 RELEASE; local debug XCTest",
+      "artifact": "docs/evidence/m01-m02-optics-camera-2026-11-23.md",
+      "reviewer": "Assistant self-review; no independent reviewer",
+      "notes": "37 XCTest cases passed, zero failures or skips; XCTest elapsed 0.441 s. Native SwiftUI/SceneKit not compiled."
+    },
+    {
+      "gate": "photometry",
+      "result": "pass",
+      "revision": "d306e64f7e53a514e23f720bc3af3eb9e463be9a",
+      "date": "2026-11-23",
+      "method": "SurfacePhotometryTests and StudioOpticsTests; closed-form, independent composite Simpson integral and directional/rotation tests",
+      "environment": "Debian GNU/Linux 13 x86_64; Swift 6.2.1 RELEASE; local debug XCTest",
+      "artifact": "docs/evidence/m01-m02-optics-camera-2026-11-23.md",
+      "reviewer": "Assistant self-review; no independent reviewer",
+      "notes": "10 rectangular fixtures; maximum relative area error 0.0678272%. Ideal photometry only, not calibrated photographic rendering."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "a04f2e955e095f8c6af98f37b501308e528fc508",
+      "date": "2026-11-23",
+      "method": "Run 45254550467: both jobs canceled before executing steps; log requests returned 404 BlobNotFound",
+      "environment": "GitHub Actions macos-15; no executed steps",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45254550467",
+      "reviewer": "Assistant self-review; no independent reviewer",
+      "notes": "Workflow concluded failure, but no compiler output or build evidence exists. Not evidence of a source compilation failure."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "d306e64f7e53a514e23f720bc3af3eb9e463be9a",
+      "date": "2026-11-23",
+      "method": "Run 45258658322, simulator job 137987129423",
+      "environment": "GitHub Actions macos-15; queued, no steps",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45258658322",
+      "reviewer": "Assistant self-review; no independent reviewer",
+      "notes": "Unsigned simulator build not established; no artifacts."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "d306e64f7e53a514e23f720bc3af3eb9e463be9a",
+      "date": "2026-11-23",
+      "method": "Run 45258658322, simulator job 137987129423",
+      "environment": "GitHub Actions macos-15; queued, no steps",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45258658322",
+      "reviewer": "Assistant self-review; no independent reviewer",
+      "notes": "Four native smoke tests include recipe edit/save/relaunch, optics undo/redo/relaunch, camera undo/redo/relaunch, corrupt project blocking; not executed."
     }
   ]
 }

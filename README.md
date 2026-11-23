@@ -4,9 +4,9 @@
 
 Key & Fill is a native iOS lighting studio for photographers and independent filmmakers. Import a reference, explore plausible lighting arrangements, design a scene in 3D, place equipment in a real room using AR, and export a practical lighting plan.
 
-**Status:** interactive prototype / pre-alpha. The native studio now includes an editable overhead plan, illustrative orbitable 3D view, four lighting recipes, undo/redo, light management, local save/reopen and shareable text. The latest portable package passed 22 tests locally, including bounded persistence and ideal point/rectangular-source photometry fixtures. The macOS simulator CI runs must complete before the native build and UI smoke can be claimed verified. The new photometry is domain-only and has not been integrated into the illustrative renderer. Physically calibrated rendering, reference inference, AR, purchases and release readiness remain outstanding. The name is provisional pending trademark and App Store checks.
+**Status:** interactive prototype / pre-alpha. Native source includes an editable overhead plan, illustrative orbitable 3D and full-frame camera preview, four lighting recipes, undo/redo, point/directional/rectangular emitters, manual aiming and modifier dimensions, ideal camera-facing lux estimates, focal length/position controls, local save/reopen and shareable text. The portable package passed 37 tests locally, including versioned scene migration, bounded persistence, photometry and camera geometry. Native compilation, UI behavior and screenshots remain unverified until the queued macOS CI completes. The renderer is illustrative SceneKit, not calibrated RealityKit/Metal. Reference inference, AR, purchases and release readiness remain outstanding. The name is provisional pending trademark and App Store checks.
 
-[Prototype guide](docs/PROTOTYPE.md) · [GitHub Actions](https://github.com/mirzotipi-wq/APP1/actions) · [Latest domain test evidence](docs/evidence/m01-m02-2026-11-23.md)
+[Prototype guide](docs/PROTOTYPE.md) · [GitHub Actions](https://github.com/mirzotipi-wq/APP1/actions) · [Latest domain test evidence](docs/evidence/m01-m02-optics-camera-2026-11-23.md)
 
 ## Start here
 
