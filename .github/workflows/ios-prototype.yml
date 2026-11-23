@@ -6,33 +6,68 @@ on:
 permissions:
   contents: read
 jobs:
+  # Portable verification does not need the scarce macOS simulator runner.
   core:
-    runs-on: macos-15
-    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Verify agent state and domain
+      - name: Record portable environment
         run: |
-          set -o pipefail
+          set -euo pipefail
+          {
+            uname -a
+            cat /etc/os-release
+            swift --version
+            python3 --version
+            git rev-parse HEAD
+          } | tee core-environment.log
+      - name: Verify agent state and native source syntax
+        run: |
+          set -euo pipefail
           python3 scripts/agent_cycle.py check
           python3 scripts/agent_cycle.py next
-          swift --version
-          swift test 2>&1 | tee core-tests.log
+          # Syntax only: Linux cannot type-check Apple SDK APIs.
+          swiftc -frontend -parse App/*.swift UITests/*.swift 2>&1 | tee native-syntax.log
+      - name: Portable debug tests
+        run: |
+          set -euo pipefail
+          swift test --jobs 2 2>&1 | tee core-tests.log
+      - name: Portable release tests
+        run: |
+          set -euo pipefail
+          swift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: core-test-log
-          path: core-tests.log
+          path: |
+            core-environment.log
+            native-syntax.log
+            core-tests.log
+            core-release-tests.log
   simulator:
     runs-on: macos-15
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - name: Record Apple toolchain and test the portable package on macOS
+        run: |
+          set -euo pipefail
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            git rev-parse HEAD
+          } | tee macos-environment.log
+          swift test --jobs 2 2>&1 | tee macos-core-tests.log
       - name: Generate project
         run: |
-          xcodebuild -version
-          xcodebuild -showsdks
+          set -euo pipefail
           command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee xcodegen-version.log
           xcodegen generate
       - name: Select available iPhone simulator
         run: |
@@ -71,14 +106,35 @@ jobs:
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath StudioSmoke.xcresult \
             CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ui-tests.log
+      - name: Build unsigned release simulator application
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
+      - name: Export genuine XCTest attachments
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -d StudioSmoke.xcresult ]; then
+            mkdir -p artifacts/ui-attachments
+            xcrun xcresulttool export attachments --path StudioSmoke.xcresult --output-path artifacts/ui-attachments
+          else
+            echo "No XCTest result bundle was produced."
+          fi
       - name: Upload test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: simulator-evidence
           path: |
+            macos-environment.log
+            macos-core-tests.log
+            xcodegen-version.log
             build.log
+            release-build.log
             ui-tests.log
             simulators.json
             StudioSmoke.xcresult
+            artifacts/ui-attachments/
           if-no-files-found: warn
