@@ -28,7 +28,7 @@ jobs:
           python3 scripts/agent_cycle.py check
           python3 scripts/agent_cycle.py next
           # Syntax only: Linux cannot type-check Apple SDK APIs.
-          swiftc -frontend -parse App/*.swift UITests/*.swift 2>&1 | tee native-syntax.log
+          swiftc -frontend -parse App/*.swift UITests/*.swift NativeTests/*.swift 2>&1 | tee native-syntax.log
       - name: Portable debug tests
         run: |
           set -euo pipefail

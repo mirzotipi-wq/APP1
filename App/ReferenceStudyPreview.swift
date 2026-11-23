@@ -3,8 +3,8 @@ import CoreGraphics
 import Foundation
 import LightingCore
 
-/// The bounded CPU reference study is deliberately distinct from the illustrative
-/// SceneKit views. All rendering happens on a worker, with stale results discarded.
+/// The bounded direct-light study is deliberately distinct from the illustrative
+/// SceneKit views. A serialized worker validates Metal against CPU before use.
 struct ReferenceStudyPreview: View {
     let scene: LightingScene
     @State private var frame: Frame?
@@ -13,6 +13,7 @@ struct ReferenceStudyPreview: View {
         let scene: LightingScene
         let image: CGImage?
         let unsupportedPixels: Int
+        let backend: StudyBackend?
         let message: String?
     }
 
@@ -23,12 +24,19 @@ struct ReferenceStudyPreview: View {
                 if let frame, frame.scene == scene {
                     if let image = frame.image {
                         let width = min(geometry.size.width, geometry.size.height * 1.5)
-                        Image(decorative: image, scale: 1, orientation: .up)
+                        Image(image, scale: 1, orientation: .up, label: Text("Rendered neutral sphere and panel"))
                             .resizable().interpolation(.medium)
                             .frame(width: width, height: width / 1.5)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .accessibilityLabel("Rendered neutral sphere and panel")
                             .accessibilityIdentifier("studyPreview")
+                        if let backend = frame.backend {
+                            Text(backend.rawValue).font(.caption2.monospaced())
+                                .foregroundStyle(.white.opacity(0.8))
+                                .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                                .padding(8).accessibilityIdentifier("studyBackend")
+                        }
                         if frame.unsupportedPixels > 0 {
                             Label("\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.",
                                   systemImage: "exclamationmark.triangle.fill")
@@ -59,29 +67,23 @@ struct ReferenceStudyPreview: View {
         .task(id: scene) {
             let snapshot = scene
             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
-            let task = Task.detached(priority: .userInitiated) {
-                Result { try ReferenceStudyRenderer.render(scene: snapshot, width: 192,
-                                                           isCancelled: { Task.isCancelled }) }
-            }
-            let result = await withTaskCancellationHandler(operation: {
-                await task.value
-            }, onCancel: {
-                task.cancel()
-            })
-            guard !Task.isCancelled else { return }
-            switch result {
-            case .success(let study):
+            do {
+                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot)
+                guard !Task.isCancelled else { return }
+                let study = rendered.image
                 let image = Self.makeImage(study)
                 frame = Frame(scene: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,
+                              backend: rendered.backend,
                               message: image == nil ? "The rendered image could not be displayed." : nil)
-            case .failure(let error):
+            } catch {
+                guard !Task.isCancelled else { return }
                 let message: String
                 switch error as? StudyError {
                 case .invalidCamera: message = "Move the camera above the panel and away from the subject."
                 case .invalidEmitter: message = "Check the aiming direction of each active light."
                 default: message = "Check the camera, light positions, and preview settings."
                 }
-                frame = Frame(scene: snapshot, image: nil, unsupportedPixels: 0, message: message)
+                frame = Frame(scene: snapshot, image: nil, unsupportedPixels: 0, backend: nil, message: message)
             }
         }
     }

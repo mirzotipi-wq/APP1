@@ -18,12 +18,28 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.keyandfill
         SWIFT_VERSION: "5.0"
+        MTL_FAST_MATH: NO
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: "Key & Fill"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "2"
         TARGETED_DEVICE_FAMILY: "1,2"
+  KeyAndFillTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [NativeTests]
+    dependencies:
+      - target: KeyAndFill
+      - package: LightingCore
+        product: LightingCore
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.keyandfill.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/KeyAndFill.app/KeyAndFill"
+        BUNDLE_LOADER: "$(TEST_HOST)"
   KeyAndFillUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -42,6 +58,7 @@ schemes:
         KeyAndFill: all
     test:
       targets:
+        - KeyAndFillTests
         - KeyAndFillUITests
     run:
       config: Debug
