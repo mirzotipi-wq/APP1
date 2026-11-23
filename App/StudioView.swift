@@ -76,7 +76,9 @@ struct StudioView: View {
                 }
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
-            .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) }
+            .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) { rig in
+                replace(rig); mode = "Study"
+            } }
             .sheet(isPresented: $showProjects) {
                 ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
                                    onSave: persistScene, onApply: applyLibrary)

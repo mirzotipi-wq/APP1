@@ -16,7 +16,7 @@ final class ReferencePhotoTests: XCTestCase {
         context.fill(CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height)))
         let image = try XCTUnwrap(context.makeImage())
         let data = NSMutableData()
-        let target = try XCTUnwrap(CGImageDestinationCreateWithData(data, UTType.jpeg.identifier as CFString, 1, nil))
+        let target = try XCTUnwrap(CGImageDestinationCreateWithData(data as CFMutableData, UTType.jpeg.identifier as CFString, 1, nil))
         let props: [CFString: Any] = [
             kCGImagePropertyOrientation: orientation,
             kCGImagePropertyTIFFDictionary: [kCGImagePropertyTIFFArtist: "private test artist"],
@@ -51,6 +51,8 @@ final class ReferencePhotoTests: XCTestCase {
 
     func testRejectsMalformedAndOversizedInputs() throws {
         XCTAssertThrowsError(try ReferencePhoto.sanitize(Data("not an image".utf8)))
+        let truncated = try fixture(width: 200, height: 100)
+        XCTAssertThrowsError(try ReferencePhoto.sanitize(Data(truncated.prefix(truncated.count / 2))))
         XCTAssertThrowsError(try ReferencePhoto.sanitize(Data(count: ReferencePhoto.byteLimit + 1))) {
             XCTAssertEqual($0 as? ReferenceImportError, .tooLarge)
         }

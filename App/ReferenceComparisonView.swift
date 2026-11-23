@@ -7,6 +7,7 @@ import UIKit
 /// the original in Photos and the saved lighting project remain unchanged.
 struct ReferenceComparisonView: View {
     let scene: LightingScene
+    let onApply: (LightingScene) -> Void
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicType
     @State private var selection: PhotosPickerItem?
@@ -16,6 +17,13 @@ struct ReferenceComparisonView: View {
     @State private var failure: String?
     @State private var sizeDescription = ""
     @State private var importTask: Task<Void, Never>?
+    @State private var observations = ReferenceObservations()
+    @State private var candidates: [GuidedRig] = []
+    @State private var previewID: String?
+    @State private var rigError: String?
+    @State private var confirmApply = false
+
+    private var selectedRig: GuidedRig? { candidates.first { $0.id == previewID } }
 
     var body: some View {
         NavigationStack {
@@ -59,6 +67,7 @@ struct ReferenceComparisonView: View {
                         }
                         VStack(alignment: .leading, spacing: 12) { photoPanel; studyPanel }
                     }
+                    guidedPanel
                     VStack(alignment: .leading, spacing: 7) {
                         Label("On-device comparison", systemImage: "lock.shield").font(.headline)
                         Text("Key & Fill keeps a reduced, metadata-free copy in memory only. Closing this view or removing the photo discards that copy. It is not included in saved projects or PDF exports. Photos may retrieve an iCloud original through the system picker. Your original is never modified.")
@@ -76,6 +85,20 @@ struct ReferenceComparisonView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { clear(); dismiss() }.accessibilityIdentifier("closeReference")
                 }
+            }
+            .confirmationDialog("Replace the current lights?", isPresented: $confirmApply, titleVisibility: .visible) {
+                Button("Apply rig") {
+                    guard let rig = selectedRig else { return }
+                    onApply(rig.scene)
+                    clear()
+                    dismiss()
+                }.accessibilityIdentifier("confirmApplyRig")
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("The studio camera and subject stay unchanged. Undo restores your previous lights. Save separately to persist the edit.")
+            }
+            .onChange(of: observations) { _, _ in
+                candidates = []; previewID = nil; rigError = nil
             }
             .onDisappear { clear() }
             .onChange(of: selection) { _, item in
@@ -117,12 +140,82 @@ struct ReferenceComparisonView: View {
 
     private var studyPanel: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("CURRENT LIGHT STUDY").font(.caption.weight(.semibold)).tracking(1.2)
-            ReferenceStudyPreview(scene: scene).frame(height: 200)
+            Text(selectedRig == nil ? "CURRENT LIGHT STUDY" : "CANDIDATE LIGHT STUDY").font(.caption.weight(.semibold)).tracking(1.2)
+            ReferenceStudyPreview(scene: selectedRig?.scene ?? scene).frame(height: 200)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             Text("Direct light only · uncalibrated relative preview")
                 .font(.caption).foregroundStyle(.secondary)
         }
+    }
+
+    private var guidedPanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Build alternatives").font(.headline)
+            Text("Choose what you can actually see. These are manually guided starting rigs, not automatic image analysis. Unknown values stay assumptions.")
+                .font(.subheadline).foregroundStyle(.secondary)
+            Picker("Key side", selection: $observations.direction) {
+                ForEach(ReferenceObservations.Direction.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }.accessibilityIdentifier("referenceKeySide")
+            Picker("Shadow edges", selection: $observations.softness) {
+                ForEach(ReferenceObservations.Softness.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }.accessibilityIdentifier("referenceSoftness")
+            Picker("Shadow fill", selection: $observations.fill) {
+                ForEach(ReferenceObservations.Fill.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }.accessibilityIdentifier("referenceFill")
+            Picker("Rim highlight", selection: $observations.rim) {
+                ForEach(ReferenceObservations.Rim.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }.accessibilityIdentifier("referenceRim")
+            Button("Build two starting rigs", systemImage: "lightbulb.2") {
+                do {
+                    candidates = try GuidedLighting.candidates(from: observations, in: scene)
+                    previewID = candidates.first?.id
+                    rigError = nil
+                } catch {
+                    candidates = []; previewID = nil
+                    rigError = (error as? GuidedRigError) == .insufficientDirection
+                        ? "Choose a visible key direction, or continue with manual editing."
+                        : "The current camera or subject geometry cannot support these starting rigs. Adjust it in the studio."
+                }
+            }
+            .buttonStyle(.borderedProminent).frame(minHeight: 44)
+            .accessibilityIdentifier("buildReferenceRigs")
+            if let rigError {
+                Text(rigError).font(.footnote).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("guidedRigError")
+            }
+            ForEach(candidates) { rig in
+                Button {
+                    previewID = rig.id
+                } label: {
+                    HStack(alignment: .top, spacing: 10) {
+                        Image(systemName: previewID == rig.id ? "largecircle.fill.circle" : "circle")
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(rig.title).font(.subheadline.weight(.semibold))
+                            Text(rig.explanation).font(.footnote).foregroundStyle(.secondary)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .padding(10)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(previewID == rig.id ? .isSelected : [])
+                .accessibilityIdentifier("guidedRig-\(rig.id)")
+            }
+            if !candidates.isEmpty {
+                Button("Preview current setup") { previewID = nil }.frame(minHeight: 44)
+                    .disabled(previewID == nil)
+                Button("Apply selected rig") { confirmApply = true }
+                    .buttonStyle(.borderedProminent).frame(minHeight: 44)
+                    .disabled(selectedRig == nil)
+                    .accessibilityIdentifier("applyReferenceRig")
+                Text("Apply changes only the editable lighting arrangement. It does not save the project or retain the reference image.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .padding(14)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
     }
 
     @MainActor private func load(_ item: PhotosPickerItem, token: UUID) {

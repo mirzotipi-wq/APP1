@@ -56,6 +56,7 @@ struct ReferencePhoto: Transferable, Sendable {
         guard data.count <= byteLimit else { throw ReferenceImportError.tooLarge }
         let noCache = [kCGImageSourceShouldCache: false] as CFDictionary
         guard let source = CGImageSourceCreateWithData(data as CFData, noCache),
+              CGImageSourceGetStatus(source) == .statusComplete,
               let identifier = CGImageSourceGetType(source) else { throw ReferenceImportError.unreadable }
         let allowed = [UTType.jpeg.identifier, UTType.png.identifier, UTType.heic.identifier, UTType.heif.identifier]
         guard allowed.contains(identifier as String), CGImageSourceGetCount(source) == 1 else {
@@ -80,12 +81,15 @@ struct ReferencePhoto: Transferable, Sendable {
                                      bitsPerComponent: 8, bytesPerRow: thumb.width * 4,
                                      space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
         else { throw ReferenceImportError.unreadable }
+        guard CGImageSourceGetStatusAtIndex(source, 0) == .statusComplete else {
+            throw ReferenceImportError.unreadable
+        }
         try Task.checkCancellation()
         // Draw only pixels into a new sRGB bitmap; never propagate source metadata.
         canvas.draw(thumb, in: CGRect(x: 0, y: 0, width: CGFloat(thumb.width), height: CGFloat(thumb.height)))
         guard let pixels = canvas.makeImage() else { throw ReferenceImportError.unreadable }
         let encoded = NSMutableData()
-        guard let destination = CGImageDestinationCreateWithData(encoded, UTType.png.identifier as CFString, 1, nil)
+        guard let destination = CGImageDestinationCreateWithData(encoded as CFMutableData, UTType.png.identifier as CFString, 1, nil)
         else { throw ReferenceImportError.unreadable }
         CGImageDestinationAddImage(destination, pixels, nil)
         guard CGImageDestinationFinalize(destination), encoded.length <= byteLimit else {
