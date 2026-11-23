@@ -1,5 +1,14 @@
 # Current handoff
 
+## Final observed CI checkpoint (2026-11-23)
+
+- Session baseline `0d0b7e855a9de034e04d0d4169845407124025bb`; transaction implementation `f46ec3b73d2f4c716009c1eb32447e0ba26bec23`; latest source `24a08290512187d4142e1a64c5fe98590c138626`.
+- [Exact-source core job 138050091879](https://github.com/mirzotipi-wq/APP1/actions/runs/45276657447/job/138050091879) completed successfully; actual logs show 95/95 Debug and 95/95 Release, zero failures. State/syntax, fixtures, host parity and upload all passed. [Evidence artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45276657447/artifacts/14867307590).
+- [Exact-source simulator job 138050091292](https://github.com/mirzotipi-wq/APP1/actions/runs/45276657447/job/138050091292) in progress at Apple toolchain and macOS package test; native Debug, Release, UI and attachments pending. Older source jobs remain in progress. No current native conclusion.
+- M01 remains active. Portable gate passed at exact source. Native build and persistence smoke are outstanding. No milestone or release approval. The 20/100 prior conservative score floor is not increased. No independent reviewer or parallel agents used.
+- Next packet: inspect job-level conclusions and failing logs, verify adaptive header/current-project selection, reference/tonal/guided flow, meter, archive deletion, persistence, unsigned Release, and inspect new genuine screenshots. Actual system picker, PDF share, physical-device performance and commercial gates remain separate.
+- This checkpoint is documentation only; avoid redundant CI for unchanged source. GitHub Actions continues independently; there is no background agent.
+
 ## Current visual refinement packet (2026-11-23)
 
 - Baseline: `f46ec3b73d2f4c716009c1eb32447e0ba26bec23`.
