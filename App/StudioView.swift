@@ -73,10 +73,8 @@ struct StudioView: View {
                     .font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("projectStatus")
             }
             Spacer()
-            ShareLink(item: exportText) {
-                Image(systemName: "square.and.arrow.up").font(.headline).frame(width: 44, height: 44)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
-            }.accessibilityLabel("Share lighting settings").disabled(!loaded)
+            LightingPlanExportMenu(scene: scene, title: "Portrait setup", textSettings: exportText)
+                .disabled(!loaded)
         }
     }
 
