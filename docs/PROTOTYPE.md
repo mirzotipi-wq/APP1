@@ -13,3 +13,7 @@ This prototype is intended as a usable single-project lighting editor on iOS 17+
 Open Actions > iOS Prototype. The Ubuntu job runs portable debug/release tests and native Swift syntax parsing; the macOS job retains package tests, generates the Xcode project, builds unsigned Debug and Release simulator configurations, runs UI smoke and exports XCTest attachments and logs. Download the simulator app artifact after a successful build; unzip the archive and use xcrun simctl install booted KeyAndFill.app.
 
 The simulator app is not a signed IPA. Native build and UI smoke are unverified until CI completes. Reference inference, calibrated rendering, AR, PDF export, project library, commerce, manual accessibility and real-device tests remain outstanding.
+
+
+### Numerical lighting study
+Choose Study to render a neutral sphere and panel from the current camera. Emitter geometry, aiming, finite-source visibility, output, color temperature, relative white balance/exposure and lens affect the image. This is an ideal diagnostic direct-light simulation, not a calibrated portrait or camera exposure. The backend label identifies CPU reference or Metal compute. A device must pass six runtime parity fixtures before Metal is selected; CPU fallback remains available. Unsupported surface samples are marked magenta and counted. Native UI execution is pending.

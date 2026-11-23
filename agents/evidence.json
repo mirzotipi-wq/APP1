@@ -165,6 +165,72 @@
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45259532290",
       "reviewer": "Assistant self-review and GitHub Actions execution; no independent product reviewer",
       "notes": "Five UI smoke scenarios authored; native execution pending."
+    },
+    {
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review plus GitHub Actions; independent product review not performed",
+      "gate": "core_tests",
+      "result": "pass",
+      "method": "Ubuntu core job 138000434002: debug/release XCTest, Swift source parsing including native tests, generated study fixtures and shared Float32 host parity",
+      "environment": "GitHub Actions Ubuntu 24.04 x86_64, Swift 6.4.2 RELEASE; clang++ C++17",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316/job/138000434002",
+      "notes": "58/58 Debug and 58/58 Release, zero failures; 3 rendered 120x80 fixtures, no unsupported pixels. Six Float32 host fixtures passed; max channel error 1, no channels >4, invalid pixels 84/84 in near-field fixture. No Apple SDK compilation."
+    },
+    {
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review plus GitHub Actions; independent product review not performed",
+      "gate": "photometry",
+      "result": "pass",
+      "method": "Analytic and independent quadrature fixtures in core job; finite-source study 8x8/32x32 convergence",
+      "environment": "GitHub Actions Ubuntu 24.04; Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316/job/138000434002",
+      "notes": "Area analytic/numerical maximum relative error 0.0678272%; 9 unoccluded rotated study fixtures 0.327981% max 8x8 vs 32x32; partial visibility 0.742031. Bounded mathematical cases only."
+    },
+    {
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review plus GitHub Actions; independent product review not performed",
+      "gate": "rendering",
+      "result": "unverified",
+      "method": "Direct-light CPU sphere/panel oracle, shared Float32 host parity and native Metal adapter authored",
+      "environment": "Linux Swift/C++ host; Apple GPU unverified",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316/artifacts/14860961995",
+      "notes": "Direct diffuse/GGX, per-sample occlusion, finite-source penumbra, relative display transform and unsupported-pixel diagnostics. Host maximum channel error 1; 6 fixtures pass. Not actual GPU, skin/fabric calibration, physical references or independent photographer review."
+    },
+    {
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review plus GitHub Actions; independent product review not performed",
+      "gate": "performance",
+      "result": "unverified",
+      "method": "Local CPU diagnostic render warm medians; no iPhone run",
+      "environment": "Linux Swift 6.2.1 release, 120x80 study, three lights; 5 warm samples each",
+      "artifact": "docs/evidence/m02-reference-study-2026-11-23.md",
+      "notes": "35.80 ms rectangle scene, 1.39 ms point scene, 35.28 ms rectangle warm scene. Not native device FPS, memory or thermal measurement."
+    },
+    {
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review plus GitHub Actions; independent product review not performed",
+      "gate": "native_build",
+      "result": "unverified",
+      "method": "Run 45262428316 simulator job 138000433437",
+      "environment": "Standard macOS 26 Intel runner queued",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316",
+      "notes": "No Apple SDK build, simulator artifact, screenshots or native smoke execution. Prior macOS 15 ARM runs canceled before steps or remain queued; no proven source failure."
+    },
+    {
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review plus GitHub Actions; independent product review not performed",
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "method": "Run 45262428316 simulator job 138000433437",
+      "environment": "Standard macOS 26 Intel runner queued",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316",
+      "notes": "No Apple SDK build, simulator artifact, screenshots or native smoke execution. Prior macOS 15 ARM runs canceled before steps or remain queued; no proven source failure."
     }
   ]
 }
