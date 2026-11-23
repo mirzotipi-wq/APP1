@@ -23,14 +23,16 @@ public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
     /// On-axis luminous intensity, not electrical watts.
     public var candela: Double
     public var kelvin: Double
-    public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double) {
+    /// Nil preserves the legacy isotropic point source.
+    public var optics: LightOptics?
+    public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
         self.id = id; self.name = name; self.position = position
-        self.candela = candela; self.kelvin = kelvin
+        self.candela = candela; self.kelvin = kelvin; self.optics = optics
     }
     public var isValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
         position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
-        kelvin.isFinite && (1_000...20_000).contains(kelvin)
+        kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
     }
 }
 
@@ -39,7 +41,8 @@ public enum SceneError: Error, Equatable {
 }
 
 public struct LightingScene: Codable, Equatable, Sendable {
-    public var schemaVersion: Int = 1
+    public static let currentSchemaVersion = 2
+    public var schemaVersion: Int = currentSchemaVersion
     public var subject: Position
     public var camera: Position
     public var lights: [StudioLight]
@@ -49,11 +52,15 @@ public struct LightingScene: Codable, Equatable, Sendable {
     }
 
     public func validated() throws -> Self {
-        guard schemaVersion == 1 else { throw SceneError.unsupportedVersion }
+        guard schemaVersion == 1 || schemaVersion == Self.currentSchemaVersion else { throw SceneError.unsupportedVersion }
+        // Version 1 never contained optics; reject ambiguous mislabeled files.
+        guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
         guard subject.isValid, camera.isValid, lights.count <= 12 else { throw SceneError.invalidScene }
         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
-        return self
+        var migrated = self
+        migrated.schemaVersion = Self.currentSchemaVersion
+        return migrated
     }
 
     public static func portrait() -> Self {
