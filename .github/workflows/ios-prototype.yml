@@ -1,0 +1,84 @@
+name: iOS Prototype
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify agent state and domain
+        run: |
+          set -o pipefail
+          python3 scripts/agent_cycle.py check
+          python3 scripts/agent_cycle.py next
+          swift --version
+          swift test 2>&1 | tee core-tests.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-test-log
+          path: core-tests.log
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate project
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks
+          command -v xcodegen || brew install xcodegen
+          xcodegen generate
+      - name: Select available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > simulators.json
+          python3 - <<'PY'
+          import json, os
+          data = json.load(open("simulators.json"))
+          devices = [d for runtime, group in sorted(data["devices"].items(), reverse=True) if "iOS" in runtime for d in group if d.get("isAvailable") and d["name"].startswith("iPhone")]
+          if not devices:
+              raise SystemExit("No available iPhone simulator")
+          device = next((d for d in devices if d["name"] == "iPhone 16"), devices[0])
+          print(device)
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build unsigned simulator app
+        run: |
+          set -o pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log
+          mkdir -p artifacts
+          ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator.zip
+      - name: Upload simulator application
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-iOS-Simulator
+          path: artifacts/KeyAndFill-simulator.zip
+          if-no-files-found: error
+      - name: Launch and exercise UI
+        run: |
+          set -o pipefail
+          xcrun simctl boot "$SIMULATOR_ID" || xcrun simctl list devices
+          xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath StudioSmoke.xcresult \
+            CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ui-tests.log
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulator-evidence
+          path: |
+            build.log
+            ui-tests.log
+            simulators.json
+            StudioSmoke.xcresult
+          if-no-files-found: warn

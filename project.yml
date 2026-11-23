@@ -22,12 +22,26 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: "Key & Fill"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "2"
         TARGETED_DEVICE_FAMILY: "1,2"
+  KeyAndFillUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: KeyAndFill
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.keyandfill.uitests
 schemes:
   KeyAndFill:
     build:
       targets:
         KeyAndFill: all
+    test:
+      targets:
+        - KeyAndFillUITests
     run:
       config: Debug
