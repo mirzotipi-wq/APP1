@@ -6,9 +6,16 @@ import LightingCore
 /// not calibrated candela or area-source shading. Emitter geometry uses world meters.
 struct SpatialPreview: UIViewRepresentable {
     let scene: LightingScene
+    let cameraMode: Bool
+
+    init(scene: LightingScene, cameraMode: Bool = false) {
+        self.scene = scene
+        self.cameraMode = cameraMode
+    }
 
     final class Coordinator {
         let content = SCNNode()
+        let camera = SCNNode()
         var lastScene: LightingScene?
     }
 
@@ -19,13 +26,13 @@ struct SpatialPreview: UIViewRepresentable {
         let world = SCNScene()
         world.background.contents = UIColor(red: 0.075, green: 0.085, blue: 0.10, alpha: 1)
         view.scene = world
-        let camera = SCNNode()
+        let camera = context.coordinator.camera
         camera.camera = SCNCamera(); camera.camera?.fieldOfView = 48
         camera.position = SCNVector3(4, 3, 6); world.rootNode.addChildNode(camera)
         camera.look(at: SCNVector3(0, 1.15, 0))
         world.rootNode.addChildNode(context.coordinator.content)
         view.pointOfView = camera
-        view.allowsCameraControl = true
+        view.allowsCameraControl = !cameraMode
         view.autoenablesDefaultLighting = false
         view.antialiasingMode = .multisampling2X
         return view
@@ -38,6 +45,16 @@ struct SpatialPreview: UIViewRepresentable {
         let root = coordinator.content
         root.childNodes.forEach { $0.removeFromParentNode() }
         populate(root)
+        if cameraMode, let framing = CameraFraming(scene: scene) {
+            let camera = coordinator.camera
+            camera.position = vector(framing.position)
+            camera.camera?.projectionDirection = .vertical
+            camera.camera?.fieldOfView = CGFloat(framing.verticalFieldOfViewDegrees)
+            camera.camera?.zNear = CameraFraming.minimumDepthMeters
+            camera.camera?.zFar = 400
+            camera.look(at: vector(framing.target), up: vector(framing.up), localFront: SCNVector3(0, 0, -1))
+            view.pointOfView = camera
+        }
         coordinator.lastScene = scene
     }
 
@@ -61,8 +78,13 @@ struct SpatialPreview: UIViewRepresentable {
         let ambient = SCNNode()
         ambient.light = SCNLight(); ambient.light?.type = .ambient; ambient.light?.intensity = 90
         root.addChildNode(ambient)
-        _ = object(SCNBox(width: 0.26, height: 0.18, length: 0.18, chamferRadius: 0.02),
-                   color: .darkGray, at: vector(scene.camera), in: root)
+        if !cameraMode {
+            let cameraBody = object(SCNBox(width: 0.26, height: 0.18, length: 0.18, chamferRadius: 0.02),
+                                    color: .darkGray, at: vector(scene.camera), in: root)
+            if let framing = CameraFraming(scene: scene) {
+                cameraBody.look(at: vector(framing.target), up: vector(framing.up), localFront: SCNVector3(0, 0, -1))
+            }
+        }
         for light in scene.lights {
             let optics = light.effectiveOptics
             let pos = vector(light.position)

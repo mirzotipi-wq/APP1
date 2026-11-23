@@ -91,12 +91,14 @@ struct StudioView: View {
             Picker("View", selection: $mode) {
                 Text("Plan").tag("Plan")
                 Text("3D").tag("3D")
-            }.pickerStyle(.segmented)
+                Text("Camera").tag("Camera")
+            }.pickerStyle(.segmented).accessibilityIdentifier("viewMode")
             ZStack(alignment: .topLeading) {
                 charcoal
                 if mode == "Plan" { plan }
+                else if mode == "Camera" { cameraPreview }
                 else { SpatialPreview(scene: scene).accessibilityLabel("Illustrative 3D lighting preview") }
-                Text(mode == "Plan" ? "OVERHEAD / 1 M GRID" : "3D / DRAG TO ORBIT")
+                Text(mode == "Plan" ? "OVERHEAD / 1 M GRID" : mode == "Camera" ? "CAMERA / 3:2" : "3D / DRAG TO ORBIT")
                     .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
                     .padding(10).allowsHitTesting(false)
             }
@@ -106,8 +108,34 @@ struct StudioView: View {
                 Spacer()
                 Text("Meters · cd · K").monospaced()
             }.font(.caption).foregroundStyle(.secondary)
+            if mode == "Camera" {
+                Divider()
+                CameraInspector(position: cameraPositionBinding, lens: cameraLensBinding,
+                                subject: scene.subject, onEditingChanged: editChanged)
+            }
         }.padding(14)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    private var cameraPreview: some View {
+        GeometryReader { geo in
+            if CameraFraming(scene: scene) != nil {
+                let aspect = CGFloat(CameraFraming.aspectRatio)
+                let width = min(geo.size.width, geo.size.height * aspect)
+                SpatialPreview(scene: scene, cameraMode: true)
+                    .frame(width: width, height: width / aspect)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .accessibilityLabel("Illustrative full-frame camera preview")
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "camera.metering.unknown").font(.title)
+                    Text("Camera framing unavailable").font(.headline)
+                    Text("Move the camera away from the subject.").font(.caption)
+                }.multilineTextAlignment(.center).padding(24)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
     }
 
     private var plan: some View {
@@ -128,6 +156,24 @@ struct StudioView: View {
                         grid.move(to: CGPoint(x: 0, y: h / 2 + offset))
                         grid.addLine(to: CGPoint(x: w, y: h / 2 + offset))
                         context.stroke(grid, with: .color(.white.opacity(n == 0 ? 0.20 : 0.07)), lineWidth: 1)
+                    }
+                    if let framing = CameraFraming(scene: scene) {
+                        let origin = point(scene.camera, w, h, scale)
+                        let half = framing.subjectPlaneWidthMeters / 2
+                        let left = Position(x: scene.subject.x - framing.right.x * half,
+                                            y: scene.subject.y - framing.right.y * half,
+                                            z: scene.subject.z - framing.right.z * half)
+                        let right = Position(x: scene.subject.x + framing.right.x * half,
+                                             y: scene.subject.y + framing.right.y * half,
+                                             z: scene.subject.z + framing.right.z * half)
+                        var cone = Path()
+                        cone.move(to: origin)
+                        cone.addLine(to: point(left, w, h, scale))
+                        cone.addLine(to: point(right, w, h, scale))
+                        cone.closeSubpath()
+                        context.fill(cone, with: .color(.white.opacity(0.04)))
+                        context.stroke(cone, with: .color(.white.opacity(0.45)),
+                                       style: StrokeStyle(lineWidth: 1, dash: [3, 4]))
                     }
                     for light in scene.lights {
                         let origin = point(light.position, w, h, scale)
@@ -165,7 +211,10 @@ struct StudioView: View {
                 }.accessibilityHidden(true)
                 marker("Subject", icon: "person.fill", color: .white, active: false)
                     .position(point(scene.subject, w, h, scale))
-                marker("Camera", icon: "camera.fill", color: .white, active: false)
+                Button { mode = "Camera" } label: {
+                    marker("Camera", icon: "camera.fill", color: .white, active: false)
+                }.buttonStyle(.plain).accessibilityLabel("Edit camera position and lens")
+                    .accessibilityIdentifier("editCamera")
                     .position(point(scene.camera, w, h, scale))
                 ForEach(scene.lights) { light in
                     Button { selected = light.id } label: {
@@ -305,6 +354,22 @@ struct StudioView: View {
                 })
     }
 
+    private var cameraPositionBinding: Binding<Position> {
+        Binding(get: { scene.camera }, set: { new in
+            guard new.isValid, new != scene.camera else { return }
+            if editStart == nil { remember(scene) }
+            scene.camera = new
+        })
+    }
+
+    private var cameraLensBinding: Binding<CameraLens> {
+        Binding(get: { scene.effectiveCameraLens }, set: { new in
+            guard new.isValid, new != scene.effectiveCameraLens else { return }
+            if editStart == nil { remember(scene) }
+            scene.cameraLens = new
+        })
+    }
+
     private func editChanged(_ editing: Bool) {
         if editing {
             if editStart == nil { editStart = scene }
@@ -344,7 +409,7 @@ struct StudioView: View {
             if optics.kind == .rectangle { result += String(format: "; surface %.2f × %.2f m", optics.widthMeters, optics.heightMeters) }
             return result
         }
-        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera))"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
+        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera)); \(String(format: "%.0f", scene.effectiveCameraLens.focalLengthMillimeters)) mm, full frame 36 × 24 mm"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
     }
     private func remember(_ previous: LightingScene) {
         if history.last != previous { history.append(previous) }

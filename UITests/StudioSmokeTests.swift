@@ -91,6 +91,43 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(width.value as? String, editedWidth)
     }
 
+    func testCameraFocalLengthUndoAndRelaunch() throws {
+        let app = makeApp()
+        app.launch()
+        assertStatus("Unsaved changes", in: app)
+        let camera = app.buttons["editCamera"]
+        reveal(camera, in: app)
+        camera.tap()
+        let focal = app.sliders["cameraFocalLength"]
+        reveal(focal, in: app)
+        let initial = focal.value as? String
+        let tele = app.buttons["85 millimeter lens"]
+        reveal(tele, in: app)
+        tele.tap()
+        XCTAssertEqual(focal.value as? String, "85 mm")
+        let undo = app.buttons["undo"]
+        reveal(undo, in: app, direction: false)
+        undo.tap()
+        reveal(focal, in: app)
+        XCTAssertEqual(focal.value as? String, initial)
+        let redo = app.buttons["redo"]
+        reveal(redo, in: app, direction: false)
+        redo.tap()
+        reveal(focal, in: app)
+        XCTAssertEqual(focal.value as? String, "85 mm")
+        reveal(undo, in: app, direction: false)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Studio-camera"; attachment.lifetime = .keepAlways; addAttachment(attachment)
+        app.buttons["saveProject"].tap()
+        app.terminate()
+        app.launch()
+        assertStatus("Saved locally", in: app)
+        reveal(camera, in: app)
+        camera.tap()
+        reveal(focal, in: app)
+        XCTAssertEqual(focal.value as? String, "85 mm")
+    }
+
     func testCorruptProjectBlocksSavingAcrossRelaunch() throws {
         let app = makeApp(corrupt: true)
         app.launch()
