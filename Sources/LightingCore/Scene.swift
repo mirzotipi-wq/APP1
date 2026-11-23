@@ -41,21 +41,25 @@ public enum SceneError: Error, Equatable {
 }
 
 public struct LightingScene: Codable, Equatable, Sendable {
-    public static let currentSchemaVersion = 2
+    public static let currentSchemaVersion = 3
     public var schemaVersion: Int = currentSchemaVersion
     public var subject: Position
     public var camera: Position
+    /// Nil uses the default 50 mm full-frame perspective.
+    public var cameraLens: CameraLens?
     public var lights: [StudioLight]
 
-    public init(subject: Position, camera: Position, lights: [StudioLight]) {
-        self.subject = subject; self.camera = camera; self.lights = lights
+    public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil) {
+        self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens
     }
 
     public func validated() throws -> Self {
-        guard schemaVersion == 1 || schemaVersion == Self.currentSchemaVersion else { throw SceneError.unsupportedVersion }
+        guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
         // Version 1 never contained optics; reject ambiguous mislabeled files.
         guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
-        guard subject.isValid, camera.isValid, lights.count <= 12 else { throw SceneError.invalidScene }
+        // Version 2 adds light optics, version 3 adds a camera lens.
+        guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+        guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), lights.count <= 12 else { throw SceneError.invalidScene }
         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
         var migrated = self

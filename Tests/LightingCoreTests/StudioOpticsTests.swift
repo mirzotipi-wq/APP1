@@ -15,7 +15,7 @@ final class StudioOpticsTests: XCTestCase {
         "lights":[{"id":"72FA05BA-B155-4BA3-A6FA-B024074E85B6","name":"Legacy key","position":{"x":0,"y":0,"z":2},"candela":400,"kelvin":5600}]}
         """
         let migrated = try SceneCodec.decode(Data(json.utf8))
-        XCTAssertEqual(migrated.schemaVersion, 2)
+        XCTAssertEqual(migrated.schemaVersion, LightingScene.currentSchemaVersion)
         XCTAssertEqual(migrated.lights[0].id.uuidString, "72FA05BA-B155-4BA3-A6FA-B024074E85B6")
         XCTAssertEqual(migrated.lights[0].name, "Legacy key")
         XCTAssertEqual(migrated.lights[0].position, .init(x: 0, y: 0, z: 2))
@@ -48,7 +48,7 @@ final class StudioOpticsTests: XCTestCase {
         s.lights[0].optics = .init(kind: .rectangle)
         s.schemaVersion = 1
         XCTAssertThrowsError(try s.validated())
-        s.schemaVersion = 3
+        s.schemaVersion = 99
         XCTAssertThrowsError(try s.validated())
     }
 
