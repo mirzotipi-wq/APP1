@@ -27,6 +27,7 @@ jobs:
           set -euo pipefail
           python3 scripts/agent_cycle.py check
           python3 scripts/agent_cycle.py next
+          python3 scripts/verify_app_icon.py | tee icon-source.log
           # Syntax only: Linux cannot type-check Apple SDK APIs.
           swiftc -frontend -parse App/*.swift UITests/*.swift NativeTests/*.swift 2>&1 | tee native-syntax.log
       - name: Portable debug tests
@@ -56,6 +57,7 @@ jobs:
           path: |
             core-environment.log
             native-syntax.log
+            icon-source.log
             core-tests.log
             core-release-tests.log
             study-render.log
@@ -101,10 +103,11 @@ jobs:
           PY
       - name: Build unsigned simulator app
         run: |
-          set -o pipefail
+          set -euo pipefail
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log
+          python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee icon-debug.log
           mkdir -p artifacts
           ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator.zip
       - name: Upload simulator application
@@ -128,6 +131,7 @@ jobs:
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
+          python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee icon-release.log
       - name: Export genuine XCTest attachments
         if: always()
         run: |
@@ -149,6 +153,8 @@ jobs:
             xcodegen-version.log
             build.log
             release-build.log
+            icon-debug.log
+            icon-release.log
             ui-tests.log
             simulators.json
             StudioSmoke.xcresult

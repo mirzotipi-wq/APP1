@@ -1,5 +1,17 @@
 # Current handoff
 
+## App icon and packaging packet (2026-11-23)
+
+- Baseline `ac1dea40de7066379b3b382a81d6a03aba2202f5`.
+- Exact precision-input source ac1dea40 passed 105/105 portable Debug and Release tests, zero failures; all six room tests and four recovery tests, source syntax, study fixtures and host parity passed. Core job 138055329060; simulator job 138055328524 queued. [Evidence](https://github.com/mirzotipi-wq/APP1/actions/runs/45278179961/artifacts/14868727773).
+- Downloaded actual unsigned simulator artifact 14867991186 at 24a08290; unpacked app bundle Info.plist confirmed com.example.keyandfill, iOS 17.0+, iPhone/iPad families, SDK iphonesimulator26.5, no code signature, no CFBundleIcons/Assets.car. No privacy manifest; no physical-device or release build evidence. [Earlier actual app artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45276657447/artifacts/14867991186).
+- Original 1024x1024 opaque RGB8 sRGB AppIcon geometric warm-key/cool-fill mark, visually reviewed actual binary, native universal asset catalog and explicit primary icon build setting; standard-library source PNG validation and optional reproducible design generator; Debug/Release bundle icon checks and logs in existing workflow. No paid or unlicensed assets; new native package verification pending.
+- Apple source: https://developer.apple.com/documentation/xcode/configuring-your-app-icon (single 1024x1024 image for iOS/iPadOS), https://developer.apple.com/design/human-interface-guidelines/app-icons/ (size/color space/design). No App Store submission, signing or owner approval.
+- Next: current exact-source CI verify icon PNG, actual compiled Assets.car and primary icon metadata, Debug and Release and full native UI/persistence. Prior simulator jobs still queued/in progress. Preserve protected release gates; actual Home Screen appearance, privacy manifest, device tests and independent review pending.
+- Sequential self-review, score floor remains 20/100.
+
+## Prior handoff
+
 ## Manual room placement and exact entry packet (2026-11-23)
 
 - Session baseline 88f7c2d321568090b6caad06f840b68d1799745b. Recovery commits 84c2db5c and 4a3d0e6e; manual room source 5855ca5c705c3c4d1c94faddd88dd8514ddf61ca.
