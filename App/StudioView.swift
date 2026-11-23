@@ -7,6 +7,7 @@ struct StudioView: View {
     @State private var saved: LightingScene?
     @State private var library: ProjectLibrary?
     @State private var showProjects = false
+    @State private var showReference = false
     @State private var history: [LightingScene] = []
     @State private var future: [LightingScene] = []
     @State private var editStart: LightingScene?
@@ -39,6 +40,12 @@ struct StudioView: View {
                         ProgressView("Opening projects…")
                             .frame(maxWidth: .infinity, minHeight: 160)
                     } else {
+                        Button { showReference = true } label: {
+                            Label("Compare reference photo", systemImage: "rectangle.split.2x1")
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityIdentifier("openReference")
                         workspace
                         meter
                         rack
@@ -69,6 +76,7 @@ struct StudioView: View {
                 }
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
+            .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) }
             .sheet(isPresented: $showProjects) {
                 ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
                                    onSave: persistScene, onApply: applyLibrary)
