@@ -1,0 +1,1 @@
+Read AGENTS.md and follow its startup, evidence, review and handoff requirements before any change. The master directive, protected quality and product contracts take precedence over backlog notes. Do not claim unrun checks or launch autonomous jobs. Use python3 scripts/agent_cycle.py next to select the next eligible milestone; verify actual repository state before proceeding.

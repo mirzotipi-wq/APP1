@@ -1,0 +1,20 @@
+# Technical architecture
+
+## Platform
+Native SwiftUI iOS 17+ baseline; verify deployment and toolchain requirements before release. Portable LightingCore Swift package for domain logic. App/ is the composition/UI layer. XcodeGen produces a reproducible Xcode project. Prefer Apple frameworks, limited dependencies with documented licenses, no embedded keys.
+
+## Boundaries
+- LightingCore: value-type scene, SI units, validation, ideal photometry, deterministic fixtures. Future modules: scene geometry, transforms, modifier distribution, calibrated color/exposure, solver contracts. No Apple UI/AR dependency.
+- Studio rendering: RealityKit for scene interaction/AR shared representation; use Metal custom shading where necessary for physical fidelity. Keep adapter separate from domain; use scene-linear radiance, explicit exposure/white balance/tone mapping and consistent coordinate transforms. Distinguish candela, lumen, lux and electrical watts. Do not equate watts with luminous output; calibrated equipment profiles include provenance and uncertainty. Area-source integration/soft shadows require numerical validation; point-source estimate is not a softbox simulator.
+- Editor: SwiftUI state on main actor, stable IDs, commands/undo, normalized values, selection, inspector, accessible numeric controls; move expensive work off main actor, cancel stale tasks.
+- Reference: PhotosPicker, Vision/Core ML/Core Image, orientation and color management, optional user annotations. Model output is untrusted; validate ranges, rank multiple plausible rigs, abstain on ambiguity. Never infer identity or upload images by default.
+- AR: ARKit world tracking, session lifecycle, interruption/relocalization, capability checks, explicit transforms, tracking confidence. RoomPlan optional on supported LiDAR devices. Do not invent placement accuracy.
+- Persistence: versioned Codable JSON, atomic writes, app-private storage; upgrade to project library with migrations, thumbnails, safe import/export, recovery, and explicit deletion. No silent overwrite on decode failure.
+- Commerce: StoreKit 2 nonconsumable verified entitlements, transaction updates, restore, offline behavior and sandbox tests. No paywall gating before valid implementation.
+- Export: vector diagram/PDF and share sheet, accessible legend, units, source provenance, project version.
+
+## Coordinates and color
+Right-handed scene coordinates, meters: +x right, +y up, +z toward camera for initial default; view adapters handle transforms explicitly. Orientation conventions must be documented and unit-tested. Point source ideal illuminance E = I cos(theta) / r² on a surface, with bounded physically valid domain; starter implements only the normal-incidence case. Color temperature in Kelvin is not a complete spectral model. Keep photometric calculations separate from RGB display and test exposure and monotonicity.
+
+## Security
+Use least privilege, clear permission purposes, no analytics by default, no secret logging, no photo data in telemetry. Treat imported files and model output as untrusted; bound input sizes, validate schema, handle corruption and cancellation. External inference is an explicit future decision with consent, data retention and cost limits.
