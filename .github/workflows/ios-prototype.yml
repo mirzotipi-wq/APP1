@@ -37,6 +37,11 @@ jobs:
         run: |
           set -euo pipefail
           swift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log
+      - name: Render portable reference study images
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/render-study-fixtures.swift -o "$RUNNER_TEMP/render-study"
+          "$RUNNER_TEMP/render-study" study-artifacts | tee study-render.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -46,6 +51,8 @@ jobs:
             native-syntax.log
             core-tests.log
             core-release-tests.log
+            study-render.log
+            study-artifacts/
   simulator:
     runs-on: macos-15
     timeout-minutes: 45

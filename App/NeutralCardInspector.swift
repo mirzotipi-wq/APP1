@@ -57,7 +57,7 @@ struct NeutralCardInspector: View {
             Button("Reset card settings") { settings = PreviewSettings() }
                 .disabled(settings == PreviewSettings())
                 .accessibilityIdentifier("resetCardSettings")
-            Text("18% neutral card at subject center, with a relative 1000 lx reference. These controls affect the card only. No measured fixture spectra, indirect light, actual camera response or exposure calibration.")
+            Text("18% neutral card at subject center, with a relative 1000 lx reference. These controls affect the card and Study viewport, not the illustrative 3D shading. No measured fixture spectra, indirect light, actual camera response or exposure calibration.")
                 .font(.caption).foregroundStyle(.secondary)
         }
         .task(id: scene) {

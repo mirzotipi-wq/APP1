@@ -94,13 +94,15 @@ struct StudioView: View {
                 Text("Plan").tag("Plan")
                 Text("3D").tag("3D")
                 Text("Camera").tag("Camera")
+                Text("Study").tag("Study")
             }.pickerStyle(.segmented).accessibilityIdentifier("viewMode")
             ZStack(alignment: .topLeading) {
                 charcoal
                 if mode == "Plan" { plan }
                 else if mode == "Camera" { cameraPreview }
+                else if mode == "Study" { ReferenceStudyPreview(scene: scene) }
                 else { SpatialPreview(scene: scene).accessibilityLabel("Illustrative 3D lighting preview") }
-                Text(mode == "Plan" ? "OVERHEAD / 1 M GRID" : mode == "Camera" ? "CAMERA / 3:2" : "3D / DRAG TO ORBIT")
+                Text(mode == "Plan" ? "OVERHEAD / 1 M GRID" : mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
                     .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
                     .padding(10).allowsHitTesting(false)
             }
@@ -110,7 +112,15 @@ struct StudioView: View {
                 Spacer()
                 Text("Meters · cd · K").monospaced()
             }.font(.caption).foregroundStyle(.secondary)
-            if mode == "Camera" {
+            if mode == "Study" {
+                Text("Neutral sphere and panel · direct light, finite-source shadows and relative color. Not a portrait or calibrated exposure.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Button("Adjust preview color and exposure") { showMeter = true }
+                    .font(.subheadline).frame(minHeight: 44)
+                    .disabled(showMeter)
+            }
+            if mode == "Camera" || mode == "Study" {
                 Divider()
                 CameraInspector(position: cameraPositionBinding, lens: cameraLensBinding,
                                 subject: scene.subject, onEditingChanged: editChanged)

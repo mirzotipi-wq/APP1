@@ -167,6 +167,25 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(balance.value as? String, "3200 K")
     }
 
+    func testStudyRendersActualReferenceFrame() throws {
+        let app = makeApp()
+        app.launch()
+        assertStatus("Unsaved changes", in: app)
+        let study = app.segmentedControls["viewMode"].buttons["Study"]
+        XCTAssertTrue(study.waitForExistence(timeout: 10))
+        study.tap()
+        let rendered = app.images["studyPreview"]
+        XCTAssertTrue(rendered.waitForExistence(timeout: 20), "The reference renderer must publish a real frame")
+        XCTAssertTrue(rendered.isHittable)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Studio-light-study"; attachment.lifetime = .keepAlways; addAttachment(attachment)
+        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
+        plan.tap()
+        XCTAssertTrue(app.buttons["editCamera"].waitForExistence(timeout: 5))
+        study.tap()
+        XCTAssertTrue(rendered.waitForExistence(timeout: 20))
+    }
+
     func testCorruptProjectBlocksSavingAcrossRelaunch() throws {
         let app = makeApp(corrupt: true)
         app.launch()
