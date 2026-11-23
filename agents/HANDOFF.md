@@ -1,5 +1,27 @@
 # Current handoff
 
+**Stage:** M01 active; M02–M07 pending. No milestone complete. Latest source implements independent M04 work without advancing dependency gates.
+
+## Latest integrated cycle
+
+- Start: 52c0a00fcff1ae1d8e542f44e9bdcc886aeff132.
+- 60caa0dba5dece3bddbf38c6a4330593d160c713: native PhotosPicker import, bounded file transfer (32 MiB, 100 MP, single JPEG/PNG/HEIF still), orientation-aware 1600 px derivative, no copied source metadata, cancellation/request tokens, ephemeral reference/Study comparison sheet and native/UI tests. 
+- e7332c873d94d56b9fb33e6b5f053668569922cb: two camera-relative editable starting rigs from explicit user observations; unknown key direction abstains; ideal emitter distances and sizes, working 400 lx key/5600 K, optional fill ratios/rim; confirm replacement through existing undo/explicit save path; six portable tests.
+- 3628de66bbd2e03e890194c44c55120f572b7ede: bounded 128×128 aspect-preserving thumbnail luminance statistics, opaque samples only, sRGB linearization and neutral gray percentiles, dark/highlight fractions, inactive photo concealment, reset observations on replacement, five portable tests plus guided apply/undo UI scenario.
+- **Actual verification:** first source [78/78 Debug and Release](https://github.com/mirzotipi-wq/APP1/actions/runs/45268985440/job/138023414860), [unsigned simulator artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45268985440/artifacts/14863024540); guided source [84/84 Debug and Release](https://github.com/mirzotipi-wq/APP1/actions/runs/45269217130/job/138024225540), six solver tests passed, [raw evidence](https://github.com/mirzotipi-wq/APP1/actions/runs/45269217130/artifacts/14863059495). Latest [core](https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/job/138025049210) in_progress; Debug success, Release success; [simulator](https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/job/138025048902) queued. Native UI tests and Apple SDK build of latest source not established. Earlier library [native job](https://github.com/mirzotipi-wq/APP1/actions/runs/45267427132/job/138017945122) Debug app build succeeded, UI still running at observation.
+- [Reference cycle evidence](../docs/evidence/m04-reference-comparison-2026-11-23.md). Evidence-only floor remains 20/100; no unsupported points awarded. No actual parallel agents or independent reviewer. No App Store publication, spending or release authorization.
+
+## Next executable packet
+
+1. Inspect latest and earlier native jobs above and actual logs. Repair only observed compile/test failures; do not rerun blindly or remove meaningful tests. Verify current Debug/Release simulator build and persistence smoke, then M01 if all actual gates pass.
+2. Inspect genuine screenshots and XCTest attachments, including reference comparison, guided application/undo, protected library migration/corruption, PDFKit/share, and current screenshot layout. Exercise the actual Photos picker with local and iCloud-unavailable assets, limited/denied permission, cancel/replacement/remove, background and no source metadata/private export. Native tests of FileRepresentation alone do not verify real picker integration.
+3. For M04, prepare 30+ rights-cleared controlled portrait examples with documented lighting, held-out split and two independent human reviewers. The new manual candidate generator and tonal summary are not automated photograph-to-rig inference and must not be represented as such. Implement calibrated abstaining inference separately.
+4. Remaining mandatory performance, realistic rendering/physical calibration, editing repetition, accessibility, AR real-device validation, StoreKit, privacy, customer validation, independent review and owner approval remain open.
+
+## Earlier handoff retained below
+
+# Current handoff
+
 **Stage:** M01 active; M02–M07 pending. No milestone is complete. Portable library and all existing domain tests passed; current native build and persistence smoke are unverified.
 
 ## Latest integrated cycle

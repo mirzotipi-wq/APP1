@@ -374,6 +374,105 @@
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14862957971",
       "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
       "notes": "Validated legacy migration without deleting original, bounded atomic snapshots, round trips, stale-write rejection, corruption, oversized/nonregular file protection, archive/restore. Interruption/low storage, native UX and permanent deletion/export/recovery policy outstanding; do not mark full gate passed."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "60caa0dba5dece3bddbf38c6a4330593d160c713",
+      "date": "2026-11-23",
+      "method": "Actual portable CI job 138023414860; Debug and Release XCTest, state/syntax, fixtures and Float32 parity",
+      "environment": "Ubuntu 24.04 x86_64; Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45268985440/artifacts/14864261790",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "78 tests passed in each configuration. Native syntax only for imported-photo feature."
+    },
+    {
+      "gate": "native_build",
+      "result": "pass",
+      "revision": "60caa0dba5dece3bddbf38c6a4330593d160c713",
+      "date": "2026-11-23",
+      "method": "Observed successful Build unsigned simulator app and uploaded simulator application in job 138023414421",
+      "environment": "GitHub Actions macos-26-intel; Debug unsigned simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45268985440/artifacts/14863024540",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Earlier source revision includes photo comparison UI; native SDK app compilation passed. XCTest execution, physical-device evidence and later source remain unverified."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "e7332c873d94d56b9fb33e6b5f053668569922cb",
+      "date": "2026-11-23",
+      "method": "Actual portable CI job 138024225540, Debug/Release XCTest, state/syntax and fixtures/host parity",
+      "environment": "Ubuntu 24.04 x86_64 Swift 6.4.2 RELEASE",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269217130/artifacts/14863059495",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "84 tests in both configurations, zero failures, all six GuidedLightingTests pass; all 108 observation combinations / 216 candidate rigs validated in the domain test. Test includes rotated camera basis, assumed plane lux and relative fill ratio, degenerate geometry, ambiguity and round trips."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Observed latest simulator workflow job 138025048902",
+      "environment": "macos-26-intel, queued",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Prior reference-only build succeeded. No claim about latest revision native SDK build or UI execution."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Observed earlier simulator jobs and authored guided-rig apply/undo scenario",
+      "environment": "GitHub Actions Apple simulator; UI execution not yet confirmed",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Previous library and private-photo revisions compiled. Latest save/reopen, corrupt storage and no implicit save/undo still require execution."
+    },
+    {
+      "gate": "inference",
+      "result": "unverified",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Implemented user-entered observations, two alternative rigs and descriptive whole-image tonal summary; six solver tests pass on e7332c8; latest five tone tests added",
+      "environment": "Portable domain; native UI and held-out controlled images not yet verified",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Not automatic inverse rendering. 400 lx and 5600 K are working assumptions; no confidence or exact reconstruction claim. Held-out 30+ examples, two independent reviewers and abstention validation remain mandatory."
+    },
+    {
+      "gate": "reference_privacy",
+      "result": "unverified",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Native source: system PhotosPicker, bounded file transfer, orientation/sRGB downsample, metadata-stripped pixels, cancellation, ephemeral in-memory derivative, inactive concealment; four native pipeline tests authored",
+      "environment": "iOS source; native app build on 60caa0d only; device audit pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "No network endpoint, project/PDF attachment or source identifiers added. System Photos may fetch iCloud media. Must verify actual import/replacement/removal, permissions, app-switcher behavior, original preservation and no unexpected data transfer."
+    },
+    {
+      "gate": "editing",
+      "result": "unverified",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Guided alternate selection, confirmation, Studio replace via existing undo path, explicit save boundary; UI tests authored",
+      "environment": "iOS source; native CI pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "No claim of native UX or accessibility pass."
+    },
+    {
+      "gate": "core_tests",
+      "result": "unverified",
+      "revision": "3628de66bbd2e03e890194c44c55120f572b7ede",
+      "date": "2026-11-23",
+      "method": "Latest core workflow observation; in_progress; Debug success, Release success",
+      "environment": "GitHub Actions Ubuntu 24.04",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791/job/138025049210",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Prior 84-test revision verified; latest native source syntax passed, do not claim full current test result before run completes."
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Provisional evidence-only scorecard — 2026-11-23
 
-This is a conservative **20/100 supported-points floor**, not an estimate of overall quality, progress percentage or release readiness. Points are awarded only for actual existing portable tests and bounded numerical evidence; unverified work is unawarded, not necessarily absent. Native source follow-up 767d8b527ff2bcb266b6ca72298119b7557206e2 still has CI pending. No independent review. No protected quality gate is changed.
+This is a conservative **20/100 supported-points floor**, not an estimate of overall quality, progress percentage or release readiness. Points are awarded only for actual existing portable tests and bounded numerical evidence; unverified work is unawarded, not necessarily absent. Earlier reference-only source 60caa0d compiled as an unsigned simulator app; latest source native tests remain pending. Guided manual alternatives and descriptive tone analysis are independent partial M04 work, not automatic inference, calibrated rendering or a completed user workflow. No additional supported points awarded yet. No independent review. No protected quality gate is changed.
 
 | Category | Max | Supported | Transparent allocation |
 |---|---:|---:|---|
@@ -16,4 +16,4 @@ This is a conservative **20/100 supported-points floor**, not an estimate of ove
 | App Store compliance | 5 | 0 | Current Apple requirements, signed distribution, listing and independent review pending |
 | Total | 100 | 20 | Evidence floor; all mandatory release gates still apply |
 
-[Portable CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016895770) confirmed 78/78 Debug and Release tests on b8d0ef90a690e80686fd6821981ec97da163dfa4; host parity and PPM fixtures also passed. [Current native CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45267427132) remains unverified. Do not claim a score of 95 or release readiness until all gates and independent evidence pass. The allocation is a proposed internal review convention, not a replacement for docs/QUALITY.md.
+[Portable CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016895770) confirmed 78/78 Debug and Release tests on b8d0ef90a690e80686fd6821981ec97da163dfa4; host parity and PPM fixtures also passed. [Latest verified portable CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45269217130) confirms 84 tests in both configurations. [Current native CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45269453791) remains unverified. Do not claim a score of 95 or release readiness until all gates and independent evidence pass. The allocation is a proposed internal review convention, not a replacement for docs/QUALITY.md.
