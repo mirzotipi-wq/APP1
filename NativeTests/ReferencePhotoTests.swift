@@ -69,8 +69,17 @@ final class ReferencePhotoTests: XCTestCase {
         let url = directory.appendingPathComponent("reference.jpg")
         let original = try fixture(width: 80, height: 60)
         try original.write(to: url)
-        let imported = try await ReferencePhoto(importing: url, contentType: .jpeg)
+        // The FileRepresentation callback calls read(file:) on every supported OS.
+        // Transferable's public URL initializer is only available from iOS 18.2.
+        let imported = try ReferencePhoto.read(file: url)
         XCTAssertEqual(imported.width, 80); XCTAssertEqual(imported.height, 60)
+        if #available(iOS 18.2, *) {
+            let transferred = try await ReferencePhoto(importing: url, contentType: .jpeg)
+            XCTAssertEqual(transferred.width, imported.width)
+            XCTAssertEqual(transferred.height, imported.height)
+            XCTAssertNotNil(CGImageSourceCreateWithData(transferred.png as CFData, nil))
+            XCTAssertNotNil(transferred.tones)
+        }
         XCTAssertEqual(try Data(contentsOf: url), original)
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: directory.path), ["reference.jpg"])
         XCTAssertThrowsError(try ReferencePhoto.read(file: directory))
