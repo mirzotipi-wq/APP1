@@ -10,6 +10,7 @@ struct StudioView: View {
     @State private var editStart: LightingScene?
     @State private var mode = "Plan"
     @State private var showRecipes = false
+    @State private var showMeter = false
     @State private var confirmRemove = false
     @State private var loaded = false
     @State private var saveBlocked = false
@@ -24,6 +25,7 @@ struct StudioView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     header
                     workspace
+                    meter
                     rack
                     if let light = scene.lights.first(where: { $0.id == selected }) {
                         inspector(light)
@@ -250,6 +252,24 @@ struct StudioView: View {
         }.frame(minWidth: 44, minHeight: 44)
     }
 
+    private var meter: some View {
+        DisclosureGroup(isExpanded: $showMeter) {
+            NeutralCardInspector(scene: scene, settings: previewSettingsBinding,
+                                 onEditingChanged: editChanged)
+                .padding(.top, 12)
+        } label: {
+            VStack(alignment: .leading, spacing: 3) {
+                Label("Light meter & test card", systemImage: "light.metering.center.weighted")
+                    .font(.headline)
+                Text("Ideal direct light · relative color preview").font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityIdentifier("meterDisclosure")
+        .padding(14)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+    }
+
     private var rack: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -362,6 +382,14 @@ struct StudioView: View {
         })
     }
 
+    private var previewSettingsBinding: Binding<PreviewSettings> {
+        Binding(get: { scene.effectivePreviewSettings }, set: { new in
+            guard new.isValid, new != scene.effectivePreviewSettings else { return }
+            if editStart == nil { remember(scene) }
+            scene.previewSettings = new
+        })
+    }
+
     private var cameraLensBinding: Binding<CameraLens> {
         Binding(get: { scene.effectiveCameraLens }, set: { new in
             guard new.isValid, new != scene.effectiveCameraLens else { return }
@@ -409,7 +437,7 @@ struct StudioView: View {
             if optics.kind == .rectangle { result += String(format: "; surface %.2f × %.2f m", optics.widthMeters, optics.heightMeters) }
             return result
         }
-        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera)); \(String(format: "%.0f", scene.effectiveCameraLens.focalLengthMillimeters)) mm, full frame 36 × 24 mm"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
+        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera)); \(String(format: "%.0f", scene.effectiveCameraLens.focalLengthMillimeters)) mm, full frame 36 × 24 mm", "Test card: \(String(format: "%.0f", scene.effectivePreviewSettings.whiteBalanceKelvin)) K balance, \(String(format: "%+.2f", scene.effectivePreviewSettings.exposureStops)) relative stops"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
     }
     private func remember(_ previous: LightingScene) {
         if history.last != previous { history.append(previous) }

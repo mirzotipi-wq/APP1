@@ -128,6 +128,45 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(focal.value as? String, "85 mm")
     }
 
+    func testMeterBalanceSaveUndoAndRelaunch() throws {
+        let app = makeApp()
+        app.launch()
+        assertStatus("Unsaved changes", in: app)
+        let disclosure = app.buttons["meterDisclosure"]
+        reveal(disclosure, in: app)
+        disclosure.tap()
+        let lux = app.staticTexts["combinedLux"]
+        reveal(lux, in: app)
+        XCTAssertTrue(lux.waitForExistence(timeout: 10))
+        let originalLux = lux.label
+        let balance = app.sliders["previewWhiteBalance"]
+        reveal(balance, in: app)
+        XCTAssertEqual(balance.value as? String, "5600 K")
+        let tungsten = app.buttons["balance-3200"]
+        reveal(tungsten, in: app)
+        tungsten.tap()
+        XCTAssertEqual(balance.value as? String, "3200 K")
+        reveal(lux, in: app, direction: false)
+        XCTAssertEqual(lux.label, originalLux, "Balance changes color, not incident lux")
+        let undo = app.buttons["undo"]
+        reveal(undo, in: app, direction: false)
+        undo.tap()
+        reveal(balance, in: app)
+        XCTAssertEqual(balance.value as? String, "5600 K")
+        reveal(tungsten, in: app)
+        tungsten.tap()
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Studio-test-card"; attachment.lifetime = .keepAlways; addAttachment(attachment)
+        app.buttons["saveProject"].tap()
+        app.terminate()
+        app.launch()
+        assertStatus("Saved locally", in: app)
+        reveal(disclosure, in: app)
+        disclosure.tap()
+        reveal(balance, in: app)
+        XCTAssertEqual(balance.value as? String, "3200 K")
+    }
+
     func testCorruptProjectBlocksSavingAcrossRelaunch() throws {
         let app = makeApp(corrupt: true)
         app.launch()
