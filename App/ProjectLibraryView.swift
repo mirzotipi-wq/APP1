@@ -226,19 +226,26 @@ private struct ProjectNameEditor: View {
                             .accessibilityIdentifier("clearProjectName")
                         }
                     }
-                    if let errorMessage { Text(errorMessage).font(.footnote) }
+                    if let errorMessage {
+                        Text(errorMessage).font(.footnote).foregroundStyle(.red)
+                            .accessibilityIdentifier("projectNameError")
+                    }
+                }
+                Section {
+                    Button { submit() } label: {
+                        Text("Save project name").fontWeight(.semibold)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled((try? ProjectLibrary.normalizedName(name)) == nil)
+                    .accessibilityIdentifier("confirmProjectName")
                 }
             }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { submit() }
-                        .disabled((try? ProjectLibrary.normalizedName(name)) == nil)
-                        .accessibilityIdentifier("confirmProjectName")
-                }
-            }
+             }
             .onAppear { focused = true }
         }
     }
@@ -246,6 +253,7 @@ private struct ProjectNameEditor: View {
     private func submit() {
         do {
             try onSubmit(ProjectLibrary.normalizedName(name))
+            focused = false
             dismiss()
         } catch { errorMessage = error.localizedDescription }
     }
