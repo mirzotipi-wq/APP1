@@ -1,0 +1,283 @@
+import Foundation
+
+public enum StudyQuality: Sendable {
+    /// 8×8 midpoint samples per rectangle. Intended for a small diagnostic image.
+    case interactive
+    /// 32×32 midpoint samples per rectangle, matching the numerical photometry grid.
+    case reference
+    fileprivate var grid: Int { self == .interactive ? 8 : 32 }
+}
+
+public enum StudyError: Error, Equatable {
+    case invalidScene, invalidCamera, invalidEmitter, invalidResolution, invalidSurface, cancelled
+}
+
+/// Achromatic, spectrally flat materials. Dielectric uses a direct-light GGX/Smith/Schlick
+/// approximation; no measured skin/fabric, subsurface, multi-scattering or indirect lighting.
+public enum StudyMaterial: Equatable, Sendable {
+    case diffuse(reflectance: Double)
+    case dielectric(reflectance: Double, roughness: Double, f0: Double)
+
+    fileprivate var isValid: Bool {
+        switch self {
+        case .diffuse(let r): return r.isFinite && (0...1).contains(r)
+        case .dielectric(let r, let rough, let f0):
+            return r.isFinite && (0...1).contains(r) && rough.isFinite && (0.05...1).contains(rough) && f0.isFinite && (0...0.08).contains(f0)
+        }
+    }
+
+    /// Returns π·BRDF, making a pure diffuse material equal to its reflectance.
+    /// The caller supplies incident irradiance (lux), including N·L.
+    fileprivate func response(normal n: SIMD3<Double>, light l: SIMD3<Double>, view v: SIMD3<Double>, nl: Double) -> Double {
+        switch self {
+        case .diffuse(let r): return r
+        case .dielectric(let r, let rough, let f0):
+            let nv = max(0, dot3(n, v))
+            guard nv > 0, let h = normalized3(l + v) else { return 0 }
+            let nh = min(1, max(0, dot3(n, h)))
+            let vh = min(1, max(0, dot3(v, h)))
+            let alpha = rough * rough, a2 = alpha * alpha
+            let d = nh * nh * (a2 - 1) + 1
+            let distributionTimesPi = a2 / (d * d)
+            // Height-correlated Smith visibility: stable at grazing angles.
+            let denominator = 2 * (nl * sqrt(nv * nv * (1 - a2) + a2) + nv * sqrt(nl * nl * (1 - a2) + a2))
+            let fresnel = f0 + (1 - f0) * pow(1 - vh, 5)
+            let specular = denominator > 0 ? distributionTimesPi * fresnel / denominator : 0
+            return r * (1 - fresnel) + specular
+        }
+    }
+}
+
+/// Diagnostic geometry: neutral sphere resting on a finite horizontal reference panel.
+/// This plane is at subject height minus radius; it is not the actual room floor.
+public struct StudyGeometry: Equatable, Sendable {
+    public let center: Position
+    public let radius: Double
+    public let panelHalfExtent: Double
+    public var panelY: Double { center.y - radius }
+
+    public init?(center: Position, radius: Double = 0.22, panelHalfExtent: Double = 3) {
+        guard center.isValid, radius.isFinite, (0.05...1).contains(radius),
+              panelHalfExtent.isFinite, (1...10).contains(panelHalfExtent), panelHalfExtent >= radius else { return nil }
+        self.center = center; self.radius = radius; self.panelHalfExtent = panelHalfExtent
+    }
+
+    fileprivate func inPanel(_ p: SIMD3<Double>) -> Bool {
+        abs(p.x - center.x) <= panelHalfExtent && abs(p.z - center.z) <= panelHalfExtent
+    }
+
+    /// Positive ray/sphere intersection; a receiver's shadow ray is offset separately.
+    fileprivate func sphereHit(origin: SIMD3<Double>, direction: SIMD3<Double>, minimum: Double) -> Double? {
+        let offset = origin - vec(center)
+        let b = dot3(offset, direction), c = dot3(offset, offset) - radius * radius
+        let discriminant = b * b - c
+        guard discriminant >= 0 else { return nil }
+        let root = sqrt(discriminant)
+        let near = -b - root, far = -b + root
+        if near >= minimum { return near }
+        if far >= minimum { return far }
+        return nil
+    }
+
+    fileprivate func occludes(from origin: SIMD3<Double>, to direction: SIMD3<Double>, distance: Double) -> Bool {
+        let epsilon = 1e-5
+        if let hit = sphereHit(origin: origin, direction: direction, minimum: epsilon), hit < distance - epsilon { return true }
+        if abs(direction.y) > 1e-12 {
+            let t = (panelY - origin.y) / direction.y
+            if t >= epsilon, t < distance - epsilon, inPanel(origin + direction * t) { return true }
+        }
+        return false
+    }
+}
+
+public struct StudySurfaceSignal: Equatable, Sendable {
+    /// Incident illuminance including visibility, before any material or exposure.
+    public let visibleLux: Double
+    public let unoccludedLux: Double
+    /// Relative scene-linear XYZ; π·outgoing radiance / 1000 lx reference.
+    public let signalXYZ: RelativeXYZ
+}
+
+/// Prepared light samples are shared across surface evaluations. Rectangular sources
+/// use area-weighted midpoint samples; sample intensity sums to on-axis candela.
+public struct StudyLighting: Sendable {
+    private struct Sample: Sendable {
+        let position: SIMD3<Double>
+        let emittingNormal: SIMD3<Double>?
+        let candela: Double
+        let xyz: SIMD3<Double>
+    }
+    private struct AreaGuard: Sendable {
+        let center: SIMD3<Double>
+        let right: SIMD3<Double>
+        let up: SIMD3<Double>
+        let halfWidth: Double
+        let halfHeight: Double
+        let minimumDistance: Double
+
+        func containsNearReceiver(_ p: SIMD3<Double>) -> Bool {
+            let delta = p - center
+            let x = min(halfWidth, max(-halfWidth, dot3(delta, right)))
+            let y = min(halfHeight, max(-halfHeight, dot3(delta, up)))
+            let separation = delta - right * x - up * y
+            return dot3(separation, separation) < minimumDistance * minimumDistance
+        }
+    }
+    private let samples: [Sample]
+    private let areaGuards: [AreaGuard]
+
+    public init(scene: LightingScene, quality: StudyQuality = .interactive) throws {
+        guard (try? scene.validated()) != nil else { throw StudyError.invalidScene }
+        var result: [Sample] = []
+        var guards: [AreaGuard] = []
+        for light in scene.lights where light.candela > 0 {
+            guard let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { throw StudyError.invalidEmitter }
+            let xyz = SIMD3<Double>(color.x, color.y, color.z)
+            let optics = light.effectiveOptics, center = vec(light.position)
+            if optics.kind == .point {
+                result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz))
+            } else {
+                guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }
+                let axis = vec(frame.normal)
+                if optics.kind == .directional {
+                    result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz))
+                } else {
+                    let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
+                    let perCell = light.candela / Double(grid * grid)
+                    guards.append(.init(center: center, right: right, up: up,
+                                        halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
+                                        minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))
+                    for row in 0..<grid {
+                        let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters
+                        for col in 0..<grid {
+                            let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
+                            result.append(.init(position: center + right * x + up * y, emittingNormal: axis, candela: perCell, xyz: xyz))
+                        }
+                    }
+                }
+            }
+        }
+        samples = result; areaGuards = guards
+    }
+
+    public var sampleCount: Int { samples.count }
+
+    /// Evaluates one arbitrary receiver. Geometry nil means no visibility/occlusion.
+    /// A point sample nearer than 5 cm, or a receiver within the declared finite-area
+    /// near-field guard (max of 5 cm and one quarter longest side), is unsupported.
+    public func evaluate(receiver: Position, normal: UnitDirection, view: UnitDirection,
+                         material: StudyMaterial, geometry: StudyGeometry? = nil) throws -> StudySurfaceSignal {
+        guard receiver.isValid, material.isValid, dot3(vec(normal), vec(view)) > 0 else { throw StudyError.invalidSurface }
+        return try evaluate(receiver: vec(receiver), normal: vec(normal), view: vec(view), material: material, geometry: geometry)
+    }
+
+    fileprivate func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
+                              material: StudyMaterial, geometry: StudyGeometry?) throws -> StudySurfaceSignal {
+        if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }
+        var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero
+        let shadowOrigin = receiver + normal * 1e-5
+        for sample in samples {
+            let delta = sample.position - receiver
+            let r2 = dot3(delta, delta)
+            guard r2 >= 0.0025 else { throw StudyError.invalidSurface }
+            let distance = sqrt(r2), wi = delta / distance
+            let nl = min(1, max(0, dot3(normal, wi)))
+            if nl == 0 { continue }
+            let emitted = sample.emittingNormal.map { min(1, max(0, -dot3($0, wi))) } ?? 1
+            if emitted == 0 { continue }
+            let lux = sample.candela * emitted * nl / r2
+            total += lux
+            // Offset origin while keeping the shadow ray aimed at the actual source sample.
+            if let geometry {
+                let segment = sample.position - shadowOrigin
+                let length = sqrt(dot3(segment, segment))
+                if geometry.occludes(from: shadowOrigin, to: segment / length, distance: length) { continue }
+            }
+            visible += lux
+            let scale = lux * material.response(normal: normal, light: wi, view: view, nl: nl) / 1000
+            xyz += sample.xyz * scale
+        }
+        return .init(visibleLux: visible, unoccludedLux: total, signalXYZ: .init(x: xyz.x, y: xyz.y, z: xyz.z))
+    }
+}
+
+/// Packed, opaque RGBA8, top-to-bottom rows, 3:2 frame. Invalid near-emitter
+/// receivers are marked diagnostic magenta and counted, never passed off as shadows.
+public struct StudyImage: Equatable, Sendable {
+    public let width: Int
+    public let height: Int
+    public let rgba: Data
+    public let unsupportedPixels: Int
+}
+
+/// Deterministic CPU oracle/diagnostic preview. Direct light only; deliberately small
+/// bounded images. Not a real-time production GPU renderer or photographic ground truth.
+public enum ReferenceStudyRenderer {
+    public static func render(scene: LightingScene, width: Int = 120, quality: StudyQuality = .interactive,
+                              isCancelled: () -> Bool = { false }) throws -> StudyImage {
+        // Bound both output allocation and reference-quality work.
+        let maximum = quality == .reference ? 96 : 192
+        guard width >= 24, width <= maximum, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
+        guard let camera = CameraFraming(scene: scene), let geometry = StudyGeometry(center: scene.subject),
+              camera.position.y > geometry.panelY + 0.01,
+              camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters else { throw StudyError.invalidCamera }
+        let light = try StudyLighting(scene: scene, quality: quality)
+        guard let transform = PreviewColorTransform(settings: scene.effectivePreviewSettings) else { throw StudyError.invalidScene }
+        let height = width * 2 / 3, origin = vec(camera.position)
+        let forward = vec(camera.forward), right = vec(camera.right), up = vec(camera.up)
+        let halfW = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
+        let halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
+        var pixels = [UInt8](repeating: 255, count: width * height * 4)
+        var unsupported = 0
+        let sphere: StudyMaterial = .dielectric(reflectance: 0.18, roughness: 0.32, f0: 0.04)
+        let panel: StudyMaterial = .diffuse(reflectance: 0.30)
+        for y in 0..<height {
+            if isCancelled() { throw StudyError.cancelled }
+            let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfH
+            for x in 0..<width {
+                let px = (2 * (Double(x) + 0.5) / Double(width) - 1) * halfW
+                guard let ray = normalized3(forward + right * px + up * py) else { throw StudyError.invalidCamera }
+                let minT = CameraFraming.minimumDepthMeters / dot3(ray, forward)
+                let sphereT = geometry.sphereHit(origin: origin, direction: ray, minimum: minT)
+                var planeT: Double?
+                if ray.y < -1e-12 {
+                    let t = (geometry.panelY - origin.y) / ray.y
+                    if t >= minT, geometry.inPanel(origin + ray * t) { planeT = t }
+                }
+                let index = 4 * (y * width + x)
+                var p: SIMD3<Double>, n: SIMD3<Double>, material: StudyMaterial
+                if let t = sphereT, t < (planeT ?? .infinity) {
+                    p = origin + ray * t
+                    guard let unit = normalized3(p - vec(geometry.center)) else { throw StudyError.invalidSurface }
+                    n = unit; material = sphere
+                } else if let t = planeT {
+                    p = origin + ray * t; n = .init(0, 1, 0); material = panel
+                } else {
+                    pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
+                    continue
+                }
+                do {
+                    let signal = try light.evaluate(receiver: p, normal: n, view: -ray, material: material, geometry: geometry)
+                    guard let color = transform.display(signal.signalXYZ) else { throw StudyError.invalidSurface }
+                    pixels[index] = byte(color.red); pixels[index + 1] = byte(color.green); pixels[index + 2] = byte(color.blue)
+                } catch StudyError.invalidSurface {
+                    unsupported += 1
+                    pixels[index] = 255; pixels[index + 1] = 0; pixels[index + 2] = 255
+                }
+            }
+        }
+        if isCancelled() { throw StudyError.cancelled }
+        return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported)
+    }
+
+    private static func byte(_ v: Double) -> UInt8 { UInt8((min(1, max(0, v)) * 255).rounded()) }
+}
+
+private func vec(_ p: Position) -> SIMD3<Double> { .init(p.x, p.y, p.z) }
+private func vec(_ d: UnitDirection) -> SIMD3<Double> { .init(d.x, d.y, d.z) }
+private func dot3(_ a: SIMD3<Double>, _ b: SIMD3<Double>) -> Double { a.x * b.x + a.y * b.y + a.z * b.z }
+private func normalized3(_ v: SIMD3<Double>) -> SIMD3<Double>? {
+    let length = sqrt(dot3(v, v))
+    guard length.isFinite, length > 0 else { return nil }
+    return v / length
+}

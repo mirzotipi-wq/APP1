@@ -66,37 +66,8 @@ public enum PreviewColorimetry {
         return RelativeXYZ(total / total.y)
     }
 
-    /// Convert a nonnegative XYZ signal into display sRGB using Bradford chromatic adaptation,
-    /// relative exposure, luminance Reinhard tone mapping and neutral-axis gamut compression.
-    /// The reference white is a blackbody at the selected balance, not a camera profile.
     public static func display(_ xyz: RelativeXYZ, settings: PreviewSettings) -> DisplayRGB? {
-        guard settings.isValid, [xyz.x, xyz.y, xyz.z].allSatisfy({ $0.isFinite && $0 >= 0 }),
-              let white = blackbody(kelvin: settings.whiteBalanceKelvin) else { return nil }
-        let d65 = SIMD3<Double>(0.3127 / 0.3290, 1, (1 - 0.3127 - 0.3290) / 0.3290)
-        let src = bradford(white.vector), dst = bradford(d65)
-        guard src.x > 0, src.y > 0, src.z > 0 else { return nil }
-        let adapted = inverseBradford(bradford(xyz.vector) * (dst / src)) * pow(2, settings.exposureStops)
-        // Keep signed linear RGB until display gamut mapping. Do not clip incoming illuminants.
-        let rgb = SIMD3<Double>(3.24096994 * adapted.x - 1.53738318 * adapted.y - 0.49861076 * adapted.z,
-                                -0.96924364 * adapted.x + 1.87596750 * adapted.y + 0.04155506 * adapted.z,
-                                0.05563008 * adapted.x - 0.20397696 * adapted.y + 1.05697151 * adapted.z)
-        guard [rgb.x, rgb.y, rgb.z, adapted.y].allSatisfy(\.isFinite), adapted.y >= 0 else { return nil }
-        if adapted.y == 0 { return .init(red: 0, green: 0, blue: 0) }
-        let luminance = adapted.y / (1 + adapted.y)
-        let tone = rgb / (1 + adapted.y)
-        // Compress chroma around the tone-mapped neutral instead of channel clipping.
-        // Choose the largest t such that neutral + t * (color - neutral) remains in [0,1].
-        var t = 1.0
-        for component in [tone.x, tone.y, tone.z] {
-            let delta = component - luminance
-            if delta > 0 { t = min(t, (1 - luminance) / delta) }
-            if delta < 0 { t = min(t, -luminance / delta) }
-        }
-        func encode(_ v: Double) -> Double {
-            let linear = min(1, max(0, luminance + t * (v - luminance)))
-            return linear <= 0.0031308 ? 12.92 * linear : 1.055 * pow(linear, 1 / 2.4) - 0.055
-        }
-        return .init(red: encode(tone.x), green: encode(tone.y), blue: encode(tone.z))
+        PreviewColorTransform(settings: settings)?.display(xyz)
     }
 
     private static func matchingFunctions(_ wavelength: Double) -> SIMD3<Double> {
@@ -111,15 +82,56 @@ public enum PreviewColorimetry {
         return .init(max(0, x), max(0, y), max(0, z))
     }
 
-    private static func bradford(_ v: SIMD3<Double>) -> SIMD3<Double> {
+    fileprivate static func bradford(_ v: SIMD3<Double>) -> SIMD3<Double> {
         .init(0.8951 * v.x + 0.2664 * v.y - 0.1614 * v.z,
               -0.7502 * v.x + 1.7135 * v.y + 0.0367 * v.z,
               0.0389 * v.x - 0.0685 * v.y + 1.0296 * v.z)
     }
-    private static func inverseBradford(_ v: SIMD3<Double>) -> SIMD3<Double> {
+    fileprivate static func inverseBradford(_ v: SIMD3<Double>) -> SIMD3<Double> {
         .init(0.9869929 * v.x - 0.1470543 * v.y + 0.1599627 * v.z,
               0.4323053 * v.x + 0.5183603 * v.y + 0.0492912 * v.z,
               -0.0085287 * v.x + 0.0400428 * v.y + 0.9684867 * v.z)
+    }
+}
+
+/// Prepared, reusable display transform for a fixed white balance and exposure.
+/// Retains signed linear RGB through tone/gamut mapping. No camera profile.
+public struct PreviewColorTransform: Sendable {
+    private let adaptationRatio: SIMD3<Double>
+    private let exposure: Double
+
+    public init?(settings: PreviewSettings) {
+        guard settings.isValid, let white = PreviewColorimetry.blackbody(kelvin: settings.whiteBalanceKelvin) else { return nil }
+        let d65 = SIMD3<Double>(0.3127 / 0.3290, 1, (1 - 0.3127 - 0.3290) / 0.3290)
+        let src = PreviewColorimetry.bradford(white.vector), dst = PreviewColorimetry.bradford(d65)
+        guard src.x > 0, src.y > 0, src.z > 0 else { return nil }
+        adaptationRatio = dst / src
+        exposure = pow(2, settings.exposureStops)
+    }
+
+    /// Bradford adaptation, relative exposure, luminance Reinhard tone mapping and
+    /// neutral-axis gamut compression into display-encoded sRGB.
+    public func display(_ xyz: RelativeXYZ) -> DisplayRGB? {
+        guard xyz.x.isFinite, xyz.y.isFinite, xyz.z.isFinite, xyz.x >= 0, xyz.y >= 0, xyz.z >= 0 else { return nil }
+        let adapted = PreviewColorimetry.inverseBradford(PreviewColorimetry.bradford(xyz.vector) * adaptationRatio) * exposure
+        let rgb = SIMD3<Double>(3.24096994 * adapted.x - 1.53738318 * adapted.y - 0.49861076 * adapted.z,
+                                -0.96924364 * adapted.x + 1.87596750 * adapted.y + 0.04155506 * adapted.z,
+                                0.05563008 * adapted.x - 0.20397696 * adapted.y + 1.05697151 * adapted.z)
+        guard rgb.x.isFinite, rgb.y.isFinite, rgb.z.isFinite, adapted.y.isFinite, adapted.y >= 0 else { return nil }
+        if adapted.y == 0 { return .init(red: 0, green: 0, blue: 0) }
+        let luminance = adapted.y / (1 + adapted.y)
+        let tone = rgb / (1 + adapted.y)
+        var t = 1.0
+        for component in [tone.x, tone.y, tone.z] {
+            let delta = component - luminance
+            if delta > 0 { t = min(t, (1 - luminance) / delta) }
+            if delta < 0 { t = min(t, -luminance / delta) }
+        }
+        func encode(_ v: Double) -> Double {
+            let linear = min(1, max(0, luminance + t * (v - luminance)))
+            return linear <= 0.0031308 ? 12.92 * linear : 1.055 * pow(linear, 1 / 2.4) - 0.055
+        }
+        return .init(red: encode(tone.x), green: encode(tone.y), blue: encode(tone.z))
     }
 }
 
