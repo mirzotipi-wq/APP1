@@ -231,6 +231,72 @@
       "environment": "Standard macOS 26 Intel runner queued",
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316",
       "notes": "No Apple SDK build, simulator artifact, screenshots or native smoke execution. Prior macOS 15 ARM runs canceled before steps or remain queued; no proven source failure."
+    },
+    {
+      "revision": "001de5a5627721975206ae8ffdbdc507d44eae7a",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review; independent product review not performed",
+      "gate": "native_build",
+      "result": "pass",
+      "method": "GitHub Actions generated Xcode project and unsigned Debug xcodebuild; BUILD SUCCEEDED",
+      "environment": "macOS 26.6.1 Intel, Xcode 26.6 (17F113), iOS simulator SDK 26.5, Apple Swift 6.3.3",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262040915/artifacts/14860922461",
+      "notes": "Actual prior-revision unsigned simulator build only. UI test compilation subsequently failed; Release build skipped. Does not establish current revision or physical-device build."
+    },
+    {
+      "revision": "001de5a5627721975206ae8ffdbdc507d44eae7a",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review; independent product review not performed",
+      "gate": "persistence_smoke",
+      "result": "fail",
+      "method": "XCTest target build failed before test execution; five references to undefined addAttachment",
+      "environment": "macOS 26.6.1 Intel, Xcode 26.6, iOS simulator SDK 26.5",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262040915/job/137999059454",
+      "notes": "Exit code 65, testing canceled due to compilation failure; not evidence of a persistence runtime defect. All five calls corrected to XCTestCase.add in 27ec422f7e5cd4f80d216b3e7931416ced2d861e; rerun required."
+    },
+    {
+      "revision": "27ec422f7e5cd4f80d216b3e7931416ced2d861e",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review; independent product review not performed",
+      "gate": "core_tests",
+      "result": "pass",
+      "method": "swift test --jobs 2 and swift test -c release --jobs 2 on reconstructed package with matching Git blobs",
+      "environment": "Linux x86_64, Swift 6.2.1; exact portable sources/tests at 27ec422f7e5cd4f80d216b3e7931416ced2d861e",
+      "artifact": "docs/evidence/m05-pdf-preview-2026-11-23.md",
+      "notes": "68 tests, zero failures/skips in each configuration. Ten new export domain fixtures. Debug test execution 0.403s; Release 0.138s; not device performance."
+    },
+    {
+      "revision": "27ec422f7e5cd4f80d216b3e7931416ced2d861e",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review; independent product review not performed",
+      "gate": "native_build",
+      "result": "unverified",
+      "method": "Swift native source syntax parse; latest GitHub Actions queued",
+      "environment": "Linux Swift 6.2.1 syntax parse; Apple SDK verification pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45265352398",
+      "notes": "Older native build succeeded, but this source revision adds PDF rendering and sharing. Corrected XCTest API still needs SDK type checking."
+    },
+    {
+      "revision": "27ec422f7e5cd4f80d216b3e7931416ced2d861e",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review; independent product review not performed",
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "method": "Corrected screenshot attachment calls; rerun existing smoke suite",
+      "environment": "Apple simulator CI queued",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45265352398",
+      "notes": "Previous test compilation failure fixed at source; no new UI execution yet."
+    },
+    {
+      "revision": "27ec422f7e5cd4f80d216b3e7931416ced2d861e",
+      "date": "2026-11-23",
+      "reviewer": "Assistant self-review; independent product review not performed",
+      "gate": "export",
+      "result": "unverified",
+      "method": "Ten portable fixtures passed; two native PDFKit tests and one export UI test authored; Swift syntax parsed",
+      "environment": "Linux Swift 6.2.1; native simulator CI queued",
+      "artifact": "docs/evidence/m05-pdf-preview-2026-11-23.md",
+      "notes": "Vector rendering and native sharing implemented, but PDF readability, PDFKit opening, and actual UI share/open behavior remain to be verified on Apple runner."
     }
   ]
 }

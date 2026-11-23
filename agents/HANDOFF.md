@@ -1,6 +1,23 @@
 # Current handoff
 
-**Stage:** M01 active; M02 pending. No milestone is complete. Independently verified ideal photometry passes its bounded numerical gate, and camera projection tests pass. Native compilation and persistence smoke are still unverified.
+**Stage:** M01 active; M02–M07 pending. No milestone is complete. Older unsigned Debug simulator build passed; current revision native build and persistence smoke remain unverified. The prior test target compilation failure has been corrected at source.
+
+## Latest integrated cycle
+
+- Start: 4ab9f9442c9d0e0b804ee852ef31cadcf1861766.
+- 27ec422f7e5cd4f80d216b3e7931416ced2d861e: independent M05 export groundwork: validated portable lighting-plan model, world-scaled overhead diagram, rotated modifier footprints, distinct numbered marker labels, camera/aim lines, metric/imperial grid, A4/US Letter pages, equipment schedules, native vector PDF generation, PDFKit preview and share menu. Ten portable, two native PDFKit and one UI test added. Existing five invalid XCTest attachment calls corrected; new tests use the same correct API.
+- 68 portable tests passed both Debug and Release with zero failures/skips on Linux Swift 6.2.1. Native source syntax parsed; no SDK type-check of the export changes. [Evidence](../docs/evidence/m05-pdf-preview-2026-11-23.md).
+- [Earlier simulator job](https://github.com/mirzotipi-wq/APP1/actions/runs/45262040915/job/137999059454) at 001de5a5627721975206ae8ffdbdc507d44eae7a built unsigned Debug successfully (Xcode 26.6, iOS simulator SDK 26.5). Test target then failed to compile due to five undefined addAttachment calls, so no UI execution occurred and Release build was skipped. [Unsigned simulator artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45262040915/artifacts/14860922461); [failure evidence](https://github.com/mirzotipi-wq/APP1/actions/runs/45262040915/artifacts/14862985221).
+- [Current CI run](https://github.com/mirzotipi-wq/APP1/actions/runs/45265352398) queued at observation. Native PDFKit, sharing, screenshot, GPU, save/relaunch and Release simulator verification are pending.
+
+## Next executable packet (authoritative)
+
+1. Check current main and latest workflow/job status. Inspect actual compile and test logs; fix any native SDK or UI errors without disabling tests. Rerun on the current revision.
+2. Obtain save/edit/relaunch/corruption smoke and current unsigned Debug build evidence before closing M01. Inspect actual screenshots and PDF attachments; test share/open, readability and units before passing export. Check Release build.
+3. Continue project library persistence, production spatial rendering, reference analysis and remaining roadmap work. Coordinate with other invocations; avoid overlapping writes and use exact expected branch SHA.
+4. Physical-device accessibility, performance, calibration, AR, real customer validation and owner release approval remain outstanding. No independent review performed. No release authorized.
+
+## Prior cycle history
 
 ## Integrated this cycle
 
@@ -27,7 +44,7 @@
 
 Latest [CI run 45262428316](https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316) on d6407acc324bedfc5abe946565e6b4f60cd2a3ba: core success, simulator job 138000433437 queued (macOS 26 Intel). Prior macOS 15 ARM runs canceled before steps or remain queued. No native build, UI execution or screenshots. Do not claim signed/device build or completed milestone.
 
-## Next executable packet
+## Prior cycle next packet (historical; superseded above)
 
 1. Inspect latest run and jobs; if a real failure appears, retrieve logs and repair it. If canceled before execution, diagnose runner availability and billing/permissions as appropriate; do not rerun blindly. Native compilation and save/edit/relaunch/corruption tests are the highest-priority unresolved gates.
 2. Capture exact Xcode/SDK/simulator and screenshots, result bundle and build artifact. Inspect editor, camera view and Dynamic Type; verify both new undo/relaunch paths and existing smoke. Run agent_cycle.py check and next on a real checkout.
