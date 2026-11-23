@@ -11,6 +11,61 @@
       "artifact": "docs/evidence/core-2026-11-23.md",
       "reviewer": "Assistant self-review",
       "notes": "11 XCTest tests, zero failures, zero skipped. Does not establish native iOS build or UI launch."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "6254c9d9e49eb3d10cdf062023624231141eb9f5",
+      "date": "2026-11-23",
+      "method": "swift test --jobs 2; verified all eight package/source/test blob hashes against the commit tree",
+      "environment": "Debian GNU/Linux 13 x86_64; Swift 6.2.1 RELEASE; debug; local command-line runner",
+      "artifact": "docs/evidence/m01-m02-2026-11-23.md",
+      "reviewer": "Assistant self-review",
+      "notes": "16 XCTest tests, zero failures, zero skipped. Added five bounded file loading and corruption-preservation tests."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "9b5fd3a093615daa4b2e1b1a466bdf4117262d99",
+      "date": "2026-11-23",
+      "method": "swift test --jobs 2; verified all ten package/source/test blob hashes against the commit tree",
+      "environment": "Debian GNU/Linux 13 x86_64; Swift 6.2.1 RELEASE; debug; local command-line runner",
+      "artifact": "docs/evidence/m01-m02-2026-11-23.md",
+      "reviewer": "Assistant self-review",
+      "notes": "22 XCTest tests, zero failures, zero skipped; full portable package. Native build not established."
+    },
+    {
+      "gate": "photometry",
+      "result": "pass",
+      "revision": "9b5fd3a093615daa4b2e1b1a466bdf4117262d99",
+      "date": "2026-11-23",
+      "method": "SurfacePhotometryTests: analytic cosine/inverse-square checks; six closed-form rectangular fixtures; four independent composite Simpson reference fixtures",
+      "environment": "Debian GNU/Linux 13 x86_64; Swift 6.2.1 RELEASE; debug; local command-line runner",
+      "artifact": "docs/evidence/m01-m02-2026-11-23.md",
+      "reviewer": "Assistant self-review",
+      "notes": "Pass is limited to the declared ideal point and Lambertian rectangle models and fixture domain. Maximum measured relative area error 0.0678272%; no calibrated renderer, equipment, material or physical-device validation."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "9b5fd3a093615daa4b2e1b1a466bdf4117262d99",
+      "date": "2026-11-23",
+      "method": "GitHub Actions run 45256267785; inspect native simulator job 137978795596",
+      "environment": "GitHub Actions macos-15; queued, no steps executed",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45256267785",
+      "reviewer": "Assistant self-review",
+      "notes": "No logs, native build, screenshots or artifact evidence available at observation."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "9b5fd3a093615daa4b2e1b1a466bdf4117262d99",
+      "date": "2026-11-23",
+      "method": "GitHub Actions run 45256267785; inspect native simulator job 137978795596",
+      "environment": "GitHub Actions macos-15; queued, no steps executed",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45256267785",
+      "reviewer": "Assistant self-review",
+      "notes": "Added UUID-isolated save/reopen and corrupt-project relaunch test cases; not executed on simulator."
     }
   ]
 }
