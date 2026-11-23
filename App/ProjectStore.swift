@@ -28,6 +28,9 @@ struct ProjectStore {
         store = ProjectLibraryFileStore(directory: directory)
     }
     func load() throws -> ProjectLibrary? { try store.load() }
+    func saveRecoveryCopy(name: String, scene: LightingScene) throws -> ProjectLibrary {
+        try store.saveRecoveryCopy(name: name, scene: scene)
+    }
     func save(_ library: ProjectLibrary, replacing expected: ProjectLibrary?) throws {
         try store.save(library, replacing: expected)
     }

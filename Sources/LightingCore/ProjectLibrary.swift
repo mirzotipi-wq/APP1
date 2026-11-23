@@ -172,6 +172,19 @@ public struct ProjectLibraryFileStore: Sendable {
         try write(validated)
     }
 
+    /// Append a recovery record to the latest validated snapshot under the
+    /// transaction lock. Never replace another editor's saved project.
+    public func saveRecoveryCopy(name: String, scene: LightingScene) throws -> ProjectLibrary {
+        let name = try ProjectLibrary.normalizedName(name)
+        let scene = try scene.validated()
+        Self.transactionLock.lock()
+        defer { Self.transactionLock.unlock() }
+        guard var latest = try loadWhileLocked() else { throw ProjectLibraryError.invalidLibrary }
+        try latest.create(name: name, scene: scene)
+        try write(latest)
+        return latest
+    }
+
     private func write(_ library: ProjectLibrary) throws {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

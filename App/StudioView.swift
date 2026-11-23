@@ -18,6 +18,8 @@ struct StudioView: View {
     @State private var loaded = false
     @State private var saveBlocked = false
     @State private var message: String?
+    @State private var saveConflict = false
+    @State private var confirmReloadConflict = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private let store = ProjectStore()
     private let amber = Color(red: 0.96, green: 0.65, blue: 0.30)
@@ -41,6 +43,7 @@ struct StudioView: View {
                         ProgressView("Opening projects…")
                             .frame(maxWidth: .infinity, minHeight: 160)
                     } else {
+                        if saveConflict { conflictRecoveryPanel }
                         Button { showReference = true } label: {
                             Label("Compare reference photo", systemImage: "rectangle.split.2x1")
                                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
@@ -59,7 +62,7 @@ struct StudioView: View {
                         Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
                             .font(.footnote).foregroundStyle(.secondary)
                     }
-                    if let message { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
+                    if let message, !saveConflict { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
                 }
                 .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
             }
@@ -89,6 +92,12 @@ struct StudioView: View {
                     var next = scene; next.lights.removeAll { $0.id == selected }; replace(next)
                 }
                 Button("Cancel", role: .cancel) {}
+            }
+            .alert("Reload saved project?", isPresented: $confirmReloadConflict) {
+                Button("Keep editing", role: .cancel) {}
+                Button("Reload and discard edits", role: .destructive) { reloadAfterConflict() }
+            } message: {
+                Text("Only the unsaved changes in this window will be discarded. The latest saved library will be opened.")
             }
             .task { if !loaded { load() } }
         }
@@ -147,6 +156,28 @@ struct StudioView: View {
             LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
                 .disabled(!loaded || saveBlocked)
         }
+    }
+
+    private var conflictRecoveryPanel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Saved library changed", systemImage: "exclamationmark.circle").font(.headline)
+            Text("Your setup is still in this window. Save a separate project to preserve it without replacing the newer saved version, or reload the latest library.").font(.subheadline)
+            Button { saveConflictCopy() } label: {
+                Label("Save setup as new project", systemImage: "plus.square.on.square")
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            }
+            .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("saveConflictCopy")
+            Button("Reload latest saved library") { confirmReloadConflict = true }
+                .frame(minHeight: 44).accessibilityIdentifier("reloadConflict")
+            if let message {
+                Text(message).font(.footnote).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("conflictMessage")
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
     }
 
     private var workspace: some View {
@@ -572,7 +603,7 @@ struct StudioView: View {
             if let stored = library?.activeProject?.scene { scene = stored; saved = stored }
             else { saved = nil }
             history.removeAll(); future.removeAll(); selected = scene.lights.first?.id
-            saveBlocked = false; loaded = true; message = nil
+            saveBlocked = false; loaded = true; saveConflict = false; message = nil
         } catch {
             saveBlocked = true; loaded = true
             message = "Saved project could not be opened. Saving is disabled to protect existing data."
@@ -584,7 +615,7 @@ struct StudioView: View {
         if let library { next = library }
         else { next = try ProjectLibrary(name: "Portrait setup", scene: scene) }
         try next.updateActiveScene(scene)
-        try store.save(next, replacing: library)
+        try saveLibrarySnapshot(next)
         library = next; saved = scene
         message = "Project saved on this device."
     }
@@ -594,7 +625,7 @@ struct StudioView: View {
             throw ProjectLibraryError.staleSnapshot
         }
         let switching = next.activeID != library?.activeID
-        try store.save(next, replacing: library)
+        try saveLibrarySnapshot(next)
         library = next
         if switching {
             scene = active.scene; saved = active.scene
@@ -603,6 +634,53 @@ struct StudioView: View {
             mode = "Plan"; showMeter = false
         }
         message = nil
+    }
+
+    private func saveLibrarySnapshot(_ next: ProjectLibrary) throws {
+        do {
+            try store.save(next, replacing: library)
+            saveConflict = false
+        } catch {
+            if (error as? ProjectLibraryError) == .staleSnapshot {
+                saveConflict = true
+                message = "The newer saved library was not overwritten."
+            }
+            throw error
+        }
+    }
+
+    private func saveConflictCopy() {
+        guard saveConflict, loaded, !saveBlocked else { return }
+        let suffix = " recovery"
+        let name = String(projectName.prefix(ProjectLibrary.maximumNameLength - suffix.count)) + suffix
+        do {
+            let latest = try store.saveRecoveryCopy(name: name, scene: scene)
+            adoptRecoveredLibrary(latest)
+            message = "Your setup was saved as a separate project."
+        } catch {
+            message = "Could not save a recovery copy. Your edits remain in this window. \(error.localizedDescription)"
+        }
+    }
+
+    private func reloadAfterConflict() {
+        guard saveConflict, loaded, !saveBlocked else { return }
+        do {
+            guard let latest = try store.load(), latest.activeProject != nil else {
+                throw ProjectLibraryError.invalidLibrary
+            }
+            adoptRecoveredLibrary(latest)
+            message = "Latest saved library opened."
+        } catch {
+            message = "Could not reload. Your edits remain in this window. \(error.localizedDescription)"
+        }
+    }
+
+    private func adoptRecoveredLibrary(_ latest: ProjectLibrary) {
+        guard let active = latest.activeProject else { return }
+        library = latest; scene = active.scene; saved = active.scene
+        history.removeAll(); future.removeAll(); editStart = nil
+        selected = scene.lights.first?.id
+        mode = "Plan"; showMeter = false; saveConflict = false
     }
 
     private func save() {

@@ -307,6 +307,96 @@ final class ProjectLibraryTests: XCTestCase {
         }
     }
 
+    func testRecoveryCopyPreservesNewerOriginalAndOtherProjects() throws {
+        try withStore { store in
+            var baseline = try ProjectLibrary(name: "Portrait", scene: .portrait())
+            let originalID = baseline.activeID
+            try baseline.create(name: "Other", scene: .portrait())
+            try baseline.select(originalID)
+            try store.save(baseline, replacing: nil)
+            var local = try XCTUnwrap(baseline.activeProject?.scene)
+            local.lights[0].candela = 1111
+            var stale = baseline
+            try stale.updateActiveScene(local)
+            var newer = baseline
+            var remote = try XCTUnwrap(newer.activeProject?.scene)
+            remote.lights[0].candela = 2222
+            try newer.updateActiveScene(remote)
+            try newer.rename(originalID, to: "Newer original")
+            try store.save(newer, replacing: baseline)
+            XCTAssertThrowsError(try store.save(stale, replacing: baseline)) {
+                XCTAssertEqual($0 as? ProjectLibraryError, .staleSnapshot)
+            }
+            let recovered = try store.saveRecoveryCopy(name: "Portrait recovery", scene: local)
+            XCTAssertNotEqual(recovered.activeID, originalID)
+            XCTAssertEqual(recovered.activeProject?.scene, local)
+            XCTAssertEqual(recovered.activeProject?.name, "Portrait recovery")
+            XCTAssertEqual(recovered.projects.filter { $0.id != recovered.activeID }, newer.projects)
+            XCTAssertEqual(try store.load(), recovered)
+        }
+    }
+
+    func testRecoveryCopyAtCapacityAndInvalidInputsLeaveBytesUnchanged() throws {
+        try withStore { store in
+            var library = try ProjectLibrary(name: "Original", scene: .portrait())
+            for i in 1..<ProjectLibrary.maximumProjects {
+                try library.create(name: "Project \(i)", scene: .portrait())
+            }
+            try store.save(library, replacing: nil)
+            let bytes = try Data(contentsOf: store.url)
+            XCTAssertThrowsError(try store.saveRecoveryCopy(name: "Copy", scene: .portrait())) {
+                XCTAssertEqual($0 as? ProjectLibraryError, .capacity)
+            }
+            var invalid = LightingScene.portrait()
+            invalid.subject.x = .infinity
+            XCTAssertThrowsError(try store.saveRecoveryCopy(name: "Invalid", scene: invalid))
+            XCTAssertThrowsError(try store.saveRecoveryCopy(name: "", scene: .portrait()))
+            XCTAssertEqual(try Data(contentsOf: store.url), bytes)
+            XCTAssertEqual(try store.load(), library)
+        }
+    }
+
+    func testRecoveryCopyRefusesMissingOrCorruptLibrary() throws {
+        try withStore { store in
+            XCTAssertThrowsError(try store.saveRecoveryCopy(name: "Copy", scene: .portrait())) {
+                XCTAssertEqual($0 as? ProjectLibraryError, .invalidLibrary)
+            }
+            XCTAssertNil(try store.load())
+            let initial = try ProjectLibrary(name: "Original", scene: .portrait())
+            try store.save(initial, replacing: nil)
+            let corrupt = Data("damaged library".utf8)
+            try corrupt.write(to: store.url)
+            XCTAssertThrowsError(try store.saveRecoveryCopy(name: "Copy", scene: .portrait()))
+            XCTAssertEqual(try Data(contentsOf: store.url), corrupt)
+        }
+    }
+
+    func testConcurrentRecoveryCopiesPreserveAllRecords() throws {
+        try withStore { store in
+            let initial = try ProjectLibrary(name: "Original", scene: .portrait())
+            try store.save(initial, replacing: nil)
+            let outcomes = Observations<UUID?>()
+            let directory = store.directory
+            let count = 12
+            DispatchQueue.concurrentPerform(iterations: count) { i in
+                do {
+                    let result = try ProjectLibraryFileStore(directory: directory)
+                        .saveRecoveryCopy(name: "Recovery \(i)", scene: .portrait())
+                    outcomes.append(result.activeID)
+                } catch {
+                    outcomes.append(nil)
+                }
+            }
+            let ids = outcomes.snapshot().compactMap { $0 }
+            let latest = try XCTUnwrap(store.load())
+            XCTAssertEqual(ids.count, count)
+            XCTAssertEqual(Set(ids).count, count)
+            XCTAssertEqual(latest.projects.count, count + 1)
+            XCTAssertEqual(Set(latest.projects.map(\.id)), Set(ids + [initial.activeID]))
+            XCTAssertEqual(latest.projects.first { $0.id == initial.activeID }, initial.activeProject)
+        }
+    }
+
     func testInvalidMetadataAndFutureSchemaAreRejected() throws {
         let initial = try ProjectLibrary(name: "Portrait", scene: .portrait())
         let data = try JSONEncoder().encode(initial)
