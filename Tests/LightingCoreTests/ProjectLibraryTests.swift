@@ -199,6 +199,114 @@ final class ProjectLibraryTests: XCTestCase {
         }
     }
 
+
+    // The collector protects test observations; the store must independently
+    // serialize its own check-and-write transaction across different instances.
+    private final class Observations<Value: Sendable>: @unchecked Sendable {
+        private let lock = NSLock()
+        private var values: [Value] = []
+
+        func append(_ value: Value) {
+            lock.lock()
+            defer { lock.unlock() }
+            values.append(value)
+        }
+
+        func snapshot() -> [Value] {
+            lock.lock()
+            defer { lock.unlock() }
+            return values
+        }
+    }
+
+    private enum SaveOutcome: Equatable, Sendable {
+        case saved(String)
+        case stale
+        case unexpected(String)
+    }
+
+    private func assertSingleWinner(_ outcomes: [SaveOutcome], store: ProjectLibraryFileStore,
+                                    attempts: Int) throws {
+        XCTAssertEqual(outcomes.count, attempts)
+        let winners = outcomes.compactMap { outcome -> String? in
+            if case let .saved(name) = outcome { return name }
+            return nil
+        }
+        XCTAssertEqual(winners.count, 1, "Only one snapshot may commit")
+        XCTAssertEqual(outcomes.filter { $0 == .stale }.count, attempts - 1)
+        XCTAssertEqual(try store.load()?.activeProject?.name, try XCTUnwrap(winners.first))
+    }
+
+    func testConcurrentFirstSavesAllowExactlyOneWriter() throws {
+        try withStore { store in
+            let outcomes = Observations<SaveOutcome>()
+            let attempts = 12
+            let directory = store.directory
+            DispatchQueue.concurrentPerform(iterations: attempts) { index in
+                let name = "New \(index)"
+                do {
+                    let candidate = try ProjectLibrary(name: name, scene: .portrait())
+                    try ProjectLibraryFileStore(directory: directory).save(candidate, replacing: nil)
+                    outcomes.append(.saved(name))
+                } catch ProjectLibraryError.staleSnapshot {
+                    outcomes.append(.stale)
+                } catch {
+                    outcomes.append(.unexpected(String(describing: error)))
+                }
+            }
+            try assertSingleWinner(outcomes.snapshot(), store: store, attempts: attempts)
+        }
+    }
+
+    func testConcurrentEditsFromSameSnapshotAllowExactlyOneWriter() throws {
+        try withStore { store in
+            let baseline = try ProjectLibrary(name: "Original", scene: .portrait())
+            try store.save(baseline, replacing: nil)
+            let outcomes = Observations<SaveOutcome>()
+            let attempts = 12
+            let directory = store.directory
+            DispatchQueue.concurrentPerform(iterations: attempts) { index in
+                let name = "Edit \(index)"
+                do {
+                    var candidate = baseline
+                    try candidate.rename(candidate.activeID, to: name)
+                    try ProjectLibraryFileStore(directory: directory).save(candidate, replacing: baseline)
+                    outcomes.append(.saved(name))
+                } catch ProjectLibraryError.staleSnapshot {
+                    outcomes.append(.stale)
+                } catch {
+                    outcomes.append(.unexpected(String(describing: error)))
+                }
+            }
+            try assertSingleWinner(outcomes.snapshot(), store: store, attempts: attempts)
+            XCTAssertEqual(try store.load()?.activeID, baseline.activeID)
+            XCTAssertEqual(try store.load()?.activeProject?.scene, baseline.activeProject?.scene)
+        }
+    }
+
+    func testConcurrentLegacyMigrationReturnsOneStableIdentity() throws {
+        try withStore { store in
+            try SceneFileStore(url: store.legacyURL).save(.portrait())
+            let originalBytes = try Data(contentsOf: store.legacyURL)
+            let outcomes = Observations<ProjectLibrary?>()
+            let attempts = 12
+            let directory = store.directory
+            DispatchQueue.concurrentPerform(iterations: attempts) { _ in
+                do {
+                    outcomes.append(try ProjectLibraryFileStore(directory: directory).load())
+                } catch {
+                    outcomes.append(nil)
+                }
+            }
+            let results = outcomes.snapshot()
+            let persisted = try XCTUnwrap(store.load())
+            XCTAssertEqual(results.count, attempts)
+            XCTAssertTrue(results.allSatisfy { $0 == persisted },
+                          "Every window must observe the same migrated snapshot and ID")
+            XCTAssertEqual(try Data(contentsOf: store.legacyURL), originalBytes)
+        }
+    }
+
     func testInvalidMetadataAndFutureSchemaAreRejected() throws {
         let initial = try ProjectLibrary(name: "Portrait", scene: .portrait())
         let data = try JSONEncoder().encode(initial)

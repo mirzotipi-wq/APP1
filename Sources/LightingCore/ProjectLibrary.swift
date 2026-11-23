@@ -132,10 +132,12 @@ public struct ProjectLibrary: Codable, Equatable, Sendable {
 
 /// A library is atomically replaced only after validating its previous snapshot.
 /// The legacy portrait.json is deliberately left untouched after migration.
-/// This optimistic guard covers sequential windows in the app, not concurrent
-/// external processes writing to an app-private directory.
+/// A process-wide transaction lock protects the comparison and replacement,
+/// including first-time migration, across independent windows/store instances.
+/// External processes writing directly to the directory are outside this contract.
 public struct ProjectLibraryFileStore: Sendable {
     public static let maximumBytes = 8 * 1024 * 1024
+    private static let transactionLock = NSLock()
     public let directory: URL
     public var url: URL { directory.appendingPathComponent("projects.json") }
     public var legacyURL: URL { directory.appendingPathComponent("portrait.json") }
@@ -143,6 +145,14 @@ public struct ProjectLibraryFileStore: Sendable {
     public init(directory: URL) { self.directory = directory }
 
     public func load() throws -> ProjectLibrary? {
+        Self.transactionLock.lock()
+        defer { Self.transactionLock.unlock() }
+        return try loadWhileLocked()
+    }
+
+    /// Must only be called while holding transactionLock. Migration writes to
+    /// disk, so it belongs inside the same transaction as snapshot validation.
+    private func loadWhileLocked() throws -> ProjectLibrary? {
         if let data = try readLibrary() {
             return try JSONDecoder().decode(ProjectLibrary.self, from: data).validated()
         }
@@ -156,7 +166,9 @@ public struct ProjectLibraryFileStore: Sendable {
     /// overwriting another project's edits or metadata.
     public func save(_ library: ProjectLibrary, replacing expected: ProjectLibrary?) throws {
         let validated = try library.validated()
-        guard try load() == expected else { throw ProjectLibraryError.staleSnapshot }
+        Self.transactionLock.lock()
+        defer { Self.transactionLock.unlock() }
+        guard try loadWhileLocked() == expected else { throw ProjectLibraryError.staleSnapshot }
         try write(validated)
     }
 

@@ -1,5 +1,15 @@
 # Current handoff
 
+## Current transaction-safety packet (2026-11-23)
+
+- Baseline: `0d0b7e855a9de034e04d0d4169845407124025bb`.
+- Serialize project-library load/migration and compare-and-replace saves across in-process store instances. Three regression tests target concurrent first writes, concurrent edits from a shared snapshot and concurrent legacy migration. Acceptance: exactly one writer, all other writers stale; all migration readers see one identical stable identity; original legacy bytes unchanged.
+- Source self-review only; new tests and native builds pending at integration. Historical CI run 45274350597 core passed (92/92 Debug and Release); simulator completed unsigned Debug build and upload, UI test step in progress, Release pending. No direct Git clone: container DNS cannot resolve github.com; GitHub connector used for source and integration. No independent reviewers or parallel agents.
+- Next: inspect the new main source workflow and previous native run 45274350597. Require passing new concurrent tests in Debug and Release and current native UI/Release; diagnose actual failures before advancing M01. The lock covers in-process callers only; external processes and actual interruption/low-storage/device testing remain outside this evidence.
+- Current evidence score remains 20/100 floor; no release promotion.
+
+## Prior handoff
+
 **Stage:** M01 active; M02–M07 pending. No milestone complete. M01 native/persistence revalidation remains mandatory.
 
 ## Latest integrated cycle
