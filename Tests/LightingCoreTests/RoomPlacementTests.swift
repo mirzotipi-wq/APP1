@@ -64,6 +64,20 @@ final class RoomPlacementTests: XCTestCase {
         XCTAssertGreaterThan(plan.outsideCount, 0)
     }
 
+    func testMeasurementInputAcceptsExactLocalizedValuesAndRejectsInvalidText() throws {
+        let range = 1.0...30.0
+        XCTAssertEqual(RoomMeasurementInput.parse(" 6.35 ", in: range), 6.35)
+        XCTAssertEqual(RoomMeasurementInput.parse("6,35", decimalSeparator: ",", in: range), 6.35)
+        XCTAssertEqual(RoomMeasurementInput.parse("30", in: range), 30)
+        XCTAssertEqual(RoomMeasurementInput.parse("0.01", in: 0...1), 0.01)
+        for text in ["", " ", "NaN", "inf", "1e1", "6.3.5", "6m", "0.99", "30.01", "-6", "1,234", "1 2"] {
+            XCTAssertNil(RoomMeasurementInput.parse(text, in: range), text)
+        }
+        XCTAssertNil(RoomMeasurementInput.parse("6.35", decimalSeparator: ",", in: range))
+        XCTAssertNil(RoomMeasurementInput.parse("6,35", decimalSeparator: ".", in: range))
+        XCTAssertNil(RoomMeasurementInput.parse(String(repeating: "1", count: 40), in: range))
+    }
+
     func testRejectsInvalidRoomAndScene() throws {
         for room in [
             ManualRoom(widthMeters: 0), ManualRoom(depthMeters: .infinity),

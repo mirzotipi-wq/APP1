@@ -1,5 +1,17 @@
 # Current handoff
 
+## Manual room placement and exact entry packet (2026-11-23)
+
+- Session baseline 88f7c2d321568090b6caad06f840b68d1799745b. Recovery commits 84c2db5c and 4a3d0e6e; manual room source 5855ca5c705c3c4d1c94faddd88dd8514ddf61ca.
+- Recovery source 4a3d0e6e, core job 138052958137, 99/99 Debug and Release, zero failures including all four recovery tests. Simulator 138052957650 queued. [Recovery CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45277494136/artifacts/14868592104).
+- Room source 5855ca5c, core job 138053931520, 104/104 Debug and Release, zero failures including all five room-coordinate tests. State/syntax and host parity checks passed. Simulator 138053931764 queued. [Room CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45277775880/artifacts/14867622512).
+- Manual room placement with user-measured rectangular room, subject floor offset and yaw, exact 1:1 rigid transform, signed wall coordinates, equipment heights and horizontal distances, center bounds warnings, native diagram and no scene mutation; precise locale-aware distance fields with explicit Set and invalid-input feedback. Six portable geometry/input tests and one native UI scenario added in total; latest input source CI pending. Session-only settings; not AR tracking, automatic measurement, collision/footprint or ceiling clearance.
+- Current previous-source simulator runs 45276657447, 45276217297, 45274350597, 45274202947, 45274080732 remain in UI execution. No latest-source native conclusion; M01 active. Check current exact-source CI before advancing gates, and inspect actual attachments.
+- Next: verify exact room-input source core and native builds; inspect native recovery/reload and manual placement tests, meter, reference comparison, PDF, persistence and Release. Real-room trials and AR, privacy, calibrated rendering, device and release gates remain outstanding.
+- Sequential self-review only; no independent review. 20/100 conservative evidence floor unchanged.
+
+## Prior handoff
+
 ## Stale-save recovery packet (2026-11-23)
 
 - Session baseline `88f7c2d321568090b6caad06f840b68d1799745b`; implementation `84c2db5c7460e5bf6bca3dc1b801608abd16f3fd`.

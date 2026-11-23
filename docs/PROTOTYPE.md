@@ -18,3 +18,7 @@ The simulator app is not a signed IPA. A prior unsigned Debug build succeeded; c
 
 ### Numerical lighting study
 Choose Study to render a neutral sphere and panel from the current camera. Emitter geometry, aiming, finite-source visibility, output, color temperature, relative white balance/exposure and lens affect the image. This is an ideal diagnostic direct-light simulation, not a calibrated portrait or camera exposure. The backend label identifies CPU reference or Metal compute. A device must pass six runtime parity fixtures before Metal is selected; CPU fallback remains available. Unsupported surface samples are marked magenta and counted. Native UI execution is pending.
+
+### Manual room placement
+
+Choose Room placement from the studio. Enter the measured room width/depth (1–30 m), subject floor offsets from the left and near walls, and rig yaw. Set each numeric entry explicitly; invalid drafts leave previous values unchanged. The map is an overhead 1:1 coordinate transform of equipment centers. Signed X/Z coordinates, light/camera height and horizontal subject distance are listed; out-of-room centers are flagged without clamping. This does not sense the real room, estimate footprints or ensure collision, cable or ceiling clearance. Room parameters are session-only; the studio scene, undo history and saved project remain unchanged. Native UI and physical verification are still required; this is not AR.

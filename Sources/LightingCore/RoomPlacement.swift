@@ -30,6 +30,23 @@ public struct ManualRoom: Equatable, Sendable {
     }
 }
 
+/// Strict decimal input for manual tape measurements. Accept the current
+/// locale's separator, but never grouping, exponents or partial invalid input.
+public enum RoomMeasurementInput {
+    public static func parse(_ text: String, decimalSeparator: String = ".",
+                             in range: ClosedRange<Double>) -> Double? {
+        let input = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !input.isEmpty, input.count <= 24, !decimalSeparator.isEmpty,
+              decimalSeparator == "." || !input.contains(".") else { return nil }
+        let canonical = input.replacingOccurrences(of: decimalSeparator, with: ".")
+        guard canonical.allSatisfy({ $0 == "." || ("0"..."9").contains($0) }),
+              canonical.filter({ $0 == "." }).count <= 1,
+              let value = Double(canonical), value.isFinite,
+              range.contains(value) else { return nil }
+        return value
+    }
+}
+
 public struct RoomPlacementPoint: Identifiable, Equatable, Sendable {
     public enum Kind: String, Sendable { case subject, camera, light }
     public let id: String

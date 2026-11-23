@@ -57,26 +57,22 @@ struct ManualRoomPlacementView: View {
     private var inputs: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Room dimensions").font(.headline)
-            Stepper(value: Binding(get: { room.widthMeters }, set: {
-                room.widthMeters = $0
-                room.subjectX = min(room.subjectX, $0)
-            }), in: ManualRoom.dimensionRange, step: 0.1) {
-                Text("Width: \(meters(room.widthMeters))")
-            }
-            Stepper(value: Binding(get: { room.depthMeters }, set: {
-                room.depthMeters = $0
-                room.subjectZ = min(room.subjectZ, $0)
-            }), in: ManualRoom.dimensionRange, step: 0.1) {
-                Text("Depth: \(meters(room.depthMeters))")
-            }
+            RoomMeasurementField(title: "Width", id: "roomWidth", value: Binding(
+                get: { room.widthMeters }, set: {
+                    room.widthMeters = $0
+                    room.subjectX = min(room.subjectX, $0)
+                }), range: ManualRoom.dimensionRange)
+            RoomMeasurementField(title: "Depth", id: "roomDepth", value: Binding(
+                get: { room.depthMeters }, set: {
+                    room.depthMeters = $0
+                    room.subjectZ = min(room.subjectZ, $0)
+                }), range: ManualRoom.dimensionRange)
             Divider()
             Text("Subject floor position").font(.headline)
-            Stepper(value: $room.subjectX, in: 0...room.widthMeters, step: 0.1) {
-                Text("From left wall: \(meters(room.subjectX))")
-            }
-            Stepper(value: $room.subjectZ, in: 0...room.depthMeters, step: 0.1) {
-                Text("From near wall: \(meters(room.subjectZ))")
-            }
+            RoomMeasurementField(title: "From left wall", id: "roomSubjectX", value: $room.subjectX,
+                                 range: 0...room.widthMeters)
+            RoomMeasurementField(title: "From near wall", id: "roomSubjectZ", value: $room.subjectZ,
+                                 range: 0...room.depthMeters)
             Divider()
             Text("Rig rotation").font(.headline)
             HStack {
@@ -153,5 +149,68 @@ struct ManualRoomPlacementView: View {
         case .camera: return "camera.fill"
         case .light: return "lightbulb.fill"
         }
+    }
+}
+
+/// Draft text is separate from the committed measurement. Typing malformed
+/// input never updates the room or clamps a user's value without notice.
+private struct RoomMeasurementField: View {
+    let title: String
+    let id: String
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    @Environment(\.locale) private var locale
+    @State private var draft = ""
+    @State private var invalid = false
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title).font(.subheadline.weight(.medium))
+            HStack(spacing: 8) {
+                TextField("Meters", text: $draft)
+                    .keyboardType(.decimalPad)
+                    .multilineTextAlignment(.trailing)
+                    .font(.body.monospacedDigit())
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focused)
+                    .accessibilityLabel(title + " in meters")
+                    .accessibilityIdentifier(id)
+                    .onSubmit { apply() }
+                Text("m").foregroundStyle(.secondary)
+                Button("Set") { apply() }
+                    .buttonStyle(.bordered)
+                    .frame(minHeight: 44)
+                    .accessibilityLabel("Set " + title.lowercased())
+                    .accessibilityIdentifier(id + "Set")
+            }
+            if invalid {
+                Text("Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) m.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .accessibilityIdentifier(id + "Error")
+            }
+        }
+        .onAppear { draft = format(value) }
+        .onChange(of: value) { _, next in
+            draft = format(next)
+            invalid = false
+        }
+        .onChange(of: draft) { _, _ in invalid = false }
+    }
+
+    private func format(_ number: Double) -> String {
+        number.formatted(.number.precision(.fractionLength(0...6)).grouping(.never).locale(locale))
+    }
+
+    private func apply() {
+        guard let next = RoomMeasurementInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
+                                                    in: range) else {
+            invalid = true
+            return
+        }
+        value = next
+        draft = format(next)
+        invalid = false
+        focused = false
     }
 }
