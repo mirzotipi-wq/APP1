@@ -25,10 +25,10 @@ final class StudioSmokeTests: XCTestCase {
         assertStatus("Unsaved changes", in: app)
         app.buttons["recipes"].tap()
         app.buttons["recipe-Silhouette"].tap()
-        let add = app.buttons["addLight"]
-        XCTAssertTrue(add.waitForExistence(timeout: 10))
-        if !add.isHittable { app.swipeUp() }
-        add.tap()
+        let addLightButton = app.buttons["addLight"]
+        XCTAssertTrue(addLightButton.waitForExistence(timeout: 10))
+        if !addLightButton.isHittable { app.swipeUp() }
+        addLightButton.tap()
         let row = app.buttons["light-Light 1"]
         if !row.isHittable { app.swipeUp() }
         XCTAssertTrue(row.waitForExistence(timeout: 5))
@@ -36,7 +36,7 @@ final class StudioSmokeTests: XCTestCase {
         app.swipeDown()
         assertStatus("Saved locally", in: app)
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Studio-plan"; attachment.lifetime = .keepAlways; add(attachment)
+        attachment.name = "Studio-plan"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)
@@ -80,7 +80,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(width.value as? String, editedWidth)
 
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Studio-optics"; attachment.lifetime = .keepAlways; add(attachment)
+        attachment.name = "Studio-optics"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
         app.terminate()
         app.launch()
@@ -117,7 +117,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(focal.value as? String, "85 mm")
         reveal(undo, in: app, direction: false)
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Studio-camera"; attachment.lifetime = .keepAlways; add(attachment)
+        attachment.name = "Studio-camera"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
         app.terminate()
         app.launch()
@@ -156,7 +156,7 @@ final class StudioSmokeTests: XCTestCase {
         reveal(tungsten, in: app)
         tungsten.tap()
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Studio-test-card"; attachment.lifetime = .keepAlways; add(attachment)
+        attachment.name = "Studio-test-card"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
         app.terminate()
         app.launch()
@@ -178,7 +178,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(rendered.waitForExistence(timeout: 20), "The reference renderer must publish a real frame")
         XCTAssertTrue(rendered.isHittable)
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Studio-light-study"; attachment.lifetime = .keepAlways; add(attachment)
+        attachment.name = "Studio-light-study"; attachment.lifetime = .keepAlways; self.add(attachment)
         let plan = app.segmentedControls["viewMode"].buttons["Plan"]
         plan.tap()
         XCTAssertTrue(app.buttons["editCamera"].waitForExistence(timeout: 5))

@@ -2,7 +2,7 @@ import Foundation
 import LightingCore
 
 struct ProjectStore {
-    private let store: SceneFileStore
+    private let store: ProjectLibraryFileStore
     init() {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         var directory = base.appendingPathComponent("KeyAndFill", isDirectory: true)
@@ -25,8 +25,10 @@ struct ProjectStore {
             }
         }
         #endif
-        store = SceneFileStore(url: directory.appendingPathComponent("portrait.json"))
+        store = ProjectLibraryFileStore(directory: directory)
     }
-    func load() throws -> LightingScene? { try store.load() }
-    func save(_ scene: LightingScene) throws { try store.save(scene) }
+    func load() throws -> ProjectLibrary? { try store.load() }
+    func save(_ library: ProjectLibrary, replacing expected: ProjectLibrary?) throws {
+        try store.save(library, replacing: expected)
+    }
 }

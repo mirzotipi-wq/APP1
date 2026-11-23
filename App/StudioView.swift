@@ -5,6 +5,8 @@ struct StudioView: View {
     @State private var scene = LightingScene.portrait()
     @State private var selected: UUID?
     @State private var saved: LightingScene?
+    @State private var library: ProjectLibrary?
+    @State private var showProjects = false
     @State private var history: [LightingScene] = []
     @State private var future: [LightingScene] = []
     @State private var editStart: LightingScene?
@@ -54,6 +56,10 @@ struct StudioView: View {
                 }
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
+            .sheet(isPresented: $showProjects) {
+                ProjectLibraryView(library: library, hasUnsavedChanges: saved != scene,
+                                   onSave: persistScene, onApply: applyLibrary)
+            }
             .confirmationDialog("Remove selected light?", isPresented: $confirmRemove, titleVisibility: .visible) {
                 Button("Remove light", role: .destructive) {
                     var next = scene; next.lights.removeAll { $0.id == selected }; replace(next)
@@ -64,17 +70,24 @@ struct StudioView: View {
         }
     }
 
+    private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
+
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
-                Text("Portrait setup").font(.title2.bold())
+                Text(projectName).font(.title2.bold()).accessibilityIdentifier("projectName")
                 Text(saveBlocked ? "Saved data protected" : (saved == scene ? "Saved locally" : "Unsaved changes"))
                     .font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("projectStatus")
             }
             Spacer()
-            LightingPlanExportMenu(scene: scene, title: "Portrait setup", textSettings: exportText)
-                .disabled(!loaded)
+            VStack(alignment: .trailing, spacing: 4) {
+                Button("Projects", systemImage: "folder") { showProjects = true }
+                    .font(.subheadline).frame(minHeight: 44)
+                    .disabled(!loaded || saveBlocked).accessibilityIdentifier("openProjectLibrary")
+                LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
+                    .disabled(!loaded)
+            }
         }
     }
 
@@ -445,7 +458,7 @@ struct StudioView: View {
             if optics.kind == .rectangle { result += String(format: "; surface %.2f × %.2f m", optics.widthMeters, optics.heightMeters) }
             return result
         }
-        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera)); \(String(format: "%.0f", scene.effectiveCameraLens.focalLengthMillimeters)) mm, full frame 36 × 24 mm", "Test card: \(String(format: "%.0f", scene.effectivePreviewSettings.whiteBalanceKelvin)) K balance, \(String(format: "%+.2f", scene.effectivePreviewSettings.exposureStops)) relative stops"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
+        return (["Key & Fill — \(projectName) lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera)); \(String(format: "%.0f", scene.effectiveCameraLens.focalLengthMillimeters)) mm, full frame 36 × 24 mm", "Test card: \(String(format: "%.0f", scene.effectivePreviewSettings.whiteBalanceKelvin)) K balance, \(String(format: "%+.2f", scene.effectivePreviewSettings.exposureStops)) relative stops"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
     }
     private func remember(_ previous: LightingScene) {
         if history.last != previous { history.append(previous) }
@@ -477,7 +490,9 @@ struct StudioView: View {
     }
     private func load() {
         do {
-            if let stored = try store.load() { scene = stored; saved = stored }
+            library = try store.load()
+            if let stored = library?.activeProject?.scene { scene = stored; saved = stored }
+            else { saved = nil }
             history.removeAll(); future.removeAll(); selected = scene.lights.first?.id
             saveBlocked = false; loaded = true; message = nil
         } catch {
@@ -485,9 +500,35 @@ struct StudioView: View {
             message = "Saved project could not be opened. Saving is disabled to protect existing data."
         }
     }
+    private func persistScene() throws {
+        guard loaded, !saveBlocked else { throw ProjectLibraryError.invalidLibrary }
+        var next: ProjectLibrary
+        if let library { next = library }
+        else { next = try ProjectLibrary(name: "Portrait setup", scene: scene) }
+        try next.updateActiveScene(scene)
+        try store.save(next, replacing: library)
+        library = next; saved = scene
+        message = "Project saved on this device."
+    }
+
+    private func applyLibrary(_ next: ProjectLibrary) throws {
+        guard loaded, !saveBlocked, saved == scene, let active = next.activeProject else {
+            throw ProjectLibraryError.staleSnapshot
+        }
+        let switching = next.activeID != library?.activeID
+        try store.save(next, replacing: library)
+        library = next
+        if switching {
+            scene = active.scene; saved = active.scene
+            history.removeAll(); future.removeAll(); editStart = nil
+            selected = scene.lights.first?.id
+            mode = "Plan"; showMeter = false
+        }
+        message = nil
+    }
+
     private func save() {
-        do {
-            try store.save(scene); saved = scene; message = "Project saved on this device."
-        } catch { message = "Could not save the project. Your edits remain in this session." }
+        do { try persistScene() }
+        catch { message = "Could not save the project. Your edits remain in this session. \(error.localizedDescription)" }
     }
 }
