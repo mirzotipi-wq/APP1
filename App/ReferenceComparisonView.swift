@@ -10,9 +10,11 @@ struct ReferenceComparisonView: View {
     let onApply: (LightingScene) -> Void
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicType
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selection: PhotosPickerItem?
     @State private var requestID = UUID()
     @State private var reference: UIImage?
+    @State private var tones: ReferenceTonalSummary?
     @State private var loading = false
     @State private var failure: String?
     @State private var sizeDescription = ""
@@ -67,6 +69,7 @@ struct ReferenceComparisonView: View {
                         }
                         VStack(alignment: .leading, spacing: 12) { photoPanel; studyPanel }
                     }
+                    if let tones { tonalPanel(tones) }
                     guidedPanel
                     VStack(alignment: .leading, spacing: 7) {
                         Label("On-device comparison", systemImage: "lock.shield").font(.headline)
@@ -119,10 +122,13 @@ struct ReferenceComparisonView: View {
             Text("REFERENCE PHOTO").font(.caption.weight(.semibold)).tracking(1.2)
             ZStack {
                 Color.black
-                if let reference {
+                if reference != nil && scenePhase != .active {
+                    Label("Photo hidden while inactive", systemImage: "lock.fill")
+                        .font(.caption).foregroundStyle(.white)
+                } else if let reference {
                     Image(uiImage: reference).resizable().scaledToFit()
                         .accessibilityLabel("Imported reference photograph")
-                        .accessibilityIdentifier("importedReference")
+                        .accessibilityIdentifier("importedReference").privacySensitive()
                 } else {
                     VStack(spacing: 8) {
                         Image(systemName: "photo").font(.title)
@@ -146,6 +152,43 @@ struct ReferenceComparisonView: View {
             Text("Direct light only · uncalibrated relative preview")
                 .font(.caption).foregroundStyle(.secondary)
         }
+    }
+
+    private func tonalPanel(_ tones: ReferenceTonalSummary) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Reference tones").font(.headline)
+            Text("Whole-image luminance in equivalent SDR gray, not a light meter.")
+                .font(.footnote).foregroundStyle(.secondary)
+            Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
+                GridRow {
+                    Text("10th percentile")
+                    Text(tones.lowGray, format: .percent.precision(.fractionLength(0)))
+                }
+                GridRow {
+                    Text("Median")
+                    Text(tones.medianGray, format: .percent.precision(.fractionLength(0)))
+                }
+                GridRow {
+                    Text("90th percentile")
+                    Text(tones.highGray, format: .percent.precision(.fractionLength(0)))
+                }
+                GridRow {
+                    Text("Deep shadows (≤10% gray)")
+                    Text(tones.deepShadowFraction, format: .percent.precision(.fractionLength(0)))
+                }
+                GridRow {
+                    Text("Bright highlights (≥95% gray)")
+                    Text(tones.brightHighlightFraction, format: .percent.precision(.fractionLength(0)))
+                }
+            }
+            .font(.subheadline.monospacedDigit())
+            Text("Approximate distribution from \(tones.sampleCount) opaque thumbnail samples, including background. It does not identify the subject, recover exposure, detect sensor clipping or choose the key direction.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+        .accessibilityIdentifier("referenceTones")
     }
 
     private var guidedPanel: some View {
@@ -226,6 +269,8 @@ struct ReferenceComparisonView: View {
                       let image = UIImage(data: photo.png) else { throw ReferenceImportError.unreadable }
                 guard !Task.isCancelled, requestID == token else { return }
                 reference = image
+                tones = photo.tones
+                observations = .init(); candidates = []; previewID = nil; rigError = nil
                 sizeDescription = "\(photo.width) × \(photo.height) px · session only"
                 loading = false
             } catch {
@@ -243,6 +288,8 @@ struct ReferenceComparisonView: View {
         importTask = nil
         selection = nil
         reference = nil
+        tones = nil
+        observations = .init(); candidates = []; previewID = nil; rigError = nil
         sizeDescription = ""
         failure = nil
         loading = false

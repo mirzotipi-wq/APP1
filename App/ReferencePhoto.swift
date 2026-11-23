@@ -2,6 +2,7 @@ import CoreGraphics
 import CoreTransferable
 import Foundation
 import ImageIO
+import LightingCore
 import UniformTypeIdentifiers
 
 enum ReferenceImportError: LocalizedError, Equatable {
@@ -24,6 +25,7 @@ struct ReferencePhoto: Transferable, Sendable {
     let png: Data
     let width: Int
     let height: Int
+    let tones: ReferenceTonalSummary?
 
     static var transferRepresentation: some TransferRepresentation {
         FileRepresentation(importedContentType: .image) { received in
@@ -96,6 +98,25 @@ struct ReferencePhoto: Transferable, Sendable {
             throw ReferenceImportError.unreadable
         }
         try Task.checkCancellation()
-        return Self(png: encoded as Data, width: pixels.width, height: pixels.height)
+        return Self(png: encoded as Data, width: pixels.width, height: pixels.height, tones: Self.measure(pixels))
+    }
+
+    /// Fixed, aspect-preserving thumbnail, explicit RGBA8 byte order. No source
+    /// file or pixels are retained by the statistics value.
+    private static func measure(_ image: CGImage) -> ReferenceTonalSummary? {
+        let scale = min(1, 128.0 / Double(max(image.width, image.height)))
+        let width = max(1, Int((Double(image.width) * scale).rounded()))
+        let height = max(1, Int((Double(image.height) * scale).rounded()))
+        guard let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+        var bytes = [UInt8](repeating: 0, count: width * height * 4)
+        let drawn = bytes.withUnsafeMutableBytes { buffer -> Bool in
+            guard let context = CGContext(data: buffer.baseAddress, width: width, height: height,
+                    bitsPerComponent: 8, bytesPerRow: width * 4, space: space,
+                    bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+            context.interpolationQuality = .medium
+            context.draw(image, in: CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height)))
+            return true
+        }
+        return drawn ? ReferenceTonalSummary(rgba: bytes) : nil
     }
 }
