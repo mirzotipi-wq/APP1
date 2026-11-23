@@ -1,5 +1,15 @@
 # Current handoff
 
+## Stale-save recovery packet (2026-11-23)
+
+- Session baseline `88f7c2d321568090b6caad06f840b68d1799745b`; implementation `84c2db5c7460e5bf6bca3dc1b801608abd16f3fd`.
+- Implemented explicit stale-save recovery: append edited setup to the latest validated library under the transaction lock as a new project, without replacing the competing record. Confirm discard before reload; failed copy/reload retains in-memory edits. Four portable adversarial tests and two native UI scenarios using a UUID-scoped real competing transaction. No format change. All new CI pending at integration.
+- Previous visual revision 24a08290 passed 95/95 Debug and Release and unsigned native Debug build; simulator UI still in progress (job 138050091292). Prior runs 45276217297, 45274350597, 45274202947, 45274080732 are also at native UI test step; no new native conclusion.
+- Next: inspect latest exact-source workflow; validate recovery copies, capacity, corruption, concurrent copies, cancel/confirm reload, both versions across relaunch. Inspect actual native failures and screenshots, retain quality gates.
+- Sequential self-review only; no independent reviewer. Score floor remains 20/100, M01 active, no release approval.
+
+## Prior handoff
+
 ## Final observed CI checkpoint (2026-11-23)
 
 - Session baseline `0d0b7e855a9de034e04d0d4169845407124025bb`; transaction implementation `f46ec3b73d2f4c716009c1eb32447e0ba26bec23`; latest source `24a08290512187d4142e1a64c5fe98590c138626`.

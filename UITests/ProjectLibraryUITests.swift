@@ -127,6 +127,81 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertFalse(remove.exists)
     }
 
+    private func conflictingEditor() throws -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEST_CONFLICT"] = "1"
+        app.launch()
+        let save = app.buttons["saveProject"]
+        waitUntilEnabled(save)
+        save.tap()
+        let recipes = app.buttons["recipes"]
+        waitUntilEnabled(recipes)
+        recipes.tap()
+        app.buttons["recipe-Silhouette"].tap()
+        save.tap()
+        let copy = app.buttons["saveConflictCopy"]
+        for _ in 0..<8 where !copy.isHittable { app.swipeDown() }
+        waitUntilEnabled(copy)
+        return app
+    }
+
+    func testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch() throws {
+        continueAfterFailure = false
+        let app = try conflictingEditor()
+        let copy = app.buttons["saveConflictCopy"]
+        let reload = app.buttons["reloadConflict"]
+        if !reload.isHittable { app.swipeUp() }
+        reload.tap()
+        let alert = app.alerts["Reload saved project?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        alert.buttons["Keep editing"].tap()
+        XCTAssertTrue(copy.exists)
+        if !copy.isHittable { app.swipeDown() }
+        copy.tap()
+        waitForTitle("Portrait setup recovery", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        app.terminate()
+        app.launchEnvironment.removeValue(forKey: "KEYFILL_UI_TEST_CONFLICT")
+        app.launch()
+        waitForTitle("Portrait setup recovery", in: app)
+        let backlight = app.buttons["light-Backlight"]
+        for _ in 0..<8 where !backlight.isHittable { app.swipeUp() }
+        XCTAssertTrue(backlight.exists)
+        XCTAssertFalse(app.buttons["light-Key"].exists)
+        let projects = app.buttons["openProjectLibrary"]
+        for _ in 0..<8 where !projects.isHittable { app.swipeDown() }
+        projects.tap()
+        let original = app.buttons["Open Other window"]
+        waitUntilEnabled(original)
+        original.tap()
+        app.buttons["Done"].tap()
+        waitForTitle("Other window", in: app)
+        let key = app.buttons["light-Key"]
+        for _ in 0..<8 where !key.isHittable { app.swipeUp() }
+        XCTAssertTrue(key.exists)
+        XCTAssertFalse(app.buttons["light-Backlight"].exists)
+    }
+
+    func testStaleSaveReloadRequiresConfirmation() throws {
+        continueAfterFailure = false
+        let app = try conflictingEditor()
+        let reload = app.buttons["reloadConflict"]
+        for _ in 0..<4 where !reload.isHittable { app.swipeUp() }
+        reload.tap()
+        let alert = app.alerts["Reload saved project?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        alert.buttons["Reload and discard edits"].tap()
+        waitForTitle("Other window", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        XCTAssertFalse(app.buttons["saveConflictCopy"].exists)
+        let key = app.buttons["light-Key"]
+        for _ in 0..<8 where !key.isHittable { app.swipeUp() }
+        XCTAssertTrue(key.exists)
+        XCTAssertFalse(app.buttons["light-Backlight"].exists)
+    }
+
     func testUnsavedSetupMustBeSavedBeforeLibraryChanges() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
