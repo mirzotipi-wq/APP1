@@ -9,6 +9,16 @@ final class ColorimetryTests: XCTestCase {
         ])
     }
 
+    func testDefaultPortraitHasUsableMeterAndBalanceDoesNotChangeLux() throws {
+        var portrait = LightingScene.portrait()
+        let daylight = try XCTUnwrap(NeutralCardPreview(scene: portrait))
+        XCTAssertGreaterThan(daylight.totalLux, 0)
+        portrait.previewSettings = .init(whiteBalanceKelvin: 3200)
+        let tungsten = try XCTUnwrap(NeutralCardPreview(scene: portrait))
+        XCTAssertEqual(daylight.totalLux, tungsten.totalLux, accuracy: 1e-9)
+        XCTAssertNotEqual(daylight.display, tungsten.display)
+    }
+
     func testPlanckianChromaticityAgainstPublishedReference() throws {
         // CIE illuminant A, approximately 2856 K: x=0.44757, y=0.40745 (CIE 1931 2°).
         // Approximation is not a replacement for the tabulated standard observer.

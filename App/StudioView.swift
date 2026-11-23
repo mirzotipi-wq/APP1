@@ -298,19 +298,39 @@ struct StudioView: View {
     }
 
     private var meter: some View {
-        DisclosureGroup(isExpanded: $showMeter) {
-            NeutralCardInspector(scene: scene, settings: previewSettingsBinding,
-                                 onEditingChanged: editChanged)
-                .padding(.top, 12)
-        } label: {
-            VStack(alignment: .leading, spacing: 3) {
-                Label("Light meter & test card", systemImage: "light.metering.center.weighted")
-                    .font(.headline)
-                Text("Ideal direct light · relative color preview").font(.caption)
-                    .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 0) {
+            // Scope the disclosure identifier to the actual button. Applying it
+            // to DisclosureGroup can propagate it into the expanded children.
+            Button {
+                showMeter.toggle()
+            } label: {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Label("Light meter & test card", systemImage: "light.metering.center.weighted")
+                            .font(.headline)
+                        Text("Ideal direct light · relative color preview")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: showMeter ? "chevron.up" : "chevron.down")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Light meter and test card")
+            .accessibilityValue(showMeter ? "Expanded" : "Collapsed")
+            .accessibilityHint(showMeter ? "Hides light meter controls" : "Shows light meter controls")
+            .accessibilityIdentifier("meterDisclosure")
+            if showMeter {
+                Divider().padding(.vertical, 12)
+                NeutralCardInspector(scene: scene, settings: previewSettingsBinding,
+                                     onEditingChanged: editChanged)
             }
         }
-        .accessibilityIdentifier("meterDisclosure")
         .padding(14)
         .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
     }
