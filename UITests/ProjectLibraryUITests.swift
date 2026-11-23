@@ -69,6 +69,55 @@ final class ProjectLibraryUITests: XCTestCase {
         attachment.name = "Project-library"; attachment.lifetime = .keepAlways; self.add(attachment)
     }
 
+    func testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launch()
+        let projects = app.buttons["openProjectLibrary"]
+        waitUntilEnabled(projects)
+        waitUntilEnabled(app.buttons["saveProject"])
+        app.buttons["saveProject"].tap()
+        projects.tap()
+        let create = app.buttons["newProject"]
+        waitUntilEnabled(create)
+        create.tap()
+        let input = app.textFields["projectNameInput"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        app.buttons["clearProjectName"].tap()
+        input.tap()
+        input.typeText("Keep")
+        app.buttons["confirmProjectName"].tap()
+        let original = app.buttons["Options for Portrait setup"]
+        waitUntilEnabled(original)
+        original.tap()
+        app.buttons["Archive"].tap()
+        let remove = app.buttons["Delete archived Portrait setup"]
+        let restore = app.buttons["Restore Portrait setup"]
+        waitUntilEnabled(remove)
+        remove.tap()
+        let alert = app.alerts["Delete archived project?"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        alert.buttons["Cancel"].tap()
+        waitUntilEnabled(restore)
+        remove.tap()
+        XCTAssertTrue(alert.waitForExistence(timeout: 10))
+        alert.buttons["Delete project"].tap()
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: restore)], timeout: 10), .completed)
+        app.buttons["Done"].tap()
+        waitForTitle("Keep", in: app)
+        app.terminate()
+        app.launch()
+        waitForTitle("Keep", in: app)
+        waitUntilEnabled(projects)
+        projects.tap()
+        XCTAssertTrue(app.buttons["Options for Keep"].waitForExistence(timeout: 10))
+        XCTAssertFalse(original.exists)
+        XCTAssertFalse(restore.exists)
+        XCTAssertFalse(remove.exists)
+    }
+
     func testUnsavedSetupMustBeSavedBeforeLibraryChanges() throws {
         continueAfterFailure = false
         let app = XCUIApplication()

@@ -12,6 +12,8 @@ struct ProjectLibraryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var naming: Naming?
     @State private var errorMessage: String?
+    @State private var pendingDeletion: LightingProject?
+    @State private var confirmDeletion = false
 
     private struct Naming: Identifiable {
         enum Kind { case create, rename(UUID), duplicate(UUID) }
@@ -58,6 +60,10 @@ struct ProjectLibraryView: View {
                     }
                     .disabled(!canMutate || (library?.projects.count ?? 0) >= ProjectLibrary.maximumProjects)
                     .accessibilityIdentifier("newProject")
+                    if let library, library.projects.count >= ProjectLibrary.maximumProjects {
+                        Text("64-project limit reached, including archived projects. Remove an archived project to free a slot.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
                 }
                 if let library, library.projects.contains(where: { $0.isArchived }) {
                     Section("Archived") {
@@ -70,16 +76,37 @@ struct ProjectLibraryView: View {
                                 Spacer()
                                 Button("Restore") { change { try $0.restore(project.id) } }
                                     .buttonStyle(.borderless).disabled(!canMutate)
+                                    .frame(minHeight: 44)
                                     .accessibilityLabel("Restore \(project.name)")
+                                Button(role: .destructive) {
+                                    pendingDeletion = project
+                                    confirmDeletion = true
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .frame(width: 44, height: 44).contentShape(Rectangle())
+                                }
+                                .buttonStyle(.borderless).disabled(!canMutate)
+                                .accessibilityLabel("Delete archived \(project.name)")
                             }
                         }
-                        Text("Archived projects are kept on this device and can be restored.")
+                        Text("Archived projects can be restored or permanently removed from this library.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }
             }
             .navigationTitle("Projects")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            .alert("Delete archived project?", isPresented: $confirmDeletion, presenting: pendingDeletion) { project in
+                Button("Delete project", role: .destructive) {
+                    // The domain and store re-check identity, archive status and the
+                    // current snapshot; a failed write leaves the displayed library intact.
+                    change { try $0.deleteArchived(project.id) }
+                    pendingDeletion = nil
+                }
+                Button("Cancel", role: .cancel) { pendingDeletion = nil }
+            } message: { project in
+                Text("Remove “\(project.name)” and its saved lighting setup from this library? This cannot be undone here. Existing exports and legacy migration backups are not erased.")
+            }
             .sheet(item: $naming) { action in
                 ProjectNameEditor(title: action.title, initial: action.initial) { name in
                     try apply { next in

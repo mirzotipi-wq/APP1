@@ -144,6 +144,61 @@ final class ProjectLibraryTests: XCTestCase {
         XCTAssertEqual(library, snapshot)
     }
 
+    func testOnlyArchivedProjectsCanBeDeletedAndOtherRecordsSurviveReopen() throws {
+        try withStore { store in
+            var library = try ProjectLibrary(name: "Original", scene: .portrait())
+            let original = try XCTUnwrap(library.activeProject)
+            try library.duplicate(original.id, name: "Archived copy")
+            let archived = library.activeID
+            try library.create(name: "Active", scene: .portrait())
+            let active = try XCTUnwrap(library.activeProject)
+            let before = library
+            XCTAssertThrowsError(try library.deleteArchived(original.id)) {
+                XCTAssertEqual($0 as? ProjectLibraryError, .mustArchiveBeforeDeletion)
+            }
+            XCTAssertThrowsError(try library.deleteArchived(active.id))
+            XCTAssertThrowsError(try library.deleteArchived(UUID())) {
+                XCTAssertEqual($0 as? ProjectLibraryError, .notFound)
+            }
+            XCTAssertEqual(library, before)
+            try library.archive(archived)
+            try store.save(library, replacing: nil)
+            let saved = try XCTUnwrap(store.load())
+            try library.deleteArchived(archived)
+            XCTAssertEqual(library.activeProject, active)
+            XCTAssertEqual(library.projects.first { $0.id == original.id }, original)
+            try store.save(library, replacing: saved)
+            var reopened = try XCTUnwrap(store.load())
+            XCTAssertEqual(reopened, library)
+            XCTAssertFalse(reopened.projects.contains { $0.id == archived })
+            XCTAssertThrowsError(try reopened.restore(archived))
+        }
+    }
+
+    func testArchivedDeletionFreesCapacityAndStaleDeletionCannotOverwrite() throws {
+        try withStore { store in
+            var library = try ProjectLibrary(name: "Original", scene: .portrait())
+            let archived = library.activeID
+            for i in 1..<ProjectLibrary.maximumProjects {
+                try library.create(name: "Project \(i)", scene: .portrait())
+            }
+            try library.archive(archived)
+            try store.save(library, replacing: nil)
+            let original = try XCTUnwrap(store.load())
+            var deletion = original
+            try deletion.deleteArchived(archived)
+            try deletion.create(name: "New project", scene: .portrait())
+            XCTAssertEqual(deletion.projects.count, ProjectLibrary.maximumProjects)
+            var otherWindow = original
+            try otherWindow.restore(archived)
+            try store.save(otherWindow, replacing: original)
+            XCTAssertThrowsError(try store.save(deletion, replacing: original)) {
+                XCTAssertEqual($0 as? ProjectLibraryError, .staleSnapshot)
+            }
+            XCTAssertEqual(try store.load(), otherWindow)
+        }
+    }
+
     func testInvalidMetadataAndFutureSchemaAreRejected() throws {
         let initial = try ProjectLibrary(name: "Portrait", scene: .portrait())
         let data = try JSONEncoder().encode(initial)

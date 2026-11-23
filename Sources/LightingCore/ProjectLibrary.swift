@@ -3,6 +3,7 @@ import Foundation
 public enum ProjectLibraryError: Error, Equatable, LocalizedError {
     case invalidName, invalidLibrary, unsupportedVersion, duplicateID, capacity
     case notFound, archived, activeCannotArchive, staleSnapshot, notRegularFile, tooLarge
+    case mustArchiveBeforeDeletion
 
     public var errorDescription: String? {
         switch self {
@@ -14,6 +15,7 @@ public enum ProjectLibraryError: Error, Equatable, LocalizedError {
         case .notFound: return "The project could not be found."
         case .archived: return "Restore this project before opening or editing it."
         case .activeCannotArchive: return "Open a different project before archiving this one."
+        case .mustArchiveBeforeDeletion: return "Only an archived, inactive project can be permanently removed from the library."
         case .staleSnapshot: return "The library changed in another window. Your edits have not been overwritten."
         case .notRegularFile: return "The saved library is not a regular file. Existing data has been protected."
         case .tooLarge: return "The project library exceeds the supported storage size."
@@ -114,6 +116,17 @@ public struct ProjectLibrary: Codable, Equatable, Sendable {
 
     public mutating func restore(_ id: UUID) throws {
         projects[try index(id)].isArchived = false
+    }
+
+    /// Removes one archived record. The active project, other records and
+    /// the legacy migration backup are untouched. Persist via the store's
+    /// atomic, stale-snapshot-checked save; this is not secure file erasure.
+    public mutating func deleteArchived(_ id: UUID) throws {
+        let i = try index(id)
+        guard id != activeID, projects[i].isArchived else {
+            throw ProjectLibraryError.mustArchiveBeforeDeletion
+        }
+        projects.remove(at: i)
     }
 }
 
