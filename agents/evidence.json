@@ -297,6 +297,83 @@
       "environment": "Linux Swift 6.2.1; native simulator CI queued",
       "artifact": "docs/evidence/m05-pdf-preview-2026-11-23.md",
       "notes": "Vector rendering and native sharing implemented, but PDF readability, PDFKit opening, and actual UI share/open behavior remain to be verified on Apple runner."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
+      "date": "2026-11-23",
+      "method": "GitHub Actions core job 138016895770; agent_cycle check/next; native Swift syntax parse; swift test --jobs 2; swift test --configuration release --jobs 2; portable render and C++ Float32 parity",
+      "environment": "Ubuntu 24.04.5 LTS x86_64, Swift 6.4.2 RELEASE",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14862957971",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "78/78 XCTest cases in each configuration, zero failures; all ten ProjectLibraryTests pass in each. 3 diagnostic PPM fixtures no unsupported pixels; six Float32 host cases pass, max channel error 1, none >4, near-field invalid 84/84. Source-only follow-up 767d8b5 changes only native UI/test files; its independent core job was running at observation."
+    },
+    {
+      "gate": "photometry",
+      "result": "pass",
+      "revision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
+      "date": "2026-11-23",
+      "method": "Re-executed existing analytic, area integration and direct-light tests in full portable core CI",
+      "environment": "Ubuntu 24.04.5 LTS, Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016895770",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "9 rotated 8x8 versus 32x32 unoccluded study fixtures: max relative error 0.0032798081798638967; bounded math, not photographic calibration."
+    },
+    {
+      "gate": "native_build",
+      "result": "pass",
+      "revision": "d6407acc324bedfc5abe946565e6b4f60cd2a3ba",
+      "date": "2026-11-23",
+      "method": "Observed actual simulator job 138000433437: generated project, unsigned Debug build and upload succeeded",
+      "environment": "macos-26-intel GitHub Actions; earlier revision only",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316/artifacts/14862742238",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "UI phase still in progress at observation. This historical build does not establish current SDK compilation or device signing."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "767d8b527ff2bcb266b6ca72298119b7557206e2",
+      "date": "2026-11-23",
+      "method": "Current native runner queued, first library source Swift syntax parsed in portable CI",
+      "environment": "Current run 45267427132 simulator 138017945122",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267427132",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "No current Apple SDK type check, release build or current simulator artifact yet."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "767d8b527ff2bcb266b6ca72298119b7557206e2",
+      "date": "2026-11-23",
+      "method": "Authored native multi-project scenarios plus existing corruption/relaunch checks; corrected shadowed attachment method",
+      "environment": "Current macOS simulator job queued",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267427132",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "All existing gates retained. No native test execution or current screenshots."
+    },
+    {
+      "gate": "editing",
+      "result": "unverified",
+      "revision": "767d8b527ff2bcb266b6ca72298119b7557206e2",
+      "date": "2026-11-23",
+      "method": "Library UI create, rename, duplicate, switch, archive, restore and protected unsaved-save boundary authored; live SwiftUI bindings and stable IDs",
+      "environment": "Native SwiftUI source; Apple execution pending",
+      "artifact": "docs/evidence/m03-project-library-2026-11-23.md",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Portable domain methods verified at b8d0ef9. Real workflow repetition, interaction review and accessible screen inspection outstanding."
+    },
+    {
+      "gate": "persistence",
+      "result": "unverified",
+      "revision": "767d8b527ff2bcb266b6ca72298119b7557206e2",
+      "date": "2026-11-23",
+      "method": "Portable ten-case library regression suite passed at b8d0ef9 in Debug and Release; unchanged domain in native follow-up",
+      "environment": "Ubuntu Swift 6.4.2; iOS simulator/device pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14862957971",
+      "reviewer": "Assistant self-review and actual CI where specified; no independent product reviewer",
+      "notes": "Validated legacy migration without deleting original, bounded atomic snapshots, round trips, stale-write rejection, corruption, oversized/nonregular file protection, archive/restore. Interruption/low storage, native UX and permanent deletion/export/recovery policy outstanding; do not mark full gate passed."
     }
   ]
 }

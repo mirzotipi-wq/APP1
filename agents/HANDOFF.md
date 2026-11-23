@@ -1,5 +1,27 @@
 # Current handoff
 
+**Stage:** M01 active; M02–M07 pending. No milestone is complete. Portable library and all existing domain tests passed; current native build and persistence smoke are unverified.
+
+## Latest integrated cycle
+
+- Baseline: 9b939bd2a711c5ea7c62f20defb633ce0f1049e6.
+- b8d0ef90a690e80686fd6821981ec97da163dfa4: versioned ProjectLibrary and atomic ProjectLibraryFileStore, stable active ID, first-save and idempotent legacy migration preserving portrait.json, stale snapshot rejection, named create/rename/duplicate/switch, archive/restore, 64-record and 8 MiB bounds, corrupt/nonregular protection. Native Projects sheet, project-aware export titles, explicit save boundary, ten new portable tests, two UI scenarios; fix local add variable shadowing XCTestCase.add(_:).
+- 767d8b527ff2bcb266b6ca72298119b7557206e2: use live bindings in the project sheet; add a clear name control, reliable enabled/title waits and archive/restore UI checks; prevent editing/export of a default stand-in while saved data is unreadable, present protected-data retry screen. No native SDK verification yet.
+- **Verified:** [core job 138016895770](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016895770) on b8d0ef90a690e80686fd6821981ec97da163dfa4: Ubuntu 24.04.5 LTS Swift 6.4.2, 78/78 Debug and 78/78 Release, zero failures; ten library tests passed in each; agent state check/next and native syntax parse passed; 3 study fixtures and 6 host parity fixtures pass. [Raw artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14862957971). [Evidence](../docs/evidence/m03-project-library-2026-11-23.md).
+- [Current follow-up CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45267427132): core 138017944413 in progress, native simulator 138017945122 queued at observation. [First library CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194): core success; native simulator 138016896671 queued. [PDF CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45265352398): core passed, simulator started. [Older simulator](https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316/job/138000433437): Debug build and upload succeeded at d6407acc324bedfc5abe946565e6b4f60cd2a3ba; UI step in progress at observation. [Earlier artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45262428316/artifacts/14862742238). No current native build/test result or screenshot. 
+- [Provisional evidence-only quality scorecard](../docs/evidence/quality-scorecard-2026-11-23.md): 20/100 supported points, not a percentage of feature completion or a measured overall product rating. No independent reviewer or physical-device evidence.
+
+## Next executable packet
+
+1. Inspect job-level results and actual logs for current run 45267427132, PDF run 45265352398 and older run 45262428316. Repair current SwiftUI/Apple SDK or XCTest errors, not historical errors already corrected; preserve all tests.
+2. Verify native Debug and Release simulator builds, existing persistence and corruption smoke, new create/rename/duplicate/switch/archive/restore/relaunch and save boundary. Inspect genuine screenshots and PDFKit document/share attachments. Confirm no cross-project undo/selection and no silent loss of edits. Keep M01 active until exact evidence meets its gates.
+3. Complete independent reference import/local privacy, permanent deletion/recovery and project library low-storage/interruption tests, and production RealityKit interaction/calibrated rendering while dependencies remain blocked. Do not advance M03 based only on ten portable tests.
+4. Device performance, accessibility, physical AR, customer validation, independent review and owner signoff remain outstanding. No publication or paid services authorized. Sequential specialist self-review only; no independent agents available.
+
+## Prior handoff retained for continuity
+
+# Current handoff
+
 **Stage:** M01 active; M02–M07 pending. No milestone is complete. Older unsigned Debug simulator build passed; current revision native build and persistence smoke remain unverified. The prior test target compilation failure has been corrected at source.
 
 ## Latest integrated cycle

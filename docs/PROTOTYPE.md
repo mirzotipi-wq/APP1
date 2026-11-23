@@ -1,6 +1,6 @@
 # Prototype 0.1 — native studio
 
-This prototype is intended as a usable single-project lighting editor on iOS 17+. It is not a release candidate.
+This prototype is intended as a multi-project lighting editor prototype on iOS 17+. It is not a release candidate.
 
 - Choose one of four editable portrait recipes, select lights in the plan or rack, edit position, intensity and temperature, add/remove lights, undo/redo and save.
 - Switch Plan / 3D / Camera to inspect illustrative geometry in a native SceneKit viewport; tap the camera marker to edit its position and 14–200 mm full-frame lens. Coverage and field-of-view values use the tested ideal projection model.
@@ -8,11 +8,12 @@ This prototype is intended as a usable single-project lighting editor on iOS 17+
 - Open Light meter & test card for combined direct lux, ideal 18% neutral-card color, balance and relative exposure. Controls change the diagnostic card only, not SceneKit shading.
 - The intensity mapping is artistic; it is not calibrated. SceneKit is a temporary adapter; production RealityKit/Metal remains the target.
 - Use the share menu for text settings or a native vector PDF lighting plan. Choose A4 or US Letter and metric or imperial units; preview the document, then share. Export does not save or mutate the project and includes no reference photo. PDFKit rendering and actual native sharing remain pending verification. Corrupt saved data blocks writes.
+- Save the initial setup, then open Projects. Create a named portrait project, rename or duplicate saved scenes, open another project, or archive an inactive one and restore it later. Save current edits before changing projects; a switch resets the editor history. Legacy portrait.json is preserved when migrated. Capacity is 64 projects including archived; permanent purge is not yet implemented. If existing data cannot be opened, the editor shows a protected-data error and Retry rather than allowing replacement or exporting a default scene. Native verification remains pending.
 - Charcoal workspace, amber selection, one-meter grid, readable system surfaces, visible units, native navigation and accessibility labels.
 
 Open Actions > iOS Prototype. The Ubuntu job runs portable debug/release tests and native Swift syntax parsing; the macOS job retains package tests, generates the Xcode project, builds unsigned Debug and Release simulator configurations, runs UI smoke and exports XCTest attachments and logs. Download the simulator app artifact after a successful build; unzip the archive and use xcrun simctl install booted KeyAndFill.app.
 
-The simulator app is not a signed IPA. A prior unsigned Debug build succeeded; current native build and UI smoke are unverified until CI completes. Reference inference, calibrated rendering, AR, native PDF verification, project library, commerce, manual accessibility and real-device tests remain outstanding.
+The simulator app is not a signed IPA. A prior unsigned Debug build succeeded; current native build and UI smoke are unverified until CI completes. Reference inference, calibrated rendering, AR, native PDF and project library UI verification, permanent deletion/recovery, commerce, manual accessibility and real-device tests remain outstanding.
 
 
 ### Numerical lighting study

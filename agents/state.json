@@ -95,25 +95,34 @@
   ],
   "lastCycle": {
     "date": "2026-11-23",
-    "baseRevision": "4ab9f9442c9d0e0b804ee852ef31cadcf1861766",
-    "testedRevision": "27ec422f7e5cd4f80d216b3e7931416ced2d861e",
+    "baseRevision": "9b939bd2a711c5ea7c62f20defb633ce0f1049e6",
+    "sourceRevision": "767d8b527ff2bcb266b6ca72298119b7557206e2",
+    "testedRevision": "b8d0ef90a690e80686fd6821981ec97da163dfa4",
     "activeMilestone": "M01",
     "blockingGates": [
       "native_build",
       "persistence_smoke"
     ],
     "independentWork": [
-      "photometry",
-      "rendering (diagnostic oracle/optional Metal; gate unverified)",
-      "export (portable model verified; PDFKit and sharing pending)"
+      "M02 photometry and diagnostic renderer (calibrated rendering gate unverified)",
+      "M03 project library: portable domain and migration tested; native UX pending",
+      "M05 export: portable layout tested; native PDFKit and sharing pending"
     ],
     "latestWorkflow": {
-      "id": 45265352398,
-      "status": "queued",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45265352398",
-      "core": "pending",
-      "simulator": "pending"
+      "id": 45267427132,
+      "status": "in_progress",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267427132",
+      "core": "in_progress",
+      "simulator": "queued"
     },
-    "nextPacket": "Inspect run 45265352398 jobs and logs. Confirm corrected native test target compiles, then fix any actual SDK/UI failures. Verify save/edit/relaunch/corruption, native PDF opening/sharing and inspect exported attachments; do not advance milestones on syntax or portable tests alone. Coordinate independent project library work without overwriting concurrent changes."
+    "verifiedPortableWorkflow": {
+      "id": 45267130194,
+      "core": "success",
+      "debugTests": 78,
+      "releaseTests": 78,
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/artifacts/14862957971"
+    },
+    "nextPacket": "Inspect current source run 45267427132 (core 138017944413, simulator 138017945122), prior PDF run 45265352398 and older UI phase 45262428316. Fix actual SDK/XCTest failures and rerun. Verify first save, legacy migration, corrupt library protection, project create/rename/duplicate/switch/relaunch/archive/restore, no cross-project undo, PDFKit share/open and actual attachments. Do not mark M01 complete until native build and persistence smoke pass. While native runner remains queued, implement independent reference import/privacy or measured project recovery work without weakening gates."
   }
 }
