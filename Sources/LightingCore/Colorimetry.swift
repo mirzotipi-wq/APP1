@@ -109,6 +109,11 @@ public struct PreviewColorTransform: Sendable {
         exposure = pow(2, settings.exposureStops)
     }
 
+    /// Explicit shared parameters for the optional Float32 compute implementation.
+    public var computeParameters: SIMD4<Float> {
+        .init(Float(adaptationRatio.x), Float(adaptationRatio.y), Float(adaptationRatio.z), Float(exposure))
+    }
+
     /// Bradford adaptation, relative exposure, luminance Reinhard tone mapping and
     /// neutral-axis gamut compression into display-encoded sRGB.
     public func display(_ xyz: RelativeXYZ) -> DisplayRGB? {

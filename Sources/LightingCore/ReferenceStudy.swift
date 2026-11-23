@@ -9,7 +9,7 @@ public enum StudyQuality: Sendable {
 }
 
 public enum StudyError: Error, Equatable {
-    case invalidScene, invalidCamera, invalidEmitter, invalidResolution, invalidSurface, cancelled
+    case invalidScene, invalidCamera, invalidEmitter, invalidResolution, invalidSurface, invalidComputeOutput, cancelled
 }
 
 /// Achromatic, spectrally flat materials. Dielectric uses a direct-light GGX/Smith/Schlick
@@ -162,6 +162,20 @@ public struct StudyLighting: Sendable {
 
     public var sampleCount: Int { samples.count }
 
+    // Structure-of-vectors contract: three aligned float4 rows per sample and area.
+    // Translate positions to the subject center to reduce Float32 roundoff.
+    fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+        samples.flatMap { s in
+            [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1), pack(s.xyz, 0)]
+        }
+    }
+
+    fileprivate func computeAreas(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+        areaGuards.flatMap { a in
+            [pack(a.center - center, a.minimumDistance), pack(a.right, a.halfWidth), pack(a.up, a.halfHeight)]
+        }
+    }
+
     /// Evaluates one arbitrary receiver. Geometry nil means no visibility/occlusion.
     /// A point sample nearer than 5 cm, or a receiver within the declared finite-area
     /// near-field guard (max of 5 cm and one quarter longest side), is unsupported.
@@ -208,14 +222,59 @@ public struct StudyImage: Equatable, Sendable {
     public let height: Int
     public let rgba: Data
     public let unsupportedPixels: Int
+
+    /// Compute buffer uses alpha 0 exclusively as an invalid-surface flag. Restore
+    /// opaque alpha and count flags, without guessing from the visible RGB color.
+    public static func fromComputeRGBA(width: Int, height: Int, data: Data) throws -> StudyImage {
+        guard (24...192).contains(width), width.isMultiple(of: 3), height == width * 2 / 3,
+              data.count == width * height * 4 else { throw StudyError.invalidComputeOutput }
+        var bytes = [UInt8](data), unsupported = 0
+        for i in stride(from: 0, to: bytes.count, by: 4) {
+            if bytes[i+3] == 0 {
+                guard bytes[i] == 255, bytes[i+1] == 0, bytes[i+2] == 255 else { throw StudyError.invalidComputeOutput }
+                unsupported += 1; bytes[i+3] = 255
+            } else if bytes[i+3] != 255 { throw StudyError.invalidComputeOutput }
+        }
+        return .init(width: width, height: height, rgba: Data(bytes), unsupportedPixels: unsupported)
+    }
 }
 
-/// Deterministic CPU oracle/diagnostic preview. Direct light only; deliberately small
-/// bounded images. Not a real-time production GPU renderer or photographic ground truth.
-public enum ReferenceStudyRenderer {
-    public static func render(scene: LightingScene, width: Int = 120, quality: StudyQuality = .interactive,
-                              isCancelled: () -> Bool = { false }) throws -> StudyImage {
-        // Bound both output allocation and reference-quality work.
+/// Optional GPU backend input, generated from the same validated source samples,
+/// camera, and display transform as the CPU oracle. Every row is a 16-byte float4.
+/// Parameters: 0 origin/halfW, 1 forward/halfH, 2 right/radius, 3 up/panelHalfExtent,
+/// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/reserved.
+public struct StudyComputeInput: Sendable {
+    public let width: Int
+    public let height: Int
+    public let parameters: [SIMD4<Float>]
+    public let samples: [SIMD4<Float>]
+    public let areas: [SIMD4<Float>]
+
+    public init(scene: LightingScene, width: Int = 192) throws {
+        let setup = try StudySetup(scene: scene, width: width, quality: .interactive)
+        let c = vec(setup.geometry.center), camera = setup.camera
+        let origin = vec(camera.position) - c
+        let samples = setup.lighting.computeSamples(relativeTo: c)
+        let areas = setup.lighting.computeAreas(relativeTo: c)
+        self.width = width; self.height = setup.height
+        self.samples = samples; self.areas = areas
+        parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),
+                      pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),
+                      setup.transform.computeParameters,
+                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 0)]
+    }
+}
+
+private struct StudySetup {
+    let camera: CameraFraming
+    let geometry: StudyGeometry
+    let lighting: StudyLighting
+    let transform: PreviewColorTransform
+    let height: Int
+    let halfW: Double
+    let halfH: Double
+
+    init(scene: LightingScene, width: Int, quality: StudyQuality) throws {
         let maximum = quality == .reference ? 96 : 192
         guard width >= 24, width <= maximum, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
         guard let camera = CameraFraming(scene: scene), let geometry = StudyGeometry(center: scene.subject),
@@ -223,10 +282,23 @@ public enum ReferenceStudyRenderer {
               camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters else { throw StudyError.invalidCamera }
         let light = try StudyLighting(scene: scene, quality: quality)
         guard let transform = PreviewColorTransform(settings: scene.effectivePreviewSettings) else { throw StudyError.invalidScene }
-        let height = width * 2 / 3, origin = vec(camera.position)
+        self.camera = camera; self.geometry = geometry; lighting = light; self.transform = transform
+        height = width * 2 / 3
+        halfW = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
+        halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
+    }
+}
+
+/// Deterministic CPU oracle/diagnostic preview. Direct light only; deliberately small
+/// bounded images. Not a real-time production GPU renderer or photographic ground truth.
+public enum ReferenceStudyRenderer {
+    public static func render(scene: LightingScene, width: Int = 120, quality: StudyQuality = .interactive,
+                              isCancelled: () -> Bool = { false }) throws -> StudyImage {
+        let setup = try StudySetup(scene: scene, width: width, quality: quality)
+        let camera = setup.camera, geometry = setup.geometry, light = setup.lighting, transform = setup.transform
+        let height = setup.height, origin = vec(camera.position)
         let forward = vec(camera.forward), right = vec(camera.right), up = vec(camera.up)
-        let halfW = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
-        let halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
+        let halfW = setup.halfW, halfH = setup.halfH
         var pixels = [UInt8](repeating: 255, count: width * height * 4)
         var unsupported = 0
         let sphere: StudyMaterial = .dielectric(reflectance: 0.18, roughness: 0.32, f0: 0.04)
@@ -280,4 +352,8 @@ private func normalized3(_ v: SIMD3<Double>) -> SIMD3<Double>? {
     let length = sqrt(dot3(v, v))
     guard length.isFinite, length > 0 else { return nil }
     return v / length
+}
+
+private func pack(_ v: SIMD3<Double>, _ w: Double) -> SIMD4<Float> {
+    .init(Float(v.x), Float(v.y), Float(v.z), Float(w))
 }
