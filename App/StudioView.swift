@@ -31,7 +31,7 @@ struct StudioView: View {
                         ContentUnavailableView("No light selected", systemImage: "lightbulb",
                             description: Text("Add a light or choose a recipe."))
                     }
-                    Text("Illustrative preview. Illuminance is an ideal point-source estimate, not a calibrated measurement.")
+                    Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
                         .font(.footnote).foregroundStyle(.secondary)
                     if let message { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
                     if saveBlocked { Button("Retry loading saved project") { load() } }
@@ -113,7 +113,9 @@ struct StudioView: View {
     private var plan: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
-            let extent = max(4.0, ([scene.subject, scene.camera] + scene.lights.map(\.position)).map { max(abs($0.x), abs($0.z)) }.max() ?? 4)
+            let targets = scene.lights.filter { $0.effectiveOptics.kind.isAimed }.map { $0.target(subject: scene.subject) }
+            let positions = [scene.subject, scene.camera] + scene.lights.map(\.position) + targets
+            let extent = max(4.0, (positions.map { max(abs($0.x), abs($0.z)) }.max() ?? 4) + 1)
             let scale = min(w, h) / CGFloat(extent * 2 + 2)
             ZStack {
                 Canvas { context, size in
@@ -129,16 +131,36 @@ struct StudioView: View {
                     }
                     for light in scene.lights {
                         let origin = point(light.position, w, h, scale)
-                        let target = point(scene.subject, w, h, scale)
-                        var beam = Path()
-                        beam.move(to: origin)
-                        beam.addLine(to: CGPoint(x: target.x - 9, y: target.y - 9))
-                        beam.addLine(to: CGPoint(x: target.x + 9, y: target.y + 9))
-                        beam.closeSubpath()
-                        context.fill(beam, with: .color(amber.opacity(light.id == selected ? 0.22 : 0.07)))
+                        let optics = light.effectiveOptics
+                        let targetPosition = optics.kind.isAimed ? light.target(subject: scene.subject) : scene.subject
+                        let target = point(targetPosition, w, h, scale)
                         var line = Path(); line.move(to: origin); line.addLine(to: target)
                         context.stroke(line, with: .color(amber.opacity(light.id == selected ? 0.9 : 0.35)),
-                                       style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                                       style: StrokeStyle(lineWidth: 1, dash: optics.kind.isAimed ? [5, 3] : [2, 5]))
+                        if optics.kind.isAimed && optics.aimTarget != nil {
+                            var cross = Path()
+                            cross.move(to: CGPoint(x: target.x - 5, y: target.y))
+                            cross.addLine(to: CGPoint(x: target.x + 5, y: target.y))
+                            cross.move(to: CGPoint(x: target.x, y: target.y - 5))
+                            cross.addLine(to: CGPoint(x: target.x, y: target.y + 5))
+                            context.stroke(cross, with: .color(amber), lineWidth: 1.5)
+                        }
+                        if optics.kind == .rectangle, let frame = StudioPhotometry.frame(for: light, subject: scene.subject) {
+                            var footprint = Path()
+                            for (index, corner) in [(-1.0, -1.0), (1.0, -1.0), (1.0, 1.0), (-1.0, 1.0)].enumerated() {
+                                let dx = corner.0 * optics.widthMeters / 2
+                                let dy = corner.1 * optics.heightMeters / 2
+                                let p = Position(x: light.position.x + frame.right.x * dx + frame.up.x * dy,
+                                                 y: light.position.y + frame.right.y * dx + frame.up.y * dy,
+                                                 z: light.position.z + frame.right.z * dx + frame.up.z * dy)
+                                let projected = point(p, w, h, scale)
+                                if index == 0 { footprint.move(to: projected) }
+                                else { footprint.addLine(to: projected) }
+                            }
+                            footprint.closeSubpath()
+                            context.fill(footprint, with: .color(amber.opacity(0.2)))
+                            context.stroke(footprint, with: .color(amber), lineWidth: 2)
+                        }
                     }
                 }.accessibilityHidden(true)
                 marker("Subject", icon: "person.fill", color: .white, active: false)
@@ -147,7 +169,7 @@ struct StudioView: View {
                     .position(point(scene.camera, w, h, scale))
                 ForEach(scene.lights) { light in
                     Button { selected = light.id } label: {
-                        marker(light.name, icon: "lightbulb.fill", color: amber, active: selected == light.id)
+                        marker(light.name, icon: lightIcon(light), color: amber, active: selected == light.id)
                     }.buttonStyle(.plain)
                         .accessibilityLabel("Select \(light.name) on plan")
                         .accessibilityAddTraits(selected == light.id ? .isSelected : [])
@@ -160,6 +182,14 @@ struct StudioView: View {
     private func point(_ p: Position, _ w: CGFloat, _ h: CGFloat, _ scale: CGFloat) -> CGPoint {
         CGPoint(x: w / 2 + CGFloat(p.x) * scale, y: h / 2 + CGFloat(p.z) * scale)
     }
+    private func lightIcon(_ light: StudioLight) -> String {
+        switch light.effectiveOptics.kind {
+        case .point: return "lightbulb.fill"
+        case .directional: return "flashlight.on.fill"
+        case .rectangle: return "rectangle.inset.filled"
+        }
+    }
+
     private func marker(_ name: String, icon: String, color: Color, active: Bool) -> some View {
         VStack(spacing: 3) {
             Image(systemName: icon).font(.system(size: 17, weight: .medium)).foregroundStyle(color)
@@ -183,10 +213,11 @@ struct StudioView: View {
             ForEach(scene.lights) { light in
                 Button { selected = light.id } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: "lightbulb.fill").foregroundStyle(amber).frame(width: 36, height: 36)
+                        Image(systemName: lightIcon(light)).foregroundStyle(amber).frame(width: 36, height: 36)
                             .background(amber.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
                         VStack(alignment: .leading, spacing: 3) {
                             Text(light.name).font(.subheadline.weight(.semibold))
+                            Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
                             Text("\(light.position.distance(to: scene.subject), specifier: "%.2f") m · \(light.kelvin, specifier: "%.0f") K")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
@@ -216,13 +247,24 @@ struct StudioView: View {
                     Image(systemName: "trash").frame(width: 44, height: 44)
                 }.accessibilityLabel("Remove selected light")
             }
-            if let lux = Photometry.normalIlluminance(candela: light.candela, distanceMeters: light.position.distance(to: scene.subject)) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("IDEAL NORMAL-INCIDENCE ESTIMATE").font(.caption2.weight(.medium)).foregroundStyle(.secondary)
-                    Text("\(lux, specifier: "%.0f") lx").font(.system(.title2, design: .monospaced).weight(.semibold))
-                }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
-                    .background(amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
-            }
+            VStack(alignment: .leading, spacing: 5) {
+                Text("CAMERA-FACING PLANE · IDEAL").font(.caption2.weight(.medium)).foregroundStyle(.secondary)
+                if let lux = StudioPhotometry.illuminance(for: light, in: scene) {
+                    Text("\(lux, specifier: "%.1f") lx")
+                        .font(.system(.title2, design: .monospaced).weight(.semibold))
+                        .accessibilityIdentifier("idealLux")
+                    Text("Direct incident light at the subject center. Rim lights may read zero on this plane.")
+                        .font(.caption).foregroundStyle(.secondary)
+                } else {
+                    Label("Estimate unavailable", systemImage: "exclamationmark.triangle")
+                        .font(.subheadline.weight(.semibold)).accessibilityIdentifier("idealLux")
+                    Text("Check the aim and separation of the emitter, subject and camera. Near-field geometry can fall outside the model.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
+                .background(amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+            OpticsInspector(optics: opticsBinding(for: light.id), subject: scene.subject, onEditingChanged: editChanged)
+            Divider()
             control("Horizontal", id: light.id, key: \.position.x, range: -4...4, step: 0.05, unit: "m")
             control("Depth", id: light.id, key: \.position.z, range: -4...4, step: 0.05, unit: "m")
             control("Height", id: light.id, key: \.position.y, range: 0...4, step: 0.05, unit: "m")
@@ -237,8 +279,10 @@ struct StudioView: View {
             get: { scene.lights.first(where: { $0.id == id })?[keyPath: key] ?? range.lowerBound },
             set: { new in
                 guard let i = scene.lights.firstIndex(where: { $0.id == id }), new.isFinite else { return }
+                let clamped = min(range.upperBound, max(range.lowerBound, new))
+                guard clamped != scene.lights[i][keyPath: key] else { return }
                 if editStart == nil { remember(scene) }
-                scene.lights[i][keyPath: key] = min(range.upperBound, max(range.lowerBound, new))
+                scene.lights[i][keyPath: key] = clamped
             })
         return VStack(alignment: .leading, spacing: 5) {
             HStack {
@@ -247,13 +291,26 @@ struct StudioView: View {
                 Text("\(value.wrappedValue, specifier: unit == "m" ? "%.2f" : "%.0f") \(unit)")
                     .font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
             }
-            Slider(value: value, in: range, step: step, onEditingChanged: { editing in
-                if editing { editStart = scene }
-                else {
-                    if let start = editStart, start != scene { remember(start) }
-                    editStart = nil
-                }
-            }).accessibilityLabel(title)
+            Slider(value: value, in: range, step: step, onEditingChanged: editChanged).accessibilityLabel(title)
+        }
+    }
+
+    private func opticsBinding(for id: UUID) -> Binding<LightOptics> {
+        Binding(get: { scene.lights.first(where: { $0.id == id })?.effectiveOptics ?? LightOptics() },
+                set: { new in
+                    guard new.isValid, let i = scene.lights.firstIndex(where: { $0.id == id }),
+                          scene.lights[i].effectiveOptics != new else { return }
+                    if editStart == nil { remember(scene) }
+                    scene.lights[i].optics = new
+                })
+    }
+
+    private func editChanged(_ editing: Bool) {
+        if editing {
+            if editStart == nil { editStart = scene }
+        } else {
+            if let start = editStart, start != scene { remember(start) }
+            editStart = nil
         }
     }
 
@@ -279,10 +336,15 @@ struct StudioView: View {
     }
 
     private var exportText: String {
-        let entries = scene.lights.map { light in
-            "\(light.name): \(String(format: "(%.2f, %.2f, %.2f)", light.position.x, light.position.y, light.position.z)) m, \(Int(light.candela)) cd, \(Int(light.kelvin)) K"
+        func coordinates(_ p: Position) -> String { String(format: "(%.2f, %.2f, %.2f) m", p.x, p.y, p.z) }
+        let entries = scene.lights.map { light -> String in
+            let optics = light.effectiveOptics
+            var result = "\(light.name): \(optics.kind.title), \(coordinates(light.position)), \(String(format: "%.1f", light.candela)) cd, \(String(format: "%.0f", light.kelvin)) K"
+            if optics.kind.isAimed { result += "; aim \(coordinates(light.target(subject: scene.subject)))" }
+            if optics.kind == .rectangle { result += String(format: "; surface %.2f × %.2f m", optics.widthMeters, optics.heightMeters) }
+            return result
         }
-        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters."] + entries + ["Illustrative plan; not calibrated photometry."]).joined(separator: "\n")
+        return (["Key & Fill — Portrait lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera))"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
     }
     private func remember(_ previous: LightingScene) {
         if history.last != previous { history.append(previous) }
