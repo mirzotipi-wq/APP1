@@ -4,8 +4,9 @@ import LightingCore
 /// Explicit save boundary: browsing is allowed while dirty, but mutations and
 /// switches must wait until the current scene is saved successfully.
 struct ProjectLibraryView: View {
-    let library: ProjectLibrary?
-    let hasUnsavedChanges: Bool
+    @Binding var library: ProjectLibrary?
+    @Binding var scene: LightingScene
+    @Binding var saved: LightingScene?
     let onSave: () throws -> Void
     let onApply: (ProjectLibrary) throws -> Void
     @Environment(\.dismiss) private var dismiss
@@ -20,6 +21,7 @@ struct ProjectLibraryView: View {
         let initial: String
     }
 
+    private var hasUnsavedChanges: Bool { saved != scene }
     private var canMutate: Bool { !hasUnsavedChanges && library != nil }
 
     var body: some View {
@@ -167,10 +169,22 @@ private struct ProjectNameEditor: View {
         NavigationStack {
             Form {
                 Section("Project name") {
-                    TextField("Name", text: $name).focused($focused)
-                        .textInputAutocapitalization(.sentences).submitLabel(.done)
-                        .accessibilityIdentifier("projectNameInput")
-                        .onSubmit { submit() }
+                    HStack {
+                        TextField("Name", text: $name).focused($focused)
+                            .textInputAutocapitalization(.sentences).submitLabel(.done)
+                            .accessibilityIdentifier("projectNameInput")
+                            .onSubmit { submit() }
+                        if !name.isEmpty {
+                            Button {
+                                name = ""; focused = true
+                            } label: {
+                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                    .frame(width: 44, height: 44)
+                            }
+                            .buttonStyle(.borderless).accessibilityLabel("Clear project name")
+                            .accessibilityIdentifier("clearProjectName")
+                        }
+                    }
                     if let errorMessage { Text(errorMessage).font(.footnote) }
                 }
             }

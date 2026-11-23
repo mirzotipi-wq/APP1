@@ -26,19 +26,32 @@ struct StudioView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     header
-                    workspace
-                    meter
-                    rack
-                    if let light = scene.lights.first(where: { $0.id == selected }) {
-                        inspector(light)
+                    if saveBlocked {
+                        ContentUnavailableView {
+                            Label("Saved project unavailable", systemImage: "externaldrive.badge.exclamationmark")
+                        } description: {
+                            Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
+                        } actions: {
+                            Button("Retry loading saved project") { load() }
+                                .buttonStyle(.borderedProminent)
+                        }
+                    } else if !loaded {
+                        ProgressView("Opening projects…")
+                            .frame(maxWidth: .infinity, minHeight: 160)
                     } else {
-                        ContentUnavailableView("No light selected", systemImage: "lightbulb",
-                            description: Text("Add a light or choose a recipe."))
+                        workspace
+                        meter
+                        rack
+                        if let light = scene.lights.first(where: { $0.id == selected }) {
+                            inspector(light)
+                        } else {
+                            ContentUnavailableView("No light selected", systemImage: "lightbulb",
+                                description: Text("Add a light or choose a recipe."))
+                        }
+                        Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
-                    Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
-                        .font(.footnote).foregroundStyle(.secondary)
                     if let message { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
-                    if saveBlocked { Button("Retry loading saved project") { load() } }
                 }
                 .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
             }
@@ -48,7 +61,7 @@ struct StudioView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Recipes", systemImage: "square.stack") { showRecipes = true }
-                        .disabled(!loaded).accessibilityIdentifier("recipes")
+                        .disabled(!loaded || saveBlocked).accessibilityIdentifier("recipes")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") { save() }.fontWeight(.semibold)
@@ -57,7 +70,7 @@ struct StudioView: View {
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showProjects) {
-                ProjectLibraryView(library: library, hasUnsavedChanges: saved != scene,
+                ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
                                    onSave: persistScene, onApply: applyLibrary)
             }
             .confirmationDialog("Remove selected light?", isPresented: $confirmRemove, titleVisibility: .visible) {
@@ -76,7 +89,8 @@ struct StudioView: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
-                Text(projectName).font(.title2.bold()).accessibilityIdentifier("projectName")
+                Text(saveBlocked ? "Project unavailable" : projectName)
+                    .font(.title2.bold()).lineLimit(2).accessibilityIdentifier("projectName")
                 Text(saveBlocked ? "Saved data protected" : (saved == scene ? "Saved locally" : "Unsaved changes"))
                     .font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("projectStatus")
             }
@@ -86,7 +100,7 @@ struct StudioView: View {
                     .font(.subheadline).frame(minHeight: 44)
                     .disabled(!loaded || saveBlocked).accessibilityIdentifier("openProjectLibrary")
                 LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
-                    .disabled(!loaded)
+                    .disabled(!loaded || saveBlocked)
             }
         }
     }
