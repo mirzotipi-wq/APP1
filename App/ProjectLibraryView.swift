@@ -8,8 +8,9 @@ struct ProjectLibraryView: View {
     @Binding var library: ProjectLibrary?
     @Binding var scene: LightingScene
     @Binding var saved: LightingScene?
-    let onSave: () throws -> Void
-    let onApply: (ProjectLibrary) throws -> Void
+    let isWorking: Bool
+    let onSave: () throws -> Task<Void, Error>
+    let onApply: (ProjectLibraryCommand) throws -> Task<Void, Error>
     @Environment(\.dismiss) private var dismiss
     @State private var naming: Naming?
     @State private var errorMessage: String?
@@ -17,6 +18,9 @@ struct ProjectLibraryView: View {
     @State private var confirmDeletion = false
     @State private var showImporter = false
     @State private var isImporting = false
+    @State private var isCommittingImport = false
+    @State private var isPerformingOperation = false
+    @State private var operationRequest = UUID()
     @State private var importRequest = UUID()
     @State private var importTask: Task<Void, Never>?
     @State private var importMessage: String?
@@ -31,7 +35,10 @@ struct ProjectLibraryView: View {
     }
 
     private var hasUnsavedChanges: Bool { saved != scene }
-    private var canMutate: Bool { !hasUnsavedChanges && library != nil && !isImporting }
+    private var canMutate: Bool {
+        !hasUnsavedChanges && library != nil && !isImporting && !isCommittingImport &&
+            !isWorking && !isPerformingOperation
+    }
     private var canImport: Bool {
         acceptingImports && canMutate &&
             (library?.projects.count ?? ProjectLibrary.maximumProjects) < ProjectLibrary.maximumProjects
@@ -47,7 +54,7 @@ struct ProjectLibraryView: View {
                         Text("Save your current edits before creating, opening or organizing projects. Nothing is discarded automatically.")
                             .font(.subheadline).foregroundStyle(.secondary)
                         Button("Save current setup") { perform { try onSave() } }
-                            .disabled(isImporting)
+                            .disabled(isImporting || isCommittingImport || isWorking || isPerformingOperation)
                             .accessibilityIdentifier("librarySaveCurrent")
                     }
                 }
@@ -64,6 +71,13 @@ struct ProjectLibraryView: View {
                         Button("Cancel import") { cancelImport() }
                             .frame(minHeight: 44)
                             .accessibilityIdentifier("cancelProjectImport")
+                    }
+                } else if isCommittingImport || isWorking || isPerformingOperation {
+                    Section {
+                        ProgressView("Saving project changes")
+                            .accessibilityIdentifier("projectLibraryProgress")
+                        Text("You can close Projects while the save finishes.")
+                            .font(.caption).foregroundStyle(.secondary)
                     }
                 } else if let importMessage {
                     Section {
@@ -115,7 +129,7 @@ struct ProjectLibraryView: View {
                                     Text("\(project.scene.lights.count) lights").font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Button("Restore") { change { try $0.restore(project.id) } }
+                                Button("Restore") { change(.restore(project.id)) }
                                     .buttonStyle(.borderless).disabled(!canMutate)
                                     .frame(minHeight: 44)
                                     .accessibilityLabel("Restore \(displayName(project))")
@@ -157,7 +171,7 @@ struct ProjectLibraryView: View {
                 Button("Delete project", role: .destructive) {
                     // The domain and store re-check identity, archive status and the
                     // current snapshot; a failed write leaves the displayed library intact.
-                    change { try $0.deleteArchived(project.id) }
+                    change(.deleteArchived(project.id))
                     pendingDeletion = nil
                 }
                 Button("Cancel", role: .cancel) { pendingDeletion = nil }
@@ -166,12 +180,10 @@ struct ProjectLibraryView: View {
             }
             .sheet(item: $naming) { action in
                 ProjectNameEditor(title: action.title, initial: action.initial) { name in
-                    try apply { next in
-                        switch action.kind {
-                        case .create: try next.create(name: name, scene: .portrait())
-                        case .rename(let id): try next.rename(id, to: name)
-                        case .duplicate(let id): try next.duplicate(id, name: name)
-                        }
+                    switch action.kind {
+                    case .create: return try apply(.create(name: name, scene: .portrait()))
+                    case .rename(let id): return try apply(.rename(id, name: name))
+                    case .duplicate(let id): return try apply(.duplicate(id, name: name))
                     }
                 }
             }
@@ -191,7 +203,7 @@ struct ProjectLibraryView: View {
                     .accessibilityIdentifier("activeProjectRow")
             } else {
                 Button {
-                    change { try $0.select(project.id) }
+                    change(.select(project.id))
                 } label: {
                     projectRowLabel(project, active: false)
                 }
@@ -208,7 +220,7 @@ struct ProjectLibraryView: View {
                                     initial: StudioDisplayName.display(project.name, maximumCharacters: ProjectLibrary.maximumNameLength - 5) + " copy")
                 }
                 .disabled((library?.projects.count ?? 0) >= ProjectLibrary.maximumProjects)
-                Button("Archive", systemImage: "archivebox") { change { try $0.archive(project.id) } }
+                Button("Archive", systemImage: "archivebox") { change(.archive(project.id)) }
                     .disabled(active)
             } label: {
                 Image(systemName: "ellipsis.circle").font(.title3)
@@ -239,10 +251,11 @@ struct ProjectLibraryView: View {
         .frame(minHeight: 44)
     }
 
-    private func apply(_ edit: (inout ProjectLibrary) throws -> Void) throws {
-        guard canMutate, var next = library else { throw ProjectLibraryError.staleSnapshot }
-        try edit(&next)
-        try onApply(next)
+    private func apply(_ command: ProjectLibraryCommand) throws -> Task<Void, Error> {
+        guard canMutate else { throw ProjectLibraryError.staleSnapshot }
+        // The parent reserves synchronously; validation and mutation happen on
+        // the worker, including a possibly large imported scene or legacy name.
+        return try onApply(command)
     }
 
     private func displayName(_ project: LightingProject) -> String {
@@ -258,13 +271,26 @@ struct ProjectLibraryView: View {
         displayName(project) + (displayName(project) == project.name ? "" : " (ID \(project.id.uuidString.prefix(8)))")
     }
 
-    private func change(_ edit: (inout ProjectLibrary) throws -> Void) {
-        perform { try apply(edit) }
+    private func change(_ command: ProjectLibraryCommand) {
+        perform { try apply(command) }
     }
 
-    private func perform(_ operation: () throws -> Void) {
-        do { try operation(); errorMessage = nil }
-        catch { errorMessage = error.localizedDescription }
+    private func perform(_ operation: () throws -> Task<Void, Error>) {
+        guard !isPerformingOperation else { return }
+        do {
+            let task = try operation() // Reserves the parent before spawning an observer.
+            let request = UUID()
+            operationRequest = request
+            isPerformingOperation = true
+            errorMessage = nil
+            Task { @MainActor in
+                defer { if operationRequest == request { isPerformingOperation = false } }
+                do { try await task.value }
+                catch {
+                    if acceptingImports, operationRequest == request { errorMessage = error.localizedDescription }
+                }
+            }
+        } catch { errorMessage = error.localizedDescription }
     }
 
     @MainActor private func importSelection(_ selection: Result<[URL], Error>) {
@@ -294,19 +320,33 @@ struct ProjectLibraryView: View {
         importMessage = nil
         errorMessage = nil
         importTask = Task { @MainActor in
+            defer {
+                if request == importRequest {
+                    isImporting = false
+                    isCommittingImport = false
+                    importTask = nil
+                }
+            }
             do {
                 let document = try await ProjectDocumentIO.read(from: url)
-                guard !Task.isCancelled, request == importRequest else { return }
-                // The actual apply path rechecks the current editor boundary and
-                // performs the store's optimistic transaction before adoption.
-                isImporting = false
-                try apply { next in
-                    try next.create(name: document.name, scene: document.scene)
+                guard !Task.isCancelled, acceptingImports, request == importRequest else { return }
+                guard !hasUnsavedChanges, library != nil, !isWorking,
+                      (library?.projects.count ?? ProjectLibrary.maximumProjects) < ProjectLibrary.maximumProjects else {
+                    throw ProjectLibraryError.staleSnapshot
                 }
+                // Reserve the parent while the provider-read gate is still
+                // closed. From here the commit belongs to Studio, and closing
+                // Projects must not turn a successful write into a cancellation.
+                let commit = try onApply(.create(name: document.name, scene: document.scene))
+                isCommittingImport = true
+                isImporting = false
+                try await commit.value
+                guard acceptingImports, request == importRequest else { return }
                 importMessage = "Imported “\(StudioDisplayName.label(document.name, fallback: "Unnamed project"))” as a new project."
                 importTask = nil
             } catch {
-                guard !Task.isCancelled, request == importRequest else { return }
+                guard acceptingImports, request == importRequest else { return }
+                if Task.isCancelled && !isCommittingImport { return }
                 isImporting = false
                 importTask = nil
                 errorMessage = "The project was not imported. Existing projects and studio edits have been kept. \(error.localizedDescription)"
@@ -315,6 +355,7 @@ struct ProjectLibraryView: View {
     }
 
     private func cancelImport() {
+        guard !isCommittingImport else { return }
         importRequest = UUID()
         importTask?.cancel()
         importTask = nil
@@ -324,15 +365,16 @@ struct ProjectLibraryView: View {
 
 private struct ProjectNameEditor: View {
     let title: String
-    let onSubmit: (String) throws -> Void
+    let onSubmit: (String) throws -> Task<Void, Error>
     private let initialDisplay: String
     private let requiresNewName: Bool
     @State private var name: String
     @State private var errorMessage: String?
+    @State private var isSubmitting = false
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focused: Bool
 
-    init(title: String, initial: String, onSubmit: @escaping (String) throws -> Void) {
+    init(title: String, initial: String, onSubmit: @escaping (String) throws -> Task<Void, Error>) {
         self.title = title
         self.onSubmit = onSubmit
         let bounded = StudioDisplayName.display(initial)
@@ -347,6 +389,7 @@ private struct ProjectNameEditor: View {
                 Section("Project name") {
                     HStack {
                         TextField("Name", text: boundedDraft).focused($focused)
+                            .disabled(isSubmitting)
                             .textInputAutocapitalization(.never).autocorrectionDisabled().submitLabel(.done)
                             .accessibilityIdentifier("projectNameInput")
                             .onSubmit { submit() }
@@ -358,6 +401,7 @@ private struct ProjectNameEditor: View {
                                     .frame(width: 44, height: 44)
                             }
                             .buttonStyle(.borderless).accessibilityLabel("Clear project name")
+                            .disabled(isSubmitting)
                             .accessibilityIdentifier("clearProjectName")
                         }
                     }
@@ -370,6 +414,11 @@ private struct ProjectNameEditor: View {
                         Text(errorMessage).font(.footnote).foregroundStyle(.red)
                             .accessibilityIdentifier("projectNameError")
                     }
+                    if isSubmitting {
+                        ProgressView("Saving project name")
+                        Text("This save finishes before closing. Your entered name stays here if saving fails.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
                 }
                 Section {
                     Button { submit() } label: {
@@ -377,7 +426,7 @@ private struct ProjectNameEditor: View {
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled((try? StudioDisplayName.newInput(name)) == nil ||
+                    .disabled(isSubmitting || (try? StudioDisplayName.newInput(name)) == nil ||
                               (requiresNewName && name == initialDisplay))
                     .accessibilityIdentifier("confirmProjectName")
                 }
@@ -385,21 +434,29 @@ private struct ProjectNameEditor: View {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(isSubmitting) }
              }
+            .interactiveDismissDisabled(isSubmitting)
             .onAppear { focused = true }
         }
     }
 
     private func submit() {
+        guard !isSubmitting else { return }
         guard !requiresNewName || name != initialDisplay else {
             errorMessage = "Enter a new name, or cancel to keep the complete saved name."
             return
         }
         do {
-            try onSubmit(StudioDisplayName.newInput(name))
+            let normalized = try StudioDisplayName.newInput(name)
+            let task = try onSubmit(normalized) // Reserves before a second submit can enqueue.
+            isSubmitting = true
             focused = false
-            dismiss()
+            Task { @MainActor in
+                do { try await task.value; dismiss() }
+                catch { errorMessage = error.localizedDescription }
+                isSubmitting = false
+            }
         } catch { errorMessage = error.localizedDescription }
     }
 

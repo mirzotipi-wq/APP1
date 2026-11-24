@@ -122,6 +122,9 @@ final class ManualRoomPlacementUITests: XCTestCase {
         let details = notes.exists
             ? "Type: \(notes.elementType)\nLabel: \(notes.label)\nValue: \(String(describing: notes.value))\nFrame: \(notes.frame)"
             : "roomNotesText does not exist"
+        // A cancelled test run may never finalize its xcresult attachments.
+        // Retain the actual observed accessibility content in the raw log too.
+        print("Room-notes-accessibility-details:\n\(details)")
         let content = XCTAttachment(string: details)
         content.name = "Room-notes-accessibility-details"; content.lifetime = .keepAlways; add(content)
         if includeFailure {
@@ -133,6 +136,13 @@ final class ManualRoomPlacementUITests: XCTestCase {
     }
 
     private func recordRoomFailure(in app: XCUIApplication) {
+        let matches = app.descendants(matching: .any).matching(identifier: "roomPlacementStatus")
+        let count = matches.count
+        print("Room-status-accessibility-match-count: \(count)")
+        for index in 0..<min(count, 4) {
+            let status = matches.element(boundBy: index)
+            print("Room-status-accessibility[\(index)]: type=\(status.elementType), label=\(String(reflecting: status.label)), value=\(String(describing: status.value)), frame=\(status.frame)")
+        }
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Room-status-failure"; screenshot.lifetime = .keepAlways; add(screenshot)
         let hierarchy = XCTAttachment(string: app.debugDescription)

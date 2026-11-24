@@ -55,6 +55,7 @@ final class PrecisionEditingUITests: XCTestCase {
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Studio-exact-light-intensity"; screenshot.lifetime = .keepAlways; add(screenshot)
         app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
         app.terminate()
         app.launch()
         XCTAssertTrue(app.buttons["recipes"].waitForExistence(timeout: 15))
@@ -87,6 +88,7 @@ final class PrecisionEditingUITests: XCTestCase {
         XCTAssertEqual(exact.value as? String, "73.125 mm")
         expectValue(app.sliders["cameraFocalLength"], equals: "73.125 mm")
         app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
         app.terminate()
         app.launch()
         XCTAssertTrue(camera.waitForExistence(timeout: 15))
@@ -121,6 +123,7 @@ final class PrecisionEditingUITests: XCTestCase {
         expectValue(app.sliders["emitterWidth"], equals: "1.237 m")
         XCTAssertEqual(exact.value as? String, "1.237 m")
         app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
         let open = app.buttons["openRoomPlacement"]
         reveal(open, in: app, towardBottom: false)
         open.tap()

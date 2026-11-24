@@ -1,6 +1,27 @@
 import XCTest
 
 extension XCTestCase {
+    /// Header and toolbar buttons can exist during asynchronous initial load.
+    /// Their enabled state is the editor's actual readiness boundary.
+    func waitForEnabledStudioControl(_ element: XCUIElement,
+                                     file: StaticString = #filePath, line: UInt = #line) {
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == true"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed, file: file, line: line)
+    }
+
+    /// Saving runs on the store actor. Wait for its actual committed receipt
+    /// before terminating the process or starting another editing workflow.
+    func waitForCommittedProject(in app: XCUIApplication,
+                                 file: StaticString = #filePath, line: UInt = #line) {
+        let status = app.staticTexts["projectStatus"]
+        let committed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND label == %@", "Saved locally"),
+            object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [committed], timeout: 10), .completed,
+                       "The save must finish before this workflow continues", file: file, line: line)
+    }
+
     /// Hittable alone is insufficient for SwiftUI scroll content: an offscreen
     /// row can report hittable while an event lands in a sticky bar or nowhere.
     /// Only for scrolling content, never fixed navigation or edit-history buttons.

@@ -4,14 +4,18 @@ import LightingCore
 /// Keep the unsaved editor untouched while choosing a specific archived record.
 /// The store rechecks the complete displayed record inside the write transaction.
 struct RecoveryCapacityView: View {
-    let onLoad: () throws -> [LightingProject]
-    let onReplace: (LightingProject) throws -> Void
+    let onLoad: () async throws -> [LightingProject]
+    let onReplace: (LightingProject) throws -> Task<Void, Error>
     @Environment(\.dismiss) private var dismiss
     @State private var candidates: [LightingProject] = []
     @State private var selected: LightingProject?
     @State private var confirmReplacement = false
     @State private var loaded = false
     @State private var message: String?
+    @State private var isLoading = false
+    @State private var isReplacing = false
+    @State private var loadRequest = UUID()
+    @State private var loadTask: Task<Void, Never>?
 
     var body: some View {
         NavigationStack {
@@ -27,10 +31,18 @@ struct RecoveryCapacityView: View {
                         Text(message).accessibilityIdentifier("recoveryCapacityMessage")
                         Button("Refresh archived projects") { reload() }
                             .frame(minHeight: 44)
+                            .disabled(isLoading || isReplacing)
                     }
                 }
                 if !loaded {
                     ProgressView("Opening archived projects")
+                } else if isReplacing {
+                    Section {
+                        ProgressView("Saving recovery project")
+                            .accessibilityIdentifier("recoverySaveProgress")
+                        Text("The confirmed replacement finishes before closing. If saving fails, your setup remains in the studio.")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
                 } else if candidates.isEmpty {
                     Section {
                         Text("No archived projects are available")
@@ -58,6 +70,7 @@ struct RecoveryCapacityView: View {
                                 .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
+                            .disabled(isLoading || isReplacing)
                             .accessibilityLabel("Replace archived \(displayName(project))")
                             .accessibilityValue(displayName(project) == project.name ? "" : "Project ID \(project.id.uuidString.prefix(8))")
                         }
@@ -68,7 +81,8 @@ struct RecoveryCapacityView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Keep editing") { dismiss() }
+                    Button("Keep editing") { cancelLoad(); dismiss() }
+                        .disabled(isReplacing)
                         .accessibilityIdentifier("cancelRecoveryReplacement")
                 }
             }
@@ -82,19 +96,41 @@ struct RecoveryCapacityView: View {
                 Text("Save your current setup as a new recovery project? If the library is still full, “\(confirmationName(project))” will be removed. That removal cannot be undone here. If space is available, the archived project is kept. Existing exported files are kept.")
             }
             .task { if !loaded { reload() } }
+            .onDisappear { cancelLoad() }
+            .interactiveDismissDisabled(isReplacing)
         }
     }
 
-    private func reload() {
-        do {
-            candidates = try onLoad()
-            loaded = true
-            message = nil
-        } catch {
-            candidates = []
-            loaded = true
-            message = "Archived projects could not be opened. Your current edits are still in the studio. \(error.localizedDescription)"
+    private func reload(preservingMessage: String? = nil) {
+        guard !isReplacing else { return }
+        cancelLoad()
+        let request = UUID()
+        loadRequest = request
+        isLoading = true
+        loadTask = Task { @MainActor in
+            defer {
+                if loadRequest == request { isLoading = false; loadTask = nil }
+            }
+            do {
+                let latest = try await onLoad()
+                guard !Task.isCancelled, request == loadRequest else { return }
+                candidates = latest
+                loaded = true
+                message = preservingMessage
+            } catch {
+                guard !Task.isCancelled, request == loadRequest else { return }
+                candidates = []
+                loaded = true
+                message = "Archived projects could not be opened. Your current edits are still in the studio. \(error.localizedDescription)"
+            }
         }
+    }
+
+    private func cancelLoad() {
+        loadRequest = UUID()
+        loadTask?.cancel()
+        loadTask = nil
+        isLoading = false
     }
 
     private func displayName(_ project: LightingProject) -> String {
@@ -107,12 +143,25 @@ struct RecoveryCapacityView: View {
     }
 
     private func replace(_ project: LightingProject) {
+        guard !isReplacing, !isLoading else { return }
         do {
-            try onReplace(project)
-            dismiss()
+            let task = try onReplace(project) // Parent reservation precedes the observer.
+            isReplacing = true
+            Task { @MainActor in
+                do {
+                    try await task.value
+                    isReplacing = false
+                    dismiss()
+                } catch {
+                    isReplacing = false
+                    selected = nil
+                    let failure = "No recovery project was saved. The archived project may have changed; review the current choices before trying again. Your edits remain in the studio. \(error.localizedDescription)"
+                    message = failure
+                    reload(preservingMessage: failure)
+                }
+            }
         } catch {
             selected = nil
-            reload()
             message = "No recovery project was saved. The archived project may have changed; review the current choices before trying again. Your edits remain in the studio. \(error.localizedDescription)"
         }
     }

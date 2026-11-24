@@ -23,6 +23,7 @@ final class ProjectLibraryUITests: XCTestCase {
         waitUntilEnabled(projects)
         waitUntilEnabled(app.buttons["saveProject"])
         app.buttons["saveProject"].tap()
+        waitUntilEnabled(projects)
         projects.tap()
         let activeRow = app.descendants(matching: .any)["activeProjectRow"].firstMatch
         XCTAssertTrue(activeRow.waitForExistence(timeout: 10))
@@ -94,6 +95,7 @@ final class ProjectLibraryUITests: XCTestCase {
         waitUntilEnabled(projects)
         waitUntilEnabled(app.buttons["saveProject"])
         app.buttons["saveProject"].tap()
+        waitUntilEnabled(projects)
         projects.tap()
         let create = app.buttons["newProject"]
         waitUntilEnabled(create)
@@ -296,7 +298,57 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["librarySaveCurrent"].tap()
         let create = app.buttons["newProject"]
         waitUntilEnabled(create)
+        // The first save replaces draft identity while Projects stays open.
+        // Its next command must use the refreshed owner, not a stale callback.
+        create.tap()
+        let name = app.textFields["projectNameInput"]
+        XCTAssertTrue(name.waitForExistence(timeout: 10))
+        app.buttons["clearProjectName"].tap()
+        name.tap()
+        name.typeText("After first save")
+        waitUntilEnabled(app.buttons["confirmProjectName"])
+        app.buttons["confirmProjectName"].tap()
+        waitUntilEnabled(app.buttons["Options for After first save"])
         app.buttons["Done"].tap()
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        waitForTitle("After first save", in: app)
+    }
+
+    func testLargeValidLibraryCanLoadSaveBrowseAndRelaunch() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEST_LARGE_LIBRARY"] = "1"
+        app.launch()
+        let save = app.buttons["saveProject"]
+        waitUntilEnabled(save)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        let add = app.buttons["addLightShortcut"]
+        revealStudioContent(add, in: app, towardBottom: false)
+        add.tap()
+        let light = app.buttons["light-Light 1"]
+        XCTAssertTrue(light.waitForExistence(timeout: 15))
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
+        save.tap()
+        let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "Saved locally"),
+                                              object: app.staticTexts["projectStatus"])
+        XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 15), .completed)
+        waitUntilEnabled(save)
+        let projects = app.buttons["openProjectLibrary"]
+        revealStudioContent(projects, in: app, towardBottom: false)
+        waitUntilEnabled(projects)
+        projects.tap()
+        waitUntilEnabled(app.buttons["newProject"])
+        app.buttons["Done"].tap()
+        XCTAssertTrue(light.exists)
+        app.terminate()
+        // Keep the fixture flag enabled: a new actor must not recreate or
+        // overwrite the existing large library during relaunch.
+        app.launch()
+        waitUntilEnabled(save)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        XCTAssertTrue(light.waitForExistence(timeout: 15))
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "light-")).count, 4)
     }
 }

@@ -124,7 +124,7 @@ final class LightingPlanExportUITests: XCTestCase {
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         app.launch()
         let export = app.buttons["exportLightingPlan"]
-        XCTAssertTrue(export.waitForExistence(timeout: 15))
+        waitForEnabledStudioControl(export)
         export.tap()
         assertFormatChooser(in: app, expectedLights: 3)
 

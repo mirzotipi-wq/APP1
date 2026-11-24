@@ -5,11 +5,12 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-# Keep the newest verification for a branch/PR; repeated pushes must not leave
-# an ever-growing queue of superseded native jobs. Cancellations remain visible.
+# Let main's active native suite finish and finalize its evidence. GitHub's
+# default single pending slot keeps only the newest queued revision, so frequent
+# pushes cannot create an ever-growing queue. PR/other branch runs still cancel.
 concurrency:
   group: keyfill-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 jobs:
   # Portable verification does not need the scarce macOS simulator runner.
   core:

@@ -21,7 +21,7 @@ final class StudioSmokeTests: XCTestCase {
     func testRecipeEditSaveAndReopen() throws {
         let app = makeApp()
         app.launch()
-        XCTAssertTrue(app.buttons["recipes"].waitForExistence(timeout: 15))
+        waitForEnabledStudioControl(app.buttons["recipes"])
         assertStatus("Unsaved changes", in: app)
         app.buttons["recipes"].tap()
         let closeRecipes = app.buttons["closeRecipes"]
@@ -94,6 +94,7 @@ final class StudioSmokeTests: XCTestCase {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Studio-optics"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)
@@ -131,6 +132,7 @@ final class StudioSmokeTests: XCTestCase {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Studio-camera"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)
@@ -203,6 +205,7 @@ final class StudioSmokeTests: XCTestCase {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Studio-test-card"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)

@@ -63,12 +63,16 @@ struct ManualRoomPlacementView: View {
     /// Keep the committed placement result ahead of the editable measurements.
     /// Invalid drafts never masquerade as the actual room geometry.
     private func placementSummary(_ plan: RoomPlacementPlan) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        let centerStatus = plan.outsideCount == 0
+            ? "All \(plan.points.count) center positions inside room"
+            : "\(plan.outsideCount) of \(plan.points.count) center positions outside room"
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Current measured layout").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-            Label(plan.outsideCount == 0 ? "All \(plan.points.count) center positions inside room" :
-                  "\(plan.outsideCount) of \(plan.points.count) center positions outside room",
+            Label(centerStatus,
                   systemImage: plan.outsideCount == 0 ? "checkmark.circle" : "exclamationmark.triangle")
                 .font(.headline)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(verbatim: centerStatus))
                 .accessibilityIdentifier("roomPlacementStatus")
             if !plan.modifierFootprints.isEmpty {
                 if plan.crossingModifierCount > 0 {
