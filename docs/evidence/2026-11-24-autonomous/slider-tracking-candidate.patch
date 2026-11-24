@@ -1,0 +1,884 @@
+diff --git a/App/StudioSlider.swift b/App/StudioSlider.swift
+--- a/App/StudioSlider.swift
++++ b/App/StudioSlider.swift
+@@ -1,34 +1,222 @@
+ import SwiftUI
+-
+-/// Captures history before a slider-origin value write, including platforms
+-/// that deliver that write before the editing-began callback. Exact-value
+-/// fields keep their original binding and remain discrete history commands.
++import UIKit
++
++struct StudioSliderAccessibility {
++    let label: String
++    let value: (Double) -> String
++    let identifier: String
++}
++
++/// Continuous preview with an explicit native touch boundary. Exact-value
++/// fields retain their original binding and remain separate history commands.
+ struct StudioSlider: View {
+     let value: Binding<Double>
+     let bounds: ClosedRange<Double>
+     let step: Double
++    let accessibility: StudioSliderAccessibility
+     let onEditingChanged: (Bool) -> Void
+ 
+     init(value: Binding<Double>, in bounds: ClosedRange<Double>, step: Double,
++         accessibility: StudioSliderAccessibility,
+          onEditingChanged: @escaping (Bool) -> Void) {
+         self.value = value
+         self.bounds = bounds
+         self.step = step
++        self.accessibility = accessibility
+         self.onEditingChanged = onEditingChanged
+     }
+ 
+     var body: some View {
+-        let editing = StudioSliderEditing(read: { value.wrappedValue },
+-                                          write: { value.wrappedValue = $0 },
+-                                          onEditingChanged: onEditingChanged)
+-        Slider(value: Binding(get: editing.read, set: editing.setValue),
+-               in: bounds, step: step, onEditingChanged: onEditingChanged)
+-            .accessibilityAdjustableAction { direction in
+-                switch direction {
+-                case .increment: editing.adjust(by: step, in: bounds)
+-                case .decrement: editing.adjust(by: -step, in: bounds)
+-                @unknown default: break
+-                }
+-            }
+-    }
+-}
++        StudioSliderControl(editing: StudioSliderEditing(read: { value.wrappedValue },
++                                                        write: { value.wrappedValue = $0 },
++                                                        onEditingChanged: onEditingChanged),
++                            bounds: bounds, step: step, accessibility: accessibility)
++            .frame(minHeight: 44)
++    }
++}
++
++private struct StudioSliderControl: UIViewRepresentable {
++    let editing: StudioSliderEditing
++    let bounds: ClosedRange<Double>
++    let step: Double
++    let accessibility: StudioSliderAccessibility
++    @Environment(\.isEnabled) private var isEnabled
++
++    func makeUIView(context: Context) -> StudioTrackingSlider {
++        StudioTrackingSlider(frame: .zero)
++    }
++
++    func updateUIView(_ uiView: StudioTrackingSlider, context: Context) {
++        uiView.configure(editing: editing, mapping: StudioSliderMapping(bounds: bounds, step: step),
++                         accessibility: accessibility, isEnabled: isEnabled)
++    }
++
++    static func dismantleUIView(_ uiView: StudioTrackingSlider, coordinator: ()) {
++        uiView.invalidate()
++    }
++}
++
++/// The same instance survives SwiftUI value updates. Touch sessions retain the
++/// binding captured at begin, including the caller's project/control generation.
++final class StudioTrackingSlider: UISlider {
++    private let editTracking = StudioSliderTracking()
++    private var token: StudioSliderTracking.Token?
++    private var editing: StudioSliderEditing?
++    private var mapping: StudioSliderMapping?
++    private var valueDescription: ((Double) -> String)?
++
++    override init(frame: CGRect) {
++        super.init(frame: frame)
++        minimumValue = 0
++        maximumValue = 1
++        isContinuous = true
++        addTarget(self, action: #selector(valueChanged), for: .valueChanged)
++    }
++
++    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
++
++    override var intrinsicContentSize: CGSize {
++        let size = super.intrinsicContentSize
++        return CGSize(width: size.width, height: max(44, size.height))
++    }
++
++    override var accessibilityValue: String? {
++        get {
++            guard let editing, let valueDescription else { return super.accessibilityValue }
++            return valueDescription(editing.read())
++        }
++        set { super.accessibilityValue = newValue }
++    }
++
++    func configure(editing: StudioSliderEditing, mapping: StudioSliderMapping?,
++                   accessibility: StudioSliderAccessibility, isEnabled: Bool) {
++        let enabled = isEnabled && mapping != nil && editing.read().isFinite
++        if !enabled, editTracking.isTracking { cancelTracking(with: nil) }
++        self.editing = editing
++        self.mapping = mapping
++        valueDescription = accessibility.value
++        self.isEnabled = enabled
++        synchronizeDisplay()
++        // These are the same localized label/readout and stable identifier
++        // supplied by each inspector. The native slider is their sole owner.
++        accessibilityLabel = accessibility.label
++        accessibilityIdentifier = accessibility.identifier
++    }
++
++    func invalidate() {
++        cancelTracking(with: nil)
++        editing = nil
++        mapping = nil
++        valueDescription = nil
++        isEnabled = false
++    }
++
++    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
++        guard isEnabled, let editing, let mapping else { return false }
++        token = editTracking.begin(editing: editing, mapping: mapping, displayedValue: value)
++        guard isEnabled, let token, token == editTracking.currentToken else {
++            finishTracking(finalDisplay: nil, reason: "invalidated begin")
++            return false
++        }
++        trace("begin")
++        let accepted = super.beginTracking(touch, with: event)
++        guard accepted else {
++            finishTracking(finalDisplay: nil, reason: "declined")
++            return false
++        }
++        guard isEnabled, self.token == token, editTracking.currentToken == token else {
++            cancelTracking(with: event)
++            return false
++        }
++        return true
++    }
++
++    override func continueTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
++        guard isEnabled, let token, editTracking.currentToken == token else {
++            cancelTracking(with: event)
++            return false
++        }
++        let continued = super.continueTracking(touch, with: event)
++        guard continued else {
++            finishTracking(finalDisplay: value, reason: "stopped")
++            return false
++        }
++        guard isEnabled, self.token == token, editTracking.currentToken == token else {
++            cancelTracking(with: event)
++            return false
++        }
++        return true
++    }
++
++    override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
++        // Let UIKit finish its own tracking work while this session still owns
++        // value events. Then publish the final value before ending history.
++        super.endTracking(touch, with: event)
++        finishTracking(finalDisplay: value, reason: "end")
++    }
++
++    override func cancelTracking(with event: UIEvent?) {
++        super.cancelTracking(with: event)
++        finishTracking(finalDisplay: nil, reason: "cancel")
++    }
++
++    override func didMoveToWindow() {
++        super.didMoveToWindow()
++        if window == nil, editTracking.isTracking { cancelTracking(with: nil) }
++    }
++
++    @objc private func valueChanged() {
++        guard let token else {
++            trace("ignored value outside tracking")
++            synchronizeDisplay()
++            return
++        }
++        editTracking.change(value, for: token)
++        trace("value")
++    }
++
++    private func finishTracking(finalDisplay: Float?, reason: String) {
++        guard let token = token ?? editTracking.currentToken else { return }
++        self.token = nil
++        editTracking.finish(token, finalDisplay: finalDisplay)
++        trace(reason)
++        synchronizeDisplay()
++    }
++
++    private func synchronizeDisplay() {
++        // Updating the thumb during a drag would feed a stepped or stale model
++        // value back into UIKit's active pointer tracking. Configure only the
++        // next session; the current one retains its original range and binding.
++        guard !editTracking.isTracking, let editing, let mapping,
++              let display = mapping.normalized(editing.read()), display != value else { return }
++        setValue(display, animated: false)
++    }
++
++    override func accessibilityIncrement() { adjustAccessibly(by: 1) }
++    override func accessibilityDecrement() { adjustAccessibly(by: -1) }
++
++    private func adjustAccessibly(by direction: Double) {
++        if editTracking.isTracking { cancelTracking(with: nil) }
++        // Ending the old edit can synchronously disable, remove or reconfigure
++        // this view. Read the current configuration only after that callback.
++        guard isEnabled, let editing, let mapping else { return }
++        // Exact Double arithmetic and one complete command per VoiceOver
++        // action, including imported values outside the usual quick range.
++        editing.adjust(by: direction * mapping.step, in: mapping.bounds)
++        trace(direction > 0 ? "accessibility increment" : "accessibility decrement")
++        synchronizeDisplay()
++    }
++
++    #if DEBUG
++    private var traceCount = 0
++    private func trace(_ event: String) {
++        guard traceCount < 64,
++              ProcessInfo.processInfo.arguments.contains("-ui-testing"),
++              ProcessInfo.processInfo.environment["KEYFILL_UI_TEST_SLIDER_TRACE"] == "1" else { return }
++        traceCount += 1
++        print("StudioSliderTrace \(traceCount) \(accessibilityIdentifier ?? "unidentified") \(event) display=\(value) model=\(editing?.read() ?? .nan) tracking=\(editTracking.isTracking) enabled=\(isEnabled)")
++    }
++    #else
++    private func trace(_ event: String) {}
++    #endif
++}
+diff --git a/App/StudioSliderTracking.swift b/App/StudioSliderTracking.swift
+new file mode 100644
+--- /dev/null
++++ b/App/StudioSliderTracking.swift
+@@ -0,0 +1,103 @@
++/// Maps the native control's normalized Float display to a stepped Double.
++/// Display conversion is one-way: configuring a control must never write its
++/// rounded Float value back into the scene.
++struct StudioSliderMapping: Equatable {
++    let bounds: ClosedRange<Double>
++    let step: Double
++
++    init?(bounds: ClosedRange<Double>, step: Double) {
++        guard bounds.lowerBound.isFinite, bounds.upperBound.isFinite,
++              bounds.upperBound > bounds.lowerBound,
++              (bounds.upperBound - bounds.lowerBound).isFinite,
++              step.isFinite, step > 0 else { return nil }
++        self.bounds = bounds
++        self.step = step
++    }
++
++    func normalized(_ value: Double) -> Float? {
++        guard value.isFinite else { return nil }
++        let clamped = min(bounds.upperBound, max(bounds.lowerBound, value))
++        return Float((clamped - bounds.lowerBound) / (bounds.upperBound - bounds.lowerBound))
++    }
++
++    func modelValue(_ normalized: Float) -> Double? {
++        guard normalized.isFinite else { return nil }
++        let position = min(1, max(0, Double(normalized)))
++        if position == 0 { return bounds.lowerBound }
++        if position == 1 { return bounds.upperBound }
++        let distance = position * (bounds.upperBound - bounds.lowerBound)
++        let increment = (distance / step).rounded()
++        let value = bounds.lowerBound + increment * step
++        guard value.isFinite else { return nil }
++        return min(bounds.upperBound, max(bounds.lowerBound, value))
++    }
++}
++
++/// One native touch sequence owns one frozen adapter and mapping. UIKit begins
++/// this session before dispatching value changes and finishes it after the
++/// final value has been read. A value event cannot create or reopen a session.
++/// The control owns this object on the main actor; it has no UI dependency so
++/// the transaction and exact-value invariants can be exercised independently.
++final class StudioSliderTracking {
++    struct Token: Equatable { fileprivate let sequence: UInt64 }
++
++    private struct Session {
++        let token: Token
++        let editing: StudioSliderEditing
++        let mapping: StudioSliderMapping
++        let initialValue: Double
++        let initialDisplay: Float
++        var lastDisplay: Float
++    }
++
++    private var sequence: UInt64 = 0
++    private var session: Session?
++    var isTracking: Bool { session != nil }
++    var currentToken: Token? { session?.token }
++
++    @discardableResult
++    func begin(editing: StudioSliderEditing, mapping: StudioSliderMapping,
++               displayedValue: Float) -> Token? {
++        if let previous = session { finish(previous.token) }
++        let initial = editing.read()
++        guard initial.isFinite, displayedValue.isFinite else { return nil }
++        sequence &+= 1
++        let token = Token(sequence: sequence)
++        session = Session(token: token, editing: editing, mapping: mapping,
++                          initialValue: initial, initialDisplay: displayedValue,
++                          lastDisplay: displayedValue)
++        editing.onEditingChanged(true)
++        return token
++    }
++
++    func change(_ displayedValue: Float, for token: Token) {
++        guard var current = session, current.token == token,
++              displayedValue.isFinite, displayedValue != current.lastDisplay else { return }
++        // Returning to the exact displayed starting position also restores an
++        // imported value that is not on the slider's grid. No Float round trip.
++        let next = displayedValue == current.initialDisplay
++            ? current.initialValue : current.mapping.modelValue(displayedValue)
++        guard let next, next.isFinite else { return }
++        current.lastDisplay = displayedValue
++        session = current
++        guard next != current.editing.read() else { return }
++        // A parent lifecycle boundary may have force-closed history while the
++        // native touch is still active. Reassert this captured owner, then
++        // recheck the token in case the callback cancelled or replaced it.
++        // Values arriving after finish never reach this owner callback.
++        current.editing.onEditingChanged(true)
++        guard session?.token == token else { return }
++        current.editing.write(next)
++    }
++
++    /// A completed touch supplies its final value before closing. Cancellation
++    /// or removal supplies nil and commits the last value already published,
++    /// matching the editor's existing owner-qualified end contract.
++    func finish(_ token: Token, finalDisplay: Float? = nil) {
++        guard session?.token == token else { return }
++        if let finalDisplay { change(finalDisplay, for: token) }
++        guard let current = session, current.token == token else { return }
++        session = nil // Close first: a delayed or reentrant event cannot reopen it.
++        current.editing.onEditingChanged(false)
++    }
++}
+diff --git a/App/CameraInspector.swift b/App/CameraInspector.swift
+--- a/App/CameraInspector.swift
++++ b/App/CameraInspector.swift
+@@ -60,18 +60,18 @@
+                         step: Double, unit: String, id: String) -> some View {
+         // Preserve valid imported positions even outside the initial editing range.
+         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
+-        let formatted = StudioNumericInput.formattedValue(value.wrappedValue, unit: unit, locale: locale)
+         return VStack(alignment: .leading, spacing: 4) {
+             HStack {
+                 Text(title).font(.subheadline.weight(.medium))
+                 Spacer()
+                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: domain)
+             }
+-            StudioSlider(value: value, in: bounds, step: step) { editing in
++            StudioSlider(value: value, in: bounds, step: step,
++                         accessibility: .init(label: title,
++                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: unit, locale: locale) },
++                                              identifier: id)) { editing in
+                 onEditingChanged(editing, id)
+             }
+-                .accessibilityLabel(title).accessibilityValue(formatted)
+-                .accessibilityIdentifier(id)
+         }
+     }
+ }
+diff --git a/App/NeutralCardInspector.swift b/App/NeutralCardInspector.swift
+--- a/App/NeutralCardInspector.swift
++++ b/App/NeutralCardInspector.swift
+@@ -106,18 +106,18 @@
+ 
+     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>,
+                         step: Double, unit: String, id: String) -> some View {
+-        let formatted = StudioNumericInput.formattedValue(value.wrappedValue, unit: unit, locale: locale)
+         return VStack(alignment: .leading, spacing: 4) {
+             HStack {
+                 Text(title).font(.subheadline.weight(.medium))
+                 Spacer()
+                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
+             }
+-            StudioSlider(value: value, in: range, step: step) { editing in
++            StudioSlider(value: value, in: range, step: step,
++                         accessibility: .init(label: title,
++                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: unit, locale: locale) },
++                                              identifier: id)) { editing in
+                 onEditingChanged(editing, id)
+             }
+-                .accessibilityLabel(title).accessibilityValue(formatted)
+-                .accessibilityIdentifier(id)
+         }
+     }
+ }
+diff --git a/App/OpticsInspector.swift b/App/OpticsInspector.swift
+--- a/App/OpticsInspector.swift
++++ b/App/OpticsInspector.swift
+@@ -88,12 +88,12 @@
+                 Spacer()
+                 PrecisionValueButton(title: title, unit: "m", id: id, value: value, range: domain)
+             }
+-            StudioSlider(value: value, in: limits, step: step) { editing in
++            StudioSlider(value: value, in: limits, step: step,
++                         accessibility: .init(label: title,
++                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: "m", locale: locale) },
++                                              identifier: id)) { editing in
+                 onEditingChanged(editing, id)
+             }
+-                .accessibilityLabel(title)
+-                .accessibilityValue(StudioNumericInput.formattedValue(actual, unit: "m", locale: locale))
+-                .accessibilityIdentifier(id)
+         }
+     }
+ }
+diff --git a/App/StudioView.swift b/App/StudioView.swift
+--- a/App/StudioView.swift
++++ b/App/StudioView.swift
+@@ -651,13 +651,13 @@
+                                      value: value, range: domain)
+                     .id(owner)
+             }
+-            StudioSlider(value: value, in: bounds, step: step) { [owner] editing in
++            StudioSlider(value: value, in: bounds, step: step,
++                         accessibility: .init(label: title,
++                                              value: { StudioNumericInput.formattedValue($0, unit: unit) },
++                                              identifier: fieldID)) { [owner] editing in
+                 editChanged(editing, owner: owner, generation: generation)
+             }
+                 .id(owner)
+-                .accessibilityLabel(title)
+-                .accessibilityValue(StudioNumericInput.formattedValue(value.wrappedValue, unit: unit))
+-                .accessibilityIdentifier(fieldID)
+         }
+     }
+ 
+diff --git a/NativeTests/StudioSliderTrackingTests.swift b/NativeTests/StudioSliderTrackingTests.swift
+new file mode 100644
+--- /dev/null
++++ b/NativeTests/StudioSliderTrackingTests.swift
+@@ -0,0 +1,307 @@
++import XCTest
++import LightingCore
++@testable import KeyAndFill
++
++final class StudioSliderTrackingTests: XCTestCase {
++    private final class Editor {
++        var scene = LightingScene.portrait()
++        var history = SceneEditHistory()
++        var generation = "A"
++        var begins = 0
++        var ends = 0
++        var writes = 0
++        var afterBegin: (() -> Void)?
++        var afterWrite: (() -> Void)?
++
++        init(width: Double = 0.6) {
++            scene.lights[0].optics = .init(kind: .rectangle, widthMeters: width)
++        }
++
++        var width: Double { scene.lights[0].effectiveOptics.widthMeters }
++
++        func adapter() -> StudioSliderEditing {
++            let captured = generation
++            return StudioSliderEditing(read: { self.width }, write: { value in
++                guard self.generation == captured else { return }
++                var optics = self.scene.lights[0].effectiveOptics
++                optics.widthMeters = value
++                guard optics.isValid, optics != self.scene.lights[0].effectiveOptics else { return }
++                if !self.history.isEditing { self.history.record(previous: self.scene) }
++                self.scene.lights[0].optics = optics
++                self.writes += 1
++                self.afterWrite?()
++            }, onEditingChanged: { editing in
++                if editing {
++                    guard self.generation == captured else { return }
++                    self.begins += 1
++                    self.history.begin(scene: self.scene, owner: captured + ".width")
++                    self.afterBegin?()
++                } else {
++                    self.ends += 1
++                    self.history.end(scene: self.scene, owner: captured + ".width")
++                }
++            })
++        }
++    }
++
++    private let mapping = StudioSliderMapping(bounds: 0.05...4, step: 0.05)!
++
++    func testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        var point = editor.scene
++        point.lights[0].optics?.kind = .point
++        editor.history.record(previous: point)
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(mapping.normalized(1.85)!, for: token)
++        tracking.finish(token, finalDisplay: mapping.normalized(1.3)!)
++        let edited = editor.scene
++        XCTAssertEqual(editor.width, 1.3, accuracy: 1e-12)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertEqual(editor.ends, 1)
++        XCTAssertEqual(editor.history.undo(current: edited), initial)
++        XCTAssertEqual(editor.history.undo(current: initial), point)
++        XCTAssertNil(editor.history.undo(current: point))
++        XCTAssertEqual(editor.history.redo(current: point), initial)
++        XCTAssertEqual(editor.history.redo(current: initial), edited)
++    }
++
++    func testValueAfterEndCannotReopenHistoryOrDisableUndo() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(mapping.normalized(1.85)!, for: token)
++        tracking.finish(token, finalDisplay: mapping.normalized(1.3)!)
++        let final = editor.scene
++        tracking.change(mapping.normalized(2)!, for: token)
++        tracking.finish(token, finalDisplay: 1)
++        XCTAssertEqual(editor.scene, final)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertTrue(editor.history.canUndo)
++        XCTAssertEqual(editor.ends, 1)
++        XCTAssertEqual(editor.history.undo(current: final), initial)
++    }
++
++    func testUnchangedThumbPreservesExactImportedDoubleAndRedo() throws {
++        for width in [0.723456789, 3.12345678912345, 0.05, 4] {
++            let editor = Editor(width: width), tracking = StudioSliderTracking()
++            let initial = editor.scene
++            editor.adapter().adjust(by: width == 0.05 ? 0.01 : -0.01, in: 0.05...10)
++            let previousEdit = editor.scene
++            editor.scene = try XCTUnwrap(editor.history.undo(current: previousEdit))
++            let writes = editor.writes
++            let display = mapping.normalized(editor.width)!
++            let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                                   displayedValue: display))
++            tracking.change(display, for: token)
++            tracking.finish(token, finalDisplay: display)
++            XCTAssertEqual(editor.scene, initial)
++            XCTAssertEqual(editor.width.bitPattern, width.bitPattern)
++            XCTAssertEqual(editor.writes, writes)
++            XCTAssertFalse(editor.history.isEditing)
++            XCTAssertEqual(editor.history.redo(current: initial), previousEdit)
++        }
++    }
++
++    func testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory() throws {
++        let editor = Editor(width: 0.723456789), tracking = StudioSliderTracking()
++        let initial = editor.scene, display = mapping.normalized(editor.width)!
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: display))
++        tracking.change(0.75, for: token)
++        XCTAssertNotEqual(editor.scene, initial)
++        tracking.finish(token, finalDisplay: display)
++        XCTAssertEqual(editor.scene, initial)
++        XCTAssertEqual(editor.width.bitPattern, 0.723456789.bitPattern)
++        XCTAssertFalse(editor.history.canUndo)
++        XCTAssertFalse(editor.history.isEditing)
++    }
++
++    func testNewSessionRetiresOldTokenAndKeepsGesturesSeparate() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let first = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(mapping.normalized(1.3)!, for: first)
++        let firstResult = editor.scene
++        let second = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                                displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(1, for: first)
++        tracking.finish(first, finalDisplay: 1)
++        XCTAssertEqual(editor.scene, firstResult)
++        XCTAssertTrue(editor.history.isEditing)
++        tracking.finish(second, finalDisplay: mapping.normalized(2)!)
++        XCTAssertEqual(editor.history.undo(current: editor.scene), firstResult)
++        XCTAssertEqual(editor.history.undo(current: firstResult), initial)
++        XCTAssertEqual(editor.ends, 2)
++    }
++
++    func testSessionRetainsOriginalWriterAndRange() throws {
++        let original = Editor(), replacement = Editor(width: 1.1)
++        let tracking = StudioSliderTracking()
++        let replacementInitial = replacement.scene
++        var latestAdapter = original.adapter()
++        var latestMapping = mapping
++        let token = try XCTUnwrap(tracking.begin(editing: latestAdapter, mapping: latestMapping,
++                                               displayedValue: latestMapping.normalized(original.width)!))
++        latestAdapter = replacement.adapter()
++        latestMapping = StudioSliderMapping(bounds: 0.1...2, step: 0.1)!
++        tracking.finish(token, finalDisplay: 1)
++        XCTAssertEqual(original.width, 4)
++        XCTAssertEqual(replacement.scene, replacementInitial)
++        let next = try XCTUnwrap(tracking.begin(editing: latestAdapter, mapping: latestMapping,
++                                              displayedValue: latestMapping.normalized(replacement.width)!))
++        tracking.finish(next, finalDisplay: 1)
++        XCTAssertEqual(replacement.width, 2)
++        XCTAssertEqual(original.width, 4)
++    }
++
++    func testCapturedGenerationCannotWriteOrCloseNewProjectEdit() throws {
++        let editor = Editor(), old = StudioSliderTracking(), current = StudioSliderTracking()
++        let oldToken = try XCTUnwrap(old.begin(editing: editor.adapter(), mapping: mapping,
++                                              displayedValue: mapping.normalized(editor.width)!))
++        old.change(mapping.normalized(1.3)!, for: oldToken)
++        editor.history.end(scene: editor.scene) // Existing lifecycle force-close.
++        editor.generation = "B"
++        editor.scene.lights[0].optics?.widthMeters = 1.2
++        editor.history.reset()
++        let newInitial = editor.scene
++        let currentToken = try XCTUnwrap(current.begin(editing: editor.adapter(), mapping: mapping,
++                                                       displayedValue: mapping.normalized(editor.width)!))
++        old.change(1, for: oldToken)
++        old.finish(oldToken, finalDisplay: 1)
++        XCTAssertEqual(editor.scene, newInitial)
++        XCTAssertTrue(editor.history.isEditing, "Old owner end must not close the new project")
++        current.finish(currentToken, finalDisplay: mapping.normalized(1.8)!)
++        XCTAssertEqual(editor.history.undo(current: editor.scene), newInitial)
++    }
++
++    func testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(mapping.normalized(1.3)!, for: token)
++        editor.history.end(scene: editor.scene)
++        let boundary = editor.scene
++        tracking.change(mapping.normalized(1.8)!, for: token)
++        tracking.finish(token, finalDisplay: mapping.normalized(2)!)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertEqual(editor.history.undo(current: editor.scene), boundary,
++                       "Values after an explicit parent boundary must not become per-write commands")
++        XCTAssertEqual(editor.history.undo(current: boundary), initial)
++        XCTAssertNil(editor.history.undo(current: initial))
++    }
++
++    func testAnotherOwnerCannotAbsorbAnActiveTokenValue() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(mapping.normalized(1.3)!, for: token)
++        let beforeOther = editor.scene
++        editor.history.begin(scene: editor.scene, owner: "A.height")
++        editor.scene.lights[0].optics?.heightMeters = 0.8
++        let otherResult = editor.scene
++        tracking.finish(token, finalDisplay: mapping.normalized(2)!)
++        XCTAssertEqual(editor.history.undo(current: editor.scene), otherResult,
++                       "The width write must not merge into the intervening height owner's command")
++        XCTAssertEqual(editor.history.undo(current: otherResult), beforeOther)
++    }
++
++    func testCancellationCommitsLastPublishedValueWithoutFloatRewrite() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        tracking.change(mapping.normalized(1.3)!, for: token)
++        let published = editor.scene
++        tracking.finish(token)
++        tracking.change(1, for: token)
++        XCTAssertEqual(editor.scene, published)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertEqual(editor.history.undo(current: published), initial)
++    }
++
++    func testInvalidSamplesDoNotWriteOrLeaveEditingOpen() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        for value in [Float.nan, .infinity, -.infinity] { tracking.change(value, for: token) }
++        tracking.finish(token, finalDisplay: .nan)
++        XCTAssertEqual(editor.scene, initial)
++        XCTAssertEqual(editor.writes, 0)
++        XCTAssertFalse(editor.history.canUndo)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertNil(tracking.begin(editing: editor.adapter(), mapping: mapping, displayedValue: .nan))
++    }
++
++    func testReentrantFinishDuringFinalWriteClosesOnlyOnce() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        editor.afterWrite = { tracking.finish(token) }
++        tracking.finish(token, finalDisplay: mapping.normalized(1.3)!)
++        XCTAssertFalse(tracking.isTracking)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertEqual(editor.ends, 1)
++        XCTAssertEqual(editor.history.undo(current: editor.scene), initial)
++    }
++
++    func testOwnerReassertionCannotWriteAfterReentrantCancellation() throws {
++        let editor = Editor(), tracking = StudioSliderTracking()
++        let initial = editor.scene
++        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
++                                               displayedValue: mapping.normalized(editor.width)!))
++        editor.afterBegin = { tracking.finish(token) }
++        tracking.change(mapping.normalized(1.3)!, for: token)
++        tracking.finish(token, finalDisplay: 1)
++        XCTAssertEqual(editor.scene, initial)
++        XCTAssertEqual(editor.writes, 0)
++        XCTAssertEqual(editor.ends, 1)
++        XCTAssertFalse(editor.history.isEditing)
++        XCTAssertFalse(editor.history.canUndo)
++    }
++
++    func testReentrantInvalidationAtBeginRejectsSubsequentValues() throws {
++        let tracking = StudioSliderTracking()
++        var value = 0.723456789, begins = 0, ends = 0
++        let adapter = StudioSliderEditing(read: { value }, write: { value = $0 }, onEditingChanged: { editing in
++            if editing {
++                begins += 1
++                if let token = tracking.currentToken { tracking.finish(token) }
++            } else { ends += 1 }
++        })
++        let token = try XCTUnwrap(tracking.begin(editing: adapter, mapping: mapping,
++                                               displayedValue: mapping.normalized(value)!))
++        tracking.change(1, for: token)
++        tracking.finish(token, finalDisplay: 1)
++        XCTAssertEqual(value, 0.723456789)
++        XCTAssertFalse(tracking.isTracking)
++        XCTAssertEqual(begins, 1)
++        XCTAssertEqual(ends, 1)
++    }
++
++    func testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps() throws {
++        XCTAssertNil(StudioSliderMapping(bounds: 1...1, step: 0.1))
++        XCTAssertNil(StudioSliderMapping(bounds: 0...1, step: 0))
++        XCTAssertNil(StudioSliderMapping(bounds: 0...1, step: .nan))
++        XCTAssertNil(StudioSliderMapping(bounds: 0...Double.infinity, step: 1))
++        XCTAssertNil(StudioSliderMapping(bounds: -Double.greatestFiniteMagnitude...Double.greatestFiniteMagnitude, step: 1))
++        XCTAssertNil(mapping.normalized(.nan))
++        XCTAssertNil(mapping.modelValue(.infinity))
++        XCTAssertEqual(mapping.modelValue(-1), 0.05)
++        XCTAssertEqual(mapping.modelValue(2), 4)
++        for value in [0.05, 0.6, 1.3, 1.85, 3.95, 4] {
++            XCTAssertEqual(try XCTUnwrap(mapping.modelValue(mapping.normalized(value)!)), value, accuracy: 1e-12)
++        }
++        let retained = try XCTUnwrap(StudioSliderMapping(bounds: -4...80.123456789, step: 0.05))
++        XCTAssertEqual(retained.normalized(80.123456789), 1)
++        XCTAssertEqual(retained.modelValue(1), 80.123456789)
++        let unrepresentableGrid = try XCTUnwrap(StudioSliderMapping(bounds: 0...1, step: .leastNonzeroMagnitude))
++        XCTAssertNil(unrepresentableGrid.modelValue(0.5))
++    }
++}
+diff --git a/NativeTests/StudioTrackingSliderTests.swift b/NativeTests/StudioTrackingSliderTests.swift
+new file mode 100644
+--- /dev/null
++++ b/NativeTests/StudioTrackingSliderTests.swift
+@@ -0,0 +1,83 @@
++import XCTest
++import UIKit
++import LightingCore
++@testable import KeyAndFill
++
++@MainActor
++final class StudioTrackingSliderTests: XCTestCase {
++    private let accessibility = StudioSliderAccessibility(
++        label: "Width", value: { StudioNumericInput.formattedValue($0, unit: "m", locale: Locale(identifier: "en_US")) },
++        identifier: "emitterWidth")
++
++    func testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble() {
++        var value = 0.72345678912345, writes = 0, begins = 0
++        let editing = StudioSliderEditing(read: { value }, write: { value = $0; writes += 1 },
++                                          onEditingChanged: { if $0 { begins += 1 } })
++        let slider = StudioTrackingSlider(frame: CGRect(x: 0, y: 0, width: 300, height: 44))
++        let mapping = StudioSliderMapping(bounds: 0.05...4, step: 0.05)!
++        slider.configure(editing: editing, mapping: mapping, accessibility: accessibility, isEnabled: true)
++        slider.configure(editing: editing, mapping: mapping, accessibility: accessibility, isEnabled: true)
++        slider.value = 0.9 // A stale native event outside a touch must restore the model's display.
++        slider.sendActions(for: .valueChanged)
++        XCTAssertEqual(value.bitPattern, 0.72345678912345.bitPattern)
++        XCTAssertEqual(writes, 0)
++        XCTAssertEqual(begins, 0)
++        XCTAssertTrue(slider.isContinuous)
++        XCTAssertEqual(slider.value, mapping.normalized(value))
++        XCTAssertEqual(slider.accessibilityLabel, accessibility.label)
++        XCTAssertEqual(slider.accessibilityValue, accessibility.value(value))
++        XCTAssertEqual(slider.accessibilityIdentifier, accessibility.identifier)
++        XCTAssertGreaterThanOrEqual(slider.intrinsicContentSize.height, 44)
++        value = 3.12345678912345
++        XCTAssertEqual(slider.accessibilityValue, accessibility.value(value),
++                       "The accessible readout must read the current Double before another configure")
++        slider.configure(editing: editing, mapping: mapping, accessibility: accessibility, isEnabled: true)
++        XCTAssertEqual(value.bitPattern, 3.12345678912345.bitPattern)
++        XCTAssertEqual(slider.value, mapping.normalized(value))
++        XCTAssertEqual(writes, 0)
++    }
++
++    func testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState() {
++        var value = 0.723456789, begins = 0, ends = 0
++        let editing = StudioSliderEditing(read: { value }, write: { value = $0 }, onEditingChanged: {
++            if $0 { begins += 1 } else { ends += 1 }
++        })
++        let slider = StudioTrackingSlider(frame: .zero)
++        let mapping = StudioSliderMapping(bounds: 0.05...4, step: 0.05)!
++        slider.configure(editing: editing, mapping: mapping, accessibility: accessibility, isEnabled: true)
++        slider.accessibilityIncrement()
++        XCTAssertEqual(value, 0.723456789 + 0.05)
++        XCTAssertEqual(slider.accessibilityValue, accessibility.value(value))
++        XCTAssertEqual(slider.accessibilityLabel, "Width")
++        XCTAssertEqual(slider.accessibilityIdentifier, "emitterWidth")
++        XCTAssertEqual(begins, 1)
++        XCTAssertEqual(ends, 1)
++        slider.configure(editing: editing, mapping: mapping, accessibility: accessibility, isEnabled: false)
++        slider.accessibilityDecrement()
++        XCTAssertEqual(value, 0.723456789 + 0.05)
++        XCTAssertEqual(begins, 1)
++        slider.configure(editing: editing, mapping: mapping, accessibility: accessibility, isEnabled: true)
++        value = 4
++        slider.accessibilityIncrement()
++        XCTAssertEqual(value, 4)
++        XCTAssertEqual(begins, 1)
++        slider.invalidate()
++        slider.accessibilityDecrement()
++        slider.sendActions(for: .valueChanged)
++        XCTAssertEqual(value, 4)
++        XCTAssertFalse(slider.isEnabled)
++    }
++
++    func testInvalidRangeDisablesNativeControlWithoutWritingTheModel() {
++        var value = 0.723456789, writes = 0
++        let editing = StudioSliderEditing(read: { value }, write: { value = $0; writes += 1 },
++                                          onEditingChanged: { _ in })
++        let slider = StudioTrackingSlider(frame: .zero)
++        slider.configure(editing: editing, mapping: nil, accessibility: accessibility, isEnabled: true)
++        slider.accessibilityIncrement()
++        slider.sendActions(for: .valueChanged)
++        XCTAssertEqual(value, 0.723456789)
++        XCTAssertEqual(writes, 0)
++        XCTAssertFalse(slider.isEnabled)
++    }
++}
+diff --git a/UITests/StudioSmokeTests.swift b/UITests/StudioSmokeTests.swift
+--- a/UITests/StudioSmokeTests.swift
++++ b/UITests/StudioSmokeTests.swift
+@@ -65,6 +65,7 @@
+ 
+     func testOpticsEditingUndoRedoAndRelaunch() throws {
+         let app = makeApp()
++        app.launchEnvironment["KEYFILL_UI_TEST_SLIDER_TRACE"] = "1"
+         app.launch()
+         assertStatus("Unsaved changes", in: app)
+         let emitter = app.buttons["emitterKind"]
+@@ -74,19 +75,27 @@
+         XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
+         let width = app.sliders["emitterWidth"]
+         revealStudioContent(width, in: app)
++        XCTAssertEqual(app.sliders.matching(identifier: "emitterWidth").count, 1,
++                       "One native slider must own the width accessibility metadata")
+         let initialWidth = try XCTUnwrap(width.value as? String)
++        XCTAssertEqual(width.label, "Width", "The native slider must retain its accessible label")
++        XCTAssertEqual(initialWidth, "0.6 m", "The native slider must expose the model readout, not a percentage")
+         width.adjust(toNormalizedSliderPosition: 0.5)
+         let editedWidth = try XCTUnwrap(width.value as? String)
+         XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
+ 
+         let undo = app.buttons["undo"]
+         reveal(undo, in: app, direction: false)
++        let state = XCTAttachment(string: "Initial width: \(initialWidth)\nEdited width: \(editedWidth)\nUndo enabled: \(undo.isEnabled)\nRedo enabled: \(app.buttons["redo"].isEnabled)\n\(width.debugDescription)\n\(undo.debugDescription)")
++        state.name = "Optics-tracking-before-undo"; state.lifetime = .keepAlways; add(state)
++        XCTAssertTrue(undo.isEnabled, "The completed width gesture must close its edit before Undo")
+         undo.tap()
+         XCTAssertEqual(emitter.value as? String, "Rectangular softbox", "Undo width, not the preceding emitter selection")
+         revealStudioContent(width, in: app)
+         XCTAssertEqual(width.value as? String, initialWidth)
+         let redo = app.buttons["redo"]
+         reveal(redo, in: app, direction: false)
++        XCTAssertTrue(redo.isEnabled, "Undo must complete and enable Redo")
+         redo.tap()
+         revealStudioContent(width, in: app)
+         XCTAssertEqual(width.value as? String, editedWidth)

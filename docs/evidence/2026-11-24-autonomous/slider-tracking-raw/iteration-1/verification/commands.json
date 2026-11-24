@@ -1,0 +1,103 @@
+[
+  {
+    "mode": "debug",
+    "command": [
+      "/workspace/scratch/73dcd6a65726/toolchains/swift-6.4.3-RELEASE-debian13/usr/bin/swiftc",
+      "-swift-version",
+      "5",
+      "-Onone",
+      "-DDEBUG",
+      "-enable-testing",
+      "-module-name",
+      "LightingCore",
+      "-emit-library",
+      "-emit-module",
+      "-emit-module-path",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug/LightingCore.swiftmodule",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/CameraFraming.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/Colorimetry.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/GuidedLighting.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/LightingPlan.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/LightingProjectDocument.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/LightingRecipe.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/PortraitHeadMesh.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/PortraitStudy.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/ProjectLibrary.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/ReferencePNG.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/ReferenceStudy.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/ReferenceTonalSummary.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/RoomPlacement.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/RoomPlacementText.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/Scene.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/SceneCodec.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/SceneEditHistory.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/SceneFileStore.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/StudioDisplayName.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/StudioNumericInput.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/StudioOptics.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/StudioSceneBounds.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/StudyValidationFixtures.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Sources/LightingCore/SurfacePhotometry.swift",
+      "-o",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug/libLightingCore.so"
+    ],
+    "exit": 0
+  },
+  {
+    "mode": "debug",
+    "command": [
+      "/workspace/scratch/73dcd6a65726/toolchains/swift-6.4.3-RELEASE-debian13/usr/bin/swiftc",
+      "-swift-version",
+      "5",
+      "-Onone",
+      "-DDEBUG",
+      "-enable-testing",
+      "-module-name",
+      "KeyAndFill",
+      "-emit-library",
+      "-emit-module",
+      "-emit-module-path",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug/KeyAndFill.swiftmodule",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/App/StudioSliderEditing.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/App/StudioSliderTracking.swift",
+      "-o",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug/libKeyAndFill.so"
+    ],
+    "exit": 0
+  },
+  {
+    "mode": "debug",
+    "command": [
+      "/workspace/scratch/73dcd6a65726/toolchains/swift-6.4.3-RELEASE-debian13/usr/bin/swiftc",
+      "-swift-version",
+      "5",
+      "-Onone",
+      "-DDEBUG",
+      "-I",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug",
+      "-L",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug",
+      "-lLightingCore",
+      "-lKeyAndFill",
+      "-Xlinker",
+      "-rpath",
+      "-Xlinker",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/NativeTests/StudioSliderEditingTests.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/Tests/LightingCoreTests/SceneEditHistoryTests.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/NativeTests/StudioSliderTrackingTests.swift",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/main.swift",
+      "-o",
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug/slider-tests"
+    ],
+    "exit": 0
+  },
+  {
+    "mode": "debug",
+    "command": [
+      "/workspace/scratch/73dcd6a65726/verification/slider-tracking-candidate/verification/build-debug/slider-tests"
+    ],
+    "exit": 1
+  }
+]

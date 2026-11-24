@@ -65,6 +65,7 @@ final class StudioSmokeTests: XCTestCase {
 
     func testOpticsEditingUndoRedoAndRelaunch() throws {
         let app = makeApp()
+        app.launchEnvironment["KEYFILL_UI_TEST_SLIDER_TRACE"] = "1"
         app.launch()
         assertStatus("Unsaved changes", in: app)
         let emitter = app.buttons["emitterKind"]
@@ -74,19 +75,27 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
         let width = app.sliders["emitterWidth"]
         revealStudioContent(width, in: app)
+        XCTAssertEqual(app.sliders.matching(identifier: "emitterWidth").count, 1,
+                       "One native slider must own the width accessibility metadata")
         let initialWidth = try XCTUnwrap(width.value as? String)
+        XCTAssertEqual(width.label, "Width", "The native slider must retain its accessible label")
+        XCTAssertEqual(initialWidth, "0.6 m", "The native slider must expose the model readout, not a percentage")
         width.adjust(toNormalizedSliderPosition: 0.5)
         let editedWidth = try XCTUnwrap(width.value as? String)
         XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
 
         let undo = app.buttons["undo"]
         reveal(undo, in: app, direction: false)
+        let state = XCTAttachment(string: "Initial width: \(initialWidth)\nEdited width: \(editedWidth)\nUndo enabled: \(undo.isEnabled)\nRedo enabled: \(app.buttons["redo"].isEnabled)\n\(width.debugDescription)\n\(undo.debugDescription)")
+        state.name = "Optics-tracking-before-undo"; state.lifetime = .keepAlways; add(state)
+        XCTAssertTrue(undo.isEnabled, "The completed width gesture must close its edit before Undo")
         undo.tap()
         XCTAssertEqual(emitter.value as? String, "Rectangular softbox", "Undo width, not the preceding emitter selection")
         revealStudioContent(width, in: app)
         XCTAssertEqual(width.value as? String, initialWidth)
         let redo = app.buttons["redo"]
         reveal(redo, in: app, direction: false)
+        XCTAssertTrue(redo.isEnabled, "Undo must complete and enable Redo")
         redo.tap()
         revealStudioContent(width, in: app)
         XCTAssertEqual(width.value as? String, editedWidth)

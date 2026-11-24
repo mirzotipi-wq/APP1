@@ -88,12 +88,12 @@ struct OpticsInspector: View {
                 Spacer()
                 PrecisionValueButton(title: title, unit: "m", id: id, value: value, range: domain)
             }
-            StudioSlider(value: value, in: limits, step: step) { editing in
+            StudioSlider(value: value, in: limits, step: step,
+                         accessibility: .init(label: title,
+                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: "m", locale: locale) },
+                                              identifier: id)) { editing in
                 onEditingChanged(editing, id)
             }
-                .accessibilityLabel(title)
-                .accessibilityValue(StudioNumericInput.formattedValue(actual, unit: "m", locale: locale))
-                .accessibilityIdentifier(id)
         }
     }
 }

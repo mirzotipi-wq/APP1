@@ -60,18 +60,18 @@ struct CameraInspector: View {
                         step: Double, unit: String, id: String) -> some View {
         // Preserve valid imported positions even outside the initial editing range.
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
-        let formatted = StudioNumericInput.formattedValue(value.wrappedValue, unit: unit, locale: locale)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: domain)
             }
-            StudioSlider(value: value, in: bounds, step: step) { editing in
+            StudioSlider(value: value, in: bounds, step: step,
+                         accessibility: .init(label: title,
+                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: unit, locale: locale) },
+                                              identifier: id)) { editing in
                 onEditingChanged(editing, id)
             }
-                .accessibilityLabel(title).accessibilityValue(formatted)
-                .accessibilityIdentifier(id)
         }
     }
 }

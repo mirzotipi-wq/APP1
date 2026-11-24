@@ -4,6 +4,7 @@ import LightingCore
 struct StudioView: View {
     @State private var scene = LightingScene.portrait()
     @State private var selected: UUID?
+    @State private var planNeedsLabelNotice = false
     @State private var saved: LightingScene?
     @State private var library: ProjectLibrary?
     @State private var showProjects = false
@@ -318,6 +319,27 @@ struct StudioView: View {
                 }
             }
             .frame(height: 280).clipShape(RoundedRectangle(cornerRadius: 16))
+            .onPreferenceChange(StudioPlanLabelNoticeKey.self) { planNeedsLabelNotice = $0 }
+            if mode == "Plan" {
+                if let light = scene.lights.first(where: { $0.id == selected }) {
+                    Text("Selected: " + lightDisplayName(light))
+                        .font(.caption.weight(.medium))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("planSelectedLight")
+                    if lightDisplayName(light) != light.name {
+                        Text("Light ID: \(light.id.uuidString.prefix(8))")
+                            .font(.caption2.monospaced()).foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                if planNeedsLabelNotice {
+                    Text("Use the light list below to select lights in crowded positions.")
+                        .font(.caption).foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("planLabelNotice")
+                }
+            }
             HStack {
                 Label("\(scene.lights.count) lights", systemImage: "lightbulb")
                 Spacer()
@@ -451,25 +473,9 @@ struct StudioView: View {
                         }
                     }
                 }.accessibilityHidden(true)
-                Text(grid.map { "OVERHEAD / " + StudioNumericInput.formattedValue($0.spacingMeters, unit: "M GRID") } ?? "OVERHEAD")
-                    .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
-                    .padding(10).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .allowsHitTesting(false)
-                marker("Subject", icon: "person.fill", color: .white, active: false)
-                    .position(point(scene.subject, w, h, scale, center))
-                Button { mode = "Camera" } label: {
-                    marker("Camera", icon: "camera.fill", color: .white, active: false)
-                }.buttonStyle(.plain).accessibilityLabel("Edit camera position and lens")
-                    .accessibilityIdentifier("editCamera")
-                    .position(point(scene.camera, w, h, scale, center))
-                ForEach(scene.lights) { light in
-                    Button(action: sceneAction { selected = light.id }) {
-                        marker(lightDisplayName(light), icon: lightIcon(light), color: amber, active: selected == light.id)
-                    }.buttonStyle(.plain)
-                        .accessibilityLabel("Select \(lightDisplayName(light)) on plan")
-                        .accessibilityAddTraits(selected == light.id ? .isSelected : [])
-                        .position(point(light.position, w, h, scale, center))
-                }
+                StudioPlanMarkers(
+                    markers: planMarkers(width: w, height: h, scale: scale, center: center),
+                    gridTitle: grid.map { "OVERHEAD / " + StudioNumericInput.formattedValue($0.spacingMeters, unit: "M GRID") } ?? "OVERHEAD")
             }
         }
     }
@@ -491,15 +497,24 @@ struct StudioView: View {
         return StudioDisplayName.label(light.name, fallback: fallback)
     }
 
-    private func marker(_ name: String, icon: String, color: Color, active: Bool) -> some View {
-        VStack(spacing: 3) {
-            Image(systemName: icon).font(.system(size: 17, weight: .medium)).foregroundStyle(color)
-                .frame(width: 34, height: 34)
-                .background(active ? amber.opacity(0.25) : Color.black.opacity(0.65), in: Circle())
-                .overlay { Circle().strokeBorder(color.opacity(active ? 1 : 0.45), lineWidth: active ? 2 : 1) }
-            Text(StudioDisplayName.display(name)).font(.caption2.weight(.semibold)).lineLimit(1).foregroundStyle(.white)
-                .padding(.horizontal, 4).background(.black.opacity(0.7), in: Capsule())
-        }.frame(minWidth: 44, maxWidth: 96, minHeight: 44)
+    private func planMarkers(width: CGFloat, height: CGFloat, scale: CGFloat, center: Position) -> [StudioPlanMarker] {
+        var markers = [
+            StudioPlanMarker(id: "subject", anchor: point(scene.subject, width, height, scale, center),
+                             name: "Subject", icon: "person.fill", color: .white, selected: false,
+                             accessibilityLabel: "Subject"),
+            StudioPlanMarker(id: "camera", anchor: point(scene.camera, width, height, scale, center),
+                             name: "Camera", icon: "camera.fill", color: .white, selected: false,
+                             accessibilityLabel: "Edit camera position and lens", accessibilityIdentifier: "editCamera",
+                             action: { mode = "Camera" })
+        ]
+        markers += scene.lights.map { light in
+            StudioPlanMarker(id: light.id.uuidString, anchor: point(light.position, width, height, scale, center),
+                             name: lightDisplayName(light), icon: lightIcon(light), color: amber,
+                             selected: selected == light.id,
+                             accessibilityLabel: "Select \(lightDisplayName(light)) on plan",
+                             action: sceneAction { selected = light.id })
+        }
+        return markers
     }
 
     private var meter: some View {
@@ -651,13 +666,13 @@ struct StudioView: View {
                                      value: value, range: domain)
                     .id(owner)
             }
-            StudioSlider(value: value, in: bounds, step: step) { [owner] editing in
+            StudioSlider(value: value, in: bounds, step: step,
+                         accessibility: .init(label: title,
+                                              value: { StudioNumericInput.formattedValue($0, unit: unit) },
+                                              identifier: fieldID)) { [owner] editing in
                 editChanged(editing, owner: owner, generation: generation)
             }
                 .id(owner)
-                .accessibilityLabel(title)
-                .accessibilityValue(StudioNumericInput.formattedValue(value.wrappedValue, unit: unit))
-                .accessibilityIdentifier(fieldID)
         }
     }
 

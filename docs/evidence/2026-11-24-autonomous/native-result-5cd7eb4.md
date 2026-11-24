@@ -83,6 +83,18 @@ No Swift source compiler error or native method failure appears in the complete 
 
 The unchanged actual optics UI assertion and all remaining UI/device gates stay open. Passing all eight slider helper methods again does not establish the full dragged-control contract that failed at source9. No source correction was made during this evidence collection.
 
+## Later completed UI observations
+
+At the lead's direct **12:09:57 UTC** observation, the library/reference job had completed **failure** at `11:59:12Z`, the room/precision job had completed **success** at `12:00:39Z`, and studio/export was running after starting at `11:59:17Z`. These are later observations, separate from the earlier 11:54 snapshot above.
+
+The complete [library/reference log](5cd7eb4-library-job.log), SHA-256 `6de7f161d9621dfda3a70e4d8e99415c2f6ceefec079927f89d6876a52405492`, records **8/9 scenarios passed**, with one failure and a 652.003-second final aggregate. The archived-delete method failed at its first `waitUntilEnabled(projects)` on line 95, before any save, project creation, archive or delete action. The original 15-second readiness expectation timed out. It is therefore a first-launch availability failure, not evidence that a delete transaction lost data. The other six library methods and both reference methods passed, including the new real large-library load/save/browse/relaunch scenario (68.003s), create/duplicate/rename/switch/relaunch, full-capacity recovery, stale-save copy/reload and the unsaved boundary.
+
+Root downloaded compact artifact `14917746890`, verified its exact 1,099,801-byte size and SHA-256 `98eaad6fa8f9c4c92cf6c6751ccde3654464c67ad024bf9ee0925b9aaafa5cb4`, and checked every ZIP entry's CRC. Bounded HTTP range reads from full artifact `14918136298` recovered the original 1,906,593-byte failure recording, SHA-256 `e4a54767f1ccdb77306830b222ce8bd0aa4bc716c213d962c3380bc79e619f22`, and its original debug description. Root inspected ten sampled video frames: the app progresses from installation/launch through Opening projects to the ordinary studio with a blue Projects action. The 196-byte debug attachment contains only the target query chain, without the button's enabled state or a complete accessibility hierarchy. These observations do not establish the native readiness failure's cause or prove when XCTest could access the visible control. No timeout was extended. A subsequent source change adds failure-only hierarchy/screenshot diagnostics while retaining the same readiness predicate and deadline.
+
+The complete [room/precision log](5cd7eb4-room-job.log), SHA-256 `86585847ff28089013c4349615455a76d1b22633f6dd61799a908bf301c26cf4`, records **5/5 scenarios passed**, zero failures, and a 712.389-second final aggregate. Both room workflows and all three exact camera/intensity/modifier workflows completed. This is actual source10 evidence for the new asynchronous save boundaries and room-status follow-up, while source8's earlier failure remains retained. No physical room/AR or device performance claim follows from these simulator methods.
+
+Across the two finalized UI shards, **13/14 scenarios passed**, with the remaining nine studio/export scenarios still running at this observation. The full workflow and persistence/regression gates remain incomplete; the native65 pass does not erase this real UI failure.
+
 ## Artifact metadata
 
 These values are from the actual source10 workflow artifact response. Every artifact below identifies source5cd7eb4. **No ZIP download, CRC check, application inspection or visual review is claimed for these artifacts in this packet.** The full64MB native artifact was not needed to establish the completed log results.

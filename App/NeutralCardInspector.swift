@@ -106,18 +106,18 @@ struct NeutralCardInspector: View {
 
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>,
                         step: Double, unit: String, id: String) -> some View {
-        let formatted = StudioNumericInput.formattedValue(value.wrappedValue, unit: unit, locale: locale)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
             }
-            StudioSlider(value: value, in: range, step: step) { editing in
+            StudioSlider(value: value, in: range, step: step,
+                         accessibility: .init(label: title,
+                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: unit, locale: locale) },
+                                              identifier: id)) { editing in
                 onEditingChanged(editing, id)
             }
-                .accessibilityLabel(title).accessibilityValue(formatted)
-                .accessibilityIdentifier(id)
         }
     }
 }

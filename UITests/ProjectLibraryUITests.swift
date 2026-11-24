@@ -4,7 +4,25 @@ final class ProjectLibraryUITests: XCTestCase {
     private func waitUntilEnabled(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
         let predicate = NSPredicate(format: "exists == true AND enabled == true")
         let ready = XCTNSPredicateExpectation(predicate: predicate, object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed, file: file, line: line)
+        let result = XCTWaiter.wait(for: [ready], timeout: 15)
+        if result != .completed {
+            // Preserve the real timeout. A cold-launch failure previously
+            // retained only a query chain, although the recording later showed
+            // the studio. Capture actual application state for the next failure.
+            let app = XCUIApplication()
+            let description = "Application state: \(app.state.rawValue)\n" +
+                "Requested element:\n\(String(element.debugDescription.prefix(8_000)))\n" +
+                "Application hierarchy:\n\(String(app.debugDescription.prefix(24_000)))"
+            let state = XCTAttachment(string: description)
+            state.name = "Project-control-readiness-failure"
+            state.lifetime = .keepAlways
+            add(state)
+            let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            screenshot.name = "Project-control-readiness-failure-screen"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+        }
+        XCTAssertEqual(result, .completed, file: file, line: line)
     }
 
     private func waitForTitle(_ title: String, in app: XCUIApplication) {
