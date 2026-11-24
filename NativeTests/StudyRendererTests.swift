@@ -48,4 +48,62 @@ final class StudyRendererTests: XCTestCase {
         let rendered = try await engine.render(scene: scene, width: 48)
         XCTAssertEqual(rendered.backend, .cpu)
     }
+
+    private final class CancellationProbe: @unchecked Sendable {
+        private let lock = NSLock()
+        private var remainingChecks = 5
+        private var enabled = true
+
+        func requested() -> Bool {
+            lock.lock()
+            defer { lock.unlock() }
+            guard enabled else { return false }
+            remainingChecks -= 1
+            return remainingChecks <= 0
+        }
+
+        func resume() {
+            lock.lock()
+            enabled = false
+            lock.unlock()
+        }
+    }
+
+    func testCancelledInitialParityValidationCanRetryMetalOnSameEngine() async throws {
+        guard MTLCreateSystemDefaultDevice() != nil else {
+            throw XCTSkip("No Metal device available; interrupted GPU validation cannot be verified.")
+        }
+        let cancellation = CancellationProbe()
+        let engine = StudyRenderEngine(cancellationRequested: { cancellation.requested() })
+        let scene = LightingScene.portrait()
+        do {
+            // Cancellation arrives after the initial request check, while the
+            // first CPU parity fixture is being evaluated. No timing sleep is
+            // needed, and the real backend is used on both attempts.
+            _ = try await engine.render(scene: scene, width: 48)
+            XCTFail("Interrupted validation must not return a frame")
+        } catch {
+            XCTAssertEqual(error as? StudyError, .cancelled)
+        }
+        cancellation.resume()
+        let rendered = try await engine.render(scene: scene, width: 48)
+        XCTAssertEqual(rendered.backend, .metal,
+                       "An interrupted validation must not permanently select CPU")
+        let reference = try ReferenceStudyRenderer.render(scene: scene, width: 48)
+        XCTAssertTrue(try XCTUnwrap(StudyParityMetrics(reference: reference, candidate: rendered.image)).passes)
+    }
+
+    func testAdditionalCancellationPredicateCannotSuppressTaskCancellation() async throws {
+        let engine = StudyRenderEngine(cancellationRequested: { false })
+        let operation = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await engine.render(scene: .portrait(), width: 48)
+        }
+        do {
+            _ = try await operation.value
+            XCTFail("A cancelled task must not publish a frame")
+        } catch {
+            XCTAssertEqual(error as? StudyError, .cancelled)
+        }
+    }
 }

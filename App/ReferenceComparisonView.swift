@@ -251,6 +251,7 @@ struct ReferenceComparisonView: View {
                 .accessibilityIdentifier("guidedRig-\(rig.id)")
             }
             if !candidates.isEmpty {
+                if let selectedRig { rigBasis(selectedRig.basis) }
                 Button("Preview current setup") { previewID = nil }.frame(minHeight: 44)
                     .disabled(previewID == nil)
                 Button("Apply selected rig") { confirmApply = true }
@@ -263,6 +264,42 @@ struct ReferenceComparisonView: View {
         }
         .padding(14)
         .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func rigBasis(_ basis: GuidedRigBasis) -> some View {
+        let observed = GuidedRigBasis.Cue.allCases.filter { basis.provenance(for: $0) == .userObservation }
+        let observedText = observed.map { cue in
+            let value: String
+            switch cue {
+            case .direction: value = basis.observations.direction.rawValue
+            case .softness: value = basis.observations.softness.rawValue
+            case .fill: value = basis.observations.fill.rawValue
+            case .rim: value = basis.observations.rim.rawValue
+            }
+            return "\(cue.rawValue): \(value)"
+        }.joined(separator: "; ")
+        let unknownText = basis.unobservedCues.map(\.rawValue).joined(separator: ", ")
+        let distance = StudioNumericInput.formattedValue(basis.keyDistanceMeters)
+        let azimuth = StudioNumericInput.formattedValue(basis.keyAzimuthDegrees)
+        let elevation = StudioNumericInput.formattedValue(basis.keyElevationDegrees)
+        let lux = StudioNumericInput.formattedValue(basis.keyIlluminanceLux)
+        let kelvin = StudioNumericInput.formattedValue(basis.lightKelvin)
+        return VStack(alignment: .leading, spacing: 6) {
+            Text("Basis for this rig").font(.subheadline.weight(.semibold))
+            Text("Your observations — \(observedText)")
+                .accessibilityIdentifier("guidedObservedCues")
+            Text(unknownText.isEmpty ? "No unknown cues. Exact geometry and output are still assumptions."
+                 : "Assumed cues — \(unknownText)")
+                .accessibilityIdentifier("guidedAssumedCues")
+            Text("Chosen starting values — \(distance) m key distance · \(azimuth)° side · \(elevation)° elevation · \(lux) lx key · \(kelvin) K")
+                .monospacedDigit()
+                .accessibilityIdentifier("guidedStartingValues")
+            Text("Angles are camera-relative. Exact geometry, power and color remain starting assumptions for every rig.")
+                .foregroundStyle(.secondary)
+        }
+        .font(.caption)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 4)
     }
 
     @MainActor private func load(_ item: PhotosPickerItem, token: UUID) {

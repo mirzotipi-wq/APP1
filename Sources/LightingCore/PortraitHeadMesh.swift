@@ -279,16 +279,38 @@ struct PortraitHeadMesh: Sendable {
     func hit(origin: SIMD3<Double>, direction: SIMD3<Double>,
              minimum: Double, maximum: Double) -> Hit? {
         var closest: Hit?
+        // Incident faces can report the same vertex/edge a few ulps apart.
+        // Keep the true minimum distance, but allow a front-facing outward
+        // face to supply its normal at that tie. Otherwise an exterior
+        // silhouette can select a back face and become an invalid pixel.
+        // The 1 pm floor is far below mesh dimensions; the ulp term keeps
+        // this a numerical tie at larger camera distances.
+        func tieTolerance(_ distance: Double) -> Double {
+            max(1e-12, 8 * distance.ulp)
+        }
+        func searchLimit() -> Double {
+            guard let closest else { return maximum }
+            return min(maximum, closest.distance + tieTolerance(closest.distance))
+        }
         func visit(_ index: Int) {
             let node = nodes[index]
-            let limit = closest?.distance ?? maximum
             guard node.bounds.intersects(origin: origin, direction: direction,
-                                          minimum: minimum, maximum: limit) else { return }
+                                          minimum: minimum, maximum: searchLimit()) else { return }
             if node.count > 0 {
                 for i in node.first..<(node.first + node.count) {
                     if let hit = triangles[i].hit(origin: origin, direction: direction,
-                                                   minimum: minimum, maximum: closest?.distance ?? maximum) {
-                        closest = hit
+                                                   minimum: minimum, maximum: searchLimit()) {
+                        guard let previous = closest else { closest = hit; continue }
+                        var surface = hit.distance < previous.distance ? hit : previous
+                        if abs(hit.distance - previous.distance) <= tieTolerance(previous.distance) {
+                            let previousFacesRay = headDot(previous.geometricNormal, -direction) > 0
+                            let hitFacesRay = headDot(hit.geometricNormal, -direction) > 0
+                            if previousFacesRay != hitFacesRay {
+                                surface = previousFacesRay ? previous : hit
+                            }
+                        }
+                        closest = .init(distance: min(previous.distance, hit.distance),
+                                        normal: surface.normal, geometricNormal: surface.geometricNormal)
                     }
                 }
             } else {

@@ -17,6 +17,7 @@ final class ReferenceComparisonUITests: XCTestCase {
         XCTAssertTrue(app.images["studyPreview"].waitForExistence(timeout: 30))
         XCTAssertFalse(app.images["importedReference"].exists)
         XCTAssertFalse(app.buttons["removeReference"].exists)
+        XCTAssertFalse(app.staticTexts["guidedObservedCues"].exists)
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.name = "Reference-comparison-empty"
         shot.lifetime = .keepAlways
@@ -40,10 +41,7 @@ final class ReferenceComparisonUITests: XCTestCase {
         open.tap()
         let build = app.buttons["buildReferenceRigs"]
         func reveal(_ element: XCUIElement, up: Bool = true) {
-            for _ in 0..<8 where !element.isHittable {
-                if up { app.swipeUp() } else { app.swipeDown() }
-            }
-            XCTAssertTrue(element.isHittable)
+            revealStudioContent(element, in: app, towardBottom: up)
         }
         reveal(build)
         build.tap()
@@ -60,7 +58,33 @@ final class ReferenceComparisonUITests: XCTestCase {
         let second = app.buttons["guidedRig-far"]
         reveal(second)
         XCTAssertTrue(second.exists)
+        second.tap()
+        let observed = app.staticTexts["guidedObservedCues"]
+        reveal(observed)
+        XCTAssertEqual(observed.label, "Your observations — Key side: Image left")
+        let assumed = app.staticTexts["guidedAssumedCues"]
+        reveal(assumed)
+        XCTAssertEqual(assumed.label, "Assumed cues — Shadow edges, Shadow fill, Rim highlight")
+        let startingValues = app.staticTexts["guidedStartingValues"]
+        reveal(startingValues)
+        let fartherValues = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label CONTAINS %@", "2.25 m key distance"), object: startingValues)
+        XCTAssertEqual(XCTWaiter.wait(for: [fartherValues], timeout: 5), .completed)
+        XCTAssertTrue(second.isSelected)
+        XCTAssertTrue(startingValues.label.contains("400 lx key"))
+        XCTAssertTrue(startingValues.label.contains("5600 K"))
+        reveal(first, up: false)
         first.tap()
+        reveal(startingValues)
+        let closerValues = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label CONTAINS %@", "1.5 m key distance"), object: startingValues)
+        XCTAssertEqual(XCTWaiter.wait(for: [closerValues], timeout: 5), .completed)
+        XCTAssertTrue(first.isSelected)
+        XCTAssertFalse(startingValues.label.contains("2.25 m key distance"))
+        let basisShot = XCTAttachment(screenshot: app.screenshot())
+        basisShot.name = "Reference-guided-basis"
+        basisShot.lifetime = .keepAlways
+        self.add(basisShot)
         let apply = app.buttons["applyReferenceRig"]
         reveal(apply)
         apply.tap()
@@ -71,7 +95,7 @@ final class ReferenceComparisonUITests: XCTestCase {
         confirm.tap()
         XCTAssertTrue(open.waitForExistence(timeout: 10))
         let undo = app.buttons["undo"]
-        reveal(undo, up: false)
+        XCTAssertTrue(undo.exists && undo.isHittable)
         XCTAssertTrue(undo.isEnabled)
         undo.tap()
         XCTAssertFalse(undo.isEnabled)

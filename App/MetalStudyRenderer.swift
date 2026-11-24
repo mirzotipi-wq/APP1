@@ -75,10 +75,16 @@ final class MetalStudyRenderer {
 
     /// Fail closed to CPU on any image-parity failure. Runtime gate is a numerical
     /// sanity check, not a measured performance or physical-rendering claim.
-    func validate() throws {
+    func validate(isCancelled: () -> Bool = { Task.isCancelled }) throws {
         for fixture in StudyValidationFixtures.all() {
-            let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 48)
+            guard !isCancelled() else { throw StudyError.cancelled }
+            let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 48,
+                                                               isCancelled: isCancelled)
+            guard !isCancelled() else { throw StudyError.cancelled }
             let candidate = try render(scene: fixture.scene, width: 48)
+            // A submitted GPU command must finish before its buffers can be
+            // read, but cancellation prevents starting another fixture.
+            guard !isCancelled() else { throw StudyError.cancelled }
             guard StudyParityMetrics(reference: reference, candidate: candidate)?.passes == true else {
                 throw MetalStudyError.parity
             }
@@ -104,41 +110,61 @@ actor StudyRenderEngine {
     static let shared = StudyRenderEngine()
     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
     private var state = State.unchecked
+    private let additionalCancellation: @Sendable () -> Bool
+
+    /// An additional cooperative cancellation source is useful to callers that
+    /// invalidate work independently of a task, and permits deterministic
+    /// lifecycle tests. It can never suppress actual task cancellation.
+    init(cancellationRequested: @escaping @Sendable () -> Bool = { false }) {
+        additionalCancellation = cancellationRequested
+    }
 
     func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {
-        guard !Task.isCancelled else { throw StudyError.cancelled }
+        let additionalCancellation = additionalCancellation
+        let isCancelled = { Task.isCancelled || additionalCancellation() }
+        guard !isCancelled() else { throw StudyError.cancelled }
         if subject == .bust {
-            // The mannequin has additional analytic geometry. Do not send it
+            // The mannequin has additional geometry. Do not send it
             // to the sphere-only Metal kernel or claim a validated GPU path.
             let image = try PortraitStudyRenderer.render(scene: scene, width: min(width, PortraitStudyRenderer.maximumWidth),
-                                                        isCancelled: { Task.isCancelled })
-            guard !Task.isCancelled else { throw StudyError.cancelled }
+                                                        isCancelled: isCancelled)
+            guard !isCancelled() else { throw StudyError.cancelled }
             return StudyRenderedFrame(image: image, backend: .cpu)
         }
         if case .unchecked = state {
-            if let device = MTLCreateSystemDefaultDevice(),
-               let renderer = try? MetalStudyRenderer(device: device),
-               (try? renderer.validate()) != nil {
+            do {
+                guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
+                let renderer = try MetalStudyRenderer(device: device)
+                try renderer.validate(isCancelled: isCancelled)
+                guard !isCancelled() else { throw StudyError.cancelled }
                 state = .metal(renderer)
-            } else {
+            } catch let error as StudyError where error == .cancelled {
+                // Incomplete validation is not a failed backend. Leave the
+                // state unchecked so the next live request can validate it.
+                throw error
+            } catch {
+                guard !isCancelled() else { throw StudyError.cancelled }
                 state = .cpu
             }
         }
-        guard !Task.isCancelled else { throw StudyError.cancelled }
+        guard !isCancelled() else { throw StudyError.cancelled }
         if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
             do {
                 let image = try renderer.render(scene: scene, width: width)
-                guard !Task.isCancelled else { throw StudyError.cancelled }
+                guard !isCancelled() else { throw StudyError.cancelled }
                 return StudyRenderedFrame(image: image, backend: .metal)
             } catch let error as StudyError {
                 // Validation/cancellation is a scene error, not a backend failure.
                 if error != .invalidComputeOutput { throw error }
+                guard !isCancelled() else { throw StudyError.cancelled }
                 state = .cpu
             } catch {
+                guard !isCancelled() else { throw StudyError.cancelled }
                 state = .cpu
             }
         }
-        let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: { Task.isCancelled })
+        let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
+        guard !isCancelled() else { throw StudyError.cancelled }
         return StudyRenderedFrame(image: image, backend: .cpu)
     }
 }

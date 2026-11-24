@@ -25,6 +25,51 @@ public struct ReferenceObservations: Equatable, Sendable {
     }
 }
 
+/// The basis of a manually guided candidate, not a confidence score. A person's
+/// categorical observation can guide a choice without measuring its geometry,
+/// source power or color. All numeric values here are starting assumptions.
+public struct GuidedRigBasis: Equatable, Sendable {
+    public enum Cue: String, CaseIterable, Sendable {
+        case direction = "Key side"
+        case softness = "Shadow edges"
+        case fill = "Shadow fill"
+        case rim = "Rim highlight"
+    }
+
+    public enum Provenance: Equatable, Sendable {
+        case userObservation, startingAssumption
+    }
+
+    /// The original, unmodified answers, including explicit "Not sure" values.
+    public let observations: ReferenceObservations
+    public let keyDistanceMeters: Double
+    /// Angles in the camera-relative basis; these are not room/world angles.
+    public let keyAzimuthDegrees: Double
+    public let keyElevationDegrees: Double
+    /// Incident illuminance on the camera-facing subject plane, not exposure.
+    public let keyIlluminanceLux: Double
+    /// The chosen ideal source temperature, not a recovered lamp spectrum.
+    public let lightKelvin: Double
+
+    /// Provenance applies only to the categorical cue, never to the exact
+    /// numeric implementation. For example, "Soft edges" does not measure a
+    /// softbox's dimensions, and "Restrained fill" does not measure a 4:1 ratio.
+    public func provenance(for cue: Cue) -> Provenance {
+        let unknown: Bool
+        switch cue {
+        case .direction: unknown = observations.direction == .unknown
+        case .softness: unknown = observations.softness == .unknown
+        case .fill: unknown = observations.fill == .unknown
+        case .rim: unknown = observations.rim == .unknown
+        }
+        return unknown ? .startingAssumption : .userObservation
+    }
+
+    public var unobservedCues: [Cue] {
+        Cue.allCases.filter { provenance(for: $0) == .startingAssumption }
+    }
+}
+
 public struct GuidedRig: Identifiable, Equatable, Sendable {
     public let id: String
     public let title: String
@@ -34,6 +79,7 @@ public struct GuidedRig: Identifiable, Equatable, Sendable {
     public let keyLux: Double
     /// Assumed ratio of the key and fill contributions, not the photograph's contrast.
     public let keyToFillRatio: Double?
+    public let basis: GuidedRigBasis
 }
 
 public enum GuidedRigError: Error, Equatable {
@@ -50,9 +96,12 @@ public enum GuidedLighting {
             throw GuidedRigError.unsupportedGeometry
         }
         let sign: Double = observations.direction == .left ? -1 : observations.direction == .right ? 1 : 0
-        let azimuth = sign * 35.0 * .pi / 180
-        let elevation = 25.0 * .pi / 180
+        let azimuthDegrees = sign * 35.0
+        let elevationDegrees = 25.0
+        let azimuth = azimuthDegrees * .pi / 180
+        let elevation = elevationDegrees * .pi / 180
         let targetLux = 400.0 // Deliberately chosen working scale; not inferred from the photo.
+        let lightKelvin = 5600.0
 
         func position(distance: Double, azimuth: Double, elevation: Double) -> Position {
             let r = distance * sin(azimuth) * cos(elevation)
@@ -64,7 +113,7 @@ public enum GuidedLighting {
         }
 
         func light(name: String, at position: Position, optics: LightOptics, target: Double) throws -> StudioLight {
-            var result = StudioLight(name: name, position: position, candela: 1, kelvin: 5600, optics: optics)
+            var result = StudioLight(name: name, position: position, candela: 1, kelvin: lightKelvin, optics: optics)
             guard position.y >= 0.1, result.isValid,
                   let unitLux = StudioPhotometry.illuminance(for: result, in: scene),
                   unitLux.isFinite, unitLux > 1e-9 else { throw GuidedRigError.unsupportedGeometry }
@@ -98,7 +147,7 @@ public enum GuidedLighting {
             }
             if observations.rim == .visible {
                 let rimPosition = position(distance: 1.8, azimuth: sign >= 0 ? -2.6 : 2.6, elevation: 0.35)
-                let rim = StudioLight(name: "Rim", position: rimPosition, candela: 450, kelvin: 5600,
+                let rim = StudioLight(name: "Rim", position: rimPosition, candela: 450, kelvin: lightKelvin,
                                       optics: .init(kind: .directional))
                 guard rimPosition.y >= 0.1, rim.isValid else { throw GuidedRigError.unsupportedGeometry }
                 lights.append(rim)
@@ -112,7 +161,11 @@ public enum GuidedLighting {
             let explanation = String(format: "%.2f m key · %@ · %@ · %@. Assumed 400 lx key and 5600 K; neither is measured from the image.",
                                      distance, modifierText, fillText, rimText)
             return GuidedRig(id: far ? "far" : "near", title: far ? "Farther starting rig" : "Closer starting rig",
-                             explanation: explanation, scene: valid, keyLux: targetLux, keyToFillRatio: ratio)
+                             explanation: explanation, scene: valid, keyLux: targetLux, keyToFillRatio: ratio,
+                             basis: GuidedRigBasis(observations: observations, keyDistanceMeters: distance,
+                                                   keyAzimuthDegrees: azimuthDegrees,
+                                                   keyElevationDegrees: elevationDegrees,
+                                                   keyIlluminanceLux: targetLux, lightKelvin: lightKelvin))
         }
     }
 }
