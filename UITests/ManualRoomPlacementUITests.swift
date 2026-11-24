@@ -57,11 +57,30 @@ final class ManualRoomPlacementUITests: XCTestCase {
             if result != .completed { recordRoomFailure(in: app) }
             XCTAssertEqual(result, .completed)
         }
+        func openNotes(containing text: String) -> XCUIElement {
+            let review = app.buttons["reviewRoomNotes"]
+            revealStudioContent(review, in: app, towardBottom: false)
+            review.tap()
+            XCTAssertTrue(app.buttons["closeRoomNotes"].waitForExistence(timeout: 10))
+            let notes = app.descendants(matching: .any)["roomNotesText"].firstMatch
+            let predicate = NSPredicate(format: "exists == true AND label CONTAINS %@", text)
+            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: notes)], timeout: 10), .completed)
+            XCTAssertTrue(app.buttons["shareRoomNotes"].exists)
+            XCTAssertTrue(app.buttons["shareRoomNotes"].isEnabled)
+            return notes
+        }
         setRoomMeasurement("2", id: "roomWidth", in: app)
         let error = app.descendants(matching: .any)["roomWidthError"].firstMatch
         XCTAssertTrue(error.waitForExistence(timeout: 5))
         XCTAssertTrue(error.label.contains("Current value is 6 m"))
         XCTAssertEqual(subject.value as? String, "3", "The rejected resize must not relocate the subject")
+        expect("All 5 center positions inside room")
+        // The review must use committed width 6, not the rejected width 2 draft.
+        let originalNotes = openNotes(containing: "Room width: 6.00 m")
+        XCTAssertFalse(originalNotes.label.contains("Room width: 2.00 m"))
+        app.buttons["closeRoomNotes"].tap()
+        XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 10))
+        XCTAssertEqual(subject.value as? String, "3")
         expect("All 5 center positions inside room")
         // Restore the committed value using the visible recovery action.
         let reset = app.buttons["roomWidthReset"]
@@ -81,6 +100,16 @@ final class ManualRoomPlacementUITests: XCTestCase {
         revealStudioContent(signed, in: app)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Room-precise-signed-coordinate"; attachment.lifetime = .keepAlways; add(attachment)
+        let currentNotes = openNotes(containing: "Room width: 2.00 m")
+        XCTAssertTrue(currentNotes.label.contains("X from left wall: -0.0001 m"))
+        XCTAssertFalse(currentNotes.label.contains("Room width: 6.00 m"))
+        let notesAttachment = XCTAttachment(screenshot: app.screenshot())
+        notesAttachment.name = "Room-measurement-notes"; notesAttachment.lifetime = .keepAlways; add(notesAttachment)
+        app.buttons["closeRoomNotes"].tap()
+        XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 10))
+        XCTAssertEqual(width.value as? String, "2")
+        XCTAssertEqual(subject.value as? String, "1.4999")
+        expect("3 of 5 center positions outside room")
         app.buttons["closeRoomPlacement"].tap()
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
         XCTAssertFalse(app.buttons["undo"].isEnabled)

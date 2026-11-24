@@ -38,21 +38,16 @@ struct ReferencePhoto: Transferable, Sendable {
     }
 
     static func read(file: URL) throws -> Self {
-        try Task.checkCancellation()
-        let info = try file.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
-        guard info.isRegularFile == true else { throw ReferenceImportError.unreadable }
-        if let size = info.fileSize, size > byteLimit { throw ReferenceImportError.tooLarge }
-        let handle = try FileHandle(forReadingFrom: file)
-        defer { try? handle.close() }
-        var data = Data()
-        while true {
-            try Task.checkCancellation()
-            let remaining = byteLimit + 1 - data.count
-            guard remaining > 0 else { throw ReferenceImportError.tooLarge }
-            guard let chunk = try handle.read(upToCount: min(256 * 1024, remaining)),
-                  !chunk.isEmpty else { break }
-            data.append(chunk)
-            guard data.count <= byteLimit else { throw ReferenceImportError.tooLarge }
+        let data: Data
+        do {
+            // The provider's temporary file is consumed inside its transfer
+            // callback. Validate the opened descriptor, not earlier path metadata.
+            data = try BoundedFileReader.read(from: file, maximumBytes: byteLimit)
+        } catch let error as BoundedFileReader.ReadError {
+            switch error {
+            case .tooLarge: throw ReferenceImportError.tooLarge
+            case .notRegularFile, .unreadable: throw ReferenceImportError.unreadable
+            }
         }
         return try sanitize(data)
     }

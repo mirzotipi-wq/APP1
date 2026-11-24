@@ -1,4 +1,3 @@
-import Darwin
 import Foundation
 import LightingCore
 import SwiftUI
@@ -102,41 +101,15 @@ enum ProjectDocumentIO {
     }
 
     private static func readCoordinatedFile(from url: URL, cancellation: ReadCancellation) throws -> LightingProjectDocument {
-        try cancellation.checkCancellation()
-        guard url.isFileURL else { throw ImportError.unreadable }
-        // O_NOFOLLOW rejects a final symbolic link even if it replaces the path
-        // while this operation starts. O_NONBLOCK avoids blocking on a FIFO
-        // before fstat can establish that the opened descriptor is regular.
-        let descriptor = url.withUnsafeFileSystemRepresentation { path -> Int32 in
-            guard let path else { return -1 }
-            return Darwin.open(path, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
-        }
-        guard descriptor >= 0 else {
-            if errno == ELOOP { throw ImportError.notRegularFile }
-            throw ImportError.unreadable
-        }
-        let handle = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
-        defer { try? handle.close() }
-        var info = stat()
-        guard Darwin.fstat(descriptor, &info) == 0 else { throw ImportError.unreadable }
-        guard info.st_mode & mode_t(S_IFMT) == mode_t(S_IFREG) else {
-            throw ImportError.notRegularFile
-        }
-        guard info.st_size >= 0 else { throw ImportError.unreadable }
-        guard info.st_size <= LightingProjectDocument.maximumBytes else {
-            throw LightingProjectDocument.DocumentError.tooLarge
-        }
-        var contents = Data()
-        contents.reserveCapacity(Int(info.st_size))
-        while true {
-            try cancellation.checkCancellation()
-            let remaining = LightingProjectDocument.maximumBytes + 1 - contents.count
-            guard remaining > 0 else { throw LightingProjectDocument.DocumentError.tooLarge }
-            guard let chunk = try handle.read(upToCount: min(64 * 1024, remaining)),
-                  !chunk.isEmpty else { break }
-            contents.append(chunk)
-            guard contents.count <= LightingProjectDocument.maximumBytes else {
-                throw LightingProjectDocument.DocumentError.tooLarge
+        let contents: Data
+        do {
+            contents = try BoundedFileReader.read(from: url, maximumBytes: LightingProjectDocument.maximumBytes,
+                                                  checkCancellation: cancellation.checkCancellation)
+        } catch let error as BoundedFileReader.ReadError {
+            switch error {
+            case .tooLarge: throw LightingProjectDocument.DocumentError.tooLarge
+            case .notRegularFile: throw ImportError.notRegularFile
+            case .unreadable: throw ImportError.unreadable
             }
         }
         try cancellation.checkCancellation()

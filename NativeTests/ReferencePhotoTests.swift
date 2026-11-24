@@ -62,6 +62,126 @@ final class ReferencePhotoTests: XCTestCase {
         XCTAssertEqual(image.width, result.width); XCTAssertEqual(image.height, result.height)
     }
 
+    /// Explicit RGBA image-data rows keep the fixture independent of Quartz's
+    /// drawing coordinate system. The first row is the encoded top row.
+    private func rgbaImage(width: Int, height: Int, bytes: [UInt8]) throws -> CGImage {
+        XCTAssertEqual(bytes.count, width * height * 4)
+        let provider = try XCTUnwrap(CGDataProvider(data: Data(bytes) as CFData))
+        let space = try XCTUnwrap(CGColorSpace(name: CGColorSpace.sRGB))
+        return try XCTUnwrap(CGImage(width: width, height: height, bitsPerComponent: 8,
+            bitsPerPixel: 32, bytesPerRow: width * 4, space: space,
+            bitmapInfo: CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Big.rawValue |
+                                    CGImageAlphaInfo.premultipliedLast.rawValue),
+            provider: provider, decode: nil, shouldInterpolate: false, intent: .defaultIntent))
+    }
+
+    private func encode(_ image: CGImage, as type: UTType, orientation: UInt32 = 1) throws -> Data {
+        let data = NSMutableData()
+        let destination = try XCTUnwrap(CGImageDestinationCreateWithData(
+            data as CFMutableData, type.identifier as CFString, 1, nil))
+        let properties: [CFString: Any] = [kCGImagePropertyOrientation: orientation,
+                                         kCGImageDestinationLossyCompressionQuality: 1.0]
+        CGImageDestinationAddImage(destination, image, properties as CFDictionary)
+        XCTAssertTrue(CGImageDestinationFinalize(destination))
+        return data as Data
+    }
+
+    /// CGImage cropping uses image-data rows, not view coordinates. Draw only
+    /// one cropped pixel so no vertical-context flip can alter the probe.
+    /// https://developer.apple.com/documentation/coregraphics/cgimage/cropping(to:)
+    private func pixel(_ image: CGImage, x: Int, y: Int) throws -> [UInt8] {
+        let crop = try XCTUnwrap(image.cropping(to: CGRect(x: CGFloat(x), y: CGFloat(y), width: 1, height: 1)))
+        let space = try XCTUnwrap(CGColorSpace(name: CGColorSpace.sRGB))
+        var bytes = [UInt8](repeating: 0, count: 4)
+        try bytes.withUnsafeMutableBytes { buffer in
+            let context = try XCTUnwrap(CGContext(data: buffer.baseAddress, width: 1, height: 1,
+                bitsPerComponent: 8, bytesPerRow: 4, space: space,
+                bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue))
+            context.draw(crop, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+        return bytes
+    }
+
+    func testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom() throws {
+        let width = 96, height = 64
+        // Encoded quadrants: A red, B green / C blue, D yellow.
+        let palette: [[UInt8]] = [[235, 35, 35, 255], [35, 220, 55, 255],
+                                  [35, 55, 230, 255], [235, 220, 35, 255]]
+        var bytes: [UInt8] = []
+        bytes.reserveCapacity(width * height * 4)
+        for y in 0..<height {
+            for x in 0..<width {
+                bytes += palette[(y < height / 2 ? 0 : 2) + (x < width / 2 ? 0 : 1)]
+            }
+        }
+        let image = try rgbaImage(width: width, height: height, bytes: bytes)
+        // Output TL/TR/BL/BR indices, derived from the EXIF display transforms:
+        // identity, horizontal mirror, 180°, vertical mirror, transpose,
+        // clockwise 90°, transverse, counter-clockwise 90°.
+        // These are ImageIO/EXIF values, not UIImage.Orientation raw values.
+        // https://developer.apple.com/documentation/imageio/cgimagepropertyorientation
+        let expected = [[0, 1, 2, 3], [1, 0, 3, 2], [3, 2, 1, 0], [2, 3, 0, 1],
+                        [0, 2, 1, 3], [2, 0, 3, 1], [3, 1, 2, 0], [1, 3, 0, 2]]
+        for orientation in 1...8 {
+            let encoded = try encode(image, as: .jpeg, orientation: UInt32(orientation))
+            let input = try XCTUnwrap(CGImageSourceCreateWithData(encoded as CFData, nil))
+            let properties = try XCTUnwrap(CGImageSourceCopyPropertiesAtIndex(input, 0, nil) as? [String: Any])
+            XCTAssertEqual((properties[kCGImagePropertyOrientation as String] as? NSNumber)?.intValue, orientation)
+            let sourcePixels = try XCTUnwrap(CGImageSourceCreateImageAtIndex(input, 0, nil))
+            XCTAssertEqual(sourcePixels.width, width)
+            XCTAssertEqual(sourcePixels.height, height)
+
+            let result = try ReferencePhoto.sanitize(encoded)
+            XCTAssertEqual(result.width, orientation >= 5 ? height : width, "EXIF \(orientation)")
+            XCTAssertEqual(result.height, orientation >= 5 ? width : height, "EXIF \(orientation)")
+            let output = try XCTUnwrap(CGImageSourceCreateWithData(result.png as CFData, nil))
+            let outputProperties = try XCTUnwrap(CGImageSourceCopyPropertiesAtIndex(output, 0, nil) as? [String: Any])
+            let outputOrientation = (outputProperties[kCGImagePropertyOrientation as String] as? NSNumber)?.intValue
+            XCTAssertTrue(outputOrientation == nil || outputOrientation == 1,
+                          "The transform must be baked into pixels, not left as EXIF \(orientation)")
+            let transformed = try XCTUnwrap(CGImageSourceCreateImageAtIndex(output, 0, nil))
+            for corner in 0..<4 {
+                let xPart = corner % 2 == 0 ? 1 : 3
+                let yPart = corner < 2 ? 1 : 3
+                let sourcePixel = try pixel(sourcePixels, x: width * xPart / 4, y: height * yPart / 4)
+                let actual = try pixel(transformed, x: result.width * xPart / 4, y: result.height * yPart / 4)
+                for channel in 0..<3 {
+                    // Probe well inside each quadrant, away from JPEG chroma
+                    // boundaries; tolerance permits codec/color-rounding noise.
+                    XCTAssertEqual(Double(sourcePixel[channel]), Double(palette[corner][channel]), accuracy: 24,
+                                   "Fixture pixels changed before orientation \(orientation)")
+                    XCTAssertEqual(Double(actual[channel]), Double(palette[expected[orientation - 1][corner]][channel]),
+                                   accuracy: 24, "EXIF \(orientation), corner \(corner), channel \(channel)")
+                }
+                XCTAssertEqual(actual[3], 255, "EXIF \(orientation) must preserve opaque pixels")
+            }
+        }
+    }
+
+    func testTransparentAndPartialAlphaRemainExcludedFromReferenceTones() throws {
+        let width = 64, height = 32
+        var bytes: [UInt8] = []
+        for _ in 0..<height {
+            for x in 0..<width {
+                // Opaque neutral gray, half-transparent white, transparent.
+                // Values are premultiplied to match the explicit image format.
+                bytes += x < 32 ? [128, 128, 128, 255] : x < 48 ? [128, 128, 128, 128] : [0, 0, 0, 0]
+            }
+        }
+        let image = try rgbaImage(width: width, height: height, bytes: bytes)
+        let result = try ReferencePhoto.sanitize(encode(image, as: .png))
+        let source = try XCTUnwrap(CGImageSourceCreateWithData(result.png as CFData, nil))
+        let derivative = try XCTUnwrap(CGImageSourceCreateImageAtIndex(source, 0, nil))
+        XCTAssertEqual(try pixel(derivative, x: 16, y: 16)[3], 255)
+        XCTAssertEqual(try pixel(derivative, x: 40, y: 16)[3], 128)
+        XCTAssertEqual(try pixel(derivative, x: 56, y: 16)[3], 0)
+        let tones = try XCTUnwrap(result.tones)
+        XCTAssertEqual(tones.sampleCount, 32 * height)
+        XCTAssertEqual(tones.medianGray, 128.0 / 255, accuracy: 0.01)
+        XCTAssertEqual(tones.deepShadowFraction, 0)
+        XCTAssertEqual(tones.brightHighlightFraction, 0)
+    }
+
     func testRejectsMalformedAndOversizedInputs() throws {
         XCTAssertThrowsError(try ReferencePhoto.sanitize(Data("not an image".utf8)))
         let truncated = try fixture(width: 200, height: 100)

@@ -7,7 +7,13 @@ struct ManualRoomPlacementView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @State private var room = ManualRoom()
+    @State private var notesSnapshot: NotesSnapshot?
     private var plan: RoomPlacementPlan? { try? RoomPlacementPlan(scene: scene, room: room) }
+
+    private struct NotesSnapshot: Identifiable {
+        let id = UUID()
+        let text: String
+    }
 
     var body: some View {
         NavigationStack {
@@ -48,6 +54,9 @@ struct ManualRoomPlacementView: View {
                     Button("Done") { dismiss() }.accessibilityIdentifier("closeRoomPlacement")
                 }
             }
+            .sheet(item: $notesSnapshot) { snapshot in
+                RoomPlacementNotesView(text: snapshot.text)
+            }
         }
     }
 
@@ -81,6 +90,18 @@ struct ManualRoomPlacementView: View {
                         .accessibilityIdentifier("modifierUnavailableStatus")
                 }
             }
+            Button {
+                // Capture the committed plan, never a partially typed field.
+                // The presented notes and share item use the same immutable text.
+                notesSnapshot = .init(text: plan.textSummary(locale: locale))
+            } label: {
+                Label("Review and share notes", systemImage: "doc.text")
+                    .frame(minHeight: 44)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityIdentifier("reviewRoomNotes")
+            Text("Notes use the current measured layout. Press Set to include a changed entry. Room measurements are not included in the saved lighting project.")
+                .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
@@ -210,6 +231,45 @@ struct ManualRoomPlacementView: View {
         case .subject: return "person.fill"
         case .camera: return "camera.fill"
         case .light: return "lightbulb.fill"
+        }
+    }
+}
+
+/// A read-only snapshot. Reviewing or sharing never saves or changes the room
+/// or studio, and dismissing this sheet leaves the measurement session open.
+private struct RoomPlacementNotesView: View {
+    let text: String
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("These notes contain the committed room measurements and calculated placement coordinates. They are separate from the saved lighting project.")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                        .accessibilityIdentifier("roomNotesScope")
+                    ShareLink(item: text, subject: Text("Key & Fill room measurements")) {
+                        Label("Share measurement notes", systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("shareRoomNotes")
+                    Text(text)
+                        .font(.body.monospacedDigit())
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("roomNotesText")
+                }
+                .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
+            }
+            .navigationTitle("Room notes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                        .accessibilityIdentifier("closeRoomNotes")
+                }
+            }
         }
     }
 }
