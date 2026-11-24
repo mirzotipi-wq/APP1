@@ -1,5 +1,53 @@
 # Development completion checkpoint — 2026-11-24
 
+## Source-five terminal UI: M01 complete at the exact accepted source
+
+**M01 is complete at `c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee` (tree `72fce94bd52240e4d47af2365b39041b4371e82e`); M02 is active and M03–M07 remain pending.** Root explicitly authorized this transition after specialist 100's independent assessment and the actual same-source **RecipeEditSaveAndReopen pass (65.729 s)** plus **CorruptProjectBlocksSavingAcrossRelaunch pass (20.527 s)**. Explicit library creation/rename/relaunch corroborates the direct first-save/edit/relaunch/corrupt-storage evidence. Existing **261 Debug / 261 Release / 28 Python, both unsigned builds and 84 native passes** complete the M01 gate set. All **100 assignments** and prior failed evidence remain recorded. This acceptance is source-specific, not release approval or acceptance of the current source-six working changes.
+
+| Source-five UI shard | Completed | Passed | Failed | Aggregate | Suite finished UTC |
+|---|---:|---:|---:|---:|---|
+| Studio/export `138757582390` | 11 | 10 | 1 | 717.581 s | 21:03:31.410 |
+| Library/reference `138757582423` | 11 | 7 | 4 | 736.002 s | 21:03:00.540 |
+| Room/precision `138757582503` | 5 | 5 | 0 | 938.700 s | 21:10:13.405 |
+| **Total** | **27** | **22** | **5** | — | No interrupted methods |
+
+**Studio/export:** both Export methods passed (**75.853 s, 118.820 s**). Eight of nine Studio methods passed: Camera **65.423**, Corrupt **20.527**, Meter **65.959**, Optics **71.678**, Recipe **65.729**, Guide **62.868**, Sphere **26.193**, Mannequin **72.514 seconds**. Optics retained the original actual **0.6 m gesture / Undo / Redo / save / relaunch** acceptance. Settings passed **Meters → Feet and reopening**, then the app died immediately opening 3D; **Fit and AR were not reached**. Root extracted the actual IPS: **SIGFPE / EXC_ARITHMETIC**, `CoreRE TextureManager::init → engine → MeshResource.generateBox → StudioGeometryResources.init:164 → RealityStudioSurface.Coordinator.init`, on the **Intel Macmini6,2 simulator**. This is a real observed simulator crash; no physical-device outcome is inferred. Finalized studio results are present.
+
+**Library/reference:** six of seven ProjectLibrary methods passed, including explicit creation/rename/relaunch and stale recovery. ArchivedDelete failed a stale keyboard-tutorial message-exists wait; actual later video shows the tutorial gone and keyboard ready. Both accessibility methods failed with **AX Code=-56**. GuidedRig failed during reveal on a **blank Reference sheet**, confirmed by actual PNG and empty-modal AX; BasicReference passed. These failures remain open despite successful direct M01 smoke.
+
+**Room/precision:** all five passed — Manual **109.876 s**, Resize **369.963 s**, Camera **94.674 s**, Intensity **115.243 s**, Modifier **248.945 s**. The typed notes query correction is now native-verified, including signed coordinates, save and relaunch.
+
+| Source-five UI artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Studio full 14965475368](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14965475368) | 125,763,975 | `e53799d6c86684f3cd0c1b8812a8756e7786f7f57c580805f2f47489ecd415b8` |
+| [Studio compact 14963878402](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14963878402) | 2,918,074 | `166a5af9a0092c16dbc470428624e2ac449547c18b2eaca16523a1c9099c833d` |
+| [Library full 14963783389](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14963783389) | 122,836,965 | `4d296b2ad0669b13fef4481eb4a45338c58b5b8570741d3fa6367c6fb52d3fb2` |
+| [Library compact 14963703429](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14963703429) | 1,230,167 | `2129135eb6cc4801134881ba02abee7f20c65f004c747e057f001cd602b0710b` |
+| [Room full 14965241557](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14965241557) | 7,092,115 | `fedc3aa6f58943c1840fe9713e1818ed23434e99d238d5e2450958e2936f4a60` |
+| [Room compact 14965760647](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14965760647) | 1,749,995 | `b3b3a9dd7bd4f6294390d2055eebf3033953be91f1fc449a09a3c800d29c64ef` |
+
+Root fetched the overall run API at **21:17:09 UTC**: head **c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee**, status **completed**, conclusion **failure**, `updated_at` **2026-11-24T21:11:39Z**. The field is recorded as the API update timestamp. **Source-six working fixes are unverified:** specialist 90's functional SceneKit compatibility path for the Intel 3D crash, and specialist 100's item-driven Reference sheet plus hittable-key/inactive-Continue readiness. Root independently viewed the blank Reference PNG and keyboard frames at 48 s/55 s and approved the two specialist-100 fixes. The functional SceneKit path is under independent specialist-100/root source review. All need their own native/UI CI. Preserve the accepted source-five M01 evidence while keeping rendering, accessibility, full editing/persistence and regression failures or missing evidence explicit. No future SHA, repair pass, calibrated/device/performance result or owner release approval is supplied.
+
+## Published source five — exact core/native receipt at 20:55:45 UTC
+
+Published source is **`c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee`**, tree **`72fce94bd52240e4d47af2365b39041b4371e82e`**, on `development/completion-final-20261124`. Actual distinct assignments remain **100**. The integration lead read the complete exact-source logs for [run 45481676220](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220).
+
+**Core job 138756184590 succeeded:** **261 Debug tests (8.417 s)**, **261 Release tests (4.537 s)**, zero failures, and **28 Python tests (0.276 s)** on Swift 6.4.2 Linux. Syntax, host kernel parity and precision checks passed. These elapsed times describe this run, not device performance.
+
+**Native job 138757582398 succeeded:** Debug `BUILD SUCCEEDED` at **20:38:24.695492 UTC**, Release at **20:41:19.948278 UTC**; **84/84 methods, zero failures**, **30.152 s test / 33.691 s overall**. Embedded `All tests` finished **20:51:58.757 UTC** and `TEST SUCCEEDED` appeared **20:54:05.508463 UTC**. The lead retrieved the complete **824,222-byte** log at **20:55:45 UTC**. **Current core_tests and native_build pass at this exact SHA.**
+
+| Source-five artifact | Bytes | Supplied SHA-256 |
+|---|---:|---|
+| [Native compact 14964800247](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14964800247) | 332,360 | `2ab7d60070f929bb857b6127f38947a2e0128e53c340fe83a8318a901f1e9a46` |
+| [Native full 14964536398](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14964536398) | 67,131,080 | `04793f5a8b9fc933f14457ce9e8b068944e98affdb8f585055e175453210d715` |
+| [Debug app 14963090474](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14963090474) | 3,449,252 | Not supplied in this observation |
+| [Release app 14964100309](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14964100309) | 3,996,810 | Not supplied in this observation |
+| [Core log 14961689083](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220/artifacts/14961689083) | 61,525 | Not supplied in this observation |
+
+All three **UI boot preflights and UI builds succeeded**. Studio `138757582390`, library `138757582423` and room `138757582503` are still running. **No UI method count or result is available in this receipt.** Infrastructure/build success does not establish interaction acceptance.
+
+Specialist 100 independently assessed **RecipeEditSaveAndReopen** and **CorruptProjectBlocksSavingAcrossRelaunch** as the direct M01 first-save/edit/relaunch/corrupt-storage smoke pair; explicit library creation provides corroboration. Evaluate actual passing results at this source against the existing M01 contract. Genuinely unrelated M03/M07 failures remain separate failed gates; a failure contradicting M01 requirements remains relevant. **Persistence smoke is unverified, M01 remains active and M02–M07 remain pending.** No milestone transition, complete UI regression, physical-device, calibrated or release acceptance is claimed. Earlier failures below are retained.
+
 ## Terminal source-four UI receipt — completed 20:14:48 UTC
 
 The run API reports [source-four workflow 45471239991](https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991) completed **failure at 20:14:48 UTC**; the lead retrieved these terminal results around **20:21–20:24 UTC**. Parent `293686f94900b123aeded15b238f21157f73f30d`, its tree, branch and **100 assignments** are unchanged. The source-specific **261 Debug / 261 Release / 28 Python, both builds and 84 native passes** remain valid. Source five is unpublished and unverified.
@@ -85,3 +133,6 @@ No configured commerce SKU, signed build, physical AR/Metal/performance evidence
 The cancellation, navigation and tutorial corrections have now received independent source review. The next integration also runs the three existing UI shards concurrently: the prior run left studio/export queued behind the other two. Selectors, assertions and per-step deadlines are unchanged.
 
 Next: record the actual integrated source and tree; inspect finalized `394e28e` UI outcomes without rewriting the earlier observation; then verify the new source with its applicable core, unsigned build, native and UI checks. Preserve failures and original acceptance requirements. Update current counts and provenance only from actual results. M01 cannot close until all of its gates pass at an applicable source.
+
+
+Source-six source review completed: specialist 90 implemented the Intel-simulator SceneKit compatibility path; specialist 100 and the integration lead independently approved renderer routing, existing camera/Fit behavior, current-scene selection mapping and cleanup. The selection recognizer waits only for camera pan/pinch/rotation and multi-tap gestures. The lead also reviewed the actual blank Reference screenshot and keyboard frames before approving the item-driven Reference sheet and keyboard-readiness correction. Native execution of these working changes remains pending.

@@ -37,10 +37,14 @@ extension XCTestCase {
                 return
             }
             proceed.tap()
-            let dismissed = XCTNSPredicateExpectation(
-                predicate: NSPredicate(format: "exists == false"), object: introduction)
-            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
-                           "The keyboard introduction must dismiss before typing", file: file, line: line)
+            // UIKit can retain the hidden introduction in its accessibility tree.
+            // Require the actual transition to usable typing keys instead.
+            let typingKey = app.keyboards.firstMatch.keys.firstMatch
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                (!proceed.exists || !proceed.isHittable) && typingKey.exists && typingKey.isHittable
+            }, object: typingKey)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+                           "The keyboard introduction must close and expose typing keys", file: file, line: line)
             return
         }
     }

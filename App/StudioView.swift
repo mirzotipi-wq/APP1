@@ -12,7 +12,6 @@ struct StudioView: View {
     @State private var saved: LightingScene?
     @State private var library: ProjectLibrary?
     @State private var showProjects = false
-    @State private var showReference = false
     @State private var showRoomPlacement = false
     @State private var showSubject = false
     @State private var renamingLightID: UUID?
@@ -74,10 +73,11 @@ struct StudioView: View {
         let generation: UUID
     }
 
-    private struct SceneContext {
+    private struct SceneContext: Identifiable {
         let scene: LightingScene
         let generation: UUID
         let owner = UUID().uuidString
+        var id: String { owner }
     }
 
     var body: some View {
@@ -165,12 +165,10 @@ struct StudioView: View {
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
             .sheet(isPresented: $showSettings) { StudioSettingsView(store: entitlements) }
-            .sheet(isPresented: $showReference) {
-                if let context = referenceContext {
-                    ReferenceComparisonView(scene: context.scene) { rig in
-                        guard acceptsSceneResult(from: context) else { return }
-                        replace(rig); mode = "Study"
-                    }
+            .sheet(item: $referenceContext) { context in
+                ReferenceComparisonView(scene: context.scene) { rig in
+                    guard acceptsSceneResult(from: context) else { return }
+                    replace(rig); mode = "Study"
                 }
             }
             .background {
@@ -427,7 +425,7 @@ struct StudioView: View {
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
             : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
         return layout {
-            Button { referenceContext = sceneContext(); showReference = true } label: {
+            Button { referenceContext = sceneContext() } label: {
                 Label("Reference photo", systemImage: "rectangle.split.2x1")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -1133,7 +1131,6 @@ struct StudioView: View {
     }
 
     private func dismissSceneEditors() {
-        showReference = false
         showRoomPlacement = false
         showSubject = false
         showArrangement = false

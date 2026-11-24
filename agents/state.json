@@ -12,7 +12,7 @@
         "native_build",
         "persistence_smoke"
       ],
-      "status": "active"
+      "status": "complete"
     },
     {
       "id": "M02",
@@ -25,7 +25,7 @@
         "rendering",
         "performance"
       ],
-      "status": "pending"
+      "status": "active"
     },
     {
       "id": "M03",
@@ -96,13 +96,13 @@
   "lastCycle": {
     "date": "2026-11-24",
     "baseRevision": "d816a95714c3a8b5cb31c16f0be73e3c4c1982c2",
-    "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
-    "testedRevision": "293686f94900b123aeded15b238f21157f73f30d",
-    "activeMilestone": "M01",
+    "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+    "testedRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+    "activeMilestone": "M02",
     "blockingGates": [
-      "core_tests",
-      "native_build",
-      "persistence_smoke"
+      "photometry",
+      "rendering",
+      "performance"
     ],
     "independentWork": [
       "5739346: direct overhead-plan editing, subject controls and light management.",
@@ -110,188 +110,277 @@
       "394e28e: editing transaction guards, geometry/export corrections and photo lifecycle handling; 261 Debug, 261 Release and 28 Python pass at this exact SHA. Four portable methods, one native PDF method covering four formats and one UI workflow were added; native/UI acceptance remains pending."
     ],
     "latestWorkflow": {
-      "id": 45471239991,
-      "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
+      "id": 45481676220,
+      "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
       "status": "completed",
       "conclusion": "failure",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991",
-      "observationWindowUTC": "Root retrieved terminal run/job evidence around 20:21\u201320:24 UTC on 2026-11-24; run API completion was 20:14:48 UTC.",
-      "core": "Completed success: 261/261 Debug, 261/261 Release and 28 Python.",
-      "simulator": "Completed success: both unsigned builds and 84/84 native tests, zero failures. Embedded tests finished 19:59:25.493 UTC; TEST SUCCEEDED at 20:04:40.311826 UTC.",
-      "uiLibraryReference": "Job 138721052557 failed before any app tests: xcodebuild could not find destination device beginning 12FC. Log artifact 14959187269 is 25,921 bytes; compact artifact 14960225473 is an empty 146-byte archive.",
-      "uiRoomPrecision": "Job 138721052348: 5 started, 4 completed, 3 passed, 1 failed, 1 interrupted by the 32-minute step deadline. Initial Manual, Precision Camera and Intensity passed; Resize notes query failed despite correct captured AX; Modifier remained active at deadline.",
-      "uiStudioExport": "Job 138721052210: 11 completed, 7 passed, 4 failed in 1190.143 s; suite finished 20:10:37.256 UTC. Export readiness failed before tapping Export/document generation; backup passed. Three studio label/value/Guide geometry failures preceded later functional assertions.",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220",
+      "observationWindowUTC": "Root supplied terminal source-five UI logs/artifacts; studio suite finished 21:03:31.410, library 21:03:00.540, room 21:10:13.405 UTC on 2026-11-24.",
+      "core": "Success: 261 Debug (8.417 s), 261 Release (4.537 s), zero failures; 28 Python (0.276 s); syntax, host kernel parity and precision checks passed.",
+      "simulator": "Completed success: unsigned Debug at 20:38:24.695492 UTC and Release at 20:41:19.948278 UTC; 84/84 native methods, zero failures, 30.152 s test/33.691 s overall. All tests finished 20:51:58.757 UTC; TEST SUCCEEDED 20:54:05.508463 UTC.",
+      "uiLibraryReference": "11 completed, 7 passed, 4 failed; 736.002 s. Explicit create/rename/relaunch and stale recovery passed. Failures: stale keyboard-tutorial wait, two AX Code=-56 errors, guided-rig reveal on an empty Reference modal.",
+      "uiRoomPrecision": "All 5 passed, 938.700 s, including exact notes/signed coordinates/save/relaunch.",
+      "uiStudioExport": "11 completed, 10 passed, 1 failed; 717.581 s. Both Export methods and eight Studio methods passed, including original optics gesture/Undo/Redo/save/relaunch. Settings passed unit checks then crashed opening 3D on Intel simulator; no Fit/AR acceptance.",
       "coreJob": {
-        "id": 138719440807,
+        "id": 138756184590,
         "status": "completed",
         "conclusion": "success",
         "debugTests": 261,
         "releaseTests": 261,
-        "pythonTests": 28
+        "pythonTests": 28,
+        "debugSeconds": 8.417,
+        "releaseSeconds": 4.537,
+        "pythonSeconds": 0.276
       },
-      "simulatorJobId": 138721052072,
-      "uiLibraryReferenceJobId": 138721052557,
-      "uiRoomPrecisionJobId": 138721052348,
-      "uiStudioExportJobId": 138721052210,
-      "rerunRequest": {
-        "observationWindowUTC": "2026-11-24 at 19:59 UTC",
-        "httpStatus": 403,
-        "started": false,
-        "reason": "Workflow was still running. No rerun started. Source five will run its own full CI; do not repeat the superseded source."
+      "simulatorJobId": 138757582398,
+      "uiLibraryReferenceJobId": 138757582423,
+      "uiRoomPrecisionJobId": 138757582503,
+      "uiStudioExportJobId": 138757582390,
+      "notes": "M01 accepted complete at exact c74c3b7 from core/build and direct Recipe/Corrupt persistence smoke, independently assessed by specialist 100 and authorized by root. M02 active; five UI failures remain. Source-six working fixes have no own CI acceptance.",
+      "statusNotes": "Root read the run API at 21:17:09 UTC: head c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee, status completed, conclusion failure, updated_at 2026-11-24T21:11:39Z.",
+      "uiSummary": {
+        "completed": 27,
+        "passed": 22,
+        "failed": 5,
+        "interrupted": 0
       },
-      "completedAtUTC": "2026-11-24T20:14:48Z",
-      "notes": "Terminal source-four workflow failed. Core 261/261/28 and native 84/build successes remain valid at this exact source. Library setup ran no app tests; no whole UI, 3D/AR or source-five acceptance."
+      "updatedAtUTC": "2026-11-24T21:11:39Z",
+      "retrievedAtUTC": "2026-11-24T21:17:09Z"
     },
     "verifiedPortableWorkflow": {
-      "id": 45471239991,
-      "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
-      "sourceTree": "abc3f7002714e97e9f33a42cda12eeecf213a510",
-      "scope": "historical",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991",
-      "jobId": 138719440807,
+      "id": 45481676220,
+      "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+      "sourceTree": "72fce94bd52240e4d47af2365b39041b4371e82e",
+      "scope": "current",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220",
+      "jobId": 138756184590,
       "core": "success",
       "debugTests": 261,
       "releaseTests": 261,
       "pythonTests": 28,
+      "failures": 0,
+      "debugSeconds": 8.417,
+      "releaseSeconds": 4.537,
+      "pythonSeconds": 0.276,
+      "environment": "Swift 6.4.2 Linux",
+      "syntax": "pass",
+      "hostKernelParity": "pass",
+      "precisionChecks": "pass",
+      "logArtifact": {
+        "id": 14961689083,
+        "sizeBytes": 61525
+      },
       "report": "docs/evidence/development-completion-2026-11-24.md",
-      "notes": "Exact parent-source result supplied by the lead; pending source-five changes have no own CI result."
+      "notes": "Root read the complete exact-source log. Timing is a test-run observation, not device performance."
     },
-    "nextPacket": "Publish the reviewed source-five corrections, record its actual SHA/tree and run its own full CI; the boot-preflight patch is present and root structural validation passed. Investigate source-four initial Export launch/readiness without claiming document-content failure. Preserve the 10-second notes deadline, exact values, original functional acceptance and all historical failures. Do not rerun superseded source four; its prior 403 request started no rerun. M01 remains active.",
-    "pendingSourceChanges": "Source five unpublished. Reviewed Settings explicit normalized Meters/Feet value and StudioSmoke exact Width in meters/four-coordinate-ULP Guide geometry fixes retain the 44-point target and original 0.6 m/Undo/Redo/save/relaunch acceptance. Specialist 90 completed typed app.staticTexts[\"roomNotesText\"] with label CONTAINS exact requested text, removing only a redundant exists lookup; root inspected actual AX and Text source. Same 10-second wait, committed 6.00 m/rejected 2.00 m, later signed coordinates, diagnostics, share, Undo, save and relaunch remain. Root-reviewed UI workflow adds a separate 10-minute simulator boot preflight before build-for-testing, with one fresh availability check and retained boot log/artifact. Boot is removed from the 32/40-minute UI execution step; 25-minute build and 85/93-minute total job deadlines and the native-unit job are unchanged. No new cases, retry loops, selectors or relaxed assertions. No source-five CI pass.",
+    "nextPacket": "Integrate the source-reviewed source-six corrections and run their native/UI CI. Verify 3D entry/Fit/AR fallback, Reference presentation and archived-delete keyboard entry without changing original assertions. Preserve both AX Code=-56 failures until independently resolved. M02 photometry/rendering/performance acceptance remains outstanding.",
+    "pendingSourceChanges": "Source-six working changes have completed independent source review: functional SceneKit orbit/Fit/selection on Intel simulators avoids RealityKit engine initialization; item-driven Reference presentation removes the blank-content path; keyboard readiness requires inactive Continue plus a hittable typing key at the original deadline. Root reviewed actual crash, blank modal and keyboard frames. Native/UI acceptance for these changes remains pending. M01 acceptance stays tied to c74c3b7.",
     "backlog": "agents/BACKLOG.md",
     "sessionLedger": "docs/evidence/development-completion-2026-11-24.md",
     "specialistsAssigned": 100,
     "verifiedNativeWorkflow": {
-      "id": 45471239991,
-      "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
-      "scope": "historical",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991",
-      "jobId": 138721052072,
+      "id": 45481676220,
+      "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+      "scope": "current",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220",
+      "jobId": 138757582398,
       "jobConclusion": "success",
       "workflowConclusion": "failure",
       "unsignedDebugBuild": "success",
       "unsignedReleaseBuild": "success",
+      "unsignedDebugBuildAtUTC": "2026-11-24T20:38:24.695492Z",
+      "unsignedReleaseBuildAtUTC": "2026-11-24T20:41:19.948278Z",
       "nativeTestsConclusion": "success",
       "nativeMethods": {
         "executed": 84,
         "passed": 84,
-        "failed": 0
+        "failed": 0,
+        "executionSeconds": 30.152,
+        "aggregateSeconds": 33.691
       },
-      "nativeTestsFinishedAtUTC": "2026-11-24T19:59:25.493Z",
-      "testSucceededAtUTC": "2026-11-24T20:04:40.311826Z",
-      "retrievedAtUTC": "2026-11-24T20:09:47Z",
+      "nativeTestsFinishedAtUTC": "2026-11-24T20:51:58.757Z",
+      "testSucceededAtUTC": "2026-11-24T20:54:05.508463Z",
+      "retrievedAtUTC": "2026-11-24T20:55:45Z",
+      "rawJobLogBytes": 824222,
+      "compactArtifact": {
+        "id": 14964800247,
+        "sizeBytes": 332360,
+        "sha256": "2ab7d60070f929bb857b6127f38947a2e0128e53c340fe83a8318a901f1e9a46"
+      },
+      "fullArtifact": {
+        "id": 14964536398,
+        "sizeBytes": 67131080,
+        "sha256": "04793f5a8b9fc933f14457ce9e8b068944e98affdb8f585055e175453210d715"
+      },
+      "debugAppArtifact": {
+        "id": 14963090474,
+        "sizeBytes": 3449252
+      },
+      "releaseAppArtifact": {
+        "id": 14964100309,
+        "sizeBytes": 3996810
+      },
       "libraryReferenceUI": {
-        "jobId": 138721052557,
-        "status": "completed",
-        "conclusion": "failure",
-        "appTestsExecuted": 0,
-        "failure": "Unable to find xcodebuild destination device beginning 12FC.",
-        "logArtifact": {
-          "id": 14959187269,
-          "sizeBytes": 25921
-        },
-        "compactArtifact": {
-          "id": 14960225473,
-          "sizeBytes": 146,
-          "contents": "Empty archive"
-        }
-      },
-      "roomPrecisionUI": {
-        "jobId": 138721052348,
-        "status": "completed",
-        "conclusion": "failure",
-        "started": 5,
-        "completed": 4,
-        "passed": 3,
-        "failed": 1,
-        "interrupted": 1,
-        "initialManual": {
-          "result": "pass",
-          "seconds": 168.203
-        },
-        "resizeNotes": {
-          "result": "fail",
-          "seconds": 281.671,
-          "failure": "Same 10-second expected-6 m notes query; actual AX contained correct committed 6 m / 7 m / 3 / 2 values."
-        },
-        "precisionCamera": {
-          "result": "pass",
-          "seconds": 177.107
-        },
-        "precisionIntensity": {
-          "result": "pass",
-          "seconds": 253.423
-        },
-        "precisionModifier": {
-          "result": "interrupted",
-          "notes": "Still making active queries at t302.51 s when the 32-minute step expired; no method result."
-        },
-        "stepStartedAtUTC": "2026-11-24T19:38:59.749Z",
-        "bootFinishedAtUTC": "2026-11-24T19:46:15.349Z",
-        "xcodeInvocationAtUTC": "2026-11-24T19:47:38.352Z",
-        "firstTestAtUTC": "2026-11-24T19:51:42.135Z",
-        "stepDeadlineAtUTC": "2026-11-24T20:11:13.633Z",
-        "startupBeforeFirstTest": "Approximately 12 minutes 42 seconds of the test-step budget.",
-        "finalizedXCResult": false,
-        "exportFailure": "Result-bundle Info.plist missing; no PNG exported. No overall suite result.",
-        "logArtifact": {
-          "id": 14961645218,
-          "sizeBytes": 29838,
-          "sha256": "b9d2f26b1a3757ecd6f4256eeb7a8846acc41f7b84cc546561a4066e0c3578e2"
-        }
-      },
-      "studioExportUI": {
-        "jobId": 138721052210,
+        "jobId": 138757582423,
         "status": "completed",
         "conclusion": "failure",
         "completed": 11,
         "passed": 7,
         "failed": 4,
-        "aggregateSeconds": 1190.143,
-        "suiteFinishedAtUTC": "2026-11-24T20:10:37.256Z",
-        "rawJobLogBytes": 505988,
+        "interrupted": 0,
+        "aggregateSeconds": 736.002,
+        "suiteFinishedAtUTC": "2026-11-24T21:03:00.540Z",
+        "projectLibrary": {
+          "completed": 7,
+          "passed": 6,
+          "failed": 1,
+          "passedCoverage": "Explicit creation, rename/relaunch and stale recovery included.",
+          "failure": "ArchivedDelete waited on a stale keyboard-tutorial message-exists condition; actual later video proves tutorial gone and keyboard ready."
+        },
+        "accessibility": {
+          "failed": 2,
+          "error": "AX Code=-56"
+        },
+        "reference": {
+          "basic": "pass",
+          "guidedRig": "fail: reveal attempted on blank Reference sheet; actual PNG and AX show an empty modal."
+        },
+        "fullArtifact": {
+          "id": 14963783389,
+          "sizeBytes": 122836965,
+          "sha256": "4d296b2ad0669b13fef4481eb4a45338c58b5b8570741d3fa6367c6fb52d3fb2"
+        },
+        "compactArtifact": {
+          "id": 14963703429,
+          "sizeBytes": 1230167,
+          "sha256": "2129135eb6cc4801134881ba02abee7f20c65f004c747e057f001cd602b0710b"
+        }
+      },
+      "roomPrecisionUI": {
+        "jobId": 138757582503,
+        "status": "completed",
+        "conclusion": "success",
+        "completed": 5,
+        "passed": 5,
+        "failed": 0,
+        "interrupted": 0,
+        "aggregateSeconds": 938.7,
+        "suiteFinishedAtUTC": "2026-11-24T21:10:13.405Z",
+        "methodSeconds": {
+          "Manual": 109.876,
+          "Resize": 369.963,
+          "Camera": 94.674,
+          "Intensity": 115.243,
+          "Modifier": 248.945
+        },
+        "notes": "Typed notes query fully verified by this native scenario, including signed coordinates/save/relaunch.",
+        "fullArtifact": {
+          "id": 14965241557,
+          "sizeBytes": 7092115,
+          "sha256": "fedc3aa6f58943c1840fe9713e1818ed23434e99d238d5e2450958e2936f4a60"
+        },
+        "compactArtifact": {
+          "id": 14965760647,
+          "sizeBytes": 1749995,
+          "sha256": "b3b3a9dd7bd4f6294390d2055eebf3033953be91f1fc449a09a3c800d29c64ef"
+        }
+      },
+      "studioExportUI": {
+        "jobId": 138757582390,
+        "status": "completed",
+        "conclusion": "failure",
+        "completed": 11,
+        "passed": 10,
+        "failed": 1,
+        "interrupted": 0,
+        "aggregateSeconds": 717.581,
+        "suiteFinishedAtUTC": "2026-11-24T21:03:31.410Z",
+        "finalizedXCResult": true,
         "export": {
           "completed": 2,
-          "passed": 1,
-          "failed": 1,
-          "backupPassedSeconds": 291.575,
-          "failure": "Initial launch/readiness common-wait timeout at line 127, 19:53:31.729 UTC, before tapping Export or generating a document. No document-content defect established.",
-          "readinessTrace": "Launch began 19:50:47 UTC; automation setup t66.47 s; idle wait t78.42; absent event-loop idle notification t138.50; exportLightingPlan exists/enabled predicate t140.71 and repeated exists queries before timeout."
+          "passed": 2,
+          "failed": 0,
+          "methodSeconds": [
+            75.853,
+            118.82
+          ]
         },
         "studio": {
           "completed": 9,
-          "passed": 6,
-          "failed": 3,
-          "aggregateSeconds": 725.602,
-          "failures": "Exact Width in meters label versus Width; empty Picker value versus Meters; Guide height 43.99999999999997 versus 44. Each failed before later functional checks.",
-          "passedCoverage": "Camera, Corrupt, Meter, Recipe, StudySphere and Mannequin."
+          "passed": 8,
+          "failed": 1,
+          "passedMethodsSeconds": {
+            "Camera": 65.423,
+            "CorruptProjectBlocksSavingAcrossRelaunch": 20.527,
+            "Meter": 65.959,
+            "Optics": 71.678,
+            "RecipeEditSaveAndReopen": 65.729,
+            "Guide": 62.868,
+            "Sphere": 26.193,
+            "Mannequin": 72.514
+          },
+          "opticsAcceptance": "Original actual 0.6 m gesture, Undo/Redo/save/relaunch passed.",
+          "settingsFailure": "Meters to Feet and reopen checks passed, then the app died immediately opening 3D; Fit/AR assertions were not reached."
         },
-        "finalizedXCResult": true,
-        "artifactUpload": "success",
+        "crash": {
+          "evidence": "Actual IPS extracted by root",
+          "exception": "SIGFPE / EXC_ARITHMETIC",
+          "stack": "CoreRE TextureManager::init -> engine -> MeshResource.generateBox -> StudioGeometryResources.init:164 -> RealityStudioSurface.Coordinator.init",
+          "environment": "Intel simulator, Macmini6,2",
+          "scope": "Observed on this simulator; no physical-device failure or Fit/AR acceptance inferred."
+        },
         "fullArtifact": {
-          "id": 14960681991,
-          "sizeBytes": 143497773,
-          "sha256": "2be8fcbe6f0735570a100de82145e1213058154b8f3bb97fbe00054c764e06c9"
+          "id": 14965475368,
+          "sizeBytes": 125763975,
+          "sha256": "e53799d6c86684f3cd0c1b8812a8756e7786f7f57c580805f2f47489ecd415b8"
         },
         "compactArtifact": {
-          "id": 14960786780,
-          "sizeBytes": 2248019,
-          "sha256": "44668388b75e4a0e9a8d8e7b525e5a376ce03996c38f0f2d67a4c7572fa5394e"
-        },
-        "notes": "No 3D/AR acceptance; actual UI assertions failed before those later checks. The initial Export launch/readiness failure is under investigation, not evidence of failed document content."
+          "id": 14963878402,
+          "sizeBytes": 2918074,
+          "sha256": "166a5af9a0092c16dbc470428624e2ac449547c18b2eaca16523a1c9099c833d"
+        }
       },
       "report": "docs/evidence/development-completion-2026-11-24.md",
-      "notes": "Actual source-four core/build/native successes remain separate from terminal failed/incomplete UI. Studio artifacts finalized; room did not finalize and library ran no app tests. Source five remains unpublished and unverified.",
-      "workflowCompletedAtUTC": "2026-11-24T20:14:48Z",
-      "uiObservationWindowUTC": "Root retrieval around 20:21\u201320:24 UTC on 2026-11-24"
+      "notes": "Exact source-five core/build/native and direct persistence smoke support M01 completion. UI 22/27 with five retained failures; no complete regression, 3D/Fit/AR or source-six acceptance.",
+      "priorUIObservation": {
+        "studioExportUI": {
+          "jobId": 138757582390,
+          "status": "in_progress",
+          "bootPreflight": "success",
+          "buildForTesting": "success",
+          "methodCounts": null
+        },
+        "libraryReferenceUI": {
+          "jobId": 138757582423,
+          "status": "in_progress",
+          "bootPreflight": "success",
+          "buildForTesting": "success",
+          "methodCounts": null
+        },
+        "roomPrecisionUI": {
+          "jobId": 138757582503,
+          "status": "in_progress",
+          "bootPreflight": "success",
+          "buildForTesting": "success",
+          "methodCounts": null
+        }
+      },
+      "uiSummary": {
+        "completed": 27,
+        "passed": 22,
+        "failed": 5,
+        "interrupted": 0
+      },
+      "workflowUpdatedAtUTC": "2026-11-24T21:11:39Z",
+      "workflowRetrievedAtUTC": "2026-11-24T21:17:09Z"
     },
-    "sourceTree": "abc3f7002714e97e9f33a42cda12eeecf213a510",
+    "sourceTree": "72fce94bd52240e4d47af2365b39041b4371e82e",
     "verifiedLocalSource": {
-      "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
-      "sourceTree": "abc3f7002714e97e9f33a42cda12eeecf213a510",
+      "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+      "sourceTree": "72fce94bd52240e4d47af2365b39041b4371e82e",
       "result": "unverified",
       "report": "docs/evidence/development-completion-2026-11-24.md",
-      "notes": "No local tests run by this records packet; the exact supplied remote results are recorded separately."
+      "notes": "No local execution by this records packet; current passing evidence is exact-source remote CI."
     },
     "specialistCountNotes": "Integration lead confirmed the 100th distinct assignment, a100_final_integration_review, after assigning a099_checkpoint_records. Exactly 100 current-session specialists; follow-ups add none. Prior checkpoint 61 belongs to a separate session and is not added.",
     "historicalNativeWorkflows": [
@@ -898,6 +987,130 @@
             "methodCounts": "No result observed"
           }
         }
+      },
+      {
+        "id": 45471239991,
+        "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
+        "scope": "historical",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991",
+        "jobId": 138721052072,
+        "jobConclusion": "success",
+        "workflowConclusion": "failure",
+        "unsignedDebugBuild": "success",
+        "unsignedReleaseBuild": "success",
+        "nativeTestsConclusion": "success",
+        "nativeMethods": {
+          "executed": 84,
+          "passed": 84,
+          "failed": 0
+        },
+        "nativeTestsFinishedAtUTC": "2026-11-24T19:59:25.493Z",
+        "testSucceededAtUTC": "2026-11-24T20:04:40.311826Z",
+        "retrievedAtUTC": "2026-11-24T20:09:47Z",
+        "libraryReferenceUI": {
+          "jobId": 138721052557,
+          "status": "completed",
+          "conclusion": "failure",
+          "appTestsExecuted": 0,
+          "failure": "Unable to find xcodebuild destination device beginning 12FC.",
+          "logArtifact": {
+            "id": 14959187269,
+            "sizeBytes": 25921
+          },
+          "compactArtifact": {
+            "id": 14960225473,
+            "sizeBytes": 146,
+            "contents": "Empty archive"
+          }
+        },
+        "roomPrecisionUI": {
+          "jobId": 138721052348,
+          "status": "completed",
+          "conclusion": "failure",
+          "started": 5,
+          "completed": 4,
+          "passed": 3,
+          "failed": 1,
+          "interrupted": 1,
+          "initialManual": {
+            "result": "pass",
+            "seconds": 168.203
+          },
+          "resizeNotes": {
+            "result": "fail",
+            "seconds": 281.671,
+            "failure": "Same 10-second expected-6 m notes query; actual AX contained correct committed 6 m / 7 m / 3 / 2 values."
+          },
+          "precisionCamera": {
+            "result": "pass",
+            "seconds": 177.107
+          },
+          "precisionIntensity": {
+            "result": "pass",
+            "seconds": 253.423
+          },
+          "precisionModifier": {
+            "result": "interrupted",
+            "notes": "Still making active queries at t302.51 s when the 32-minute step expired; no method result."
+          },
+          "stepStartedAtUTC": "2026-11-24T19:38:59.749Z",
+          "bootFinishedAtUTC": "2026-11-24T19:46:15.349Z",
+          "xcodeInvocationAtUTC": "2026-11-24T19:47:38.352Z",
+          "firstTestAtUTC": "2026-11-24T19:51:42.135Z",
+          "stepDeadlineAtUTC": "2026-11-24T20:11:13.633Z",
+          "startupBeforeFirstTest": "Approximately 12 minutes 42 seconds of the test-step budget.",
+          "finalizedXCResult": false,
+          "exportFailure": "Result-bundle Info.plist missing; no PNG exported. No overall suite result.",
+          "logArtifact": {
+            "id": 14961645218,
+            "sizeBytes": 29838,
+            "sha256": "b9d2f26b1a3757ecd6f4256eeb7a8846acc41f7b84cc546561a4066e0c3578e2"
+          }
+        },
+        "studioExportUI": {
+          "jobId": 138721052210,
+          "status": "completed",
+          "conclusion": "failure",
+          "completed": 11,
+          "passed": 7,
+          "failed": 4,
+          "aggregateSeconds": 1190.143,
+          "suiteFinishedAtUTC": "2026-11-24T20:10:37.256Z",
+          "rawJobLogBytes": 505988,
+          "export": {
+            "completed": 2,
+            "passed": 1,
+            "failed": 1,
+            "backupPassedSeconds": 291.575,
+            "failure": "Initial launch/readiness common-wait timeout at line 127, 19:53:31.729 UTC, before tapping Export or generating a document. No document-content defect established.",
+            "readinessTrace": "Launch began 19:50:47 UTC; automation setup t66.47 s; idle wait t78.42; absent event-loop idle notification t138.50; exportLightingPlan exists/enabled predicate t140.71 and repeated exists queries before timeout."
+          },
+          "studio": {
+            "completed": 9,
+            "passed": 6,
+            "failed": 3,
+            "aggregateSeconds": 725.602,
+            "failures": "Exact Width in meters label versus Width; empty Picker value versus Meters; Guide height 43.99999999999997 versus 44. Each failed before later functional checks.",
+            "passedCoverage": "Camera, Corrupt, Meter, Recipe, StudySphere and Mannequin."
+          },
+          "finalizedXCResult": true,
+          "artifactUpload": "success",
+          "fullArtifact": {
+            "id": 14960681991,
+            "sizeBytes": 143497773,
+            "sha256": "2be8fcbe6f0735570a100de82145e1213058154b8f3bb97fbe00054c764e06c9"
+          },
+          "compactArtifact": {
+            "id": 14960786780,
+            "sizeBytes": 2248019,
+            "sha256": "44668388b75e4a0e9a8d8e7b525e5a376ce03996c38f0f2d67a4c7572fa5394e"
+          },
+          "notes": "No 3D/AR acceptance; actual UI assertions failed before those later checks. The initial Export launch/readiness failure is under investigation, not evidence of failed document content."
+        },
+        "report": "docs/evidence/development-completion-2026-11-24.md",
+        "notes": "Actual source-four core/build/native successes remain separate from terminal failed/incomplete UI. Studio artifacts finalized; room did not finalize and library ran no app tests. Source five remains unpublished and unverified.",
+        "workflowCompletedAtUTC": "2026-11-24T20:14:48Z",
+        "uiObservationWindowUTC": "Root retrieval around 20:21\u201320:24 UTC on 2026-11-24"
       }
     ],
     "historicalPortableWorkflows": [
@@ -975,6 +1188,20 @@
         "pythonTests": 28,
         "report": "docs/evidence/development-completion-2026-11-24.md",
         "notes": "Known exact-SHA core pass supplied by the integration lead. Historical relative to the later working changes; keep this result when invalidating current working-tree gates. No local rerun, timing or physical performance claim."
+      },
+      {
+        "id": 45471239991,
+        "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
+        "sourceTree": "abc3f7002714e97e9f33a42cda12eeecf213a510",
+        "scope": "historical",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991",
+        "jobId": 138719440807,
+        "core": "success",
+        "debugTests": 261,
+        "releaseTests": 261,
+        "pythonTests": 28,
+        "report": "docs/evidence/development-completion-2026-11-24.md",
+        "notes": "Exact parent-source result supplied by the lead; pending source-five changes have no own CI result."
       }
     ],
     "historicalWorkflowObservations": [
@@ -1139,6 +1366,70 @@
           "reason": "Workflow was still running. No rerun started. Source five will run its own full CI; do not repeat the superseded source."
         },
         "scope": "historical"
+      },
+      {
+        "id": 45471239991,
+        "sourceRevision": "293686f94900b123aeded15b238f21157f73f30d",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45471239991",
+        "observationWindowUTC": "Root retrieved terminal run/job evidence around 20:21\u201320:24 UTC on 2026-11-24; run API completion was 20:14:48 UTC.",
+        "core": "Completed success: 261/261 Debug, 261/261 Release and 28 Python.",
+        "simulator": "Completed success: both unsigned builds and 84/84 native tests, zero failures. Embedded tests finished 19:59:25.493 UTC; TEST SUCCEEDED at 20:04:40.311826 UTC.",
+        "uiLibraryReference": "Job 138721052557 failed before any app tests: xcodebuild could not find destination device beginning 12FC. Log artifact 14959187269 is 25,921 bytes; compact artifact 14960225473 is an empty 146-byte archive.",
+        "uiRoomPrecision": "Job 138721052348: 5 started, 4 completed, 3 passed, 1 failed, 1 interrupted by the 32-minute step deadline. Initial Manual, Precision Camera and Intensity passed; Resize notes query failed despite correct captured AX; Modifier remained active at deadline.",
+        "uiStudioExport": "Job 138721052210: 11 completed, 7 passed, 4 failed in 1190.143 s; suite finished 20:10:37.256 UTC. Export readiness failed before tapping Export/document generation; backup passed. Three studio label/value/Guide geometry failures preceded later functional assertions.",
+        "coreJob": {
+          "id": 138719440807,
+          "status": "completed",
+          "conclusion": "success",
+          "debugTests": 261,
+          "releaseTests": 261,
+          "pythonTests": 28
+        },
+        "simulatorJobId": 138721052072,
+        "uiLibraryReferenceJobId": 138721052557,
+        "uiRoomPrecisionJobId": 138721052348,
+        "uiStudioExportJobId": 138721052210,
+        "rerunRequest": {
+          "observationWindowUTC": "2026-11-24 at 19:59 UTC",
+          "httpStatus": 403,
+          "started": false,
+          "reason": "Workflow was still running. No rerun started. Source five will run its own full CI; do not repeat the superseded source."
+        },
+        "completedAtUTC": "2026-11-24T20:14:48Z",
+        "notes": "Terminal source-four workflow failed. Core 261/261/28 and native 84/build successes remain valid at this exact source. Library setup ran no app tests; no whole UI, 3D/AR or source-five acceptance.",
+        "scope": "historical"
+      },
+      {
+        "id": 45481676220,
+        "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220",
+        "observationWindowUTC": "Root read complete exact-source core/native logs; native log retrieved 2026-11-24 at 20:55:45 UTC. UI method counts/results not yet supplied.",
+        "core": "Success: 261 Debug (8.417 s), 261 Release (4.537 s), zero failures; 28 Python (0.276 s); syntax, host kernel parity and precision checks passed.",
+        "simulator": "Completed success: unsigned Debug at 20:38:24.695492 UTC and Release at 20:41:19.948278 UTC; 84/84 native methods, zero failures, 30.152 s test/33.691 s overall. All tests finished 20:51:58.757 UTC; TEST SUCCEEDED 20:54:05.508463 UTC.",
+        "uiLibraryReference": "Job 138757582423 running; boot preflight and UI build succeeded. No method result supplied.",
+        "uiRoomPrecision": "Job 138757582503 running; boot preflight and UI build succeeded. No method result supplied.",
+        "uiStudioExport": "Job 138757582390 running; boot preflight and UI build succeeded. No method result supplied.",
+        "coreJob": {
+          "id": 138756184590,
+          "status": "completed",
+          "conclusion": "success",
+          "debugTests": 261,
+          "releaseTests": 261,
+          "pythonTests": 28,
+          "debugSeconds": 8.417,
+          "releaseSeconds": 4.537,
+          "pythonSeconds": 0.276
+        },
+        "simulatorJobId": 138757582398,
+        "uiLibraryReferenceJobId": 138757582423,
+        "uiRoomPrecisionJobId": 138757582503,
+        "uiStudioExportJobId": 138757582390,
+        "notes": "Current exact-source core_tests/native_build pass. Persistence smoke and full UI remain unverified; no milestone transition or release inference.",
+        "scope": "historical"
       }
     ],
     "historicalLocalSources": [
@@ -1223,7 +1514,8 @@
       "57393463263635e3758c66e237b0e7f369863577",
       "10ba0ef9868a053142e31dda5b5bcad81dd6b769",
       "394e28e163be345b9db135d8a10a3a1dfafe6617",
-      "293686f94900b123aeded15b238f21157f73f30d"
+      "293686f94900b123aeded15b238f21157f73f30d",
+      "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee"
     ],
     "newTestMethods": {
       "portable": 4,
@@ -1248,11 +1540,45 @@
         "notes": "Earlier dated running snapshot is retained. This does not verify later working-source patches or full UI/device gates."
       }
     ],
-    "pendingSourceValidation": {
+    "prepublicationStructuralValidation": {
       "result": "structural_checks_passed",
       "reviewer": "Integration lead",
       "notes": "Root structural validation passed: PyYAML parse, bash -n for every UI run script, preflight ordering/boot removal/unchanged budget/native-job checks, git diff --check, agent_cycle.py check and native_test_shards.py check. These are structural checks, not source-five native acceptance.",
       "sourceExecution": "Pending; source five remains unpublished."
+    },
+    "m01SmokeAssessment": {
+      "reviewer": "Specialist 100 independent assessment; integration lead explicitly authorized the source-five milestone transition",
+      "gate": "persistence_smoke",
+      "result": "pass",
+      "acceptedRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+      "directScenarioPair": [
+        {
+          "name": "RecipeEditSaveAndReopen",
+          "result": "pass",
+          "seconds": 65.729
+        },
+        {
+          "name": "CorruptProjectBlocksSavingAcrossRelaunch",
+          "result": "pass",
+          "seconds": 20.527
+        }
+      ],
+      "corroboration": "Explicit library creation/rename/relaunch passed, along with room signed coordinates/save/relaunch.",
+      "notes": "Direct same-source proof satisfies the existing M01 first-save/edit/relaunch and corrupt-storage smoke requirement. Existing core_tests/native_build also pass at c74c3b7. M01 complete/M02 active is source-bound; unrelated M03/M07 failures and the M02 3D crash remain recorded."
+    },
+    "milestoneAcceptance": {
+      "M01": {
+        "sourceRevision": "c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee",
+        "sourceTree": "72fce94bd52240e4d47af2365b39041b4371e82e",
+        "workflowId": 45481676220,
+        "gates": [
+          "core_tests",
+          "native_build",
+          "persistence_smoke"
+        ],
+        "decision": "Complete at exact source five; root authorized after specialist 100 assessment and actual direct smoke passes.",
+        "workingSourceCaveat": "Source-six 3D/Reference/tutorial fixes are unverified and are not certified by source-five acceptance."
+      }
     }
   }
 }

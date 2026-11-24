@@ -1,4 +1,22 @@
+## Source-six review receipt
+
+The functional Intel-simulator SceneKit fallback and Reference/keyboard corrections have completed independent source review. The lead inspected the actual CoreRE crash, blank Reference screenshot and keyboard before/after frames. Native verification of these working changes remains pending; the completed M01 evidence below is tied to c74c3b7.
+
 # Current handoff
+
+## Source-five terminal UI and M01 acceptance — 2026-11-24
+
+- **M01 is complete at exact published/tested `c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee`; M02 is active; M03–M07 remain pending.** Root authorized this transition after specialist 100's assessment and actual **RecipeEditSaveAndReopen (65.729 s)** / **CorruptProjectBlocksSavingAcrossRelaunch (20.527 s)** passes, corroborated by explicit library creation/rename/relaunch. Core **261/261 + 28** and both builds/**84 native** already pass at that source. Assignment count remains **100**; this is not release acceptance.
+- [Source-five UI](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220): **27 completed, 22 passed, 5 failed, none interrupted**. Studio/export **10/11**; both exports passed and original optics **0.6 m gesture/Undo/Redo/save/relaunch** passed. Settings passed unit/reopen checks then **crashed opening 3D**: actual Intel Macmini6,2 IPS shows `SIGFPE/EXC_ARITHMETIC` through `CoreRE TextureManager::init` and `MeshResource.generateBox` to `StudioGeometryResources.init:164`. **Fit/AR were not reached.**
+- Library/reference **7/11**: explicit creation/rename/relaunch and stale recovery passed. Failures remain: stale keyboard-tutorial wait despite later video proving keyboard ready; **two AX Code=-56** errors; guided-rig reveal on an actual blank Reference modal. Room **5/5 passed**, including corrected typed notes, signed coordinates/save/relaunch. [Exact timings and finalized artifact digests](../docs/evidence/development-completion-2026-11-24.md). Run API read at **21:17:09 UTC** confirms **completed/failure**, with `updated_at` **21:11:39 UTC**.
+- **Working source six is unverified:** functional SceneKit compatibility path for the Intel crash; item-driven Reference sheet; actual hittable-key/inactive-Continue readiness. Root approved the Reference/keyboard fixes after actual PNG and 48 s/55 s keyboard-frame review; the functional SceneKit path remains under independent 100/root review. All candidates need their own native/UI CI. Preserve source-five exact M01 acceptance and every failed M02/M03/M07 gate; no future SHA or repair pass is invented.
+
+## Published source five — core/native receipt at 20:55:45 UTC
+
+- Current published source **`c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee`**, tree **`72fce94bd52240e4d47af2365b39041b4371e82e`**, branch **`development/completion-final-20261124`**. Actual assignments remain **100**. [Run 45481676220](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220); earlier failures and observations remain below.
+- Core `138756184590`: **261 Debug / 261 Release / 28 Python passed**, zero failures; 8.417 / 4.537 / 0.276 s, Swift 6.4.2 Linux. Syntax, host kernel parity and precision passed. Native `138757582398`: **both unsigned builds and 84/84 methods passed**, zero failures; 30.152 s test / 33.691 s overall. Root read the complete 824,222-byte native log at **20:55:45 UTC**. **Current core_tests and native_build pass at this exact SHA.** [Times/artifacts](../docs/evidence/development-completion-2026-11-24.md).
+- All three UI boot preflights and UI builds succeeded. Studio `138757582390`, library `138757582423` and room `138757582503` are running; **no method counts or results are supplied yet**. Persistence smoke and full regression remain unverified.
+- Specialist 100 independently identifies **RecipeEditSaveAndReopen + CorruptProjectBlocksSavingAcrossRelaunch** as the direct M01 first-save/edit/relaunch/corruption smoke pair, corroborated by explicit library creation. Assess actual same-source results when received; retain every failed gate and distinguish genuinely unrelated M03/M07 failures. **No milestone transition yet: M01 active; M02–M07 pending.** No release, physical-device or calibrated acceptance follows.
 
 ## Source-four terminal UI receipt — completed 20:14:48 UTC; retrieved 20:21–20:24 UTC
 

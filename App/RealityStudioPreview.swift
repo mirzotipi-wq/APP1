@@ -13,8 +13,7 @@ struct RealityStudioPreview: View {
     let onSelect: (UUID) -> Void
 
     var body: some View {
-        RealityStudioSurface(scene: scene, selected: selected,
-                             fitRequest: fitRequest, onSelect: onSelect)
+        surface
             .overlay(alignment: .bottomLeading) {
                 Text(previewNote)
                     .font(.caption2)
@@ -27,8 +26,25 @@ struct RealityStudioPreview: View {
             }
     }
 
+    @ViewBuilder private var surface: some View {
+        #if targetEnvironment(simulator) && arch(x86_64)
+        // The Intel iOS 26.5 runtime traps inside CoreRE's texture manager on
+        // its first mesh, before ARView exists. A working Metal compute device
+        // does not establish RealityKit support. Choose the renderer before
+        // constructing its coordinator, including outside UI tests.
+        SpatialPreview(scene: scene, fitRequest: fitRequest,
+                       selected: selected, onSelect: onSelect)
+        #else
+        RealityStudioSurface(scene: scene, selected: selected,
+                             fitRequest: fitRequest, onSelect: onSelect)
+        #endif
+    }
+
     private var previewNote: String {
         guard (try? scene.validated()) != nil else { return "Preview unavailable · check setup" }
+        #if targetEnvironment(simulator) && arch(x86_64)
+        return "Illustrative lighting · geometry in meters"
+        #else
         let count = scene.lights.filter {
             $0.candela > 0 && (!$0.effectiveOptics.kind.isAimed ||
                               StudioPhotometry.frame(for: $0, subject: scene.subject) != nil)
@@ -36,6 +52,7 @@ struct RealityStudioPreview: View {
         return count > StudioEntityGraph.maximumShadedLights
             ? "Illustrative lighting · first \(StudioEntityGraph.maximumShadedLights) active lights shaded"
             : "Illustrative lighting · geometry in meters"
+        #endif
     }
 }
 

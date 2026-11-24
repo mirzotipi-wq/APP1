@@ -5,23 +5,105 @@ import simd
 
 /// Temporary illustrative renderer; SceneKit intensity and spotlight cones are
 /// not calibrated candela or area-source shading. Emitter geometry uses world meters.
+@MainActor
 struct SpatialPreview: UIViewRepresentable {
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isEnabled) private var isEnabled
     let scene: LightingScene
     let cameraMode: Bool
     let fitRequest: Int
+    let selected: UUID?
+    let onSelect: ((UUID) -> Void)?
 
-    init(scene: LightingScene, cameraMode: Bool = false, fitRequest: Int = 0) {
+    init(scene: LightingScene, cameraMode: Bool = false, fitRequest: Int = 0,
+         selected: UUID? = nil, onSelect: ((UUID) -> Void)? = nil) {
         self.scene = scene
         self.cameraMode = cameraMode
         self.fitRequest = fitRequest
+        self.selected = selected
+        self.onSelect = onSelect
     }
 
-    final class Coordinator {
+    @MainActor
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
         let content = SCNNode()
         let camera = SCNNode()
         var lastScene: LightingScene?
         var lastCameraMode: Bool?
         var lastFitRequest: Int?
+        var lastSelected: UUID?
+        var lightIDs: [ObjectIdentifier: UUID] = [:]
+        var selectionIndicators: [UUID: SCNNode] = [:]
+        var onSelect: ((UUID) -> Void)?
+        private weak var view: SCNView?
+        private weak var selectionGesture: UITapGestureRecognizer?
+        private var interactionEnabled = true
+
+        func attach(to view: SCNView) {
+            self.view = view
+            let tap = UITapGestureRecognizer(target: self, action: #selector(selectLight(_:)))
+            tap.delegate = self
+            // Retain SceneKit's native orbit, two-finger pan and pinch controls.
+            // Selection must wait for a camera gesture (including double-tap).
+            for gesture in view.gestureRecognizers ?? [] {
+                if gesture is UIPanGestureRecognizer || gesture is UIPinchGestureRecognizer ||
+                    gesture is UIRotationGestureRecognizer ||
+                    (gesture as? UITapGestureRecognizer).map({ $0.numberOfTapsRequired > 1 }) == true {
+                    tap.require(toFail: gesture)
+                }
+            }
+            view.addGestureRecognizer(tap)
+            selectionGesture = tap
+        }
+
+        func setInteractionEnabled(_ enabled: Bool) {
+            interactionEnabled = enabled
+            view?.isUserInteractionEnabled = enabled
+            if !enabled { view?.defaultCameraController.stopInertia() }
+        }
+
+        func detach(from view: SCNView) {
+            onSelect = nil
+            interactionEnabled = false
+            if let tap = selectionGesture {
+                tap.delegate = nil
+                tap.removeTarget(self, action: nil)
+                view.removeGestureRecognizer(tap)
+            }
+            selectionGesture = nil
+            view.defaultCameraController.stopInertia()
+            view.allowsCameraControl = false
+            view.isUserInteractionEnabled = false
+            view.isPlaying = false
+            view.pointOfView = nil
+            view.scene = nil
+            content.childNodes.forEach { $0.removeFromParentNode() }
+            content.removeFromParentNode()
+            camera.removeFromParentNode()
+            lightIDs.removeAll()
+            selectionIndicators.removeAll()
+            lastScene = nil
+            self.view = nil
+        }
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            interactionEnabled && lastCameraMode == false && onSelect != nil &&
+                view?.window != nil && !UIAccessibility.isVoiceOverRunning
+        }
+
+        @objc private func selectLight(_ gesture: UITapGestureRecognizer) {
+            guard gesture.state == .ended, gestureRecognizerShouldBegin(gesture),
+                  let view, let hit = view.hitTest(gesture.location(in: view), options: nil).first else { return }
+            var node: SCNNode? = hit.node
+            while let current = node {
+                if let id = lightIDs[ObjectIdentifier(current)],
+                   lastScene?.lights.contains(where: { $0.id == id }) == true {
+                    onSelect?(id)
+                    return
+                }
+                node = current.parent
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -45,21 +127,31 @@ struct SpatialPreview: UIViewRepresentable {
         view.allowsCameraControl = !cameraMode
         view.autoenablesDefaultLighting = false
         view.antialiasingMode = .multisampling2X
+        coordinator.attach(to: view)
         return view
     }
 
     func updateUIView(_ view: SCNView, context: Context) {
         updateView(view, coordinator: context.coordinator)
+        context.coordinator.setInteractionEnabled(isEnabled && scenePhase == .active)
+    }
+
+    static func dismantleUIView(_ view: SCNView, coordinator: Coordinator) {
+        coordinator.detach(from: view)
     }
 
     func updateView(_ view: SCNView, coordinator: Coordinator) {
+        // A project or command generation can change without changing geometry.
+        // Never retain a selection callback from the previous SwiftUI update.
+        coordinator.onSelect = cameraMode ? nil : onSelect
         let modeChanged = coordinator.lastCameraMode != cameraMode
         let sceneChanged = coordinator.lastScene != scene
+        let selectionChanged = coordinator.lastSelected != selected
         let contentChanged = modeChanged || coordinator.lastScene?.subject != scene.subject ||
             coordinator.lastScene?.lights != scene.lights ||
             (!cameraMode && coordinator.lastScene?.camera != scene.camera)
         let needsFit = !cameraMode && (modeChanged || coordinator.lastFitRequest != fitRequest)
-        guard sceneChanged || modeChanged || needsFit else { return }
+        guard sceneChanged || modeChanged || needsFit || selectionChanged else { return }
         // Publish geometry, camera pose, lens, clipping and controller target as
         // one nonanimated update. Do not inherit an enclosing UI animation's
         // duration or expose an intermediate camera configuration to rendering.
@@ -74,7 +166,12 @@ struct SpatialPreview: UIViewRepresentable {
         if contentChanged {
             let root = coordinator.content
             root.childNodes.forEach { $0.removeFromParentNode() }
-            populate(root)
+            coordinator.lightIDs.removeAll()
+            coordinator.selectionIndicators.removeAll()
+            populate(root, coordinator: coordinator)
+        }
+        for (id, indicator) in coordinator.selectionIndicators {
+            indicator.isHidden = id != selected
         }
         view.allowsCameraControl = !cameraMode
         (view as? OrbitAwareSceneView)?.usesOrbitProjection = !cameraMode
@@ -93,6 +190,7 @@ struct SpatialPreview: UIViewRepresentable {
         }
         coordinator.lastScene = scene
         coordinator.lastCameraMode = cameraMode
+        coordinator.lastSelected = selected
     }
 
     private func fitOrbit(_ view: SCNView, coordinator: Coordinator, bounds: StudioSceneBounds) {
@@ -137,7 +235,7 @@ struct SpatialPreview: UIViewRepresentable {
         return node
     }
 
-    private func populate(_ root: SCNNode) {
+    private func populate(_ root: SCNNode, coordinator: Coordinator) {
         let floor = SCNFloor(); floor.reflectivity = 0
         _ = object(floor, color: UIColor(white: 0.19, alpha: 1), at: SCNVector3Zero, in: root)
         let p = vector(scene.subject)
@@ -190,13 +288,31 @@ struct SpatialPreview: UIViewRepresentable {
             }
             let fixture = object(geometry, color: color, at: pos, in: root)
             if let frame { orient(fixture, to: frame) }
+            if !cameraMode {
+                coordinator.lightIDs[ObjectIdentifier(fixture)] = light.id
+                // A wire outline marks selection without changing light output
+                // or the authored equipment dimensions used by the scene.
+                if let outline = geometry.copy() as? SCNGeometry {
+                    let material = SCNMaterial()
+                    material.diffuse.contents = UIColor.systemYellow
+                    material.lightingModel = .constant
+                    material.fillMode = .lines
+                    outline.materials = [material]
+                    let indicator = SCNNode(geometry: outline)
+                    indicator.scale = SCNVector3(1.06, 1.06, 1.06)
+                    indicator.isHidden = light.id != selected
+                    fixture.addChildNode(indicator)
+                    coordinator.selectionIndicators[light.id] = indicator
+                }
+            }
             // Keep equipment readable, but do not imply a powered-off fixture is emitting light.
             if light.candela > 0 && (!optics.kind.isAimed || frame != nil) {
                 fixture.geometry?.firstMaterial?.emission.contents = UIColor.systemOrange.withAlphaComponent(0.35)
             }
             if pos.y > 0.05 {
-                _ = object(SCNCylinder(radius: 0.015, height: CGFloat(pos.y)), color: .gray,
-                           at: SCNVector3(pos.x, pos.y / 2, pos.z), in: root)
+                let stand = object(SCNCylinder(radius: 0.015, height: CGFloat(pos.y)), color: .gray,
+                                   at: SCNVector3(pos.x, pos.y / 2, pos.z), in: root)
+                if !cameraMode { coordinator.lightIDs[ObjectIdentifier(stand)] = light.id }
             }
         }
     }

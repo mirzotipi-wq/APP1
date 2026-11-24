@@ -8,7 +8,7 @@ Key & Fill is a native iOS lighting workspace for photographers and filmmakers: 
 
 ## Current implementation
 
-- **Studio:** interactive RealityKit 3D with orbit, pan, zoom and selection; an editable overhead plan with light dragging; a SceneKit camera preview; subject, camera, optics and light controls; modifier roll; scene arrangement; target-lux adjustment; metric/imperial display; recipes and undo/redo.
+- **Studio:** interactive RealityKit 3D with orbit, pan, zoom and selection, with a functional SceneKit path on Intel simulators; an editable overhead plan with light dragging; a SceneKit camera preview; subject, camera, optics and light controls; modifier roll; scene arrangement; target-lux adjustment; metric/imperial display; recipes and undo/redo.
 - **Lighting studies:** ideal photometry, numerical sphere and neutral-mannequin studies, and optional Metal rendering. Preview shading is illustrative. Lux estimates describe an ideal receiving plane, not calibrated skin exposure or a measured fixture.
 - **Reference workflow:** on-device Vision checks support a bounded brighter-side proposal for suitable portraits. Applying a proposed rig requires explicit acceptance; manual starting rigs remain available. Single-image analysis does not reconstruct an exact lighting setup.
 - **Photo comparison:** import two actual photographs for side-by-side or wipe comparison. Reduced, metadata-stripped photo copies remain in memory for the session and are excluded from saved projects and PDF exports.
@@ -46,7 +46,7 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and remaining gates
 
-At the recorded `394e28e` checkpoint, [CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45465026704) passed 261 portable tests in each of Debug and Release, 28 Python checks, both unsigned simulator builds and 84 native tests. The four measured-room PDF variants were visually reviewed. UI execution remained in progress, and subsequent cancellation and test-navigation fixes require their own results. The [development checkpoint](docs/evidence/development-completion-2026-11-24.md) records exact revisions, simulator failures, fixes and remaining verification.
+At the recorded `c74c3b7` checkpoint, [CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220) passed 261 portable tests in each of Debug and Release, 28 Python checks, both unsigned simulator builds and 84 native tests. All 27 UI scenarios completed: 22 passed and five failed, so the overall workflow failed. Foundation save/relaunch and corrupt-file protection passed. Subsequent Intel-simulator rendering, Reference presentation and keyboard-readiness corrections require their own native results. The four measured-room PDF variants were visually reviewed at the earlier `394e28e` source. The [development checkpoint](docs/evidence/development-completion-2026-11-24.md) records exact revisions, simulator failures, fixes and remaining verification.
 
 Physical-device tracking, accessibility and performance, calibrated rendering, purchase sandbox scenarios, signing, customer validation and owner release approval remain outstanding. See the [quality contract](docs/QUALITY.md) and [milestone state](agents/state.json).
 
