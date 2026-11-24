@@ -514,33 +514,42 @@ struct StudioView: View {
                 .background(amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
             OpticsInspector(optics: opticsBinding(for: light.id), subject: scene.subject, onEditingChanged: editChanged)
             Divider()
-            control("Horizontal", id: light.id, key: \.position.x, range: -4...4, step: 0.05, unit: "m")
-            control("Depth", id: light.id, key: \.position.z, range: -4...4, step: 0.05, unit: "m")
-            control("Height", id: light.id, key: \.position.y, range: 0...4, step: 0.05, unit: "m")
+            control("Horizontal", id: light.id, key: \.position.x, range: -4...4, domain: -100...100, step: 0.05, unit: "m", fieldID: "lightX")
+            control("Depth", id: light.id, key: \.position.z, range: -4...4, domain: -100...100, step: 0.05, unit: "m", fieldID: "lightZ")
+            control("Height", id: light.id, key: \.position.y, range: 0...4, domain: -100...100, step: 0.05, unit: "m", fieldID: "lightY")
             Divider()
-            control("Intensity", id: light.id, key: \.candela, range: 0...3000, step: 25, unit: "cd")
-            control("Temperature", id: light.id, key: \.kelvin, range: 2000...9000, step: 100, unit: "K")
+            control("Intensity", id: light.id, key: \.candela, range: 0...3000, domain: 0...100_000, step: 25, unit: "cd", fieldID: "lightIntensity")
+            control("Temperature", id: light.id, key: \.kelvin, range: 2000...9000, domain: 1000...20_000, step: 100, unit: "K", fieldID: "lightTemperature")
         }.padding(14).background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
     }
 
-    private func control(_ title: String, id: UUID, key: WritableKeyPath<StudioLight, Double>, range: ClosedRange<Double>, step: Double, unit: String) -> some View {
+    private func control(_ title: String, id: UUID, key: WritableKeyPath<StudioLight, Double>,
+                         range: ClosedRange<Double>, domain: ClosedRange<Double>,
+                         step: Double, unit: String, fieldID: String) -> some View {
         let value = Binding<Double>(
             get: { scene.lights.first(where: { $0.id == id })?[keyPath: key] ?? range.lowerBound },
             set: { new in
-                guard let i = scene.lights.firstIndex(where: { $0.id == id }), new.isFinite else { return }
-                let clamped = min(range.upperBound, max(range.lowerBound, new))
-                guard clamped != scene.lights[i][keyPath: key] else { return }
+                guard let i = scene.lights.firstIndex(where: { $0.id == id }),
+                      new.isFinite, domain.contains(new), new != scene.lights[i][keyPath: key] else { return }
+                var next = scene.lights[i]
+                next[keyPath: key] = new
+                guard next.isValid else { return }
                 if editStart == nil { remember(scene) }
-                scene.lights[i][keyPath: key] = clamped
+                scene.lights[i] = next
             })
+        let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         return VStack(alignment: .leading, spacing: 5) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
-                Text("\(value.wrappedValue, specifier: unit == "m" ? "%.2f" : "%.0f") \(unit)")
-                    .font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                PrecisionValueButton(title: title, unit: unit, id: fieldID,
+                                     value: value, range: domain)
+                    .id(id)
             }
-            Slider(value: value, in: range, step: step, onEditingChanged: editChanged).accessibilityLabel(title)
+            Slider(value: value, in: bounds, step: step, onEditingChanged: editChanged)
+                .accessibilityLabel(title)
+                .accessibilityValue(value.wrappedValue.formatted(.number.precision(.fractionLength(0...6)).grouping(.never)) + " " + unit)
+                .accessibilityIdentifier(fieldID)
         }
     }
 
