@@ -1,7 +1,7 @@
 import XCTest
 
 final class PrecisionEditingUITests: XCTestCase {
-    private func reveal(_ target: XCUIElement, in app: XCUIApplication) {
+    private func reveal(_ target: XCUIElement, in app: XCUIApplication, towardBottom: Bool = true) {
         // AX can mark an offscreen SwiftUI row as hittable. Require a finite,
         // usable onscreen center, clear of navigation and edit-history bars.
         for _ in 0..<12 {
@@ -12,8 +12,9 @@ final class PrecisionEditingUITests: XCTestCase {
                     return
                 }
             }
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: 0.78))
-                .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: 0.30)))
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: towardBottom ? 0.78 : 0.30))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: towardBottom ? 0.30 : 0.78))
+            start.press(forDuration: 0.05, thenDragTo: end)
         }
         XCTFail("Exact value control was not reachable in the inspector")
     }
@@ -62,5 +63,80 @@ final class PrecisionEditingUITests: XCTestCase {
         XCTAssertTrue(app.buttons["recipes"].waitForExistence(timeout: 15))
         reveal(exact, in: app)
         XCTAssertEqual(exact.value as? String, "4321.5 cd")
+    }
+
+    func testExactCameraFocalLengthUndoRedoAndReopen() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launch()
+        let camera = app.segmentedControls["viewMode"].buttons["Camera"]
+        XCTAssertTrue(camera.waitForExistence(timeout: 15))
+        camera.tap()
+        let exact = app.buttons["cameraFocalLengthExact"]
+        reveal(exact, in: app)
+        XCTAssertEqual(exact.value as? String, "50 mm")
+        exact.tap()
+        replaceText(app.textFields["precisionValue"], with: "73.125")
+        app.buttons["precisionApply"].tap()
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value == %@", "73.125 mm"), object: exact)
+        XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 10), .completed)
+        app.buttons["undo"].tap()
+        XCTAssertEqual(exact.value as? String, "50 mm")
+        app.buttons["redo"].tap()
+        XCTAssertEqual(exact.value as? String, "73.125 mm")
+        app.buttons["saveProject"].tap()
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(camera.waitForExistence(timeout: 15))
+        camera.tap()
+        reveal(exact, in: app)
+        XCTAssertEqual(exact.value as? String, "73.125 mm")
+    }
+
+    func testExactModifierWidthAndRoomCrossingWithInsideCenters() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launch()
+        XCTAssertTrue(app.buttons["recipes"].waitForExistence(timeout: 15))
+        let emitter = app.buttons["emitterKind"]
+        reveal(emitter, in: app)
+        emitter.tap()
+        app.buttons["Rectangular softbox"].tap()
+        let exact = app.buttons["emitterWidthExact"]
+        reveal(exact, in: app)
+        exact.tap()
+        replaceText(app.textFields["precisionValue"], with: "1.237")
+        app.buttons["precisionApply"].tap()
+        let width = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value == %@", "1.237 m"), object: exact)
+        XCTAssertEqual(XCTWaiter.wait(for: [width], timeout: 10), .completed)
+        app.buttons["saveProject"].tap()
+        let open = app.buttons["openRoomPlacement"]
+        reveal(open, in: app, towardBottom: false)
+        open.tap()
+        let centers = app.descendants(matching: .any)["roomPlacementStatus"].firstMatch
+        let faces = app.descendants(matching: .any)["modifierCrossingStatus"].firstMatch
+        func expect(_ target: XCUIElement, contains message: String) {
+            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label CONTAINS %@", message), object: target)
+            XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 15), .completed)
+        }
+        expect(centers, contains: "All 5 center positions inside room")
+        expect(faces, contains: "Rectangular emitting faces within room outline")
+        let field = app.textFields["roomSubjectX"]
+        reveal(field, in: app)
+        replaceText(field, with: "1.6")
+        app.buttons["roomSubjectXSet"].tap()
+        expect(centers, contains: "All 5 center positions inside room")
+        expect(faces, contains: "1 rectangular modifier crosses a wall")
+        reveal(faces, in: app)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Manual-room-modifier-crossing"; attachment.lifetime = .keepAlways; add(attachment)
+        app.buttons["closeRoomPlacement"].tap()
+        let status = app.staticTexts["projectStatus"]
+        let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", "Saved locally"), object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 10), .completed)
     }
 }

@@ -16,6 +16,7 @@ public enum EmitterKind: String, Codable, CaseIterable, Sendable {
 /// Ideal emitter geometry, not a measured modifier or equipment profile.
 /// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
 public struct LightOptics: Codable, Equatable, Sendable {
+    public static let dimensionRange: ClosedRange<Double> = 0.05...4
     public var kind: EmitterKind
     public var aimTarget: Position?
     public var widthMeters: Double
@@ -29,7 +30,7 @@ public struct LightOptics: Codable, Equatable, Sendable {
 
     public var isValid: Bool {
         (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
-        (0.05...4).contains(widthMeters) && (0.05...4).contains(heightMeters)
+        Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters)
     }
 }
 

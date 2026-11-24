@@ -1,6 +1,7 @@
 import Foundation
 
 public struct Position: Codable, Equatable, Sendable {
+    public static let coordinateRange: ClosedRange<Double> = -100...100
     public var x: Double
     public var y: Double
     public var z: Double
@@ -8,7 +9,7 @@ public struct Position: Codable, Equatable, Sendable {
         self.x = x; self.y = y; self.z = z
     }
     public var isValid: Bool {
-        [x, y, z].allSatisfy { $0.isFinite && abs($0) <= 100 }
+        [x, y, z].allSatisfy { $0.isFinite && Self.coordinateRange.contains($0) }
     }
     public func distance(to other: Position) -> Double {
         let dx = x - other.x, dy = y - other.y, dz = z - other.z

@@ -27,7 +27,8 @@ struct ManualRoomPlacementView: View {
                                 .accessibilityIdentifier("roomPlacementStatus")
                             if !plan.modifierFootprints.isEmpty {
                                 if plan.crossingModifierCount > 0 {
-                                    Label("\(plan.crossingModifierCount) rectangular modifiers cross a wall",
+                                    Label(plan.crossingModifierCount == 1 ? "1 rectangular modifier crosses a wall" :
+                                          "\(plan.crossingModifierCount) rectangular modifiers cross a wall",
                                           systemImage: "exclamationmark.triangle")
                                         .foregroundStyle(.orange)
                                         .accessibilityIdentifier("modifierCrossingStatus")

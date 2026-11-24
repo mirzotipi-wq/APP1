@@ -110,8 +110,7 @@ struct NeutralCardInspector: View {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
-                Text("\(formatted) \(unit)").font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
             }
             Slider(value: value, in: range, step: step, onEditingChanged: onEditingChanged)
                 .accessibilityLabel(title).accessibilityValue("\(formatted) \(unit)")

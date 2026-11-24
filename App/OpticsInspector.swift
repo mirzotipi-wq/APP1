@@ -41,16 +41,16 @@ struct OpticsInspector: View {
                 )).accessibilityIdentifier("aimAtSubject")
                 if optics.aimTarget != nil {
                     Text("Target position · world meters").font(.caption.weight(.medium)).foregroundStyle(.secondary)
-                    slider("Aim X", value: aimCoordinate(\.x), range: -4...4, step: 0.05, id: "aimX")
-                    slider("Aim Y", value: aimCoordinate(\.y), range: 0...4, step: 0.05, id: "aimY")
-                    slider("Aim Z", value: aimCoordinate(\.z), range: -4...4, step: 0.05, id: "aimZ")
+                    slider("Aim X", value: aimCoordinate(\.x), range: -4...4, domain: Position.coordinateRange, step: 0.05, id: "aimX")
+                    slider("Aim Y", value: aimCoordinate(\.y), range: 0...4, domain: Position.coordinateRange, step: 0.05, id: "aimY")
+                    slider("Aim Z", value: aimCoordinate(\.z), range: -4...4, domain: Position.coordinateRange, step: 0.05, id: "aimZ")
                 }
             }
             if optics.kind == .rectangle {
                 Divider()
                 Text("Diffusion surface · meters").font(.caption.weight(.medium)).foregroundStyle(.secondary)
-                slider("Width", value: dimension(\.widthMeters), range: 0.05...4, step: 0.05, id: "emitterWidth")
-                slider("Height", value: dimension(\.heightMeters), range: 0.05...4, step: 0.05, id: "emitterHeight")
+                slider("Width", value: dimension(\.widthMeters), range: 0.05...4, domain: LightOptics.dimensionRange, step: 0.05, id: "emitterWidth")
+                slider("Height", value: dimension(\.heightMeters), range: 0.05...4, domain: LightOptics.dimensionRange, step: 0.05, id: "emitterHeight")
             }
         }
     }
@@ -77,15 +77,15 @@ struct OpticsInspector: View {
         })
     }
 
-    private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double, id: String) -> some View {
+    private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, domain: ClosedRange<Double>, step: Double, id: String) -> some View {
         // A migrated or externally authored valid target may be outside the usual studio range.
         let actual = value.wrappedValue
-        let limits = min(range.lowerBound, actual)...max(range.upperBound, actual)
+        let limits = StudioNumericInput.sliderBounds(usual: range, current: actual)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
-                Text("\(actual, specifier: "%.2f") m").font(.subheadline.monospacedDigit()).foregroundStyle(.secondary)
+                PrecisionValueButton(title: title, unit: "m", id: id, value: value, range: domain)
             }
             Slider(value: value, in: limits, step: step, onEditingChanged: onEditingChanged)
                 .accessibilityLabel(title).accessibilityValue(Text("\(actual, specifier: "%.2f") meters"))

@@ -31,7 +31,8 @@ struct CameraInspector: View {
                     .font(.subheadline).foregroundStyle(.secondary)
             }
             slider("Focal length", value: $lens.focalLengthMillimeters,
-                   range: CameraLens.focalLengthRange, step: 1, unit: "mm", id: "cameraFocalLength")
+                   range: CameraLens.focalLengthRange, domain: CameraLens.focalLengthRange,
+                   step: 1, unit: "mm", id: "cameraFocalLength")
             HStack(spacing: 0) {
                 ForEach([24.0, 35.0, 50.0, 85.0, 135.0], id: \.self) { mm in
                     Button {
@@ -46,25 +47,24 @@ struct CameraInspector: View {
                         .accessibilityAddTraits(lens.focalLengthMillimeters == mm ? .isSelected : [])
                 }
             }
-            slider("Camera horizontal", value: $position.x, range: -4...4, step: 0.05, unit: "m", id: "cameraX")
-            slider("Camera height", value: $position.y, range: 0...4, step: 0.05, unit: "m", id: "cameraY")
-            slider("Camera depth", value: $position.z, range: -6...6, step: 0.05, unit: "m", id: "cameraZ")
+            slider("Camera horizontal", value: $position.x, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", id: "cameraX")
+            slider("Camera height", value: $position.y, range: 0...4, domain: Position.coordinateRange, step: 0.05, unit: "m", id: "cameraY")
+            slider("Camera depth", value: $position.z, range: -6...6, domain: Position.coordinateRange, step: 0.05, unit: "m", id: "cameraZ")
             Text("Ideal perspective aimed at the subject center. No optical distortion, depth of field or calibrated image exposure.")
                 .font(.caption).foregroundStyle(.secondary)
         }
     }
 
-    private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>,
+    private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, domain: ClosedRange<Double>,
                         step: Double, unit: String, id: String) -> some View {
         // Preserve valid imported positions even outside the initial editing range.
-        let bounds = min(range.lowerBound, value.wrappedValue)...max(range.upperBound, value.wrappedValue)
+        let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         let formatted = String(format: unit == "mm" ? "%.0f" : "%.2f", value.wrappedValue)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
-                Text("\(formatted) \(unit)").font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: domain)
             }
             Slider(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged)
                 .accessibilityLabel(title).accessibilityValue("\(formatted) \(unit)")

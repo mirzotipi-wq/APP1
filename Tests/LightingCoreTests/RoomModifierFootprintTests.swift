@@ -93,4 +93,20 @@ final class RoomModifierFootprintTests: XCTestCase {
             XCTAssertEqual(p.zFromNear, q.zFromNear, accuracy: 1e-10)
         }
     }
+
+    func testDefaultPortraitExactModifierCrossesWhileAllCentersRemainInside() throws {
+        var rig = LightingScene.portrait()
+        rig.lights[0].optics = .init(kind: .rectangle, widthMeters: 1.237)
+        let original = rig
+        var measured = ManualRoom()
+        let clear = try RoomPlacementPlan(scene: rig, room: measured)
+        XCTAssertEqual(clear.outsideCount, 0)
+        XCTAssertEqual(clear.crossingModifierCount, 0)
+        measured.subjectX = 1.6
+        let crossing = try RoomPlacementPlan(scene: rig, room: measured)
+        XCTAssertEqual(crossing.outsideCount, 0)
+        XCTAssertEqual(crossing.crossingModifierCount, 1)
+        XCTAssertEqual(crossing.modifierFootprints.first?.crossedWalls, [.left])
+        XCTAssertEqual(rig, original)
+    }
 }
