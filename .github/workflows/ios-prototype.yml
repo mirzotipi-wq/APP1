@@ -68,7 +68,9 @@ jobs:
   simulator:
     # Standard public-repository Intel pool: test an alternative after repeated arm64 queue cancellations.
     runs-on: macos-26-intel
-    timeout-minutes: 45
+    # Full serial XCTest plus two builds and artifact export may exceed 45 min.
+    # Keep an explicit job bound and a tighter, separate UI step bound.
+    timeout-minutes: 70
     steps:
       - uses: actions/checkout@v4
       - name: Record Apple toolchain and test the portable package on macOS
@@ -120,19 +122,10 @@ jobs:
           name: KeyAndFill-iOS-Simulator
           path: artifacts/KeyAndFill-simulator.zip
           if-no-files-found: error
-      - name: Launch and exercise UI
-        run: |
-          set -o pipefail
-          xcrun simctl boot "$SIMULATOR_ID" || xcrun simctl list devices
-          xcrun simctl bootstatus "$SIMULATOR_ID" -b
-          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
-            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
-            -parallel-testing-enabled NO -resultBundlePath StudioSmoke.xcresult \
-            CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ui-tests.log
       - name: Build unsigned release simulator application
         id: release_build
-        # A failed UI assertion must not mask independent Release build evidence.
-        # The workflow still fails if the UI suite fails.
+        # Collect independent Release evidence before the longer UI suite.
+        # A UI failure or timeout must not erase these artifacts.
         if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}
         run: |
           set -euo pipefail
@@ -150,6 +143,18 @@ jobs:
           name: KeyAndFill-iOS-Simulator-Release
           path: artifacts/KeyAndFill-simulator-release.zip
           if-no-files-found: error
+      - name: Launch and exercise UI
+        # Verify the test suite even if independent Release packaging fails.
+        if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}
+        timeout-minutes: 50
+        run: |
+          set -o pipefail
+          xcrun simctl boot "$SIMULATOR_ID" || xcrun simctl list devices
+          xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath StudioSmoke.xcresult \
+            CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ui-tests.log
       - name: Export genuine XCTest attachments
         if: always()
         run: |
