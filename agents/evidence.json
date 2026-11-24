@@ -1122,6 +1122,138 @@
       "artifact": "docs/PRIVACY.md",
       "reviewer": "Assistant sequential self-review; no independent reviewer",
       "notes": "Added manifest and bundle integrity checks for local project/selected-photo metadata; no tracking/collection declared. Signed archive, actual native package and runtime physical-device verification pending."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Completed portable core job 138061841002; macOS package test also executed",
+      "environment": "Ubuntu 24.04 portable runner and macOS 26 Intel",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852/artifacts/14869136464",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "109/109 Debug and Release on Ubuntu, 109/109 macOS package Debug, zero failures. Source syntax, icon/privacy source checks, study and Float32 host parity passed."
+    },
+    {
+      "gate": "native_build",
+      "result": "pass",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Actual unsigned Debug xcodebuild and bundle validators, native job 138061840386",
+      "environment": "macOS 26 Intel; Xcode 26.6, iOS simulator SDK 26.5; iPhone 17 Pro",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852/artifacts/14871393366",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Debug build and compiled icon/privacy bundle checks passed. Native Release skipped after failed UI; not a signed device app."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "fail",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Native XCTest run 45280053852; actual failed recording and accessibility attachment inspected",
+      "environment": "iPhone 17 Pro simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852/artifacts/14873377895",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "9/9 native, 14/15 UI; project recovery, recipe/camera/optics saves and corruption cases passed; meter white-balance undo and relaunch scenario stopped at initial expansion. No evidence of a persistence data-loss defect, but full native smoke incomplete."
+    },
+    {
+      "gate": "editing",
+      "result": "fail",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Native meter UI failure at StudioSmokeTests.swift:140 and recording inspection",
+      "environment": "iPhone 17 Pro simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852/artifacts/14873377895",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Meter remained collapsed after test tap; recording showed header below visible scroll area; AX attachment reports zero-size/infinite-origin frame. Actual cause not proven beyond offscreen reachability evidence."
+    },
+    {
+      "gate": "regression",
+      "result": "fail",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Actual native job 138061840386",
+      "environment": "iPhone 17 Pro simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "14/15 UI; 9/9 native; only meter scenario failed. Release skipped."
+    },
+    {
+      "gate": "reference_privacy",
+      "result": "unverified",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Four native ReferencePhotoTests and reference comparison UI passed; source manifest and Debug bundle checked",
+      "environment": "iPhone 17 Pro simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Prior native file-transfer and metadata assertions now pass at exact source; real PhotosPicker permission/limited/denied and network/runtime device verification remain outstanding."
+    },
+    {
+      "gate": "privacy",
+      "result": "unverified",
+      "revision": "f19339177e92125e6d0bcb0a96ca5d1a85f31f4c",
+      "date": "2026-11-24",
+      "method": "Actual Debug bundle manifest packaging check",
+      "environment": "Unsigned iOS Debug simulator app",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45280053852/artifacts/14871393366",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Manifest copied into bundle and validator passed. Not a signed archive or privacy disclosure/device audit."
+    },
+    {
+      "gate": "core_tests",
+      "result": "unverified",
+      "revision": "d9363dfd58f9e4b66c776c3759234c8d14c526c5",
+      "date": "2026-11-24",
+      "method": "Exact new source core CI 138231844578",
+      "environment": "Ubuntu portable runner",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45330974433",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Prior 109/109 Debug/Release results retained; exact-source CI pending or unconfirmed."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "d9363dfd58f9e4b66c776c3759234c8d14c526c5",
+      "date": "2026-11-24",
+      "method": "New meter-navigation/CI source authored, exact-source native rerun required",
+      "environment": "Connector source edits, no Apple SDK available locally",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45330974433",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Prior Debug build passed; current revised SwiftUI and Release workflow need actual native compilation."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "d9363dfd58f9e4b66c776c3759234c8d14c526c5",
+      "date": "2026-11-24",
+      "method": "New meter shortcut and direct disclosure regression authored",
+      "environment": "Exact-source native execution pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45330974433",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Keep M01 active; require actual save/relaunch and complete native meter regression."
+    },
+    {
+      "gate": "editing",
+      "result": "unverified",
+      "revision": "d9363dfd58f9e4b66c776c3759234c8d14c526c5",
+      "date": "2026-11-24",
+      "method": "Repositioned meter panel and anchored Scene shortcut; retained collapse/expand regression",
+      "environment": "Exact-source native execution pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45330974433",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Actual UI and accessibility validation pending."
+    },
+    {
+      "gate": "regression",
+      "result": "unverified",
+      "revision": "d9363dfd58f9e4b66c776c3759234c8d14c526c5",
+      "date": "2026-11-24",
+      "method": "New source and CI changes require full rerun",
+      "environment": "Exact-source native execution pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45330974433",
+      "reviewer": "Assistant sequential self-review and actual CI where specified; no independent reviewer",
+      "notes": "Do not treat prior 14/15 result as current pass."
     }
   ]
 }
