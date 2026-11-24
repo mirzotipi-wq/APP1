@@ -1,5 +1,11 @@
 # Current handoff
 
+## Latest exact-source portable verification (2026-11-24)
+
+- Room/precision/meter executable revision `55787162ffbe5098c7bd63caf852c33168ef76dd`: [core run 45331816997](https://github.com/mirzotipi-wq/APP1/actions/runs/45331816997/job/138234549293) completed **120/120 Debug and 120/120 Release tests**, zero failures. All six room modifier tests passed in both configurations; all earlier tests preserved; six shared Float32 fixtures passed, max one level. [Raw core artifact](https://github.com/mirzotipi-wq/APP1/actions/runs/45331816997/artifacts/14891404008).
+- Native job 138234548924: in_progress, stage Build unsigned simulator app. Current native build not yet established. Full native UI and Release not established at checkpoint. Previous source native jobs 138231844938 and 138233642179 had Debug builds but UI pending at earlier observation; fetch fresh results. No M01 promotion. Evidence-only score floor 20/100.
+- GitHub's in-progress native job log endpoint returned BlobNotFound while the UI step ran; do not invent test counts. Three native jobs continue independently on GitHub; resume at actual logs/artifacts rather than opening more speculative source revisions.
+
 ## Precision editing and projected modifier geometry checkpoint (2026-11-24)
 
 - Session baseline `de1a7a017cf35085bd43bf0856284455399c55ab`. Source commits `d9363dfd58f9e4b66c776c3759234c8d14c526c5` (meter reachability, CI), `e3baf76a5fd5c91422b04facddd54e785f11d5e0` (precision light editor), `55787162ffbe5098c7bd63caf852c33168ef76dd` (projected rectangular faces). Intermediate evidence-only checkpoint `258a5951c105b6f53bc10ae6ce5c36a6449d332c`.
