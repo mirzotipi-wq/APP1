@@ -7,10 +7,17 @@ struct OpticsInspector: View {
     let subject: Position
     let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRawValue = PlanUnits.metric.rawValue
 
     private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
+
+    private var fieldLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -25,11 +32,13 @@ struct OpticsInspector: View {
                     }
                 }
             } label: {
-                HStack(alignment: .firstTextBaseline) {
+                fieldLayout {
                     Text("Emitter").foregroundStyle(.primary)
-                    Spacer()
-                    Text(optics.kind.title).fontWeight(.medium)
-                    Image(systemName: "chevron.up.chevron.down").font(.caption)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(optics.kind.title).fontWeight(.medium)
+                        Image(systemName: "chevron.up.chevron.down").font(.caption)
+                    }
                 }.frame(minHeight: 44)
             }
             .accessibilityLabel("Emitter type")
@@ -101,9 +110,9 @@ struct OpticsInspector: View {
         let limits = StudioNumericInput.sliderBounds(usual: range, current: actual)
         let units = self.units
         return VStack(alignment: .leading, spacing: 4) {
-            HStack {
+            fieldLayout {
                 Text(title).font(.subheadline.weight(.medium))
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 if measurement == .distance {
                     DistanceValueButton(title: title, id: id, value: value, range: domain)
                 } else {

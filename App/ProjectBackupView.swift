@@ -91,7 +91,9 @@ struct ProjectBackupView: View {
     }
 
     @MainActor private func prepare() async {
-        prepared = nil
+        // Keep the immutable document alive if this task restarts while the
+        // system exporter is using it, or after returning from its sheet.
+        guard !Task.isCancelled, prepared == nil else { return }
         preparationError = nil
         let name = name, scene = scene
         let worker = Task.detached(priority: .utility) {

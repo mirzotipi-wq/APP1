@@ -41,6 +41,7 @@ struct RealityStudioPreview: View {
 
 @MainActor
 private struct RealityStudioSurface: UIViewRepresentable {
+    @Environment(\.scenePhase) private var scenePhase
     let scene: LightingScene
     let selected: UUID?
     let fitRequest: Int
@@ -66,6 +67,7 @@ private struct RealityStudioSurface: UIViewRepresentable {
     func updateUIView(_ view: StudioOrbitARView, context: Context) {
         context.coordinator.update(scene: scene, selected: selected,
                                    fitRequest: fitRequest, onSelect: onSelect)
+        context.coordinator.setSceneActive(scenePhase == .active)
     }
 
     static func dismantleUIView(_ view: StudioOrbitARView, coordinator: Coordinator) {
@@ -84,6 +86,8 @@ private struct RealityStudioSurface: UIViewRepresentable {
         private var onSelect: ((UUID) -> Void)?
         private var currentScene: LightingScene?
         private var lastFitRequest: Int?
+        private var isSceneActive = true
+        private var isRendering = false
         private var needsFit = true
         private var target = SIMD3<Float>(0, 1, 0)
         private var yaw: Float = 0.56
@@ -97,9 +101,8 @@ private struct RealityStudioSurface: UIViewRepresentable {
             camera.name = "Studio orbit camera"
             camera.camera = PerspectiveCameraComponent(near: 0.02, far: 2_000, fieldOfViewInDegrees: 48)
             cameraAnchor.addChild(camera)
-            view.scene.addAnchor(graph.anchor)
-            view.scene.addAnchor(cameraAnchor)
             view.didLayout = { [weak self] size in self?.layout(size: size) }
+            view.didChangeWindow = { [weak self] in self?.updateRenderingState() }
 
             let orbit = UIPanGestureRecognizer(target: self, action: #selector(orbit(_:)))
             orbit.minimumNumberOfTouches = 1
@@ -120,6 +123,33 @@ private struct RealityStudioSurface: UIViewRepresentable {
                 view.addGestureRecognizer(gesture)
             }
             applyCamera()
+            updateRenderingState()
+        }
+
+        func setSceneActive(_ active: Bool) {
+            isSceneActive = active
+            updateRenderingState()
+        }
+
+        private func updateRenderingState() {
+            guard let view else { return }
+            let shouldRender = isSceneActive && view.window != nil
+            view.isHidden = !shouldRender
+            guard shouldRender != isRendering else { return }
+            isRendering = shouldRender
+            // Keep orbit state while detaching geometry outside the active
+            // window. A non-AR preview never starts an AR camera session.
+            if shouldRender {
+                view.scene.addAnchor(graph.anchor)
+                view.scene.addAnchor(cameraAnchor)
+            } else {
+                view.scene.removeAnchor(graph.anchor)
+                view.scene.removeAnchor(cameraAnchor)
+                for gesture in gestures {
+                    gesture.isEnabled = false
+                    gesture.isEnabled = true
+                }
+            }
         }
 
         func update(scene: LightingScene, selected: UUID?, fitRequest: Int,
@@ -138,14 +168,19 @@ private struct RealityStudioSurface: UIViewRepresentable {
 
         func detach(from view: StudioOrbitARView) {
             view.didLayout = nil
+            view.didChangeWindow = nil
             for gesture in gestures {
                 gesture.delegate = nil
                 gesture.removeTarget(self, action: nil)
                 view.removeGestureRecognizer(gesture)
             }
             gestures.removeAll()
+            panGesture = nil
+            zoomGesture = nil
             view.scene.removeAnchor(graph.anchor)
             view.scene.removeAnchor(cameraAnchor)
+            camera.removeFromParent()
+            isRendering = false
             onSelect = nil
             currentScene = nil
             self.view = nil
@@ -182,6 +217,9 @@ private struct RealityStudioSurface: UIViewRepresentable {
 
         private func applyCamera() {
             let offset = SIMD3<Float>(sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch)) * distance
+            // Authored coordinates lie in a 200 m cube. Include its diagonal
+            // and equipment margins even after panning at maximum zoom-out.
+            camera.camera.far = max(100, distance + simd_length(target) + 200)
             camera.look(at: target, from: target + offset, relativeTo: nil)
         }
 
@@ -233,6 +271,21 @@ private struct RealityStudioSurface: UIViewRepresentable {
             (gestureRecognizer === zoomGesture && otherGestureRecognizer === panGesture)
         }
 
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            isRendering && currentScene != nil && !UIAccessibility.isVoiceOverRunning
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                               shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard gestureRecognizer is UIPanGestureRecognizer || gestureRecognizer is UIPinchGestureRecognizer,
+                  let scrollView = otherGestureRecognizer.view as? UIScrollView,
+                  otherGestureRecognizer === scrollView.panGestureRecognizer,
+                  let view, view.isDescendant(of: scrollView) else { return false }
+            // Gestures that begin inside the preview edit its camera; scrolling
+            // remains available everywhere else and through VoiceOver.
+            return true
+        }
+
         private func clamp(_ value: Float, to range: ClosedRange<Float>) -> Float {
             min(range.upperBound, max(range.lowerBound, value))
         }
@@ -242,7 +295,13 @@ private struct RealityStudioSurface: UIViewRepresentable {
 @MainActor
 private final class StudioOrbitARView: ARView {
     var didLayout: ((CGSize) -> Void)?
+    var didChangeWindow: (() -> Void)?
     private var previousSize: CGSize = .zero
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        didChangeWindow?()
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()

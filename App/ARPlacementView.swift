@@ -6,7 +6,9 @@ import UIKit
 @MainActor
 struct ARPlacementView: View {
     let scene: LightingScene
-    private let onRoomChange: ((ManualRoom) -> Void)?
+    private let onRoomChange: ((ManualRoom) -> Bool)?
+    private let onRoomRemove: (() -> Bool)?
+    private let onClose: (() -> Void)?
     @StateObject private var controller: ARPlacementController
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
@@ -14,12 +16,16 @@ struct ARPlacementView: View {
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRawValue = PlanUnits.metric.rawValue
     @State private var showingManual = false
+    @State private var manualOwner: UUID?
 
     private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
 
-    init(scene: LightingScene, onRoomChange: ((ManualRoom) -> Void)? = nil) {
+    init(scene: LightingScene, onRoomRemove: (() -> Bool)? = nil,
+         onClose: (() -> Void)? = nil, onRoomChange: ((ManualRoom) -> Bool)? = nil) {
         self.scene = scene
         self.onRoomChange = onRoomChange
+        self.onRoomRemove = onRoomRemove
+        self.onClose = onClose
         _controller = StateObject(wrappedValue: ARPlacementController(scene: scene))
     }
 
@@ -46,18 +52,57 @@ struct ARPlacementView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
+                        onClose?()
                         controller.disappeared()
                         dismiss()
                     }
                     .accessibilityIdentifier("closeARPlacement")
                 }
             }
-            .sheet(isPresented: $showingManual) {
-                ManualRoomPlacementView(scene: scene, onChange: onRoomChange)
+            .background {
+                if let owner = manualOwner {
+                    Color.clear
+                        .sheet(isPresented: manualPresentationBinding(for: owner), onDismiss: {
+                            if manualOwner == owner {
+                                showingManual = false
+                                manualOwner = nil
+                            }
+                        }) {
+                            ManualRoomPlacementView(scene: scene,
+                                onRemove: manualRoomRemoval(for: owner),
+                                onClose: {
+                                    if manualOwner == owner { showingManual = false }
+                                }, onChange: manualRoomChange(for: owner))
+                        }
+                        .id(owner)
+                }
             }
             .onAppear { controller.appeared(isActive: scenePhase == .active) }
             .onDisappear { controller.disappeared() }
             .onChange(of: scenePhase) { _, phase in controller.setActive(phase == .active) }
+        }
+    }
+
+    private func manualPresentationBinding(for owner: UUID) -> Binding<Bool> {
+        Binding(get: { showingManual && manualOwner == owner }, set: { presented in
+            guard manualOwner == owner else { return }
+            showingManual = presented
+        })
+    }
+
+    private func manualRoomChange(for owner: UUID) -> ((ManualRoom) -> Bool)? {
+        guard let onRoomChange else { return nil }
+        return { room in
+            guard showingManual, manualOwner == owner else { return false }
+            return onRoomChange(room)
+        }
+    }
+
+    private func manualRoomRemoval(for owner: UUID) -> (() -> Bool)? {
+        guard let onRoomRemove else { return nil }
+        return {
+            guard showingManual, manualOwner == owner else { return false }
+            return onRoomRemove()
         }
     }
 
@@ -198,6 +243,7 @@ struct ARPlacementView: View {
     private var manualOption: some View {
         Button {
             controller.stop()
+            manualOwner = UUID()
             showingManual = true
         } label: {
             Label("Use manual room measurements", systemImage: "ruler")

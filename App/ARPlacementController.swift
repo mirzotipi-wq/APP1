@@ -119,7 +119,7 @@ final class ARPlacementController: NSObject, ObservableObject {
                 return "Tracking has recovered. Compare every marker with the room before continuing. Reset if anything shifted."
             }
             if hasPlacement {
-                return "Markers show authored equipment centers. Check placement with a tape measure and a light meter."
+                return "Markers show equipment centers; amber outlines show available rectangular emitting faces. Check placement with a tape measure and a light meter."
             }
             return surfaceFound
                 ? "Confirm the crosshair is on the actual floor, not a table or shelf, then place the subject here."
@@ -297,6 +297,8 @@ final class ARPlacementController: NSObject, ObservableObject {
         let entity = AnchorEntity(anchor: anchor)
         let root = Entity()
         entity.addChild(root)
+        // The cached layout has zero origin and yaw. The anchor and root
+        // apply translation and heading once to both centers and face corners.
         buildMarkers(layout: layout, in: root)
         root.orientation = simd_quatf(angle: Float(placed.yawDegrees * .pi / 180), axis: [0, 1, 0])
         floorAnchor = anchor
@@ -368,6 +370,26 @@ final class ARPlacementController: NSObject, ObservableObject {
             if item.role != .subject {
                 addLine(from: [0, 0.012, 0], to: floor + [0, 0.012, 0], color: lineColor, in: root)
             }
+        }
+        buildModifierFaces(layout: layout, in: root)
+    }
+
+    private func buildModifierFaces(layout: ARPlacementLayout, in root: Entity) {
+        let color = UIColor(red: 1, green: 0.74, blue: 0.34, alpha: 1)
+        for face in layout.modifierFaces where face.isAvailable {
+            // Core corners already include authored aim, dimensions and roll.
+            // Outline only the ideal emitting face, without implying a fixture
+            // volume, clearance boundary or illumination of the room.
+            let outline = Entity()
+            outline.name = "emitting-face-\(face.id.uuidString)"
+            let corners = face.corners.map { vector($0) }
+            for index in corners.indices {
+                addLine(from: corners[index], to: corners[(index + 1) % corners.count],
+                        color: color, in: outline)
+            }
+            // Keep every edge under the rig so rotation, tracking visibility,
+            // reset and anchor loss follow the same lifecycle as the markers.
+            root.addChild(outline)
         }
     }
 

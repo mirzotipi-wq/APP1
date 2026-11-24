@@ -190,12 +190,16 @@ enum ReferenceAnalysisService {
         }
         let leftMean = left.map(\.luminance).reduce(0, +) / 3
         let rightMean = right.map(\.luminance).reduce(0, +) / 3
-        let clipped = patches.map(\.clippedFraction).reduce(0, +) / 6
+        let sampledPixelCount = patches.map(\.count).reduce(0, +)
+        // Patches can contain different numbers of opaque samples after cropping
+        // and downsampling; a pixel fraction must weight their counts accordingly.
+        let clipped = patches.reduce(0.0) { $0 + $1.clippedFraction * Double($1.count) }
+            / Double(sampledPixelCount)
         let denominator = leftMean + rightMean
         let asymmetry = denominator > 0 ? (leftMean - rightMean) / denominator : 0
         let measurements = ReferenceFaceMeasurements(leftLuminance: leftMean, rightLuminance: rightMean,
             asymmetry: asymmetry, clippedFraction: clipped,
-            sampledPixelCount: patches.map(\.count).reduce(0, +))
+            sampledPixelCount: sampledPixelCount)
         guard [leftMean, rightMean, clipped, asymmetry].allSatisfy(\.isFinite) else {
             return result(.unsupported, "The brightness comparison was invalid. Choose the key side manually.", bounds: bounds)
         }
@@ -250,12 +254,12 @@ enum ReferenceAnalysisService {
         values.reserveCapacity(width * height)
         var clipped = 0
         for index in stride(from: 0, to: bytes.count, by: 4) {
-            // Exclude transparency rather than counting premultiplied black as shadow.
-            guard bytes[index + 3] >= 250 else { continue }
-            let alpha = Double(bytes[index + 3]) / 255
-            let red = min(1, Double(bytes[index]) / 255 / alpha)
-            let green = min(1, Double(bytes[index + 1]) / 255 / alpha)
-            let blue = min(1, Double(bytes[index + 2]) / 255 / alpha)
+            // Only fully opaque pixels have an appearance independent of an
+            // unspecified background, matching the whole-image tonal summary.
+            guard bytes[index + 3] == 255 else { continue }
+            let red = Double(bytes[index]) / 255
+            let green = Double(bytes[index + 1]) / 255
+            let blue = Double(bytes[index + 2]) / 255
             let encodedLuma = 0.2126 * red + 0.7152 * green + 0.0722 * blue
             // One saturated channel can lose usable brightness information even
             // when weighted luma is moderate (for example under colored light).

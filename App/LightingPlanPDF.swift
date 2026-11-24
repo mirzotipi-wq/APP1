@@ -32,7 +32,7 @@ import LightingCore
             }
             for (index, items) in plan.roomPlacementPages.enumerated() {
                 context.beginPage()
-                base(cg, plan: plan, bounds: bounds, section: "Manual room placement", page: plan.equipmentPages.count + index + 2)
+                base(cg, plan: plan, bounds: bounds, section: "Manual room placement", page: plan.equipmentPages.count + index + 2, compact: true)
                 roomPlacement(cg, plan: plan, items: items, bounds: bounds)
             }
         }
@@ -40,13 +40,14 @@ import LightingCore
         return data
     }
 
-    private static func base(_ cg: CGContext, plan: LightingPlan, bounds: CGRect, section: String, page: Int) {
+    private static func base(_ cg: CGContext, plan: LightingPlan, bounds: CGRect, section: String, page: Int, compact: Bool = false) {
         cg.setFillColor(UIColor.white.cgColor); cg.fill(bounds)
         let width = bounds.width - 80
-        text("KEY & FILL  /  STUDIO DOCUMENT", x: 40, y: 32, width: width, height: 16, size: 10, color: amber, weight: .semibold)
-        text(section, x: 40, y: 51, width: width, height: 38, size: 25, weight: .semibold)
-        text(plan.title, x: 40, y: 92, width: width, height: 42, size: 15, minimum: 10, color: muted)
-        stroke(cg, from: CGPoint(x: 40, y: 137), to: CGPoint(x: bounds.width - 40, y: 137), color: rule)
+        text("KEY & FILL  /  STUDIO DOCUMENT", x: 40, y: compact ? 23 : 32, width: width, height: 16, size: 10, color: amber, weight: .semibold)
+        text(section, x: 40, y: compact ? 40 : 51, width: width, height: compact ? 29 : 38, size: compact ? 23 : 25, weight: .semibold)
+        text(plan.title, x: 40, y: compact ? 70 : 92, width: width, height: compact ? 23 : 42, size: compact ? 11 : 15, minimum: compact ? 9 : 10, color: muted)
+        let headerBottom: CGFloat = compact ? 96 : 137
+        stroke(cg, from: CGPoint(x: 40, y: headerBottom), to: CGPoint(x: bounds.width - 40, y: headerBottom), color: rule)
         let footer = bounds.height - 41
         stroke(cg, from: CGPoint(x: 40, y: footer - 8), to: CGPoint(x: bounds.width - 40, y: footer - 8), color: rule)
         text("Plan v\(LightingPlan.reportVersion) · Scene v\(plan.scene.schemaVersion) · \(plan.paper.title)", x: 40, y: footer, width: width - 80, height: 20, size: 9, color: muted)
@@ -116,45 +117,39 @@ import LightingCore
 
     /// Every room page repeats the measurement basis and scope notes. Four
     /// fixed-height vector rows fit inside the Letter content bounds; A4 uses
-    /// the same readable layout. The model owns the identical page grouping.
+    /// the same layout. A compact header leaves space for full height checks.
     private static func roomPlacement(_ cg: CGContext, plan: LightingPlan, items: [PlanRoomItem], bounds: CGRect) {
         let width = bounds.width - 80
         let summary = plan.roomPlacementSummary
         let summaryBoxes: [(y: CGFloat, height: CGFloat, size: CGFloat)] = [
-            (151, 18, 11), (171, 18, 10), (191, 27, 10), (220, 23, 9.5), (245, 22, 9)
+            (101, 13, 10), (115, 12, 9), (128, 22, 9), (151, 12, 9), (164, 22, 8.5)
         ]
         for (line, box) in zip(summary, summaryBoxes) {
             text(line, x: 40, y: box.y, width: width, height: box.height, size: box.size,
                  color: muted, weight: .medium)
         }
-        stroke(cg, from: CGPoint(x: 40, y: 269), to: CGPoint(x: bounds.width - 40, y: 269), color: rule)
+        stroke(cg, from: CGPoint(x: 40, y: 188), to: CGPoint(x: bounds.width - 40, y: 188), color: rule)
         for (index, item) in items.enumerated() {
-            let y = CGFloat(270 + index * 96)
+            let y = CGFloat(189 + index * 119)
             let x: CGFloat = 76
             let rowWidth = bounds.width - x - 40
-            let gap: CGFloat = 14
-            let columnWidth = (rowWidth - gap) / 2
-            let secondColumn = x + columnWidth + gap
             let statusColor = item.hasWarning ? amber : muted
             text(item.marker, x: 40, y: y + 5, width: 30, height: 24, size: 17, color: amber, weight: .semibold)
-            text(item.name, x: x, y: y + 2, width: rowWidth, height: 25, size: 12, minimum: 10, weight: .semibold)
-            text("X from left: \(plan.units.roomDistance(item.point.xFromLeft))", x: x, y: y + 28,
-                 width: columnWidth, height: 14, size: 9.5)
-            text("Z from near: \(plan.units.roomDistance(item.point.zFromNear))", x: secondColumn, y: y + 28,
-                 width: columnWidth, height: 14, size: 9.5)
-            text("Height: \(plan.units.roomDistance(item.point.heightMeters))", x: x, y: y + 43,
-                 width: columnWidth, height: 14, size: 9.5)
-            text("Floor distance: \(plan.units.roomDistance(item.point.horizontalDistanceFromSubject))", x: secondColumn, y: y + 43,
-                 width: columnWidth, height: 14, size: 9.5)
-            text(item.centerStatus, x: x, y: y + 58, width: rowWidth, height: 13, size: 9, color: statusColor, weight: .medium)
-            if let status = item.projectedFaceStatus(units: plan.units) {
-                text(status, x: x, y: y + 72, width: rowWidth, height: 22, size: 9, color: statusColor)
+            text(item.name, x: x, y: y + 2, width: rowWidth, height: 24, size: 11, minimum: 9.5, weight: .semibold)
+            let coordinates = "X from left: \(plan.units.roomDistance(item.point.xFromLeft)) · Z from near: \(plan.units.roomDistance(item.point.zFromNear))\nHeight: \(plan.units.roomDistance(item.point.heightMeters)) · Floor distance to subject: \(plan.units.roomDistance(item.point.horizontalDistanceFromSubject))"
+            text(coordinates, x: x, y: y + 27, width: rowWidth, height: 24, size: 9, minimum: 8.5)
+            text(item.centerStatus + ". " + item.centerHeightStatus(units: plan.units),
+                 x: x, y: y + 52, width: rowWidth, height: 25, size: 9, minimum: 8.5, color: statusColor)
+            let faceStatus = [item.projectedFaceStatus(units: plan.units), item.faceHeightStatus(units: plan.units)]
+                .compactMap { $0 }.joined(separator: " ")
+            if !faceStatus.isEmpty {
+                text(faceStatus, x: x, y: y + 78, width: rowWidth, height: 38, size: 9, minimum: 8.5, color: statusColor)
             }
-            stroke(cg, from: CGPoint(x: 40, y: y + 95), to: CGPoint(x: bounds.width - 40, y: y + 95), color: rule)
+            stroke(cg, from: CGPoint(x: 40, y: y + 118), to: CGPoint(x: bounds.width - 40, y: y + 118), color: rule)
         }
         text(LightingPlan.roomPlacementCoordinateNote,
-             x: 40, y: 663, width: width, height: 27, size: 8.5, color: muted)
-        text(LightingPlan.roomPlacementLimitations, x: 40, y: 693, width: width, height: 40, size: 8.5, color: muted)
+             x: 40, y: 670, width: width, height: 27, size: 8.5, color: muted)
+        text(LightingPlan.roomPlacementLimitations, x: 40, y: 699, width: width, height: 40, size: 8.5, color: muted)
     }
 
     private static func text(_ string: String, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,

@@ -8,10 +8,17 @@ struct CameraInspector: View {
     let subject: Position
     let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRawValue = PlanUnits.metric.rawValue
 
     private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
+
+    private var fieldLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+    }
 
     private var framing: CameraFraming? {
         CameraFraming(scene: LightingScene(subject: subject, camera: position, lights: [], cameraLens: lens))
@@ -38,7 +45,8 @@ struct CameraInspector: View {
             slider("Focal length", value: $lens.focalLengthMillimeters,
                    range: CameraLens.focalLengthRange, domain: CameraLens.focalLengthRange,
                    step: 1, unit: "mm", id: "cameraFocalLength")
-            HStack(spacing: 0) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0),
+                                     count: dynamicTypeSize.isAccessibilitySize ? 2 : 5), spacing: 8) {
                 ForEach([24.0, 35.0, 50.0, 85.0, 135.0], id: \.self) { mm in
                     Button {
                         lens.focalLengthMillimeters = mm
@@ -69,9 +77,9 @@ struct CameraInspector: View {
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         let units = self.units
         return VStack(alignment: .leading, spacing: 4) {
-            HStack {
+            fieldLayout {
                 Text("\(title) (\(units.symbol))").font(.subheadline.weight(.medium))
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 DistanceValueButton(title: title, id: id, value: value, range: Position.coordinateRange)
             }
             StudioSlider(value: value, in: bounds, step: step,
@@ -88,9 +96,9 @@ struct CameraInspector: View {
         // Preserve valid imported positions even outside the initial editing range.
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         return VStack(alignment: .leading, spacing: 4) {
-            HStack {
+            fieldLayout {
                 Text(title).font(.subheadline.weight(.medium))
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: domain)
             }
             StudioSlider(value: value, in: bounds, step: step,

@@ -69,9 +69,18 @@ public enum StudioNumericInput {
 
     public static func parse(_ text: String, decimalSeparator: String = ".",
                              in range: ClosedRange<Double>) -> Double? {
+        // Bound pasted input before trimming or traversing grapheme clusters.
+        // The small whitespace allowance preserves ordinary padded decimals.
+        guard text.utf8.prefix(257).count <= 256,
+              decimalSeparator.utf8.prefix(5).count <= 4,
+              range.lowerBound.isFinite, range.upperBound.isFinite else { return nil }
         let input = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !input.isEmpty, input.utf8.count <= 96, input.count <= 32,
-              decimalSeparator.count == 1, let separator = decimalSeparator.first,
+              decimalSeparator.unicodeScalars.count == 1,
+              let scalar = decimalSeparator.unicodeScalars.first,
+              !CharacterSet.whitespacesAndNewlines.contains(scalar),
+              !CharacterSet.letters.contains(scalar),
+              let separator = decimalSeparator.first,
               separator != "+", separator != "-", separator != "−",
               separator.wholeNumberValue == nil else { return nil }
         var canonical = ""

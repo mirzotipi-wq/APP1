@@ -52,6 +52,7 @@ final class EntitlementStore: ObservableObject {
     private var startupTask: Task<Void, Never>?
     private var isLoadingProduct = false
     private var entitlementRevision = UUID()
+    private var purchaseResolutionRevision = UUID()
     private var finishingTransactions: Set<UInt64> = []
 
     init(productID: String? = EntitlementStore.configuredProductID) {
@@ -104,6 +105,7 @@ final class EntitlementStore: ObservableObject {
         if hasLifetimeAccess { return record(.purchased) }
         if isPurchasePending { return record(.pending) }
         guard canPurchase, let product else { return record(.unavailable) }
+        let resolutionRevision = purchaseResolutionRevision
 
         activity = .purchasing
         lastOutcome = nil
@@ -116,6 +118,12 @@ final class EntitlementStore: ObservableObject {
                 return record(.cancelled)
             case .pending:
                 // Approval may have arrived through updates while purchase awaited.
+                // A subsequent revocation must not let this older result reopen
+                // an approval that the store has already observed completing.
+                if resolutionRevision != purchaseResolutionRevision {
+                    isPurchasePending = false
+                    return record(currentPurchaseOutcome)
+                }
                 isPurchasePending = !hasLifetimeAccess
                 return record(isPurchasePending ? .pending : .purchased)
             @unknown default:
@@ -186,7 +194,10 @@ final class EntitlementStore: ObservableObject {
             entitlement = current
             // A restore or refresh that finds no entitlement cannot establish
             // that an outstanding approval was declined or cancelled.
-            if current == .purchased { isPurchasePending = false }
+            if current == .purchased {
+                purchaseResolutionRevision = UUID()
+                isPurchasePending = false
+            }
             return
         }
     }

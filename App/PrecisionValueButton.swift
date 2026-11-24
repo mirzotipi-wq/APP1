@@ -35,7 +35,8 @@ struct PrecisionValueButton: View {
         .accessibilityHint("Opens a numeric editor")
         .accessibilityIdentifier(id + "Exact")
         .sheet(isPresented: $showingEditor) {
-            PrecisionValueEditor(title: title, unit: unit, value: $value, range: range)
+            PrecisionValueEditor(title: title, unit: unit, value: $value, range: range,
+                                 isPresented: $showingEditor)
         }
     }
 }
@@ -45,6 +46,7 @@ private struct PrecisionValueEditor: View {
     let unit: String
     @Binding var value: Double
     let range: ClosedRange<Double>
+    @Binding var isPresented: Bool
     @Environment(\.locale) private var locale
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focused: Bool
@@ -52,6 +54,10 @@ private struct PrecisionValueEditor: View {
     @State private var initialDraft = ""
     @State private var requiresReplacementDraft = false
     @State private var invalid = false
+    @State private var active = false
+    @State private var originalValueBits: UInt64?
+    @State private var originalLocale = Locale.current
+    @State private var originalRange: ClosedRange<Double>?
 
     var body: some View {
         NavigationStack {
@@ -96,17 +102,26 @@ private struct PrecisionValueEditor: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") { cancel() }
                         .accessibilityIdentifier("precisionCancel")
                 }
             }
             .onAppear {
+                guard originalValueBits == nil else { return }
+                originalValueBits = value.bitPattern
+                originalLocale = locale
+                originalRange = range
                 let exact = StudioNumericInput.editableText(value, decimalSeparator: locale.decimalSeparator ?? ".")
                 requiresReplacementDraft = exact == nil
                 initialDraft = exact ?? ""
                 draft = initialDraft
+                active = true
             }
             .onChange(of: draft) { _, _ in invalid = false }
+            .onChange(of: value.bitPattern) { _, _ in if active { cancel() } }
+            .onChange(of: locale) { _, _ in if active { cancel() } }
+            .onChange(of: range) { _, _ in if active { cancel() } }
+            .onDisappear { active = false }
         }
     }
 
@@ -118,17 +133,33 @@ private struct PrecisionValueEditor: View {
     }
 
     private func apply() {
+        // A stale keyboard submission must not overwrite an external edit or
+        // reinterpret digits after the presentation's locale has changed.
+        guard active, isPresented else { return }
+        guard value.bitPattern == originalValueBits, locale == originalLocale,
+              range == originalRange else { cancel(); return }
         // Applying untouched formatted text must not round an imported value.
         if draft == initialDraft {
-            focused = false; dismiss(); return
+            cancel(); return
         }
         guard let next = StudioNumericInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
                                                   in: range) else {
             invalid = true
             return
         }
-        value = next
+        active = false
+        // Equivalent decimal spellings preserve the stored bits (and signed
+        // zero), and do not create a redundant history entry.
+        if next != value { value = next }
         focused = false
+        isPresented = false
+        dismiss()
+    }
+
+    private func cancel() {
+        active = false
+        focused = false
+        isPresented = false
         dismiss()
     }
 }

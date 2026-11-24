@@ -205,6 +205,7 @@ private final class StudioLampEntity {
     private var lastSubject: Position?
     private var lastSelected = false
     private var lastShades = false
+    private var hasAimGeometry = false
 
     init(id: UUID, resources: StudioGeometryResources) {
         self.resources = resources
@@ -281,7 +282,11 @@ private final class StudioLampEntity {
 
             let delta = vector(light.target(subject: subject)) - position
             let length = simd_length(delta)
-            if frame != nil, length > 0.0001 {
+            // A finite core frame can exist even when source and target are
+            // too close to form a visible Float-space segment. Hide both aim
+            // markers then, including after an earlier, longer aim was cached.
+            hasAimGeometry = frame != nil && length > 0.0001
+            if hasAimGeometry {
                 aimLine.position = delta / 2
                 aimLine.scale = [0.005, length, 0.005]
                 aimLine.orientation = simd_quatf(from: [0, 1, 0], to: delta / length)
@@ -290,8 +295,8 @@ private final class StudioLampEntity {
             }
         }
         selection.isEnabled = selected
-        aimLine.isEnabled = selected && frame != nil
-        aimTarget.isEnabled = selected && frame != nil
+        aimLine.isEnabled = selected && hasAimGeometry
+        aimTarget.isEnabled = selected && hasAimGeometry
         if sourceChanged {
             let color = sourceColor(kelvin: light.kelvin)
             let active = light.candela > 0 && (!optics.kind.isAimed || frame != nil)

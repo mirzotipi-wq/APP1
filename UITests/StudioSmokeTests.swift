@@ -18,6 +18,65 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed, file: file, line: line)
     }
 
+    #if targetEnvironment(simulator)
+    func testSettingsFeet3DFitAndSimulatorARManualFallback() throws {
+        let app = makeApp()
+        app.launch()
+        let tools = app.buttons["studioTools"]
+        waitForEnabledStudioControl(tools)
+        revealStudioContent(tools, in: app, towardBottom: false)
+        tools.tap()
+        app.buttons["Settings"].tap()
+        let units = app.buttons["distanceUnits"]
+        XCTAssertTrue(units.waitForExistence(timeout: 10))
+        XCTAssertEqual(units.value as? String, "Meters")
+        units.tap()
+        app.buttons["Feet"].tap()
+        XCTAssertEqual(units.value as? String, "Feet")
+        app.navigationBars["Settings"].buttons["Done"].tap()
+        XCTAssertTrue(app.staticTexts["Feet · cd · K"].waitForExistence(timeout: 10))
+
+        tools.tap()
+        app.buttons["Settings"].tap()
+        XCTAssertTrue(units.waitForExistence(timeout: 10))
+        XCTAssertEqual(units.value as? String, "Feet", "Reopening Settings must retain the preference")
+        app.navigationBars["Settings"].buttons["Done"].tap()
+        let orbit = app.segmentedControls["viewMode"].buttons["3D"]
+        revealStudioContent(orbit, in: app)
+        orbit.tap()
+        let fit = app.buttons["fitStudioSetup"]
+        XCTAssertTrue(fit.waitForExistence(timeout: 10))
+        revealStudioContent(fit, in: app)
+        fit.tap()
+        XCTAssertTrue(orbit.isSelected)
+        let orbitLabel = app.staticTexts["3D / DRAG TO ORBIT"]
+        revealStudioContent(orbitLabel, in: app, towardBottom: false)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Studio-3D-fit-feet"; screenshot.lifetime = .keepAlways; add(screenshot)
+
+        revealStudioContent(tools, in: app, towardBottom: false)
+        tools.tap()
+        app.buttons["Place in AR"].tap()
+        let status = app.descendants(matching: .any)["arTrackingStatus"].firstMatch
+        XCTAssertTrue(status.waitForExistence(timeout: 10))
+        XCTAssertEqual(status.label, "AR is unavailable on this device")
+        XCTAssertFalse(app.buttons["startARCamera"].exists)
+        XCTAssertFalse(app.descendants(matching: .any)["arCameraPreview"].firstMatch.exists)
+        let manual = app.buttons["arManualMeasurements"]
+        revealStudioContent(manual, in: app)
+        manual.tap()
+        XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 10))
+        let width = app.textFields["roomWidth"]
+        revealStudioContent(width, in: app)
+        XCTAssertEqual(width.label, "Width in feet", "The manual fallback must use the selected units")
+        app.buttons["closeRoomPlacement"].tap()
+        XCTAssertTrue(app.buttons["closeARPlacement"].waitForExistence(timeout: 10))
+        app.buttons["closeARPlacement"].tap()
+        XCTAssertTrue(orbit.waitForExistence(timeout: 10))
+        XCTAssertTrue(orbit.isSelected)
+    }
+    #endif
+
     func testRecipeEditSaveAndReopen() throws {
         let app = makeApp()
         app.launch()

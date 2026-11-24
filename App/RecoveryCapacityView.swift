@@ -11,6 +11,7 @@ struct RecoveryCapacityView: View {
     @State private var selected: LightingProject?
     @State private var confirmReplacement = false
     @State private var loaded = false
+    @State private var loadFailed = false
     @State private var message: String?
     @State private var isLoading = false
     @State private var isReplacing = false
@@ -34,8 +35,9 @@ struct RecoveryCapacityView: View {
                             .disabled(isLoading || isReplacing)
                     }
                 }
-                if !loaded {
+                if !loaded || isLoading {
                     ProgressView("Opening archived projects")
+                        .accessibilityIdentifier("recoveryCapacityProgress")
                 } else if isReplacing {
                     Section {
                         ProgressView("Saving recovery project")
@@ -43,14 +45,18 @@ struct RecoveryCapacityView: View {
                         Text("The confirmed replacement finishes before closing. If saving fails, your setup remains in the studio.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
-                } else if candidates.isEmpty {
+                } else if candidates.isEmpty && !loadFailed {
                     Section {
                         Text("No archived projects are available")
                             .font(.headline).accessibilityIdentifier("recoveryCapacityEmpty")
                         Text("Your edits remain open in this window. Return to the studio and choose Export, then Editable project copy, to preserve them in a file. No saved project has been removed.")
                             .font(.subheadline).foregroundStyle(.secondary)
+                        if message == nil {
+                            Button("Refresh archived projects") { reload() }
+                                .frame(minHeight: 44)
+                        }
                     }
-                } else {
+                } else if !candidates.isEmpty {
                     Section("Choose an archived project") {
                         ForEach(candidates) { project in
                             Button {
@@ -104,6 +110,8 @@ struct RecoveryCapacityView: View {
     private func reload(preservingMessage: String? = nil) {
         guard !isReplacing else { return }
         cancelLoad()
+        selected = nil
+        confirmReplacement = false
         let request = UUID()
         loadRequest = request
         isLoading = true
@@ -116,11 +124,13 @@ struct RecoveryCapacityView: View {
                 guard !Task.isCancelled, request == loadRequest else { return }
                 candidates = latest
                 loaded = true
+                loadFailed = false
                 message = preservingMessage
             } catch {
                 guard !Task.isCancelled, request == loadRequest else { return }
                 candidates = []
                 loaded = true
+                loadFailed = true
                 message = "Archived projects could not be opened. Your current edits are still in the studio. \(error.localizedDescription)"
             }
         }

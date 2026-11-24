@@ -281,18 +281,24 @@ public struct RoomPlacementPlan: Equatable, Sendable {
     public init(scene: LightingScene, room: ManualRoom) throws {
         guard room.isValid else { throw RoomPlacementError.invalidRoom }
         let scene = try scene.validated()
-        let radians = room.yawDegrees * .pi / 180
-        let c = cos(radians), s = sin(radians)
-        // Remove tiny floating-point residuals at exact wall boundaries.
-        func snap(_ value: Double, limit: Double) -> Double {
-            if abs(value) <= 1e-9 { return 0 }
-            if abs(value - limit) <= 1e-9 { return limit }
-            return value
+        // Exact cardinal coefficients avoid trigonometric residuals at wall
+        // contact. Never snap physical coordinates: even a tiny overhang must
+        // remain outside the room.
+        let c: Double
+        let s: Double
+        switch room.yawDegrees {
+        case 0, -360, 360: c = 1; s = 0
+        case 90, -270: c = 0; s = 1
+        case -90, 270: c = 0; s = -1
+        case -180, 180: c = -1; s = 0
+        default:
+            let radians = room.yawDegrees * .pi / 180
+            c = cos(radians); s = sin(radians)
         }
         func floorPoint(_ p: Position) -> RoomFloorPoint {
             let dx = p.x - scene.subject.x, dz = p.z - scene.subject.z
-            return .init(xFromLeft: snap(room.subjectX + c * dx + s * dz, limit: room.widthMeters),
-                         zFromNear: snap(room.subjectZ - s * dx + c * dz, limit: room.depthMeters))
+            return .init(xFromLeft: room.subjectX + c * dx + s * dz,
+                         zFromNear: room.subjectZ - s * dx + c * dz)
         }
         func point(_ id: String, _ kind: RoomPlacementPoint.Kind, _ name: String,
                    _ p: Position) -> RoomPlacementPoint {

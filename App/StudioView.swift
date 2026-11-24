@@ -20,7 +20,7 @@ struct StudioView: View {
     @State private var showRenameLight = false
     @State private var renameGeneration: UUID?
     @State private var planDrag: PlanDrag?
-    @State private var luxTarget: StudioLight?
+    @State private var luxTarget: LuxTarget?
     @State private var showArrangement = false
     @State private var showARPlacement = false
     @State private var showSettings = false
@@ -35,6 +35,11 @@ struct StudioView: View {
     @State private var showMeter = false
     @State private var meterNavigationRequest = 0
     @State private var confirmRemove = false
+    @State private var removalTarget: RemovalTarget?
+    @State private var referenceContext: SceneContext?
+    @State private var roomContext: SceneContext?
+    @State private var arrangementContext: SceneContext?
+    @State private var arContext: SceneContext?
     @State private var loaded = false
     @State private var saveBlocked = false
     @State private var message: String?
@@ -55,6 +60,24 @@ struct StudioView: View {
         let scene: LightingScene
         let pointsPerMeter: Double
         let owner: String
+    }
+
+    private struct LuxTarget: Identifiable {
+        let id = UUID()
+        let light: StudioLight
+        let scene: LightingScene
+        let generation: UUID
+    }
+
+    private struct RemovalTarget {
+        let lightID: UUID
+        let generation: UUID
+    }
+
+    private struct SceneContext {
+        let scene: LightingScene
+        let generation: UUID
+        let owner = UUID().uuidString
     }
 
     var body: some View {
@@ -142,25 +165,35 @@ struct StudioView: View {
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
             .sheet(isPresented: $showSettings) { StudioSettingsView(store: entitlements) }
-            .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) { rig in
-                guard libraryOperation.allowsSceneMutation(from: generation) else { return }
-                replace(rig); mode = "Study"
-            } }
-            .sheet(isPresented: $showRoomPlacement) {
-                let owner = editOwner("room")
-                ManualRoomPlacementView(scene: scene) { room in
-                    guard libraryOperation.allowsSceneMutation(from: generation), room.isValid,
-                          room != scene.placementRoom else { return }
-                    editHistory.begin(scene: scene, owner: owner)
-                    scene.placementRoom = room
+            .sheet(isPresented: $showReference) {
+                if let context = referenceContext {
+                    ReferenceComparisonView(scene: context.scene) { rig in
+                        guard acceptsSceneResult(from: context) else { return }
+                        replace(rig); mode = "Study"
+                    }
                 }
-                .onDisappear { editHistory.end(scene: scene, owner: owner) }
             }
-            .sheet(item: $luxTarget) { light in
-                LightTargetLuxView(light: light, scene: scene) { adjusted in
-                    guard libraryOperation.allowsSceneMutation(from: generation),
-                          let index = scene.lights.firstIndex(where: { $0.id == light.id }),
-                          scene.lights[index] == light else {
+            .background {
+                if let context = roomContext {
+                    Color.clear
+                        .sheet(isPresented: roomPresentationBinding(for: context), onDismiss: {
+                            finishRoomEditing(context)
+                        }) {
+                            ManualRoomPlacementView(scene: scene,
+                                onRemove: { removeRoom(from: context) },
+                                onClose: { retireRoomPresentation(context) }) { room in
+                                    applyRoom(room, from: context)
+                                }
+                        }
+                        .id(context.owner)
+                }
+            }
+            .sheet(item: $luxTarget) { target in
+                LightTargetLuxView(light: target.light, scene: target.scene) { adjusted in
+                    guard libraryOperation.allowsSceneMutation(from: target.generation),
+                          scene == target.scene,
+                          let index = scene.lights.firstIndex(where: { $0.id == target.light.id }),
+                          scene.lights[index] == target.light else {
                         message = "The setup changed while adjusting output. Open the light's target again."
                         return
                     }
@@ -170,20 +203,27 @@ struct StudioView: View {
                 }
             }
             .sheet(isPresented: $showArrangement) {
-                SceneArrangementView(scene: scene) { next in
-                    guard libraryOperation.allowsSceneMutation(from: generation) else { return }
-                    replace(next)
+                if let context = arrangementContext {
+                    SceneArrangementView(scene: context.scene) { next in
+                        guard acceptsSceneResult(from: context) else { return }
+                        replace(next)
+                    }
                 }
             }
-            .sheet(isPresented: $showARPlacement) {
-                let owner = editOwner("ar-room")
-                ARPlacementView(scene: scene) { room in
-                    guard libraryOperation.allowsSceneMutation(from: generation), room.isValid,
-                          scene.placementRoom != room else { return }
-                    editHistory.begin(scene: scene, owner: owner)
-                    scene.placementRoom = room
+            .background {
+                if let context = arContext {
+                    Color.clear
+                        .sheet(isPresented: roomPresentationBinding(for: context, isAR: true), onDismiss: {
+                            finishRoomEditing(context)
+                        }) {
+                            ARPlacementView(scene: scene,
+                                onRoomRemove: { removeRoom(from: context) },
+                                onClose: { retireRoomPresentation(context) }) { room in
+                                    applyRoom(room, from: context)
+                                }
+                        }
+                        .id(context.owner)
                 }
-                .onDisappear { editHistory.end(scene: scene, owner: owner) }
             }
             .sheet(isPresented: $showSubject) {
                 NavigationStack {
@@ -226,10 +266,14 @@ struct StudioView: View {
             }
             .confirmationDialog("Remove selected light?", isPresented: $confirmRemove, titleVisibility: .visible) {
                 Button("Remove light", role: .destructive) {
-                    guard libraryOperation.allowsSceneMutation(from: generation) else { return }
-                    var next = scene; next.lights.removeAll { $0.id == selected }; replace(next)
+                    guard let target = removalTarget,
+                          libraryOperation.allowsSceneMutation(from: target.generation) else { return }
+                    var next = scene
+                    next.lights.removeAll { $0.id == target.lightID }
+                    replace(next)
+                    removalTarget = nil
                 }
-                Button("Cancel", role: .cancel) {}
+                Button("Cancel", role: .cancel) { removalTarget = nil }
             }
             .alert("Reload saved project?", isPresented: $confirmReloadConflict) {
                 Button("Keep editing", role: .cancel) {}
@@ -325,8 +369,12 @@ struct StudioView: View {
                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
             Menu {
                 Button("Subject position", systemImage: "person.crop.rectangle") { showSubject = true }
-                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath") { showArrangement = true }
-                Button("Place in AR", systemImage: "arkit") { showARPlacement = true }
+                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath") {
+                    arrangementContext = sceneContext(); showArrangement = true
+                }
+                Button("Place in AR", systemImage: "arkit") {
+                    arContext = sceneContext(); showARPlacement = true
+                }
                 Divider()
                 Button("Settings", systemImage: "gearshape") { showSettings = true }
             } label: {
@@ -379,7 +427,7 @@ struct StudioView: View {
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
             : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
         return layout {
-            Button { showReference = true } label: {
+            Button { referenceContext = sceneContext(); showReference = true } label: {
                 Label("Reference photo", systemImage: "rectangle.split.2x1")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -387,7 +435,7 @@ struct StudioView: View {
             .buttonStyle(.bordered)
             .accessibilityLabel("Compare reference photo")
             .accessibilityIdentifier("openReference")
-            Button { showRoomPlacement = true } label: {
+            Button { roomContext = sceneContext(); showRoomPlacement = true } label: {
                 Label("Room placement", systemImage: "ruler")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -442,13 +490,14 @@ struct StudioView: View {
                 charcoal
                 if mode == "Plan" { plan }
                 else if mode == "Camera" { cameraPreview }
-                else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject) }
+                else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
                 else {
                     RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in
                         guard libraryOperation.allowsSceneMutation(from: generation),
                               scene.lights.contains(where: { $0.id == id }) else { return }
                         selected = id
                     }
+                    .id(generation)
                     .accessibilityLabel("Illustrative 3D lighting preview")
                 }
                 if mode != "Plan" {
@@ -733,7 +782,7 @@ struct StudioView: View {
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
-                        Text("\(light.candela, specifier: "%.0f") cd").font(.caption.monospacedDigit())
+                        Text(StudioMeterReadout.candela(light.candela, locale: locale)).font(.caption.monospacedDigit())
                         Image(systemName: selected == light.id ? "checkmark.circle.fill" : "circle")
                             .foregroundStyle(selected == light.id ? amber : Color.secondary)
                     }.padding(8).frame(minHeight: 52)
@@ -755,29 +804,35 @@ struct StudioView: View {
                 }
                 Spacer()
                 Menu {
-                    Button("Rename light", systemImage: "pencil") {
+                    Button("Rename light", systemImage: "pencil", action: sceneAction {
                         renamingLightID = light.id
                         renameGeneration = libraryOperation.generation
                         lightNameDraft = lightDisplayName(light)
                         showRenameLight = true
-                    }
+                    })
                     Button("Duplicate light", systemImage: "plus.square.on.square",
                            action: sceneAction { duplicateLight(light.id) })
                         .disabled(scene.lights.count >= 12)
-                    Button("Set ideal lux", systemImage: "sun.max") { luxTarget = light }
+                    Button("Set ideal lux", systemImage: "sun.max", action: sceneAction {
+                        guard scene.lights.contains(light) else { return }
+                        luxTarget = LuxTarget(light: light, scene: scene, generation: libraryOperation.generation)
+                    })
                 } label: {
                     Image(systemName: "ellipsis.circle").frame(width: 44, height: 44)
                 }
                 .accessibilityLabel("Light actions")
                 .accessibilityIdentifier("lightActions")
-                Button(role: .destructive) { confirmRemove = true } label: {
+                Button(role: .destructive, action: sceneAction {
+                    removalTarget = RemovalTarget(lightID: light.id, generation: libraryOperation.generation)
+                    confirmRemove = true
+                }) {
                     Image(systemName: "trash").frame(width: 44, height: 44)
                 }.accessibilityLabel("Remove selected light")
             }
             VStack(alignment: .leading, spacing: 5) {
                 Text("CAMERA-FACING PLANE · IDEAL").font(.caption2.weight(.medium)).foregroundStyle(.secondary)
                 if let lux = StudioPhotometry.illuminance(for: light, in: scene) {
-                    Text("\(lux, specifier: "%.1f") lx")
+                    Text(StudioMeterReadout.lux(lux, locale: locale))
                         .font(.system(.title2, design: .monospaced).weight(.semibold))
                         .accessibilityIdentifier("idealLux")
                     Text("Direct incident light at the subject center. Rim lights may read zero on this plane.")
@@ -1001,6 +1056,101 @@ struct StudioView: View {
         }
     }
 
+    private func sceneContext() -> SceneContext {
+        finishPlanDrag()
+        editHistory.end(scene: scene)
+        return SceneContext(scene: scene, generation: libraryOperation.generation)
+    }
+
+    private func acceptsSceneResult(from context: SceneContext) -> Bool {
+        guard libraryOperation.allowsSceneMutation(from: context.generation) else { return false }
+        guard scene == context.scene else {
+            message = "The setup changed while this editor was open. Reopen it to apply changes to the current setup."
+            return false
+        }
+        return true
+    }
+
+    private func roomPresentationBinding(for context: SceneContext, isAR: Bool = false) -> Binding<Bool> {
+        Binding(get: {
+            isAR ? (showARPlacement && arContext?.owner == context.owner)
+                : (showRoomPlacement && roomContext?.owner == context.owner)
+        }, set: { presented in
+            // A delayed dismissal belongs only to its original presentation.
+            if isAR {
+                guard arContext?.owner == context.owner else { return }
+                showARPlacement = presented
+            } else {
+                guard roomContext?.owner == context.owner else { return }
+                showRoomPlacement = presented
+            }
+        })
+    }
+
+    private func retireRoomPresentation(_ context: SceneContext) {
+        if roomContext?.owner == context.owner { showRoomPlacement = false }
+        if arContext?.owner == context.owner { showARPlacement = false }
+    }
+
+    private func acceptsRoomResult(from context: SceneContext) -> Bool {
+        guard libraryOperation.allowsSceneMutation(from: context.generation),
+              (showRoomPlacement && roomContext?.owner == context.owner)
+                || (showARPlacement && arContext?.owner == context.owner) else { return false }
+        // Repeated room changes belong to this presentation; other rig edits
+        // invalidate its snapshot even if the project generation is unchanged.
+        var current = scene
+        current.placementRoom = context.scene.placementRoom
+        return current == context.scene
+    }
+
+    private func applyRoom(_ room: ManualRoom, from context: SceneContext) -> Bool {
+        guard room.isValid, acceptsRoomResult(from: context) else { return false }
+        guard room != scene.placementRoom else { return true }
+        editHistory.begin(scene: scene, owner: context.owner)
+        scene.placementRoom = room
+        return true
+    }
+
+    private func finishRoomEditing(_ context: SceneContext?) {
+        guard let context else { return }
+        editHistory.end(scene: scene, owner: context.owner)
+        if roomContext?.owner == context.owner {
+            showRoomPlacement = false
+            roomContext = nil
+        }
+        if arContext?.owner == context.owner {
+            showARPlacement = false
+            arContext = nil
+        }
+    }
+
+    private func removeRoom(from context: SceneContext) -> Bool {
+        guard acceptsRoomResult(from: context) else { return false }
+        guard scene.placementRoom != nil else { return true }
+        editHistory.begin(scene: scene, owner: context.owner)
+        scene.placementRoom = nil
+        return true
+    }
+
+    private func dismissSceneEditors() {
+        showReference = false
+        showRoomPlacement = false
+        showSubject = false
+        showArrangement = false
+        showARPlacement = false
+        showRecipes = false
+        showRenameLight = false
+        confirmRemove = false
+        renamingLightID = nil
+        renameGeneration = nil
+        removalTarget = nil
+        luxTarget = nil
+        referenceContext = nil
+        roomContext = nil
+        arrangementContext = nil
+        arContext = nil
+    }
+
     private func replace(_ next: LightingScene) {
         guard !libraryOperation.isBusy else { return }
         guard let validated = try? next.validated() else {
@@ -1147,6 +1297,7 @@ struct StudioView: View {
                 library = adoption.library
                 scene = adoption.scene
                 saved = adoption.saved
+                if libraryOperation.generation != request.generation { dismissSceneEditors() }
                 if adoption.resetsHistory {
                     editHistory.reset()
                     selected = scene.lights.first?.id

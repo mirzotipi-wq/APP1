@@ -89,7 +89,7 @@ struct NeutralCardInspector: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 5) {
                 Text("COMBINED DIRECT LIGHT").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
-                Text("\(card.totalLux, specifier: "%.1f") lx")
+                Text(StudioMeterReadout.lux(card.totalLux, locale: locale))
                     .font(.system(.title2, design: .monospaced).weight(.semibold))
                     .accessibilityIdentifier("combinedLux")
                 Text("Relative 18% card · sRGB")

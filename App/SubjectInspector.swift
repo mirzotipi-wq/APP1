@@ -6,10 +6,17 @@ struct SubjectInspector: View {
     @Binding var position: Position
     let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRawValue = PlanUnits.metric.rawValue
 
     private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
+
+    private var fieldLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -22,7 +29,7 @@ struct SubjectInspector: View {
                    step: 0.05, id: "subjectX")
             slider("Subject height", value: $position.y, range: 0...4,
                    step: 0.05, id: "subjectY")
-            HStack(spacing: 8) {
+            fieldLayout {
                 heightPreset("Standing", height: 1.5, id: "subjectStandingHeight")
                 heightPreset("Seated", height: 1.1, id: "subjectSeatedHeight")
             }
@@ -68,9 +75,9 @@ struct SubjectInspector: View {
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         let units = self.units
         return VStack(alignment: .leading, spacing: 4) {
-            HStack {
+            fieldLayout {
                 Text("\(title) (\(units.symbol))").font(.subheadline.weight(.medium))
-                Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 DistanceValueButton(title: title, id: id, value: value, range: Position.coordinateRange)
             }
             StudioSlider(value: value, in: bounds, step: step,

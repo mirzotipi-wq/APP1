@@ -152,15 +152,31 @@ public struct PlanRoomItem: Equatable, Sendable {
     }
 
     public var hasWarning: Bool {
-        !point.insideRoom || modifierFootprint.map { !$0.isAvailable || $0.isInsideRoom == false } == true
+        !point.insideRoom || Self.hasHeightWarning(point.verticalClearance) || modifierFootprint.map {
+            !$0.isAvailable || $0.isInsideRoom == false || Self.hasHeightWarning($0.verticalClearance)
+        } == true
+    }
+
+    private static func hasHeightWarning(_ clearance: RoomVerticalClearance) -> Bool {
+        !clearance.isAvailable || !clearance.crossedBoundaries.isEmpty || !clearance.touchingBoundaries.isEmpty
+    }
+
+    public func centerHeightStatus(units: PlanUnits) -> String {
+        "Center height check: \(point.verticalClearance.statusSummary(distance: units.roomDistance))"
+    }
+
+    public func faceHeightStatus(units: PlanUnits) -> String? {
+        modifierFootprint.map {
+            "Emitting-face height check: \($0.verticalClearance.statusSummary(distance: units.roomDistance))"
+        }
     }
 
     public func coordinates(units: PlanUnits) -> String {
         "X from left wall: \(units.roomDistance(point.xFromLeft)); Z from near wall: \(units.roomDistance(point.zFromNear)); Height: \(units.roomDistance(point.heightMeters)); Floor distance to subject: \(units.roomDistance(point.horizontalDistanceFromSubject))"
     }
 
-    /// Only the ideal emitting face's floor projection is described. These
-    /// values cannot establish equipment-body or ceiling clearance.
+    /// Only the ideal emitting face's floor projection is described here.
+    /// The separate height check also cannot establish complete-fixture clearance.
     public func projectedFaceStatus(units: PlanUnits) -> String? {
         guard let footprint = modifierFootprint else { return nil }
         guard footprint.isAvailable else { return "Emitting-face projection unavailable; check aim." }
@@ -187,10 +203,10 @@ public struct LightingPlan: Equatable, Sendable {
     public let roomPlacement: RoomPlacementPlan?
     public static let lightsPerPage = 5
     /// Four bounded rows leave room for two-line Unicode names, signed wall
-    /// coordinates, face warnings and the scope notes on both paper sizes.
+    /// coordinates, center/face height checks and scope notes on both paper sizes.
     public static let roomItemsPerPage = 4
-    public static let roomPlacementCoordinateNote = "X/Z are measured from the left/near walls; height is above the studio floor. Negative values are beyond those walls or below the floor. Floor distance is horizontal distance to the subject."
-    public static let roomPlacementLimitations = "Manual measurements, calculated at 1:1 scale. Only centers and ideal rectangular emitting-face floor projections are checked. Verify complete fixtures, stands, booms, cables and ceiling clearance physically. Ceiling clearance is not calculated; displayed precision is not measurement accuracy."
+    public static let roomPlacementCoordinateNote = "X/Z are measured from the left/near walls; height is above the floor. Negative values lie beyond those walls or below the floor. Floor distance to subject is horizontal. Inside/outside outline labels describe the floor projection."
+    public static let roomPlacementLimitations = "Manual measurements at 1:1 scale. Checks cover centers and ideal rectangular emitting faces against walls, a flat floor and, when measured, a flat ceiling. Contact is zero distance, not positive clearance. Verify complete fixtures, stands, booms, cables and working clearance physically. Displayed precision is not measurement accuracy."
 
     public init(scene: LightingScene, title: String, units: PlanUnits = .metric, paper: PlanPaper = .letter) throws {
         let scene = try scene.validated()
@@ -255,9 +271,9 @@ public struct LightingPlan: Equatable, Sendable {
         let room = placement.room
         return [
             "Room width: \(units.roomDistance(room.widthMeters)) · Room depth: \(units.roomDistance(room.depthMeters))",
-            room.ceilingHeightMeters.map { "Ceiling height: \(units.roomDistance($0)) (recorded only)" } ?? "Ceiling height: Unmeasured",
+            room.ceilingHeightMeters.map { "Ceiling height: \(units.roomDistance($0))" } ?? "Ceiling height: Unmeasured",
             "Subject floor position: X \(units.roomDistance(room.subjectX)) from left wall; Z \(units.roomDistance(room.subjectZ)) from near wall",
-            "Rig rotation: \(PlanUnits.parameterNumber(room.yawDegrees))° · Positive rotation turns scene +Z toward room +X (right wall).",
+            "Rig rotation: \(PlanUnits.parameterNumber(room.yawDegrees))° · Positive rotation turns +Z toward +X (right wall).",
             "Centers outside room outline: \(placement.outsideCount) of \(placement.points.count) · Emitting faces crossing walls: \(placement.crossingModifierCount) · Unavailable: \(placement.unavailableModifierCount)"
         ]
     }
@@ -266,8 +282,10 @@ public struct LightingPlan: Equatable, Sendable {
         guard roomPlacement != nil else { return nil }
         var lines = ["Manual room placement"] + roomPlacementSummary + [Self.roomPlacementCoordinateNote]
         for item in roomPlacementItems {
-            lines += ["", "\(item.marker). \(item.name)", item.coordinates(units: units), item.centerStatus]
+            lines += ["", "\(item.marker). \(item.name)", item.coordinates(units: units), item.centerStatus,
+                      item.centerHeightStatus(units: units)]
             if let status = item.projectedFaceStatus(units: units) { lines.append(status) }
+            if let status = item.faceHeightStatus(units: units) { lines.append(status) }
         }
         lines += ["", Self.roomPlacementLimitations]
         return lines.joined(separator: "\n")

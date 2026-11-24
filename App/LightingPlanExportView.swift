@@ -104,7 +104,7 @@ struct LightingPlanExportView: View {
     @State private var units: PlanUnits
     @State private var paper = PlanPaper.letter
     @State private var prepared: Prepared?
-    @State private var failed = false
+    @State private var failedOptions: Options?
     @State private var retry = 0
 
     init(scene: LightingScene, title: String) {
@@ -146,7 +146,7 @@ struct LightingPlanExportView: View {
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }.buttonStyle(.borderedProminent).padding(.horizontal)
                         .accessibilityIdentifier("shareLightingPlanPDF")
-                } else if failed {
+                } else if failedOptions == options {
                     ContentUnavailableView {
                         Label("PDF could not be created", systemImage: "doc.text")
                     } description: {
@@ -173,7 +173,11 @@ struct LightingPlanExportView: View {
     }
 
     @MainActor private func prepare(_ selection: Options) async {
-        prepared = nil; failed = false
+        // A cancelled task can still enter this method after a replacement
+        // task starts. It must not clear that task's preview or failure state.
+        guard !Task.isCancelled, selection == options else { return }
+        guard prepared?.options != selection else { return }
+        prepared = nil; failedOptions = nil
         await Task.yield()
         guard !Task.isCancelled, selection == options else { return }
         do {
@@ -182,7 +186,7 @@ struct LightingPlanExportView: View {
             guard !Task.isCancelled, selection == options else { return }
             prepared = Prepared(options: selection, item: .init(data: data), pages: plan.pageCount)
         } catch {
-            if !Task.isCancelled, selection == options { failed = true }
+            if !Task.isCancelled, selection == options { failedOptions = selection }
         }
     }
 }

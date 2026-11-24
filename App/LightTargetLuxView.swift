@@ -10,11 +10,14 @@ struct LightTargetLuxView: View {
     @Environment(\.locale) private var locale
     @State private var draft = ""
     @State private var error: String?
+    @State private var didApply = false
     @FocusState private var inputFocused: Bool
 
     private var target: Double? {
-        StudioNumericInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
-                                 in: 0...Double.greatestFiniteMagnitude)
+        // Bound pasted input before the shared parser trims or scans it.
+        guard draft.utf8.prefix(97).count <= 96 else { return nil }
+        return StudioNumericInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
+                                        in: 0...Double.greatestFiniteMagnitude)
     }
 
     var body: some View {
@@ -30,8 +33,14 @@ struct LightTargetLuxView: View {
                     HStack {
                         TextField("Desired lux", text: $draft)
                             .keyboardType(.decimalPad).focused($inputFocused)
+                            .accessibilityLabel("Desired illuminance in lux")
+                            .accessibilityHint("Enter zero to switch this light off.")
                             .accessibilityIdentifier("targetLuxInput")
                         Text("lx").foregroundStyle(.secondary)
+                    }
+                    if !draft.isEmpty && target == nil {
+                        Text("Enter zero or a positive decimal number using up to 32 characters.")
+                            .font(.footnote).foregroundStyle(.secondary)
                     }
                     if let value = target, let adjusted = try? LightOutputAdjustment.light(light, targetingLux: value, in: scene) {
                         LabeledContent("Required intensity",
@@ -49,7 +58,7 @@ struct LightTargetLuxView: View {
                 }
                 Section {
                     Button("Apply to light") { apply() }
-                        .disabled(target == nil)
+                        .disabled(target == nil || didApply)
                         .accessibilityIdentifier("applyTargetLux")
                 }
             }
@@ -74,9 +83,12 @@ struct LightTargetLuxView: View {
     }
 
     private func apply() {
-        guard let target else { return }
+        guard !didApply, let target else { return }
         do {
             let adjusted = try LightOutputAdjustment.light(light, targetingLux: target, in: scene)
+            // Set before the callback so reentrant or queued taps cannot
+            // create duplicate scene/history mutations during dismissal.
+            didApply = true
             onApply(adjusted)
             dismiss()
         } catch {

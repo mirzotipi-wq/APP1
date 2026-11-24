@@ -24,20 +24,30 @@ enum PlacementMeasurementDisplay {
 /// Manual alternative to AR. The studio receives committed, valid room edits.
 struct ManualRoomPlacementView: View {
     let scene: LightingScene
-    private let onChange: ((ManualRoom) -> Void)?
+    private let onChange: ((ManualRoom) -> Bool)?
+    private let onRemove: (() -> Bool)?
+    private let onClose: (() -> Void)?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRawValue = PlanUnits.metric.rawValue
     @State private var room: ManualRoom
+    @State private var keptRoom: ManualRoom?
+    @State private var roomCommitRejected = false
+    @State private var showingRemoveConfirmation = false
     @State private var notesSnapshot: NotesSnapshot?
     private var plan: RoomPlacementPlan? { try? RoomPlacementPlan(scene: scene, room: room) }
     private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
+    private var roomIsKept: Bool { !roomCommitRejected && keptRoom == room }
 
-    init(scene: LightingScene, onChange: ((ManualRoom) -> Void)? = nil) {
+    init(scene: LightingScene, onRemove: (() -> Bool)? = nil,
+         onClose: (() -> Void)? = nil, onChange: ((ManualRoom) -> Bool)? = nil) {
         self.scene = scene
         self.onChange = onChange
+        self.onRemove = onRemove
+        self.onClose = onClose
         _room = State(initialValue: scene.placementRoom ?? ManualRoom())
+        _keptRoom = State(initialValue: scene.placementRoom)
     }
 
     private struct NotesSnapshot: Identifiable {
@@ -51,11 +61,19 @@ struct ManualRoomPlacementView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Measure the room").font(.title2.bold())
-                        Text("Enter real wall distances and the subject's floor position. Place each camera and light center using the measurements below, and check rectangular modifier projections.")
+                        Text("Enter real wall distances and the subject's floor position. Add a ceiling height to check centers and ideal rectangular emitting faces against the floor and ceiling.")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                     if let plan { placementSummary(plan) }
                     inputs
+                    if onChange != nil { roomCommitControls }
+                    if keptRoom != nil, onRemove != nil { roomRemovalControls }
+                    if roomCommitRejected {
+                        Label("The setup changed or this editor closed. Your change was not applied. Close and reopen room placement to edit the current setup.",
+                              systemImage: "exclamationmark.triangle")
+                            .font(.subheadline)
+                            .accessibilityIdentifier("roomCommitError")
+                    }
                     if let plan {
                         VStack(alignment: .leading, spacing: 10) {
                             map(plan)
@@ -71,7 +89,7 @@ struct ManualRoomPlacementView: View {
                     }
                     Label("Manual measurements only", systemImage: "ruler")
                         .font(.headline)
-                    Text("Center coordinates and rectangular emitting-face projections are calculated at 1:1 scale from your entries. Displayed distances are calculated, not a guarantee of measurement precision. These checks do not measure the actual room, detect collisions, include the entire fixture or guarantee clearance. Check housing, stands, booms, cables and ceiling clearance physically. Room measurements are included when you save the lighting project.")
+                    Text("Center coordinates and ideal rectangular emitting faces are calculated at 1:1 scale from your entries. Height checks assume a flat floor and, when measured, a flat horizontal ceiling. Touching means zero distance. These checks do not measure the actual room, detect equipment collisions or guarantee complete fixture clearance. Check housing, stands, booms, cables and working clearance physically. Displayed precision does not guarantee measurement accuracy. Room measurements kept with the setup are included when you save the lighting project.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
@@ -81,17 +99,86 @@ struct ManualRoomPlacementView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }.accessibilityIdentifier("closeRoomPlacement")
+                    Button("Done") {
+                        onClose?()
+                        dismiss()
+                    }.accessibilityIdentifier("closeRoomPlacement")
                 }
             }
             .sheet(item: $notesSnapshot) { snapshot in
                 RoomPlacementNotesView(text: snapshot.text)
             }
+            .alert("Remove room measurements from setup?", isPresented: $showingRemoveConfirmation) {
+                Button("Remove room measurements", role: .destructive) { removeRoom() }
+                    .accessibilityIdentifier("confirmRemoveRoomFromSetup")
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("The displayed measurements stay here for planning. Save the lighting project to keep the removal for future sessions. Undo in the studio restores the setup from before this room editing session.")
+            }
             .onChange(of: room) { _, next in
-                guard next.isValid else { return }
-                onChange?(next)
+                keepRoom(next)
             }
         }
+    }
+
+    private var roomCommitControls: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                // An unchanged default room still needs an explicit callback
+                // before it belongs to the setup. Never read field drafts here.
+                keepRoom(room)
+            } label: {
+                Label(roomIsKept ? "Room kept with setup" : "Keep room with setup",
+                      systemImage: roomIsKept ? "checkmark.circle" : "plus.circle")
+                    .frame(maxWidth: .infinity, minHeight: 44)
+            }
+            .buttonStyle(.bordered)
+            .disabled(!room.isValid || roomIsKept)
+            .accessibilityIdentifier("keepRoomWithSetup")
+            .accessibilityHint("Keeps the current valid room measurements in this setup. Save the lighting project to keep them for future sessions.")
+            Text("If the displayed values already match your room, use Keep room with setup. Press Set to include each changed entry; unfinished or invalid field text is excluded. Save the lighting project to keep the applied measurements for future sessions.")
+                .font(.caption).foregroundStyle(.secondary)
+                .accessibilityIdentifier("keepRoomWithSetupHelp")
+        }
+    }
+
+    private func keepRoom(_ next: ManualRoom) {
+        guard next.isValid, let onChange else { return }
+        guard onChange(next) else {
+            roomCommitRejected = true
+            return
+        }
+        roomCommitRejected = false
+        keptRoom = next
+    }
+
+    private var roomRemovalControls: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button(role: .destructive) {
+                showingRemoveConfirmation = true
+            } label: {
+                Label("Remove room from setup", systemImage: "minus.circle")
+                    .frame(maxWidth: .infinity, minHeight: 44)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityIdentifier("removeRoomFromSetup")
+            .accessibilityHint("Asks for confirmation before removing the room measurements from this setup. The displayed measurements remain available for planning.")
+            Text("Save the lighting project to keep a removal for future sessions. Undo in the studio restores the setup from before this room editing session.")
+                .font(.caption).foregroundStyle(.secondary)
+                .accessibilityIdentifier("removeRoomFromSetupHelp")
+        }
+    }
+
+    private func removeRoom() {
+        guard keptRoom != nil, let onRemove else { return }
+        guard onRemove() else {
+            roomCommitRejected = true
+            return
+        }
+        // Acknowledge removal only after the current presentation accepts it.
+        // Keep the measured planning draft available for review and sharing.
+        roomCommitRejected = false
+        keptRoom = nil
     }
 
     /// Keep the committed placement result ahead of the editable measurements.
@@ -102,11 +189,14 @@ struct ManualRoomPlacementView: View {
             : "\(plan.outsideCount) of \(plan.points.count) center positions outside room"
         return VStack(alignment: .leading, spacing: 8) {
             Text("Current measured layout").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Text("Wall checks · floor projection")
+                .font(.caption).foregroundStyle(.secondary)
             Label(centerStatus,
                   systemImage: plan.outsideCount == 0 ? "checkmark.circle" : "exclamationmark.triangle")
                 .font(.headline)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: centerStatus))
+                .accessibilityHint("Checks the floor projection against walls. Height checks follow separately.")
                 .accessibilityIdentifier("roomPlacementStatus")
             if !plan.modifierFootprints.isEmpty {
                 if plan.crossingModifierCount > 0 {
@@ -131,6 +221,7 @@ struct ManualRoomPlacementView: View {
             Text(plan.room.ceilingHeightMeters.map { "Ceiling height: \(distance($0))" } ?? "Ceiling height: Unmeasured")
                 .font(.subheadline).foregroundStyle(.secondary)
                 .accessibilityIdentifier("roomCeilingStatus")
+            heightSummary(plan)
             Button {
                 // Capture the committed plan, never a partially typed field.
                 // The presented notes and share item use the same immutable text.
@@ -160,7 +251,7 @@ struct ManualRoomPlacementView: View {
                 .font(.caption).foregroundStyle(.secondary)
             RoomMeasurementField(title: "Ceiling height (optional)", id: "roomCeilingHeight",
                                  value: $room.ceilingHeightMeters, range: ManualRoom.dimensionRange, units: units)
-            Text("Leave blank and press Set for unmeasured. Ceiling clearance is not calculated; check it physically.")
+            Text("Leave blank and press Set for unmeasured. A measured height enables ceiling checks for centers and ideal emitting faces; floor checks remain available without it.")
                 .font(.caption).foregroundStyle(.secondary)
             Divider()
             Text("Subject floor position").font(.headline)
@@ -249,6 +340,12 @@ struct ManualRoomPlacementView: View {
                 Label("Outside room", systemImage: "exclamationmark.triangle")
                     .font(.subheadline).foregroundStyle(.orange)
             }
+            Text("X from left wall: \(distance(point.xFromLeft))")
+            Text("Z from near wall: \(distance(point.zFromNear))")
+            Text("Height: \(distance(point.heightMeters)) · Floor distance to subject: \(distance(point.horizontalDistanceFromSubject))")
+                .foregroundStyle(.secondary)
+            verticalCheck(point.verticalClearance, title: "Center height check",
+                          id: "roomCenterHeightCheck_" + point.id)
             if let footprint {
                 if !footprint.isAvailable {
                     Label("Modifier projection unavailable", systemImage: "questionmark.circle")
@@ -263,14 +360,57 @@ struct ManualRoomPlacementView: View {
                          "Minimum projected wall distance: \(distance(clearance))")
                         .foregroundStyle(.secondary)
                 }
+                verticalCheck(footprint.verticalClearance, title: "Ideal emitting-face height check",
+                              id: "roomFaceHeightCheck_" + point.id)
             }
-            Text("X from left wall: \(distance(point.xFromLeft))")
-            Text("Z from near wall: \(distance(point.zFromNear))")
-            Text("Height: \(distance(point.heightMeters)) · Floor distance to subject: \(distance(point.horizontalDistanceFromSubject))")
-                .foregroundStyle(.secondary)
         }
         .font(.subheadline.monospacedDigit())
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func heightSummary(_ plan: RoomPlacementPlan) -> some View {
+        let extent = plan.room.ceilingHeightMeters == nil ? "below floor" : "below floor or above measured ceiling"
+        let boundaries = plan.room.ceilingHeightMeters == nil ? "floor" : "floor or ceiling"
+        let unavailableFaces = plan.modifierFootprints.filter { !$0.verticalClearance.isAvailable }.count
+        return VStack(alignment: .leading, spacing: 6) {
+            Text("Height checks").font(.subheadline.weight(.semibold))
+            Label("Centers \(extent): \(plan.verticalOutsideCount); touching \(boundaries): \(plan.verticalTouchingPointCount)",
+                  systemImage: plan.verticalOutsideCount > 0 ? "exclamationmark.triangle" : "arrow.up.and.down")
+                .foregroundStyle(plan.verticalOutsideCount > 0 ? Color.orange : Color.secondary)
+                .accessibilityIdentifier("roomCenterHeightStatus")
+            if !plan.modifierFootprints.isEmpty {
+                Label("Ideal emitting faces \(extent): \(plan.verticalCrossingModifierCount); touching \(boundaries): \(plan.verticalTouchingModifierCount)",
+                      systemImage: plan.verticalCrossingModifierCount > 0 ? "exclamationmark.triangle" : "arrow.up.and.down")
+                    .foregroundStyle(plan.verticalCrossingModifierCount > 0 ? Color.orange : Color.secondary)
+                    .accessibilityIdentifier("roomFaceHeightStatus")
+            }
+            if plan.room.ceilingHeightMeters == nil {
+                Text("Ceiling checks unavailable until a height is measured.")
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("roomCeilingUnmeasured")
+            }
+            if unavailableFaces > 0 {
+                Text("\(unavailableFaces) ideal emitting-face height checks unavailable; check aim.")
+                    .foregroundStyle(.secondary)
+                    .accessibilityIdentifier("roomFaceHeightUnavailable")
+            }
+        }
+        .font(.subheadline)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func verticalCheck(_ report: RoomVerticalClearance, title: String, id: String) -> some View {
+        let hasCrossing = !report.crossedBoundaries.isEmpty
+        let symbol = !report.isAvailable ? "questionmark.circle"
+            : hasCrossing ? "exclamationmark.triangle" : "arrow.up.and.down"
+        return VStack(alignment: .leading, spacing: 3) {
+            Text(title).font(.caption.weight(.semibold))
+            Label(report.statusSummary(distance: distance), systemImage: symbol)
+                .foregroundStyle(hasCrossing ? Color.orange : Color.secondary)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(id)
     }
 
     private func distance(_ value: Double) -> String {
@@ -340,6 +480,9 @@ private struct RoomMeasurementField: View {
     private let allowsUnmeasured: Bool
     @Environment(\.locale) private var locale
     @State private var draft = ""
+    @State private var draftUnits: PlanUnits?
+    @State private var draftLocale: Locale?
+    @State private var draftValueBits: UInt64?
     @State private var invalid = false
     @FocusState private var focused: Bool
 
@@ -412,11 +555,8 @@ private struct RoomMeasurementField: View {
                 .accessibilityIdentifier(id + "Reset")
             }
         }
-        .onAppear { draft = format(value) }
-        .onChange(of: value) { _, next in
-            draft = format(next)
-            invalid = false
-        }
+        .onAppear { restoreDraft() }
+        .onChange(of: value) { _, _ in restoreDraft() }
         .onChange(of: units) { _, _ in
             // Discard old-unit digits instead of committing them as a new unit.
             restoreDraft()
@@ -451,6 +591,9 @@ private struct RoomMeasurementField: View {
 
     private func restoreDraft() {
         draft = format(value)
+        draftUnits = units
+        draftLocale = locale
+        draftValueBits = value?.bitPattern
         invalid = false
         focused = false
     }
@@ -462,11 +605,16 @@ private struct RoomMeasurementField: View {
     }
 
     private func apply() {
+        // Environment and binding changes may render before their onChange
+        // handlers run. Never interpret old digits in the new input context.
+        guard draftUnits == units, draftLocale == locale,
+              draftValueBits == value?.bitPattern else {
+            restoreDraft()
+            return
+        }
         if allowsUnmeasured, draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            value = nil
-            draft = ""
-            invalid = false
-            focused = false
+            if value != nil { value = nil }
+            restoreDraft()
             return
         }
         // Applying an untouched formatted draft must not round its value.
@@ -477,16 +625,22 @@ private struct RoomMeasurementField: View {
             focused = false
             return
         }
-        guard let entered = RoomMeasurementInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
-                                                       in: displayRange) else {
+        let separator = locale.decimalSeparator ?? "."
+        guard let entered = RoomMeasurementInput.parse(draft, decimalSeparator: separator,
+                                                       in: 0...Double.greatestFiniteMagnitude) else {
             rejectDraft()
             return
         }
         if let value, value.isFinite, range.contains(value),
-           entered.bitPattern == units.fromMeters(value).bitPattern {
+           entered == units.fromMeters(value) || entered == RoomMeasurementInput.parse(
+               format(value), decimalSeparator: separator, in: 0...Double.greatestFiniteMagnitude) {
+            // Numerically equivalent text (including added trailing zeroes)
+            // must preserve the original SI precision and signed zero. A
+            // rounded display may itself fall just outside the edit bounds.
             restoreDraft()
             return
         }
+        guard displayRange.contains(entered) else { rejectDraft(); return }
         // Use the exact SI endpoints when their converted representation
         // would otherwise round one ULP outside the allowed meter range.
         let next: Double
@@ -502,8 +656,6 @@ private struct RoomMeasurementField: View {
             return
         }
         value = next
-        draft = format(next)
-        invalid = false
-        focused = false
+        restoreDraft()
     }
 }

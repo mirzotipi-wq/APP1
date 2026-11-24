@@ -31,6 +31,7 @@ struct ReferenceComparisonView: View {
     @State private var rigError: String?
     @State private var confirmApply = false
     @State private var showPhotoComparison = false
+    @State private var sessionClosed = false
 
     private var selectedRig: GuidedRig? { candidates.first { $0.id == previewID } }
 
@@ -43,7 +44,10 @@ struct ReferenceComparisonView: View {
                         Text("Inspect direction, contrast, softness and color. The study is a neutral sphere, not a reconstruction of the photographed person.")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
-                    HStack(spacing: 12) {
+                    let importLayout = dynamicType.isAccessibilitySize
+                        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                        : AnyLayout(HStackLayout(spacing: 12))
+                    importLayout {
                         PhotosPicker(selection: $selection, matching: .images, preferredItemEncoding: .current) {
                             Label(reference == nil ? "Choose photo" : "Replace photo", systemImage: "photo.on.rectangle")
                                 .frame(minHeight: 44)
@@ -85,8 +89,10 @@ struct ReferenceComparisonView: View {
                     }
                     .buttonStyle(.bordered).frame(minHeight: 44)
                     .accessibilityIdentifier("openPhotoComparison")
-                    if let tones { tonalPanel(tones) }
-                    if reference != nil { analysisPanel }
+                    if scenePhase == .active {
+                        if let tones { tonalPanel(tones) }
+                        if reference != nil { analysisPanel }
+                    }
                     guidedPanel
                     VStack(alignment: .leading, spacing: 7) {
                         Label("On-device comparison", systemImage: "lock.shield").font(.headline)
@@ -103,14 +109,16 @@ struct ReferenceComparisonView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { clear(); dismiss() }.accessibilityIdentifier("closeReference")
+                    Button("Done") { closeSession(); dismiss() }.accessibilityIdentifier("closeReference")
                 }
             }
             .alert("Replace the current lights?", isPresented: $confirmApply) {
                 Button("Apply rig") {
-                    guard let rig = selectedRig else { return }
+                    guard !sessionClosed, let rig = selectedRig else { return }
+                    // Invalidate asynchronous work and consume Apply before the
+                    // parent callback can change this presentation's identity.
+                    closeSession()
                     onApply(rig.scene)
-                    clear()
                     dismiss()
                 }
                 Button("Cancel", role: .cancel) {}
@@ -122,10 +130,10 @@ struct ReferenceComparisonView: View {
             }
             .onChange(of: observations) { _, _ in
                 candidates = []; previewID = nil; rigError = nil
+                confirmApply = false
             }
-            .onDisappear { clear() }
             .onChange(of: selection) { _, item in
-                guard let item else { return }
+                guard !sessionClosed, let item else { return }
                 let token = UUID()
                 requestID = token
                 loading = true
@@ -134,6 +142,10 @@ struct ReferenceComparisonView: View {
                 selection = nil
                 load(item, token: token)
             }
+        }
+        .background {
+            ComparisonSessionDismissalObserver(onDismiss: closeSession)
+                .allowsHitTesting(false)
         }
     }
 
@@ -333,6 +345,11 @@ struct ReferenceComparisonView: View {
                 Text(rigError).font(.footnote).foregroundStyle(.secondary)
                     .accessibilityIdentifier("guidedRigError")
             }
+            if candidates.count == 1 {
+                Text("Only one starting rig is supported by the current camera and subject geometry.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("guidedRigAvailability")
+            }
             ForEach(candidates) { rig in
                 Button {
                     previewID = rig.id
@@ -430,9 +447,13 @@ struct ReferenceComparisonView: View {
                 reference = image
                 tones = photo.tones
                 observations = .init(); candidates = []; previewID = nil; rigError = nil
+                confirmApply = false
                 sizeDescription = "\(photo.width) × \(photo.height) px · session only"
                 loading = false
                 startAnalysis(png: photo.png)
+            } catch is CancellationError {
+                guard !Task.isCancelled, requestID == token else { return }
+                loading = false
             } catch {
                 guard !Task.isCancelled, requestID == token else { return }
                 let detail = (error as? ReferenceImportError)?.errorDescription ??
@@ -502,6 +523,14 @@ struct ReferenceComparisonView: View {
         reference = nil
         tones = nil
         observations = .init(); candidates = []; previewID = nil; rigError = nil
+        confirmApply = false
         sizeDescription = ""
+    }
+
+    @MainActor private func closeSession() {
+        guard !sessionClosed else { return }
+        sessionClosed = true
+        confirmApply = false
+        clear()
     }
 }

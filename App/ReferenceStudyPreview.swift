@@ -13,6 +13,16 @@ struct ReferenceStudyPreview: View {
     private struct Request: Equatable {
         let scene: LightingScene
         let subject: StudySubject
+
+        init(scene: LightingScene, subject: StudySubject) {
+            // Measured-room placement does not participate in this direct-light
+            // study. Keep its snapshot and identity independent of room edits,
+            // retaining the complete light optics, camera and preview settings.
+            var renderScene = scene
+            renderScene.placementRoom = nil
+            self.scene = renderScene
+            self.subject = subject
+        }
     }
     private var request: Request { .init(scene: scene, subject: subject) }
     private var imageLabel: String {
@@ -94,17 +104,22 @@ struct ReferenceStudyPreview: View {
         }
         .task(id: request) {
             let snapshot = request
+            // A quick switch back to a completed request can reuse its pixels.
+            // Failed frames remain retryable when this view appears again.
+            if let frame, frame.request == snapshot, frame.image != nil { return }
             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
             do {
                 let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)
                 guard !Task.isCancelled else { return }
                 let study = rendered.image
                 let image = Self.makeImage(study)
+                guard !Task.isCancelled else { return }
                 frame = Frame(request: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,
                               backend: rendered.backend,
                               message: image == nil ? "The rendered image could not be displayed." : nil)
             } catch {
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled, !(error is CancellationError),
+                      (error as? StudyError) != .cancelled else { return }
                 let message: String
                 switch error as? StudyError {
                 case .invalidCamera: message = "Move the camera above the panel and away from the subject."

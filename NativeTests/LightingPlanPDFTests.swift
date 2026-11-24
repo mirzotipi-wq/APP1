@@ -62,6 +62,47 @@ final class LightingPlanPDFTests: XCTestCase {
         }
     }
 
+    @MainActor func testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits() throws {
+        var scene = LightingScene.portrait()
+        scene.placementRoom = .init(ceilingHeightMeters: 3)
+        scene.lights = (1...12).map { index in
+            StudioLight(name: "Measured fixture \(index)", position: .init(x: Double(index) / 2, y: 2 + Double(index) / 10, z: 1),
+                        candela: 700, kelvin: 5600, optics: .init(kind: .rectangle, widthMeters: 1.2, heightMeters: 0.6, rollDegrees: 37.5))
+        }
+        func normalized(_ text: String) -> String { text.split(whereSeparator: \.isWhitespace).joined(separator: " ") }
+        for paper in PlanPaper.allCases {
+            for units in PlanUnits.allCases {
+                let plan = try LightingPlan(scene: scene, title: "Measured room validation", units: units, paper: paper)
+                let data = try LightingPlanPDF.make(plan)
+                let attachment = XCTAttachment(data: data, uniformTypeIdentifier: "com.adobe.pdf")
+                attachment.name = "Measured-room-\(paper.rawValue)-\(units.rawValue).pdf"; attachment.lifetime = .keepAlways
+                add(attachment)
+                let pdf = try XCTUnwrap(PDFDocument(data: data))
+                XCTAssertEqual(plan.roomPlacementItems.count, 14)
+                XCTAssertEqual(pdf.pageCount, 8)
+                XCTAssertTrue(pdf.page(at: 1)?.string?.contains("Roll 37.5°") == true)
+                XCTAssertTrue(pdf.page(at: 7)?.string?.contains("Measured fixture 12") == true)
+                for (index, items) in plan.roomPlacementPages.enumerated() {
+                    let page = try XCTUnwrap(pdf.page(at: 1 + plan.equipmentPages.count + index))
+                    let content = normalized(page.string ?? "")
+                    for expected in plan.roomPlacementSummary + [LightingPlan.roomPlacementCoordinateNote, LightingPlan.roomPlacementLimitations] {
+                        XCTAssertTrue(content.contains(normalized(expected)), "\(paper) \(units) room page \(index): missing \(expected)")
+                    }
+                    for item in items {
+                        let details = [item.name,
+                            "X from left: \(units.roomDistance(item.point.xFromLeft)) · Z from near: \(units.roomDistance(item.point.zFromNear))",
+                            "Height: \(units.roomDistance(item.point.heightMeters)) · Floor distance to subject: \(units.roomDistance(item.point.horizontalDistanceFromSubject))",
+                            item.centerStatus + ". " + item.centerHeightStatus(units: units),
+                            item.projectedFaceStatus(units: units), item.faceHeightStatus(units: units)].compactMap { $0 }
+                        for expected in details {
+                            XCTAssertTrue(content.contains(normalized(expected)), "\(paper) \(units) \(item.name): truncated or missing \(expected)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @MainActor func testEmptySceneStillProducesReadableDiagramAndSchedule() throws {
         var scene = LightingScene.portrait(); scene.lights = []
         let plan = try LightingPlan(scene: scene, title: "Empty")

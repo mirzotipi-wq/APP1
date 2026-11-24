@@ -43,10 +43,12 @@ struct DistanceValueButton: View {
         Binding {
             units.fromMeters(value)
         } set: { entered in
+            // Reject a late Apply from a sheet whose unit identity has changed.
+            guard units == StudioPreferences.units(from: unitsRawValue) else { return }
             guard let displayRange, entered.isFinite, displayRange.contains(entered) else { return }
             // A numerically unchanged edit must preserve the exact original SI
-            // value, including when feet -> meters would differ by one ULP.
-            guard entered.bitPattern != units.fromMeters(value).bitPattern else { return }
+            // value, including signed zero and feet -> meters round-trip drift.
+            guard entered != units.fromMeters(value) else { return }
             let meters: Double
             if entered == displayRange.lowerBound {
                 meters = range.lowerBound

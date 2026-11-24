@@ -1,6 +1,7 @@
 import SwiftUI
 import SceneKit
 import LightingCore
+import simd
 
 /// Temporary illustrative renderer; SceneKit intensity and spotlight cones are
 /// not calibrated candela or area-source shading. Emitter geometry uses world meters.
@@ -54,6 +55,9 @@ struct SpatialPreview: UIViewRepresentable {
     func updateView(_ view: SCNView, coordinator: Coordinator) {
         let modeChanged = coordinator.lastCameraMode != cameraMode
         let sceneChanged = coordinator.lastScene != scene
+        let contentChanged = modeChanged || coordinator.lastScene?.subject != scene.subject ||
+            coordinator.lastScene?.lights != scene.lights ||
+            (!cameraMode && coordinator.lastScene?.camera != scene.camera)
         let needsFit = !cameraMode && (modeChanged || coordinator.lastFitRequest != fitRequest)
         guard sceneChanged || modeChanged || needsFit else { return }
         // Publish geometry, camera pose, lens, clipping and controller target as
@@ -67,7 +71,7 @@ struct SpatialPreview: UIViewRepresentable {
         defer { SCNTransaction.commit() }
         // Keep the viewport, user orbit and controller alive during ordinary
         // edits. Only an initial presentation or explicit Fit request recenters.
-        if sceneChanged || modeChanged {
+        if contentChanged {
             let root = coordinator.content
             root.childNodes.forEach { $0.removeFromParentNode() }
             populate(root)
@@ -115,6 +119,17 @@ struct SpatialPreview: UIViewRepresentable {
 
     private func vector(_ p: Position) -> SCNVector3 { SCNVector3(Float(p.x), Float(p.y), Float(p.z)) }
     private func vector(_ d: UnitDirection) -> SCNVector3 { SCNVector3(Float(d.x), Float(d.y), Float(d.z)) }
+
+    private func orient(_ node: SCNNode, to frame: EmitterFrame, negativeZForward: Bool = false) {
+        // Use the complete shared basis, including roll and the deterministic
+        // vertical-aim frame. Fixtures emit along +Z; SceneKit lights use -Z.
+        // Flipping both right and normal preserves a right-handed rotation.
+        let sign: Float = negativeZForward ? -1 : 1
+        let right = SIMD3<Float>(Float(frame.right.x), Float(frame.right.y), Float(frame.right.z)) * sign
+        let up = SIMD3<Float>(Float(frame.up.x), Float(frame.up.y), Float(frame.up.z))
+        let normal = SIMD3<Float>(Float(frame.normal.x), Float(frame.normal.y), Float(frame.normal.z)) * sign
+        node.simdOrientation = simd_quatf(simd_float3x3(columns: (right, up, normal)))
+    }
     private func object(_ g: SCNGeometry, color: UIColor, at p: SCNVector3, in root: SCNNode) -> SCNNode {
         g.firstMaterial?.diffuse.contents = color
         g.firstMaterial?.lightingModel = .blinn
@@ -131,7 +146,14 @@ struct SpatialPreview: UIViewRepresentable {
                            at: SCNVector3(p.x, p.y - 0.55, p.z), in: root)
         torso.scale = SCNVector3(1.2, 1, 0.65)
         let ambient = SCNNode()
-        ambient.light = SCNLight(); ambient.light?.type = .ambient; ambient.light?.intensity = 90
+        ambient.light = SCNLight(); ambient.light?.type = .ambient
+        // This readability fill is illustrative, but an empty or powered-off
+        // rig must not acquire illumination from the preview itself.
+        let hasActiveEmitter = scene.lights.contains {
+            $0.isValid && $0.candela > 0 &&
+                (!$0.effectiveOptics.kind.isAimed || StudioPhotometry.frame(for: $0, subject: scene.subject) != nil)
+        }
+        ambient.light?.intensity = hasActiveEmitter ? 90 : 0
         root.addChildNode(ambient)
         if !cameraMode {
             let cameraBody = object(SCNBox(width: 0.26, height: 0.18, length: 0.18, chamferRadius: 0.02),
@@ -141,10 +163,10 @@ struct SpatialPreview: UIViewRepresentable {
             }
         }
         for light in scene.lights {
+            guard light.isValid else { continue }
             let optics = light.effectiveOptics
             let pos = vector(light.position)
             let frame = StudioPhotometry.frame(for: light, subject: scene.subject)
-            let target = vector(light.target(subject: scene.subject))
             // A degenerate aiming direction must not silently become an omnidirectional light.
             if !optics.kind.isAimed || frame != nil {
                 let emitter = SCNNode(); emitter.position = pos
@@ -156,7 +178,7 @@ struct SpatialPreview: UIViewRepresentable {
                 root.addChildNode(emitter)
                 if let frame {
                     source.spotInnerAngle = 25; source.spotOuterAngle = 140
-                    emitter.look(at: target, up: vector(frame.up), localFront: SCNVector3(0, 0, -1))
+                    orient(emitter, to: frame, negativeZForward: true)
                 }
             }
             let color: UIColor = light.candela > 0 ? .systemOrange : .darkGray
@@ -167,7 +189,7 @@ struct SpatialPreview: UIViewRepresentable {
             case .rectangle: geometry = SCNBox(width: CGFloat(optics.widthMeters), height: CGFloat(optics.heightMeters), length: 0.055, chamferRadius: 0.012)
             }
             let fixture = object(geometry, color: color, at: pos, in: root)
-            if let frame { fixture.look(at: target, up: vector(frame.up), localFront: SCNVector3(0, 0, 1)) }
+            if let frame { orient(fixture, to: frame) }
             // Keep equipment readable, but do not imply a powered-off fixture is emitting light.
             if light.candela > 0 && (!optics.kind.isAimed || frame != nil) {
                 fixture.geometry?.firstMaterial?.emission.contents = UIColor.systemOrange.withAlphaComponent(0.35)

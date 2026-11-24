@@ -54,13 +54,24 @@ public enum LightOutputAdjustment {
         }
         adjusted.candela = targetLux / unitLux
         guard adjusted.candela > 0, adjusted.isValid else {
+            // At the 100,000 cd boundary, independent integration rounding can
+            // put the quotient just above the limit. Retain an already exact
+            // setting rather than rejecting the editor's unchanged value.
+            if source.candela > 0,
+               StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
+                return source
+            }
             throw LightOutputAdjustmentError.outputOutOfRange
         }
 
-        // Extremely small positive outputs can underflow in finite-emitter
-        // integration even when their candela itself is representable.
+        // Extremely small positive outputs can underflow or lose substantial
+        // precision in finite-emitter integration even when their candela is
+        // representable. A nonzero result alone does not establish that the
+        // requested contribution was achieved. Comparing a ratio also avoids
+        // underflowing an absolute tolerance for subnormal target values.
         guard let achievedLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
-              achievedLux.isFinite, achievedLux > 0 else {
+              achievedLux.isFinite, achievedLux > 0,
+              abs(achievedLux / targetLux - 1) <= 1e-9 else {
             throw LightOutputAdjustmentError.outputOutOfRange
         }
         return adjusted

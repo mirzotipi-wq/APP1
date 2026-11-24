@@ -78,7 +78,7 @@ struct StudioGuideView: View {
             step("Open a starting rig",
                  "Tap Recipes at the top of the studio. Three-point portrait gives you Key, Fill and Rim lights. Rembrandt, Butterfly and Silhouette offer other starting arrangements.")
             step("Keep what you want",
-                 "Keep subject and camera placement applies the recipe's lights around your current subject, facing your camera. Turn it off to start from the complete preset instead. Undo restores the previous setup. Tap Save before exploring if you want a saved version to return to.")
+                 "Keep subject and camera placement applies the recipe's lights around your current subject, facing your camera, and keeps camera settings and measured room. Turn it off to use the recipe's subject, camera and lights and reset room and preview settings. Undo restores the previous setup. Tap Save before exploring if you want a saved version to return to.")
             step("Shape the portrait",
                  "Begin with the Key light's side, height and intensity. Balance Fill to control shadow depth, then use Rim for separation. Adjust the starting layout for your subject and real equipment.")
         case .editing:
@@ -89,7 +89,7 @@ struct StudioGuideView: View {
             step("Choose the emitting surface",
                  "In Emitter, choose Bare point, Directional or Rectangular softbox. The softbox Width and Height describe its emitting face; Roll turns that face around its aim. For aimed emitters, keep Aim at subject on or turn it off to set Aim X, Aim Y and Aim Z.")
             step("Manage and arrange",
-                 "Use Light actions to rename or duplicate a light, or target its ideal-plane lux contribution. Studio tools also opens Subject position and Arrange setup, where you can move the entire setup or rotate and mirror its lights. Each applied arrangement can be undone.")
+                 "Use Light actions to rename or duplicate a light. Set ideal lux adjusts that light's contribution on the ideal camera-facing plane at the subject; other lights stay unchanged. Studio tools also opens Subject position and Arrange setup, where you can move the entire setup or rotate and mirror its lights. Each applied arrangement can be undone.")
             step("Compare edits",
                  "Undo and Redo at the bottom let you compare changes. Save keeps the current setup locally; edit history belongs to the current editing session.")
         case .previews:
@@ -105,24 +105,24 @@ struct StudioGuideView: View {
             step("Bring a visual target",
                  "Open Reference photo, then Choose photo. Compare direction, shadow edges and fill against the neutral study. The app's photo copy is kept only while this view is open; your original remains unchanged.")
             step("Describe what you see",
-                 "A suitable single-face photo may offer an on-device suggestion for the brighter side. Use suggested side only if it matches what you see. Choose Key side, Shadow edges, Shadow fill and Rim highlight, then tap Build starting rigs. Leave uncertain cues unknown. A visible key direction is needed to build alternatives.")
+                 "A suitable single-face photo may offer an on-device suggestion for the brighter side. Tap Use suggested side to accept it only if it matches what you see; it does not set Key side automatically. Choose Key side, Shadow edges, Shadow fill and Rim highlight, then tap Build starting rigs. Leave uncertain cues unknown. A visible key direction is needed to build alternatives.")
             step("Compare with your result",
-                 "Open Compare two photos to import a test photograph beside the reference. Compare them side by side or move the wipe divider. The photos are fitted without automatic alignment or exposure matching; both copies stay only while the comparison is open.")
+                 "Tap Compare a test shot to import a test photograph beside the reference. Compare them side by side or move the wipe divider. The photos are fitted without automatic alignment or exposure matching. Closing the comparison clears its copies and returns to Reference, where your original reference and lighting choices remain until you close that view.")
             step("Compare assumptions",
-                 "Try Closer starting rig and Farther starting rig. Read Basis for this rig to separate Your observations, Assumed cues and Chosen starting values. Preview current setup returns to your existing light study. Exact geometry, intensity and color remain starting assumptions.")
+                 "Compare the one or two available starting rigs. Some subject positions allow only one arrangement within the supported scene. Read Basis for this rig to distinguish your observations, an accepted on-device key-side suggestion, assumed cues and chosen starting values. Preview current setup returns to your existing light study. Exact geometry, intensity and color remain starting assumptions.")
             step("Keep an alternative",
                  "Choose Apply selected rig and confirm Apply rig. Only the lights change; the studio camera and subject stay in place. Undo restores the previous lights. Save separately to keep the edit.")
         case .room:
             step("Measure, then enter",
-                 "Open Room placement after shaping the rig. Measure Width and Depth and the subject's distances From left wall and From near wall. Press Set after each changed entry so it becomes part of the current measured layout.")
+                 "Open Room placement after shaping the rig. Measure Width and Depth and the subject's distances From left wall and From near wall. Add Ceiling height (optional) for ceiling checks; leave it blank and press Set for unmeasured. Floor checks remain available without it. Press Set after each changed entry so it becomes part of the current measured layout.")
             step("Turn and place the rig",
                  "Adjust Rig rotation or use Rotate 180°. Read each camera and light center's wall distances and height. Rectangular emitting-face projections flag wall crossings. Manual room placement uses the dimensions you enter.")
             step("Place at full scale in AR",
-                 "On a supported device, open Studio tools > Place in AR and start the camera. Move slowly until the app finds a horizontal surface, then place the subject on the floor. Check scale and alignment against your measurements. Tracking can drift; recheck the placement after interruptions or tracking warnings. Manual room placement is also available from that screen.")
+                 "On a supported device, open Studio tools > Place in AR and tap Start AR camera. Move slowly until the app finds a horizontal surface, then place the subject on the floor. Check scale and alignment against your measurements. Recheck after tracking warnings, or use Reset and scan again. Use manual room measurements stops the camera. When you return, tap Start AR camera to scan and place the setup again.")
             step("Check the real equipment",
-                 "Check the fixture, stands, booms, cables and ceiling clearance physically. The diagram covers centers and rectangular emitting faces, rather than the full equipment.")
+                 "Wall, floor and measured ceiling checks cover centers and ideal rectangular emitting faces. Check the full fixture, stands, booms, cables and working clearance physically.")
             step("Take the notes with you",
-                 "Use Review and share notes, then Share measurement notes. Notes include committed entries, so press Set first. Room measurements are kept with the lighting setup when you tap Save in the studio. Editable project copies include them; share measurement notes for a detailed placement report.")
+                 "Use Review and share notes, then Share measurement notes. Notes include applied entries, so press Set first. If the displayed values already match your room, choose Keep room with setup. Remove room from setup asks for confirmation and keeps your planning fields. Save in the studio keeps the measurements or their removal with the project. Undo in the studio restores the setup from before this room editing session as one edit.")
         case .saving:
             step("Keep a local project",
                  "Tap Save and wait for Saved locally. Projects lets you open, rename, duplicate and archive saved setups. Save your current edits before opening or changing another project.")

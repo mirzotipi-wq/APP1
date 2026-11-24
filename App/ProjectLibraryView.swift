@@ -169,6 +169,11 @@ struct ProjectLibraryView: View {
             }
             .alert("Delete archived project?", isPresented: $confirmDeletion, presenting: pendingDeletion) { project in
                 Button("Delete project", role: .destructive) {
+                    guard library?.projects.first(where: { $0.id == project.id }) == project else {
+                        pendingDeletion = nil
+                        errorMessage = ProjectLibraryError.staleSnapshot.localizedDescription
+                        return
+                    }
                     // The domain and store re-check identity, archive status and the
                     // current snapshot; a failed write leaves the displayed library intact.
                     change(.deleteArchived(project.id))

@@ -15,6 +15,7 @@ struct PhotoComparisonView: View {
     @State private var testSelection: PhotosPickerItem?
     @State private var mode = ComparisonMode.sideBySide
     @State private var wipeFraction = 0.5
+    @State private var sessionClosed = false
 
     init(initialReference: UIImage? = nil) {
         // Capture the mutable slot in StateObject's thunk, not a separate copy
@@ -86,22 +87,25 @@ struct PhotoComparisonView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { clearSession(); dismiss() }
+                    Button("Done") { closeSession(); dismiss() }
                         .frame(minHeight: 44)
                         .accessibilityIdentifier("closePhotoComparison")
                 }
             }
             .onChange(of: referenceSelection) { _, item in
-                guard let item else { return }
+                guard !sessionClosed, let item else { return }
                 referenceSelection = nil
                 reference.load(item)
             }
             .onChange(of: testSelection) { _, item in
-                guard let item else { return }
+                guard !sessionClosed, let item else { return }
                 testSelection = nil
                 testShot.load(item)
             }
-            .onDisappear { clearSession() }
+        }
+        .background {
+            ComparisonSessionDismissalObserver(onDismiss: closeSession)
+                .allowsHitTesting(false)
         }
     }
 
@@ -331,6 +335,65 @@ struct PhotoComparisonView: View {
         testShot.clear()
         wipeFraction = 0.5
         mode = .sideBySide
+    }
+
+    private func closeSession() {
+        guard !sessionClosed else { return }
+        sessionClosed = true
+        clearSession()
+    }
+}
+
+/// SwiftUI disappearance also occurs when a nested picker or sheet covers a
+/// session. Only a completed dismissal of this controller's ancestor releases
+/// the photos; a cancelled interactive swipe must retain them.
+@MainActor
+struct ComparisonSessionDismissalObserver: UIViewControllerRepresentable {
+    let onDismiss: () -> Void
+
+    func makeUIViewController(context: Context) -> Controller {
+        let controller = Controller()
+        controller.onDismiss = onDismiss
+        return controller
+    }
+
+    func updateUIViewController(_ controller: Controller, context: Context) {
+        controller.onDismiss = onDismiss
+    }
+
+    final class Controller: UIViewController {
+        var onDismiss: (() -> Void)?
+        private var dismissalStarted = false
+
+        private var ancestorIsBeingDismissed: Bool {
+            var ancestor: UIViewController? = self
+            while let current = ancestor {
+                if current.isBeingDismissed { return true }
+                ancestor = current.parent
+            }
+            return false
+        }
+
+        override func loadView() {
+            view = UIView(frame: .zero)
+            view.isUserInteractionEnabled = false
+        }
+
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+            dismissalStarted = ancestorIsBeingDismissed
+        }
+
+        override func viewDidDisappear(_ animated: Bool) {
+            super.viewDidDisappear(animated)
+            if dismissalStarted || ancestorIsBeingDismissed { onDismiss?() }
+            dismissalStarted = false
+        }
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            dismissalStarted = false
+        }
     }
 }
 

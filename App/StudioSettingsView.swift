@@ -14,13 +14,13 @@ struct StudioSettingsView: View {
         NavigationStack {
             Form {
                 Section("Workspace") {
-                    Picker("Distance units", selection: $unitsRaw) {
+                    Picker("Distance units", selection: unitsSelection) {
                         Text("Meters").tag(PlanUnits.metric.rawValue)
                         Text("Feet").tag(PlanUnits.imperial.rawValue)
                     }.accessibilityIdentifier("distanceUnits")
                     Text("The setup keeps its exact metric coordinates. Display units change how distances are read and entered.")
                         .font(.footnote).foregroundStyle(.secondary)
-                    Picker("Appearance", selection: $appearance) {
+                    Picker("Appearance", selection: appearanceSelection) {
                         Text("System").tag("system")
                         Text("Light").tag("light")
                         Text("Dark").tag("dark")
@@ -37,7 +37,7 @@ struct StudioSettingsView: View {
                 }
                 Section("Your photographs") {
                     Label("On-device analysis", systemImage: "lock.shield")
-                    Text("Reference and test photographs are reduced, stripped of their original metadata and kept in memory while you compare them. Closing the comparison discards those copies. Your originals stay in Photos.")
+                    Text("Reference and test photographs use reduced copies with original metadata removed. These copies are kept in memory for the open comparison views and are excluded from saved projects and exports. Your originals in Photos are never modified.")
                     Text("Photo selection can retrieve an iCloud original through Apple's picker. Key & Fill does not upload photographs to an inference service. AR camera frames and room tracking maps are not saved.")
                 }
                 Section("Your projects") {
@@ -56,6 +56,20 @@ struct StudioSettingsView: View {
             }
             .sheet(isPresented: $showPurchase) { ProFeaturesView(store: store) }
         }
+    }
+
+    private var unitsSelection: Binding<String> {
+        Binding(
+            get: { StudioPreferences.units(from: unitsRaw).rawValue },
+            set: { unitsRaw = $0 }
+        )
+    }
+
+    private var appearanceSelection: Binding<String> {
+        Binding(
+            get: { appearance == "light" || appearance == "dark" ? appearance : "system" },
+            set: { appearance = $0 }
+        )
     }
 
     private var version: String {

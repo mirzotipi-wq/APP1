@@ -113,6 +113,7 @@ struct StudioPlanMarkers: View {
 /// replace the gesture's state or its captured completion callback.
 private struct StudioPlanMarkerControl: View {
     let marker: StudioPlanMarker
+    @Environment(\.isEnabled) private var isEnabled
     @GestureState private var dragRecognized = false
     @State private var dragInProgress = false
     @State private var dragChange: ((CGSize) -> Void)?
@@ -123,6 +124,7 @@ private struct StudioPlanMarkerControl: View {
             .accessibilityLabel(marker.accessibilityLabel)
             .accessibilityIdentifier(marker.accessibilityIdentifier)
             .accessibilityAddTraits(marker.selected ? .isSelected : [])
+            .allowsHitTesting(isEnabled)
             .onChange(of: dragInProgress && !dragRecognized) { _, needsCompletion in
                 // GestureState also resets when the system cancels a gesture;
                 // include ownership so a start and cancel in one render still
@@ -132,6 +134,9 @@ private struct StudioPlanMarkerControl: View {
             .onChange(of: marker.onDragChanged != nil) { _, enabled in
                 if !enabled { finishDrag() }
             }
+            .onChange(of: isEnabled) { _, enabled in
+                if !enabled { finishDrag() }
+            }
             .onDisappear { finishDrag() }
     }
 
@@ -139,12 +144,18 @@ private struct StudioPlanMarkerControl: View {
         if marker.onDragChanged != nil {
             markerIcon
                 // Exclusive recognition preserves taps while preventing a drag
-                // from also opening the subject or camera inspector. Simultaneous
-                // attachment lets an enclosing scroll view recognize its gesture.
-                .simultaneousGesture(dragGesture.exclusively(before:
-                    TapGesture().onEnded { marker.action?() }))
+                // from also activating the marker. A selected marker owns its
+                // drag; simultaneous recognition would also move the scroll view
+                // before the parent can disable scrolling for this transaction.
+                .highPriorityGesture(dragGesture.exclusively(before:
+                    TapGesture().onEnded {
+                        if isEnabled { marker.action?() }
+                    }))
                 .accessibilityAddTraits(marker.action == nil ? [] : .isButton)
-                .accessibilityAction { marker.action?() }
+                .accessibilityHint("Use the position controls below to move this light precisely.")
+                .accessibilityAction {
+                    if isEnabled { marker.action?() }
+                }
         } else if let action = marker.action {
             Button(action: action) { markerIcon }.buttonStyle(.plain)
         } else {
@@ -158,6 +169,7 @@ private struct StudioPlanMarkerControl: View {
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
             .updating($dragRecognized) { _, recognized, _ in recognized = true }
             .onChanged { value in
+                guard isEnabled else { finishDrag(); return }
                 if !dragInProgress {
                     guard let changed = marker.onDragChanged else { return }
                     dragInProgress = true
@@ -169,7 +181,7 @@ private struct StudioPlanMarkerControl: View {
                 dragChange?(value.translation)
             }
             .onEnded { value in
-                if dragInProgress { dragChange?(value.translation) }
+                if isEnabled && dragInProgress { dragChange?(value.translation) }
                 finishDrag()
             }
     }

@@ -143,7 +143,17 @@ final class PrecisionEditingUITests: XCTestCase {
         attachment.name = "Manual-room-modifier-crossing"; attachment.lifetime = .keepAlways; add(attachment)
         app.buttons["closeRoomPlacement"].tap()
         let status = app.staticTexts["projectStatus"]
+        // Committed room measurements now belong to the editable project.
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", "Unsaved changes"), object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 10), .completed)
+        app.buttons["undo"].tap()
         let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", "Saved locally"), object: status)
         XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 10), .completed)
+        XCTAssertEqual(exact.value as? String, "1.237 m", "Undoing room placement must preserve the saved modifier width")
+        app.buttons["redo"].tap()
+        let restored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", "Unsaved changes"), object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 10), .completed)
+        app.buttons["saveProject"].tap()
+        waitForCommittedProject(in: app)
     }
 }

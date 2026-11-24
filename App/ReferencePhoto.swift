@@ -74,6 +74,7 @@ struct ReferencePhoto: Transferable, Sendable {
             kCGImageSourceThumbnailMaxPixelSize: maxEdge,
             kCGImageSourceShouldCacheImmediately: true
         ]
+        try Task.checkCancellation()
         guard let thumb = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary),
               thumb.width > 0, thumb.height > 0,
               max(thumb.width, thumb.height) <= maxEdge,
@@ -102,7 +103,12 @@ struct ReferencePhoto: Transferable, Sendable {
         let clean: Data
         do { clean = try ReferencePNG.metadataFree(encoded as Data, maximumBytes: byteLimit) }
         catch { throw ReferenceImportError.unreadable }
-        return Self(png: clean, width: pixels.width, height: pixels.height, tones: Self.measure(pixels))
+        try Task.checkCancellation()
+        let tones = Self.measure(pixels)
+        // Cancellation can arrive during either synchronous filtering or drawing.
+        // Do not publish a completed derivative from a cancelled import.
+        try Task.checkCancellation()
+        return Self(png: clean, width: pixels.width, height: pixels.height, tones: tones)
     }
 
     /// Fixed, aspect-preserving thumbnail, explicit RGBA8 byte order. No source
