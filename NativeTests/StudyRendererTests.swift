@@ -29,6 +29,18 @@ final class StudyRendererTests: XCTestCase {
         print("Validated engine selected \(rendered.backend.rawValue)")
     }
 
+    func testEngineMannequinUsesCPUAndPublishesDistinctFrame() async throws {
+        var scene = LightingScene.portrait()
+        scene.camera = .init(x: 0, y: 1.6, z: 1.7)
+        scene.cameraLens = .init(focalLengthMillimeters: 70)
+        let engine = StudyRenderEngine()
+        let rendered = try await engine.render(scene: scene, width: 72, subject: .bust)
+        XCTAssertEqual(rendered.backend, .cpu)
+        XCTAssertEqual(rendered.image, try PortraitStudyRenderer.render(scene: scene, width: 72))
+        XCTAssertEqual(rendered.image.unsupportedPixels, 0)
+        XCTAssertNotEqual(rendered.image, try ReferenceStudyRenderer.render(scene: scene, width: 72))
+    }
+
     func testEngineUsesCPUForFarGeometry() async throws {
         var scene = LightingScene.portrait()
         scene.camera = .init(x: 0, y: 1.5, z: 25)

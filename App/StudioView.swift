@@ -13,6 +13,7 @@ struct StudioView: View {
     @State private var future: [LightingScene] = []
     @State private var editStart: LightingScene?
     @State private var mode = "Plan"
+    @State private var studySubject: StudySubject = .sphere
     @State private var showRecipes = false
     @State private var showMeter = false
     @State private var meterNavigationRequest = 0
@@ -280,7 +281,7 @@ struct StudioView: View {
                 charcoal
                 if mode == "Plan" { plan }
                 else if mode == "Camera" { cameraPreview }
-                else if mode == "Study" { ReferenceStudyPreview(scene: scene) }
+                else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject) }
                 else { SpatialPreview(scene: scene).accessibilityLabel("Illustrative 3D lighting preview") }
                 Text(mode == "Plan" ? "OVERHEAD / 1 M GRID" : mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
                     .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
@@ -293,7 +294,16 @@ struct StudioView: View {
                 Text("Meters · cd · K").monospaced()
             }.font(.caption).foregroundStyle(.secondary)
             if mode == "Study" {
-                Text("Neutral sphere and panel · direct light, finite-source shadows and relative color. Not a portrait or calibrated exposure.")
+                Picker("Study subject", selection: $studySubject) {
+                    ForEach(StudySubject.allCases, id: \.self) { subject in
+                        Text(subject.rawValue).tag(subject)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .accessibilityIdentifier("studySubject")
+                Text(studySubject == .sphere
+                     ? "Neutral sphere and panel · direct light, finite-source shadows and relative color. Not calibrated exposure."
+                     : "Neutral mannequin · head, nose, ears, shoulders and matte clothing. Uses your actual camera framing. CPU direct-light diagnostic, not calibrated skin or a reconstructed person.")
                     .font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

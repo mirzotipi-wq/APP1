@@ -19,8 +19,22 @@ import Foundation
         for i in hard.lights.indices { hard.lights[i].optics = nil }
         var warm = soft
         warm.previewSettings = .init(whiteBalanceKelvin: 3200, exposureStops: 1)
-        for (name, scene) in [("soft", soft), ("hard", hard), ("warm", warm)] {
-            let study = try ReferenceStudyRenderer.render(scene: scene, width: 120)
+        var bustSoft = soft
+        bustSoft.camera = .init(x: 0, y: 1.60, z: 1.7)
+        bustSoft.cameraLens = .init(focalLengthMillimeters: 70)
+        var bustHard = bustSoft
+        for i in bustHard.lights.indices { bustHard.lights[i].optics = nil }
+        var bustSide = bustSoft
+        bustSide.camera = .init(x: 0.84, y: 1.63, z: 1.45)
+        bustSide.previewSettings = .init(whiteBalanceKelvin: 4300, exposureStops: 0.5)
+        let cases: [(String, LightingScene, StudySubject)] = [
+            ("soft", soft, .sphere), ("hard", hard, .sphere), ("warm", warm, .sphere),
+            ("bust-soft", bustSoft, .bust), ("bust-hard", bustHard, .bust), ("bust-side", bustSide, .bust)
+        ]
+        for (name, scene, subject) in cases {
+            let study = try subject == .sphere
+                ? ReferenceStudyRenderer.render(scene: scene, width: 120)
+                : PortraitStudyRenderer.render(scene: scene, width: 144)
             guard study.unsupportedPixels == 0 else { throw StudyError.invalidSurface }
             var ppm = Data("P6\n\(study.width) \(study.height)\n255\n".utf8)
             let pixels = [UInt8](study.rgba)

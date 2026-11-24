@@ -105,8 +105,16 @@ actor StudyRenderEngine {
     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
     private var state = State.unchecked
 
-    func render(scene: LightingScene, width: Int = 192) throws -> StudyRenderedFrame {
+    func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {
         guard !Task.isCancelled else { throw StudyError.cancelled }
+        if subject == .bust {
+            // The mannequin has additional analytic geometry. Do not send it
+            // to the sphere-only Metal kernel or claim a validated GPU path.
+            let image = try PortraitStudyRenderer.render(scene: scene, width: min(width, PortraitStudyRenderer.maximumWidth),
+                                                        isCancelled: { Task.isCancelled })
+            guard !Task.isCancelled else { throw StudyError.cancelled }
+            return StudyRenderedFrame(image: image, backend: .cpu)
+        }
         if case .unchecked = state {
             if let device = MTLCreateSystemDefaultDevice(),
                let renderer = try? MetalStudyRenderer(device: device),

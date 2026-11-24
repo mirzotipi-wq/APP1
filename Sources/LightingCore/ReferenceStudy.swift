@@ -187,8 +187,12 @@ public struct StudyLighting: Sendable {
         return try evaluate(receiver: vec(receiver), normal: vec(normal), view: vec(view), material: material, geometry: geometry)
     }
 
-    fileprivate func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
-                              material: StudyMaterial, geometry: StudyGeometry?) throws -> StudySurfaceSignal {
+    /// Internal direct-light evaluator shared by the sphere and mannequin
+    /// diagnostics. The additional visibility function is CPU-only; the sphere
+    /// and its fixed-grid Metal oracle retain the original sampling contract.
+    func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
+                  material: StudyMaterial, geometry: StudyGeometry? = nil,
+                  occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil) throws -> StudySurfaceSignal {
         if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }
         var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero
         let shadowOrigin = receiver + normal * 1e-5
@@ -204,10 +208,12 @@ public struct StudyLighting: Sendable {
             let lux = sample.candela * emitted * nl / r2
             total += lux
             // Offset origin while keeping the shadow ray aimed at the actual source sample.
-            if let geometry {
+            if geometry != nil || occlusionTest != nil {
                 let segment = sample.position - shadowOrigin
                 let length = sqrt(dot3(segment, segment))
-                if geometry.occludes(from: shadowOrigin, to: segment / length, distance: length) { continue }
+                let shadowDirection = segment / length
+                if geometry?.occludes(from: shadowOrigin, to: shadowDirection, distance: length) == true ||
+                    occlusionTest?(shadowOrigin, shadowDirection, length) == true { continue }
             }
             visible += lux
             let scale = lux * material.response(normal: normal, light: wi, view: view, nl: nl) / 1000

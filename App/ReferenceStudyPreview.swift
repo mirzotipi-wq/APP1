@@ -7,10 +7,20 @@ import LightingCore
 /// SceneKit views. A serialized worker validates Metal against CPU before use.
 struct ReferenceStudyPreview: View {
     let scene: LightingScene
+    var subject: StudySubject = .sphere
     @State private var frame: Frame?
 
-    private struct Frame {
+    private struct Request: Equatable {
         let scene: LightingScene
+        let subject: StudySubject
+    }
+    private var request: Request { .init(scene: scene, subject: subject) }
+    private var imageLabel: String {
+        subject == .sphere ? "Rendered neutral sphere and panel" : "Rendered neutral mannequin bust"
+    }
+
+    private struct Frame {
+        let request: Request
         let image: CGImage?
         let unsupportedPixels: Int
         let backend: StudyBackend?
@@ -21,14 +31,14 @@ struct ReferenceStudyPreview: View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomLeading) {
                 Color.black
-                if let frame, frame.scene == scene {
+                if let frame, frame.request == request {
                     if let image = frame.image {
                         let width = min(geometry.size.width, geometry.size.height * 1.5)
-                        Image(image, scale: 1, orientation: .up, label: Text("Rendered neutral sphere and panel"))
+                        Image(image, scale: 1, orientation: .up, label: Text(imageLabel))
                             .resizable().interpolation(.medium)
                             .frame(width: width, height: width / 1.5)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .accessibilityLabel("Rendered neutral sphere and panel")
+                            .accessibilityLabel(imageLabel)
                             .accessibilityIdentifier("studyPreview")
                         if let backend = frame.backend {
                             Text(backend.rawValue).font(.caption2.monospaced())
@@ -64,15 +74,15 @@ struct ReferenceStudyPreview: View {
                 }
             }
         }
-        .task(id: scene) {
-            let snapshot = scene
+        .task(id: request) {
+            let snapshot = request
             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
             do {
-                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot)
+                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)
                 guard !Task.isCancelled else { return }
                 let study = rendered.image
                 let image = Self.makeImage(study)
-                frame = Frame(scene: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,
+                frame = Frame(request: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,
                               backend: rendered.backend,
                               message: image == nil ? "The rendered image could not be displayed." : nil)
             } catch {
@@ -83,7 +93,7 @@ struct ReferenceStudyPreview: View {
                 case .invalidEmitter: message = "Check the aiming direction of each active light."
                 default: message = "Check the camera, light positions, and preview settings."
                 }
-                frame = Frame(scene: snapshot, image: nil, unsupportedPixels: 0, backend: nil, message: message)
+                frame = Frame(request: snapshot, image: nil, unsupportedPixels: 0, backend: nil, message: message)
             }
         }
     }

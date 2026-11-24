@@ -231,6 +231,35 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(rendered.waitForExistence(timeout: 20))
     }
 
+    func testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene() throws {
+        let app = makeApp()
+        app.launch()
+        assertStatus("Unsaved changes", in: app)
+        let study = app.segmentedControls["viewMode"].buttons["Study"]
+        XCTAssertTrue(study.waitForExistence(timeout: 15))
+        study.tap()
+        let rendered = app.images["studyPreview"]
+        XCTAssertTrue(rendered.waitForExistence(timeout: 20))
+        XCTAssertEqual(rendered.label, "Rendered neutral sphere and panel")
+        let bust = app.segmentedControls["studySubject"].buttons["Bust"]
+        revealStudioContent(bust, in: app)
+        bust.tap()
+        let predicate = NSPredicate(format: "exists == true AND label == %@", "Rendered neutral mannequin bust")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: rendered)], timeout: 30), .completed)
+        XCTAssertEqual(app.staticTexts["studyBackend"].label, "CPU reference")
+        revealStudioContent(rendered, in: app, towardBottom: false)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Studio-mannequin-study"; attachment.lifetime = .keepAlways; add(attachment)
+        XCTAssertFalse(app.buttons["undo"].isEnabled)
+        assertStatus("Unsaved changes", in: app)
+        let sphere = app.segmentedControls["studySubject"].buttons["Sphere"]
+        revealStudioContent(sphere, in: app)
+        sphere.tap()
+        let spherePredicate = NSPredicate(format: "exists == true AND label == %@", "Rendered neutral sphere and panel")
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: spherePredicate, object: rendered)], timeout: 30), .completed)
+        XCTAssertFalse(app.buttons["undo"].isEnabled)
+    }
+
     func testCorruptProjectBlocksSavingAcrossRelaunch() throws {
         let app = makeApp(corrupt: true)
         app.launch()
