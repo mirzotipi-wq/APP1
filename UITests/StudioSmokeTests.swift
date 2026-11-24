@@ -102,7 +102,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(backlight.exists)
         XCTAssertTrue(row.isSelected, "The new light must be selected")
         app.buttons["saveProject"].tap()
-        app.swipeDown()
+        revealStudioContent(app.staticTexts["projectStatus"], in: app, towardBottom: false)
         assertStatus("Saved locally", in: app)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Studio-plan"; attachment.lifetime = .keepAlways; self.add(attachment)
@@ -116,9 +116,7 @@ final class StudioSmokeTests: XCTestCase {
     }
 
     private func reveal(_ element: XCUIElement, in app: XCUIApplication, direction: Bool = true) {
-        for _ in 0..<8 where !element.isHittable {
-            if direction { app.swipeUp() } else { app.swipeDown() }
-        }
+        revealStudioContent(element, in: app, towardBottom: direction)
         XCTAssertTrue(element.exists && element.isHittable)
     }
 
@@ -144,7 +142,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
 
         let undo = app.buttons["undo"]
-        reveal(undo, in: app, direction: false)
+        XCTAssertTrue(undo.exists && undo.isHittable)
         let state = XCTAttachment(string: "Initial width: \(initialWidth)\nEdited width: \(editedWidth)\nUndo enabled: \(undo.isEnabled)\nRedo enabled: \(app.buttons["redo"].isEnabled)\n\(width.debugDescription)\n\(undo.debugDescription)")
         state.name = "Optics-tracking-before-undo"; state.lifetime = .keepAlways; add(state)
         XCTAssertTrue(undo.isEnabled, "The completed width gesture must close its edit before Undo")
@@ -153,7 +151,7 @@ final class StudioSmokeTests: XCTestCase {
         revealStudioContent(width, in: app)
         XCTAssertEqual(width.value as? String, initialWidth)
         let redo = app.buttons["redo"]
-        reveal(redo, in: app, direction: false)
+        XCTAssertTrue(redo.exists && redo.isHittable)
         XCTAssertTrue(redo.isEnabled, "Undo must complete and enable Redo")
         redo.tap()
         revealStudioContent(width, in: app)
@@ -187,16 +185,16 @@ final class StudioSmokeTests: XCTestCase {
         tele.tap()
         XCTAssertEqual(focal.value as? String, "85 mm")
         let undo = app.buttons["undo"]
-        reveal(undo, in: app, direction: false)
+        XCTAssertTrue(undo.exists && undo.isHittable)
         undo.tap()
         reveal(focal, in: app)
         XCTAssertEqual(focal.value as? String, initial)
         let redo = app.buttons["redo"]
-        reveal(redo, in: app, direction: false)
+        XCTAssertTrue(redo.exists && redo.isHittable)
         redo.tap()
         reveal(focal, in: app)
         XCTAssertEqual(focal.value as? String, "85 mm")
-        reveal(undo, in: app, direction: false)
+        XCTAssertTrue(undo.exists && undo.isHittable)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Studio-camera"; attachment.lifetime = .keepAlways; self.add(attachment)
         app.buttons["saveProject"].tap()
@@ -264,7 +262,7 @@ final class StudioSmokeTests: XCTestCase {
         reveal(lux, in: app, direction: false)
         XCTAssertEqual(lux.label, originalLux)
         let undo = app.buttons["undo"]
-        reveal(undo, in: app, direction: false)
+        XCTAssertTrue(undo.exists && undo.isHittable)
         undo.tap()
         reveal(balance, in: app)
         XCTAssertEqual(balance.value as? String, "5600 K")

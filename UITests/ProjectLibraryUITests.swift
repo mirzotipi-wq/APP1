@@ -55,6 +55,7 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertTrue(input.waitForExistence(timeout: 10))
         app.buttons["clearProjectName"].tap()
         input.tap()
+        dismissKeyboardTypingIntroduction(in: app)
         input.typeText("Editorial")
         let exactEditorial = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Editorial"), object: input)
         XCTAssertEqual(XCTWaiter.wait(for: [exactEditorial], timeout: 10), .completed)
@@ -73,6 +74,7 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertTrue(input.waitForExistence(timeout: 10))
         app.buttons["clearProjectName"].tap()
         input.tap()
+        dismissKeyboardTypingIntroduction(in: app)
         input.typeText("Campaign")
         let exactCampaign = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Campaign"), object: input)
         XCTAssertEqual(XCTWaiter.wait(for: [exactCampaign], timeout: 10), .completed)
@@ -122,9 +124,26 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertTrue(input.waitForExistence(timeout: 10))
         app.buttons["clearProjectName"].tap()
         input.tap()
+        dismissKeyboardTypingIntroduction(in: app)
         input.typeText("Keep")
         let exactKeep = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Keep"), object: input)
-        XCTAssertEqual(XCTWaiter.wait(for: [exactKeep], timeout: 10), .completed)
+        let enteredKeep = XCTWaiter.wait(for: [exactKeep], timeout: 10)
+        if enteredKeep != .completed {
+            // The failed run retained only an empty, focused text field.
+            // Keep the original failure and capture keyboard/presentation state.
+            let description = "Requested project name: Keep\n" +
+                "Requested element:\n\(String(input.debugDescription.prefix(8_000)))\n" +
+                "Application hierarchy:\n\(String(app.debugDescription.prefix(24_000)))"
+            let state = XCTAttachment(string: description)
+            state.name = "Project-name-entry-failure"
+            state.lifetime = .keepAlways
+            add(state)
+            let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            screenshot.name = "Project-name-entry-failure-screen"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+        }
+        XCTAssertEqual(enteredKeep, .completed)
         waitUntilEnabled(app.buttons["confirmProjectName"])
         app.buttons["confirmProjectName"].tap()
         let original = app.buttons["Options for Portrait setup"]
@@ -171,7 +190,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["recipe-Silhouette"].tap()
         save.tap()
         let copy = app.buttons["saveConflictCopy"]
-        for _ in 0..<8 where !copy.isHittable { app.swipeDown() }
+        revealStudioContent(copy, in: app, towardBottom: false)
         waitUntilEnabled(copy)
         return app
     }
@@ -181,13 +200,13 @@ final class ProjectLibraryUITests: XCTestCase {
         let app = try conflictingEditor()
         let copy = app.buttons["saveConflictCopy"]
         let reload = app.buttons["reloadConflict"]
-        if !reload.isHittable { app.swipeUp() }
+        revealStudioContent(reload, in: app)
         reload.tap()
         let alert = app.alerts["Reload saved project?"]
         XCTAssertTrue(alert.waitForExistence(timeout: 10))
         alert.buttons["Keep editing"].tap()
         XCTAssertTrue(copy.exists)
-        if !copy.isHittable { app.swipeDown() }
+        revealStudioContent(copy, in: app, towardBottom: false)
         copy.tap()
         waitForTitle("Portrait setup recovery", in: app)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
@@ -195,12 +214,15 @@ final class ProjectLibraryUITests: XCTestCase {
         app.launchEnvironment.removeValue(forKey: "KEYFILL_UI_TEST_CONFLICT")
         app.launch()
         waitForTitle("Portrait setup recovery", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         let backlight = app.buttons["light-Backlight"]
-        for _ in 0..<8 where !backlight.isHittable { app.swipeUp() }
+        revealStudioContent(backlight, in: app)
         XCTAssertTrue(backlight.exists)
         XCTAssertFalse(app.buttons["light-Key"].exists)
         let projects = app.buttons["openProjectLibrary"]
-        for _ in 0..<8 where !projects.isHittable { app.swipeDown() }
+        revealStudioContent(projects, in: app, towardBottom: false)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally",
+                       "Scrolling to Projects must preserve the saved lighting setup")
         projects.tap()
         let original = app.buttons["Open Other window"]
         waitUntilEnabled(original)
@@ -208,7 +230,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["Done"].tap()
         waitForTitle("Other window", in: app)
         let key = app.buttons["light-Key"]
-        for _ in 0..<8 where !key.isHittable { app.swipeUp() }
+        revealStudioContent(key, in: app)
         XCTAssertTrue(key.exists)
         XCTAssertFalse(app.buttons["light-Backlight"].exists)
     }
@@ -217,7 +239,7 @@ final class ProjectLibraryUITests: XCTestCase {
         continueAfterFailure = false
         let app = try conflictingEditor()
         let reload = app.buttons["reloadConflict"]
-        for _ in 0..<4 where !reload.isHittable { app.swipeUp() }
+        revealStudioContent(reload, in: app)
         reload.tap()
         let alert = app.alerts["Reload saved project?"]
         XCTAssertTrue(alert.waitForExistence(timeout: 10))
@@ -226,7 +248,7 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         XCTAssertFalse(app.buttons["saveConflictCopy"].exists)
         let key = app.buttons["light-Key"]
-        for _ in 0..<8 where !key.isHittable { app.swipeUp() }
+        revealStudioContent(key, in: app)
         XCTAssertTrue(key.exists)
         XCTAssertFalse(app.buttons["light-Backlight"].exists)
     }
@@ -323,6 +345,7 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertTrue(name.waitForExistence(timeout: 10))
         app.buttons["clearProjectName"].tap()
         name.tap()
+        dismissKeyboardTypingIntroduction(in: app)
         name.typeText("After first save")
         waitUntilEnabled(app.buttons["confirmProjectName"])
         app.buttons["confirmProjectName"].tap()

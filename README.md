@@ -46,7 +46,7 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and remaining gates
 
-The recorded baseline on `development/completion-20261124`, commit `10ba0ef`, passed both unsigned simulator builds, 257 portable tests in each of Debug and Release, and 83 native tests. Room UI completed 4/5 scenarios; its saved-state assertion has since been corrected in the working tree and awaits verification. Other UI acceptance is not claimed here. Current implementation changes require their own CI results; the baseline does not certify them.
+At the recorded `394e28e` checkpoint, [CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45465026704) passed 261 portable tests in each of Debug and Release, 28 Python checks, both unsigned simulator builds and 84 native tests. The four measured-room PDF variants were visually reviewed. UI execution remained in progress, and subsequent cancellation and test-navigation fixes require their own results. The [development checkpoint](docs/evidence/development-completion-2026-11-24.md) records exact revisions, simulator failures, fixes and remaining verification.
 
 Physical-device tracking, accessibility and performance, calibrated rendering, purchase sandbox scenarios, signing, customer validation and owner release approval remain outstanding. See the [quality contract](docs/QUALITY.md) and [milestone state](agents/state.json).
 

@@ -236,7 +236,9 @@ jobs:
     timeout-minutes: ${{ matrix.job_minutes }}
     strategy:
       fail-fast: false
-      max-parallel: 2
+      # Each shard has its own simulator and bounded budget. Run all three so
+      # the studio/export result need not wait for another UI shard to finish.
+      max-parallel: 3
       matrix:
         shard: [room-precision, library-reference, studio-export]
         include:

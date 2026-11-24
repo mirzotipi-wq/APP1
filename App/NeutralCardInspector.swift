@@ -67,15 +67,18 @@ struct NeutralCardInspector: View {
             let snapshot = scene
             do { try await Task.sleep(nanoseconds: 50_000_000) } catch { return }
             let work = Task.detached(priority: .userInitiated) {
-                NeutralCardPreview(scene: snapshot)
+                try Task.checkCancellation()
+                return NeutralCardPreview(scene: snapshot)
             }
-            let result = await withTaskCancellationHandler(operation: {
-                await work.value
-            }, onCancel: {
-                work.cancel()
-            })
-            guard !Task.isCancelled else { return }
-            sample = Sample(scene: snapshot, card: result)
+            do {
+                let result = try await withTaskCancellationHandler(operation: {
+                    try await work.value
+                }, onCancel: {
+                    work.cancel()
+                })
+                guard !Task.isCancelled else { return }
+                sample = Sample(scene: snapshot, card: result)
+            } catch { return }
         }
     }
 

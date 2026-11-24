@@ -32,7 +32,7 @@ final class ManualRoomPlacementUITests: XCTestCase {
         add(attachment)
         app.buttons["closeRoomPlacement"].tap()
         let project = app.staticTexts["projectStatus"]
-        for _ in 0..<8 where !project.isHittable { app.swipeDown() }
+        revealStudioContent(project, in: app, towardBottom: false)
         XCTAssertEqual(project.label, "Unsaved changes")
         XCTAssertTrue(app.buttons["undo"].exists)
         XCTAssertTrue(app.buttons["undo"].isEnabled, "Committed room changes must be undoable")

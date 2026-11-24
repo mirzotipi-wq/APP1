@@ -95,250 +95,113 @@
   ],
   "lastCycle": {
     "date": "2026-11-24",
-    "baseRevision": "968e4bb1b3932c5140b735b404c9538d909bab23",
-    "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
-    "testedRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+    "baseRevision": "d816a95714c3a8b5cb31c16f0be73e3c4c1982c2",
+    "sourceRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
+    "testedRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
     "activeMilestone": "M01",
     "blockingGates": [
+      "core_tests",
+      "native_build",
       "persistence_smoke"
     ],
     "independentWork": [
-      "M02 photometry and diagnostic renderer; earlier native simulator Metal passed; calibrated portrait and physical hardware remain unverified",
-      "M03 archive-only deletion, confirmation and atomic save; historical library UI pass; native recovery UI passed at f1933917; full regression pending",
-      "M04 reference import/comparison, guided manual alternatives and tonal statistics; deployment target test fix; actual picker and held-out inference pending",
-      "M05 earlier PDFKit and preview passed; current share/open and full export gate pending",
-      "M05 manual placement center-coordinate transform and native measurement UI; native manual room scenario passed at f1933917; physical AR pending; not AR tracking or collision validation.",
-      "M06/M07 original icon and explicit native bundle validation; Debug icon bundle verified at f1933917; Release/device appearance pending.",
-      "M06 privacy manifest and draft privacy review; signed archive/device audit pending.",
-      "M03 exact numeric light XYZ/intensity/temperature, validated localized input and full model bounds; 5 new portable tests and native Debug build at e3baf76; exact native edit/undo/redo/save pending.",
-      "M05 projected rectangular emitting-face corners, wall crossing/overhang and outline, degenerate aim unknown; six geometry regressions added; portable geometry and parity passed. Not AR/complete collision clearance.",
-      "M03 exact validated numeric entry extended to camera focal/XYZ, aim XYZ, modifier width/height, white balance/exposure; M05 direct modifier crossing UI scenario. Three new portable tests passed both configurations; exact-source Debug app built; full native UI pending.",
-      "M05 shared PDF/plain-text export retains precise parameters up to six fractional digits; portable regression passed; native PDF and share/open pending.",
-      "M01 room primary action, adaptive layout and stronger UI test viewport/value checks; native verification pending.",
-      "M05 explicit room resizing preserves subject offsets, localized exact measurements, signed sub-millimeter readout and bounded tiny values; 129/129 portable and Debug build passed at 1802ea25, new UI pending.",
-      "M02 diagnostic area lux clips positive-incidence polygon at grazing angles using bounded 12x12 triangle quadrature; fully lit path retains 32x32 reference grid. Three added portable cases and existing parity assertion pass on a13d8c96. Renderer fixed grid still approximate for grazing.",
-      "Historical pre-session CI packet: Release artifacts were moved ahead of the longer UI suite, with then-current 70-minute job/50-minute combined UI bounds. Superseded by separate native build/unit and UI shards; current UI bounds are 85 minutes total with 12/25/32-minute preflight/build/test stages (see checkpoint 5 and CI review).",
-      "M01 historical a13d8c96 unsigned Debug and Release passed; 10/10 native units; UI timeout and incomplete xcresult, not a suite pass. Room resize and recipe failures reproduced on 1802ea25; explicit clear/restore, reachable summary, recipe cards and Add Light shortcut integrated; exact native repair pending.",
-      "M01 native build/unit job and 3 fail-independent UI shards; validated exactly-once coverage of 6 UI classes; current native matrix queued.",
-      "M02 optional CPU mannequin diagnostic with original neutral head mesh, 5248 triangles, BVH, integrated facial relief and finite-segment visibility; same physical camera and direct-light color model. Geometric-normal fallback corrected oblique silhouette failure; 139/139 portable Debug/Release; all 6 render fixtures and existing shared kernel parity pass. Native switch test and physical device/calibration outstanding.",
-      "2026-11-24 a9a2e8e: capacity-safe recovery, transaction history, relative room rotation, geometry-centered 2D/3D fit, bounded adaptive grid/names, exact accessibility, reference replacement cancellation; 180/180 local Debug/Release; GitHub core success; native pending.",
-      "2026-11-24 e45a1c8: bounded editable project export/import, security-scoped coordinated provider reads and cancellation; historical evidence isolation, recursive UI coverage, separate UI build/test budgets.187/187 local Debug/Release;24/24 Python; native pending.",
-      "2026-11-24 5ac2d1e:300-ray independent BVH oracle found/fixed silhouette normal tie;4photometry invariants; Metal initial validation cancellation recovery; typed guided rig provenance/UI.201/201 local both. Measured renderer baseline; reciprocal cache rejected/reverted after unstable timing.",
-      "2026-11-24 0fce248: committed room measurement notes, bounded descriptor-based selected-file reads, adversarial document imports and native EXIF/alpha regressions. Exact local 212/212 Debug and Release, 24/24 Python; actual core CI success and both unsigned build steps passed. Native suites incomplete; room UI failed before execution on missing Metal toolchain.",
-      "2026-11-24 0d63dd8: exact source passed 234/234 Debug and Release, 28/28 Python, six original shared-kernel fixtures and eight strict far-camera controls. Cancellation polling, owned history, visible identities, conservative Float32 routing and Metal compiler preflight integrated. Raw cutoff failures remain documented; no native or device gate inferred.",
-      "Historical2026-11-24 ff8b683:245/245 portable Debug/Release,28 Python, both unsigned native builds. Final native40/42 passed (33 assertions in2 SpatialPreview methods); all bounded reader/document IO/photo/PDF/StudyRenderer methods passed including simulator Metal parity. Library/reference7/8 and room/precision4/5. Studio/export9 started,8 completed(4pass/4fail),1bust-switch interrupted by32-minute timeout, no finalizedxcresult. Corrupt-storage/meter/recipe/study-frame passed; export/camera-termination/optics-undo failures retained.",
-      "2026-11-24 cycle7/15a1b34: native SceneKit transaction/projection and FOV representation corrections, unique recovery alert selection, explicit room-note accessibility, caption/symbol corrections.245/245 local Debug/Release and28 Python; Apple acceptance pending. Pushed with child816e712, no separate workflow.",
-      "2026-11-24 cycle8/816e712: reject duplicate fields throughout nested editable-project imports, including escaped-key ambiguity; six new regressions.251/251 local Debug/Release and28 Python at exact tree19065fb97a3bdbfc9d15ec948adc5df28a784509. Workflow45373901992 core passed and both unsigned native builds passed; unit/library/room tests in progress, studio queued at10:38UTC; export/slider working fixes remain unverified.",
-      "Historical cycle9/3b2a4ce: exact local251/251 both+28 and separate23/23 adapter/history. Final workflow45377378521 failed despite both unsigned builds,50/50 native and21/22 UI: library8/8,room5/5,studio8/9. Original optics Undo expected0.6m but observed1.3m; all8 adapter unit methods passed, so their model coverage does not establish actual gesture behavior. Export2/2,camera,meter,recipe,study and bust passed. No source10 acceptance transferred.",
-      "2026-11-24 cycle10/5cd7eb4: complete serial actor library I/O and command validation, parent-owned reservation/adoption, captured scene/project/generation guards, cancellable provider read and non-abandonable commit receipt; room-status accessibility/diagnostics and active-main verification retention. Exact251/251 Debug30.075s,251/251 Release9.169s,28 Python1.062s on treeaaf52e62fff970cdc55f5908326523e58a1cf394. Separate15 Debug/12 Release actor tests; independent missing/malformed UUID data-isolation regression reproduced and corrected. All source10 native acceptance pending; elapsed host suite times are not performance measurements.",
-      "Later exact source10 observation11:54:07\u201311:54:14UTC: remote core251/251 Debug8.561s/Release4.530s and28 Python0.283s; both unsigned native builds and65/65 native methods, including15/15 actual actor/operation tests, passed. Library/room UI still running and studio queued. Native build gate passes at5cd only; persistence smoke and complete UI acceptance remain unverified. Earlier11:47 observation retained.",
-      "2026-11-24 cycle11/95e9c24: reviewed explicit native slider tracking with captured sessions/owners and unchanged stronger optics expectations; fixed projected marker centers and bounded separated captions; failure-only unchanged15-second Projects diagnostics. Exact257/257 local Debug11.005s/Release5.625s plus28 Python0.320s; remote257/257 Debug7.807s/Release4.130s plus28 Python0.270s. Native83/UI23 are authored only; current native acceptance pending. P21/T41 plusT42 inP19; guide isolated/uncounted, KF025 held.",
-      "Later source11 observation12:57UTC: both unsigned Debug/Release builds and83/83 native methods passed, including15tracking/3UIKit/8adapter/15actor. Separate macOS257 contains15history methods. Raw log and metadata retrieved12:57:49, independently counted; native_build passes only at95. UI library/room running, studioqueued; original optics gesture, plan visual/AX and persistence smoke remain unverified. Guide/CI-budget working changes and separate audit candidate are outside95."
+      "5739346: direct overhead-plan editing, subject controls and light management.",
+      "10ba0ef: native placement, photo comparison, persisted room measurements/exports and studio controls; source-specific core/build/native results retained separately from failed UI evidence.",
+      "394e28e: editing transaction guards, geometry/export corrections and photo lifecycle handling; 261 Debug, 261 Release and 28 Python pass at this exact SHA. Four portable methods, one native PDF method covering four formats and one UI workflow were added; native/UI acceptance remains pending."
     ],
     "latestWorkflow": {
-      "id": 45394444997,
-      "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+      "id": 45465026704,
+      "sourceRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
       "status": "in_progress",
       "conclusion": null,
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
-      "createdAtUTC": "2026-11-24T12:32:09Z",
-      "observationWindowUTC": "Root approximately12:57UTC job observation; complete native log/artifact metadata retrieved12:57:49UTC and independently inspected by records specialist. No specialist CI poll.",
-      "core": "Completed success: actual257/257 Debug7.807s,257/257 Release4.130s and28 Python0.270s; original6 and strict8 host parity checks passed.",
-      "simulator": "Completed success12:56:49UTC: both unsigned builds, icon/privacy bundle checks and83/83 native methods, zero failures, including15tracking/3UIKit/8adapter/15actor methods. Complete raw log retained.",
-      "uiLibraryReference": "Job138451564785 still running at root approximately12:57UTC observation; no finalized current UI count.",
-      "uiRoomPrecision": "Job138451564904 still running at root approximately12:57UTC observation; no finalized current UI count.",
-      "uiStudioExport": "Job138451564680 queued at root approximately12:57UTC observation; no original optics gesture acceptance yet.",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45465026704",
+      "observationWindowUTC": "Root-supplied UI observation at 19:16 UTC and native job observation at 19:19 UTC on 2026-11-24; no records-specialist CI poll.",
+      "core": "Completed success: 261/261 Debug, 261/261 Release and 28 Python at the exact committed source.",
+      "simulator": "Both unsigned Debug and Release builds succeeded; native tests still running at 19:19 UTC. 84 expected methods is authored inventory, not an executed/pass count.",
+      "uiLibraryReference": "Job 138700428157 running at 19:16 UTC; no finalized current count.",
+      "uiRoomPrecision": "Job 138700428256 running at 19:16 UTC; no finalized current count.",
+      "uiStudioExport": "Job 138700428187 queued at 19:16 UTC; no result.",
       "coreJob": {
-        "id": 138450151607,
+        "id": 138698953169,
         "status": "completed",
         "conclusion": "success",
-        "startedAtUTC": "2026-11-24T12:38:55Z",
-        "completedAtUTC": "2026-11-24T12:41:19Z",
-        "debugTests": 257,
-        "releaseTests": 257,
-        "pythonTests": 28,
-        "debugSeconds": 7.807,
-        "releaseSeconds": 4.13,
-        "pythonSeconds": 0.27
+        "debugTests": 261,
+        "releaseTests": 261,
+        "pythonTests": 28
       },
-      "simulatorJobId": 138451564691,
-      "uiLibraryReferenceJobId": 138451564785,
-      "uiRoomPrecisionJobId": 138451564904,
-      "uiStudioExportJobId": 138451564680,
-      "priorObservations": [
-        {
-          "status": "pending",
-          "notes": "Created12:32:09UTC and observed waiting behind source10 after publication."
-        },
-        {
-          "status": "in_progress",
-          "observedAtUTC": "2026-11-24T12:39:52Z",
-          "updatedAtUTC": "2026-11-24T12:38:55Z",
-          "notes": "Direct transition observed after source10 run/job finalized failure12:38:51UTC; no build/method result inferred then."
-        },
-        {
-          "status": "in_progress",
-          "observationWindowUTC": "Root supplied approximately12:42UTC job observation after completed core; records specialist read full retained core log. No subsequent native poll in this packet.",
-          "core": "Completed success: actual257/257 Debug7.807s,257/257 Release4.130s and28 Python0.270s; original6 and strict8 host parity checks passed.",
-          "simulator": "Job138451564691 running from12:41:24UTC; no source11 build or native method result observed.",
-          "uiLibraryReference": "Job138451564785 running from12:41:24UTC; no source11 method result observed.",
-          "uiRoomPrecision": "Job138451564904 running from12:41:24UTC; no source11 method result observed.",
-          "uiStudioExport": "Job138451564680 queued at approximately12:42UTC; no execution result."
-        }
-      ]
+      "simulatorJobId": 138700428174,
+      "uiLibraryReferenceJobId": 138700428157,
+      "uiRoomPrecisionJobId": 138700428256,
+      "uiStudioExportJobId": 138700428187,
+      "notes": "This run covers committed 394e28e, not the later pending cancellation/navigation/tutorial changes. No terminal native or whole-workflow conclusion is inferred."
     },
     "verifiedPortableWorkflow": {
-      "id": 45394444997,
-      "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
-      "scope": "current",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
-      "jobId": 138450151607,
+      "id": 45465026704,
+      "sourceRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
+      "sourceTree": "842a26c25ed28d8a2a40fa3b3d81e97adcb438c4",
+      "scope": "historical",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45465026704",
+      "jobId": 138698953169,
       "core": "success",
-      "debugTests": 257,
-      "releaseTests": 257,
+      "debugTests": 261,
+      "releaseTests": 261,
       "pythonTests": 28,
-      "debugSeconds": 7.807,
-      "releaseSeconds": 4.13,
-      "pythonSeconds": 0.27,
-      "rawLog": "docs/evidence/2026-11-24-autonomous/95e9c24-core.log",
-      "rawLogSHA256": "23ca295d22bf6f6d26299d518444e2aeaf2219d0119c85ac0ab68c96e582c6f4",
-      "rawLogBytes": 201567,
-      "notes": "Complete actual source11 remote log independently inspected. Six rendered fixtures zero unsupported; original6 host max channel error<=1, strict8 max0, matching unsupported masks.33 prepared fixtures are not33 tested passes. No native/Metal/device performance inference."
+      "report": "docs/evidence/development-completion-2026-11-24.md",
+      "notes": "Known exact-SHA core pass supplied by the integration lead. Historical relative to the later working changes; keep this result when invalidating current working-tree gates. No local rerun, timing or physical performance claim."
     },
-    "nextPacket": "Inspect finalized source11 UI shards, especially original0.6m optics Undo/Redo/save/relaunch and unchanged15-second Projects readiness diagnostics. Current native_build and83units pass at95; persistence_smoke remains outstanding. Verify native plan-caption layout/selection/large-text/VoiceOver separately. Guide/CI-budget working changes and two-screen audit candidate remain outside95; KF025 held.",
-    "pendingSourceChanges": "Source11 95e9c24/treec35f501c41a6741a5cc90c012135b8d041d005ad is pushed/read back, full local/remote core and actual unsigned builds/native83 verified. Current23UI are authored inventory with no finalized full result at12:57 observation. Guide/CI-budget working changes and separate two-screen audit candidate are outside95/uncounted; KF025held. Counts21packages/42tasks/11cycles/16pushed/61specialists remain.",
+    "nextPacket": "Integrate independently reviewed cancellation/navigation/keyboard tutorial fixes and parallel execution of the existing three UI shards; obtain exact-source CI results, preserve original acceptance and failed evidence. M01 remains active.",
+    "pendingSourceChanges": "Working changes after 394e28e include queued NeutralCard cancellation, navigation from screen edges preserving all acceptance checks, and a test-only handler for the exact iOS keyboard tutorial. Source CI pending; no next SHA or terminal native/UI result is invented. Full current working-tree gates are unverified; exact 394e28e core/build passes remain recorded.",
     "backlog": "agents/BACKLOG.md",
-    "sessionLedger": "docs/evidence/2026-11-24-autonomous/session-ledger.md",
-    "integrationCycles": 11,
-    "specialistsAssigned": 61,
+    "sessionLedger": "docs/evidence/development-completion-2026-11-24.md",
+    "specialistsAssigned": 100,
     "verifiedNativeWorkflow": {
-      "id": 45394444997,
-      "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
-      "scope": "current",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
-      "jobId": 138451564691,
-      "jobConclusion": "success",
+      "id": 45465026704,
+      "sourceRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
+      "scope": "historical",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45465026704",
+      "jobId": 138700428174,
+      "jobConclusion": null,
       "workflowConclusion": null,
       "unsignedDebugBuild": "success",
       "unsignedReleaseBuild": "success",
-      "unsignedDebugBuildAtUTC": "2026-11-24T12:45:34.028320Z",
-      "unsignedReleaseBuildAtUTC": "2026-11-24T12:47:26.070016Z",
-      "completedAtUTC": "2026-11-24T12:56:49Z",
-      "retrievedAtUTC": "2026-11-24T12:57:49Z",
       "nativeMethods": {
-        "executed": 83,
-        "passed": 83,
-        "failed": 0,
-        "assertionFailures": 0,
-        "executionSeconds": 22.21,
-        "aggregateSeconds": 23.241,
-        "trackingPassed": 15,
-        "uiKitSliderPassed": 3,
-        "sliderAdapterPassed": 8,
-        "projectStoreOperationPassed": 15,
-        "spatialPreviewPassed": 3
+        "authored": 84,
+        "executed": 84,
+        "passed": 84,
+        "failed": 0
       },
-      "nativeSuites": {
-        "BoundedFileReaderTests": 13,
-        "LightingPlanPDFTests": 3,
-        "ProjectDocumentIOTests": 9,
-        "ProjectStoreOperationTests": 15,
-        "ReferencePhotoTests": 7,
-        "SpatialPreviewTests": 3,
-        "StudioSliderEditingTests": 8,
-        "StudioSliderTrackingTests": 15,
-        "StudioTrackingSliderTests": 3,
-        "StudyRendererTests": 7
-      },
-      "macOSPortable": {
-        "executed": 257,
-        "passed": 257,
-        "failed": 0,
-        "executionSeconds": 22.331,
-        "aggregateSeconds": 22.403,
-        "historyMethodsIncluded": 15
-      },
-      "authoredUIScenarios": 23,
-      "nativeArtifact": {
-        "id": 14921917570,
-        "sizeBytes": 65532463,
-        "sha256": "ecb5c7b6d2e1c2266895e456da5ac469f10a04358d5b096891718a1c17cc3a3a"
-      },
-      "compactArtifactId": 14921647800,
-      "artifactInspection": "GitHub metadata only; no archives downloaded or CRC/visual inspection in this observation.",
-      "rawLog": "docs/evidence/2026-11-24-autonomous/95e9c24-native-job.log",
-      "rawLogSHA256": "bf4eedabe5693ee1866271ce63ea3ba028ab73d98013f6aabfec44a09b046d56",
-      "rawLogBytes": 774676,
-      "report": "docs/evidence/2026-11-24-autonomous/native-result-95e9c24.md",
+      "observationWindowUTC": "2026-11-24 at 19:19 UTC: native tests in progress; both build steps successful.",
       "libraryReferenceUI": {
-        "jobId": 138451564785,
+        "jobId": 138700428157,
         "status": "in_progress",
+        "observationWindowUTC": "2026-11-24 at 19:16 UTC",
         "methodCounts": "Unverified"
       },
       "roomPrecisionUI": {
-        "jobId": 138451564904,
+        "jobId": 138700428256,
         "status": "in_progress",
+        "observationWindowUTC": "2026-11-24 at 19:16 UTC",
         "methodCounts": "Unverified"
       },
       "studioExportUI": {
-        "jobId": 138451564680,
+        "jobId": 138700428187,
         "status": "queued",
+        "observationWindowUTC": "2026-11-24 at 19:16 UTC",
         "methodCounts": "No result observed"
       },
-      "uiStatus": "Library/reference and room/precision still running, studio/export queued at root approximately12:57UTC observation. Native_build passes at95; persistence_smoke, original optics gesture and complete UI acceptance remain unverified.",
-      "warnings": "AppIntents/Node deprecations; startup IOSurface/cache/launch diagnostics; associated passing cancellation/presenter-error/malformed-image fixtures. No compiler error, failed native method or actual GitHub error marker found.",
-      "notes": "Actual Apple SDK/build and native83 evidence at95 only. UIKit3 uses programmatic configuration/accessibility/stray-event paths, not a synthetic touch or VoiceOver audit. History15 belongs to separate macOS257, not extra native methods. No source12/guide/budget/audit acceptance.",
-      "priorObservations": [
-        {
-          "id": 45394444997,
-          "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
-          "scope": "current",
-          "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
-          "jobId": 138451564691,
-          "jobConclusion": null,
-          "workflowConclusion": null,
-          "unsignedDebugBuild": "unverified",
-          "unsignedReleaseBuild": "unverified",
-          "nativeMethods": {
-            "authored": 83,
-            "executed": null
-          },
-          "authoredUIScenarios": 23,
-          "observation": "Root approximately12:42UTC: simulator/library/room running, studio queued. No actual native method/build count observed.",
-          "notes": "Current native_build and persistence_smoke unverified after source11 integration. Historical source10 native65 and source9 native50 remain source-specific passes only."
-        }
-      ]
+      "report": "docs/evidence/development-completion-2026-11-24.md",
+      "notes": "Actual 394e28e builds and 84 native methods passed. Earlier 19:19 pending observation is retained in latestWorkflow; working source and full UI/device acceptance remain unverified.",
+      "nativeTestsConclusion": "success"
     },
-    "sourceTree": "c35f501c41a6741a5cc90c012135b8d041d005ad",
+    "sourceTree": "842a26c25ed28d8a2a40fa3b3d81e97adcb438c4",
     "verifiedLocalSource": {
-      "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
-      "sourceTree": "c35f501c41a6741a5cc90c012135b8d041d005ad",
-      "debugTests": 257,
-      "debugSeconds": 11.005,
-      "releaseTests": 257,
-      "releaseSeconds": 5.625,
-      "pythonTests": 28,
-      "pythonSeconds": 0.32,
-      "commandSeconds": {
-        "debug": 29.247,
-        "release": 37.037,
-        "python": 0.438
-      },
-      "result": "pass",
-      "environment": "Debian13 x86_64 Swift6.4.3",
-      "evidence": "docs/evidence/2026-11-24-autonomous/checkpoint-11.md",
-      "nativeParserFiles": 42,
-      "authoredNativeMethods": 83,
-      "authoredUIScenarios": 23,
-      "rawLogSHA256": {
-        "cycle11-debug.log": "d17e156e79c038968b24ffd26fc9f20366bc633d7ab4e2b3e2d123d33c90b725",
-        "cycle11-release.log": "473cce76f24a446591a505df2f944abbf493cc55fdf9bc9636a138f86039e3f8",
-        "cycle11-python.log": "e6544cc72e61852784afb30d9fd0c61483673ca04cba1478163f40df7ee3f067",
-        "cycle11-native-parse.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      "notes": "Immutable exact-source full local suites; host times are observations, not device performance. Separate38/38 Debug/Release slider-helper tests are not added to257 core methods. Syntax-only/native inventories do not establish Apple acceptance."
+      "sourceRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
+      "sourceTree": "842a26c25ed28d8a2a40fa3b3d81e97adcb438c4",
+      "result": "unverified",
+      "report": "docs/evidence/development-completion-2026-11-24.md",
+      "notes": "This records packet did not execute local tests. Actual supplied 261/261/28 CI results are recorded in verifiedPortableWorkflow; earlier local evidence is retained in historicalLocalSources."
     },
-    "specialistCountNotes": "60 scheduled specialist agents across10 waves plus actual child /root/w09_ios_critical_review/spatial_assertion_review; follow-up tasks reuse existing agents.",
+    "specialistCountNotes": "Integration lead confirmed the 100th distinct assignment, a100_final_integration_review, after assigning a099_checkpoint_records. Exactly 100 current-session specialists; follow-ups add none. Prior checkpoint 61 belongs to a separate session and is not added.",
     "historicalNativeWorkflows": [
       {
         "id": 45363578829,
@@ -747,11 +610,137 @@
           "roomPrecision": "5/5",
           "studioExport": "7 passed,1 failed of8 completed;1 interrupted"
         }
+      },
+      {
+        "id": 45394444997,
+        "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+        "scope": "historical",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
+        "jobId": 138451564691,
+        "jobConclusion": "success",
+        "workflowConclusion": null,
+        "unsignedDebugBuild": "success",
+        "unsignedReleaseBuild": "success",
+        "unsignedDebugBuildAtUTC": "2026-11-24T12:45:34.028320Z",
+        "unsignedReleaseBuildAtUTC": "2026-11-24T12:47:26.070016Z",
+        "completedAtUTC": "2026-11-24T12:56:49Z",
+        "retrievedAtUTC": "2026-11-24T12:57:49Z",
+        "nativeMethods": {
+          "executed": 83,
+          "passed": 83,
+          "failed": 0,
+          "assertionFailures": 0,
+          "executionSeconds": 22.21,
+          "aggregateSeconds": 23.241,
+          "trackingPassed": 15,
+          "uiKitSliderPassed": 3,
+          "sliderAdapterPassed": 8,
+          "projectStoreOperationPassed": 15,
+          "spatialPreviewPassed": 3
+        },
+        "nativeSuites": {
+          "BoundedFileReaderTests": 13,
+          "LightingPlanPDFTests": 3,
+          "ProjectDocumentIOTests": 9,
+          "ProjectStoreOperationTests": 15,
+          "ReferencePhotoTests": 7,
+          "SpatialPreviewTests": 3,
+          "StudioSliderEditingTests": 8,
+          "StudioSliderTrackingTests": 15,
+          "StudioTrackingSliderTests": 3,
+          "StudyRendererTests": 7
+        },
+        "macOSPortable": {
+          "executed": 257,
+          "passed": 257,
+          "failed": 0,
+          "executionSeconds": 22.331,
+          "aggregateSeconds": 22.403,
+          "historyMethodsIncluded": 15
+        },
+        "authoredUIScenarios": 23,
+        "nativeArtifact": {
+          "id": 14921917570,
+          "sizeBytes": 65532463,
+          "sha256": "ecb5c7b6d2e1c2266895e456da5ac469f10a04358d5b096891718a1c17cc3a3a"
+        },
+        "compactArtifactId": 14921647800,
+        "artifactInspection": "GitHub metadata only; no archives downloaded or CRC/visual inspection in this observation.",
+        "rawLog": "docs/evidence/2026-11-24-autonomous/95e9c24-native-job.log",
+        "rawLogSHA256": "bf4eedabe5693ee1866271ce63ea3ba028ab73d98013f6aabfec44a09b046d56",
+        "rawLogBytes": 774676,
+        "report": "docs/evidence/2026-11-24-autonomous/native-result-95e9c24.md",
+        "libraryReferenceUI": {
+          "jobId": 138451564785,
+          "status": "in_progress",
+          "methodCounts": "Unverified"
+        },
+        "roomPrecisionUI": {
+          "jobId": 138451564904,
+          "status": "in_progress",
+          "methodCounts": "Unverified"
+        },
+        "studioExportUI": {
+          "jobId": 138451564680,
+          "status": "queued",
+          "methodCounts": "No result observed"
+        },
+        "uiStatus": "Library/reference and room/precision still running, studio/export queued at root approximately12:57UTC observation. Native_build passes at95; persistence_smoke, original optics gesture and complete UI acceptance remain unverified.",
+        "warnings": "AppIntents/Node deprecations; startup IOSurface/cache/launch diagnostics; associated passing cancellation/presenter-error/malformed-image fixtures. No compiler error, failed native method or actual GitHub error marker found.",
+        "notes": "Actual Apple SDK/build and native83 evidence at95 only. UIKit3 uses programmatic configuration/accessibility/stray-event paths, not a synthetic touch or VoiceOver audit. History15 belongs to separate macOS257, not extra native methods. No source12/guide/budget/audit acceptance.",
+        "priorObservations": [
+          {
+            "id": 45394444997,
+            "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+            "scope": "current",
+            "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
+            "jobId": 138451564691,
+            "jobConclusion": null,
+            "workflowConclusion": null,
+            "unsignedDebugBuild": "unverified",
+            "unsignedReleaseBuild": "unverified",
+            "nativeMethods": {
+              "authored": 83,
+              "executed": null
+            },
+            "authoredUIScenarios": 23,
+            "observation": "Root approximately12:42UTC: simulator/library/room running, studio queued. No actual native method/build count observed.",
+            "notes": "Current native_build and persistence_smoke unverified after source11 integration. Historical source10 native65 and source9 native50 remain source-specific passes only."
+          }
+        ]
+      },
+      {
+        "id": 45456830724,
+        "sourceRevision": "10ba0ef9868a053142e31dda5b5bcad81dd6b769",
+        "scope": "historical",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45456830724",
+        "unsignedDebugBuild": "success",
+        "unsignedReleaseBuild": "success",
+        "nativeMethods": {
+          "executed": 83,
+          "passed": 83,
+          "failed": 0
+        },
+        "roomPrecisionUI": {
+          "executed": 5,
+          "passed": 4,
+          "failed": 1,
+          "failure": "Old Saved assertion after persisted room measurements changed; stronger dirty/Undo/Redo/save expectations integrated in 394e28e, rerun pending."
+        },
+        "libraryReferenceUI": {
+          "executed": 11,
+          "passed": 7,
+          "failed": 4,
+          "failures": "Two unresolved AX Code=-56 timeouts; project Keep blocked by iOS keyboard tutorial proven by actual video; stale Other disabled after broad scrolling moved Backlight to -100 m, strongly supported by reviewed artifacts."
+        },
+        "studioExportUI": {
+          "methodCounts": "No terminal result supplied in this checkpoint"
+        },
+        "workflowConclusion": null,
+        "report": "docs/evidence/development-completion-2026-11-24.md",
+        "notes": "Preserve actual failures without inferring a whole-workflow terminal conclusion or attributing pending fixes to this source."
       }
     ],
-    "substantivePackages": 21,
-    "actionableTasks": 42,
-    "pushedCommits": 16,
     "historicalPortableWorkflows": [
       {
         "id": 45377378521,
@@ -783,6 +772,36 @@
         "rawLog": "docs/evidence/2026-11-24-autonomous/5cd7eb4-core.log",
         "rawLogSHA256": "e9d721b4b818936b39e7fb1f9857f27eb5ec7692396da4c19e707738a8d6ceba",
         "notes": "Complete actual source10 remote log; original6/strict8 host checks passed. Separate from local times and native/device performance."
+      },
+      {
+        "id": 45394444997,
+        "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+        "scope": "historical",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
+        "jobId": 138450151607,
+        "core": "success",
+        "debugTests": 257,
+        "releaseTests": 257,
+        "pythonTests": 28,
+        "debugSeconds": 7.807,
+        "releaseSeconds": 4.13,
+        "pythonSeconds": 0.27,
+        "rawLog": "docs/evidence/2026-11-24-autonomous/95e9c24-core.log",
+        "rawLogSHA256": "23ca295d22bf6f6d26299d518444e2aeaf2219d0119c85ac0ab68c96e582c6f4",
+        "rawLogBytes": 201567,
+        "notes": "Complete actual source11 remote log independently inspected. Six rendered fixtures zero unsupported; original6 host max channel error<=1, strict8 max0, matching unsupported masks.33 prepared fixtures are not33 tested passes. No native/Metal/device performance inference."
+      },
+      {
+        "id": 45456830724,
+        "sourceRevision": "10ba0ef9868a053142e31dda5b5bcad81dd6b769",
+        "scope": "historical",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45456830724",
+        "core": "success",
+        "debugTests": 257,
+        "releaseTests": 257,
+        "pythonTests": 28,
+        "report": "docs/evidence/development-completion-2026-11-24.md",
+        "notes": "Integration-lead supplied actual source-specific results; not acceptance of 394e28e or later working changes."
       }
     ],
     "historicalWorkflowObservations": [
@@ -835,6 +854,165 @@
         "uiStudioExportJobId": 138417363754,
         "observedAtUTC": "2026-11-24T11:54:14Z",
         "scope": "historical"
+      },
+      {
+        "id": 45394444997,
+        "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45394444997",
+        "createdAtUTC": "2026-11-24T12:32:09Z",
+        "observationWindowUTC": "Root approximately12:57UTC job observation; complete native log/artifact metadata retrieved12:57:49UTC and independently inspected by records specialist. No specialist CI poll.",
+        "core": "Completed success: actual257/257 Debug7.807s,257/257 Release4.130s and28 Python0.270s; original6 and strict8 host parity checks passed.",
+        "simulator": "Completed success12:56:49UTC: both unsigned builds, icon/privacy bundle checks and83/83 native methods, zero failures, including15tracking/3UIKit/8adapter/15actor methods. Complete raw log retained.",
+        "uiLibraryReference": "Job138451564785 still running at root approximately12:57UTC observation; no finalized current UI count.",
+        "uiRoomPrecision": "Job138451564904 still running at root approximately12:57UTC observation; no finalized current UI count.",
+        "uiStudioExport": "Job138451564680 queued at root approximately12:57UTC observation; no original optics gesture acceptance yet.",
+        "coreJob": {
+          "id": 138450151607,
+          "status": "completed",
+          "conclusion": "success",
+          "startedAtUTC": "2026-11-24T12:38:55Z",
+          "completedAtUTC": "2026-11-24T12:41:19Z",
+          "debugTests": 257,
+          "releaseTests": 257,
+          "pythonTests": 28,
+          "debugSeconds": 7.807,
+          "releaseSeconds": 4.13,
+          "pythonSeconds": 0.27
+        },
+        "simulatorJobId": 138451564691,
+        "uiLibraryReferenceJobId": 138451564785,
+        "uiRoomPrecisionJobId": 138451564904,
+        "uiStudioExportJobId": 138451564680,
+        "priorObservations": [
+          {
+            "status": "pending",
+            "notes": "Created12:32:09UTC and observed waiting behind source10 after publication."
+          },
+          {
+            "status": "in_progress",
+            "observedAtUTC": "2026-11-24T12:39:52Z",
+            "updatedAtUTC": "2026-11-24T12:38:55Z",
+            "notes": "Direct transition observed after source10 run/job finalized failure12:38:51UTC; no build/method result inferred then."
+          },
+          {
+            "status": "in_progress",
+            "observationWindowUTC": "Root supplied approximately12:42UTC job observation after completed core; records specialist read full retained core log. No subsequent native poll in this packet.",
+            "core": "Completed success: actual257/257 Debug7.807s,257/257 Release4.130s and28 Python0.270s; original6 and strict8 host parity checks passed.",
+            "simulator": "Job138451564691 running from12:41:24UTC; no source11 build or native method result observed.",
+            "uiLibraryReference": "Job138451564785 running from12:41:24UTC; no source11 method result observed.",
+            "uiRoomPrecision": "Job138451564904 running from12:41:24UTC; no source11 method result observed.",
+            "uiStudioExport": "Job138451564680 queued at approximately12:42UTC; no execution result."
+          }
+        ],
+        "scope": "historical"
+      }
+    ],
+    "historicalLocalSources": [
+      {
+        "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+        "sourceTree": "c35f501c41a6741a5cc90c012135b8d041d005ad",
+        "debugTests": 257,
+        "debugSeconds": 11.005,
+        "releaseTests": 257,
+        "releaseSeconds": 5.625,
+        "pythonTests": 28,
+        "pythonSeconds": 0.32,
+        "commandSeconds": {
+          "debug": 29.247,
+          "release": 37.037,
+          "python": 0.438
+        },
+        "result": "pass",
+        "environment": "Debian13 x86_64 Swift6.4.3",
+        "evidence": "docs/evidence/2026-11-24-autonomous/checkpoint-11.md",
+        "nativeParserFiles": 42,
+        "authoredNativeMethods": 83,
+        "authoredUIScenarios": 23,
+        "rawLogSHA256": {
+          "cycle11-debug.log": "d17e156e79c038968b24ffd26fc9f20366bc633d7ab4e2b3e2d123d33c90b725",
+          "cycle11-release.log": "473cce76f24a446591a505df2f944abbf493cc55fdf9bc9636a138f86039e3f8",
+          "cycle11-python.log": "e6544cc72e61852784afb30d9fd0c61483673ca04cba1478163f40df7ee3f067",
+          "cycle11-native-parse.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "notes": "Immutable exact-source full local suites; host times are observations, not device performance. Separate38/38 Debug/Release slider-helper tests are not added to257 core methods. Syntax-only/native inventories do not establish Apple acceptance.",
+        "scope": "historical"
+      }
+    ],
+    "previousSessionTotals": {
+      "baseRevision": "968e4bb1b3932c5140b735b404c9538d909bab23",
+      "sourceRevision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+      "sourceTree": "c35f501c41a6741a5cc90c012135b8d041d005ad",
+      "sessionLedger": "docs/evidence/2026-11-24-autonomous/session-ledger.md",
+      "integrationCycles": 11,
+      "specialistsAssigned": 61,
+      "specialistCountNotes": "60 scheduled specialist agents across10 waves plus actual child /root/w09_ios_critical_review/spatial_assertion_review; follow-up tasks reuse existing agents.",
+      "substantivePackages": 21,
+      "actionableTasks": 42,
+      "pushedCommits": 16,
+      "notes": "Separate prior session; retained unchanged as historical counts. Do not add its 61 specialists to this session."
+    },
+    "historicalIndependentWork": [
+      "M02 photometry and diagnostic renderer; earlier native simulator Metal passed; calibrated portrait and physical hardware remain unverified",
+      "M03 archive-only deletion, confirmation and atomic save; historical library UI pass; native recovery UI passed at f1933917; full regression pending",
+      "M04 reference import/comparison, guided manual alternatives and tonal statistics; deployment target test fix; actual picker and held-out inference pending",
+      "M05 earlier PDFKit and preview passed; current share/open and full export gate pending",
+      "M05 manual placement center-coordinate transform and native measurement UI; native manual room scenario passed at f1933917; physical AR pending; not AR tracking or collision validation.",
+      "M06/M07 original icon and explicit native bundle validation; Debug icon bundle verified at f1933917; Release/device appearance pending.",
+      "M06 privacy manifest and draft privacy review; signed archive/device audit pending.",
+      "M03 exact numeric light XYZ/intensity/temperature, validated localized input and full model bounds; 5 new portable tests and native Debug build at e3baf76; exact native edit/undo/redo/save pending.",
+      "M05 projected rectangular emitting-face corners, wall crossing/overhang and outline, degenerate aim unknown; six geometry regressions added; portable geometry and parity passed. Not AR/complete collision clearance.",
+      "M03 exact validated numeric entry extended to camera focal/XYZ, aim XYZ, modifier width/height, white balance/exposure; M05 direct modifier crossing UI scenario. Three new portable tests passed both configurations; exact-source Debug app built; full native UI pending.",
+      "M05 shared PDF/plain-text export retains precise parameters up to six fractional digits; portable regression passed; native PDF and share/open pending.",
+      "M01 room primary action, adaptive layout and stronger UI test viewport/value checks; native verification pending.",
+      "M05 explicit room resizing preserves subject offsets, localized exact measurements, signed sub-millimeter readout and bounded tiny values; 129/129 portable and Debug build passed at 1802ea25, new UI pending.",
+      "M02 diagnostic area lux clips positive-incidence polygon at grazing angles using bounded 12x12 triangle quadrature; fully lit path retains 32x32 reference grid. Three added portable cases and existing parity assertion pass on a13d8c96. Renderer fixed grid still approximate for grazing.",
+      "Historical pre-session CI packet: Release artifacts were moved ahead of the longer UI suite, with then-current 70-minute job/50-minute combined UI bounds. Superseded by separate native build/unit and UI shards; current UI bounds are 85 minutes total with 12/25/32-minute preflight/build/test stages (see checkpoint 5 and CI review).",
+      "M01 historical a13d8c96 unsigned Debug and Release passed; 10/10 native units; UI timeout and incomplete xcresult, not a suite pass. Room resize and recipe failures reproduced on 1802ea25; explicit clear/restore, reachable summary, recipe cards and Add Light shortcut integrated; exact native repair pending.",
+      "M01 native build/unit job and 3 fail-independent UI shards; validated exactly-once coverage of 6 UI classes; current native matrix queued.",
+      "M02 optional CPU mannequin diagnostic with original neutral head mesh, 5248 triangles, BVH, integrated facial relief and finite-segment visibility; same physical camera and direct-light color model. Geometric-normal fallback corrected oblique silhouette failure; 139/139 portable Debug/Release; all 6 render fixtures and existing shared kernel parity pass. Native switch test and physical device/calibration outstanding.",
+      "2026-11-24 a9a2e8e: capacity-safe recovery, transaction history, relative room rotation, geometry-centered 2D/3D fit, bounded adaptive grid/names, exact accessibility, reference replacement cancellation; 180/180 local Debug/Release; GitHub core success; native pending.",
+      "2026-11-24 e45a1c8: bounded editable project export/import, security-scoped coordinated provider reads and cancellation; historical evidence isolation, recursive UI coverage, separate UI build/test budgets.187/187 local Debug/Release;24/24 Python; native pending.",
+      "2026-11-24 5ac2d1e:300-ray independent BVH oracle found/fixed silhouette normal tie;4photometry invariants; Metal initial validation cancellation recovery; typed guided rig provenance/UI.201/201 local both. Measured renderer baseline; reciprocal cache rejected/reverted after unstable timing.",
+      "2026-11-24 0fce248: committed room measurement notes, bounded descriptor-based selected-file reads, adversarial document imports and native EXIF/alpha regressions. Exact local 212/212 Debug and Release, 24/24 Python; actual core CI success and both unsigned build steps passed. Native suites incomplete; room UI failed before execution on missing Metal toolchain.",
+      "2026-11-24 0d63dd8: exact source passed 234/234 Debug and Release, 28/28 Python, six original shared-kernel fixtures and eight strict far-camera controls. Cancellation polling, owned history, visible identities, conservative Float32 routing and Metal compiler preflight integrated. Raw cutoff failures remain documented; no native or device gate inferred.",
+      "Historical2026-11-24 ff8b683:245/245 portable Debug/Release,28 Python, both unsigned native builds. Final native40/42 passed (33 assertions in2 SpatialPreview methods); all bounded reader/document IO/photo/PDF/StudyRenderer methods passed including simulator Metal parity. Library/reference7/8 and room/precision4/5. Studio/export9 started,8 completed(4pass/4fail),1bust-switch interrupted by32-minute timeout, no finalizedxcresult. Corrupt-storage/meter/recipe/study-frame passed; export/camera-termination/optics-undo failures retained.",
+      "2026-11-24 cycle7/15a1b34: native SceneKit transaction/projection and FOV representation corrections, unique recovery alert selection, explicit room-note accessibility, caption/symbol corrections.245/245 local Debug/Release and28 Python; Apple acceptance pending. Pushed with child816e712, no separate workflow.",
+      "2026-11-24 cycle8/816e712: reject duplicate fields throughout nested editable-project imports, including escaped-key ambiguity; six new regressions.251/251 local Debug/Release and28 Python at exact tree19065fb97a3bdbfc9d15ec948adc5df28a784509. Workflow45373901992 core passed and both unsigned native builds passed; unit/library/room tests in progress, studio queued at10:38UTC; export/slider working fixes remain unverified.",
+      "Historical cycle9/3b2a4ce: exact local251/251 both+28 and separate23/23 adapter/history. Final workflow45377378521 failed despite both unsigned builds,50/50 native and21/22 UI: library8/8,room5/5,studio8/9. Original optics Undo expected0.6m but observed1.3m; all8 adapter unit methods passed, so their model coverage does not establish actual gesture behavior. Export2/2,camera,meter,recipe,study and bust passed. No source10 acceptance transferred.",
+      "2026-11-24 cycle10/5cd7eb4: complete serial actor library I/O and command validation, parent-owned reservation/adoption, captured scene/project/generation guards, cancellable provider read and non-abandonable commit receipt; room-status accessibility/diagnostics and active-main verification retention. Exact251/251 Debug30.075s,251/251 Release9.169s,28 Python1.062s on treeaaf52e62fff970cdc55f5908326523e58a1cf394. Separate15 Debug/12 Release actor tests; independent missing/malformed UUID data-isolation regression reproduced and corrected. All source10 native acceptance pending; elapsed host suite times are not performance measurements.",
+      "Later exact source10 observation11:54:07\u201311:54:14UTC: remote core251/251 Debug8.561s/Release4.530s and28 Python0.283s; both unsigned native builds and65/65 native methods, including15/15 actual actor/operation tests, passed. Library/room UI still running and studio queued. Native build gate passes at5cd only; persistence smoke and complete UI acceptance remain unverified. Earlier11:47 observation retained.",
+      "2026-11-24 cycle11/95e9c24: reviewed explicit native slider tracking with captured sessions/owners and unchanged stronger optics expectations; fixed projected marker centers and bounded separated captions; failure-only unchanged15-second Projects diagnostics. Exact257/257 local Debug11.005s/Release5.625s plus28 Python0.320s; remote257/257 Debug7.807s/Release4.130s plus28 Python0.270s. Native83/UI23 are authored only; current native acceptance pending. P21/T41 plusT42 inP19; guide isolated/uncounted, KF025 held.",
+      "Later source11 observation12:57UTC: both unsigned Debug/Release builds and83/83 native methods passed, including15tracking/3UIKit/8adapter/15actor. Separate macOS257 contains15history methods. Raw log and metadata retrieved12:57:49, independently counted; native_build passes only at95. UI library/room running, studioqueued; original optics gesture, plan visual/AX and persistence smoke remain unverified. Guide/CI-budget working changes and separate audit candidate are outside95."
+    ],
+    "branch": "development/completion-20261124",
+    "sourceCommits": [
+      "57393463263635e3758c66e237b0e7f369863577",
+      "10ba0ef9868a053142e31dda5b5bcad81dd6b769",
+      "394e28e163be345b9db135d8a10a3a1dfafe6617"
+    ],
+    "newTestMethods": {
+      "portable": 4,
+      "nativePDF": 1,
+      "nativePDFFormatCombinations": 4,
+      "simulatorUI": 1,
+      "notes": "Existing room/reference assertion updates are not new methods; 84 native is expected inventory only."
+    },
+    "laterObservations": [
+      {
+        "sourceRevision": "394e28e163be345b9db135d8a10a3a1dfafe6617",
+        "observedAtUTC": "2026-11-24 19:31:16 UTC",
+        "nativeTests": {
+          "executed": 84,
+          "passed": 84,
+          "failed": 0,
+          "completedAtUTC": "2026-11-24T19:22:31.329Z",
+          "testSucceededAtUTC": "2026-11-24T19:24:15.669Z"
+        },
+        "compactArtifactId": 14956731360,
+        "pdfReview": "Actual four measured-room variants, 32 pages rendered/visually reviewed; no visible clipping/overlap/omitted fixture labels/footer collision. Lead separately reviewed Letter/imperial page 5.",
+        "notes": "Earlier dated running snapshot is retained. This does not verify later working-source patches or full UI/device gates."
       }
     ]
   }

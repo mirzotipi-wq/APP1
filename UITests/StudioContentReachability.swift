@@ -22,6 +22,29 @@ extension XCTestCase {
                        "The save must finish before this workflow continues", file: file, line: line)
     }
 
+    /// A fresh simulator can show this iOS introduction instead of the keyboard.
+    /// Identify its exact recorded copy before touching its Continue button.
+    func dismissKeyboardTypingIntroduction(in app: XCUIApplication,
+                                            file: StaticString = #filePath, line: UInt = #line) {
+        let message = "Speed up your typing by sliding your finger across the letters to compose a word."
+        for host in [app, XCUIApplication(bundleIdentifier: "com.apple.springboard")] {
+            let introduction = host.descendants(matching: .any)
+                .matching(NSPredicate(format: "label == %@", message)).firstMatch
+            guard introduction.exists else { continue }
+            let proceed = host.buttons.matching(NSPredicate(format: "label == %@", "Continue")).firstMatch
+            guard proceed.waitForExistence(timeout: 5) else {
+                XCTFail("The identified keyboard introduction has no Continue button", file: file, line: line)
+                return
+            }
+            proceed.tap()
+            let dismissed = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "exists == false"), object: introduction)
+            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
+                           "The keyboard introduction must dismiss before typing", file: file, line: line)
+            return
+        }
+    }
+
     /// Hittable alone is insufficient for SwiftUI scroll content: an offscreen
     /// row can report hittable while an event lands in a sticky bar or nowhere.
     /// Only for scrolling content, never fixed navigation or edit-history buttons.
