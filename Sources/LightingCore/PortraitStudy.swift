@@ -70,18 +70,13 @@ struct PortraitGeometry: Sendable {
     private static let panelHalfExtent = 3.0
     private static let bound = Ellipsoid(center: .init(0, -0.20, 0),
                                          radii: .init(repeating: 0.46), region: .head)
-    // Overlapping original analytic forms. No external asset, photograph,
-    // identity, texture, or inferred personal attributes are used.
+    // Ears, neck and clothing use analytic forms; the entire facial
+    // surface is a continuous, accelerated, original neutral head mesh.
+    // No external asset, photograph, identity or inferred attributes.
+    private static let head = PortraitHeadMesh.standard
     private static let parts: [Ellipsoid] = [
-        .init(center: .init(0, 0.023, -0.012), radii: .init(0.090, 0.115, 0.093), region: .head),
-        .init(center: .init(0, -0.053, 0.017), radii: .init(0.072, 0.075, 0.072), region: .head),
-        .init(center: .init(0, -0.101, 0.035), radii: .init(0.045, 0.027, 0.041), region: .head),
-        .init(center: .init(0, -0.008, 0.079), radii: .init(0.017, 0.043, 0.032), region: .head),
-        .init(center: .init(0, -0.036, 0.108), radii: .init(0.021, 0.018, 0.026), region: .head),
-        .init(center: .init(-0.090, 0.004, -0.016), radii: .init(0.017, 0.035, 0.027), region: .head),
-        .init(center: .init(0.090, 0.004, -0.016), radii: .init(0.017, 0.035, 0.027), region: .head),
-        .init(center: .init(-0.042, -0.033, 0.040), radii: .init(0.043, 0.043, 0.045), region: .head),
-        .init(center: .init(0.042, -0.033, 0.040), radii: .init(0.043, 0.043, 0.045), region: .head),
+        .init(center: .init(-0.087, 0.004, -0.015), radii: .init(0.015, 0.034, 0.023), region: .head),
+        .init(center: .init(0.087, 0.004, -0.015), radii: .init(0.015, 0.034, 0.023), region: .head),
         .init(center: .init(0, -0.175, -0.016), radii: .init(0.053, 0.095, 0.052), region: .head),
         .init(center: .init(0, -0.360, -0.022), radii: .init(0.203, 0.205, 0.108), region: .clothing),
         .init(center: .init(-0.129, -0.294, -0.020), radii: .init(0.107, 0.086, 0.090), region: .clothing),
@@ -92,7 +87,7 @@ struct PortraitGeometry: Sendable {
 
     func contains(_ point: SIMD3<Double>) -> Bool {
         let local = point - center
-        return Self.parts.contains { $0.contains(local) }
+        return Self.head.containsExclusionBounds(local) || Self.parts.contains { $0.contains(local) }
     }
 
     private func inPanel(_ local: SIMD3<Double>) -> Bool {
@@ -118,6 +113,10 @@ struct PortraitGeometry: Sendable {
         }
         if canHitBust(origin: local, direction: direction, minimum: minimum,
                       maximum: nearest?.distance ?? .infinity) {
+            if let head = Self.head.hit(origin: local, direction: direction,
+                                        minimum: minimum, maximum: nearest?.distance ?? .infinity) {
+                nearest = .init(distance: head.distance, normal: head.normal, region: .head)
+            }
             for part in Self.parts {
                 if let hit = part.hit(origin: local, direction: direction, minimum: minimum,
                                       maximum: nearest?.distance ?? .infinity) {
@@ -140,6 +139,9 @@ struct PortraitGeometry: Sendable {
             if t >= Self.epsilon, t < limit, inPanel(local + direction * t) { return true }
         }
         guard canHitBust(origin: local, direction: direction, minimum: Self.epsilon, maximum: limit) else { return false }
+        if Self.head.occludes(origin: local, direction: direction, minimum: Self.epsilon, maximum: limit) {
+            return true
+        }
         return Self.parts.contains { part in
             guard let (near, far) = part.interval(origin: local, direction: direction) else { return false }
             return far >= Self.epsilon && near < limit

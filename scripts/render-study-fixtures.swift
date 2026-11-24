@@ -21,12 +21,15 @@ import Foundation
         warm.previewSettings = .init(whiteBalanceKelvin: 3200, exposureStops: 1)
         var bustSoft = soft
         bustSoft.camera = .init(x: 0, y: 1.60, z: 1.7)
-        bustSoft.cameraLens = .init(focalLengthMillimeters: 70)
+        bustSoft.cameraLens = .init(focalLengthMillimeters: 85)
+        // A declared closer portrait fixture, with explicit relative exposure.
+        // Do not silently change a user's camera or exposure on subject switch.
+        bustSoft.previewSettings = .init(whiteBalanceKelvin: 5600, exposureStops: 1.25)
         var bustHard = bustSoft
         for i in bustHard.lights.indices { bustHard.lights[i].optics = nil }
         var bustSide = bustSoft
         bustSide.camera = .init(x: 0.84, y: 1.63, z: 1.45)
-        bustSide.previewSettings = .init(whiteBalanceKelvin: 4300, exposureStops: 0.5)
+        bustSide.previewSettings = .init(whiteBalanceKelvin: 4300, exposureStops: 1.25)
         let cases: [(String, LightingScene, StudySubject)] = [
             ("soft", soft, .sphere), ("hard", hard, .sphere), ("warm", warm, .sphere),
             ("bust-soft", bustSoft, .bust), ("bust-hard", bustHard, .bust), ("bust-side", bustSide, .bust)

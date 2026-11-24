@@ -12,10 +12,15 @@ final class PortraitStudyTests: XCTestCase {
     func testNearestHeadAndClothingSurfacesHaveAnalyticOutwardNormals() throws {
         let geometry = PortraitGeometry(center: .init(x: 0, y: 0, z: 0))
         let front = SIMD3<Double>(0, 0, -1)
-        let head = try XCTUnwrap(geometry.hit(origin: .init(0, -0.036, 1), direction: front, minimum: 0.05))
+        let noseY = PortraitHeadMesh.ringY(19)
+        let nose = PortraitHeadMesh.surfacePoint(y: noseY, angle: 0)
+        let head = try XCTUnwrap(geometry.hit(origin: .init(0, noseY, 1), direction: front, minimum: 0.05))
         XCTAssertEqual(head.region, .head)
-        XCTAssertEqual(head.distance, 1 - 0.134, accuracy: 1e-10) // nose tip
-        XCTAssertEqual(head.normal.z, 1, accuracy: 1e-10)
+        // At an actual shared ring vertex, the nearest triangle intersection
+        // must reproduce the prescribed continuous face surface.
+        XCTAssertEqual(head.distance, 1 - nose.z, accuracy: 1e-9)
+        XCTAssertGreaterThan(head.normal.z, 0.65)
+        XCTAssertEqual(head.normal.x, 0, accuracy: 1e-8)
         let shoulder = try XCTUnwrap(geometry.hit(origin: .init(0.16, -0.29, 1), direction: front, minimum: 0.05))
         XCTAssertEqual(shoulder.region, .clothing)
         XCTAssertGreaterThan(shoulder.normal.z, 0)
@@ -24,6 +29,28 @@ final class PortraitStudyTests: XCTestCase {
         XCTAssertNil(geometry.hit(origin: .init(0.6, 0.2, 1), direction: front, minimum: 0.05))
         XCTAssertTrue(geometry.contains(.init(0, 0, 0)))
         XCTAssertFalse(geometry.contains(.init(0, 0, 1)))
+    }
+
+    func testContinuousHeadSurfaceIsSymmetricAndHasIntegratedFacialRelief() throws {
+        let mesh = PortraitHeadMesh.standard
+        XCTAssertEqual(mesh.triangleCount, 2 * PortraitHeadMesh.longitudeSegments * (PortraitHeadMesh.latitudeSegments - 1))
+        for y in [-0.12, -0.08, -0.032, 0.023, 0.08, 0.13] {
+            for angle in [0.0, 0.2, 0.7, 1.4, 2.9] {
+                let a = PortraitHeadMesh.surfacePoint(y: y, angle: angle)
+                let b = PortraitHeadMesh.surfacePoint(y: y, angle: -angle)
+                XCTAssertEqual(a.x, -b.x, accuracy: 1e-12)
+                XCTAssertEqual(a.y, b.y)
+                XCTAssertEqual(a.z, b.z, accuracy: 1e-12)
+                let adjacent = PortraitHeadMesh.surfacePoint(y: y + 0.00001, angle: angle)
+                XCTAssertLessThan(abs(adjacent.z - a.z), 0.0001)
+            }
+        }
+        let nose = PortraitHeadMesh.surfacePoint(y: -0.032, angle: 0)
+        let cheek = PortraitHeadMesh.surfacePoint(y: -0.032, angle: 0.65)
+        XCTAssertGreaterThan(nose.z - cheek.z, 0.025)
+        let direction = SIMD3<Double>(0, 0, -1)
+        XCTAssertFalse(mesh.occludes(origin: .init(0, -0.032, 1), direction: direction, minimum: 1e-5, maximum: 0.5))
+        XCTAssertTrue(mesh.occludes(origin: .init(0, -0.032, 1), direction: direction, minimum: 1e-5, maximum: 1.5))
     }
 
     func testShadowSegmentsStopAtActualLightAndRespectGeometry() {
