@@ -24,14 +24,24 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(app.buttons["recipes"].waitForExistence(timeout: 15))
         assertStatus("Unsaved changes", in: app)
         app.buttons["recipes"].tap()
-        app.buttons["recipe-Silhouette"].tap()
-        let addLightButton = app.buttons["addLight"]
-        XCTAssertTrue(addLightButton.waitForExistence(timeout: 10))
-        if !addLightButton.isHittable { app.swipeUp() }
+        let closeRecipes = app.buttons["closeRecipes"]
+        XCTAssertTrue(closeRecipes.waitForExistence(timeout: 15), "Recipe sheet must actually open")
+        let silhouette = app.buttons["recipe-Silhouette"]
+        revealStudioContent(silhouette, in: app)
+        silhouette.tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: closeRecipes)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 15), .completed)
+        let backlight = app.buttons["light-Backlight"]
+        XCTAssertTrue(backlight.waitForExistence(timeout: 15), "Verify the recipe changed the actual rig before adding a light")
+        XCTAssertFalse(app.buttons["light-Key"].exists)
+        let addLightButton = app.buttons["addLightShortcut"]
+        revealStudioContent(addLightButton, in: app, towardBottom: false)
         addLightButton.tap()
         let row = app.buttons["light-Light 1"]
-        if !row.isHittable { app.swipeUp() }
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        XCTAssertTrue(row.waitForExistence(timeout: 15))
+        revealStudioContent(row, in: app)
+        XCTAssertTrue(backlight.exists)
+        XCTAssertTrue(row.isSelected, "The new light must be selected")
         app.buttons["saveProject"].tap()
         app.swipeDown()
         assertStatus("Saved locally", in: app)
@@ -40,8 +50,8 @@ final class StudioSmokeTests: XCTestCase {
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)
-        if !row.isHittable { app.swipeUp() }
-        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        XCTAssertTrue(row.waitForExistence(timeout: 15))
+        revealStudioContent(row, in: app)
         XCTAssertTrue(app.buttons["light-Backlight"].exists)
         XCTAssertFalse(app.buttons["light-Key"].exists)
     }

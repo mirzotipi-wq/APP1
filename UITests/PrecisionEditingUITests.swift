@@ -111,10 +111,7 @@ final class PrecisionEditingUITests: XCTestCase {
         }
         expect(centers, contains: "All 5 center positions inside room")
         expect(faces, contains: "Rectangular emitting faces within room outline")
-        let field = app.textFields["roomSubjectX"]
-        reveal(field, in: app)
-        replaceText(field, with: "1.6")
-        app.buttons["roomSubjectXSet"].tap()
+        setRoomMeasurement("1.6", id: "roomSubjectX", in: app)
         expect(centers, contains: "All 5 center positions inside room")
         expect(faces, contains: "1 rectangular modifier crosses a wall")
         reveal(faces, in: app)

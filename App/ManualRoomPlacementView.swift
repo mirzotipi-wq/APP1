@@ -18,34 +18,10 @@ struct ManualRoomPlacementView: View {
                         Text("Enter real wall distances and the subject's floor position. Place each camera and light center using the measurements below, and check rectangular modifier projections.")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
+                    if let plan { placementSummary(plan) }
                     inputs
                     if let plan {
                         VStack(alignment: .leading, spacing: 10) {
-                            Label(plan.outsideCount == 0 ? "All \(plan.points.count) center positions inside room" :
-                                  "\(plan.outsideCount) of \(plan.points.count) center positions outside room",
-                                  systemImage: plan.outsideCount == 0 ? "checkmark.circle" : "exclamationmark.triangle")
-                                .font(.headline)
-                                .accessibilityIdentifier("roomPlacementStatus")
-                            if !plan.modifierFootprints.isEmpty {
-                                if plan.crossingModifierCount > 0 {
-                                    Label(plan.crossingModifierCount == 1 ? "1 rectangular modifier crosses a wall" :
-                                          "\(plan.crossingModifierCount) rectangular modifiers cross a wall",
-                                          systemImage: "exclamationmark.triangle")
-                                        .foregroundStyle(.orange)
-                                        .accessibilityIdentifier("modifierCrossingStatus")
-                                } else if plan.unavailableModifierCount == 0 {
-                                    Label("Rectangular emitting faces within room outline",
-                                          systemImage: "checkmark.circle")
-                                        .foregroundStyle(.secondary)
-                                        .accessibilityIdentifier("modifierCrossingStatus")
-                                }
-                                if plan.unavailableModifierCount > 0 {
-                                    Label("\(plan.unavailableModifierCount) modifier projections unavailable; check aim",
-                                          systemImage: "questionmark.circle")
-                                        .foregroundStyle(.secondary)
-                                        .accessibilityIdentifier("modifierUnavailableStatus")
-                                }
-                            }
                             map(plan)
                             Text("Near wall at bottom · left wall at left. Rectangular emitting faces are projected to the floor and clipped to the room outline; dashed orange outlines cross a wall.")
                                 .font(.caption).foregroundStyle(.secondary)
@@ -73,6 +49,42 @@ struct ManualRoomPlacementView: View {
                 }
             }
         }
+    }
+
+    /// Keep the committed placement result ahead of the editable measurements.
+    /// Invalid drafts never masquerade as the actual room geometry.
+    private func placementSummary(_ plan: RoomPlacementPlan) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Current measured layout").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Label(plan.outsideCount == 0 ? "All \(plan.points.count) center positions inside room" :
+                  "\(plan.outsideCount) of \(plan.points.count) center positions outside room",
+                  systemImage: plan.outsideCount == 0 ? "checkmark.circle" : "exclamationmark.triangle")
+                .font(.headline)
+                .accessibilityIdentifier("roomPlacementStatus")
+            if !plan.modifierFootprints.isEmpty {
+                if plan.crossingModifierCount > 0 {
+                    Label(plan.crossingModifierCount == 1 ? "1 rectangular modifier crosses a wall" :
+                          "\(plan.crossingModifierCount) rectangular modifiers cross a wall",
+                          systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                        .accessibilityIdentifier("modifierCrossingStatus")
+                } else if plan.unavailableModifierCount == 0 {
+                    Label("Rectangular emitting faces within room outline",
+                          systemImage: "checkmark.circle")
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("modifierCrossingStatus")
+                }
+                if plan.unavailableModifierCount > 0 {
+                    Label("\(plan.unavailableModifierCount) modifier projections unavailable; check aim",
+                          systemImage: "questionmark.circle")
+                        .foregroundStyle(.secondary)
+                        .accessibilityIdentifier("modifierUnavailableStatus")
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
     }
 
     private var inputs: some View {
@@ -220,6 +232,8 @@ private struct RoomMeasurementField: View {
             HStack(spacing: 8) {
                 TextField("Meters", text: $draft)
                     .keyboardType(.decimalPad)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
                     .multilineTextAlignment(.trailing)
                     .font(.body.monospacedDigit())
                     .textFieldStyle(.roundedBorder)
@@ -227,6 +241,20 @@ private struct RoomMeasurementField: View {
                     .accessibilityLabel(title + " in meters")
                     .accessibilityIdentifier(id)
                     .onSubmit { apply() }
+                Button {
+                    draft = ""
+                    invalid = false
+                    focused = true
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(draft.isEmpty)
+                .accessibilityLabel("Clear " + title.lowercased())
+                .accessibilityIdentifier(id + "Clear")
                 Text("m").foregroundStyle(.secondary)
                 Button("Set") { apply() }
                     .buttonStyle(.bordered)
@@ -235,9 +263,18 @@ private struct RoomMeasurementField: View {
                     .accessibilityIdentifier(id + "Set")
             }
             if invalid {
-                Text("Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) m.")
-                    .font(.caption).foregroundStyle(.secondary)
+                Label("Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) m. Current value is \(format(value)) m.",
+                      systemImage: "exclamationmark.circle")
+                    .font(.caption).foregroundStyle(.primary)
                     .accessibilityIdentifier(id + "Error")
+                Button("Restore current value") {
+                    draft = format(value)
+                    invalid = false
+                    focused = false
+                }
+                .font(.subheadline)
+                .frame(minHeight: 44)
+                .accessibilityIdentifier(id + "Reset")
             }
         }
         .onAppear { draft = format(value) }
@@ -261,6 +298,9 @@ private struct RoomMeasurementField: View {
         }
         guard let next = RoomMeasurementInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
                                                     in: range) else {
+            // Dismiss the decimal keyboard so the validation result and
+            // the explicit restore action are visible and reachable.
+            focused = false
             invalid = true
             return
         }

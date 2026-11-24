@@ -258,6 +258,17 @@ struct StudioView: View {
                 .accessibilityLabel("Open light meter and test card")
                 .accessibilityHint("Opens and scrolls to the meter controls")
                 .accessibilityIdentifier("openMeter")
+                Button { addLight() } label: {
+                    Image(systemName: "plus")
+                        .font(.headline)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.bordered)
+                .disabled(scene.lights.count >= 12 || !loaded)
+                .accessibilityLabel("Add light")
+                .accessibilityHint("Adds and selects a new light in the setup")
+                .accessibilityIdentifier("addLightShortcut")
             }
             Picker("View", selection: $mode) {
                 Text("Plan").tag("Plan")
@@ -471,8 +482,13 @@ struct StudioView: View {
             HStack {
                 Text("Lights").font(.headline)
                 Spacer()
-                Button("Add light", systemImage: "plus") { addLight() }
-                    .disabled(scene.lights.count >= 12 || !loaded).accessibilityIdentifier("addLight")
+                Button { addLight() } label: {
+                    Label("Add light", systemImage: "plus")
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .disabled(scene.lights.count >= 12 || !loaded)
+                .accessibilityIdentifier("addLight")
             }
             if scene.lights.isEmpty { Text("Start with one light or choose a recipe.").foregroundStyle(.secondary) }
             ForEach(scene.lights) { light in
@@ -614,22 +630,45 @@ struct StudioView: View {
 
     private var recipeSheet: some View {
         NavigationStack {
-            List {
-                Section("Replace current setup") {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Replace current setup").font(.headline)
+                    Text("Choose a starting rig. Undo restores your previous setup.")
+                        .font(.subheadline).foregroundStyle(.secondary)
                     ForEach(LightingRecipe.allCases, id: \.self) { recipe in
                         Button {
                             replace(recipe.makeScene()); showRecipes = false
                         } label: {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(recipe.rawValue).font(.headline)
-                                Text(recipe.detail).font(.subheadline).foregroundStyle(.secondary)
-                            }.padding(.vertical, 8)
-                        }.accessibilityIdentifier("recipe-\(recipe.rawValue)")
+                            HStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(recipe.rawValue).font(.headline).foregroundStyle(.primary)
+                                    Text(recipe.detail).font(.subheadline).foregroundStyle(.secondary)
+                                }
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity, minHeight: 60, alignment: .leading)
+                            .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel(recipe.rawValue)
+                        .accessibilityHint(recipe.detail + " Replaces the current setup; undo is available.")
+                        .accessibilityIdentifier("recipe-\(recipe.rawValue)")
                     }
                 }
-                Section { Text("Undo restores your previous setup.").font(.footnote) }
-            }.navigationTitle("Lighting recipes")
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { showRecipes = false } } }
+                .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
+            }
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle("Lighting recipes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { showRecipes = false }.accessibilityIdentifier("closeRecipes")
+                }
+            }
         }
     }
 

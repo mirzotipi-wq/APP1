@@ -32,4 +32,26 @@ extension XCTestCase {
         hierarchy.name = "Unreachable-studio-hierarchy"; hierarchy.lifetime = .keepAlways; add(hierarchy)
         XCTFail("Scrolling content was not visibly reachable: \(target)", file: file, line: line)
     }
+    /// Use the app's explicit clear affordance, not cursor-position-dependent
+    /// backspaces on a localized decimal keyboard. Verify exactly what was
+    /// entered before pressing Set, and require keyboard dismissal afterwards.
+    func setRoomMeasurement(_ text: String, id: String, in app: XCUIApplication,
+                            file: StaticString = #filePath, line: UInt = #line) {
+        let field = app.textFields[id]
+        revealStudioContent(field, in: app, file: file, line: line)
+        let clear = app.buttons[id + "Clear"]
+        XCTAssertTrue(clear.exists && clear.isEnabled && clear.isHittable, file: file, line: line)
+        clear.tap()
+        XCTAssertTrue(field.waitForExistence(timeout: 5), file: file, line: line)
+        field.tap()
+        field.typeText(text)
+        XCTAssertEqual(field.value as? String, text, "Exact measurement draft must be entered", file: file, line: line)
+        let set = app.buttons[id + "Set"]
+        XCTAssertTrue(set.isHittable, file: file, line: line)
+        set.tap()
+        let keyboardGone = NSPredicate(format: "exists == false")
+        let expectation = XCTNSPredicateExpectation(predicate: keyboardGone, object: app.keyboards.firstMatch)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed,
+                       "Set must dismiss the numeric keyboard, including on validation failure", file: file, line: line)
+    }
 }

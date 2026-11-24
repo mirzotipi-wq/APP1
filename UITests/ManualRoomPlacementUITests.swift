@@ -51,31 +51,29 @@ final class ManualRoomPlacementUITests: XCTestCase {
         let width = app.textFields["roomWidth"]
         let subject = app.textFields["roomSubjectX"]
         let status = app.descendants(matching: .any)["roomPlacementStatus"].firstMatch
-        func enter(_ text: String, in field: XCUIElement, button: String) {
-            revealStudioContent(field, in: app)
-            field.tap()
-            if let old = field.value as? String {
-                field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: old.count))
-            }
-            field.typeText(text)
-            app.buttons[button].tap()
-        }
         func expect(_ text: String) {
             let predicate = NSPredicate(format: "exists == true AND label CONTAINS %@", text)
             let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: status)], timeout: 15)
             if result != .completed { recordRoomFailure(in: app) }
             XCTAssertEqual(result, .completed)
         }
-        enter("2", in: width, button: "roomWidthSet")
-        XCTAssertTrue(app.descendants(matching: .any)["roomWidthError"].firstMatch.waitForExistence(timeout: 5))
+        setRoomMeasurement("2", id: "roomWidth", in: app)
+        let error = app.descendants(matching: .any)["roomWidthError"].firstMatch
+        XCTAssertTrue(error.waitForExistence(timeout: 5))
+        XCTAssertTrue(error.label.contains("Current value is 6 m"))
         XCTAssertEqual(subject.value as? String, "3", "The rejected resize must not relocate the subject")
         expect("All 5 center positions inside room")
-        // Restore a valid draft to dismiss the keyboard, then move explicitly.
-        enter("6", in: width, button: "roomWidthSet")
-        enter("1.4999", in: subject, button: "roomSubjectXSet")
+        // Restore the committed value using the visible recovery action.
+        let reset = app.buttons["roomWidthReset"]
+        revealStudioContent(reset, in: app)
+        reset.tap()
+        XCTAssertEqual(width.value as? String, "6")
+        XCTAssertFalse(error.exists)
+        setRoomMeasurement("1.4999", id: "roomSubjectX", in: app)
         XCTAssertEqual(subject.value as? String, "1.4999")
         expect("1 of 5 center positions outside room")
-        enter("2", in: width, button: "roomWidthSet")
+        setRoomMeasurement("2", id: "roomWidth", in: app)
+        XCTAssertEqual(width.value as? String, "2")
         XCTAssertEqual(subject.value as? String, "1.4999")
         expect("3 of 5 center positions outside room")
         let signed = app.staticTexts["X from left wall: -0.0001 m"]
