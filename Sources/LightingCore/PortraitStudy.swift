@@ -26,6 +26,7 @@ struct PortraitGeometry: Sendable {
     struct Hit: Sendable {
         let distance: Double
         let normal: SIMD3<Double>
+        let geometricNormal: SIMD3<Double>
         let region: Region
     }
 
@@ -60,7 +61,7 @@ struct PortraitGeometry: Sendable {
             // essential for non-uniform radii and accurate incidence.
             let gradient = (origin + direction * distance - center) / (radii * radii)
             guard let normal = portraitUnit(gradient) else { return nil }
-            return Hit(distance: distance, normal: normal, region: region)
+            return Hit(distance: distance, normal: normal, geometricNormal: normal, region: region)
         }
     }
 
@@ -108,14 +109,15 @@ struct PortraitGeometry: Sendable {
         if direction.y < -1e-12 {
             let t = (Self.panelOffset - local.y) / direction.y
             if t >= minimum, inPanel(local + direction * t) {
-                nearest = .init(distance: t, normal: .init(0, 1, 0), region: .panel)
+                nearest = .init(distance: t, normal: .init(0, 1, 0), geometricNormal: .init(0, 1, 0), region: .panel)
             }
         }
         if canHitBust(origin: local, direction: direction, minimum: minimum,
                       maximum: nearest?.distance ?? .infinity) {
             if let head = Self.head.hit(origin: local, direction: direction,
                                         minimum: minimum, maximum: nearest?.distance ?? .infinity) {
-                nearest = .init(distance: head.distance, normal: head.normal, region: .head)
+                nearest = .init(distance: head.distance, normal: head.normal,
+                                geometricNormal: head.geometricNormal, region: .head)
             }
             for part in Self.parts {
                 if let hit = part.hit(origin: local, direction: direction, minimum: minimum,
@@ -199,7 +201,8 @@ public enum PortraitStudyRenderer {
                     let signal = try lighting.evaluate(receiver: origin + ray * hit.distance,
                                                         normal: hit.normal, view: -ray,
                                                         material: hit.region.material,
-                                                        occlusionTest: geometry.occludes)
+                                                        occlusionTest: geometry.occludes,
+                                                        geometricNormal: hit.geometricNormal)
                     guard let color = transform.display(signal.signalXYZ) else { throw StudyError.invalidSurface }
                     pixels[index] = byte(color.red); pixels[index + 1] = byte(color.green)
                     pixels[index + 2] = byte(color.blue)

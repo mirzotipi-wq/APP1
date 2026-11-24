@@ -38,7 +38,6 @@ import Foundation
             let study = try subject == .sphere
                 ? ReferenceStudyRenderer.render(scene: scene, width: 120)
                 : PortraitStudyRenderer.render(scene: scene, width: 144)
-            guard study.unsupportedPixels == 0 else { throw StudyError.invalidSurface }
             var ppm = Data("P6\n\(study.width) \(study.height)\n255\n".utf8)
             let pixels = [UInt8](study.rgba)
             for i in stride(from: 0, to: pixels.count, by: 4) {
@@ -49,6 +48,11 @@ import Foundation
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(scene).write(to: output.appendingPathComponent(name + ".json"), options: .atomic)
             print("\(name): \(study.width)×\(study.height), unsupported pixels \(study.unsupportedPixels)")
+            // Keep the failed render as an artifact, but fail the fixture gate.
+            if study.unsupportedPixels != 0 {
+                FileHandle.standardError.write(Data("Invalid fixture: \(name), \(study.unsupportedPixels) pixels\n".utf8))
+                throw StudyError.invalidSurface
+            }
         }
     }
 }

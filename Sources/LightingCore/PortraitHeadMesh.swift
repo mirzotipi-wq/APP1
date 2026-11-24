@@ -33,6 +33,7 @@ struct PortraitHeadMesh: Sendable {
     struct Hit: Sendable {
         let distance: Double
         let normal: SIMD3<Double>
+        let geometricNormal: SIMD3<Double>
     }
 
     private struct Vertex: Sendable {
@@ -124,7 +125,13 @@ struct PortraitHeadMesh: Sendable {
                                                minimum: minimum, maximum: maximum),
                   let normal = headUnit(a.normal * (1 - u - v) + b.normal * u + c.normal * v)
             else { return nil }
-            return .init(distance: t, normal: normal)
+            guard let faceNormal = headUnit(headCross(edge1, edge2)) else { return nil }
+            // A smooth interpolated normal can face away from a grazing camera ray
+            // although the intersected triangle is front-facing. In that case use
+            // the actual outward geometric normal, not a flipped shading normal.
+            let safeNormal = headDot(normal, -direction) > 0 && headDot(normal, faceNormal) > 0
+                ? normal : faceNormal
+            return .init(distance: t, normal: safeNormal, geometricNormal: faceNormal)
         }
     }
 

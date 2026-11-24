@@ -192,15 +192,19 @@ public struct StudyLighting: Sendable {
     /// and its fixed-grid Metal oracle retain the original sampling contract.
     func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
                   material: StudyMaterial, geometry: StudyGeometry? = nil,
-                  occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil) throws -> StudySurfaceSignal {
+                  occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil,
+                  geometricNormal: SIMD3<Double>? = nil) throws -> StudySurfaceSignal {
         if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }
         var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero
-        let shadowOrigin = receiver + normal * 1e-5
+        let shadowOrigin = receiver + (geometricNormal ?? normal) * 1e-5
         for sample in samples {
             let delta = sample.position - receiver
             let r2 = dot3(delta, delta)
             guard r2 >= 0.0025 else { throw StudyError.invalidSurface }
             let distance = sqrt(r2), wi = delta / distance
+            // Mesh shading normals must not admit light from below the actual face.
+            // Analytic sphere and planar receivers retain their original path.
+            if let geometricNormal, dot3(geometricNormal, wi) <= 0 { continue }
             let nl = min(1, max(0, dot3(normal, wi)))
             if nl == 0 { continue }
             let emitted = sample.emittingNormal.map { min(1, max(0, -dot3($0, wi))) } ?? 1

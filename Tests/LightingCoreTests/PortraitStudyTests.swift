@@ -104,6 +104,22 @@ final class PortraitStudyTests: XCTestCase {
         XCTAssertNotEqual(a, try PortraitStudyRenderer.render(scene: wider, width: 72))
     }
 
+    func testFullResolutionObliqueAreaLitPortraitHasNoInvalidSilhouettePixels() throws {
+        var scene = framedScene()
+        scene.camera = .init(x: 0.84, y: 1.63, z: 1.45)
+        scene.cameraLens = .init(focalLengthMillimeters: 85)
+        scene.previewSettings = .init(whiteBalanceKelvin: 4300, exposureStops: 1.25)
+        scene.lights[0].optics = .init(kind: .rectangle, widthMeters: 1, heightMeters: 1.2)
+        scene.lights[1].optics = .init(kind: .rectangle, widthMeters: 0.8, heightMeters: 0.8)
+        scene.lights[2].optics = .init(kind: .rectangle, widthMeters: 0.4, heightMeters: 0.8)
+        let image = try PortraitStudyRenderer.render(scene: scene, width: 144)
+        XCTAssertEqual(image.unsupportedPixels, 0)
+        XCTAssertEqual(image.height, 96)
+        XCTAssertFalse(stride(from: 0, to: image.rgba.count, by: 4).contains { i in
+            image.rgba[i] == 255 && image.rgba[i + 1] == 0 && image.rgba[i + 2] == 255
+        })
+    }
+
     func testInvalidCameraNearFieldAndCancellationAreHonest() throws {
         var scene = framedScene()
         XCTAssertThrowsError(try PortraitStudyRenderer.render(scene: scene, width: 145)) {
