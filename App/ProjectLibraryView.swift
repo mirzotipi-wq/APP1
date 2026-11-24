@@ -70,14 +70,19 @@ struct ProjectLibraryView: View {
                         ForEach(library.projects.filter(\.isArchived)) { project in
                             HStack {
                                 VStack(alignment: .leading, spacing: 3) {
-                                    Text(project.name).font(.headline)
+                                    Text(displayName(project)).font(.headline)
+                                    if displayName(project) != project.name {
+                                        Text("Project ID: \(project.id.uuidString.prefix(8))")
+                                            .font(.caption.monospaced()).foregroundStyle(.secondary)
+                                    }
                                     Text("\(project.scene.lights.count) lights").font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer()
                                 Button("Restore") { change { try $0.restore(project.id) } }
                                     .buttonStyle(.borderless).disabled(!canMutate)
                                     .frame(minHeight: 44)
-                                    .accessibilityLabel("Restore \(project.name)")
+                                    .accessibilityLabel("Restore \(displayName(project))")
+                                    .accessibilityValue(identityValue(project))
                                 Button(role: .destructive) {
                                     pendingDeletion = project
                                     confirmDeletion = true
@@ -86,7 +91,8 @@ struct ProjectLibraryView: View {
                                         .frame(width: 44, height: 44).contentShape(Rectangle())
                                 }
                                 .buttonStyle(.borderless).disabled(!canMutate)
-                                .accessibilityLabel("Delete archived \(project.name)")
+                                .accessibilityLabel("Delete archived \(displayName(project))")
+                                .accessibilityValue(identityValue(project))
                             }
                         }
                         Text("Archived projects can be restored or permanently removed from this library.")
@@ -105,7 +111,7 @@ struct ProjectLibraryView: View {
                 }
                 Button("Cancel", role: .cancel) { pendingDeletion = nil }
             } message: { project in
-                Text("Remove “\(project.name)” and its saved lighting setup from this library? This cannot be undone here. Existing exports and legacy migration backups are not erased.")
+                Text("Remove “\(confirmationName(project))” and its saved lighting setup from this library? This cannot be undone here. Existing exports and legacy migration backups are not erased.")
             }
             .sheet(item: $naming) { action in
                 ProjectNameEditor(title: action.title, initial: action.initial) { name in
@@ -128,8 +134,8 @@ struct ProjectLibraryView: View {
                 // project's name readable and expose its selection to VoiceOver.
                 projectRowLabel(project, active: true)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Current project: \(project.name)")
-                    .accessibilityValue("\(project.scene.lights.count) lights")
+                    .accessibilityLabel("Current project: \(displayName(project))")
+                    .accessibilityValue("\(project.scene.lights.count) lights" + identityValue(project, prefix: ". "))
                     .accessibilityAddTraits(.isSelected)
                     .accessibilityIdentifier("activeProjectRow")
             } else {
@@ -139,7 +145,8 @@ struct ProjectLibraryView: View {
                     projectRowLabel(project, active: false)
                 }
                 .buttonStyle(.borderless).disabled(!canMutate)
-                .accessibilityLabel("Open \(project.name)")
+                .accessibilityLabel("Open \(displayName(project))")
+                .accessibilityValue(identityValue(project))
             }
             Menu {
                 Button("Rename", systemImage: "pencil") {
@@ -147,7 +154,7 @@ struct ProjectLibraryView: View {
                 }
                 Button("Duplicate", systemImage: "plus.square.on.square") {
                     naming = Naming(kind: .duplicate(project.id), title: "Duplicate project",
-                                    initial: String(project.name.prefix(ProjectLibrary.maximumNameLength - 5)) + " copy")
+                                    initial: StudioDisplayName.display(project.name, maximumCharacters: ProjectLibrary.maximumNameLength - 5) + " copy")
                 }
                 .disabled((library?.projects.count ?? 0) >= ProjectLibrary.maximumProjects)
                 Button("Archive", systemImage: "archivebox") { change { try $0.archive(project.id) } }
@@ -157,7 +164,8 @@ struct ProjectLibraryView: View {
                     .frame(width: 44, height: 44).contentShape(Rectangle())
             }
             .disabled(!canMutate)
-            .accessibilityLabel("Options for \(project.name)")
+            .accessibilityLabel("Options for \(displayName(project))")
+            .accessibilityValue(identityValue(project))
         }
     }
 
@@ -166,7 +174,11 @@ struct ProjectLibraryView: View {
             Image(systemName: active ? "checkmark.circle.fill" : "square.stack")
                 .foregroundStyle(active ? Color.accentColor : Color.secondary)
             VStack(alignment: .leading, spacing: 4) {
-                Text(project.name).font(.headline).foregroundStyle(.primary)
+                Text(displayName(project)).font(.headline).foregroundStyle(.primary)
+                if displayName(project) != project.name {
+                    Text("Project ID: \(project.id.uuidString.prefix(8))")
+                        .font(.caption.monospaced()).foregroundStyle(.secondary)
+                }
                 Text("\(project.scene.lights.count) lights" + (active ? " · Open" : ""))
                     .font(.caption).foregroundStyle(.secondary)
             }
@@ -182,6 +194,19 @@ struct ProjectLibraryView: View {
         try onApply(next)
     }
 
+    private func displayName(_ project: LightingProject) -> String {
+        let name = StudioDisplayName.display(project.name)
+        return name.isEmpty ? "Unnamed project" : name
+    }
+
+    private func identityValue(_ project: LightingProject, prefix: String = "") -> String {
+        displayName(project) == project.name ? "" : prefix + "Project ID \(project.id.uuidString.prefix(8))"
+    }
+
+    private func confirmationName(_ project: LightingProject) -> String {
+        displayName(project) + (displayName(project) == project.name ? "" : " (ID \(project.id.uuidString.prefix(8)))")
+    }
+
     private func change(_ edit: (inout ProjectLibrary) throws -> Void) {
         perform { try apply(edit) }
     }
@@ -195,6 +220,8 @@ struct ProjectLibraryView: View {
 private struct ProjectNameEditor: View {
     let title: String
     let onSubmit: (String) throws -> Void
+    private let initialDisplay: String
+    private let requiresNewName: Bool
     @State private var name: String
     @State private var errorMessage: String?
     @Environment(\.dismiss) private var dismiss
@@ -203,7 +230,10 @@ private struct ProjectNameEditor: View {
     init(title: String, initial: String, onSubmit: @escaping (String) throws -> Void) {
         self.title = title
         self.onSubmit = onSubmit
-        _name = State(initialValue: initial)
+        let bounded = StudioDisplayName.display(initial)
+        self.initialDisplay = bounded
+        self.requiresNewName = bounded != initial
+        _name = State(initialValue: bounded)
     }
 
     var body: some View {
@@ -211,7 +241,7 @@ private struct ProjectNameEditor: View {
             Form {
                 Section("Project name") {
                     HStack {
-                        TextField("Name", text: $name).focused($focused)
+                        TextField("Name", text: boundedDraft).focused($focused)
                             .textInputAutocapitalization(.never).autocorrectionDisabled().submitLabel(.done)
                             .accessibilityIdentifier("projectNameInput")
                             .onSubmit { submit() }
@@ -226,6 +256,11 @@ private struct ProjectNameEditor: View {
                             .accessibilityIdentifier("clearProjectName")
                         }
                     }
+                    if requiresNewName {
+                        Text("A shortened version of the name is shown. Enter a new name to save it. Cancelling keeps the complete original saved name.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                            .accessibilityIdentifier("shortenedProjectNameNotice")
+                    }
                     if let errorMessage {
                         Text(errorMessage).font(.footnote).foregroundStyle(.red)
                             .accessibilityIdentifier("projectNameError")
@@ -237,7 +272,8 @@ private struct ProjectNameEditor: View {
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled((try? ProjectLibrary.normalizedName(name)) == nil)
+                    .disabled((try? StudioDisplayName.newInput(name)) == nil ||
+                              (requiresNewName && name == initialDisplay))
                     .accessibilityIdentifier("confirmProjectName")
                 }
             }
@@ -251,10 +287,27 @@ private struct ProjectNameEditor: View {
     }
 
     private func submit() {
+        guard !requiresNewName || name != initialDisplay else {
+            errorMessage = "Enter a new name, or cancel to keep the complete saved name."
+            return
+        }
         do {
-            try onSubmit(ProjectLibrary.normalizedName(name))
+            try onSubmit(StudioDisplayName.newInput(name))
             focused = false
             dismiss()
         } catch { errorMessage = error.localizedDescription }
+    }
+
+    /// Reject an oversized paste explicitly rather than rendering it or silently
+    /// shortening the user's new name. Empty and incomplete drafts remain editable.
+    private var boundedDraft: Binding<String> {
+        Binding(get: { name }, set: { next in
+            guard next.unicodeScalars.prefix(StudioDisplayName.maximumScalars + 1).count <= StudioDisplayName.maximumScalars else {
+                errorMessage = StudioDisplayName.NameError.tooLong.localizedDescription
+                return
+            }
+            name = next
+            errorMessage = nil
+        })
     }
 }

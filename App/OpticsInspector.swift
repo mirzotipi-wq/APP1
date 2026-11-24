@@ -6,6 +6,7 @@ struct OpticsInspector: View {
     @Binding var optics: LightOptics
     let subject: Position
     let onEditingChanged: (Bool) -> Void
+    @Environment(\.locale) private var locale
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -88,7 +89,8 @@ struct OpticsInspector: View {
                 PrecisionValueButton(title: title, unit: "m", id: id, value: value, range: domain)
             }
             Slider(value: value, in: limits, step: step, onEditingChanged: onEditingChanged)
-                .accessibilityLabel(title).accessibilityValue(Text("\(actual, specifier: "%.2f") meters"))
+                .accessibilityLabel(title)
+                .accessibilityValue(StudioNumericInput.formattedValue(actual, unit: "m", locale: locale))
                 .accessibilityIdentifier(id)
         }
     }

@@ -7,6 +7,7 @@ struct CameraInspector: View {
     @Binding var lens: CameraLens
     let subject: Position
     let onEditingChanged: (Bool) -> Void
+    @Environment(\.locale) private var locale
 
     private var framing: CameraFraming? {
         CameraFraming(scene: LightingScene(subject: subject, camera: position, lights: [], cameraLens: lens))
@@ -59,7 +60,7 @@ struct CameraInspector: View {
                         step: Double, unit: String, id: String) -> some View {
         // Preserve valid imported positions even outside the initial editing range.
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
-        let formatted = String(format: unit == "mm" ? "%.0f" : "%.2f", value.wrappedValue)
+        let formatted = StudioNumericInput.formattedValue(value.wrappedValue, unit: unit, locale: locale)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
@@ -67,7 +68,7 @@ struct CameraInspector: View {
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: domain)
             }
             Slider(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged)
-                .accessibilityLabel(title).accessibilityValue("\(formatted) \(unit)")
+                .accessibilityLabel(title).accessibilityValue(formatted)
                 .accessibilityIdentifier(id)
         }
     }

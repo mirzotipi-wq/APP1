@@ -27,6 +27,29 @@ struct ProjectStore {
                         // If the fixture cannot be prepared, the UI test's protected-state assertion fails.
                     }
                 }
+                if process.environment["KEYFILL_UI_TEST_FULL_LIBRARY"] == "1" {
+                    // A real full library, confined to the validated test UUID.
+                    // A relaunch must retain the recovery result instead of
+                    // recreating the original fixture or overwriting any bytes.
+                    let fixtureStore = ProjectLibraryFileStore(directory: directory)
+                    do {
+                        if try fixtureStore.load() == nil {
+                            var fixture = try ProjectLibrary(name: "Portrait setup", scene: .portrait())
+                            let originalID = fixture.activeID
+                            for index in 1..<(ProjectLibrary.maximumProjects - 1) {
+                                try fixture.create(name: "Saved setup \(index)", scene: .portrait())
+                            }
+                            try fixture.create(name: "Archived setup", scene: .portrait())
+                            let archivedID = fixture.activeID
+                            try fixture.select(originalID)
+                            try fixture.archive(archivedID)
+                            try fixtureStore.save(fixture, replacing: nil)
+                        }
+                    } catch {
+                        // Fixture failure is exposed by the UI test's required
+                        // saved-state/capacity assertions, never a simulated pass.
+                    }
+                }
             }
         }
         self.simulateConflict = simulateConflict
@@ -36,6 +59,10 @@ struct ProjectStore {
     func load() throws -> ProjectLibrary? { try store.load() }
     func saveRecoveryCopy(name: String, scene: LightingScene) throws -> ProjectLibrary {
         try store.saveRecoveryCopy(name: name, scene: scene)
+    }
+    func saveRecoveryCopy(name: String, scene: LightingScene,
+                          replacingArchived expected: LightingProject) throws -> ProjectLibrary {
+        try store.saveRecoveryCopy(name: name, scene: scene, replacingArchived: expected)
     }
     func save(_ library: ProjectLibrary, replacing expected: ProjectLibrary?) throws {
         #if DEBUG

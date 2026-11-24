@@ -107,4 +107,45 @@ final class ReferencePhotoTests: XCTestCase {
             XCTAssertEqual($0 as? ReferenceImportError, .tooLarge)
         }
     }
+
+    private actor ImportGate {
+        private var opened = false
+        private var continuation: CheckedContinuation<Void, Never>?
+
+        func wait() async {
+            if opened { return }
+            await withCheckedContinuation { continuation = $0 }
+        }
+
+        func open() {
+            opened = true
+            continuation?.resume()
+            continuation = nil
+        }
+    }
+
+    func testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes() async throws {
+        let original = try fixture(width: 80, height: 60)
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try original.write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        for readFromFile in [true, false] {
+            let gate = ImportGate()
+            let operation = Task {
+                await gate.wait()
+                if readFromFile { return try ReferencePhoto.read(file: url) }
+                return try ReferencePhoto.sanitize(original)
+            }
+            operation.cancel()
+            await gate.open()
+            do {
+                _ = try await operation.value
+                XCTFail("A cancelled import must not publish a derivative")
+            } catch {
+                XCTAssertTrue(error is CancellationError, "Unexpected cancellation error: \(error)")
+            }
+            XCTAssertEqual(try Data(contentsOf: url), original)
+        }
+    }
 }

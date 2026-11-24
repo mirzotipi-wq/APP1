@@ -111,7 +111,7 @@ struct ManualRoomPlacementView: View {
                     .accessibilityIdentifier("roomRotation")
                 Text("\(Int(room.yawDegrees))°").monospacedDigit().frame(minWidth: 54, alignment: .trailing)
             }
-            Button("Rotate 180°") { room.yawDegrees = room.yawDegrees == 180 ? 0 : 180 }
+            Button("Rotate 180°") { room.rotate(byDegrees: 180) }
                 .frame(minHeight: 44)
                 .accessibilityIdentifier("roomHalfTurn")
             Text("Positive rotation turns the scene's +Z direction toward the room's right wall.")
@@ -172,7 +172,7 @@ struct ManualRoomPlacementView: View {
 
     private func measurements(_ point: RoomPlacementPoint, footprint: RoomModifierFootprint?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label(point.name, systemImage: symbol(point.kind)).font(.headline)
+            Label(StudioDisplayName.display(point.name), systemImage: symbol(point.kind)).font(.headline)
             if !point.insideRoom {
                 Label("Outside room", systemImage: "exclamationmark.triangle")
                     .font(.subheadline).foregroundStyle(.orange)

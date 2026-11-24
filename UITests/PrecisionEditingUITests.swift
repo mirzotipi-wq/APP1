@@ -14,6 +14,14 @@ final class PrecisionEditingUITests: XCTestCase {
         field.typeText(text)
     }
 
+    private func expectValue(_ element: XCUIElement, equals value: String,
+                             file: StaticString = #filePath, line: UInt = #line) {
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND value == %@", value), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed,
+                       "The slider's spoken current value must preserve the exact edit", file: file, line: line)
+    }
+
     func testExactLightIntensityValidationUndoRedoAndReopen() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
@@ -37,10 +45,13 @@ final class PrecisionEditingUITests: XCTestCase {
         apply.tap()
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value == %@", "4321.5 cd"), object: exact)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 10), .completed)
+        expectValue(app.sliders["lightIntensity"], equals: "4321.5 cd")
         app.buttons["undo"].tap()
         XCTAssertEqual(exact.value as? String, "900 cd")
+        expectValue(app.sliders["lightIntensity"], equals: "900 cd")
         app.buttons["redo"].tap()
         XCTAssertEqual(exact.value as? String, "4321.5 cd")
+        expectValue(app.sliders["lightIntensity"], equals: "4321.5 cd")
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Studio-exact-light-intensity"; screenshot.lifetime = .keepAlways; add(screenshot)
         app.buttons["saveProject"].tap()
@@ -68,10 +79,13 @@ final class PrecisionEditingUITests: XCTestCase {
         app.buttons["precisionApply"].tap()
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value == %@", "73.125 mm"), object: exact)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 10), .completed)
+        expectValue(app.sliders["cameraFocalLength"], equals: "73.125 mm")
         app.buttons["undo"].tap()
         XCTAssertEqual(exact.value as? String, "50 mm")
+        expectValue(app.sliders["cameraFocalLength"], equals: "50 mm")
         app.buttons["redo"].tap()
         XCTAssertEqual(exact.value as? String, "73.125 mm")
+        expectValue(app.sliders["cameraFocalLength"], equals: "73.125 mm")
         app.buttons["saveProject"].tap()
         app.terminate()
         app.launch()
@@ -79,6 +93,7 @@ final class PrecisionEditingUITests: XCTestCase {
         camera.tap()
         reveal(exact, in: app)
         XCTAssertEqual(exact.value as? String, "73.125 mm")
+        expectValue(app.sliders["cameraFocalLength"], equals: "73.125 mm")
     }
 
     func testExactModifierWidthAndRoomCrossingWithInsideCenters() throws {
@@ -99,6 +114,12 @@ final class PrecisionEditingUITests: XCTestCase {
         app.buttons["precisionApply"].tap()
         let width = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value == %@", "1.237 m"), object: exact)
         XCTAssertEqual(XCTWaiter.wait(for: [width], timeout: 10), .completed)
+        expectValue(app.sliders["emitterWidth"], equals: "1.237 m")
+        app.buttons["undo"].tap()
+        expectValue(app.sliders["emitterWidth"], equals: "0.6 m")
+        app.buttons["redo"].tap()
+        expectValue(app.sliders["emitterWidth"], equals: "1.237 m")
+        XCTAssertEqual(exact.value as? String, "1.237 m")
         app.buttons["saveProject"].tap()
         let open = app.buttons["openRoomPlacement"]
         reveal(open, in: app, towardBottom: false)

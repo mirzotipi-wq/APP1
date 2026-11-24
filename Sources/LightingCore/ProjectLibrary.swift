@@ -51,7 +51,11 @@ public struct ProjectLibrary: Codable, Equatable, Sendable {
         let name = input.trimmingCharacters(in: .whitespacesAndNewlines)
         let forbidden = CharacterSet.controlCharacters.union(.newlines)
         guard !name.isEmpty, name.count <= maximumNameLength,
-              !name.unicodeScalars.contains(where: { forbidden.contains($0) }) else {
+              !name.unicodeScalars.contains(where: {
+                  // Joining controls are needed by ordinary scripts and joined
+                  // emoji; they do not introduce a line break or a bidi override.
+                  $0.value != 0x200C && $0.value != 0x200D && forbidden.contains($0)
+              }) else {
             throw ProjectLibraryError.invalidName
         }
         return name
@@ -180,6 +184,42 @@ public struct ProjectLibraryFileStore: Sendable {
         Self.transactionLock.lock()
         defer { Self.transactionLock.unlock() }
         guard var latest = try loadWhileLocked() else { throw ProjectLibraryError.invalidLibrary }
+        try latest.create(name: name, scene: scene)
+        try write(latest)
+        return latest
+    }
+
+    /// Replaces one explicitly confirmed archived record with a new recovery
+    /// project, including when the library is full. Compare the complete record
+    /// the user saw: an ID alone cannot authorize deleting a subsequently edited
+    /// or restored project. Unrelated newer records are preserved. If another
+    /// window has freed capacity, append without removing any archived record.
+    public func saveRecoveryCopy(name: String, scene: LightingScene,
+                                 replacingArchived expected: LightingProject) throws -> ProjectLibrary {
+        let name = try ProjectLibrary.normalizedName(name)
+        let scene = try scene.validated()
+        Self.transactionLock.lock()
+        defer { Self.transactionLock.unlock() }
+        // A replacement requires the existing library. Do not migrate a legacy
+        // file as a side effect if the library disappeared after confirmation.
+        guard let data = try readLibrary() else { throw ProjectLibraryError.invalidLibrary }
+        var latest = try JSONDecoder().decode(ProjectLibrary.self, from: data).validated()
+        if latest.projects.count < ProjectLibrary.maximumProjects {
+            // The earlier capacity failure is only an observation. Recheck
+            // inside the transaction and prefer keeping every saved record.
+            try latest.create(name: name, scene: scene)
+            try write(latest)
+            return latest
+        }
+        guard latest.projects.first(where: { $0.id == expected.id }) == expected else {
+            throw ProjectLibraryError.staleSnapshot
+        }
+        guard expected.isArchived, expected.id != latest.activeID else {
+            throw ProjectLibraryError.mustArchiveBeforeDeletion
+        }
+        // Mutate only a local value until every validation has succeeded; the
+        // removal and recovery insertion become visible in one atomic write.
+        try latest.deleteArchived(expected.id)
         try latest.create(name: name, scene: scene)
         try write(latest)
         return latest

@@ -33,6 +33,22 @@ public struct ManualRoom: Equatable, Sendable {
         return max(Self.dimensionRange.lowerBound, offset)...Self.dimensionRange.upperBound
     }
 
+    /// Rotate relative to the current placement, preserving dimensions and
+    /// subject offsets. Canonical output is in (-180, 180], matching the UI's
+    /// slider range. Invalid input leaves the entire room unchanged.
+    @discardableResult
+    public mutating func rotate(byDegrees degrees: Double) -> Bool {
+        guard isValid, degrees.isFinite else { return false }
+        // Reduce the delta before addition so even a very large finite input
+        // cannot overflow or lose the bounded starting orientation.
+        var angle = (yawDegrees + degrees.truncatingRemainder(dividingBy: 360))
+            .truncatingRemainder(dividingBy: 360)
+        if angle > 180 { angle -= 360 }
+        if angle <= -180 { angle += 360 }
+        yawDegrees = angle == 0 ? 0 : angle
+        return true
+    }
+
     public var isValid: Bool {
         widthMeters.isFinite && depthMeters.isFinite &&
         Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(depthMeters) &&

@@ -13,7 +13,7 @@ struct PrecisionValueButton: View {
     @State private var showingEditor = false
 
     private var display: String {
-        value.formatted(.number.precision(.fractionLength(0...6)).grouping(.never).locale(locale)) + " " + unit
+        StudioNumericInput.formattedValue(value, unit: unit, locale: locale)
     }
 
     var body: some View {

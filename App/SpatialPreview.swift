@@ -7,30 +7,39 @@ import LightingCore
 struct SpatialPreview: UIViewRepresentable {
     let scene: LightingScene
     let cameraMode: Bool
+    let fitRequest: Int
 
-    init(scene: LightingScene, cameraMode: Bool = false) {
+    init(scene: LightingScene, cameraMode: Bool = false, fitRequest: Int = 0) {
         self.scene = scene
         self.cameraMode = cameraMode
+        self.fitRequest = fitRequest
     }
 
     final class Coordinator {
         let content = SCNNode()
         let camera = SCNNode()
         var lastScene: LightingScene?
+        var lastCameraMode: Bool?
+        var lastFitRequest: Int?
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
     func makeUIView(context: Context) -> SCNView {
-        let view = SCNView(frame: .zero, options: nil)
+        makeView(coordinator: context.coordinator)
+    }
+
+    /// Shared with native integration tests so the actual SceneKit projection
+    /// and camera-controller state are exercised without a SwiftUI host.
+    func makeView(coordinator: Coordinator) -> SCNView {
+        let view = OrbitAwareSceneView(frame: .zero, options: nil)
         let world = SCNScene()
         world.background.contents = UIColor(red: 0.075, green: 0.085, blue: 0.10, alpha: 1)
         view.scene = world
-        let camera = context.coordinator.camera
+        let camera = coordinator.camera
         camera.camera = SCNCamera(); camera.camera?.fieldOfView = 48
-        camera.position = SCNVector3(4, 3, 6); world.rootNode.addChildNode(camera)
-        camera.look(at: SCNVector3(0, 1.15, 0))
-        world.rootNode.addChildNode(context.coordinator.content)
+        world.rootNode.addChildNode(camera)
+        world.rootNode.addChildNode(coordinator.content)
         view.pointOfView = camera
         view.allowsCameraControl = !cameraMode
         view.autoenablesDefaultLighting = false
@@ -39,12 +48,23 @@ struct SpatialPreview: UIViewRepresentable {
     }
 
     func updateUIView(_ view: SCNView, context: Context) {
-        let coordinator = context.coordinator
-        guard coordinator.lastScene != scene else { return }
-        // Keep the viewport and orbit controller alive during edits; replace only content.
-        let root = coordinator.content
-        root.childNodes.forEach { $0.removeFromParentNode() }
-        populate(root)
+        updateView(view, coordinator: context.coordinator)
+    }
+
+    func updateView(_ view: SCNView, coordinator: Coordinator) {
+        let modeChanged = coordinator.lastCameraMode != cameraMode
+        let sceneChanged = coordinator.lastScene != scene
+        let needsFit = !cameraMode && (modeChanged || coordinator.lastFitRequest != fitRequest)
+        guard sceneChanged || modeChanged || needsFit else { return }
+        // Keep the viewport, user orbit and controller alive during ordinary
+        // edits. Only an initial presentation or explicit Fit request recenters.
+        if sceneChanged || modeChanged {
+            let root = coordinator.content
+            root.childNodes.forEach { $0.removeFromParentNode() }
+            populate(root)
+        }
+        view.allowsCameraControl = !cameraMode
+        (view as? OrbitAwareSceneView)?.usesOrbitProjection = !cameraMode
         if cameraMode, let framing = CameraFraming(scene: scene) {
             let camera = coordinator.camera
             camera.position = vector(framing.position)
@@ -54,8 +74,34 @@ struct SpatialPreview: UIViewRepresentable {
             camera.camera?.zFar = 400
             camera.look(at: vector(framing.target), up: vector(framing.up), localFront: SCNVector3(0, 0, -1))
             view.pointOfView = camera
+        } else if needsFit, let bounds = try? StudioSceneBounds(scene: scene) {
+            fitOrbit(view, coordinator: coordinator, bounds: bounds)
+            coordinator.lastFitRequest = fitRequest
         }
         coordinator.lastScene = scene
+        coordinator.lastCameraMode = cameraMode
+    }
+
+    private func fitOrbit(_ view: SCNView, coordinator: Coordinator, bounds: StudioSceneBounds) {
+        let center = bounds.center
+        // Include the illustrative subject/body and fixture housing beyond the
+        // authored centers. Infinite floor and remote stand bases are not fitted.
+        let radius = max(1, bounds.radiusMeters + 1)
+        let distance = radius / sin(24 * Double.pi / 180) * 1.12
+        let direction = SIMD3<Double>(4, 2.6, 6)
+        let length = sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z)
+        let offset = direction * (distance / length)
+        let camera = coordinator.camera
+        view.defaultCameraController.stopInertia()
+        camera.position = SCNVector3(Float(center.x + offset.x), Float(center.y + offset.y), Float(center.z + offset.z))
+        camera.camera?.fieldOfView = 48
+        camera.camera?.projectionDirection = view.bounds.width < view.bounds.height ? .horizontal : .vertical
+        camera.camera?.zNear = 0.02
+        camera.camera?.zFar = max(400, distance + radius * 2)
+        camera.look(at: vector(center), up: SCNVector3(0, 1, 0), localFront: SCNVector3(0, 0, -1))
+        view.pointOfView = camera
+        view.defaultCameraController.automaticTarget = false
+        view.defaultCameraController.target = vector(center)
     }
 
     private func vector(_ p: Position) -> SCNVector3 { SCNVector3(Float(p.x), Float(p.y), Float(p.z)) }
@@ -122,5 +168,17 @@ struct SpatialPreview: UIViewRepresentable {
                            at: SCNVector3(pos.x, pos.y / 2, pos.z), in: root)
             }
         }
+    }
+}
+
+/// SwiftUI may first update a zero-sized view. Choose the orbit FOV's smaller
+/// viewport axis after layout without resetting the user's position or target.
+private final class OrbitAwareSceneView: SCNView {
+    var usesOrbitProjection = false
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        guard usesOrbitProjection, bounds.width > 0, bounds.height > 0 else { return }
+        pointOfView?.camera?.projectionDirection = bounds.width < bounds.height ? .horizontal : .vertical
     }
 }

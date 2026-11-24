@@ -44,8 +44,12 @@ struct ReferenceComparisonView: View {
                         .buttonStyle(.borderedProminent)
                         .accessibilityIdentifier("chooseReference")
                         if reference != nil || loading {
-                            Button(role: .destructive) { clear() } label: {
-                                Label(loading ? "Cancel" : "Remove", systemImage: loading ? "xmark" : "trash")
+                            Button(role: loading ? nil : .destructive) {
+                                if loading { cancelImport() }
+                                else { clear() }
+                            } label: {
+                                Label(loading ? (reference == nil ? "Cancel import" : "Cancel replacement") : "Remove",
+                                      systemImage: loading ? "xmark" : "trash")
                                     .frame(minHeight: 44)
                             }
                             .buttonStyle(.bordered)
@@ -264,9 +268,17 @@ struct ReferenceComparisonView: View {
     @MainActor private func load(_ item: PhotosPickerItem, token: UUID) {
         importTask?.cancel()
         importTask = Task {
+            defer {
+                if requestID == token { importTask = nil }
+            }
             do {
-                guard let photo = try await item.loadTransferable(type: ReferencePhoto.self),
-                      let image = UIImage(data: photo.png) else { throw ReferenceImportError.unreadable }
+                let transferred = try await item.loadTransferable(type: ReferencePhoto.self)
+                // A provider may finish after cancellation. Reject its result
+                // before constructing an obsolete image on the main actor.
+                guard !Task.isCancelled, requestID == token else { return }
+                guard let photo = transferred, let image = UIImage(data: photo.png) else {
+                    throw ReferenceImportError.unreadable
+                }
                 guard !Task.isCancelled, requestID == token else { return }
                 reference = image
                 tones = photo.tones
@@ -275,23 +287,30 @@ struct ReferenceComparisonView: View {
                 loading = false
             } catch {
                 guard !Task.isCancelled, requestID == token else { return }
-                failure = (error as? ReferenceImportError)?.errorDescription ??
+                let detail = (error as? ReferenceImportError)?.errorDescription ??
                     "The photo is unavailable. Check Photos or choose another local image."
+                failure = reference == nil ? detail : "Replacement failed. Your previous photo is still open. \(detail)"
                 loading = false
             }
         }
     }
 
-    @MainActor private func clear() {
+    /// Cancelling a replacement retains the previous photo and guided work.
+    /// Only explicit Remove, closing, or applying the rig discards that session.
+    @MainActor private func cancelImport() {
         requestID = UUID()
         importTask?.cancel()
         importTask = nil
         selection = nil
+        failure = nil
+        loading = false
+    }
+
+    @MainActor private func clear() {
+        cancelImport()
         reference = nil
         tones = nil
         observations = .init(); candidates = []; previewID = nil; rigError = nil
         sizeDescription = ""
-        failure = nil
-        loading = false
     }
 }

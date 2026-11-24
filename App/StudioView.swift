@@ -9,11 +9,10 @@ struct StudioView: View {
     @State private var showProjects = false
     @State private var showReference = false
     @State private var showRoomPlacement = false
-    @State private var history: [LightingScene] = []
-    @State private var future: [LightingScene] = []
-    @State private var editStart: LightingScene?
+    @State private var editHistory = SceneEditHistory()
     @State private var mode = "Plan"
     @State private var studySubject: StudySubject = .sphere
+    @State private var orbitFitRequest = 0
     @State private var showRecipes = false
     @State private var showMeter = false
     @State private var meterNavigationRequest = 0
@@ -23,8 +22,10 @@ struct StudioView: View {
     @State private var message: String?
     @State private var saveConflict = false
     @State private var confirmReloadConflict = false
+    @State private var showRecoveryCapacity = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
     private let store = ProjectStore()
     private let amber = Color(red: 0.96, green: 0.65, blue: 0.30)
     private let charcoal = Color(red: 0.075, green: 0.085, blue: 0.10)
@@ -85,12 +86,12 @@ struct StudioView: View {
                             Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
                                 .frame(width: 44, height: 44)
                         }
-                        .disabled(history.isEmpty).accessibilityLabel("Undo").accessibilityIdentifier("undo")
+                        .disabled(!editHistory.canUndo || editHistory.isEditing).accessibilityLabel("Undo").accessibilityIdentifier("undo")
                         Button { redo() } label: {
                             Label("Redo", systemImage: "arrow.uturn.forward").labelStyle(.iconOnly)
                                 .frame(width: 44, height: 44)
                         }
-                        .disabled(future.isEmpty).accessibilityLabel("Redo").accessibilityIdentifier("redo")
+                        .disabled(!editHistory.canRedo || editHistory.isEditing).accessibilityLabel("Redo").accessibilityIdentifier("redo")
                     }
                     .padding(.horizontal, 16).background(.bar)
                 }
@@ -119,6 +120,17 @@ struct StudioView: View {
                 ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
                                    onSave: persistScene, onApply: applyLibrary)
             }
+            .sheet(isPresented: $showRecoveryCapacity) {
+                RecoveryCapacityView(onLoad: {
+                    guard let latest = try store.load() else { throw ProjectLibraryError.invalidLibrary }
+                    return latest.projects.filter { $0.isArchived && $0.id != latest.activeID }
+                }, onReplace: { candidate in
+                    let latest = try store.saveRecoveryCopy(name: recoveryProjectName, scene: scene,
+                                                           replacingArchived: candidate)
+                    adoptRecoveredLibrary(latest)
+                    message = "Your setup was saved as a recovery project."
+                })
+            }
             .confirmationDialog("Remove selected light?", isPresented: $confirmRemove, titleVisibility: .visible) {
                 Button("Remove light", role: .destructive) {
                     var next = scene; next.lights.removeAll { $0.id == selected }; replace(next)
@@ -132,6 +144,12 @@ struct StudioView: View {
                 Text("Only the unsaved changes in this window will be discarded. The latest saved library will be opened.")
             }
             .task { if !loaded { load() } }
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { editHistory.end(scene: scene) }
+            }
+            .onChange(of: mode) { _, _ in editHistory.end(scene: scene) }
+            .onChange(of: selected) { _, _ in editHistory.end(scene: scene) }
+            .onDisappear { editHistory.end(scene: scene) }
         }
     }
 
@@ -166,7 +184,7 @@ struct StudioView: View {
     private var projectHeading: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
-            Text(saveBlocked ? "Project unavailable" : projectName)
+            Text(saveBlocked ? "Project unavailable" : StudioDisplayName.display(projectName))
                 .font(.title2.bold())
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                 .accessibilityIdentifier("projectName")
@@ -282,15 +300,23 @@ struct StudioView: View {
                 if mode == "Plan" { plan }
                 else if mode == "Camera" { cameraPreview }
                 else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject) }
-                else { SpatialPreview(scene: scene).accessibilityLabel("Illustrative 3D lighting preview") }
-                Text(mode == "Plan" ? "OVERHEAD / 1 M GRID" : mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
-                    .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
-                    .padding(10).allowsHitTesting(false)
+                else { SpatialPreview(scene: scene, fitRequest: orbitFitRequest).accessibilityLabel("Illustrative 3D lighting preview") }
+                if mode != "Plan" {
+                    Text(mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
+                        .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
+                        .padding(10).allowsHitTesting(false)
+                }
             }
             .frame(height: 280).clipShape(RoundedRectangle(cornerRadius: 16))
             HStack {
                 Label("\(scene.lights.count) lights", systemImage: "lightbulb")
                 Spacer()
+                if mode == "3D" {
+                    Button("Fit setup", systemImage: "arrow.up.left.and.arrow.down.right") { orbitFitRequest += 1 }
+                        .frame(minHeight: 44)
+                        .accessibilityHint("Frames the entire rig and resets the orbit camera")
+                        .accessibilityIdentifier("fitStudioSetup")
+                }
                 Text("Meters · cd · K").monospaced()
             }.font(.caption).foregroundStyle(.secondary)
             if mode == "Study" {
@@ -340,24 +366,29 @@ struct StudioView: View {
     private var plan: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
-            let targets = scene.lights.filter { $0.effectiveOptics.kind.isAimed }.map { $0.target(subject: scene.subject) }
-            let positions = [scene.subject, scene.camera] + scene.lights.map(\.position) + targets
-            let extent = max(4.0, (positions.map { max(abs($0.x), abs($0.z)) }.max() ?? 4) + 1)
-            let scale = min(w, h) / CGFloat(extent * 2 + 2)
+            let bounds = try? StudioSceneBounds(scene: scene)
+            let fit = bounds?.overheadFit(width: Double(w), height: Double(h), padding: min(48, Double(min(w, h)) * 0.2), minimumSpanMeters: 4)
+            let grid = fit?.grid()
+            let center = bounds?.center ?? scene.subject
+            let scale = CGFloat(fit?.pointsPerMeter ?? 1)
             ZStack {
                 Canvas { context, size in
-                    let radius = min(100, Int(ceil(extent)))
-                    for n in -radius...radius {
-                        let offset = CGFloat(n) * scale
-                        var grid = Path()
-                        grid.move(to: CGPoint(x: w / 2 + offset, y: 0))
-                        grid.addLine(to: CGPoint(x: w / 2 + offset, y: h))
-                        grid.move(to: CGPoint(x: 0, y: h / 2 + offset))
-                        grid.addLine(to: CGPoint(x: w, y: h / 2 + offset))
-                        context.stroke(grid, with: .color(.white.opacity(n == 0 ? 0.20 : 0.07)), lineWidth: 1)
+                    // Bounded grid work at every viewport size. Its caption
+                    // states the real spacing when a wide rig needs a coarser grid.
+                    for worldX in grid?.verticalWorldCoordinates ?? [] {
+                        let x = w / 2 + CGFloat(worldX - center.x) * scale
+                        var line = Path()
+                        line.move(to: CGPoint(x: x, y: 0)); line.addLine(to: CGPoint(x: x, y: h))
+                        context.stroke(line, with: .color(.white.opacity(worldX == 0 ? 0.20 : 0.07)), lineWidth: 1)
+                    }
+                    for worldZ in grid?.horizontalWorldCoordinates ?? [] {
+                        let y = h / 2 + CGFloat(worldZ - center.z) * scale
+                        var line = Path()
+                        line.move(to: CGPoint(x: 0, y: y)); line.addLine(to: CGPoint(x: w, y: y))
+                        context.stroke(line, with: .color(.white.opacity(worldZ == 0 ? 0.20 : 0.07)), lineWidth: 1)
                     }
                     if let framing = CameraFraming(scene: scene) {
-                        let origin = point(scene.camera, w, h, scale)
+                        let origin = point(scene.camera, w, h, scale, center)
                         let half = framing.subjectPlaneWidthMeters / 2
                         let left = Position(x: scene.subject.x - framing.right.x * half,
                                             y: scene.subject.y - framing.right.y * half,
@@ -367,18 +398,18 @@ struct StudioView: View {
                                              z: scene.subject.z + framing.right.z * half)
                         var cone = Path()
                         cone.move(to: origin)
-                        cone.addLine(to: point(left, w, h, scale))
-                        cone.addLine(to: point(right, w, h, scale))
+                        cone.addLine(to: point(left, w, h, scale, center))
+                        cone.addLine(to: point(right, w, h, scale, center))
                         cone.closeSubpath()
                         context.fill(cone, with: .color(.white.opacity(0.04)))
                         context.stroke(cone, with: .color(.white.opacity(0.45)),
                                        style: StrokeStyle(lineWidth: 1, dash: [3, 4]))
                     }
                     for light in scene.lights {
-                        let origin = point(light.position, w, h, scale)
+                        let origin = point(light.position, w, h, scale, center)
                         let optics = light.effectiveOptics
                         let targetPosition = optics.kind.isAimed ? light.target(subject: scene.subject) : scene.subject
-                        let target = point(targetPosition, w, h, scale)
+                        let target = point(targetPosition, w, h, scale, center)
                         var line = Path(); line.move(to: origin); line.addLine(to: target)
                         context.stroke(line, with: .color(amber.opacity(light.id == selected ? 0.9 : 0.35)),
                                        style: StrokeStyle(lineWidth: 1, dash: optics.kind.isAimed ? [5, 3] : [2, 5]))
@@ -398,7 +429,7 @@ struct StudioView: View {
                                 let p = Position(x: light.position.x + frame.right.x * dx + frame.up.x * dy,
                                                  y: light.position.y + frame.right.y * dx + frame.up.y * dy,
                                                  z: light.position.z + frame.right.z * dx + frame.up.z * dy)
-                                let projected = point(p, w, h, scale)
+                                let projected = point(p, w, h, scale, center)
                                 if index == 0 { footprint.move(to: projected) }
                                 else { footprint.addLine(to: projected) }
                             }
@@ -408,27 +439,31 @@ struct StudioView: View {
                         }
                     }
                 }.accessibilityHidden(true)
+                Text(grid.map { "OVERHEAD / " + StudioNumericInput.formattedValue($0.spacingMeters, unit: "M GRID") } ?? "OVERHEAD")
+                    .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
+                    .padding(10).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .allowsHitTesting(false)
                 marker("Subject", icon: "person.fill", color: .white, active: false)
-                    .position(point(scene.subject, w, h, scale))
+                    .position(point(scene.subject, w, h, scale, center))
                 Button { mode = "Camera" } label: {
                     marker("Camera", icon: "camera.fill", color: .white, active: false)
                 }.buttonStyle(.plain).accessibilityLabel("Edit camera position and lens")
                     .accessibilityIdentifier("editCamera")
-                    .position(point(scene.camera, w, h, scale))
+                    .position(point(scene.camera, w, h, scale, center))
                 ForEach(scene.lights) { light in
                     Button { selected = light.id } label: {
                         marker(light.name, icon: lightIcon(light), color: amber, active: selected == light.id)
                     }.buttonStyle(.plain)
-                        .accessibilityLabel("Select \(light.name) on plan")
+                        .accessibilityLabel("Select \(StudioDisplayName.display(light.name)) on plan")
                         .accessibilityAddTraits(selected == light.id ? .isSelected : [])
-                        .position(point(light.position, w, h, scale))
+                        .position(point(light.position, w, h, scale, center))
                 }
             }
         }
     }
 
-    private func point(_ p: Position, _ w: CGFloat, _ h: CGFloat, _ scale: CGFloat) -> CGPoint {
-        CGPoint(x: w / 2 + CGFloat(p.x) * scale, y: h / 2 + CGFloat(p.z) * scale)
+    private func point(_ p: Position, _ w: CGFloat, _ h: CGFloat, _ scale: CGFloat, _ center: Position) -> CGPoint {
+        CGPoint(x: w / 2 + CGFloat(p.x - center.x) * scale, y: h / 2 + CGFloat(p.z - center.z) * scale)
     }
     private func lightIcon(_ light: StudioLight) -> String {
         switch light.effectiveOptics.kind {
@@ -444,9 +479,9 @@ struct StudioView: View {
                 .frame(width: 34, height: 34)
                 .background(active ? amber.opacity(0.25) : Color.black.opacity(0.65), in: Circle())
                 .overlay { Circle().strokeBorder(color.opacity(active ? 1 : 0.45), lineWidth: active ? 2 : 1) }
-            Text(name).font(.caption2.weight(.semibold)).lineLimit(1).foregroundStyle(.white)
+            Text(StudioDisplayName.display(name)).font(.caption2.weight(.semibold)).lineLimit(1).foregroundStyle(.white)
                 .padding(.horizontal, 4).background(.black.opacity(0.7), in: Capsule())
-        }.frame(minWidth: 44, minHeight: 44)
+        }.frame(minWidth: 44, maxWidth: 96, minHeight: 44)
     }
 
     private var meter: some View {
@@ -507,7 +542,7 @@ struct StudioView: View {
                         Image(systemName: lightIcon(light)).foregroundStyle(amber).frame(width: 36, height: 36)
                             .background(amber.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(light.name).font(.subheadline.weight(.semibold))
+                            Text(StudioDisplayName.display(light.name)).font(.subheadline.weight(.semibold))
                             Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
                             Text("\(light.position.distance(to: scene.subject), specifier: "%.2f") m · \(light.kelvin, specifier: "%.0f") K")
                                 .font(.caption).foregroundStyle(.secondary)
@@ -519,7 +554,7 @@ struct StudioView: View {
                     }.padding(8).frame(minHeight: 52)
                         .background(selected == light.id ? amber.opacity(0.12) : Color(uiColor: .tertiarySystemGroupedBackground),
                                     in: RoundedRectangle(cornerRadius: 12))
-                }.buttonStyle(.plain).accessibilityIdentifier("light-\(light.name)")
+                }.buttonStyle(.plain).accessibilityIdentifier("light-\(StudioDisplayName.display(light.name))")
                     .accessibilityAddTraits(selected == light.id ? .isSelected : [])
             }
         }.padding(14)
@@ -531,7 +566,7 @@ struct StudioView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("LIGHT INSPECTOR").font(.caption2.weight(.semibold)).tracking(1.4).foregroundStyle(.secondary)
-                    Text(light.name).font(.title3.bold())
+                    Text(StudioDisplayName.display(light.name)).font(.title3.bold())
                 }
                 Spacer()
                 Button(role: .destructive) { confirmRemove = true } label: {
@@ -576,7 +611,7 @@ struct StudioView: View {
                 var next = scene.lights[i]
                 next[keyPath: key] = new
                 guard next.isValid else { return }
-                if editStart == nil { remember(scene) }
+                if !editHistory.isEditing { remember(scene) }
                 scene.lights[i] = next
             })
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
@@ -590,7 +625,7 @@ struct StudioView: View {
             }
             Slider(value: value, in: bounds, step: step, onEditingChanged: editChanged)
                 .accessibilityLabel(title)
-                .accessibilityValue(value.wrappedValue.formatted(.number.precision(.fractionLength(0...6)).grouping(.never)) + " " + unit)
+                .accessibilityValue(StudioNumericInput.formattedValue(value.wrappedValue, unit: unit))
                 .accessibilityIdentifier(fieldID)
         }
     }
@@ -600,7 +635,7 @@ struct StudioView: View {
                 set: { new in
                     guard new.isValid, let i = scene.lights.firstIndex(where: { $0.id == id }),
                           scene.lights[i].effectiveOptics != new else { return }
-                    if editStart == nil { remember(scene) }
+                    if !editHistory.isEditing { remember(scene) }
                     scene.lights[i].optics = new
                 })
     }
@@ -608,7 +643,7 @@ struct StudioView: View {
     private var cameraPositionBinding: Binding<Position> {
         Binding(get: { scene.camera }, set: { new in
             guard new.isValid, new != scene.camera else { return }
-            if editStart == nil { remember(scene) }
+            if !editHistory.isEditing { remember(scene) }
             scene.camera = new
         })
     }
@@ -616,7 +651,7 @@ struct StudioView: View {
     private var previewSettingsBinding: Binding<PreviewSettings> {
         Binding(get: { scene.effectivePreviewSettings }, set: { new in
             guard new.isValid, new != scene.effectivePreviewSettings else { return }
-            if editStart == nil { remember(scene) }
+            if !editHistory.isEditing { remember(scene) }
             scene.previewSettings = new
         })
     }
@@ -624,17 +659,16 @@ struct StudioView: View {
     private var cameraLensBinding: Binding<CameraLens> {
         Binding(get: { scene.effectiveCameraLens }, set: { new in
             guard new.isValid, new != scene.effectiveCameraLens else { return }
-            if editStart == nil { remember(scene) }
+            if !editHistory.isEditing { remember(scene) }
             scene.cameraLens = new
         })
     }
 
     private func editChanged(_ editing: Bool) {
         if editing {
-            if editStart == nil { editStart = scene }
+            editHistory.begin(scene: scene)
         } else {
-            if let start = editStart, start != scene { remember(start) }
-            editStart = nil
+            editHistory.end(scene: scene)
         }
     }
 
@@ -686,9 +720,7 @@ struct StudioView: View {
         (try? LightingPlan(scene: scene, title: projectName))?.plainText
     }
     private func remember(_ previous: LightingScene) {
-        if history.last != previous { history.append(previous) }
-        if history.count > 60 { history.removeFirst() }
-        future.removeAll()
+        editHistory.record(previous: previous)
     }
     private func replace(_ next: LightingScene) {
         guard next != scene else { return }
@@ -698,12 +730,12 @@ struct StudioView: View {
         if !scene.lights.contains(where: { $0.id == selected }) { selected = scene.lights.first?.id }
     }
     private func undo() {
-        guard let previous = history.popLast() else { return }
-        future.append(scene); scene = previous; repairSelection()
+        guard let previous = editHistory.undo(current: scene) else { return }
+        scene = previous; repairSelection()
     }
     private func redo() {
-        guard let next = future.popLast() else { return }
-        history.append(scene); scene = next; repairSelection()
+        guard let next = editHistory.redo(current: scene) else { return }
+        scene = next; repairSelection()
     }
     private func addLight() {
         guard scene.lights.count < 12 else { return }
@@ -718,7 +750,7 @@ struct StudioView: View {
             library = try store.load()
             if let stored = library?.activeProject?.scene { scene = stored; saved = stored }
             else { saved = nil }
-            history.removeAll(); future.removeAll(); selected = scene.lights.first?.id
+            editHistory.reset(); selected = scene.lights.first?.id
             saveBlocked = false; loaded = true; saveConflict = false; message = nil
         } catch {
             saveBlocked = true; loaded = true
@@ -727,6 +759,7 @@ struct StudioView: View {
     }
     private func persistScene() throws {
         guard loaded, !saveBlocked else { throw ProjectLibraryError.invalidLibrary }
+        editHistory.end(scene: scene)
         var next: ProjectLibrary
         if let library { next = library }
         else { next = try ProjectLibrary(name: "Portrait setup", scene: scene) }
@@ -745,7 +778,7 @@ struct StudioView: View {
         library = next
         if switching {
             scene = active.scene; saved = active.scene
-            history.removeAll(); future.removeAll(); editStart = nil
+            editHistory.reset()
             selected = scene.lights.first?.id
             mode = "Plan"; showMeter = false
         }
@@ -767,15 +800,19 @@ struct StudioView: View {
 
     private func saveConflictCopy() {
         guard saveConflict, loaded, !saveBlocked else { return }
-        let suffix = " recovery"
-        let name = String(projectName.prefix(ProjectLibrary.maximumNameLength - suffix.count)) + suffix
         do {
-            let latest = try store.saveRecoveryCopy(name: name, scene: scene)
+            let latest = try store.saveRecoveryCopy(name: recoveryProjectName, scene: scene)
             adoptRecoveredLibrary(latest)
             message = "Your setup was saved as a separate project."
         } catch {
             message = "Could not save a recovery copy. Your edits remain in this window. \(error.localizedDescription)"
+            if (error as? ProjectLibraryError) == .capacity { showRecoveryCapacity = true }
         }
+    }
+
+    private var recoveryProjectName: String {
+        let suffix = " recovery"
+        return StudioDisplayName.display(projectName, maximumCharacters: ProjectLibrary.maximumNameLength - suffix.count) + suffix
     }
 
     private func reloadAfterConflict() {
@@ -794,7 +831,7 @@ struct StudioView: View {
     private func adoptRecoveredLibrary(_ latest: ProjectLibrary) {
         guard let active = latest.activeProject else { return }
         library = latest; scene = active.scene; saved = active.scene
-        history.removeAll(); future.removeAll(); editStart = nil
+        editHistory.reset()
         selected = scene.lights.first?.id
         mode = "Plan"; showMeter = false; saveConflict = false
     }

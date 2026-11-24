@@ -3,6 +3,16 @@ import Foundation
 /// Strict decimal input for scene parameters. Values are never silently
 /// clamped, rounded to a slider step, or interpreted as grouped numbers.
 public enum StudioNumericInput {
+    /// The shared current-value readout for numeric controls. Slider steps
+    /// describe adjustment increments, not the precision of an imported or
+    /// directly entered value. Formatting never changes the stored number.
+    public static func formattedValue(_ value: Double, unit: String = "",
+                                      locale: Locale = .current) -> String {
+        let number = value.formatted(.number.precision(.fractionLength(0...6))
+            .grouping(.never).locale(locale))
+        return unit.isEmpty ? number : number + " " + unit
+    }
+
     public static func parse(_ text: String, decimalSeparator: String = ".",
                              in range: ClosedRange<Double>) -> Double? {
         let input = text.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -6,6 +6,7 @@ struct NeutralCardInspector: View {
     let scene: LightingScene
     @Binding var settings: PreviewSettings
     let onEditingChanged: (Bool) -> Void
+    @Environment(\.locale) private var locale
     @State private var sample: Sample?
 
     private struct Sample {
@@ -105,7 +106,7 @@ struct NeutralCardInspector: View {
 
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>,
                         step: Double, unit: String, id: String) -> some View {
-        let formatted = String(format: unit == "K" ? "%.0f" : "%+.2f", value.wrappedValue)
+        let formatted = StudioNumericInput.formattedValue(value.wrappedValue, unit: unit, locale: locale)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
@@ -113,7 +114,7 @@ struct NeutralCardInspector: View {
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
             }
             Slider(value: value, in: range, step: step, onEditingChanged: onEditingChanged)
-                .accessibilityLabel(title).accessibilityValue("\(formatted) \(unit)")
+                .accessibilityLabel(title).accessibilityValue(formatted)
                 .accessibilityIdentifier(id)
         }
     }

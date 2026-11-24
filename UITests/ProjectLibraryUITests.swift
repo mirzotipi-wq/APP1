@@ -211,6 +211,66 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertFalse(app.buttons["light-Backlight"].exists)
     }
 
+    func testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEST_CONFLICT"] = "1"
+        app.launchEnvironment["KEYFILL_UI_TEST_FULL_LIBRARY"] = "1"
+        app.launch()
+        waitForTitle("Portrait setup", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+
+        let addLight = app.buttons["addLightShortcut"]
+        revealStudioContent(addLight, in: app, towardBottom: false)
+        addLight.tap()
+        let newLight = app.buttons["light-Light 1"]
+        XCTAssertTrue(newLight.waitForExistence(timeout: 15), "The unsaved setup must actually contain the new light")
+        app.buttons["saveProject"].tap()
+        let copy = app.buttons["saveConflictCopy"]
+        revealStudioContent(copy, in: app, towardBottom: false)
+        waitUntilEnabled(copy)
+        copy.tap()
+
+        let candidate = app.buttons["Replace archived Archived setup"]
+        XCTAssertTrue(candidate.waitForExistence(timeout: 15), "A full library must offer explicit archived-record recovery")
+        candidate.tap()
+        let confirmation = app.alerts["Replace archived project?"]
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        confirmation.buttons["Cancel"].tap()
+        XCTAssertTrue(candidate.exists, "Cancel must keep the archived choice available")
+        app.buttons["cancelRecoveryReplacement"].tap()
+        waitForTitle("Portrait setup", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
+        XCTAssertTrue(newLight.exists, "Cancelling recovery must preserve the editor's new light")
+
+        revealStudioContent(copy, in: app, towardBottom: false)
+        copy.tap()
+        XCTAssertTrue(candidate.waitForExistence(timeout: 15), "Reopening must still find the untouched archive")
+        candidate.tap()
+        XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
+        confirmation.buttons["confirmRecoveryReplacement"].tap()
+        waitForTitle("Portrait setup recovery", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        XCTAssertFalse(copy.exists)
+        XCTAssertTrue(newLight.exists)
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "light-")).count, 4)
+
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "Full-library-recovery"; attachment.lifetime = .keepAlways; self.add(attachment)
+        app.terminate()
+        app.launchEnvironment.removeValue(forKey: "KEYFILL_UI_TEST_CONFLICT")
+        // Deliberately leave FULL_LIBRARY enabled: initialization must not
+        // replace the existing recovery library during the next launch.
+        app.launch()
+        waitForTitle("Portrait setup recovery", in: app)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
+        XCTAssertTrue(newLight.waitForExistence(timeout: 15))
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "light-")).count, 4)
+        XCTAssertFalse(copy.exists)
+    }
+
     func testUnsavedSetupMustBeSavedBeforeLibraryChanges() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
