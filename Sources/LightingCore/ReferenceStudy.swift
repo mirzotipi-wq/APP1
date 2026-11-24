@@ -3,7 +3,9 @@ import Foundation
 public enum StudyQuality: Sendable {
     /// 8×8 midpoint samples per rectangle. Intended for a small diagnostic image.
     case interactive
-    /// 32×32 midpoint samples per rectangle, matching the numerical photometry grid.
+    /// 32×32 midpoint samples per rectangle, matching the diagnostic meter for fully
+    /// front-facing receivers. The meter clips partial faces at grazing incidence;
+    /// this precomputed, occlusion-capable renderer retains its fixed sample grid.
     case reference
     fileprivate var grid: Int { self == .interactive ? 8 : 32 }
 }

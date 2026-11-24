@@ -59,19 +59,23 @@ private struct IncidenceVertex {
     let incidence: Double
 }
 
-/// Eight-point Gauss-Legendre nodes and weights mapped to [0, 1].
-/// We integrate the clipped polygon as a fan of triangles using a square-to-
-/// triangle map. These constants integrate polynomials through degree 15
-/// along each axis; smooth inverse-distance terms converge numerically.
-private let gauss8: [(node: Double, weight: Double)] = [
-    (0.0198550717512319, 0.0506142681451881),
-    (0.101666761293187, 0.111190517226687),
-    (0.237233795041836, 0.156853322938944),
-    (0.408282678752175, 0.181341891689181),
-    (0.591717321247825, 0.181341891689181),
-    (0.762766204958164, 0.156853322938944),
-    (0.898333238706813, 0.111190517226687),
-    (0.980144928248768, 0.0506142681451881)
+/// Twelve-point Gauss-Legendre nodes and weights on [0, 1].
+/// A square-to-triangle map integrates the clipped polygon as a triangle fan.
+/// The higher order keeps the partial/full transition error small even at
+/// the minimum supported plane separation.
+private let gauss12: [(node: Double, weight: Double)] = [
+    (0.009219682876640378, 0.023587668193255706),
+    (0.0479413718147626, 0.05346966299765953),
+    (0.11504866290284765, 0.08003916427167321),
+    (0.20634102285669126, 0.10158371336153287),
+    (0.31608425050090994, 0.1167462682691773),
+    (0.43738329574426554, 0.12457352290670134),
+    (0.5626167042557344, 0.12457352290670134),
+    (0.6839157494990901, 0.1167462682691773),
+    (0.7936589771433087, 0.10158371336153287),
+    (0.8849513370971523, 0.08003916427167321),
+    (0.9520586281852375, 0.05346966299765953),
+    (0.9907803171233596, 0.023587668193255706)
 ]
 
 extension Photometry {
@@ -88,11 +92,13 @@ extension Photometry {
     }
 
     /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2,
-    /// with L = on-axis cd / emitter area. Clip the rectangular face to the
-    /// receiver's front hemisphere before integrating. This avoids losing
-    /// a narrow positive-incidence region between fixed midpoint samples.
-    /// A convex rectangle clipped by a half-plane has at most five vertices;
-    /// 8x8 Gaussian quadrature per triangle keeps the diagnostic cost bounded.
+    /// with L = on-axis cd / emitter area. Fully front-facing emitters use
+    /// the same 32x32 midpoint grid as the unoccluded reference renderer.
+    /// Partially front-facing emitters are clipped to the receiver hemisphere,
+    /// preventing a narrow contributing strip from disappearing between samples.
+    /// A clipped rectangle has at most five vertices; 12x12 Gaussian quadrature
+    /// per triangle bounds this partial-face calculation to 432 evaluations.
+    /// The sampled renderer remains approximate at grazing incidence.
     /// The receiver must still be separated from the emitter plane by at least
     /// 5 cm and one quarter of the longest side; nearer configurations abstain.
     /// No occlusion, reflection, spectral effects or modifier transmission.
@@ -118,6 +124,13 @@ extension Photometry {
         let vertices = corners.map { p in
             IncidenceVertex(point: p, incidence: nx * p.x + ny * p.y - offset)
         }
+        if vertices.allSatisfy({ $0.incidence <= 0 }) { return 0 }
+        if vertices.allSatisfy({ $0.incidence >= 0 }) {
+            // Preserve the existing 32x32 sample convention, ordering, and
+            // normalization for ordinary fully illuminated surfaces.
+            return fullRectangleMidpoint(emitter: emitter, toReceiver: toReceiver,
+                                         receiverNormal: receiverNormal)
+        }
         var polygon: [IncidenceVertex] = []
         polygon.reserveCapacity(5)
         // Sutherland-Hodgman clipping against one affine half-plane. A
@@ -142,9 +155,9 @@ extension Photometry {
             if determinant == 0 { continue }
             // Duffy map: p = a + u(b-a) + (1-u)v(c-a).
             // The Jacobian is determinant * (1-u).
-            for (u, wu) in gauss8 {
+            for (u, wu) in gauss12 {
                 let remaining = 1 - u
-                for (v, wv) in gauss8 {
+                for (v, wv) in gauss12 {
                     let cWeight = remaining * v
                     let aWeight = remaining * (1 - v)
                     let p = a.point + ab * u + ac * cWeight
@@ -160,5 +173,27 @@ extension Photometry {
         }
         let radiance = emitter.onAxisCandela / (emitter.widthMeters * emitter.heightMeters)
         return radiance * integral
+    }
+
+    /// Existing reference-grid integration for fully front-facing receivers.
+    private static func fullRectangleMidpoint(emitter: LambertianRectangle,
+                                              toReceiver: SIMD3<Double>,
+                                              receiverNormal: UnitDirection) -> Double {
+        let samples = 32
+        let candelaPerCell = emitter.onAxisCandela / Double(samples * samples)
+        var lux = 0.0
+        for j in 0..<samples {
+            let y = ((Double(j) + 0.5) / Double(samples) - 0.5) * emitter.heightMeters
+            for i in 0..<samples {
+                let x = ((Double(i) + 0.5) / Double(samples) - 0.5) * emitter.widthMeters
+                let delta = toReceiver - emitter.right.vector * x - emitter.up.vector * y
+                let r2 = dot(delta, delta)
+                let direction = delta / r2.squareRoot()
+                let emission = min(1, max(0, dot(direction, emitter.normal)))
+                let incidence = min(1, max(0, -dot(direction, receiverNormal.vector)))
+                lux += candelaPerCell * emission * incidence / r2
+            }
+        }
+        return lux
     }
 }

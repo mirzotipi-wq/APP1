@@ -167,6 +167,21 @@ final class SurfacePhotometryTests: XCTestCase {
         XCTAssertEqual(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: away), 0)
     }
 
+    func testPartialFullTransitionRemainsSmallAtMinimumSupportedDepth() throws {
+        let e = try emitter(width: 1, height: 1)
+        let receiver = Position(x: 0, y: 0, z: 0.25)
+        // The receiver's affine incidence reaches zero at the opposite corner
+        // at cut = -1. One case uses the shared midpoint grid, the other uses
+        // clipped integration. Keep the transition well below the area gate.
+        let full = try direction(1, 1, -1.000001 / 0.25)
+        let partial = try direction(1, 1, -0.999999 / 0.25)
+        let a = try XCTUnwrap(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: full))
+        let b = try XCTUnwrap(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: partial))
+        XCTAssertGreaterThan(a, 0)
+        XCTAssertGreaterThan(b, 0)
+        XCTAssertLessThan(abs(a - b) / a, 0.002)
+    }
+
     func testRectangleBackfaceNearPlaneAndInvalidGeometry() throws {
         let e = try emitter(), toward = try direction(0, 0, -1), away = try direction(0, 0, 1)
         XCTAssertEqual(Photometry.rectangularIlluminance(emitter: e, receiver: .init(x: 0, y: 0, z: -1), receiverNormal: away), 0)
