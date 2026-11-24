@@ -17,7 +17,9 @@ struct StudioSettingsView: View {
                     Picker("Distance units", selection: unitsSelection) {
                         Text("Meters").tag(PlanUnits.metric.rawValue)
                         Text("Feet").tag(PlanUnits.imperial.rawValue)
-                    }.accessibilityIdentifier("distanceUnits")
+                    }
+                    .accessibilityIdentifier("distanceUnits")
+                    .accessibilityValue(Text(StudioPreferences.units(from: unitsRaw) == .metric ? "Meters" : "Feet"))
                     Text("The setup keeps its exact metric coordinates. Display units change how distances are read and entered.")
                         .font(.footnote).foregroundStyle(.secondary)
                     Picker("Appearance", selection: appearanceSelection) {

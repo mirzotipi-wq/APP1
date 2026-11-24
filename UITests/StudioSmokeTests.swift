@@ -135,7 +135,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(app.sliders.matching(identifier: "emitterWidth").count, 1,
                        "One native slider must own the width accessibility metadata")
         let initialWidth = try XCTUnwrap(width.value as? String)
-        XCTAssertEqual(width.label, "Width", "The native slider must retain its accessible label")
+        XCTAssertEqual(width.label, "Width in meters", "The native slider must retain its accessible label")
         XCTAssertEqual(initialWidth, "0.6 m", "The native slider must expose the model readout, not a percentage")
         width.adjust(toNormalizedSliderPosition: 0.5)
         let editedWidth = try XCTUnwrap(width.value as? String)
@@ -382,8 +382,12 @@ final class StudioSmokeTests: XCTestCase {
         let guide = app.buttons["openStudioGuide"]
         revealStudioContent(guide, in: app, towardBottom: false)
         waitForEnabledStudioControl(guide)
-        XCTAssertGreaterThanOrEqual(guide.frame.width, 44)
-        XCTAssertGreaterThanOrEqual(guide.frame.height, 44)
+        let guideFrame = guide.frame
+        // CGRect dimensions can inherit rounding from subtracting coordinate endpoints.
+        // Allow only four endpoint ULPs while retaining the 44-point target.
+        let coordinateRoundingTolerance = max(guideFrame.maxX.ulp, guideFrame.maxY.ulp) * 4
+        XCTAssertGreaterThanOrEqual(guideFrame.width + coordinateRoundingTolerance, 44)
+        XCTAssertGreaterThanOrEqual(guideFrame.height + coordinateRoundingTolerance, 44)
         XCTAssertTrue(app.buttons["openProjectLibrary"].isHittable)
         XCTAssertTrue(app.buttons["exportLightingPlan"].isHittable)
         guide.tap()

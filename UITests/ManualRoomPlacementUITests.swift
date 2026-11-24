@@ -62,8 +62,11 @@ final class ManualRoomPlacementUITests: XCTestCase {
             revealStudioContent(review, in: app, towardBottom: false)
             review.tap()
             XCTAssertTrue(app.buttons["closeRoomNotes"].waitForExistence(timeout: 10))
-            let notes = app.descendants(matching: .any)["roomNotesText"].firstMatch
-            let predicate = NSPredicate(format: "exists == true AND label CONTAINS %@", text)
+            // Failure captures identify this as StaticText with the full notes
+            // label. Query that content once per poll; separate existence and
+            // label requests consumed the deadline before diagnostics read it.
+            let notes = app.staticTexts["roomNotesText"]
+            let predicate = NSPredicate(format: "label CONTAINS %@", text)
             let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: notes)], timeout: 10)
             recordRoomNotesAccessibility(notes, in: app, includeFailure: result != .completed)
             XCTAssertEqual(result, .completed)
