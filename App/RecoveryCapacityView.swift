@@ -35,7 +35,7 @@ struct RecoveryCapacityView: View {
                     Section {
                         Text("No archived projects are available")
                             .font(.headline).accessibilityIdentifier("recoveryCapacityEmpty")
-                        Text("Your edits remain open in this window. You can return to the studio and export the lighting plan. No saved project has been removed.")
+                        Text("Your edits remain open in this window. Return to the studio and choose Export, then Editable project copy, to preserve them in a file. No saved project has been removed.")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                 } else {

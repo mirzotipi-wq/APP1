@@ -14,7 +14,9 @@ SHARDS = {
 
 def discover_ui_classes():
     result = set()
-    for file in (ROOT / "UITests").glob("*.swift"):
+    # XcodeGen includes source-directory descendants; the coverage check must
+    # discover the same nested Swift files before allowing shard selection.
+    for file in (ROOT / "UITests").rglob("*.swift"):
         content = file.read_text(encoding="utf-8")
         classes = re.findall(r"\bclass\s+(\w+)\s*:\s*XCTestCase\b", content)
         if re.search(r"\bfunc\s+test\w+\s*\(", content) and not classes:

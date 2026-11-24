@@ -18,11 +18,22 @@ struct LightingPlanExportMenu: View {
     let title: String
     let textSettings: String?
     @State private var showPDF = false
+    @State private var backupSnapshot: BackupSnapshot?
+
+    private struct BackupSnapshot: Identifiable {
+        let id = UUID()
+        let name: String
+        let scene: LightingScene
+    }
 
     var body: some View {
         Menu {
             Button("Lighting plan (PDF)", systemImage: "doc.richtext") { showPDF = true }
                 .accessibilityIdentifier("prepareLightingPlanPDF")
+            Button("Editable project copy", systemImage: "doc.badge.arrow.up") {
+                backupSnapshot = .init(name: title, scene: scene)
+            }
+            .accessibilityIdentifier("prepareEditableProjectCopy")
             if let textSettings {
                 ShareLink(item: textSettings) { Label("Share text settings", systemImage: "text.alignleft") }
             }
@@ -33,6 +44,9 @@ struct LightingPlanExportMenu: View {
         .accessibilityLabel("Export lighting plan")
         .accessibilityIdentifier("exportLightingPlan")
         .sheet(isPresented: $showPDF) { LightingPlanExportView(scene: scene, title: title) }
+        .sheet(item: $backupSnapshot) { snapshot in
+            ProjectBackupView(name: snapshot.name, scene: snapshot.scene)
+        }
     }
 }
 

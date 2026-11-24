@@ -5,6 +5,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# Keep the newest verification for a branch/PR; repeated pushes must not leave
+# an ever-growing queue of superseded native jobs. Cancellations remain visible.
+concurrency:
+  group: keyfill-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   # Portable verification does not need the scarce macOS simulator runner.
   core:
@@ -27,6 +32,7 @@ jobs:
           set -euo pipefail
           python3 scripts/agent_cycle.py check
           python3 scripts/agent_cycle.py next
+          python3 -m unittest discover -s scripts/tests -p 'test_*.py'
           python3 scripts/native_test_shards.py check
           python3 scripts/verify_app_icon.py | tee icon-source.log
           python3 scripts/verify_privacy_manifest.py | tee privacy-source.log
@@ -210,7 +216,7 @@ jobs:
     # entire result bundle when a different test class overruns its budget.
     needs: core
     runs-on: macos-26-intel
-    timeout-minutes: 48
+    timeout-minutes: 70
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -250,6 +256,13 @@ jobs:
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write("SIMULATOR_ID=" + device["udid"] + "\n")
           PY
+      - name: Build native UI test bundle
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
       - name: Run selected native UI shard
         timeout-minutes: 32
         env:
@@ -267,7 +280,7 @@ jobs:
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
-            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test 2>&1 | tee native-tests.log
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
       - name: Export finalized XCTest result bundle and genuine attachments
         if: always()
         run: |
@@ -297,6 +310,7 @@ jobs:
             icon-release.log
             privacy-release.log
             native-tests.log
+            native-ui-build.log
             artifacts/native-results.zip
             artifacts/native-attachments/
           if-no-files-found: warn

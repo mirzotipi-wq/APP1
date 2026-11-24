@@ -1,5 +1,6 @@
 import SwiftUI
 import LightingCore
+import UniformTypeIdentifiers
 
 /// Explicit save boundary: browsing is allowed while dirty, but mutations and
 /// switches must wait until the current scene is saved successfully.
@@ -14,6 +15,12 @@ struct ProjectLibraryView: View {
     @State private var errorMessage: String?
     @State private var pendingDeletion: LightingProject?
     @State private var confirmDeletion = false
+    @State private var showImporter = false
+    @State private var isImporting = false
+    @State private var importRequest = UUID()
+    @State private var importTask: Task<Void, Never>?
+    @State private var importMessage: String?
+    @State private var acceptingImports = true
 
     private struct Naming: Identifiable {
         enum Kind { case create, rename(UUID), duplicate(UUID) }
@@ -24,7 +31,11 @@ struct ProjectLibraryView: View {
     }
 
     private var hasUnsavedChanges: Bool { saved != scene }
-    private var canMutate: Bool { !hasUnsavedChanges && library != nil }
+    private var canMutate: Bool { !hasUnsavedChanges && library != nil && !isImporting }
+    private var canImport: Bool {
+        acceptingImports && canMutate &&
+            (library?.projects.count ?? ProjectLibrary.maximumProjects) < ProjectLibrary.maximumProjects
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,6 +47,7 @@ struct ProjectLibraryView: View {
                         Text("Save your current edits before creating, opening or organizing projects. Nothing is discarded automatically.")
                             .font(.subheadline).foregroundStyle(.secondary)
                         Button("Save current setup") { perform { try onSave() } }
+                            .disabled(isImporting)
                             .accessibilityIdentifier("librarySaveCurrent")
                     }
                 }
@@ -43,6 +55,20 @@ struct ProjectLibraryView: View {
                     Section {
                         Text(errorMessage).font(.subheadline)
                             .foregroundStyle(.primary).accessibilityIdentifier("libraryError")
+                    }
+                }
+                if isImporting {
+                    Section {
+                        ProgressView("Opening editable project")
+                            .accessibilityIdentifier("projectImportProgress")
+                        Button("Cancel import") { cancelImport() }
+                            .frame(minHeight: 44)
+                            .accessibilityIdentifier("cancelProjectImport")
+                    }
+                } else if let importMessage {
+                    Section {
+                        Label(importMessage, systemImage: "checkmark.circle")
+                            .accessibilityIdentifier("projectImportMessage")
                     }
                 }
                 Section("On this device") {
@@ -60,6 +86,17 @@ struct ProjectLibraryView: View {
                     }
                     .disabled(!canMutate || (library?.projects.count ?? 0) >= ProjectLibrary.maximumProjects)
                     .accessibilityIdentifier("newProject")
+                    Button {
+                        importMessage = nil
+                        errorMessage = nil
+                        showImporter = true
+                    } label: {
+                        Label("Import editable project", systemImage: "square.and.arrow.down")
+                    }
+                    .disabled(!canImport)
+                    .accessibilityIdentifier("importEditableProject")
+                    Text("Import a Key & Fill editable copy as a new project. Existing saved projects are kept.")
+                        .font(.caption).foregroundStyle(.secondary)
                     if let library, library.projects.count >= ProjectLibrary.maximumProjects {
                         Text("64-project limit reached, including archived projects. Remove an archived project to free a slot.")
                             .font(.caption).foregroundStyle(.secondary)
@@ -101,7 +138,21 @@ struct ProjectLibraryView: View {
                 }
             }
             .navigationTitle("Projects")
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { acceptingImports = false; cancelImport(); dismiss() }
+                }
+            }
+            .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json],
+                          allowsMultipleSelection: false) { result in
+                importSelection(result)
+            }
+            .onAppear { acceptingImports = true }
+            .onDisappear {
+                // A system picker may temporarily cover the sheet. Once an
+                // actual read starts, closing Projects must cancel that read.
+                if !showImporter { acceptingImports = false; cancelImport() }
+            }
             .alert("Delete archived project?", isPresented: $confirmDeletion, presenting: pendingDeletion) { project in
                 Button("Delete project", role: .destructive) {
                     // The domain and store re-check identity, archive status and the
@@ -214,6 +265,60 @@ struct ProjectLibraryView: View {
     private func perform(_ operation: () throws -> Void) {
         do { try operation(); errorMessage = nil }
         catch { errorMessage = error.localizedDescription }
+    }
+
+    @MainActor private func importSelection(_ selection: Result<[URL], Error>) {
+        guard acceptingImports else { return }
+        let urls: [URL]
+        do { urls = try selection.get() }
+        catch {
+            let cocoa = error as NSError
+            guard cocoa.domain != NSCocoaErrorDomain || cocoa.code != NSUserCancelledError else { return }
+            errorMessage = "The selected file could not be opened. No projects were changed. \(error.localizedDescription)"
+            return
+        }
+        guard let url = urls.first, urls.count == 1 else {
+            errorMessage = "Choose one editable Key & Fill project file."
+            return
+        }
+        guard canImport else {
+            errorMessage = hasUnsavedChanges
+                ? "Save the current setup before importing. Your current edits have been kept."
+                : "The library is full or unavailable. Free a project slot before importing."
+            return
+        }
+        cancelImport()
+        let request = UUID()
+        importRequest = request
+        isImporting = true
+        importMessage = nil
+        errorMessage = nil
+        importTask = Task { @MainActor in
+            do {
+                let document = try await ProjectDocumentIO.read(from: url)
+                guard !Task.isCancelled, request == importRequest else { return }
+                // The actual apply path rechecks the current editor boundary and
+                // performs the store's optimistic transaction before adoption.
+                isImporting = false
+                try apply { next in
+                    try next.create(name: document.name, scene: document.scene)
+                }
+                importMessage = "Imported “\(StudioDisplayName.display(document.name))” as a new project."
+                importTask = nil
+            } catch {
+                guard !Task.isCancelled, request == importRequest else { return }
+                isImporting = false
+                importTask = nil
+                errorMessage = "The project was not imported. Existing projects and studio edits have been kept. \(error.localizedDescription)"
+            }
+        }
+    }
+
+    private func cancelImport() {
+        importRequest = UUID()
+        importTask?.cancel()
+        importTask = nil
+        isImporting = false
     }
 }
 

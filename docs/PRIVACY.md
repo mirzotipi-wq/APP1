@@ -8,6 +8,7 @@
 - Projects and their lighting values are stored in the application's Application Support directory. Archived projects remain recoverable; explicitly deleting an archived project removes that record from the current library, not prior exports, OS backups, or legacy migration copies. Platform backup behavior must be reviewed on a real device. No cloud synchronization is implemented by the app.
 - The system PhotosPicker grants access to user-selected images. The system provider may retrieve iCloud-backed photos. The app reads a bounded temporary file, decodes only supported single still images, creates a reduced sRGB derivative, removes private ancillary PNG metadata, and retains it only in the active reference session. Actual PhotosPicker success, cancellation and retention must still be verified on physical devices.
 - PDF and text exports are generated locally and contain scene data, not reference photos. The system share action is user-initiated; the chosen destination can retain the exported copy. The app cannot delete copies a recipient or another app owns.
+- Editable project copies contain the project name and scene settings, without reference photos, library identifiers, archive state, room measurements or edit history. The user chooses a destination through the system file exporter. Import reads only a user-selected JSON file, holds security-scoped access during coordinated bounded reads, validates the document, then creates a separate project through the existing conflict-checked store. A selected file provider may download or retain files according to its own settings. Actual provider, cancellation and device behavior remain unverified.
 - No AR camera access, purchase handling, external inference or other future capability is claimed by the current privacy configuration. Update the policy, manifest and permission descriptions when those features are implemented.
 
 ## Privacy manifest and required reasons
@@ -22,7 +23,7 @@ The prototype manifest declares no tracking or data collection by the app. The f
 | Reason | Current purpose | Source |
 | --- | --- | --- |
 | C617.1 | Determine type and size of local sandbox project files before bounded reads. | SceneFileStore, ProjectLibraryFileStore, ProjectStore |
-| 3B52.1 | Determine type and size of the explicitly selected photo provider file before bounded reads. | ReferencePhoto.read(file:), ReferenceComparisonView PhotosPicker |
+| 3B52.1 | Determine type and size of explicitly selected photo or editable-project provider files before bounded reads. | ReferencePhoto.read(file:), ReferenceComparisonView PhotosPicker, ProjectDocumentIO |
 
 No timestamp or derived file metadata is uploaded or used for tracking by these paths. The source audit is not a binary API-symbol audit. The build check verifies plist structure and actual resource inclusion; it cannot prove runtime privacy, permission behavior, or compliance. Obtain device and signed archive evidence before passing the privacy gate.
 
