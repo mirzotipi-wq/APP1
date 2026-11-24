@@ -1,7 +1,7 @@
 import XCTest
 
 final class ManualRoomPlacementUITests: XCTestCase {
-    func testManualRoomReportsOutOfBoundsWithoutChangingStudio() throws {
+    func testManualRoomReportsOutOfBoundsAndRecordsRoomEdit() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
@@ -35,7 +35,7 @@ final class ManualRoomPlacementUITests: XCTestCase {
         for _ in 0..<8 where !project.isHittable { app.swipeDown() }
         XCTAssertEqual(project.label, "Unsaved changes")
         XCTAssertTrue(app.buttons["undo"].exists)
-        XCTAssertFalse(app.buttons["undo"].isEnabled)
+        XCTAssertTrue(app.buttons["undo"].isEnabled, "Committed room changes must be undoable")
     }
 
     func testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates() throws {
@@ -114,7 +114,18 @@ final class ManualRoomPlacementUITests: XCTestCase {
         expect("3 of 5 center positions outside room")
         app.buttons["closeRoomPlacement"].tap()
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
-        XCTAssertFalse(app.buttons["undo"].isEnabled)
+        XCTAssertTrue(app.buttons["undo"].isEnabled, "Committed room changes must be undoable")
+        app.buttons["saveProject"].tap()
+        let saved = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "Saved locally"),
+                                             object: app.staticTexts["projectStatus"])
+        XCTAssertEqual(XCTWaiter.wait(for: [saved], timeout: 15), .completed)
+        app.terminate()
+        app.launch()
+        XCTAssertTrue(open.waitForExistence(timeout: 15))
+        open.tap()
+        XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 15))
+        XCTAssertEqual(app.textFields["roomWidth"].value as? String, "2")
+        XCTAssertEqual(app.textFields["roomSubjectX"].value as? String, "1.4999")
     }
 
     private func recordRoomNotesAccessibility(_ notes: XCUIElement, in app: XCUIApplication,

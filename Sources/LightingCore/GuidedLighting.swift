@@ -122,7 +122,7 @@ public enum GuidedLighting {
             return result
         }
 
-        return try [false, true].map { far in
+        func candidate(far: Bool) throws -> GuidedRig {
             let distance = far ? 2.25 : 1.5
             let ratio: Double?
             switch observations.fill {
@@ -167,5 +167,11 @@ public enum GuidedLighting {
                                                    keyElevationDegrees: elevationDegrees,
                                                    keyIlluminanceLux: targetLux, lightKelvin: lightKelvin))
         }
+
+        // An unsupported alternative must not discard a usable arrangement.
+        // Keep the original order and abstain only when neither rig is valid.
+        let candidates = [false, true].compactMap { try? candidate(far: $0) }
+        guard !candidates.isEmpty else { throw GuidedRigError.unsupportedGeometry }
+        return candidates
     }
 }

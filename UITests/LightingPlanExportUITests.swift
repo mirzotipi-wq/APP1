@@ -55,7 +55,7 @@ final class LightingPlanExportUITests: XCTestCase {
                            "Preparing a document must not claim it has been exported")
             let scope = app.staticTexts["editableCopyScope"]
             revealStudioContent(scope, in: app)
-            XCTAssertTrue(scope.label.contains("Reference photos, room measurements and edit history are not included"))
+            XCTAssertTrue(scope.label.contains("Reference photos and edit history are not included"))
         }
         func closeCopy() {
             let close = app.buttons["closeEditableProjectCopy"]

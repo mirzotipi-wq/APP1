@@ -1,14 +1,44 @@
 import SwiftUI
 import LightingCore
 
-/// Manual, session-only alternative to AR. Nothing changes the lighting scene.
+/// Placement geometry stays in meters. Keep the established signed, bounded
+/// room readout in either display unit so tiny overhangs never appear as zero.
+enum PlacementMeasurementDisplay {
+    static func distance(_ meters: Double, units: PlanUnits, locale: Locale = .current) -> String {
+        if units == .metric { return RoomMeasurementDisplay.distance(meters, locale: locale) }
+        let value = units.fromMeters(meters)
+        guard value.isFinite else { return "Unavailable" }
+        let limit = 0.000001
+        let style = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(2...6))
+            .grouping(.never).locale(locale)
+        if value != 0, abs(value) < limit {
+            let threshold = limit.formatted(style)
+            let negativeThreshold = (-limit).formatted(style)
+            return value < 0 ? "between \(negativeThreshold) and 0 \(units.symbol)"
+                : "less than \(threshold) \(units.symbol)"
+        }
+        return (value == 0 ? 0.0 : value).formatted(style) + " " + units.symbol
+    }
+}
+
+/// Manual alternative to AR. The studio receives committed, valid room edits.
 struct ManualRoomPlacementView: View {
     let scene: LightingScene
+    private let onChange: ((ManualRoom) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
-    @State private var room = ManualRoom()
+    @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
+    private var unitsRawValue = PlanUnits.metric.rawValue
+    @State private var room: ManualRoom
     @State private var notesSnapshot: NotesSnapshot?
     private var plan: RoomPlacementPlan? { try? RoomPlacementPlan(scene: scene, room: room) }
+    private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
+
+    init(scene: LightingScene, onChange: ((ManualRoom) -> Void)? = nil) {
+        self.scene = scene
+        self.onChange = onChange
+        _room = State(initialValue: scene.placementRoom ?? ManualRoom())
+    }
 
     private struct NotesSnapshot: Identifiable {
         let id = UUID()
@@ -41,7 +71,7 @@ struct ManualRoomPlacementView: View {
                     }
                     Label("Manual measurements only", systemImage: "ruler")
                         .font(.headline)
-                    Text("Center coordinates and rectangular emitting-face projections are calculated at 1:1 scale from your entries. Displayed distances are calculated, not a guarantee of measurement precision. These checks do not measure the actual room, detect collisions, include the entire fixture or guarantee clearance. Check housing, stands, booms, cables and ceiling clearance physically. Room settings are session-only and do not change the saved lighting setup.")
+                    Text("Center coordinates and rectangular emitting-face projections are calculated at 1:1 scale from your entries. Displayed distances are calculated, not a guarantee of measurement precision. These checks do not measure the actual room, detect collisions, include the entire fixture or guarantee clearance. Check housing, stands, booms, cables and ceiling clearance physically. Room measurements are included when you save the lighting project.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
@@ -56,6 +86,10 @@ struct ManualRoomPlacementView: View {
             }
             .sheet(item: $notesSnapshot) { snapshot in
                 RoomPlacementNotesView(text: snapshot.text)
+            }
+            .onChange(of: room) { _, next in
+                guard next.isValid else { return }
+                onChange?(next)
             }
         }
     }
@@ -94,6 +128,9 @@ struct ManualRoomPlacementView: View {
                         .accessibilityIdentifier("modifierUnavailableStatus")
                 }
             }
+            Text(plan.room.ceilingHeightMeters.map { "Ceiling height: \(distance($0))" } ?? "Ceiling height: Unmeasured")
+                .font(.subheadline).foregroundStyle(.secondary)
+                .accessibilityIdentifier("roomCeilingStatus")
             Button {
                 // Capture the committed plan, never a partially typed field.
                 // The presented notes and share item use the same immutable text.
@@ -104,7 +141,7 @@ struct ManualRoomPlacementView: View {
             }
             .buttonStyle(.bordered)
             .accessibilityIdentifier("reviewRoomNotes")
-            Text("Notes use the current measured layout. Press Set to include a changed entry. Room measurements are not included in the saved lighting project.")
+            Text("Notes use the current measured layout in meters. Press Set to include a changed entry. Save the lighting project to keep room measurements with the setup.")
                 .font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -116,17 +153,21 @@ struct ManualRoomPlacementView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Room dimensions").font(.headline)
             RoomMeasurementField(title: "Width", id: "roomWidth", value: $room.widthMeters,
-                                 range: room.widthEditRange)
+                                 range: room.widthEditRange, units: units)
             RoomMeasurementField(title: "Depth", id: "roomDepth", value: $room.depthMeters,
-                                 range: room.depthEditRange)
+                                 range: room.depthEditRange, units: units)
             Text("Room size changes keep the subject's wall offsets. To enter a smaller room, first move the subject closer to the corresponding wall.")
+                .font(.caption).foregroundStyle(.secondary)
+            RoomMeasurementField(title: "Ceiling height (optional)", id: "roomCeilingHeight",
+                                 value: $room.ceilingHeightMeters, range: ManualRoom.dimensionRange, units: units)
+            Text("Leave blank and press Set for unmeasured. Ceiling clearance is not calculated; check it physically.")
                 .font(.caption).foregroundStyle(.secondary)
             Divider()
             Text("Subject floor position").font(.headline)
             RoomMeasurementField(title: "From left wall", id: "roomSubjectX", value: $room.subjectX,
-                                 range: 0...room.widthMeters)
+                                 range: 0...room.widthMeters, units: units)
             RoomMeasurementField(title: "From near wall", id: "roomSubjectZ", value: $room.subjectZ,
-                                 range: 0...room.depthMeters)
+                                 range: 0...room.depthMeters, units: units)
             Divider()
             Text("Rig rotation").font(.headline)
             HStack {
@@ -218,22 +259,22 @@ struct ManualRoomPlacementView: View {
                         .foregroundStyle(.orange)
                 }
                 if let clearance = footprint.minimumWallClearanceMeters {
-                    Text(clearance < 0 ? "Projected wall overhang: \(meters(-clearance))" :
-                         "Minimum projected wall distance: \(meters(clearance))")
+                    Text(clearance < 0 ? "Projected wall overhang: \(distance(-clearance))" :
+                         "Minimum projected wall distance: \(distance(clearance))")
                         .foregroundStyle(.secondary)
                 }
             }
-            Text("X from left wall: \(meters(point.xFromLeft))")
-            Text("Z from near wall: \(meters(point.zFromNear))")
-            Text("Height: \(meters(point.heightMeters)) · Floor distance to subject: \(meters(point.horizontalDistanceFromSubject))")
+            Text("X from left wall: \(distance(point.xFromLeft))")
+            Text("Z from near wall: \(distance(point.zFromNear))")
+            Text("Height: \(distance(point.heightMeters)) · Floor distance to subject: \(distance(point.horizontalDistanceFromSubject))")
                 .foregroundStyle(.secondary)
         }
         .font(.subheadline.monospacedDigit())
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func meters(_ value: Double) -> String {
-        RoomMeasurementDisplay.distance(value, locale: locale)
+    private func distance(_ value: Double) -> String {
+        PlacementMeasurementDisplay.distance(value, units: units, locale: locale)
     }
 
     private func symbol(_ kind: RoomPlacementPoint.Kind) -> String {
@@ -246,7 +287,7 @@ struct ManualRoomPlacementView: View {
 }
 
 /// A read-only snapshot. Reviewing or sharing never saves or changes the room
-/// or studio, and dismissing this sheet leaves the measurement session open.
+/// or studio, and dismissing this sheet leaves the room editor open.
 private struct RoomPlacementNotesView: View {
     let text: String
     @Environment(\.dismiss) private var dismiss
@@ -255,7 +296,7 @@ private struct RoomPlacementNotesView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    Text("These notes contain the committed room measurements and calculated placement coordinates. They are separate from the saved lighting project.")
+                    Text("These notes contain the committed room measurements and calculated placement coordinates in meters. Save the lighting project to keep the editable room measurements with the setup.")
                         .font(.subheadline).foregroundStyle(.secondary)
                         .accessibilityIdentifier("roomNotesScope")
                     ShareLink(item: text, subject: Text("Key & Fill room measurements")) {
@@ -293,18 +334,40 @@ private struct RoomPlacementNotesView: View {
 private struct RoomMeasurementField: View {
     let title: String
     let id: String
-    @Binding var value: Double
+    @Binding private var value: Double?
     let range: ClosedRange<Double>
+    let units: PlanUnits
+    private let allowsUnmeasured: Bool
     @Environment(\.locale) private var locale
     @State private var draft = ""
     @State private var invalid = false
     @FocusState private var focused: Bool
 
+    init(title: String, id: String, value: Binding<Double>, range: ClosedRange<Double>, units: PlanUnits) {
+        self.title = title
+        self.id = id
+        _value = Binding(get: { value.wrappedValue }, set: { next in
+            if let next { value.wrappedValue = next }
+        })
+        self.range = range
+        self.units = units
+        allowsUnmeasured = false
+    }
+
+    init(title: String, id: String, value: Binding<Double?>, range: ClosedRange<Double>, units: PlanUnits) {
+        self.title = title
+        self.id = id
+        _value = value
+        self.range = range
+        self.units = units
+        allowsUnmeasured = true
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.subheadline.weight(.medium))
             HStack(spacing: 8) {
-                TextField("Meters", text: $draft)
+                TextField(allowsUnmeasured ? "Unmeasured" : (units == .metric ? "Meters" : "Feet"), text: $draft)
                     .keyboardType(.decimalPad)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -312,7 +375,7 @@ private struct RoomMeasurementField: View {
                     .font(.body.monospacedDigit())
                     .textFieldStyle(.roundedBorder)
                     .focused($focused)
-                    .accessibilityLabel(title + " in meters")
+                    .accessibilityLabel(title + " in " + (units == .metric ? "meters" : "feet"))
                     .accessibilityIdentifier(id)
                     .onSubmit { apply() }
                 Button {
@@ -329,7 +392,7 @@ private struct RoomMeasurementField: View {
                 .disabled(draft.isEmpty)
                 .accessibilityLabel("Clear " + title.lowercased())
                 .accessibilityIdentifier(id + "Clear")
-                Text("m").foregroundStyle(.secondary)
+                Text(units.symbol).foregroundStyle(.secondary)
                 Button("Set") { apply() }
                     .buttonStyle(.bordered)
                     .frame(minHeight: 44)
@@ -337,14 +400,12 @@ private struct RoomMeasurementField: View {
                     .accessibilityIdentifier(id + "Set")
             }
             if invalid {
-                Label("Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) m. Current value is \(format(value)) m.",
+                Label("Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) \(units.symbol). Current value is \(value.map { format($0) + " " + units.symbol } ?? "unmeasured").",
                       systemImage: "exclamationmark.circle")
                     .font(.caption).foregroundStyle(.primary)
                     .accessibilityIdentifier(id + "Error")
                 Button("Restore current value") {
-                    draft = format(value)
-                    invalid = false
-                    focused = false
+                    restoreDraft()
                 }
                 .font(.subheadline)
                 .frame(minHeight: 44)
@@ -356,26 +417,88 @@ private struct RoomMeasurementField: View {
             draft = format(next)
             invalid = false
         }
+        .onChange(of: units) { _, _ in
+            // Discard old-unit digits instead of committing them as a new unit.
+            restoreDraft()
+        }
+        .onChange(of: locale) { _, _ in restoreDraft() }
         .onChange(of: draft) { _, _ in invalid = false }
     }
 
-    private func format(_ number: Double) -> String {
-        RoomMeasurementInput.draft(number, decimalSeparator: locale.decimalSeparator ?? ".")
+    private func format(_ number: Double?) -> String {
+        guard let number else { return "" }
+        let displayed = units.fromMeters(number)
+        guard displayed.isFinite else { return "Unavailable" }
+        let separator = locale.decimalSeparator ?? "."
+        // Keep existing metric drafts unchanged. Converted feet use a complete
+        // decimal when it fits the room input grammar, including exact bounds.
+        if units == .imperial,
+           let exact = StudioNumericInput.editableText(displayed, decimalSeparator: separator),
+           exact.count <= 24 {
+            return exact
+        }
+        return RoomMeasurementInput.draft(displayed, decimalSeparator: separator)
+    }
+
+    private var displayRange: ClosedRange<Double>? {
+        let lower = units.fromMeters(range.lowerBound)
+        let upper = units.fromMeters(range.upperBound)
+        guard range.lowerBound.isFinite, range.upperBound.isFinite,
+              lower.isFinite, upper.isFinite, lower <= upper,
+              units.toMeters(lower).isFinite, units.toMeters(upper).isFinite else { return nil }
+        return lower...upper
+    }
+
+    private func restoreDraft() {
+        draft = format(value)
+        invalid = false
+        focused = false
+    }
+
+    private func rejectDraft() {
+        // Make the validation result and explicit restore action reachable.
+        focused = false
+        invalid = true
     }
 
     private func apply() {
-        // Applying an untouched formatted draft must not round its value.
-        if draft == format(value), range.contains(value) {
+        if allowsUnmeasured, draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            value = nil
+            draft = ""
             invalid = false
             focused = false
             return
         }
-        guard let next = RoomMeasurementInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
-                                                    in: range) else {
-            // Dismiss the decimal keyboard so the validation result and
-            // the explicit restore action are visible and reachable.
+        // Applying an untouched formatted draft must not round its value.
+        guard let displayRange else { rejectDraft(); return }
+        if let value, value.isFinite, units.fromMeters(value).isFinite,
+           draft == format(value), range.contains(value) {
+            invalid = false
             focused = false
-            invalid = true
+            return
+        }
+        guard let entered = RoomMeasurementInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
+                                                       in: displayRange) else {
+            rejectDraft()
+            return
+        }
+        if let value, value.isFinite, range.contains(value),
+           entered.bitPattern == units.fromMeters(value).bitPattern {
+            restoreDraft()
+            return
+        }
+        // Use the exact SI endpoints when their converted representation
+        // would otherwise round one ULP outside the allowed meter range.
+        let next: Double
+        if entered == displayRange.lowerBound {
+            next = range.lowerBound
+        } else if entered == displayRange.upperBound {
+            next = range.upperBound
+        } else {
+            next = units.toMeters(entered)
+        }
+        guard next.isFinite, range.contains(next), units.fromMeters(next).isFinite else {
+            rejectDraft()
             return
         }
         value = next

@@ -4,20 +4,24 @@ public enum RoomPlacementError: Error, Equatable {
     case invalidRoom
 }
 
-/// Session-only, user-measured rectangular room. X increases from the left
+/// User-measured rectangular room stored with a scene. X increases from the left
 /// wall and Z from the near wall. Y is height above the studio floor.
 /// Positive yaw rotates scene +Z toward room +X; scale is always 1:1.
-public struct ManualRoom: Equatable, Sendable {
+public struct ManualRoom: Codable, Equatable, Sendable {
     public static let dimensionRange: ClosedRange<Double> = 1...30
     public var widthMeters: Double
     public var depthMeters: Double
+    /// Nil means the ceiling height has not been measured.
+    public var ceilingHeightMeters: Double?
     public var subjectX: Double
     public var subjectZ: Double
     public var yawDegrees: Double
 
     public init(widthMeters: Double = 6, depthMeters: Double = 7,
-                subjectX: Double = 3, subjectZ: Double = 2, yawDegrees: Double = 0) {
+                subjectX: Double = 3, subjectZ: Double = 2, yawDegrees: Double = 0,
+                ceilingHeightMeters: Double? = nil) {
         self.widthMeters = widthMeters; self.depthMeters = depthMeters
+        self.ceilingHeightMeters = ceilingHeightMeters
         self.subjectX = subjectX; self.subjectZ = subjectZ; self.yawDegrees = yawDegrees
     }
 
@@ -52,6 +56,7 @@ public struct ManualRoom: Equatable, Sendable {
     public var isValid: Bool {
         widthMeters.isFinite && depthMeters.isFinite &&
         Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(depthMeters) &&
+        (ceilingHeightMeters.map { $0.isFinite && Self.dimensionRange.contains($0) } ?? true) &&
         subjectX.isFinite && subjectZ.isFinite && subjectX >= 0 && subjectX <= widthMeters &&
         subjectZ >= 0 && subjectZ <= depthMeters &&
         yawDegrees.isFinite && (-360...360).contains(yawDegrees)
@@ -98,6 +103,85 @@ public enum RoomMeasurementDisplay {
     }
 }
 
+public enum RoomVerticalBoundary: String, CaseIterable, Equatable, Sendable {
+    case floor, ceiling
+}
+
+/// Vertical extent of a center or an ideal emitting face, measured from the
+/// same floor as the scene. This does not describe a complete fixture, stand,
+/// boom, subject body, or required working clearance.
+public struct RoomVerticalClearance: Equatable, Sendable {
+    /// Nil when the geometry is unavailable, for example an undefined face aim.
+    public let lowestHeightMeters: Double?
+    public let highestHeightMeters: Double?
+    /// Nil means unmeasured, independently of whether geometry is available.
+    public let ceilingHeightMeters: Double?
+
+    init(heights: [Double], ceilingHeightMeters: Double?) {
+        self.ceilingHeightMeters = ceilingHeightMeters
+        guard !heights.isEmpty, heights.allSatisfy({ $0.isFinite }) else {
+            lowestHeightMeters = nil
+            highestHeightMeters = nil
+            return
+        }
+        // Do not round or snap heights: even a tiny entered overhang must
+        // remain a violation rather than becoming contact or positive space.
+        lowestHeightMeters = heights.min()
+        highestHeightMeters = heights.max()
+    }
+
+    public var isAvailable: Bool { lowestHeightMeters != nil && highestHeightMeters != nil }
+    public var isCeilingMeasured: Bool { ceilingHeightMeters != nil }
+
+    /// Signed minimum distances. Negative values extend below the floor or
+    /// above the measured ceiling; zero is contact, not positive clearance.
+    public var minimumFloorClearanceMeters: Double? { lowestHeightMeters }
+    public var minimumCeilingClearanceMeters: Double? {
+        guard let ceilingHeightMeters, let highestHeightMeters else { return nil }
+        return ceilingHeightMeters - highestHeightMeters
+    }
+
+    /// Boundaries with geometry outside their permitted half-space. A face
+    /// wholly above the ceiling is included even if it does not meet the plane.
+    public var crossedBoundaries: [RoomVerticalBoundary] {
+        var boundaries: [RoomVerticalBoundary] = []
+        if let distance = minimumFloorClearanceMeters, distance < 0 { boundaries.append(.floor) }
+        if let distance = minimumCeilingClearanceMeters, distance < 0 { boundaries.append(.ceiling) }
+        return boundaries
+    }
+
+    /// Boundaries with exactly zero minimum distance and no overhang through
+    /// that boundary. Contact is reported separately from a negative distance.
+    public var touchingBoundaries: [RoomVerticalBoundary] {
+        var boundaries: [RoomVerticalBoundary] = []
+        if minimumFloorClearanceMeters == 0 { boundaries.append(.floor) }
+        if minimumCeilingClearanceMeters == 0 { boundaries.append(.ceiling) }
+        return boundaries
+    }
+
+    /// Boundary planes met by the point or convex face, including contact.
+    /// This also distinguishes a straddling face from one wholly outside.
+    public var intersectedBoundaries: [RoomVerticalBoundary] {
+        guard let lowestHeightMeters, let highestHeightMeters else { return [] }
+        var boundaries: [RoomVerticalBoundary] = []
+        if lowestHeightMeters <= 0, highestHeightMeters >= 0 { boundaries.append(.floor) }
+        if let ceilingHeightMeters,
+           lowestHeightMeters <= ceilingHeightMeters, highestHeightMeters >= ceilingHeightMeters {
+            boundaries.append(.ceiling)
+        }
+        return boundaries
+    }
+
+    /// False for a known floor or ceiling violation, nil for unavailable
+    /// geometry or an unmeasured ceiling, and true only for full measured-height
+    /// containment. True includes exact contact and is not an equipment check.
+    public var isInsideRoomHeight: Bool? {
+        guard isAvailable else { return nil }
+        if !crossedBoundaries.isEmpty { return false }
+        return isCeilingMeasured ? true : nil
+    }
+}
+
 public struct RoomPlacementPoint: Identifiable, Equatable, Sendable {
     public enum Kind: String, Sendable { case subject, camera, light }
     public let id: String
@@ -109,7 +193,21 @@ public struct RoomPlacementPoint: Identifiable, Equatable, Sendable {
     public let zFromNear: Double
     public let heightMeters: Double
     public let horizontalDistanceFromSubject: Double
+    /// Containment of the center's floor projection only, preserved separately
+    /// from the optional measured-ceiling check.
     public let insideRoom: Bool
+    public let verticalClearance: RoomVerticalClearance
+
+    init(id: String, kind: Kind, name: String, xFromLeft: Double, zFromNear: Double,
+         heightMeters: Double, horizontalDistanceFromSubject: Double, insideRoom: Bool,
+         ceilingHeightMeters: Double? = nil) {
+        self.id = id; self.kind = kind; self.name = name
+        self.xFromLeft = xFromLeft; self.zFromNear = zFromNear
+        self.heightMeters = heightMeters
+        self.horizontalDistanceFromSubject = horizontalDistanceFromSubject
+        self.insideRoom = insideRoom
+        self.verticalClearance = .init(heights: [heightMeters], ceilingHeightMeters: ceilingHeightMeters)
+    }
 }
 
 /// A projected floor coordinate in the measured room's wall-relative system.
@@ -122,9 +220,9 @@ public enum RoomWall: String, CaseIterable, Equatable, Sendable {
     case left, right, near, far
 }
 
-/// The rectangular emitting face projected onto the floor, not the entire
-/// modifier housing, stand, boom, or safety clearance. Degenerate aim yields
-/// unavailable geometry rather than silently reporting a clear surface.
+/// The rectangular emitting face's floor projection and corner heights, not
+/// the entire modifier housing, stand, boom, or safety clearance. Degenerate
+/// aim yields unavailable geometry rather than reporting a clear surface.
 public struct RoomModifierFootprint: Identifiable, Equatable, Sendable {
     public let id: UUID
     public let name: String
@@ -132,20 +230,53 @@ public struct RoomModifierFootprint: Identifiable, Equatable, Sendable {
     public let crossedWalls: [RoomWall]
     /// Signed minimum distance to the four room boundaries; nil when unknown.
     public let minimumWallClearanceMeters: Double?
+    /// Heights in the same winding order as the floor-projected corners.
+    /// Empty when face geometry is unavailable. Room yaw does not change height.
+    public let cornerHeightsMeters: [Double]
+    public let verticalClearance: RoomVerticalClearance
     public var isAvailable: Bool { corners.count == 4 }
+    /// Containment of the floor projection only; see verticalClearance for Y.
     public var isInsideRoom: Bool? { isAvailable ? crossedWalls.isEmpty : nil }
+
+    init(id: UUID, name: String, corners: [RoomFloorPoint], crossedWalls: [RoomWall],
+         minimumWallClearanceMeters: Double?, cornerHeightsMeters: [Double] = [],
+         ceilingHeightMeters: Double? = nil) {
+        self.id = id; self.name = name; self.corners = corners
+        self.crossedWalls = crossedWalls
+        self.minimumWallClearanceMeters = minimumWallClearanceMeters
+        self.cornerHeightsMeters = cornerHeightsMeters
+        self.verticalClearance = .init(
+            heights: corners.count == 4 && cornerHeightsMeters.count == 4 ? cornerHeightsMeters : [],
+            ceilingHeightMeters: ceilingHeightMeters)
+    }
 }
 
 /// Deterministic 1:1 mapping from a validated studio snapshot into a measured
 /// room. Checks floor-projected centers and ideal rectangular emitting faces.
-/// It does not check complete equipment bodies, ceiling, cables or collisions.
+/// Vertical checks use the floor and, when measured, a flat horizontal ceiling.
+/// It does not check complete equipment bodies, cables, or equipment collisions.
 public struct RoomPlacementPlan: Equatable, Sendable {
     public let room: ManualRoom
     public let points: [RoomPlacementPoint]
     public let modifierFootprints: [RoomModifierFootprint]
+    /// Horizontal checks retain their original room-outline semantics.
     public var outsideCount: Int { points.filter { !$0.insideRoom }.count }
     public var crossingModifierCount: Int { modifierFootprints.filter { $0.isInsideRoom == false }.count }
     public var unavailableModifierCount: Int { modifierFootprints.filter { !$0.isAvailable }.count }
+    /// Known vertical violations, including the floor when no ceiling was
+    /// measured. Each point or face is counted once even if both limits fail.
+    public var verticalOutsideCount: Int {
+        points.filter { $0.verticalClearance.isInsideRoomHeight == false }.count
+    }
+    public var verticalCrossingModifierCount: Int {
+        modifierFootprints.filter { !$0.verticalClearance.crossedBoundaries.isEmpty }.count
+    }
+    public var verticalTouchingPointCount: Int {
+        points.filter { !$0.verticalClearance.touchingBoundaries.isEmpty }.count
+    }
+    public var verticalTouchingModifierCount: Int {
+        modifierFootprints.filter { !$0.verticalClearance.touchingBoundaries.isEmpty }.count
+    }
 
     public init(scene: LightingScene, room: ManualRoom) throws {
         guard room.isValid else { throw RoomPlacementError.invalidRoom }
@@ -170,7 +301,8 @@ public struct RoomPlacementPlan: Equatable, Sendable {
                          heightMeters: p.y,
                          horizontalDistanceFromSubject: hypot(p.x - scene.subject.x, p.z - scene.subject.z),
                          insideRoom: f.xFromLeft >= 0 && f.xFromLeft <= room.widthMeters &&
-                                     f.zFromNear >= 0 && f.zFromNear <= room.depthMeters)
+                                     f.zFromNear >= 0 && f.zFromNear <= room.depthMeters,
+                         ceilingHeightMeters: room.ceilingHeightMeters)
         }
         self.room = room
         self.points = [
@@ -182,15 +314,24 @@ public struct RoomPlacementPlan: Equatable, Sendable {
             guard optics.kind == .rectangle else { return nil }
             guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else {
                 return .init(id: light.id, name: light.name, corners: [],
-                             crossedWalls: [], minimumWallClearanceMeters: nil)
+                             crossedWalls: [], minimumWallClearanceMeters: nil,
+                             ceilingHeightMeters: room.ceilingHeightMeters)
             }
             let signs: [(Double, Double)] = [(-1, -1), (1, -1), (1, 1), (-1, 1)]
-            let corners = signs.map { a, b -> RoomFloorPoint in
+            let absoluteRoll = abs(optics.effectiveRollDegrees)
+            // World-up frames have no vertical right component before roll.
+            // At exact quarter/half turns, remove only the known trigonometric
+            // zero residual so mathematical contact is not a false overhang.
+            // Do not apply a distance tolerance to entered heights or ceilings.
+            let rightHeight = absoluteRoll == 180 ? 0 : frame.right.y
+            let upHeight = absoluteRoll == 90 ? 0 : frame.up.y
+            let worldCorners = signs.map { a, b -> Position in
                 let dx = a * optics.widthMeters / 2, dy = b * optics.heightMeters / 2
-                return floorPoint(.init(x: light.position.x + dx * frame.right.x + dy * frame.up.x,
-                                        y: light.position.y + dx * frame.right.y + dy * frame.up.y,
-                                        z: light.position.z + dx * frame.right.z + dy * frame.up.z))
+                return .init(x: light.position.x + dx * frame.right.x + dy * frame.up.x,
+                             y: light.position.y + dx * rightHeight + dy * upHeight,
+                             z: light.position.z + dx * frame.right.z + dy * frame.up.z)
             }
+            let corners = worldCorners.map(floorPoint)
             // A rectangle and its orthogonal projection are convex: checking
             // the four extremal corners proves containment in a rectangle.
             let xs = corners.map(\.xFromLeft), zs = corners.map(\.zFromNear)
@@ -200,7 +341,9 @@ public struct RoomPlacementPlan: Equatable, Sendable {
             ]
             return .init(id: light.id, name: light.name, corners: corners,
                          crossedWalls: distances.filter { $0.1 < 0 }.map { $0.0 },
-                         minimumWallClearanceMeters: distances.map { $0.1 }.min())
+                         minimumWallClearanceMeters: distances.map { $0.1 }.min(),
+                         cornerHeightsMeters: worldCorners.map(\.y),
+                         ceilingHeightMeters: room.ceilingHeightMeters)
         }
     }
 }

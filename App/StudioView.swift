@@ -2,6 +2,10 @@ import SwiftUI
 import LightingCore
 
 struct StudioView: View {
+    @EnvironmentObject private var entitlements: EntitlementStore
+    @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
+    private var unitsRaw = PlanUnits.metric.rawValue
+    @Environment(\.locale) private var locale
     @State private var scene = LightingScene.portrait()
     @State private var selected: UUID?
     @State private var planNeedsLabelNotice = false
@@ -16,11 +20,17 @@ struct StudioView: View {
     @State private var showRenameLight = false
     @State private var renameGeneration: UUID?
     @State private var planDrag: PlanDrag?
+    @State private var luxTarget: StudioLight?
+    @State private var showArrangement = false
+    @State private var showARPlacement = false
+    @State private var showSettings = false
     @State private var editHistory = SceneEditHistory()
     @State private var mode = "Plan"
     @State private var studySubject: StudySubject = .sphere
     @State private var orbitFitRequest = 0
     @State private var showRecipes = false
+    @State private var recipeUsesCurrentPlacement = true
+    @State private var recipeMessage: String?
     @State private var showStudioGuide = false
     @State private var showMeter = false
     @State private var meterNavigationRequest = 0
@@ -131,12 +141,49 @@ struct StudioView: View {
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
+            .sheet(isPresented: $showSettings) { StudioSettingsView(store: entitlements) }
             .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) { rig in
                 guard libraryOperation.allowsSceneMutation(from: generation) else { return }
                 replace(rig); mode = "Study"
             } }
             .sheet(isPresented: $showRoomPlacement) {
-                ManualRoomPlacementView(scene: scene)
+                let owner = editOwner("room")
+                ManualRoomPlacementView(scene: scene) { room in
+                    guard libraryOperation.allowsSceneMutation(from: generation), room.isValid,
+                          room != scene.placementRoom else { return }
+                    editHistory.begin(scene: scene, owner: owner)
+                    scene.placementRoom = room
+                }
+                .onDisappear { editHistory.end(scene: scene, owner: owner) }
+            }
+            .sheet(item: $luxTarget) { light in
+                LightTargetLuxView(light: light, scene: scene) { adjusted in
+                    guard libraryOperation.allowsSceneMutation(from: generation),
+                          let index = scene.lights.firstIndex(where: { $0.id == light.id }),
+                          scene.lights[index] == light else {
+                        message = "The setup changed while adjusting output. Open the light's target again."
+                        return
+                    }
+                    var next = scene
+                    next.lights[index] = adjusted
+                    replace(next)
+                }
+            }
+            .sheet(isPresented: $showArrangement) {
+                SceneArrangementView(scene: scene) { next in
+                    guard libraryOperation.allowsSceneMutation(from: generation) else { return }
+                    replace(next)
+                }
+            }
+            .sheet(isPresented: $showARPlacement) {
+                let owner = editOwner("ar-room")
+                ARPlacementView(scene: scene) { room in
+                    guard libraryOperation.allowsSceneMutation(from: generation), room.isValid,
+                          scene.placementRoom != room else { return }
+                    editHistory.begin(scene: scene, owner: owner)
+                    scene.placementRoom = room
+                }
+                .onDisappear { editHistory.end(scene: scene, owner: owner) }
             }
             .sheet(isPresented: $showSubject) {
                 NavigationStack {
@@ -201,6 +248,7 @@ struct StudioView: View {
     }
 
     private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
+    private var displayUnits: PlanUnits { StudioPreferences.units(from: unitsRaw) }
 
     // Prefer one row when the full title and action labels fit. At narrower
     // widths or larger text sizes, place the title above the adaptive actions.
@@ -275,6 +323,18 @@ struct StudioView: View {
         HStack(spacing: 8) {
             LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
+            Menu {
+                Button("Subject position", systemImage: "person.crop.rectangle") { showSubject = true }
+                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath") { showArrangement = true }
+                Button("Place in AR", systemImage: "arkit") { showARPlacement = true }
+                Divider()
+                Button("Settings", systemImage: "gearshape") { showSettings = true }
+            } label: {
+                Image(systemName: "slider.horizontal.3").frame(width: 44, height: 44)
+            }
+            .accessibilityLabel("Studio tools")
+            .accessibilityIdentifier("studioTools")
+            .disabled(!loaded || saveBlocked || libraryOperation.isBusy || editHistory.isEditing)
             Button { showStudioGuide = true } label: {
                 Label("Guide", systemImage: "questionmark.circle")
                     .labelStyle(.iconOnly)
@@ -340,7 +400,8 @@ struct StudioView: View {
     }
 
     private var workspace: some View {
-        VStack(spacing: 10) {
+        let generation = libraryOperation.generation
+        return VStack(spacing: 10) {
             HStack {
                 Label("Scene", systemImage: "viewfinder").font(.headline)
                 Spacer(minLength: 8)
@@ -382,7 +443,14 @@ struct StudioView: View {
                 if mode == "Plan" { plan }
                 else if mode == "Camera" { cameraPreview }
                 else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject) }
-                else { SpatialPreview(scene: scene, fitRequest: orbitFitRequest).accessibilityLabel("Illustrative 3D lighting preview") }
+                else {
+                    RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in
+                        guard libraryOperation.allowsSceneMutation(from: generation),
+                              scene.lights.contains(where: { $0.id == id }) else { return }
+                        selected = id
+                    }
+                    .accessibilityLabel("Illustrative 3D lighting preview")
+                }
                 if mode != "Plan" {
                     Text(mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
                         .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
@@ -420,8 +488,13 @@ struct StudioView: View {
                         .accessibilityHint("Frames the entire rig and resets the orbit camera")
                         .accessibilityIdentifier("fitStudioSetup")
                 }
-                Text("Meters · cd · K").monospaced()
+                Text(displayUnits == .metric ? "Meters · cd · K" : "Feet · cd · K").monospaced()
             }.font(.caption).foregroundStyle(.secondary)
+            if mode == "3D" {
+                Text("Drag to orbit · Pinch to zoom · Two fingers to pan · Tap a light to select")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if mode == "Study" {
                 Picker("Study subject", selection: $studySubject) {
                     ForEach(StudySubject.allCases, id: \.self) { subject in
@@ -546,7 +619,7 @@ struct StudioView: View {
                 }.accessibilityHidden(true)
                 StudioPlanMarkers(
                     markers: planMarkers(width: w, height: h, scale: scale, center: center),
-                    gridTitle: grid.map { "OVERHEAD / " + StudioNumericInput.formattedValue($0.spacingMeters, unit: "M GRID") } ?? "OVERHEAD")
+                    gridTitle: grid.map { "OVERHEAD / " + PlanUnits.number(displayUnits.fromMeters($0.spacingMeters), decimals: 2) + " " + displayUnits.symbol.uppercased() + " GRID" } ?? "OVERHEAD")
             }
         }
     }
@@ -656,7 +729,7 @@ struct StudioView: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
                             Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
-                            Text("\(light.position.distance(to: scene.subject), specifier: "%.2f") m · \(light.kelvin, specifier: "%.0f") K")
+                            Text("\(displayUnits.fromMeters(light.position.distance(to: scene.subject)), specifier: "%.2f") \(displayUnits.symbol) · \(light.kelvin, specifier: "%.0f") K")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -685,12 +758,13 @@ struct StudioView: View {
                     Button("Rename light", systemImage: "pencil") {
                         renamingLightID = light.id
                         renameGeneration = libraryOperation.generation
-                        lightNameDraft = light.name
+                        lightNameDraft = lightDisplayName(light)
                         showRenameLight = true
                     }
                     Button("Duplicate light", systemImage: "plus.square.on.square",
                            action: sceneAction { duplicateLight(light.id) })
                         .disabled(scene.lights.count >= 12)
+                    Button("Set ideal lux", systemImage: "sun.max") { luxTarget = light }
                 } label: {
                     Image(systemName: "ellipsis.circle").frame(width: 44, height: 44)
                 }
@@ -754,13 +828,18 @@ struct StudioView: View {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
-                PrecisionValueButton(title: title, unit: unit, id: fieldID,
-                                     value: value, range: domain)
-                    .id(owner)
+                if unit == "m" {
+                    DistanceValueButton(title: title, id: fieldID, value: value, range: domain).id(owner)
+                } else {
+                    PrecisionValueButton(title: title, unit: unit, id: fieldID,
+                                         value: value, range: domain).id(owner)
+                }
             }
             StudioSlider(value: value, in: bounds, step: step,
                          accessibility: .init(label: title,
-                                              value: { StudioNumericInput.formattedValue($0, unit: unit) },
+                                              value: { unit == "m"
+                                                  ? DistanceValueButton.formattedValue($0, units: displayUnits, locale: locale)
+                                                  : StudioNumericInput.formattedValue($0, unit: unit, locale: locale) },
                                               identifier: fieldID)) { [owner] editing in
                 editChanged(editing, owner: owner, generation: generation)
             }
@@ -845,17 +924,31 @@ struct StudioView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Replace current setup").font(.headline)
-                    Text("Choose a starting rig. Undo restores your previous setup.")
+                    Text(recipeUsesCurrentPlacement ? "Replace current lights" : "Replace current setup").font(.headline)
+                    Toggle("Keep subject and camera placement", isOn: $recipeUsesCurrentPlacement)
+                        .accessibilityIdentifier("recipeKeepPlacement")
+                    Text(recipeUsesCurrentPlacement
+                         ? "Place a starting rig around your subject, facing your camera. Camera settings and measured room stay with the setup. Undo restores the previous lights."
+                         : "Start from the recipe's subject, camera and lights. This also resets measured room and preview settings. Undo restores your previous setup.")
                         .font(.subheadline).foregroundStyle(.secondary)
+                    if let recipeMessage {
+                        Text(recipeMessage).font(.subheadline).foregroundStyle(.red)
+                            .accessibilityIdentifier("recipeMessage")
+                    }
                     ForEach(LightingRecipe.allCases, id: \.self) { recipe in
                         Button(action: sceneAction {
-                            replace(recipe.makeScene()); showRecipes = false
+                            do {
+                                let next = recipeUsesCurrentPlacement
+                                    ? try recipe.scene(applyingTo: scene) : recipe.makeScene()
+                                replace(next); recipeMessage = nil; showRecipes = false
+                            } catch { recipeMessage = error.localizedDescription }
                         }) {
                             HStack(spacing: 12) {
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(recipe.rawValue).font(.headline).foregroundStyle(.primary)
                                     Text(recipe.detail).font(.subheadline).foregroundStyle(.secondary)
+                                    Text("\(recipe.lightCount) \(recipe.lightCount == 1 ? "light" : "lights")")
+                                        .font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer(minLength: 8)
                                 Image(systemName: "chevron.right").foregroundStyle(.secondary)
@@ -868,15 +961,21 @@ struct StudioView: View {
                         .buttonStyle(.plain)
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(recipe.rawValue)
-                        .accessibilityHint(recipe.detail + " Replaces the current setup; undo is available.")
+                        .accessibilityHint(recipe.detail + (recipeUsesCurrentPlacement
+                            ? " Replaces the lights around your current subject and camera; undo is available."
+                            : " Replaces the current setup; undo is available."))
                         .accessibilityIdentifier("recipe-\(recipe.rawValue)")
                     }
+                    Text(LightingRecipe.threePoint.assumptions)
+                        .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
             }
             .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Lighting recipes")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear { recipeMessage = nil }
+            .onChange(of: recipeUsesCurrentPlacement) { _, _ in recipeMessage = nil }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { showRecipes = false }.accessibilityIdentifier("closeRecipes")
@@ -886,7 +985,7 @@ struct StudioView: View {
     }
 
     private var exportText: String? {
-        (try? LightingPlan(scene: scene, title: projectName))?.plainText
+        (try? LightingPlan(scene: scene, title: projectName, units: displayUnits))?.plainText
     }
     private func remember(_ previous: LightingScene) {
         editHistory.record(previous: previous)
@@ -903,8 +1002,13 @@ struct StudioView: View {
     }
 
     private func replace(_ next: LightingScene) {
-        guard !libraryOperation.isBusy, next != scene else { return }
-        remember(scene); scene = next; repairSelection()
+        guard !libraryOperation.isBusy else { return }
+        guard let validated = try? next.validated() else {
+            message = "The proposed setup contains unsupported values. Your current setup has been kept."
+            return
+        }
+        guard validated != scene else { return }
+        remember(scene); scene = validated; repairSelection()
     }
     private func repairSelection() {
         if !scene.lights.contains(where: { $0.id == selected }) { selected = scene.lights.first?.id }
@@ -929,17 +1033,16 @@ struct StudioView: View {
     }
 
     private func isValidLightName(_ value: String) -> Bool {
-        let name = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        return !name.isEmpty && name.count <= 80 &&
-            !StudioDisplayName.display(name, maximumCharacters: 80).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        (try? StudioDisplayName.newInput(value)) != nil
     }
 
     private func renameSelectedLight() {
-        guard let id = renamingLightID, isValidLightName(lightNameDraft),
+        guard let id = renamingLightID,
+              let name = try? StudioDisplayName.newInput(lightNameDraft),
               renameGeneration == libraryOperation.generation,
               let index = scene.lights.firstIndex(where: { $0.id == id }) else { return }
         var next = scene
-        next.lights[index].name = lightNameDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        next.lights[index].name = name
         replace(next)
         renamingLightID = nil
     }
@@ -948,10 +1051,16 @@ struct StudioView: View {
         guard scene.lights.count < 12, let original = scene.lights.first(where: { $0.id == id }) else { return }
         var copy = original
         copy.id = UUID()
-        let stem = String(original.name.prefix(65))
+        var stem = StudioDisplayName.display(lightDisplayName(original), maximumCharacters: 65)
         var number = 1
         repeat {
-            copy.name = stem + (number == 1 ? " copy" : " copy \(number)")
+            let suffix = number == 1 ? " copy" : " copy \(number)"
+            // Leave room for the suffix under the scalar and byte limits too;
+            // one imported grapheme can contain hundreds of combining marks.
+            while !stem.isEmpty && (try? StudioDisplayName.newInput(stem + suffix)) == nil {
+                stem.removeLast()
+            }
+            copy.name = (stem.isEmpty ? "Light" : stem) + suffix
             number += 1
         } while scene.lights.contains(where: { $0.name == copy.name })
         // Preserve exact equipment geometry; duplicating never silently moves a rig.

@@ -8,6 +8,10 @@ struct CameraInspector: View {
     let subject: Position
     let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
+    @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
+    private var unitsRawValue = PlanUnits.metric.rawValue
+
+    private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
 
     private var framing: CameraFraming? {
         CameraFraming(scene: LightingScene(subject: subject, camera: position, lights: [], cameraLens: lens))
@@ -20,9 +24,9 @@ struct CameraInspector: View {
             Text("Full frame · 36 × 24 mm").font(.subheadline.weight(.medium))
             if let framing {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("\(framing.subjectPlaneWidthMeters, specifier: "%.2f") × \(framing.subjectPlaneHeightMeters, specifier: "%.2f") m")
+                    Text("\(coverageNumber(framing.subjectPlaneWidthMeters)) × \(coverageNumber(framing.subjectPlaneHeightMeters)) \(units.symbol)")
                         .font(.title3.monospacedDigit().weight(.semibold))
-                    Text("Coverage at subject · \(framing.subjectDistanceMeters, specifier: "%.2f") m distance")
+                    Text("Coverage at subject · \(coverageNumber(framing.subjectDistanceMeters)) \(units.symbol) distance")
                         .font(.caption).foregroundStyle(.secondary)
                     Text("Field of view: \(framing.horizontalFieldOfViewDegrees, specifier: "%.1f")° H / \(framing.verticalFieldOfViewDegrees, specifier: "%.1f")° V")
                         .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
@@ -48,11 +52,34 @@ struct CameraInspector: View {
                         .accessibilityAddTraits(lens.focalLengthMillimeters == mm ? .isSelected : [])
                 }
             }
-            slider("Camera horizontal", value: $position.x, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", id: "cameraX")
-            slider("Camera height", value: $position.y, range: 0...4, domain: Position.coordinateRange, step: 0.05, unit: "m", id: "cameraY")
-            slider("Camera depth", value: $position.z, range: -6...6, domain: Position.coordinateRange, step: 0.05, unit: "m", id: "cameraZ")
+            distanceSlider("Camera horizontal", value: $position.x, range: -4...4, step: 0.05, id: "cameraX")
+            distanceSlider("Camera height", value: $position.y, range: 0...4, step: 0.05, id: "cameraY")
+            distanceSlider("Camera depth", value: $position.z, range: -6...6, step: 0.05, id: "cameraZ")
             Text("Ideal perspective aimed at the subject center. No optical distortion, depth of field or calibrated image exposure.")
                 .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    private func coverageNumber(_ meters: Double) -> String {
+        units.fromMeters(meters).formatted(.number.precision(.fractionLength(2)).locale(locale))
+    }
+
+    private func distanceSlider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>,
+                                step: Double, id: String) -> some View {
+        let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
+        let units = self.units
+        return VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("\(title) (\(units.symbol))").font(.subheadline.weight(.medium))
+                Spacer()
+                DistanceValueButton(title: title, id: id, value: value, range: Position.coordinateRange)
+            }
+            StudioSlider(value: value, in: bounds, step: step,
+                         accessibility: .init(label: title + " in " + (units == .metric ? "meters" : "feet"),
+                                              value: { [locale] in DistanceValueButton.formattedValue($0, units: units, locale: locale) },
+                                              identifier: id)) { editing in
+                onEditingChanged(editing, id)
+            }
         }
     }
 

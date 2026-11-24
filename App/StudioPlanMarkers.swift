@@ -115,6 +115,7 @@ private struct StudioPlanMarkerControl: View {
     let marker: StudioPlanMarker
     @GestureState private var dragRecognized = false
     @State private var dragInProgress = false
+    @State private var dragChange: ((CGSize) -> Void)?
     @State private var dragCompletion: (() -> Void)?
 
     var body: some View {
@@ -157,15 +158,18 @@ private struct StudioPlanMarkerControl: View {
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
             .updating($dragRecognized) { _, recognized, _ in recognized = true }
             .onChanged { value in
-                guard let changed = marker.onDragChanged else { return }
                 if !dragInProgress {
+                    guard let changed = marker.onDragChanged else { return }
                     dragInProgress = true
+                    // A project copy can retain these marker IDs. Keep value
+                    // writes paired with the generation captured at drag begin.
+                    dragChange = changed
                     dragCompletion = marker.onDragEnded
                 }
-                changed(value.translation)
+                dragChange?(value.translation)
             }
             .onEnded { value in
-                if dragInProgress { marker.onDragChanged?(value.translation) }
+                if dragInProgress { dragChange?(value.translation) }
                 finishDrag()
             }
     }
@@ -176,6 +180,7 @@ private struct StudioPlanMarkerControl: View {
         // marker, disable dragging, or change the scene synchronously.
         dragInProgress = false
         let completion = dragCompletion
+        dragChange = nil
         dragCompletion = nil
         completion?()
     }

@@ -78,21 +78,23 @@ struct StudioGuideView: View {
             step("Open a starting rig",
                  "Tap Recipes at the top of the studio. Three-point portrait gives you Key, Fill and Rim lights. Rembrandt, Butterfly and Silhouette offer other starting arrangements.")
             step("Keep what you want",
-                 "Choosing a recipe replaces the current setup. Undo restores the previous setup. Tap Save before exploring if you want a saved version to return to.")
+                 "Keep subject and camera placement applies the recipe's lights around your current subject, facing your camera. Turn it off to start from the complete preset instead. Undo restores the previous setup. Tap Save before exploring if you want a saved version to return to.")
             step("Shape the portrait",
                  "Begin with the Key light's side, height and intensity. Balance Fill to control shadow depth, then use Rim for separation. Adjust the starting layout for your subject and real equipment.")
         case .editing:
             step("Select a light",
                  "Tap a light in Plan or in the Lights list. Its inspector appears below. Use the + beside Scene or Add light in the list to extend the setup.")
             step("Place it precisely",
-                 "Adjust Horizontal, Depth and Height in meters. Tap a value with the pencil, type an exact number, then choose Apply value. Cancel leaves the value unchanged. Intensity is in candela (cd), and Temperature is in kelvin (K).")
+                 "Drag the selected light's marker in Plan or adjust Horizontal, Depth and Height. Choose meters or feet in Studio tools > Settings. Tap a value with the pencil, type an exact number, then choose Apply value. Cancel leaves the value unchanged. Intensity is in candela (cd), and Temperature is in kelvin (K).")
             step("Choose the emitting surface",
-                 "In Emitter, choose Bare point, Directional or Rectangular softbox. The softbox Width and Height describe its emitting face. For aimed emitters, keep Aim at subject on or turn it off to set Aim X, Aim Y and Aim Z.")
+                 "In Emitter, choose Bare point, Directional or Rectangular softbox. The softbox Width and Height describe its emitting face; Roll turns that face around its aim. For aimed emitters, keep Aim at subject on or turn it off to set Aim X, Aim Y and Aim Z.")
+            step("Manage and arrange",
+                 "Use Light actions to rename or duplicate a light, or target its ideal-plane lux contribution. Studio tools also opens Subject position and Arrange setup, where you can move the entire setup or rotate and mirror its lights. Each applied arrangement can be undone.")
             step("Compare edits",
                  "Undo and Redo at the bottom let you compare changes. Save keeps the current setup locally; edit history belongs to the current editing session.")
         case .previews:
             step("Layout and framing",
-                 "Plan shows the overhead layout. Read its caption for the current grid spacing. In 3D, drag to orbit and use Fit setup to frame the whole rig. Camera previews the setup from your camera position, using the chosen focal length and aiming at the subject.")
+                 "Plan shows the overhead layout. Read its caption for the current grid spacing. In 3D, drag to orbit, pinch to zoom, pan with two fingers and tap a light to select it. Fit setup frames the whole rig. Camera previews the setup from your camera position, using the chosen focal length and aiming at the subject.")
             step("Light and shadow",
                  "Switch to Study and choose Sphere for a simple light check or Bust for a neutral mannequin. Use the camera controls below to change framing. Study shows direct light, shadows and relative color.")
             step("Read the meter",
@@ -103,7 +105,9 @@ struct StudioGuideView: View {
             step("Bring a visual target",
                  "Open Reference photo, then Choose photo. Compare direction, shadow edges and fill against the neutral study. The app's photo copy is kept only while this view is open; your original remains unchanged.")
             step("Describe what you see",
-                 "Choose Key side, Shadow edges, Shadow fill and Rim highlight, then tap Build two starting rigs. This is manually guided: leave uncertain cues unknown. A visible key direction is needed to build alternatives.")
+                 "A suitable single-face photo may offer an on-device suggestion for the brighter side. Use suggested side only if it matches what you see. Choose Key side, Shadow edges, Shadow fill and Rim highlight, then tap Build starting rigs. Leave uncertain cues unknown. A visible key direction is needed to build alternatives.")
+            step("Compare with your result",
+                 "Open Compare two photos to import a test photograph beside the reference. Compare them side by side or move the wipe divider. The photos are fitted without automatic alignment or exposure matching; both copies stay only while the comparison is open.")
             step("Compare assumptions",
                  "Try Closer starting rig and Farther starting rig. Read Basis for this rig to separate Your observations, Assumed cues and Chosen starting values. Preview current setup returns to your existing light study. Exact geometry, intensity and color remain starting assumptions.")
             step("Keep an alternative",
@@ -112,20 +116,22 @@ struct StudioGuideView: View {
             step("Measure, then enter",
                  "Open Room placement after shaping the rig. Measure Width and Depth and the subject's distances From left wall and From near wall. Press Set after each changed entry so it becomes part of the current measured layout.")
             step("Turn and place the rig",
-                 "Adjust Rig rotation or use Rotate 180°. Read each camera and light center's wall distances and height. Rectangular emitting-face projections flag wall crossings. This is manual placement using your measurements; the app does not scan or track the room.")
+                 "Adjust Rig rotation or use Rotate 180°. Read each camera and light center's wall distances and height. Rectangular emitting-face projections flag wall crossings. Manual room placement uses the dimensions you enter.")
+            step("Place at full scale in AR",
+                 "On a supported device, open Studio tools > Place in AR and start the camera. Move slowly until the app finds a horizontal surface, then place the subject on the floor. Check scale and alignment against your measurements. Tracking can drift; recheck the placement after interruptions or tracking warnings. Manual room placement is also available from that screen.")
             step("Check the real equipment",
                  "Check the fixture, stands, booms, cables and ceiling clearance physically. The diagram covers centers and rectangular emitting faces, rather than the full equipment.")
             step("Take the notes with you",
-                 "Use Review and share notes, then Share measurement notes. Notes include committed entries, so press Set first. Room measurements are session-only and are not part of the saved project or lighting PDF.")
+                 "Use Review and share notes, then Share measurement notes. Notes include committed entries, so press Set first. Room measurements are kept with the lighting setup when you tap Save in the studio. Editable project copies include them; share measurement notes for a detailed placement report.")
         case .saving:
             step("Keep a local project",
                  "Tap Save and wait for Saved locally. Projects lets you open, rename, duplicate and archive saved setups. Save your current edits before opening or changing another project.")
             step("Share a readable plan",
-                 "Open Export lighting plan beside Projects, then Lighting plan (PDF). Choose Paper and Units, review the preview, then Share PDF. The PDF communicates the diagram, equipment and scene settings; use an editable copy when you want to reopen a setup.")
+                 "Open Export lighting plan beside Projects, then Lighting plan (PDF). Choose Paper and Units, review the preview, then Share PDF. The PDF communicates the diagram, equipment, scene settings and committed room placement when present. Use an editable copy when you want to reopen a setup.")
             step("Keep an editable copy",
                  "Choose Editable project copy, then Save editable copy to write a file you can reopen. In Projects, Import editable project creates a separate project from that file and keeps existing projects.")
             step("Know what is included",
-                 "Exports capture the setup when you opened Export lighting plan, including unsaved edits. Exporting does not save to Projects. Photos and room measurements are not included in the PDF or editable copy. Editable copies also omit edit history; share room notes separately.")
+                 "Exports capture the setup when you opened Export lighting plan, including unsaved edits. Exporting does not save to Projects. Photos and edit history are excluded. Editable copies and PDFs include committed room measurements. Room measurement notes provide a separate text report.")
         }
     }
 

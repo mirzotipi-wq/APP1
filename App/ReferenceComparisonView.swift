@@ -19,11 +19,18 @@ struct ReferenceComparisonView: View {
     @State private var failure: String?
     @State private var sizeDescription = ""
     @State private var importTask: Task<Void, Never>?
+    @State private var analysisRequestID = UUID()
+    @State private var analysisTask: Task<Void, Never>?
+    @State private var analysis: ReferenceAnalysisResult?
+    @State private var analyzing = false
+    @State private var analysisFailure: String?
+    @State private var acceptedAnalysisDirection: ReferenceObservations.Direction?
     @State private var observations = ReferenceObservations()
     @State private var candidates: [GuidedRig] = []
     @State private var previewID: String?
     @State private var rigError: String?
     @State private var confirmApply = false
+    @State private var showPhotoComparison = false
 
     private var selectedRig: GuidedRig? { candidates.first { $0.id == previewID } }
 
@@ -73,7 +80,13 @@ struct ReferenceComparisonView: View {
                         }
                         VStack(alignment: .leading, spacing: 12) { photoPanel; studyPanel }
                     }
+                    Button("Compare a test shot", systemImage: "rectangle.on.rectangle") {
+                        showPhotoComparison = true
+                    }
+                    .buttonStyle(.bordered).frame(minHeight: 44)
+                    .accessibilityIdentifier("openPhotoComparison")
                     if let tones { tonalPanel(tones) }
+                    if reference != nil { analysisPanel }
                     guidedPanel
                     VStack(alignment: .leading, spacing: 7) {
                         Label("On-device comparison", systemImage: "lock.shield").font(.headline)
@@ -104,6 +117,9 @@ struct ReferenceComparisonView: View {
             } message: {
                 Text("The studio camera and subject stay unchanged. Undo restores your previous lights. Save separately to persist the edit.")
             }
+            .sheet(isPresented: $showPhotoComparison) {
+                PhotoComparisonView(initialReference: reference)
+            }
             .onChange(of: observations) { _, _ in
                 candidates = []; previewID = nil; rigError = nil
             }
@@ -130,9 +146,23 @@ struct ReferenceComparisonView: View {
                     Label("Photo hidden while inactive", systemImage: "lock.fill")
                         .font(.caption).foregroundStyle(.white)
                 } else if let reference {
-                    Image(uiImage: reference).resizable().scaledToFit()
-                        .accessibilityLabel("Imported reference photograph")
-                        .accessibilityIdentifier("importedReference").privacySensitive()
+                    GeometryReader { geometry in
+                        ZStack(alignment: .topLeading) {
+                            Image(uiImage: reference).resizable().scaledToFit()
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .accessibilityLabel("Imported reference photograph")
+                                .accessibilityIdentifier("importedReference").privacySensitive()
+                            if let bounds = analysis?.faceBounds {
+                                let rect = faceRect(bounds, imageSize: reference.size, container: geometry.size)
+                                Rectangle().stroke(.black.opacity(0.8), lineWidth: 4)
+                                    .overlay { Rectangle().stroke(.white, lineWidth: 2) }
+                                    .frame(width: rect.width, height: rect.height)
+                                    .position(x: rect.midX, y: rect.midY)
+                                    .allowsHitTesting(false).accessibilityHidden(true)
+                            }
+                        }
+                    }
+                    .privacySensitive()
                 } else {
                     VStack(spacing: 8) {
                         Image(systemName: "photo").font(.title)
@@ -145,6 +175,71 @@ struct ReferenceComparisonView: View {
             .frame(height: 200).clipShape(RoundedRectangle(cornerRadius: 12))
             Text(reference == nil ? "Choose a still image you are authorized to use." : sizeDescription)
                 .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    /// The service has already converted Vision bounds to a top-left origin.
+    /// Apply only the displayed image's aspect-fit scale and letterbox offsets.
+    private func faceRect(_ bounds: ReferenceFaceBounds, imageSize: CGSize, container: CGSize) -> CGRect {
+        let scale = min(container.width / imageSize.width, container.height / imageSize.height)
+        let width = imageSize.width * scale, height = imageSize.height * scale
+        return CGRect(x: (container.width - width) / 2 + CGFloat(bounds.x) * width,
+                      y: (container.height - height) / 2 + CGFloat(bounds.y) * height,
+                      width: CGFloat(bounds.width) * width, height: CGFloat(bounds.height) * height)
+    }
+
+    private var analysisPanel: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("On-device key-side check").font(.headline)
+            if analyzing {
+                ProgressView("Checking face lighting…")
+                    .accessibilityIdentifier("referenceAnalysisLoading")
+                Text("You can choose the lighting cues and build a starting rig while the check runs.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            } else if let analysis {
+                Label(analysisSupportText(analysis.support), systemImage: analysis.support == .supported ? "lightbulb" : "info.circle")
+                    .font(.subheadline.weight(.medium))
+                    .accessibilityIdentifier("referenceAnalysisSupport")
+                Text(analysis.explanation).font(.subheadline)
+                    .accessibilityIdentifier("referenceAnalysisExplanation")
+                if analysis.faceBounds != nil {
+                    Text("The outline marks the detected face region.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                if analysis.support == .supported, !analysis.requiresManualDirection {
+                    Text("Suggested key side: \(analysis.observations.direction.rawValue)")
+                        .font(.subheadline.weight(.medium))
+                    Button("Use suggested side") { useSuggestedSide() }
+                        .buttonStyle(.bordered).frame(minHeight: 44)
+                        .accessibilityIdentifier("useReferenceSuggestedSide")
+                    Text("Review the suggestion against the photo. Accepting it sets Key side; choose the other cues below.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Limitations").font(.caption.weight(.semibold))
+                    ForEach(analysis.limitations, id: \.self) { limitation in
+                        Text(limitation).font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                .accessibilityIdentifier("referenceAnalysisLimitations")
+            } else if let analysisFailure {
+                Label(analysisFailure, systemImage: "info.circle")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("referenceAnalysisError")
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+        .accessibilityIdentifier("referenceAnalysis")
+        .privacySensitive()
+    }
+
+    private func analysisSupportText(_ support: ReferenceAnalysisSupport) -> String {
+        switch support {
+        case .supported: return "Supported for a tentative suggestion"
+        case .ambiguous: return "Ambiguous — choose the key side manually"
+        case .unsupported: return "Unsupported — choose the key side manually"
         }
     }
 
@@ -198,11 +293,19 @@ struct ReferenceComparisonView: View {
     private var guidedPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Build alternatives").font(.headline)
-            Text("Choose what you can actually see. These are manually guided starting rigs, not automatic image analysis. Unknown values stay assumptions.")
+            Text("Choose what you can see, or accept a tentative key-side suggestion after reviewing the photo. Unknown cues and all numeric rig settings stay starting assumptions.")
                 .font(.subheadline).foregroundStyle(.secondary)
-            Picker("Key side", selection: $observations.direction) {
+            Picker("Key side", selection: Binding(get: { observations.direction }, set: { direction in
+                acceptedAnalysisDirection = nil
+                observations.direction = direction
+            })) {
                 ForEach(ReferenceObservations.Direction.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }.accessibilityIdentifier("referenceKeySide")
+            if let acceptedAnalysisDirection {
+                Text("Accepted on-device suggestion — Key side: \(acceptedAnalysisDirection.rawValue)")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("referenceAcceptedSuggestion")
+            }
             Picker("Shadow edges", selection: $observations.softness) {
                 ForEach(ReferenceObservations.Softness.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }.accessibilityIdentifier("referenceSoftness")
@@ -212,7 +315,7 @@ struct ReferenceComparisonView: View {
             Picker("Rim highlight", selection: $observations.rim) {
                 ForEach(ReferenceObservations.Rim.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }.accessibilityIdentifier("referenceRim")
-            Button("Build two starting rigs", systemImage: "lightbulb.2") {
+            Button("Build starting rigs", systemImage: "lightbulb.2") {
                 do {
                     candidates = try GuidedLighting.candidates(from: observations, in: scene)
                     previewID = candidates.first?.id
@@ -267,7 +370,10 @@ struct ReferenceComparisonView: View {
     }
 
     private func rigBasis(_ basis: GuidedRigBasis) -> some View {
-        let observed = GuidedRigBasis.Cue.allCases.filter { basis.provenance(for: $0) == .userObservation }
+        let usesAnalysisDirection = acceptedAnalysisDirection == basis.observations.direction
+        let observed = GuidedRigBasis.Cue.allCases.filter {
+            basis.provenance(for: $0) == .userObservation && !($0 == .direction && usesAnalysisDirection)
+        }
         let observedText = observed.map { cue in
             let value: String
             switch cue {
@@ -286,8 +392,12 @@ struct ReferenceComparisonView: View {
         let kelvin = StudioNumericInput.formattedValue(basis.lightKelvin)
         return VStack(alignment: .leading, spacing: 6) {
             Text("Basis for this rig").font(.subheadline.weight(.semibold))
-            Text("Your observations — \(observedText)")
+            Text(observedText.isEmpty ? "Your observations — none selected" : "Your observations — \(observedText)")
                 .accessibilityIdentifier("guidedObservedCues")
+            if usesAnalysisDirection {
+                Text("Accepted on-device suggestion — Key side: \(basis.observations.direction.rawValue)")
+                    .accessibilityIdentifier("guidedSuggestedCues")
+            }
             Text(unknownText.isEmpty ? "No unknown cues. Exact geometry and output are still assumptions."
                  : "Assumed cues — \(unknownText)")
                 .accessibilityIdentifier("guidedAssumedCues")
@@ -322,6 +432,7 @@ struct ReferenceComparisonView: View {
                 observations = .init(); candidates = []; previewID = nil; rigError = nil
                 sizeDescription = "\(photo.width) × \(photo.height) px · session only"
                 loading = false
+                startAnalysis(png: photo.png)
             } catch {
                 guard !Task.isCancelled, requestID == token else { return }
                 let detail = (error as? ReferenceImportError)?.errorDescription ??
@@ -330,6 +441,48 @@ struct ReferenceComparisonView: View {
                 loading = false
             }
         }
+    }
+
+    @MainActor private func startAnalysis(png: Data) {
+        cancelAnalysis()
+        let token = analysisRequestID
+        analyzing = true
+        // Keep PNG bytes only for the service call, never in view state or a project.
+        analysisTask = Task {
+            defer {
+                if analysisRequestID == token {
+                    analysisTask = nil
+                    analyzing = false
+                }
+            }
+            do {
+                let result = try await ReferenceAnalysisService.analyze(png: png)
+                guard !Task.isCancelled, analysisRequestID == token else { return }
+                analysis = result
+            } catch {
+                guard !Task.isCancelled, analysisRequestID == token else { return }
+                analysisFailure = "The on-device check could not finish. Choose the key side manually."
+            }
+        }
+    }
+
+    @MainActor private func useSuggestedSide() {
+        guard let analysis, analysis.support == .supported, !analysis.requiresManualDirection else { return }
+        acceptedAnalysisDirection = analysis.observations.direction
+        // Explicit adoption changes only direction; unknown/manual cues remain intact.
+        observations.direction = analysis.observations.direction
+    }
+
+    /// Import cancellation is independent: a failed or cancelled replacement keeps
+    /// the previous photo's result, including any check that is still running.
+    @MainActor private func cancelAnalysis() {
+        analysisRequestID = UUID()
+        analysisTask?.cancel()
+        analysisTask = nil
+        analysis = nil
+        analyzing = false
+        analysisFailure = nil
+        acceptedAnalysisDirection = nil
     }
 
     /// Cancelling a replacement retains the previous photo and guided work.
@@ -345,6 +498,7 @@ struct ReferenceComparisonView: View {
 
     @MainActor private func clear() {
         cancelImport()
+        cancelAnalysis()
         reference = nil
         tones = nil
         observations = .init(); candidates = []; previewID = nil; rigError = nil

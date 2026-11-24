@@ -17,20 +17,28 @@ public enum EmitterKind: String, Codable, CaseIterable, Sendable {
 /// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
 public struct LightOptics: Codable, Equatable, Sendable {
     public static let dimensionRange: ClosedRange<Double> = 0.05...4
+    public static let rollRange: ClosedRange<Double> = -180...180
     public var kind: EmitterKind
     public var aimTarget: Position?
     public var widthMeters: Double
     public var heightMeters: Double
+    /// Rotation about the emitting normal. Nil preserves the legacy world-up orientation.
+    public var rollDegrees: Double?
 
     public init(kind: EmitterKind = .point, aimTarget: Position? = nil,
-                widthMeters: Double = 0.6, heightMeters: Double = 0.9) {
+                widthMeters: Double = 0.6, heightMeters: Double = 0.9,
+                rollDegrees: Double? = nil) {
         self.kind = kind; self.aimTarget = aimTarget
         self.widthMeters = widthMeters; self.heightMeters = heightMeters
+        self.rollDegrees = rollDegrees
     }
+
+    public var effectiveRollDegrees: Double { rollDegrees ?? 0 }
 
     public var isValid: Bool {
         (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
-        Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters)
+        Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters) &&
+        effectiveRollDegrees.isFinite && Self.rollRange.contains(effectiveRollDegrees)
     }
 }
 
@@ -40,14 +48,16 @@ extension StudioLight {
 }
 
 /// Right-handed world-space basis; right × up = emitting normal.
-/// Roll is determined by world up; at a vertical aim the roll is arbitrary and deterministic.
+/// Zero roll follows world up, with a deterministic basis at a vertical aim.
+/// Positive roll turns right toward up around the emitting normal (the right-hand rule).
 public struct EmitterFrame: Equatable, Sendable {
     public let right: UnitDirection
     public let up: UnitDirection
     public let normal: UnitDirection
 
-    public init?(source: Position, target: Position) {
-        guard source.isValid, target.isValid,
+    public init?(source: Position, target: Position, rollDegrees: Double = 0) {
+        guard source.isValid, target.isValid, rollDegrees.isFinite,
+              LightOptics.rollRange.contains(rollDegrees),
               let n = UnitDirection(x: target.x - source.x, y: target.y - source.y, z: target.z - source.z) else { return nil }
         let horizontal = hypot(n.x, n.z)
         let r = horizontal > 1e-12
@@ -56,7 +66,20 @@ public struct EmitterFrame: Equatable, Sendable {
         guard let r, let u = UnitDirection(x: n.y * r.z - n.z * r.y,
                                            y: n.z * r.x - n.x * r.z,
                                            z: n.x * r.y - n.y * r.x) else { return nil }
-        self.right = r; self.up = u; self.normal = n
+        // Keep legacy sample coordinates exactly unchanged when no roll is requested.
+        if rollDegrees == 0 {
+            self.right = r; self.up = u; self.normal = n
+            return
+        }
+        let radians = rollDegrees * .pi / 180
+        let c = cos(radians), s = sin(radians)
+        guard let rolledRight = UnitDirection(x: c * r.x + s * u.x,
+                                              y: c * r.y + s * u.y,
+                                              z: c * r.z + s * u.z),
+              let rolledUp = UnitDirection(x: -s * r.x + c * u.x,
+                                           y: -s * r.y + c * u.y,
+                                           z: -s * r.z + c * u.z) else { return nil }
+        self.right = rolledRight; self.up = rolledUp; self.normal = n
     }
 }
 
@@ -72,7 +95,8 @@ public enum StudioPhotometry {
 
     public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
         guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
-        return EmitterFrame(source: light.position, target: light.target(subject: subject))
+        return EmitterFrame(source: light.position, target: light.target(subject: subject),
+                            rollDegrees: light.effectiveOptics.effectiveRollDegrees)
     }
 
     public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {

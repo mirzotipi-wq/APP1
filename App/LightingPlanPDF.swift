@@ -30,6 +30,11 @@ import LightingCore
                 base(cg, plan: plan, bounds: bounds, section: "Equipment & placement", page: index + 2)
                 equipment(cg, plan: plan, lights: lights, bounds: bounds)
             }
+            for (index, items) in plan.roomPlacementPages.enumerated() {
+                context.beginPage()
+                base(cg, plan: plan, bounds: bounds, section: "Manual room placement", page: plan.equipmentPages.count + index + 2)
+                roomPlacement(cg, plan: plan, items: items, bounds: bounds)
+            }
         }
         guard let document = PDFDocument(data: data), document.pageCount == plan.pageCount else { throw ExportError.invalidPDF }
         return data
@@ -107,6 +112,49 @@ import LightingCore
             stroke(cg, from: CGPoint(x: 40, y: y + 105), to: CGPoint(x: bounds.width - 40, y: y + 105), color: rule)
         }
         text("XYZ in \(plan.units.symbol) · entered settings rounded to six fractional digits · derived center-to-center 3D distances rounded to two.", x: 40, y: 715, width: width, height: 24, size: 9, color: muted)
+    }
+
+    /// Every room page repeats the measurement basis and scope notes. Four
+    /// fixed-height vector rows fit inside the Letter content bounds; A4 uses
+    /// the same readable layout. The model owns the identical page grouping.
+    private static func roomPlacement(_ cg: CGContext, plan: LightingPlan, items: [PlanRoomItem], bounds: CGRect) {
+        let width = bounds.width - 80
+        let summary = plan.roomPlacementSummary
+        let summaryBoxes: [(y: CGFloat, height: CGFloat, size: CGFloat)] = [
+            (151, 18, 11), (171, 18, 10), (191, 27, 10), (220, 23, 9.5), (245, 22, 9)
+        ]
+        for (line, box) in zip(summary, summaryBoxes) {
+            text(line, x: 40, y: box.y, width: width, height: box.height, size: box.size,
+                 color: muted, weight: .medium)
+        }
+        stroke(cg, from: CGPoint(x: 40, y: 269), to: CGPoint(x: bounds.width - 40, y: 269), color: rule)
+        for (index, item) in items.enumerated() {
+            let y = CGFloat(270 + index * 96)
+            let x: CGFloat = 76
+            let rowWidth = bounds.width - x - 40
+            let gap: CGFloat = 14
+            let columnWidth = (rowWidth - gap) / 2
+            let secondColumn = x + columnWidth + gap
+            let statusColor = item.hasWarning ? amber : muted
+            text(item.marker, x: 40, y: y + 5, width: 30, height: 24, size: 17, color: amber, weight: .semibold)
+            text(item.name, x: x, y: y + 2, width: rowWidth, height: 25, size: 12, minimum: 10, weight: .semibold)
+            text("X from left: \(plan.units.roomDistance(item.point.xFromLeft))", x: x, y: y + 28,
+                 width: columnWidth, height: 14, size: 9.5)
+            text("Z from near: \(plan.units.roomDistance(item.point.zFromNear))", x: secondColumn, y: y + 28,
+                 width: columnWidth, height: 14, size: 9.5)
+            text("Height: \(plan.units.roomDistance(item.point.heightMeters))", x: x, y: y + 43,
+                 width: columnWidth, height: 14, size: 9.5)
+            text("Floor distance: \(plan.units.roomDistance(item.point.horizontalDistanceFromSubject))", x: secondColumn, y: y + 43,
+                 width: columnWidth, height: 14, size: 9.5)
+            text(item.centerStatus, x: x, y: y + 58, width: rowWidth, height: 13, size: 9, color: statusColor, weight: .medium)
+            if let status = item.projectedFaceStatus(units: plan.units) {
+                text(status, x: x, y: y + 72, width: rowWidth, height: 22, size: 9, color: statusColor)
+            }
+            stroke(cg, from: CGPoint(x: 40, y: y + 95), to: CGPoint(x: bounds.width - 40, y: y + 95), color: rule)
+        }
+        text(LightingPlan.roomPlacementCoordinateNote,
+             x: 40, y: 663, width: width, height: 27, size: 8.5, color: muted)
+        text(LightingPlan.roomPlacementLimitations, x: 40, y: 693, width: width, height: 40, size: 8.5, color: muted)
     }
 
     private static func text(_ string: String, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,

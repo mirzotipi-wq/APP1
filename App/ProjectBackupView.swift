@@ -24,7 +24,7 @@ struct ProjectBackupView: View {
                         .accessibilityIdentifier("editableCopyProjectName")
                     Label("\(scene.lights.count) lights", systemImage: "lightbulb")
                         .accessibilityIdentifier("editableCopyLightCount")
-                    Text("Includes the project name, lights, camera and preview settings from the studio when you opened this sheet.")
+                    Text("Includes the project name, lights, camera, preview settings and any committed room measurements from the studio when you opened this sheet.")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
                 Section {
@@ -58,7 +58,7 @@ struct ProjectBackupView: View {
                 }
                 Section("Open the copy later") {
                     Text("In Projects, choose Import editable project. Importing creates a separate project and keeps existing projects.")
-                    Text("Reference photos, room measurements and edit history are not included. Your current studio edits stay open after exporting.")
+                    Text("Reference photos and edit history are not included. Your current studio edits stay open after exporting.")
                         .font(.footnote).foregroundStyle(.secondary)
                         .accessibilityIdentifier("editableCopyScope")
                 }

@@ -27,6 +27,17 @@ public enum PlanUnits: String, CaseIterable, Sendable {
         let values = [position.x, position.y, position.z].map { Self.parameterNumber(fromMeters($0), minimumDecimals: 2) }
         return "(\(values.joined(separator: ", "))) \(symbol)"
     }
+    /// Wall coordinates and projected overhangs must retain their sign even
+    /// below the report's six-decimal display precision. The threshold is in
+    /// the selected export unit, not implicitly in meters.
+    public func roomDistance(_ meters: Double) -> String {
+        let value = fromMeters(meters)
+        guard value.isFinite else { return "Unavailable" }
+        if value != 0, abs(value) < 0.000001 {
+            return value < 0 ? "between -0.000001 and 0 \(symbol)" : "less than 0.000001 \(symbol)"
+        }
+        return parameterDistance(meters)
+    }
     public static func number(_ value: Double, decimals: Int = 1) -> String {
         // Foundation on Apple SDKs rejects the dynamic-precision vararg
         // signature used here previously. A fixed, bounded format has one Double.
@@ -106,12 +117,16 @@ public struct PlanLight: Equatable, Sendable {
     public let aimIsValid: Bool
     public let widthMeters: Double?
     public let heightMeters: Double?
+    /// Only rectangular emitters have a reported roll. Nil preserves the
+    /// legacy settings line; an explicitly entered zero remains visible.
+    public let rollDegrees: Double?
 
     public func settings(units: PlanUnits) -> String {
-        let output = "\(PlanUnits.parameterNumber(candela, minimumDecimals: 1)) cd · \(PlanUnits.parameterNumber(kelvin)) K"
+        var output = "\(PlanUnits.parameterNumber(candela, minimumDecimals: 1)) cd · \(PlanUnits.parameterNumber(kelvin)) K"
         if let widthMeters, let heightMeters {
-            return "\(output) · \(units.parameterDistance(widthMeters)) × \(units.parameterDistance(heightMeters))"
+            output += " · \(units.parameterDistance(widthMeters)) × \(units.parameterDistance(heightMeters))"
         }
+        if let rollDegrees { output += " · Roll \(PlanUnits.parameterNumber(rollDegrees))°" }
         return output
     }
     public func placement(units: PlanUnits) -> String {
@@ -124,6 +139,43 @@ public struct PlanLight: Equatable, Sendable {
     }
 }
 
+/// One wall-relative export row. Markers match the overhead diagram and the
+/// equipment schedule, including when light names are duplicated or truncated.
+public struct PlanRoomItem: Equatable, Sendable {
+    public let marker: String
+    public let name: String
+    public let point: RoomPlacementPoint
+    public let modifierFootprint: RoomModifierFootprint?
+
+    public var centerStatus: String {
+        point.insideRoom ? "Center inside room outline" : "CENTER OUTSIDE ROOM OUTLINE"
+    }
+
+    public var hasWarning: Bool {
+        !point.insideRoom || modifierFootprint.map { !$0.isAvailable || $0.isInsideRoom == false } == true
+    }
+
+    public func coordinates(units: PlanUnits) -> String {
+        "X from left wall: \(units.roomDistance(point.xFromLeft)); Z from near wall: \(units.roomDistance(point.zFromNear)); Height: \(units.roomDistance(point.heightMeters)); Floor distance to subject: \(units.roomDistance(point.horizontalDistanceFromSubject))"
+    }
+
+    /// Only the ideal emitting face's floor projection is described. These
+    /// values cannot establish equipment-body or ceiling clearance.
+    public func projectedFaceStatus(units: PlanUnits) -> String? {
+        guard let footprint = modifierFootprint else { return nil }
+        guard footprint.isAvailable else { return "Emitting-face projection unavailable; check aim." }
+        var status = footprint.crossedWalls.isEmpty
+            ? "Emitting-face projection within room outline."
+            : "Emitting-face projection crosses \(footprint.crossedWalls.map(\.rawValue).joined(separator: ", ")) wall boundaries."
+        if let clearance = footprint.minimumWallClearanceMeters {
+            status += clearance < 0
+                ? " Projected wall overhang: \(units.roomDistance(-clearance))."
+                : " Minimum projected wall distance: \(units.roomDistance(clearance))."
+        }
+        return status
+    }
+}
+
 /// Immutable export snapshot, no reference images or externally supplied paths.
 public struct LightingPlan: Equatable, Sendable {
     public static let reportVersion = 1
@@ -132,7 +184,13 @@ public struct LightingPlan: Equatable, Sendable {
     public let units: PlanUnits
     public let paper: PlanPaper
     public let lights: [PlanLight]
+    public let roomPlacement: RoomPlacementPlan?
     public static let lightsPerPage = 5
+    /// Four bounded rows leave room for two-line Unicode names, signed wall
+    /// coordinates, face warnings and the scope notes on both paper sizes.
+    public static let roomItemsPerPage = 4
+    public static let roomPlacementCoordinateNote = "X/Z are measured from the left/near walls; height is above the studio floor. Negative values are beyond those walls or below the floor. Floor distance is horizontal distance to the subject."
+    public static let roomPlacementLimitations = "Manual measurements, calculated at 1:1 scale. Only centers and ideal rectangular emitting-face floor projections are checked. Verify complete fixtures, stands, booms, cables and ceiling clearance physically. Ceiling clearance is not calculated; displayed precision is not measurement accuracy."
 
     public init(scene: LightingScene, title: String, units: PlanUnits = .metric, paper: PlanPaper = .letter) throws {
         let scene = try scene.validated()
@@ -149,8 +207,11 @@ public struct LightingPlan: Equatable, Sendable {
                              followsSubject: optics.kind.isAimed && optics.aimTarget == nil,
                              aimIsValid: !optics.kind.isAimed || StudioPhotometry.frame(for: light, subject: scene.subject) != nil,
                              widthMeters: optics.kind == .rectangle ? optics.widthMeters : nil,
-                             heightMeters: optics.kind == .rectangle ? optics.heightMeters : nil)
+                             heightMeters: optics.kind == .rectangle ? optics.heightMeters : nil,
+                             rollDegrees: optics.kind == .rectangle && (optics.rollDegrees != nil || optics.effectiveRollDegrees != 0)
+                                ? optics.effectiveRollDegrees : nil)
         }
+        self.roomPlacement = try scene.placementRoom.map { try RoomPlacementPlan(scene: scene, room: $0) }
     }
 
     /// Prevent line/control injection; keep ordinary Unicode names. Bound hostile
@@ -165,7 +226,52 @@ public struct LightingPlan: Equatable, Sendable {
             Array(lights[$0..<min($0 + Self.lightsPerPage, lights.count)])
         }
     }
-    public var pageCount: Int { 1 + equipmentPages.count }
+    public var roomPlacementItems: [PlanRoomItem] {
+        guard let roomPlacement else { return [] }
+        return roomPlacement.points.enumerated().map { index, point in
+            let marker: String
+            let fallback: String
+            switch point.kind {
+            case .subject: marker = "S"; fallback = "Subject"
+            case .camera: marker = "C"; fallback = "Camera"
+            case .light: marker = String(index - 1); fallback = "Light \(index - 1)"
+            }
+            return PlanRoomItem(marker: marker, name: StudioDisplayName.label(point.name, fallback: fallback),
+                                point: point, modifierFootprint: roomPlacement.modifierFootprints.first { $0.id.uuidString == point.id })
+        }
+    }
+    public var roomPlacementPages: [[PlanRoomItem]] {
+        let items = roomPlacementItems
+        return stride(from: 0, to: items.count, by: Self.roomItemsPerPage).map {
+            Array(items[$0..<min($0 + Self.roomItemsPerPage, items.count)])
+        }
+    }
+    public var pageCount: Int { 1 + equipmentPages.count + roomPlacementPages.count }
+
+    /// Shared, unit-aware page header and text-export metadata. An absent room
+    /// adds no pages or text to existing lighting plans.
+    public var roomPlacementSummary: [String] {
+        guard let placement = roomPlacement else { return [] }
+        let room = placement.room
+        return [
+            "Room width: \(units.roomDistance(room.widthMeters)) · Room depth: \(units.roomDistance(room.depthMeters))",
+            room.ceilingHeightMeters.map { "Ceiling height: \(units.roomDistance($0)) (recorded only)" } ?? "Ceiling height: Unmeasured",
+            "Subject floor position: X \(units.roomDistance(room.subjectX)) from left wall; Z \(units.roomDistance(room.subjectZ)) from near wall",
+            "Rig rotation: \(PlanUnits.parameterNumber(room.yawDegrees))° · Positive rotation turns scene +Z toward room +X (right wall).",
+            "Centers outside room outline: \(placement.outsideCount) of \(placement.points.count) · Emitting faces crossing walls: \(placement.crossingModifierCount) · Unavailable: \(placement.unavailableModifierCount)"
+        ]
+    }
+
+    public var roomPlacementText: String? {
+        guard roomPlacement != nil else { return nil }
+        var lines = ["Manual room placement"] + roomPlacementSummary + [Self.roomPlacementCoordinateNote]
+        for item in roomPlacementItems {
+            lines += ["", "\(item.marker). \(item.name)", item.coordinates(units: units), item.centerStatus]
+            if let status = item.projectedFaceStatus(units: units) { lines.append(status) }
+        }
+        lines += ["", Self.roomPlacementLimitations]
+        return lines.joined(separator: "\n")
+    }
     public var cameraSettings: String {
         "\(PlanUnits.parameterNumber(scene.effectiveCameraLens.focalLengthMillimeters)) mm · 36 × 24 mm sensor · \(units.distance(scene.camera.distance(to: scene.subject))) to subject"
     }
@@ -185,8 +291,13 @@ public struct LightingPlan: Equatable, Sendable {
         let entries = lights.map { light in
             "\(light.number). \(light.name): \(light.kind.title) · \(light.settings(units: units)) · \(light.placement(units: units)) · \(light.aim(units: units))"
         }
-        return (header + entries + ["Entered settings and converted coordinates rounded to six fractional digits; derived distances to two.",
-                                    "Ideal source parameters; not calibrated photometry. No reference images included."]).joined(separator: "\n")
+        let precision = roomPlacement == nil
+            ? "Entered settings and converted coordinates rounded to six fractional digits; derived distances to two."
+            : "Entered settings and converted coordinates rounded to six fractional digits; equipment subject distances to two. Room distances retain up to six fractional digits, with bounds for smaller nonzero values."
+        var lines = header + entries + [precision,
+                                       "Ideal source parameters; not calibrated photometry. No reference images included."]
+        if let roomPlacementText { lines += ["", roomPlacementText] }
+        return lines.joined(separator: "\n")
     }
 
     /// A square-world-unit overhead projection; +X points right, +Z down.

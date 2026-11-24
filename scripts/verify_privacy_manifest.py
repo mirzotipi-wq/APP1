@@ -16,6 +16,10 @@ EXPECTED = {
     "NSPrivacyCollectedDataTypes": [],
     "NSPrivacyAccessedAPITypes": [
         {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"],
+        },
+        {
             "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
             "NSPrivacyAccessedAPITypeReasons": ["C617.1", "3B52.1"],
         }
@@ -35,7 +39,7 @@ def main():
     source = read(SOURCE)
     if source != EXPECTED or source["NSPrivacyTracking"] is not False:
         raise SystemExit("Privacy manifest does not match the documented prototype policy; review changes.")
-    print("Source privacy manifest: no declared tracking or collection; scoped file metadata reasons")
+    print("Source privacy manifest: no declared tracking or collection; app preferences and scoped file metadata reasons")
     if args.bundle:
         path = args.bundle / "PrivacyInfo.xcprivacy"
         if not path.is_file() or read(path) != source:

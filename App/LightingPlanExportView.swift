@@ -101,11 +101,21 @@ struct LightingPlanExportView: View {
     let scene: LightingScene
     let title: String
     @Environment(\.dismiss) private var dismiss
-    @State private var units = PlanUnits.metric
+    @State private var units: PlanUnits
     @State private var paper = PlanPaper.letter
     @State private var prepared: Prepared?
     @State private var failed = false
     @State private var retry = 0
+
+    init(scene: LightingScene, title: String) {
+        self.scene = scene
+        self.title = title
+        // Start with the studio preference, then keep this export's picker
+        // independent so choosing another report unit does not edit settings.
+        let storedUnits = StudioPreferences.defaults.string(forKey: StudioPreferences.unitsKey)
+            ?? PlanUnits.metric.rawValue
+        _units = State(initialValue: StudioPreferences.units(from: storedUnits))
+    }
 
     private struct Options: Equatable { let units: PlanUnits; let paper: PlanPaper; let retry: Int }
     private struct Prepared { let options: Options; let item: LightingPlanPDFItem; let pages: Int }

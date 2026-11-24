@@ -6,13 +6,17 @@ struct SubjectInspector: View {
     @Binding var position: Position
     let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
+    @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
+    private var unitsRawValue = PlanUnits.metric.rawValue
+
+    private var units: PlanUnits { StudioPreferences.units(from: unitsRawValue) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("SUBJECT POSITION").font(.caption2.weight(.semibold)).tracking(1.4)
                 .foregroundStyle(.secondary)
             Text("Place the subject center").font(.subheadline.weight(.medium))
-            Text("The camera and lights using Aim at subject follow this point. Coordinates are in meters from the scene origin.")
+            Text("The camera and lights using Aim at subject follow this point. Coordinates are in \(units == .metric ? "meters" : "feet") from the scene origin.")
                 .font(.caption).foregroundStyle(.secondary)
             slider("Subject horizontal", value: $position.x, range: -4...4,
                    step: 0.05, id: "subjectX")
@@ -31,7 +35,7 @@ struct SubjectInspector: View {
 
     private func heightPreset(_ title: String, height: Double, id: String) -> some View {
         let selected = position.y == height
-        let display = StudioNumericInput.formattedValue(height, unit: "m", locale: locale)
+        let display = DistanceValueButton.formattedValue(height, units: units, locale: locale)
         return Button {
             position.y = height
         } label: {
@@ -62,16 +66,16 @@ struct SubjectInspector: View {
                         step: Double, id: String) -> some View {
         // Preserve valid imported positions even outside the initial editing range.
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
+        let units = self.units
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(title).font(.subheadline.weight(.medium))
+                Text("\(title) (\(units.symbol))").font(.subheadline.weight(.medium))
                 Spacer()
-                PrecisionValueButton(title: title, unit: "m", id: id, value: value,
-                                     range: Position.coordinateRange)
+                DistanceValueButton(title: title, id: id, value: value, range: Position.coordinateRange)
             }
             StudioSlider(value: value, in: bounds, step: step,
-                         accessibility: .init(label: title,
-                                              value: { [locale] in StudioNumericInput.formattedValue($0, unit: "m", locale: locale) },
+                         accessibility: .init(label: title + " in " + (units == .metric ? "meters" : "feet"),
+                                              value: { [locale] in DistanceValueButton.formattedValue($0, units: units, locale: locale) },
                                               identifier: id)) { editing in
                 onEditingChanged(editing, id)
             }

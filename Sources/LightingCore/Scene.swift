@@ -42,7 +42,7 @@ public enum SceneError: Error, Equatable {
 }
 
 public struct LightingScene: Codable, Equatable, Sendable {
-    public static let currentSchemaVersion = 4
+    public static let currentSchemaVersion = 5
     public var schemaVersion: Int = currentSchemaVersion
     public var subject: Position
     public var camera: Position
@@ -51,9 +51,12 @@ public struct LightingScene: Codable, Equatable, Sendable {
     public var lights: [StudioLight]
     /// Nil retains the default diagnostic card balance and exposure.
     public var previewSettings: PreviewSettings?
+    /// Nil means no measured room has been saved with this scene.
+    public var placementRoom: ManualRoom?
 
-    public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil) {
+    public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil, placementRoom: ManualRoom? = nil) {
         self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens; self.previewSettings = previewSettings
+        self.placementRoom = placementRoom
     }
 
     public func validated() throws -> Self {
@@ -63,7 +66,12 @@ public struct LightingScene: Codable, Equatable, Sendable {
         // Version 2 adds light optics, version 3 adds a camera lens.
         guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
         guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
-        guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true), lights.count <= 12 else { throw SceneError.invalidScene }
+        // Version 5 adds measured rooms and rectangular-emitter roll.
+        guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+            throw SceneError.invalidScene
+        }
+        guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+              (placementRoom?.isValid ?? true), lights.count <= 12 else { throw SceneError.invalidScene }
         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
         var migrated = self
