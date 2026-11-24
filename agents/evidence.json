@@ -1540,6 +1540,127 @@
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45334846248",
       "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
       "notes": "Earlier native room/optics failures motivated source fixes; no current full regression or release claim."
+    },
+    {
+      "gate": "native_build",
+      "result": "pass",
+      "revision": "6eb42e2ad23b6e139507c995b70cfc4f2cbcbba6",
+      "date": "2026-11-24",
+      "method": "Completed native job 138236816979: actual Debug/Release builds and downloaded Release archive inspection",
+      "environment": "iPhone 17 Pro simulator SDK 26.5; Xcode 26.6; unsigned",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45332530580/artifacts/14893674637",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "Historical only. Both ZIP CRCs valid; com.example.keyandfill 0.1.0 build 2, iOS 17.0, iPhone/iPad, compiled icon metadata/Assets.car and privacy manifest present, no signature directory. Outer SHA256 1e2d54167a304491212fa5542ad0d2308e9af68d3ef1d8b1f723c6be0ec03bb3."
+    },
+    {
+      "gate": "regression",
+      "result": "fail",
+      "revision": "6eb42e2ad23b6e139507c995b70cfc4f2cbcbba6",
+      "date": "2026-11-24",
+      "method": "Completed native XCTest and inspection of compact genuine UI attachment archive",
+      "environment": "iPhone 17 Pro simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45332530580/artifacts/14894446607",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "9/9 native unit, 17/18 native UI. Exact camera focal length, exact light intensity and exact modifier width/room crossing scenarios passed. Only old ManualRoomPlacementUITests line 17 failed. Accessibility debug query showed no roomPlacementStatus. Native source is historical; current primary-action fix pending."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "1802ea25c9eac8ea27a73d4157fa7fb2438210b0",
+      "date": "2026-11-24",
+      "method": "Actual completed core job 138252052293: portable Debug/Release and four new room regression tests",
+      "environment": "Ubuntu 24.04 Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337222391/artifacts/14893269998",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "129/129 each configuration, zero failures. Locale digits, explicit resize ranges, signed sub-centimeter coordinates and actual sub-millimeter modifier overhang passed. Native Debug build/upload passed; new native room scenario pending."
+    },
+    {
+      "gate": "core_tests",
+      "result": "fail",
+      "revision": "71a15b08ba44c438ebb706b54f27b2f2edc9b1ad",
+      "date": "2026-11-24",
+      "method": "Actual completed job 138253131547; raw portable Debug logs",
+      "environment": "Ubuntu 24.04 Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337556264",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "130/131 Debug; new grazing strip/corner tests passed, but pre-existing ReferenceStudyTests.testDirectionalAndRectangleAdapterAgreeWithExistingPhotometry failed exact comparison (358.3559956565057 vs 358.3295433291197 lx). Preserve assertion; correction follows. Release skipped."
+    },
+    {
+      "gate": "core_tests",
+      "result": "fail",
+      "revision": "ee3db0835534539a6763cc7df81d6d7e008dd0c4",
+      "date": "2026-11-24",
+      "method": "Actual core job 138253457739 failed portable Debug",
+      "environment": "GitHub Actions",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337659106",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "CI-only source retains intermediate photometry code. Current correction is a13d8c96; this failed historical run remains visible."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Completed job 138254104603; raw logs, Debug/Release, state/native syntax, reference rendering and shared Float32 parity",
+      "environment": "Ubuntu 24.04 Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919/artifacts/14894921441",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "132/132 each configuration, zero failures, all core steps passed. Original exact adapter-agreement test and three new grazing/transition cases passed; four room tests retained."
+    },
+    {
+      "gate": "photometry",
+      "result": "pass",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Analytic point fixtures, six parallel rectangle fixtures, four off-axis numerical fixtures, eight positive grazing strip/corner comparisons to independent Simpson reference, tangent/dark and partial/full transition tests",
+      "environment": "Portable Swift 6.4.2 Debug and Release",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919/artifacts/14894921441",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "Max relative error among 18 printed positive area fixtures 0.00023334691793906986 (0.0233347%); eight grazing cases max 1.7798374596233513e-10 relative, fixture-limited. Original fully front-facing 32x32 reference-grid agreement passed 1e-8 lx assertion. Partial face uses clipped 12x12 triangle quadrature, at most 432 evaluations. Existing renderer keeps fixed grid at grazing; no calibrated portrait/device claim."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Reordered Release build before serial XCTest; job budget 70 min, UI stage 50 min; exact-source native job pending",
+      "environment": "macOS standard Intel runner",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "Latest simulator queued. Room source Debug passed; latest Release and SDK/native tests still require evidence. Older 45331816997 UI canceled after roughly 42 min in 45-min job; independent Release skipped, attachment export failed. Timing consistent with job bound; precise cancellation cause not confirmed from logs."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Historical exact precision/save/relaunch scenarios passed; current room and photometry changes require revalidation",
+      "environment": "Native XCTest pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "No current-source complete create/edit/save/relaunch and corruption evidence. Historical tests are not a current gate pass."
+    },
+    {
+      "gate": "editing",
+      "result": "unverified",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Room source avoids silently clamping subject, supports localized digits, preserves signed measurement readouts and unchanged draft values; four portable tests plus new UI scenario",
+      "environment": "Portable Debug/Release pass; native verification pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337222391",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "Historical precise editor and modifier crossing native passes on 6eb42e2; new room workflow and latest native reachability require actual UI results."
+    },
+    {
+      "gate": "regression",
+      "result": "unverified",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Current portable regression passed, native queued",
+      "environment": "GitHub Actions",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919",
+      "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
+      "notes": "No full current native suite, device matrix, independent review, or release evidence."
     }
   ]
 }
