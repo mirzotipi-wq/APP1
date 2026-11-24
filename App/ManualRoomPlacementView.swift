@@ -264,6 +264,10 @@ private struct RoomPlacementNotesView: View {
                         .font(.body.monospacedDigit())
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        // Give the selectable preview the same complete content
+                        // as the visible text and share item, independently of
+                        // the platform's inferred selectable-text description.
+                        .accessibilityLabel(Text(verbatim: text))
                         .accessibilityIdentifier("roomNotesText")
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)

@@ -266,7 +266,7 @@ struct StudioView: View {
                     showMeter = true
                     meterNavigationRequest += 1
                 } label: {
-                    Label("Meter", systemImage: "light.metering.center.weighted")
+                    Label("Meter", systemImage: "sun.max")
                         .font(.subheadline.weight(.medium))
                         .padding(.horizontal, 8)
                         .frame(minWidth: 44, minHeight: 44)
@@ -501,7 +501,7 @@ struct StudioView: View {
             } label: {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 3) {
-                        Label("Light meter & test card", systemImage: "light.metering.center.weighted")
+                        Label("Light meter & test card", systemImage: "sun.max")
                             .font(.headline)
                         Text("Ideal direct light · relative color preview")
                             .font(.caption).foregroundStyle(.secondary)

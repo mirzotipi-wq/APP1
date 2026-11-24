@@ -250,7 +250,18 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertTrue(candidate.waitForExistence(timeout: 15), "Reopening must still find the untouched archive")
         candidate.tap()
         XCTAssertTrue(confirmation.waitForExistence(timeout: 10))
-        confirmation.buttons["confirmRecoveryReplacement"].tap()
+        let replacementActions = confirmation.buttons.matching(NSPredicate(format: "label == %@", "Replace and save setup"))
+        let replacementCount = replacementActions.count
+        if replacementCount != 1 {
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "Recovery-confirmation-hierarchy"; hierarchy.lifetime = .keepAlways; self.add(hierarchy)
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "Recovery-confirmation"; screenshot.lifetime = .keepAlways; self.add(screenshot)
+        }
+        XCTAssertEqual(replacementCount, 1, "The destructive recovery action must expose exactly one button in its alert")
+        let replaceAction = replacementActions.element
+        waitUntilEnabled(replaceAction)
+        replaceAction.tap()
         waitForTitle("Portrait setup recovery", in: app)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         XCTAssertFalse(copy.exists)

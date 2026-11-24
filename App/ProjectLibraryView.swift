@@ -228,10 +228,10 @@ struct ProjectLibraryView: View {
                 Text(displayName(project)).font(.headline).foregroundStyle(.primary)
                 if displayName(project) != project.name {
                     Text("Project ID: \(project.id.uuidString.prefix(8))")
-                        .font(.caption.monospaced()).foregroundStyle(.secondary)
+                        .font(.caption.monospaced()).foregroundStyle(Color.primary)
                 }
                 Text("\(project.scene.lights.count) lights" + (active ? " · Open" : ""))
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.caption).foregroundStyle(Color.primary)
             }
             Spacer(minLength: 0)
         }

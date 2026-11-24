@@ -73,8 +73,10 @@ struct RecoveryCapacityView: View {
                 }
             }
             .alert("Replace archived project?", isPresented: $confirmReplacement, presenting: selected) { project in
+                // Keep this a native alert action. A custom accessibility
+                // identifier produced nested duplicate Button nodes on the
+                // tested iOS simulator; the action already has a clear label.
                 Button("Replace and save setup", role: .destructive) { replace(project) }
-                    .accessibilityIdentifier("confirmRecoveryReplacement")
                 Button("Cancel", role: .cancel) { selected = nil }
             } message: { project in
                 Text("Save your current setup as a new recovery project? If the library is still full, “\(confirmationName(project))” will be removed. That removal cannot be undone here. If space is available, the archived project is kept. Existing exported files are kept.")

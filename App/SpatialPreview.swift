@@ -56,6 +56,15 @@ struct SpatialPreview: UIViewRepresentable {
         let sceneChanged = coordinator.lastScene != scene
         let needsFit = !cameraMode && (modeChanged || coordinator.lastFitRequest != fitRequest)
         guard sceneChanged || modeChanged || needsFit else { return }
+        // Publish geometry, camera pose, lens, clipping and controller target as
+        // one nonanimated update. Do not inherit an enclosing UI animation's
+        // duration or expose an intermediate camera configuration to rendering.
+        // SceneKit presents this transaction at its normal run-loop boundary;
+        // a synchronous test must commit/flush before querying projectPoint.
+        SCNTransaction.begin()
+        SCNTransaction.animationDuration = 0
+        SCNTransaction.disableActions = true
+        defer { SCNTransaction.commit() }
         // Keep the viewport, user orbit and controller alive during ordinary
         // edits. Only an initial presentation or explicit Fit request recenters.
         if sceneChanged || modeChanged {
@@ -179,6 +188,10 @@ private final class OrbitAwareSceneView: SCNView {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard usesOrbitProjection, bounds.width > 0, bounds.height > 0 else { return }
+        SCNTransaction.begin()
+        SCNTransaction.animationDuration = 0
+        SCNTransaction.disableActions = true
+        defer { SCNTransaction.commit() }
         pointOfView?.camera?.projectionDirection = bounds.width < bounds.height ? .horizontal : .vertical
     }
 }

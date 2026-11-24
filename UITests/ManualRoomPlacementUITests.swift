@@ -64,7 +64,9 @@ final class ManualRoomPlacementUITests: XCTestCase {
             XCTAssertTrue(app.buttons["closeRoomNotes"].waitForExistence(timeout: 10))
             let notes = app.descendants(matching: .any)["roomNotesText"].firstMatch
             let predicate = NSPredicate(format: "exists == true AND label CONTAINS %@", text)
-            XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: notes)], timeout: 10), .completed)
+            let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: notes)], timeout: 10)
+            recordRoomNotesAccessibility(notes, in: app, includeFailure: result != .completed)
+            XCTAssertEqual(result, .completed)
             XCTAssertTrue(app.buttons["shareRoomNotes"].exists)
             XCTAssertTrue(app.buttons["shareRoomNotes"].isEnabled)
             return notes
@@ -113,6 +115,21 @@ final class ManualRoomPlacementUITests: XCTestCase {
         app.buttons["closeRoomPlacement"].tap()
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
         XCTAssertFalse(app.buttons["undo"].isEnabled)
+    }
+
+    private func recordRoomNotesAccessibility(_ notes: XCUIElement, in app: XCUIApplication,
+                                               includeFailure: Bool) {
+        let details = notes.exists
+            ? "Type: \(notes.elementType)\nLabel: \(notes.label)\nValue: \(String(describing: notes.value))\nFrame: \(notes.frame)"
+            : "roomNotesText does not exist"
+        let content = XCTAttachment(string: details)
+        content.name = "Room-notes-accessibility-details"; content.lifetime = .keepAlways; add(content)
+        if includeFailure {
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "Room-notes-content-failure"; screenshot.lifetime = .keepAlways; add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "Room-notes-hierarchy"; hierarchy.lifetime = .keepAlways; add(hierarchy)
+        }
     }
 
     private func recordRoomFailure(in app: XCUIApplication) {

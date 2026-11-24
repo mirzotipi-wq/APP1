@@ -32,6 +32,10 @@ final class SpatialPreviewTests: XCTestCase {
             preview.updateView(view, coordinator: coordinator)
             view.setNeedsLayout()
             view.layoutIfNeeded()
+            // This standalone view has not advanced its run loop. Commit the
+            // automatic SceneKit transaction before examining the displayed
+            // projection, just as the normal rendering loop does for a frame.
+            SCNTransaction.flush()
             let target = view.defaultCameraController.target
             XCTAssertEqual(Double(target.x), bounds.center.x, accuracy: 1e-5)
             XCTAssertEqual(Double(target.y), bounds.center.y, accuracy: 1e-5)
@@ -104,7 +108,12 @@ final class SpatialPreviewTests: XCTestCase {
         XCTAssertFalse(view.allowsCameraControl)
         XCTAssertEqual(Double(coordinator.camera.position.x), scene.camera.x, accuracy: 1e-5)
         XCTAssertEqual(Double(coordinator.camera.position.z), scene.camera.z, accuracy: 1e-5)
-        XCTAssertEqual(Double(coordinator.camera.camera?.fieldOfView ?? 0), framing.verticalFieldOfViewDegrees, accuracy: 1e-8)
+        // Native SceneKit returned this CGFloat after a Float32 round trip.
+        // One Float ULP preserves the physical lens target without requiring
+        // precision that the camera's observed representation cannot retain.
+        let expectedFieldOfView = framing.verticalFieldOfViewDegrees
+        XCTAssertEqual(Double(coordinator.camera.camera?.fieldOfView ?? 0), expectedFieldOfView,
+                       accuracy: Double(Float(expectedFieldOfView).ulp))
         XCTAssertEqual(coordinator.camera.camera?.projectionDirection, .vertical)
     }
 }
