@@ -1661,6 +1661,138 @@
       "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919",
       "reviewer": "Assistant sequential self-review and actual GitHub CI; no independent reviewer",
       "notes": "No full current native suite, device matrix, independent review, or release evidence."
+    },
+    {
+      "gate": "native_build",
+      "result": "pass",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Historical exact-source unsigned Debug and Release build and archive inspection",
+      "environment": "macOS simulator SDK 26.5 / Xcode DTXcode 2660",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919/artifacts/14894802294",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "Both builds succeeded; downloaded Release ZIP and nested archive CRC verified. SHA256 977569acdc52a7d7818f8d823f20fed3be5b982ed41c6559721090d73b18e096. com.example.keyandfill 0.1.0 build 2, iOS 17, iPhone/iPad, icon, Assets.car, privacy manifest. Unsigned simulator only; not current source or physical device."
+    },
+    {
+      "gate": "regression",
+      "result": "fail",
+      "revision": "a13d8c96aabee2ef2ffd7a38c4119efcfb197d41",
+      "date": "2026-11-24",
+      "method": "Native unit and serial UI job",
+      "environment": "macOS simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337859919",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "10/10 native unit tests passed; room resize failure observed; UI step exceeded 50 minutes and result bundle lacked finalized Info.plist. No completed UI suite pass."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "fail",
+      "revision": "1802ea25c9eac8ea27a73d4157fa7fb2438210b0",
+      "date": "2026-11-24",
+      "method": "Exact-source native unit/UI result and genuine screenshot/hierarchy review",
+      "environment": "macOS iPhone simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45337222391/artifacts/14896641224",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "10/10 native unit; 17/19 UI. Room resize blocked by decimal keyboard; width showed 62. Recipe tap left default three-light scene; new named light absent. No claim about exact tap delivery mechanism; repair adds explicit controls and actual state assertions."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "cab674175233249e8785797d283e414da23765fd",
+      "date": "2026-11-24",
+      "method": "Exact-source Debug/Release plus native class coverage manifest",
+      "environment": "Ubuntu Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45346996294/artifacts/14898995808",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "132/132 both; exactly 6 UI classes assigned once across 3 shards; native unit target separate."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "2a4fce44f7b176fee6b0580375956e22fbb0977e",
+      "date": "2026-11-24",
+      "method": "Portable Debug and Release, actual PPM fixtures and shared parity",
+      "environment": "Ubuntu Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347270629/artifacts/14898732379",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "137/137 both, 3 bust fixtures 144x96 zero unsupported, six sphere shared-kernel parity fixtures pass. Inspected actual renders; overlapping cheek/jaw ellipsoids visibly discontinuous. Diagnostic only."
+    },
+    {
+      "gate": "rendering",
+      "result": "fail",
+      "revision": "c986ec332d661e9b7ac592a63d6d00c920bdeaaf",
+      "date": "2026-11-24",
+      "method": "Continuous head mesh fixture gate and actual frontal image inspection",
+      "environment": "Ubuntu Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347683048/artifacts/14899031514",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "138/138 Debug and Release; frontal soft/hard images produced; oblique fixture failed invalidSurface, full core workflow failed. Preserve failure. Corrected geometric/shading normal handling and added exact full-resolution oblique regression."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "revision": "ceeb4e9880da6d0b9c5eb41613f6adc82a31e821",
+      "date": "2026-11-24",
+      "method": "139-test Debug/Release, source/syntax and class coverage, render fixtures and shared Float32 parity; downloaded raw artifacts",
+      "environment": "Ubuntu 24.04 x86_64 Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347986031/artifacts/14899036849",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "139/139 Debug and Release, no failures. Three sphere fixtures 120x80 and three mannequin fixtures 144x96 all zero unsupported. Six shared kernel fixtures all pass, max one channel level, >4 fraction 0, near-field masks 84/84. ZIP CRC passed, SHA256 0d82b1122f8db5879b1b7031ad8e7f2db2f3cbebe0b0941469d1a78e2d45df8c."
+    },
+    {
+      "gate": "rendering",
+      "result": "unverified",
+      "revision": "ceeb4e9880da6d0b9c5eb41613f6adc82a31e821",
+      "date": "2026-11-24",
+      "method": "Portable direct-light neutral mannequin fixtures, self-review of frontal and oblique PPMs",
+      "environment": "CPU renderer, Ubuntu Swift 6.4.2",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347986031/artifacts/14899036849",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "Original neutral 5248-triangle continuous head with BVH; finite shadow segments, geometric-normal fallback, direct-light neutral BRDF and explicit color/exposure. All fixture renders valid; ears/neck/clothing still analytic, visibly stylized at limited resolution. No authorized photo calibration, independent comparison, real skin/spectral material model, physical GPU or performance acceptance."
+    },
+    {
+      "gate": "native_build",
+      "result": "unverified",
+      "revision": "ceeb4e9880da6d0b9c5eb41613f6adc82a31e821",
+      "date": "2026-11-24",
+      "method": "Exact-source native build/unit job queued or running",
+      "environment": "macOS simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347986031",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "Portable source/syntax passed; native SDK compile and unsigned exact-revision Debug/Release artifacts pending. Historical successful native builds are not current proof."
+    },
+    {
+      "gate": "persistence_smoke",
+      "result": "unverified",
+      "revision": "ceeb4e9880da6d0b9c5eb41613f6adc82a31e821",
+      "date": "2026-11-24",
+      "method": "Three native UI shards pending including room/precision and library/reference",
+      "environment": "macOS simulator",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347986031",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "No current exact-source complete save/relaunch/corruption gate. Verify genuine UI artifacts and results."
+    },
+    {
+      "gate": "editing",
+      "result": "unverified",
+      "revision": "ceeb4e9880da6d0b9c5eb41613f6adc82a31e821",
+      "date": "2026-11-24",
+      "method": "Explicit room field clear/restore, committed status, recipe/Add Light reachability and exact state assertions",
+      "environment": "Portable tests pass; native UI pending",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45346996294",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "New mannequin switch is session-only, does not alter scene; verify native behavior and exact room/recipe regression."
+    },
+    {
+      "gate": "regression",
+      "result": "unverified",
+      "revision": "ceeb4e9880da6d0b9c5eb41613f6adc82a31e821",
+      "date": "2026-11-24",
+      "method": "Portable full verification green; native sharded suites not completed",
+      "environment": "GitHub Actions",
+      "artifact": "https://github.com/mirzotipi-wq/APP1/actions/runs/45347986031",
+      "reviewer": "Assistant sequential self-review; actual GitHub CI and downloaded artifacts; no independent reviewer",
+      "notes": "No release readiness, physical performance, independent critical review or owner approval."
     }
   ]
 }
