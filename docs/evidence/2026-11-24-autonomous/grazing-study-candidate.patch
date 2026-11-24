@@ -1,0 +1,858 @@
+--- a/Sources/LightingCore/ReferenceStudy.swift
++++ b/Sources/LightingCore/ReferenceStudy.swift
+@@ -1,11 +1,12 @@
+ import Foundation
+ 
+ public enum StudyQuality: Sendable {
+-    /// 8×8 midpoint samples per rectangle. Intended for a small diagnostic image.
++    /// 8×8 cells per rectangle. Full cells retain their midpoint; cells cut by
++    /// receiver incidence use bounded, area-weighted positive-region quadrature.
+     case interactive
+-    /// 32×32 midpoint samples per rectangle, matching the diagnostic meter for fully
+-    /// front-facing receivers. The meter clips partial faces at grazing incidence;
+-    /// this precomputed, occlusion-capable renderer retains its fixed sample grid.
++    /// 32×32 cells per rectangle, matching the diagnostic meter for fully
++    /// front-facing receivers. Clipped cells retain real per-sample visibility;
++    /// this remains bounded numerical quadrature, not an analytic shadow integral.
+     case reference
+     fileprivate var grid: Int { self == .interactive ? 8 : 32 }
+ }
+@@ -101,12 +102,14 @@
+ }
+ 
+ /// Prepared light samples are shared across surface evaluations. Rectangular sources
+-/// use area-weighted midpoint samples; sample intensity sums to on-axis candela.
++/// start from area-weighted midpoint cells; their uncut intensities sum to on-axis
++/// candela. Receiver-dependent clipping changes only partly illuminated cells.
+ public struct StudyLighting: Sendable {
+     private struct Sample: Sendable {
+         let position: SIMD3<Double>
+         let emittingNormal: SIMD3<Double>?
+         let candela: Double
++        let areaIndex: Int
+         let xyz: SIMD3<Double>
+     }
+     private struct AreaGuard: Sendable {
+@@ -127,6 +130,7 @@
+     }
+     private let samples: [Sample]
+     private let areaGuards: [AreaGuard]
++    private let grid: Int
+ 
+     public init(scene: LightingScene, quality: StudyQuality = .interactive) throws {
+         guard (try? scene.validated()) != nil else { throw StudyError.invalidScene }
+@@ -137,15 +141,16 @@
+             let xyz = SIMD3<Double>(color.x, color.y, color.z)
+             let optics = light.effectiveOptics, center = vec(light.position)
+             if optics.kind == .point {
+-                result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz))
++                result.append(.init(position: center, emittingNormal: nil, candela: light.candela, areaIndex: -1, xyz: xyz))
+             } else {
+                 guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }
+                 let axis = vec(frame.normal)
+                 if optics.kind == .directional {
+-                    result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz))
++                    result.append(.init(position: center, emittingNormal: axis, candela: light.candela, areaIndex: -1, xyz: xyz))
+                 } else {
+                     let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
+                     let perCell = light.candela / Double(grid * grid)
++                    let areaIndex = guards.count
+                     guards.append(.init(center: center, right: right, up: up,
+                                         halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
+                                         minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))
+@@ -153,22 +158,23 @@
+                         let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters
+                         for col in 0..<grid {
+                             let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
+-                            result.append(.init(position: center + right * x + up * y, emittingNormal: axis, candela: perCell, xyz: xyz))
++                            result.append(.init(position: center + right * x + up * y, emittingNormal: axis, candela: perCell, areaIndex: areaIndex, xyz: xyz))
+                         }
+                     }
+                 }
+             }
+         }
+-        samples = result; areaGuards = guards
++        samples = result; areaGuards = guards; grid = quality.grid
+     }
+ 
+     public var sampleCount: Int { samples.count }
+ 
+     // Structure-of-vectors contract: three aligned float4 rows per sample and area.
+     // Translate positions to the subject center to reduce Float32 roundoff.
++    // Color.w is zero for non-area samples, or the one-based area record index.
+     fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+         samples.flatMap { s in
+-            [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1), pack(s.xyz, 0)]
++            [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1), pack(s.xyz, Double(s.areaIndex + 1))]
+         }
+     }
+ 
+@@ -189,7 +195,7 @@
+ 
+     /// Internal direct-light evaluator shared by the sphere and mannequin
+     /// diagnostics. The additional visibility function is CPU-only; the sphere
+-    /// and its fixed-grid Metal oracle retain the original sampling contract.
++    /// and its Metal oracle use the same clipped-cell quadrature contract.
+     func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
+                   material: StudyMaterial, geometry: StudyGeometry? = nil,
+                   occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil,
+@@ -197,31 +203,93 @@
+         if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }
+         var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero
+         let shadowOrigin = receiver + (geometricNormal ?? normal) * 1e-5
+-        for sample in samples {
+-            let delta = sample.position - receiver
++        // A light's samples are contiguous. Cache the receiver's area frame
++        // once per source, so fully lit sources retain their original ordered
++        // midpoint arithmetic without per-cell clipping work.
++        var previousArea = -1
++        var rightStep = SIMD3<Double>.zero, upStep = SIMD3<Double>.zero
++        var nx = 0.0, ny = 0.0, gx = 0.0, gy = 0.0
++        var wholeAreaFull = false, wholeAreaDark = false
++        @inline(__always)
++        func accumulate(position: SIMD3<Double>, candela: Double, sample: Sample) throws {
++            let delta = position - receiver
+             let r2 = dot3(delta, delta)
+             guard r2 >= 0.0025 else { throw StudyError.invalidSurface }
+             let distance = sqrt(r2), wi = delta / distance
+             // Mesh shading normals must not admit light from below the actual face.
+             // Analytic sphere and planar receivers retain their original path.
+-            if let geometricNormal, dot3(geometricNormal, wi) <= 0 { continue }
++            if let geometricNormal, dot3(geometricNormal, wi) <= 0 { return }
+             let nl = min(1, max(0, dot3(normal, wi)))
+-            if nl == 0 { continue }
++            if nl == 0 { return }
+             let emitted = sample.emittingNormal.map { min(1, max(0, -dot3($0, wi))) } ?? 1
+-            if emitted == 0 { continue }
+-            let lux = sample.candela * emitted * nl / r2
++            if emitted == 0 { return }
++            let lux = candela * emitted * nl / r2
+             total += lux
+             // Offset origin while keeping the shadow ray aimed at the actual source sample.
+             if geometry != nil || occlusionTest != nil {
+-                let segment = sample.position - shadowOrigin
++                let segment = position - shadowOrigin
+                 let length = sqrt(dot3(segment, segment))
+                 let shadowDirection = segment / length
+                 if geometry?.occludes(from: shadowOrigin, to: shadowDirection, distance: length) == true ||
+-                    occlusionTest?(shadowOrigin, shadowDirection, length) == true { continue }
++                    occlusionTest?(shadowOrigin, shadowDirection, length) == true { return }
+             }
+             visible += lux
+             let scale = lux * material.response(normal: normal, light: wi, view: view, nl: nl) / 1000
+             xyz += sample.xyz * scale
++        }
++        // Most ordinary front-facing surfaces need no clipping. Keep their
++        // original single loop free of per-cell area metadata branches. The
++        // actual geometric hemisphere must also be fully positive on a mesh.
++        let allAreasFull = areaGuards.allSatisfy { area in
++            let offset = area.center - receiver
++            func fullyFront(_ n: SIMD3<Double>) -> Bool {
++                let span = abs(dot3(n, area.right)) * area.halfWidth + abs(dot3(n, area.up)) * area.halfHeight
++                return dot3(n, offset) >= span
++            }
++            return fullyFront(normal) && (geometricNormal.map(fullyFront) ?? true)
++        }
++        if allAreasFull {
++            for sample in samples {
++                try accumulate(position: sample.position, candela: sample.candela, sample: sample)
++            }
++            return .init(visibleLux: visible, unoccludedLux: total, signalXYZ: .init(x: xyz.x, y: xyz.y, z: xyz.z))
++        }
++        for sample in samples {
++            if sample.areaIndex >= 0 {
++                if previousArea != sample.areaIndex {
++                    previousArea = sample.areaIndex
++                    let area = areaGuards[sample.areaIndex]
++                    rightStep = area.right * (area.halfWidth / Double(grid))
++                    upStep = area.up * (area.halfHeight / Double(grid))
++                    nx = dot3(normal, rightStep); ny = dot3(normal, upStep)
++                    let center = dot3(normal, area.center - receiver)
++                    let span = (abs(nx) + abs(ny)) * Double(grid)
++                    wholeAreaFull = center >= span
++                    wholeAreaDark = center <= -span
++                    if let geometricNormal {
++                        gx = dot3(geometricNormal, rightStep); gy = dot3(geometricNormal, upStep)
++                        let geometricCenter = dot3(geometricNormal, area.center - receiver)
++                        let geometricSpan = (abs(gx) + abs(gy)) * Double(grid)
++                        wholeAreaFull = wholeAreaFull && geometricCenter >= geometricSpan
++                        wholeAreaDark = wholeAreaDark || geometricCenter <= -geometricSpan
++                    }
++                }
++                if wholeAreaDark { continue }
++                if !wholeAreaFull {
++                    let delta = sample.position - receiver
++                    let plane = StudyAreaCellPlane(x: nx, y: ny, center: dot3(normal, delta))
++                    let geometric = geometricNormal.map { StudyAreaCellPlane(x: gx, y: gy, center: dot3($0, delta)) }
++                    if plane.center <= -plane.radius || geometric.map({ $0.center <= -$0.radius }) == true { continue }
++                    if plane.center < plane.radius || geometric.map({ $0.center < $0.radius }) == true {
++                        try StudyAreaCellQuadrature.forEach(normal: plane, geometric: geometric) { uv, weight in
++                            try accumulate(position: sample.position + rightStep * uv.x + upStep * uv.y,
++                                           candela: sample.candela * weight, sample: sample)
++                        }
++                        continue
++                    }
++                }
++            }
++            try accumulate(position: sample.position, candela: sample.candela, sample: sample)
+         }
+         return .init(visibleLux: visible, unoccludedLux: total, signalXYZ: .init(x: xyz.x, y: xyz.y, z: xyz.z))
+     }
+@@ -254,7 +322,8 @@
+ /// Optional GPU backend input, generated from the same validated source samples,
+ /// camera, and display transform as the CPU oracle. Every row is a 16-byte float4.
+ /// Parameters: 0 origin/halfW, 1 forward/halfH, 2 right/radius, 3 up/panelHalfExtent,
+-/// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/reserved.
++/// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/cell grid.
++/// Sample color.w holds a one-based area index, or zero for point/directional.
+ public struct StudyComputeInput: Sendable {
+     public let width: Int
+     public let height: Int
+@@ -273,7 +342,7 @@
+         parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),
+                       pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),
+                       setup.transform.computeParameters,
+-                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 0)]
++                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), Float(StudyQuality.interactive.grid))]
+     }
+ }
+ 
+--- /dev/null
++++ b/Sources/LightingCore/StudyAreaClipping.swift
+@@ -0,0 +1,68 @@
++/// Affine receiver incidence over a sample cell's local [-1, 1] square.
++/// Coefficients are unnormalized distances; only their sign clips the domain.
++struct StudyAreaCellPlane {
++    let x: Double
++    let y: Double
++    let center: Double
++    var radius: Double { abs(x) + abs(y) }
++    func at(_ p: SIMD2<Double>) -> Double { center + x * p.x + y * p.y }
++}
++
++/// Bounded quadrature for a cell cut by the shading hemisphere and, for a
++/// mannequin, the actual geometric hemisphere. No visibility is inferred here:
++/// the caller traces every returned source position through its usual path.
++enum StudyAreaCellQuadrature {
++    static func forEach(normal: StudyAreaCellPlane, geometric: StudyAreaCellPlane? = nil,
++                        _ body: (SIMD2<Double>, Double) throws -> Void) rethrows {
++        // Clipping a quadrilateral by at most two half-planes yields at most
++        // six vertices. Two fixed eight-element buffers avoid per-cell heaps.
++        try withUnsafeTemporaryAllocation(of: SIMD2<Double>.self, capacity: 16) { storage in
++            var input = UnsafeMutableBufferPointer(start: storage.baseAddress!, count: 8)
++            var output = UnsafeMutableBufferPointer(start: storage.baseAddress! + 8, count: 8)
++            input[0] = .init(-1, -1); input[1] = .init(1, -1)
++            input[2] = .init(1, 1); input[3] = .init(-1, 1)
++            var count = clip(input, count: 4, plane: normal, into: output)
++            swap(&input, &output)
++            if let geometric, count >= 3 {
++                count = clip(input, count: count, plane: geometric, into: output)
++                swap(&input, &output)
++            }
++            guard count >= 3 else { return }
++            let a = input[0]
++            for index in 1..<(count - 1) {
++                let b = input[index], c = input[index + 1]
++                let ab = b - a, ac = c - a
++                // Triangle area / cell area / three equal quadrature weights.
++                let weight = abs(ab.x * ac.y - ab.y * ac.x) / 24
++                guard weight > 0 else { continue }
++                // Degree-two triangle rule. Positive interior points and exact
++                // area weights retain representable illuminated regions narrower than a cell.
++                try body((a * 4 + b + c) / 6, weight)
++                try body((b * 4 + a + c) / 6, weight)
++                try body((c * 4 + a + b) / 6, weight)
++            }
++        }
++    }
++
++    private static func clip(_ input: UnsafeMutableBufferPointer<SIMD2<Double>>, count: Int,
++                             plane: StudyAreaCellPlane,
++                             into output: UnsafeMutableBufferPointer<SIMD2<Double>>) -> Int {
++        guard count > 0 else { return 0 }
++        var previous = input[count - 1], previousDistance = plane.at(input[count - 1])
++        var written = 0
++        for index in 0..<count {
++            let current = input[index], distance = plane.at(current)
++            if (previousDistance > 0) != (distance > 0) {
++                let t = previousDistance / (previousDistance - distance)
++                output[written] = previous + (current - previous) * t
++                written += 1
++            }
++            if distance > 0 {
++                output[written] = current
++                written += 1
++            }
++            previous = current; previousDistance = distance
++        }
++        return written
++    }
++}
+--- a/App/StudyKernel.h
++++ b/App/StudyKernel.h
+@@ -7,8 +7,10 @@
+ #include <metal_stdlib>
+ using namespace metal;
+ #define KF_DEVICE device
++#define KF_THREAD thread
+ #else
+ #define KF_DEVICE
++#define KF_THREAD
+ #endif
+ 
+ inline float3 kfXYZ(float4 v) { return float3(v.x, v.y, v.z); }
+@@ -98,6 +100,56 @@
+     t = kfCompression(t, tone.y, luminance);
+     t = kfCompression(t, tone.z, luminance);
+     return uchar4(kfEncode(tone.x,luminance,t), kfEncode(tone.y,luminance,t), kfEncode(tone.z,luminance,t), 255);
++}
++
++// A square clipped against affine receiver incidence has at most five vertices.
++// Coordinates are local to one cell; its total uncut area is four.
++inline uint kfClipStudyCell(float center, float nx, float ny, KF_THREAD float3 *clipped) {
++    const float3 square[4] = {float3(-1.0f,-1.0f,0.0f), float3(1.0f,-1.0f,0.0f),
++                              float3(1.0f,1.0f,0.0f), float3(-1.0f,1.0f,0.0f)};
++    float3 previous = square[3];
++    float previousDistance = center + nx*previous.x + ny*previous.y;
++    uint count = 0;
++    for (uint i=0; i<4; ++i) {
++        const float3 current = square[i];
++        const float distance = center + nx*current.x + ny*current.y;
++        if ((previousDistance > 0.0f) != (distance > 0.0f)) {
++            const float t = previousDistance/(previousDistance-distance);
++            clipped[count++] = previous + (current-previous)*t;
++        }
++        if (distance > 0.0f) clipped[count++] = current;
++        previous = current; previousDistance = distance;
++    }
++    return count;
++}
++
++struct KFStudyIncident { float3 direction; float nl; float lux; bool valid; };
++
++inline KFStudyIncident kfStudyIncident(float3 source, float candela, float4 axis, float3 p, float3 n) {
++    const float3 delta=source-p, zero=float3(0.0f,0.0f,0.0f);
++    const float r2=dot(delta,delta);
++    if (r2 < 0.0025f) return {zero,0.0f,0.0f,false};
++    const float3 wi=delta/sqrt(r2);
++    const float nl=kfSaturate(dot(n,wi));
++    const float emitted=axis.w == 0.0f ? 1.0f : kfSaturate(-dot(kfXYZ(axis),wi));
++    return {wi,nl,candela*emitted*nl/r2,true};
++}
++
++struct KFStudyContribution { float3 xyz; bool valid; };
++
++// Every midpoint or clipped-region quadrature point uses the same guarded
++// irradiance, finite shadow segment, and diffuse/GGX material response.
++inline KFStudyContribution kfStudySample(float3 source, float candela, float4 axis, float3 color,
++                                         float3 p, float3 n, float3 view, float3 shadowOrigin,
++                                         float radius, float extent, bool sphere) {
++    const float3 zero = float3(0.0f,0.0f,0.0f);
++    const KFStudyIncident incident=kfStudyIncident(source,candela,axis,p,n);
++    if (!incident.valid) return {zero,false};
++    if (incident.lux == 0.0f) return {zero,true};
++    const float3 segment = source-shadowOrigin;
++    const float distance = sqrt(dot(segment,segment));
++    if (kfOccluded(shadowOrigin,segment/distance,distance,radius,extent)) return {zero, true};
++    return {color*(incident.lux*kfResponse(n,incident.direction,view,incident.nl,sphere)/1000.0f), true};
+ }
+ 
+ inline uchar4 kfStudyPixel(KF_DEVICE const float4 *parameters,
+@@ -132,24 +184,64 @@
+         if (dot(separation,separation) < center.w*center.w) return kfInvalid();
+     }
+     float3 xyz = float3(0.0f,0.0f,0.0f);
++    const float grid = parameters[5].w;
++    if (areaCount > 0 && (grid < 1.0f || grid > 32.0f)) return kfInvalid();
++    int previousArea = -1;
++    float3 rightStep = float3(0.0f,0.0f,0.0f), upStep = float3(0.0f,0.0f,0.0f);
++    float nx = 0.0f, ny = 0.0f, cellSpan = 0.0f;
++    bool wholeAreaFull = false, wholeAreaDark = false;
+     for (uint i=0; i<sampleCount; ++i) {
+         const float4 source = samples[3*i], axis = samples[3*i+1], color = samples[3*i+2];
+-        const float3 delta = kfXYZ(source)-p;
+-        const float r2 = dot(delta,delta);
+-        if (r2 < 0.0025f) return kfInvalid();
+-        const float3 wi = delta/sqrt(r2);
+-        const float nl = kfSaturate(dot(n,wi));
+-        if (nl == 0.0f) continue;
+-        const float emitted = axis.w == 0.0f ? 1.0f : kfSaturate(-dot(kfXYZ(axis),wi));
+-        if (emitted == 0.0f) continue;
+-        const float3 segment = kfXYZ(source)-shadowOrigin;
+-        const float distance = sqrt(dot(segment,segment));
+-        if (kfOccluded(shadowOrigin,segment/distance,distance,radius,extent)) continue;
+-        const float lux = source.w*emitted*nl/r2;
+-        xyz += kfXYZ(color)*(lux*kfResponse(n,wi,-ray,nl,sphere)/1000.0f);
++        // The third sample row stores a one-based area index in its spare w.
++        // Samples from each source remain contiguous in their original order.
++        const int areaIndex = (int)color.w-1;
++        if (areaIndex >= 0) {
++            if ((uint)areaIndex >= areaCount) return kfInvalid();
++            if (previousArea != areaIndex) {
++                previousArea = areaIndex;
++                const float4 center = areas[3*areaIndex], ar = areas[3*areaIndex+1], au = areas[3*areaIndex+2];
++                rightStep = kfXYZ(ar)*(ar.w/grid);
++                upStep = kfXYZ(au)*(au.w/grid);
++                nx = dot(n,rightStep); ny = dot(n,upStep);
++                cellSpan = abs(nx)+abs(ny);
++                const float incidence = dot(n,kfXYZ(center)-p), span = cellSpan*grid;
++                wholeAreaFull = incidence >= span;
++                wholeAreaDark = incidence <= -span;
++            }
++            if (wholeAreaDark) continue;
++            if (!wholeAreaFull) {
++                const float incidence = dot(n,kfXYZ(source)-p);
++                if (incidence <= -cellSpan) continue;
++                if (incidence < cellSpan) {
++                    const float3 zero = float3(0.0f,0.0f,0.0f);
++                    float3 polygon[5] = {zero,zero,zero,zero,zero};
++                    const uint count = kfClipStudyCell(incidence,nx,ny,polygon);
++                    for (uint j=1; j+1<count; ++j) {
++                        const float3 a=polygon[0], b=polygon[j], c=polygon[j+1];
++                        const float3 ab=b-a, ac=c-a;
++                        const float weight=abs(ab.x*ac.y-ab.y*ac.x)/24.0f;
++                        if (weight <= 0.0f) continue;
++                        const float3 points[3] = {(a*4.0f+b+c)/6.0f, (b*4.0f+a+c)/6.0f, (c*4.0f+a+b)/6.0f};
++                        for (uint k=0; k<3; ++k) {
++                            const float3 position=kfXYZ(source)+rightStep*points[k].x+upStep*points[k].y;
++                            const KFStudyContribution contribution=kfStudySample(position,source.w*weight,axis,kfXYZ(color),
++                                                                                p,n,-ray,shadowOrigin,radius,extent,sphere);
++                            if (!contribution.valid) return kfInvalid();
++                            xyz += contribution.xyz;
++                        }
++                    }
++                    continue;
++                }
++            }
++        }
++        const KFStudyContribution contribution=kfStudySample(kfXYZ(source),source.w,axis,kfXYZ(color),
++                                                            p,n,-ray,shadowOrigin,radius,extent,sphere);
++        if (!contribution.valid) return kfInvalid();
++        xyz += contribution.xyz;
+     }
+     return kfDisplay(xyz,parameters[4]);
+ }
+ 
++#undef KF_THREAD
+ #undef KF_DEVICE
+ #endif
+--- a/Tests/LightingCoreTests/StudyComputeInputTests.swift
++++ b/Tests/LightingCoreTests/StudyComputeInputTests.swift
+@@ -13,6 +13,9 @@
+         XCTAssertEqual(packed.width, 120); XCTAssertEqual(packed.height, 80)
+         XCTAssertEqual(packed.parameters.count, 6)
+         XCTAssertEqual(packed.parameters[5].x, 65); XCTAssertEqual(packed.parameters[5].y, 1)
++        XCTAssertEqual(packed.parameters[5].w, 8)
++        XCTAssertTrue(stride(from: 2, to: 64 * 3, by: 3).allSatisfy { packed.samples[$0].w == 1 })
++        XCTAssertEqual(packed.samples[64 * 3 + 2].w, 0)
+         XCTAssertEqual(packed.samples.count, 65 * 3); XCTAssertEqual(packed.areas.count, 3)
+         let summed = stride(from: 0, to: 64 * 3, by: 3).reduce(Float(0)) { $0 + packed.samples[$1].w }
+         XCTAssertEqual(summed, Float(scene.lights[0].candela), accuracy: 0.001)
+--- /dev/null
++++ b/Tests/LightingCoreTests/StudyGrazingTests.swift
+@@ -0,0 +1,193 @@
++import Foundation
++import XCTest
++@testable import LightingCore
++
++final class StudyGrazingTests: XCTestCase {
++    private let receiver = Position(x: 0, y: 0, z: 0.25)
++    private func scene(candela: Double = 1000) -> LightingScene {
++        .init(subject: receiver, camera: .init(x: 0, y: 0, z: 3), lights: [
++            .init(name: "Grazing rectangle", position: .init(x: 0, y: 0, z: 0), candela: candela, kelvin: 5600,
++                  optics: .init(kind: .rectangle, aimTarget: receiver, widthMeters: 1, heightMeters: 0.6))
++        ])
++    }
++    private func normal(cut: Double, slope: Double = 0) -> UnitDirection {
++        UnitDirection(x: 1, y: slope, z: cut / 0.25)!
++    }
++    private func signal(_ lighting: StudyLighting, cut: Double, slope: Double = 0) throws -> StudySurfaceSignal {
++        let n = normal(cut: cut, slope: slope)
++        return try lighting.evaluate(receiver: receiver, normal: n, view: n, material: .diffuse(reflectance: 1))
++    }
++
++    // Independent Simpson integration over exact vertical slices. This shares
++    // neither production polygon clipping nor its triangle quadrature rule.
++    private func reference(cut: Double, slope: Double) -> Double {
++        let count = 160, depth = 0.25, width = 1.0, height = 0.6
++        let length = sqrt(1 + slope * slope + cut * cut / (depth * depth))
++        let x0 = max(-width / 2, cut - slope * height / 2), x1 = width / 2
++        guard x0 < x1 else { return 0 }
++        let dx = (x1 - x0) / Double(count)
++        func weight(_ i: Int) -> Double { i == 0 || i == count ? 1 : i % 2 == 0 ? 2 : 4 }
++        var sum = 0.0
++        for i in 0...count {
++            let x = x0 + Double(i) * dx
++            let y0 = slope == 0 ? -height / 2 : max(-height / 2, (cut - x) / slope), y1 = height / 2
++            if y0 >= y1 { continue }
++            let dy = (y1 - y0) / Double(count)
++            var slice = 0.0
++            for j in 0...count {
++                let y = y0 + Double(j) * dy, r2 = x * x + y * y + depth * depth
++                slice += weight(j) * depth * max(0, (x + slope * y - cut) / length) / (r2 * r2)
++            }
++            sum += weight(i) * slice * dy / 3
++        }
++        return sum * dx / 3 * 1000 / (width * height)
++    }
++
++    func testNarrowPositiveStripsRemainPositiveAtBothQualities() throws {
++        for quality in [StudyQuality.interactive, .reference] {
++            let lighting = try StudyLighting(scene: scene(), quality: quality)
++            for cut in [0.48, 0.499, 0.49999] {
++                let actual = try signal(lighting, cut: cut)
++                let expected = reference(cut: cut, slope: 0)
++                XCTAssertGreaterThan(actual.visibleLux, 0)
++                XCTAssertLessThan(abs(actual.visibleLux - expected) / expected, 0.002)
++                XCTAssertEqual(actual.visibleLux, actual.unoccludedLux)
++                XCTAssertEqual(actual.signalXYZ.y, actual.visibleLux / 1000, accuracy: expected * 1e-12)
++            }
++        }
++    }
++
++    func testNarrowPositiveCornersRemainPositiveAtBothQualities() throws {
++        for quality in [StudyQuality.interactive, .reference] {
++            let lighting = try StudyLighting(scene: scene(), quality: quality)
++            for cut in [0.79, 0.799, 0.79999] {
++                let actual = try signal(lighting, cut: cut, slope: 1).visibleLux
++                let expected = reference(cut: cut, slope: 1)
++                XCTAssertGreaterThan(actual, 0)
++                XCTAssertLessThan(abs(actual - expected) / expected, 0.002)
++            }
++        }
++    }
++
++    func testBroaderGrazingCasesRetainStudyAccuracyWithoutClaimingMeterEquivalence() throws {
++        // Full cells deliberately keep the existing midpoint rule. The raw
++        // exploratory 0.2% comparison remains separate; these wider fixtures
++        // are assessed against the existing study model's 5% area criterion.
++        for quality in [StudyQuality.interactive, .reference] {
++            let lighting = try StudyLighting(scene: scene(), quality: quality)
++            for (cut, slope) in [(0.45, 0.0), (0.6, 1.0)] {
++                let actual = try signal(lighting, cut: cut, slope: slope).visibleLux
++                let expected = reference(cut: cut, slope: slope)
++                print("Broader grazing \(quality) cut \(cut): relative error \(abs(actual - expected) / expected)")
++                XCTAssertLessThan(abs(actual - expected) / expected, 0.05)
++            }
++        }
++    }
++
++    func testDarkTangentBackfaceAndNearFieldRemainDistinct() throws {
++        for quality in [StudyQuality.interactive, .reference] {
++            let lighting = try StudyLighting(scene: scene(), quality: quality)
++            for (cut, slope) in [(0.5, 0.0), (0.501, 0.0), (0.8, 1.0), (0.81, 1.0)] {
++                XCTAssertEqual(try signal(lighting, cut: cut, slope: slope).visibleLux, 0, accuracy: 1e-20)
++            }
++            let toward = UnitDirection(x: 0, y: 0, z: 1)!
++            XCTAssertEqual(try lighting.evaluate(receiver: .init(x: 0, y: 0, z: -0.25), normal: toward,
++                                                view: toward, material: .diffuse(reflectance: 1)).visibleLux, 0)
++            XCTAssertThrowsError(try lighting.evaluate(receiver: .init(x: 0, y: 0, z: 0.249), normal: toward,
++                                                       view: toward, material: .diffuse(reflectance: 1))) {
++                XCTAssertEqual($0 as? StudyError, .invalidSurface)
++            }
++        }
++    }
++
++    func testFullFaceTransitionIsSmallAndFullCellsRetainMidpoints() throws {
++        for (quality, grid) in [(StudyQuality.interactive, 8), (.reference, 32)] {
++            let lighting = try StudyLighting(scene: scene(), quality: quality)
++            let n = normal(cut: -1, slope: 1)
++            var expected = 0.0
++            for row in 0..<grid {
++                let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * 0.6
++                for col in 0..<grid {
++                    let x = (Double(col) + 0.5) / Double(grid) - 0.5
++                    let r2 = x*x + y*y + 0.25*0.25, distance = sqrt(r2)
++                    let nl = min(1, max(0, n.x*x/distance + n.y*y/distance - n.z*0.25/distance))
++                    expected += (1000 / Double(grid*grid)) * (0.25 / distance) * nl / r2
++                }
++            }
++            XCTAssertEqual(try signal(lighting, cut: -1, slope: 1).visibleLux, expected, accuracy: expected * 1e-12)
++            let full = try signal(lighting, cut: -0.800001, slope: 1).visibleLux
++            let partial = try signal(lighting, cut: -0.799999, slope: 1).visibleLux
++            XCTAssertLessThan(abs(full - partial) / full, 0.002)
++        }
++    }
++
++    func testClippedIntensityAndMaterialScalingRemainLinear() throws {
++        for quality in [StudyQuality.interactive, .reference] {
++            let a = try StudyLighting(scene: scene(), quality: quality)
++            let b = try StudyLighting(scene: scene(candela: 2000), quality: quality)
++            let first = try signal(a, cut: 0.499), second = try signal(b, cut: 0.499)
++            XCTAssertEqual(second.visibleLux, first.visibleLux * 2, accuracy: first.visibleLux * 1e-12)
++            let n = normal(cut: 0.499)
++            let dim = try a.evaluate(receiver: receiver, normal: n, view: n, material: .diffuse(reflectance: 0.18))
++            XCTAssertEqual(dim.visibleLux, first.visibleLux)
++            XCTAssertEqual(dim.signalXYZ.y, first.signalXYZ.y * 0.18, accuracy: first.signalXYZ.y * 1e-12)
++        }
++    }
++
++    func testEveryClippedPointUsesRealVisibilityAndGeometricHemisphere() throws {
++        let lighting = try StudyLighting(scene: scene())
++        let value = normal(cut: 0.499), n = SIMD3<Double>(value.x, value.y, value.z)
++        let p = SIMD3<Double>(receiver.x, receiver.y, receiver.z)
++        let clear = try signal(lighting, cut: 0.499)
++        var calls = 0
++        let blocked = try lighting.evaluate(receiver: p, normal: n, view: n, material: .diffuse(reflectance: 1),
++                                            occlusionTest: { origin, direction, distance in
++            calls += 1
++            let source = origin + direction * distance
++            XCTAssertGreaterThan(source.x, 0.499)
++            XCTAssertEqual(source.z, 0, accuracy: 1e-12)
++            XCTAssertGreaterThan(distance, 0.05)
++            return true
++        })
++        XCTAssertGreaterThan(calls, 0)
++        XCTAssertLessThanOrEqual(calls, lighting.sampleCount * 9)
++        XCTAssertEqual(blocked.unoccludedLux, clear.unoccludedLux)
++        XCTAssertEqual(blocked.visibleLux, 0)
++        XCTAssertEqual(blocked.signalXYZ.y, 0)
++        let upper = try lighting.evaluate(receiver: p, normal: n, view: n, material: .diffuse(reflectance: 1),
++                                          occlusionTest: { origin, direction, distance in
++            XCTAssertGreaterThan((origin + direction * distance).y, 0)
++            return false
++        }, geometricNormal: .init(0, 1, 0))
++        // The physical half-domain is symmetric; the finite triangle rule is
++        // not exactly mirror-symmetric. Compare with the independent integral,
++        // using the same narrow-region accuracy bound rather than exact halves.
++        let expectedHalf = reference(cut: 0.499, slope: 0) / 2
++        XCTAssertGreaterThan(upper.visibleLux, 0)
++        XCTAssertLessThan(abs(upper.visibleLux - expectedHalf) / expectedHalf, 0.002)
++        let opposite = try lighting.evaluate(receiver: p, normal: n, view: n, material: .diffuse(reflectance: 1),
++                                             geometricNormal: .init(-n.x, 0, n.z))
++        XCTAssertEqual(opposite.visibleLux, 0)
++    }
++
++    func testClippedCellWeightsAndPositiveDomainAreBounded() {
++        for plane in [StudyAreaCellPlane(x: 1, y: 0, center: -0.999998),
++                      .init(x: 1, y: 1, center: -1.999998), .init(x: 1, y: 1, center: 0)] {
++            var weight = 0.0, count = 0
++            StudyAreaCellQuadrature.forEach(normal: plane) { point, fraction in
++                count += 1; weight += fraction
++                XCTAssertTrue(point.x.isFinite && point.y.isFinite && fraction.isFinite)
++                XCTAssertGreaterThan(fraction, 0)
++                XCTAssertGreaterThan(plane.at(point), 0)
++                XCTAssertLessThanOrEqual(abs(point.x), 1)
++                XCTAssertLessThanOrEqual(abs(point.y), 1)
++            }
++            XCTAssertGreaterThan(weight, 0)
++            XCTAssertLessThanOrEqual(weight, 1)
++            XCTAssertLessThanOrEqual(count, 9)
++        }
++        var weight = 0.0
++        StudyAreaCellQuadrature.forEach(normal: .init(x: 1, y: 0, center: -0.999998)) { _, fraction in weight += fraction }
++        XCTAssertEqual(weight, 0.000001, accuracy: 1e-15)
++    }
++}
+--- a/scripts/verify-kernel-host.cpp
++++ b/scripts/verify-kernel-host.cpp
+@@ -52,6 +52,9 @@
+         throw std::runtime_error("invalid fixture header");
+     const auto p=rows(s,np),samples=rows(s,ns),areas=rows(s,na);
+     if(p[5].x!=float(ns/3)||p[5].y!=float(na/3))throw std::runtime_error("invalid sample counts");
++    if(p[5].w!=8.0f)throw std::runtime_error("invalid cell grid");
++    for(uint i=2;i<ns;i+=3)if(samples[i].w<0.0f||samples[i].w>float(na/3)||floor(samples[i].w)!=samples[i].w)
++        throw std::runtime_error("invalid sample area index");
+     std::vector<uint8_t> ref(w*h*4);
+     if(!s.read(reinterpret_cast<char*>(ref.data()),ref.size())||s.peek()!=std::char_traits<char>::eof())
+         throw std::runtime_error("invalid reference length");
+--- /dev/null
++++ b/scripts/grazing-study-probe.swift
+@@ -0,0 +1,75 @@
++import Foundation
++import Dispatch
++
++@main struct GrazingStudyProbe {
++    static func scene(intensity: Double = 1000) -> LightingScene {
++        let receiver = Position(x: 0, y: 0, z: 0.25)
++        let light = StudioLight(name: "Grazing area", position: .init(x: 0, y: 0, z: 0), candela: intensity, kelvin: 5600,
++                                optics: .init(kind: .rectangle, aimTarget: receiver, widthMeters: 1, heightMeters: 0.6))
++        return .init(subject: receiver, camera: .init(x: 0, y: 0, z: 3), lights: [light])
++    }
++    // Independent vertical-slice Simpson reference, not production clipping.
++    static func reference(cut: Double, slope: Double) -> Double {
++        let depth = 0.25, width = 1.0, height = 0.6, count = 160
++        let length = sqrt(1 + slope * slope + cut * cut / (depth * depth))
++        let x0 = max(-width / 2, cut - slope * height / 2), x1 = width / 2
++        guard x0 < x1 else { return 0 }
++        let dx = (x1 - x0) / Double(count)
++        func weight(_ i: Int) -> Double { i == 0 || i == count ? 1 : i % 2 == 0 ? 2 : 4 }
++        var sum = 0.0
++        for i in 0...count {
++            let x = x0 + Double(i) * dx
++            let y0 = slope == 0 ? -height / 2 : max(-height / 2, (cut - x) / slope), y1 = height / 2
++            if y0 >= y1 { continue }
++            let dy = (y1 - y0) / Double(count)
++            var slice = 0.0
++            for j in 0...count {
++                let y = y0 + Double(j) * dy
++                let r2 = x * x + y * y + depth * depth
++                slice += weight(j) * depth * max(0, (x + slope * y - cut) / length) / (r2 * r2)
++            }
++            sum += weight(i) * slice * dy / 3
++        }
++        return sum * dx / 3 * 1000 / (width * height)
++    }
++    static func main() throws {
++        let receiver = Position(x: 0, y: 0, z: 0.25)
++        if CommandLine.arguments.contains("--bench") {
++            for quality in [StudyQuality.interactive, .reference] {
++                let lighting = try StudyLighting(scene: scene(), quality: quality)
++                for (name, cut, slope) in [("full",-1.0,0.0),("half",0.0,0.0),("strip",0.499,0.0),("corner",0.799,1.0)] {
++                    let n = UnitDirection(x: 1, y: slope, z: cut / 0.25)!
++                    var times: [Double] = [], checksum = 0.0
++                    for run in 0..<7 {
++                        let start = DispatchTime.now().uptimeNanoseconds
++                        for _ in 0..<2000 {
++                            let signal = try lighting.evaluate(receiver: receiver, normal: n, view: n,
++                                                               material: .dielectric(reflectance: 0.18, roughness: 0.32, f0: 0.04))
++                            checksum += signal.visibleLux + signal.unoccludedLux + signal.signalXYZ.x + signal.signalXYZ.y + signal.signalXYZ.z
++                        }
++                        if run > 0 { times.append(Double(DispatchTime.now().uptimeNanoseconds - start) / 1e6) }
++                    }
++                    print("BENCH \(quality) \(name) samples_ms=\(times) checksum=\(checksum)")
++                }
++            }
++            return
++        }
++        var failures = 0
++        for quality in [StudyQuality.interactive, .reference] {
++            let lighting = try StudyLighting(scene: scene(), quality: quality)
++            for (slope, cuts) in [(0.0,[0.45,0.48,0.499,0.49999]),(1.0,[0.6,0.79,0.799,0.79999])] {
++                for cut in cuts {
++                    let n = UnitDirection(x: 1, y: slope, z: cut / 0.25)!
++                    let actual = try lighting.evaluate(receiver: receiver, normal: n, view: n, material: .diffuse(reflectance: 1)).visibleLux
++                    let expected = reference(cut: cut, slope: slope)
++                    let error = abs(actual - expected) / expected
++                    let pass = actual > 0 && error < 0.002
++                    if !pass { failures += 1 }
++                    print("CASE \(quality) slope=\(slope) cut=\(cut) actual=\(actual) expected=\(expected) relative_error=\(error) \(pass ? "PASS" : "FAIL")")
++                }
++            }
++        }
++        print("GRAZING_REGRESSIONS 16 cases; \(failures) failed")
++        if failures != 0 { exit(1) }
++    }
++}
+--- /dev/null
++++ b/scripts/verify-study-grazing.cpp
+@@ -0,0 +1,119 @@
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <cstring>
++#include <fstream>
++#include <iostream>
++#include <stdexcept>
++#include <string>
++#include <vector>
++using std::abs; using std::min; using std::max; using std::isfinite;
++using std::sqrt; using std::pow; using std::floor; using std::clamp;
++using uint = uint32_t;
++struct float3 {
++    float x,y,z;
++    float3(float a,float b,float c):x(a),y(b),z(c){}
++    float3 operator+(float3 b) const {return {x+b.x,y+b.y,z+b.z};}
++    float3 operator-(float3 b) const {return {x-b.x,y-b.y,z-b.z};}
++    float3 operator-() const {return {-x,-y,-z};}
++    float3 operator*(float3 b) const {return {x*b.x,y*b.y,z*b.z};}
++    float3 operator*(float s) const {return {x*s,y*s,z*s};}
++    float3 operator/(float s) const {return {x/s,y/s,z/s};}
++    float3& operator+=(float3 b) {*this=*this+b;return *this;}
++};
++struct float4 {float x,y,z,w;};
++struct uchar4 {
++    uint8_t x,y,z,w;
++    uchar4(int a,int b,int c,int d):x((uint8_t)a),y((uint8_t)b),z((uint8_t)c),w((uint8_t)d){}
++};
++inline float dot(float3 a,float3 b){return a.x*b.x+a.y*b.y+a.z*b.z;}
++inline float3 normalize(float3 a){return a/sqrt(dot(a,a));}
++#include "../App/StudyKernel.h"
++
++
++#include <iomanip>
++
++// Independent vertical-slice Simpson integral, not production clipping.
++static double reference(double cut,double slope) {
++    const int count=160;const double depth=.25,width=1.0,height=.6;
++    const double length=std::sqrt(1+slope*slope+cut*cut/(depth*depth));
++    const double x0=std::max(-width/2,cut-slope*height/2),x1=width/2;
++    if(x0>=x1)return 0;
++    const double dx=(x1-x0)/count;
++    auto weight=[&](int i){return i==0||i==count?1.0:i%2==0?2.0:4.0;};
++    double sum=0;
++    for(int i=0;i<=count;++i){
++        const double x=x0+i*dx,y0=slope==0?-height/2:std::max(-height/2,(cut-x)/slope),y1=height/2;
++        if(y0>=y1)continue;
++        const double dy=(y1-y0)/count;double slice=0;
++        for(int j=0;j<=count;++j){
++            const double y=y0+j*dy,r2=x*x+y*y+depth*depth;
++            slice+=weight(j)*depth*std::max(0.0,(x+slope*y-cut)/length)/(r2*r2);
++        }
++        sum+=weight(i)*slice*dy/3;
++    }
++    return sum*dx/3*1000/(width*height);
++}
++
++static float evaluate(double cut,double slope,uint grid,bool clipped=true,float intensity=1000) {
++    // Match the public Swift normalized direction, then its Float32 packing.
++    const double scale=std::max(1.0,std::max(std::abs(slope),std::abs(cut/.25)));
++    const double a=1/scale,b=slope/scale,c=(cut/.25)/scale,length=std::sqrt(a*a+b*b+c*c);
++    const float3 n(float(a/length),float(b/length),float(c/length)),p(0,0,.25f);
++    const float3 right(.5f/grid,0,0),up(0,.3f/grid,0);
++    const float nx=dot(n,right),ny=dot(n,up),span=std::abs(nx)+std::abs(ny);
++    const float4 axis={0,0,1,1};float total=0;
++    auto sample=[&](float3 position,float weight){
++        const auto incident=kfStudyIncident(position,intensity/float(grid*grid)*weight,axis,p,n);
++        if(!incident.valid)throw std::runtime_error("unexpected near-field rejection");
++        total+=incident.lux;
++    };
++    for(uint row=0;row<grid;++row)for(uint col=0;col<grid;++col){
++        // Same Double prepared midpoints converted to Float as compute input.
++        const float3 center(float((double(col)+.5)/grid-.5),float(((double(row)+.5)/grid-.5)*.6),0);
++        const float incidence=dot(n,center-p);
++        if(clipped&&incidence<=-span)continue;
++        if(!clipped||incidence>=span){sample(center,1);continue;}
++        const float3 zero(0,0,0);float3 polygon[5]={zero,zero,zero,zero,zero};
++        const uint count=kfClipStudyCell(incidence,nx,ny,polygon);
++        for(uint j=1;j+1<count;++j){
++            const auto a=polygon[0],b=polygon[j],c=polygon[j+1],ab=b-a,ac=c-a;
++            const float weight=std::abs(ab.x*ac.y-ab.y*ac.x)/24;
++            const float3 points[3]={(a*4+b+c)/6,(b*4+a+c)/6,(c*4+a+b)/6};
++            for(const auto& q:points)sample(center+right*q.x+up*q.y,weight);
++        }
++    }
++    return total;
++}
++
++int main(){
++    try{
++        std::cout<<std::setprecision(17);int failures=0,cases=0;
++        for(uint grid:{8u,32u})for(double slope:{0.0,1.0}){
++            const double strip[4]={.45,.48,.499,.49999},corner[4]={.6,.79,.799,.79999};
++            for(double cut:slope==0?strip:corner){
++                const double expected=reference(cut,slope),actual=evaluate(cut,slope,grid);
++                const double error=std::abs(actual-expected)/expected;
++                // The 1 mm and larger narrow cases retain the 0.2% check.
++                // At 10 micrometers, the Float32 input/plane representation is
++                // explicitly a separate 2% test, not Double meter equivalence.
++                const bool broad=cut==.45||cut==.6;
++                const bool microscopic=cut==.49999||cut==.79999;
++                const double limit=broad?.05:microscopic?.02:.002;
++                const bool pass=actual>0&&error<limit;failures+=!pass;++cases;
++                std::cout<<"FLOAT32 grid="<<grid<<" slope="<<slope<<" cut="<<cut<<" actual="<<actual
++                         <<" reference="<<expected<<" relative_error="<<error<<" limit="<<limit<<" "<<(pass?"PASS":"FAIL")<<"\n";
++            }
++        }
++        for(uint grid:{8u,32u}){
++            const float baseline=evaluate(-1,1,grid,false),full=evaluate(-1,1,grid,true);
++            if(full!=baseline)throw std::runtime_error("full-cell midpoint result changed");
++            const float a=evaluate(.499,0,grid),b=evaluate(.499,0,grid,true,2000);
++            if(std::abs(b-2*a)>std::abs(a)*1e-6f)throw std::runtime_error("intensity scaling changed");
++            for(const auto pair:std::vector<std::pair<double,double>>{{.5,0},{.501,0},{.8,1},{.81,1}})
++                if(evaluate(pair.first,pair.second,grid)>1e-16f)throw std::runtime_error("dark/tangent emitted energy");
++        }
++        std::cout<<"FLOAT32_GRAZING "<<cases<<" cases; "<<failures<<" failed; full-cell/scaling/dark controls passed\n";
++        return failures?1:0;
++    }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 2;}
++}

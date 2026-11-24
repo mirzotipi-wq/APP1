@@ -1,4 +1,4 @@
-# Source 9 finalized native build, unit and library UI results
+# Source 9 finalized build, native unit and UI evidence
 
 Exact executed revision: `3b2a4cee68a06a9ff2a1cb3de88814fefc0f0d18`, tree `0ff9fa32a412534af0e11629e442f0a46a1176a0`. [Workflow 45377378521](https://github.com/mirzotipi-wq/APP1/actions/runs/45377378521). This later observation supplements the timestamped pending state in checkpoint 9; it does not rewrite that historical observation.
 
@@ -27,9 +27,21 @@ The [library/reference UI job 138390492888](https://github.com/mirzotipi-wq/APP1
 
 At the direct **11:18:05 UTC** observation on 2026-11-24, room/precision and studio/export UI shards remained in progress. No complete all-UI result is inferred from the unit or library pass. The forthcoming asynchronous persistence, room-status and concurrency-policy changes are outside this executed source and need their own acceptance; in particular, these six synchronous-library passes do not certify the new actor implementation.
 
+The [room/precision job 138390492826](https://github.com/mirzotipi-wq/APP1/actions/runs/45377378521/job/138390492826) subsequently completed **success** at `11:23:14Z`. The full retrieved [3b2a4ce-room-job.log](3b2a4ce-room-job.log), SHA-256 `f2e8a9a91907fe7abbdaefb97386534ca986ea4ecf075a8bcded3472ff913e2a`, records **5/5 scenarios, zero failures**, 1211.802-second all-tests aggregate, and `TEST EXECUTE SUCCEEDED` at `11:21:48.842203Z`. Both room methods passed, including the complete resize/signed-coordinate/notes workflow. All three exact camera, light-intensity and modifier-width/room-crossing scenarios passed.
+
+This room pass predates the explicit status-label and diagnostic changes in source 10. It cannot be attributed to those later changes, and it does not explain or erase the real source-8 initial-status failure. The source-9 studio/export shard remained in progress at the subsequent direct observation. Thus **13 of 22 source-9 UI scenarios have complete passing evidence**, with the remaining nine still pending at this checkpoint, rather than an all-UI pass.
+
+## Final studio/export result and remaining defect
+
+The [studio/export job 138390492855](https://github.com/mirzotipi-wq/APP1/actions/runs/45377378521/job/138390492855) subsequently finalized with **failure**: all nine scenarios completed, **eight passed and one failed**, with a 700.048-second all-tests aggregate. `TEST EXECUTE FAILED` is recorded at `11:35:57.425208Z`. The direct workflow response now records the entire run as `completed/failure`, updated at `2026-11-24T11:37:03Z`. The full retrieved [3b2a4ce-studio-job.log](3b2a4ce-studio-job.log) has SHA-256 `83b475f36d0a12798f2af751e1b647c7a52c7773972838d6d48b458ba95b7a7b`.
+
+Both export scenarios passed: preview without saving or changing the scene, and an unsaved editable copy at the full 64-project limit. Camera focal-length undo/relaunch, corruption protection, meter balance, recipe editing, the actual study frame and sphere/mannequin switching also passed. The remaining failure is `StudioSmokeTests.testOpticsEditingUndoRedoAndRelaunch`: after a normalized width-slider adjustment and one Undo, line 87 observes **1.3 m instead of the original 0.6 m**. The rectangular emitter-kind assertion passed. The original width assertion remains intact.
+
+Thus the final source-9 UI result is **21/22 passed, one failed**: library/reference 8/8, room/precision 5/5, and studio/export 8/9. All 50 native unit methods passed, including the eight slider-helper methods, but those unit results do not certify the actual slider gesture. The UI log records a synthesized adjustment; it contains no internal binding/edit-begin/edit-end trace that establishes why the gesture split. Callback ordering or accessibility behavior must not be asserted as the demonstrated root cause. Source 10 retains the same slider adapter and requires separate native evidence for its new persistence actor.
+
 ## Available artifacts
 
-These identifiers, sizes and SHA-256 digests are from the actual workflow artifact response. This report does not claim a fresh download, ZIP inspection or visual review of these source-9 artifacts.
+These identifiers, sizes and SHA-256 digests are from the actual workflow artifact response. Separate [library](source9-library-visual-review.md) and [room](source9-room-visual-review.md) reviews record verified compact downloads, CRC checks and actual visual observations; the other table entries are artifact metadata, not a claim of fresh local inspection.
 
 | Artifact | ID | Bytes | Reported SHA-256 |
 | --- | ---: | ---: | --- |
@@ -40,5 +52,9 @@ These identifiers, sizes and SHA-256 digests are from the actual workflow artifa
 | Core test evidence | 14912756394 | 60,865 | `e11819713e5f247e0ecb830c856d6e9a9e05f4d5a7721000237e5aad0bc35620` |
 | Library/reference UI evidence | 14914587558 | 3,960,517 | `d2fcec77d610e67fc28daeff95f3ea6531832678f138e3f4b16f405292b80900` |
 | Compact library/reference UI attachments | 14913024949 | 1,048,699 | `00fa7f6dc980a47bd11953392e735efaa348c22f2b13585f167ecb8217c343c5` |
+| Room/precision UI evidence | 14914713623 | 7,420,061 | `7313f9fb4ffbf88307fc22d9c813007210c1a2b6e2e3f20b36e7074c0a6a39ac` |
+| Compact room/precision UI attachments | 14914553792 | 1,616,532 | `fb64d2ec9d8f3a23a95218425e3f3e246410dc7e08ab6e8300121c2f2f4a4b3f` |
+| Studio/export UI evidence, including finalized result bundle | 14915129098 | 119,983,659 | `4ca435e9772f6d6fdc84044284d1bb44d30a23330420a4020ec87f11c6394a18` |
+| Compact studio/export UI attachments | 14914919665 | 2,423,568 | `3f592e8bd44c8adc81e7f7ce80adcbfc6eefad78b3c6a7ed7da97224c024b6e7` |
 
 Simulator applications remain unsigned simulator builds, not signed physical-device builds, distribution archives or TestFlight/App Store releases. Complete all-UI acceptance, forthcoming-source persistence/UI, device performance, accessibility, calibrated scenes and all remaining protected gates stay open.
