@@ -48,19 +48,29 @@ public struct LightingProjectDocument: Equatable, Sendable {
         do { envelope = try JSONDecoder().decode(Envelope.self, from: data) }
         catch let error as DocumentError { throw error }
         catch { throw DocumentError.invalidDocument }
-        try requireUniqueEnvelopeKeys(in: data)
+        try requireUniqueObjectKeys(in: data)
         return try .init(name: envelope.name, scene: envelope.scene)
     }
 
-    /// Foundation has already validated the full JSON and closed envelope. Its
-    /// keyed container collapses duplicate names, so inspect only root keys in
-    /// the original representation. Values and nested scene keys retain their
-    /// existing decoder semantics; this is not a second JSON value parser.
-    private static func requireUniqueEnvelopeKeys(in data: Data) throws {
+    private struct ObjectKeyScope {
+        let isObject: Bool
+        var expectsKey: Bool
+        var keys = Set<Data>()
+
+        init(isObject: Bool) {
+            self.isObject = isObject
+            expectsKey = isObject
+        }
+    }
+
+    /// Foundation has already accepted the JSON and closed envelope. Keyed
+    /// containers collapse duplicates, so require unambiguous names in every
+    /// imported object. This policy applies only to external project documents;
+    /// legacy stored-library decoding and JSON value interpretation are unchanged.
+    private static func requireUniqueObjectKeys(in data: Data) throws {
         let bytes = try envelopeUTF8(data)
-        var index = 0, depth = 0
-        var expectsKey = false
-        var keys = Set<String>()
+        var index = 0
+        var scopes: [ObjectKeyScope] = []
         while index < bytes.count {
             switch bytes[index] {
             case 0x22: // String: skip escaped quotes and structural punctuation.
@@ -70,24 +80,34 @@ public struct LightingProjectDocument: Equatable, Sendable {
                     index += bytes[index] == 0x5c ? 2 : 1
                 }
                 guard index < bytes.count else { throw DocumentError.invalidDocument }
-                if depth == 1 && expectsKey {
+                if let scope = scopes.indices.last, scopes[scope].expectsKey {
                     let token = Data(bytes[start...index])
-                    // Decode escapes with the same authoritative JSON decoder,
-                    // so equivalent key spellings cannot hide a duplicate.
-                    let key = try JSONDecoder().decode(String.self, from: token)
-                    guard keys.insert(key).inserted else { throw DocumentError.invalidDocument }
-                    expectsKey = false
+                    let key: String
+                    do { key = try JSONDecoder().decode(String.self, from: token) }
+                    catch { throw DocumentError.invalidDocument }
+                    // Decode escapes, then compare exact UTF-8 sequences. Swift
+                    // String equality would also merge distinct NFC/NFD names.
+                    // Mutate the stored set in place to avoid copying all earlier
+                    // names for each member of a wide object.
+                    guard scopes[scope].keys.insert(Data(key.utf8)).inserted else {
+                        throw DocumentError.invalidDocument
+                    }
+                    scopes[scope].expectsKey = false
                 }
             case 0x7b, 0x5b: // Object or array.
-                depth += 1
-                if depth == 1 { expectsKey = true }
+                scopes.append(ObjectKeyScope(isObject: bytes[index] == 0x7b))
             case 0x7d, 0x5d:
-                depth -= 1
+                guard let scope = scopes.last, scope.isObject == (bytes[index] == 0x7d) else {
+                    throw DocumentError.invalidDocument
+                }
+                scopes.removeLast() // Release this object's names before a sibling.
                 // Remaining bytes were already validated as trailing JSON
                 // whitespace. Avoid scanning large padding a second time.
-                if depth == 0 { return }
+                if scopes.isEmpty { return }
             case 0x2c:
-                if depth == 1 { expectsKey = true }
+                if let scope = scopes.indices.last, scopes[scope].isObject {
+                    scopes[scope].expectsKey = true
+                }
             default: break
             }
             index += 1
