@@ -232,13 +232,23 @@ jobs:
     # entire result bundle when a different test class overruns its budget.
     needs: core
     runs-on: macos-26-intel
-    # Reserve setup and evidence time beyond the 12 + 25 + 32 minute step bounds.
-    timeout-minutes: 85
+    # Keep 16 minutes for setup/evidence beyond each shard's 12 + 25 + UI bounds.
+    timeout-minutes: ${{ matrix.job_minutes }}
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
         shard: [room-precision, library-reference, studio-export]
+        include:
+          - shard: room-precision
+            ui_test_minutes: 32
+            job_minutes: 85
+          - shard: library-reference
+            ui_test_minutes: 32
+            job_minutes: 85
+          - shard: studio-export
+            ui_test_minutes: 40
+            job_minutes: 93
     name: ui (${{ matrix.shard }})
     steps:
       - uses: actions/checkout@v4
@@ -286,7 +296,7 @@ jobs:
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
       - name: Run selected native UI shard
-        timeout-minutes: 32
+        timeout-minutes: ${{ matrix.ui_test_minutes }}
         env:
           TEST_SHARD: ${{ matrix.shard }}
         run: |

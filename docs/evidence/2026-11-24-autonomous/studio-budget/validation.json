@@ -1,0 +1,103 @@
+{
+  "base_revision": "95e9c2446b7bb05e6df38d103063b4254bb07c92",
+  "workflow_sha256": "0c15cd6fca582b15cdb985588e68b975f4f32328211ee4f4726f3eec8a506ae2",
+  "yaml_parser": "PyYAML 6.0.3",
+  "yaml_parse": "passed",
+  "effective_matrix_rows": [
+    {
+      "shard": "room-precision",
+      "ui_test_minutes": 32,
+      "job_minutes": 85,
+      "reserve_minutes": 16
+    },
+    {
+      "shard": "library-reference",
+      "ui_test_minutes": 32,
+      "job_minutes": 85,
+      "reserve_minutes": 16
+    },
+    {
+      "shard": "studio-export",
+      "ui_test_minutes": 40,
+      "job_minutes": 93,
+      "reserve_minutes": 16
+    }
+  ],
+  "effective_ui_job_count": 3,
+  "only_authorized_semantic_changes": true,
+  "all_test_run_commands_and_selectors_unchanged": true,
+  "unchanged_test_and_selector_sources": {
+    "UITests/LightingPlanExportUITests.swift": "fc489759e8a1049802f3d7395b3052c4d8b72f5baa8bbd73b86a04f15a83e114",
+    "UITests/ManualRoomPlacementUITests.swift": "637605b7ef3c85fd7a335143c9110ccacac086cc06e248348d2ff111848e11fb",
+    "UITests/PrecisionEditingUITests.swift": "4601a7cd005443472a505d3d26cfb94ec3c82f7f4cbb4d8ef1ab112b3f4c51f3",
+    "UITests/ProjectLibraryUITests.swift": "5f4ce8826f360b10f59f753ae03c8d5004bd5fb8ca630c4ac41d7edbcd5dc26d",
+    "UITests/ReferenceComparisonUITests.swift": "7d2e812e1e082e67f678483c5118e709b64e21d3d49f71d6ce4e0952f9d73791",
+    "UITests/StudioContentReachability.swift": "4d26e60236bf0320fccfdb293364fe546ed2683d5b264a0fa8822fb6059c5419",
+    "UITests/StudioSmokeTests.swift": "8f996f519416a4d697270e0987739523cd0dc02b105df1d439cf88a9262d2233",
+    "scripts/native_test_shards.py": "1d36304b3abfb7565c2eb1166392caadc2fd26751f7259f615196bf8bd4a9a79",
+    "scripts/tests/test_native_test_shards.py": "7682cc58026e2c6d9c3198a6e9cb7c26fafeb51647c94afa16263f67099a784c"
+  },
+  "validation_commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/native_test_shards.py",
+        "check"
+      ],
+      "exit": 0,
+      "output": "All 6 UI test classes assigned once across 3 shards; native unit target is separate.\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/native_test_shards.py",
+        "unit"
+      ],
+      "exit": 0,
+      "output": "-only-testing:KeyAndFillTests\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/native_test_shards.py",
+        "room-precision"
+      ],
+      "exit": 0,
+      "output": "-only-testing:KeyAndFillUITests/ManualRoomPlacementUITests\n-only-testing:KeyAndFillUITests/PrecisionEditingUITests\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/native_test_shards.py",
+        "library-reference"
+      ],
+      "exit": 0,
+      "output": "-only-testing:KeyAndFillUITests/ProjectLibraryUITests\n-only-testing:KeyAndFillUITests/ReferenceComparisonUITests\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "scripts/native_test_shards.py",
+        "studio-export"
+      ],
+      "exit": 0,
+      "output": "-only-testing:KeyAndFillUITests/StudioSmokeTests\n-only-testing:KeyAndFillUITests/LightingPlanExportUITests\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_native_test_shards.py",
+        "-v"
+      ],
+      "exit": 0,
+      "output_file": "evidence/existing-shard-tests.log"
+    }
+  ],
+  "limitations": "Static YAML/context/matrix validation and existing Python shard regressions only; no GitHub workflow or native rerun performed"
+}

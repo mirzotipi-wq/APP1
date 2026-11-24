@@ -15,6 +15,7 @@ struct StudioView: View {
     @State private var studySubject: StudySubject = .sphere
     @State private var orbitFitRequest = 0
     @State private var showRecipes = false
+    @State private var showStudioGuide = false
     @State private var showMeter = false
     @State private var meterNavigationRequest = 0
     @State private var confirmRemove = false
@@ -114,6 +115,7 @@ struct StudioView: View {
                 }
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
+            .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
             .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) { rig in
                 guard libraryOperation.allowsSceneMutation(from: generation) else { return }
                 replace(rig); mode = "Study"
@@ -159,8 +161,8 @@ struct StudioView: View {
 
     private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
 
-    // Keep the editing canvas above the fold on compact phones. Fall back to
-    // two rows for long names, narrow widths and accessibility text sizes.
+    // Prefer one row when the full title and action labels fit. At narrower
+    // widths or larger text sizes, place the title above the adaptive actions.
     private var header: some View {
         Group {
             if dynamicTypeSize.isAccessibilitySize {
@@ -173,7 +175,7 @@ struct StudioView: View {
                     HStack(alignment: .center, spacing: 8) {
                         projectHeading.fixedSize(horizontal: true, vertical: false)
                         Spacer(minLength: 0)
-                        projectActions
+                        projectActions.fixedSize(horizontal: true, vertical: false)
                     }
                     VStack(alignment: .leading, spacing: 8) {
                         projectHeading
@@ -204,17 +206,45 @@ struct StudioView: View {
     }
 
     private var projectActions: some View {
-        HStack(spacing: 8) {
-            Button { showProjects = true } label: {
-                Label("Projects", systemImage: "folder")
-                    .font(.subheadline)
-                    .padding(.horizontal, 8)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle())
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) {
+                projectLibraryButton
+                projectUtilityActions
             }
-            .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("openProjectLibrary")
+            .fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) {
+                projectLibraryButton
+                projectUtilityActions
+            }
+        }
+    }
+
+    private var projectLibraryButton: some View {
+        Button { showProjects = true } label: {
+            Label("Projects", systemImage: "folder")
+                .font(.subheadline)
+                .padding(.horizontal, 8)
+                .frame(minWidth: 44, minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("openProjectLibrary")
+    }
+
+    private var projectUtilityActions: some View {
+        HStack(spacing: 8) {
             LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
+            Button { showStudioGuide = true } label: {
+                Label("Guide", systemImage: "questionmark.circle")
+                    .labelStyle(.iconOnly)
+                    .font(.headline)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .disabled(libraryOperation.isBusy || editHistory.isEditing)
+            .accessibilityLabel("Studio guide")
+            .accessibilityHint("Read the workflow while keeping your current setup open")
+            .accessibilityIdentifier("openStudioGuide")
         }
     }
 

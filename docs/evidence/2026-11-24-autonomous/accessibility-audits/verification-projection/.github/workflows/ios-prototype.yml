@@ -1,0 +1,350 @@
+name: iOS Prototype
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+# Let main's active native suite finish and finalize its evidence. GitHub's
+# default single pending slot keeps only the newest queued revision, so frequent
+# pushes cannot create an ever-growing queue. PR/other branch runs still cancel.
+concurrency:
+  group: keyfill-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  # Portable verification does not need the scarce macOS simulator runner.
+  core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record portable environment
+        run: |
+          set -euo pipefail
+          {
+            uname -a
+            cat /etc/os-release
+            swift --version
+            python3 --version
+            git rev-parse HEAD
+          } | tee core-environment.log
+      - name: Verify agent state and native source syntax
+        run: |
+          set -euo pipefail
+          python3 scripts/agent_cycle.py check
+          python3 scripts/agent_cycle.py next
+          python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+          python3 scripts/native_test_shards.py check
+          python3 scripts/verify_app_icon.py | tee icon-source.log
+          python3 scripts/verify_privacy_manifest.py | tee privacy-source.log
+          # Syntax only: Linux cannot type-check Apple SDK APIs.
+          swiftc -frontend -parse App/*.swift UITests/*.swift NativeTests/*.swift 2>&1 | tee native-syntax.log
+      - name: Portable debug tests
+        run: |
+          set -euo pipefail
+          swift test --jobs 2 2>&1 | tee core-tests.log
+      - name: Portable release tests
+        run: |
+          set -euo pipefail
+          swift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log
+      - name: Render portable reference study images
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/render-study-fixtures.swift -o "$RUNNER_TEMP/render-study"
+          "$RUNNER_TEMP/render-study" study-artifacts | tee study-render.log
+      - name: Compare shared Float32 kernel math against Swift CPU oracle
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/prepare-kernel-fixtures.swift -o "$RUNNER_TEMP/prepare-kernel-fixtures"
+          "$RUNNER_TEMP/prepare-kernel-fixtures" "$RUNNER_TEMP/kernel-fixtures"
+          clang++ -std=c++17 -O2 -Wall -Wextra -Werror scripts/verify-kernel-host.cpp -o "$RUNNER_TEMP/verify-kernel-host"
+          "$RUNNER_TEMP/verify-kernel-host" "$RUNNER_TEMP"/kernel-fixtures/*.bin | tee study-kernel.log
+      - name: Verify far-camera Float32 precision regressions
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/precision-boundary.swift -o "$RUNNER_TEMP/prepare-precision-boundary"
+          "$RUNNER_TEMP/prepare-precision-boundary" "$RUNNER_TEMP/precision-boundary"
+          "$RUNNER_TEMP/verify-kernel-host" --maximum-channel-error 1 \
+            "$RUNNER_TEMP"/precision-boundary/area-camera-*.bin \
+            "$RUNNER_TEMP"/precision-boundary/world-translation-*.bin | tee study-precision.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-test-log
+          path: |
+            core-environment.log
+            native-syntax.log
+            icon-source.log
+            privacy-source.log
+            core-tests.log
+            core-release-tests.log
+            study-render.log
+            study-kernel.log
+            study-precision.log
+            study-artifacts/
+  simulator:
+    # Standard public-repository Intel pool: test an alternative after repeated arm64 queue cancellations.
+    runs-on: macos-26-intel
+    needs: core
+    # Build evidence is independent of long UI suites. Native unit tests follow.
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record Apple toolchain and test the portable package on macOS
+        run: |
+          set -euo pipefail
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            git rev-parse HEAD
+          } | tee macos-environment.log
+          swift test --jobs 2 2>&1 | tee macos-core-tests.log
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
+      - name: Generate project
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee xcodegen-version.log
+          xcodegen generate
+      - name: Select available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > simulators.json
+          python3 - <<'PY'
+          import json, os
+          data = json.load(open("simulators.json"))
+          devices = [d for runtime, group in sorted(data["devices"].items(), reverse=True) if "iOS" in runtime for d in group if d.get("isAvailable") and d["name"].startswith("iPhone")]
+          if not devices:
+              raise SystemExit("No available iPhone simulator")
+          device = next((d for d in devices if d["name"] == "iPhone 16"), devices[0])
+          print(device)
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build unsigned simulator app
+        id: debug_build
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log
+          python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee icon-debug.log
+          python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee privacy-debug.log
+          mkdir -p artifacts
+          ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator.zip
+      - name: Upload simulator application
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-iOS-Simulator
+          path: artifacts/KeyAndFill-simulator.zip
+          if-no-files-found: error
+      - name: Build unsigned release simulator application
+        id: release_build
+        # Collect independent Release evidence before the longer UI suite.
+        # A UI failure or timeout must not erase these artifacts.
+        if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
+          python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee icon-release.log
+          python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee privacy-release.log
+          mkdir -p artifacts
+          ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator-release.zip
+      - name: Upload unsigned release simulator application
+        if: ${{ !cancelled() && steps.release_build.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-iOS-Simulator-Release
+          path: artifacts/KeyAndFill-simulator-release.zip
+          if-no-files-found: error
+      - name: Run native unit tests
+        timeout-minutes: 18
+        env:
+          TEST_SHARD: unit
+        run: |
+          set -euo pipefail
+          xcrun simctl boot "$SIMULATOR_ID" || xcrun simctl list devices
+          xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
+          tests=()
+          while IFS= read -r selector; do
+            tests+=("$selector")
+          done <<< "$selectors"
+          [ "${#tests[@]}" -gt 0 ]
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test 2>&1 | tee native-tests.log
+      - name: Export finalized XCTest result bundle and genuine attachments
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -f NativeTests.xcresult/Info.plist ]; then
+            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            exit 1
+          fi
+          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          mkdir -p artifacts/native-attachments
+          xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload native result and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-unit-and-build-evidence
+          path: |
+            macos-environment.log
+            metal-toolchain.log
+            macos-core-tests.log
+            xcodegen-version.log
+            simulators.json
+            build.log
+            release-build.log
+            icon-debug.log
+            privacy-debug.log
+            icon-release.log
+            privacy-release.log
+            native-tests.log
+            artifacts/native-results.zip
+            artifacts/native-attachments/
+          if-no-files-found: warn
+      - name: Upload compact native attachments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-unit-and-build-evidence-compact
+          path: |
+            artifacts/native-attachments/manifest.json
+            artifacts/native-attachments/*.png
+            artifacts/native-attachments/*.txt
+            artifacts/native-attachments/*.pdf
+          if-no-files-found: warn
+  ui:
+    # Independent class-level shards retain all scenarios and avoid losing an
+    # entire result bundle when a different test class overruns its budget.
+    needs: core
+    runs-on: macos-26-intel
+    # Reserve setup and evidence time beyond the 12 + 25 + 32 minute step bounds.
+    timeout-minutes: 85
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [room-precision, library-reference, studio-export]
+    name: ui (${{ matrix.shard }})
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record Apple toolchain and exact revision
+        run: |
+          set -euo pipefail
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            git rev-parse HEAD
+          } | tee macos-environment.log
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
+      - name: Generate project
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee xcodegen-version.log
+          xcodegen generate
+      - name: Select available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > simulators.json
+          python3 - <<'PY'
+          import json, os
+          data = json.load(open("simulators.json"))
+          devices = [d for runtime, group in sorted(data["devices"].items(), reverse=True) if "iOS" in runtime for d in group if d.get("isAvailable") and d["name"].startswith("iPhone")]
+          if not devices:
+              raise SystemExit("No available iPhone simulator")
+          device = next((d for d in devices if d["name"] == "iPhone 16"), devices[0])
+          print(device)
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build native UI test bundle
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
+      - name: Run selected native UI shard
+        timeout-minutes: 32
+        env:
+          TEST_SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          xcrun simctl boot "$SIMULATOR_ID" || xcrun simctl list devices
+          xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
+          tests=()
+          while IFS= read -r selector; do
+            tests+=("$selector")
+          done <<< "$selectors"
+          [ "${#tests[@]}" -gt 0 ]
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+      - name: Export finalized XCTest result bundle and genuine attachments
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -f NativeTests.xcresult/Info.plist ]; then
+            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            exit 1
+          fi
+          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          mkdir -p artifacts/native-attachments
+          xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload native result and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-${{ matrix.shard }}-evidence
+          path: |
+            macos-environment.log
+            metal-toolchain.log
+            macos-core-tests.log
+            xcodegen-version.log
+            simulators.json
+            build.log
+            release-build.log
+            icon-debug.log
+            privacy-debug.log
+            icon-release.log
+            privacy-release.log
+            native-tests.log
+            native-ui-build.log
+            artifacts/native-results.zip
+            artifacts/native-attachments/
+          if-no-files-found: warn
+      - name: Upload compact native attachments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-${{ matrix.shard }}-evidence-compact
+          path: |
+            artifacts/native-attachments/manifest.json
+            artifacts/native-attachments/*.png
+            artifacts/native-attachments/*.txt
+            artifacts/native-attachments/*.pdf
+          if-no-files-found: warn

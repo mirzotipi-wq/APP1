@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SHARDS = {
     "room-precision": ("ManualRoomPlacementUITests", "PrecisionEditingUITests"),
-    "library-reference": ("ProjectLibraryUITests", "ReferenceComparisonUITests"),
+    "library-reference": ("ProjectLibraryUITests", "ReferenceComparisonUITests", "AccessibilityAuditUITests"),
     "studio-export": ("StudioSmokeTests", "LightingPlanExportUITests"),
 }
 

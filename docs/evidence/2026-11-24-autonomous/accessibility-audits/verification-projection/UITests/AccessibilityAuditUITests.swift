@@ -1,0 +1,77 @@
+import XCTest
+
+final class AccessibilityAuditUITests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    @MainActor
+    private func launchLoadedPlanStudio() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launch()
+        waitForEnabledStudioControl(app.buttons["recipes"])
+        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
+        XCTAssertTrue(plan.waitForExistence(timeout: 10))
+        XCTAssertTrue(plan.isSelected, "Audit the initial Plan studio, not another preview mode")
+        XCTAssertEqual(app.staticTexts["projectName"].label, "Portrait setup")
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
+        XCTAssertTrue(app.staticTexts["3 lights"].exists)
+        XCTAssertTrue(app.buttons["editCamera"].exists)
+        return app
+    }
+
+    @MainActor
+    func testInitialLoadedPlanStudioAccessibilityAudit() throws {
+        let app = launchLoadedPlanStudio()
+        try auditCurrentScreen(app, name: "Accessibility-initial-Plan")
+    }
+
+    @MainActor
+    func testExactLightIntensityEditorAccessibilityAudit() throws {
+        let app = launchLoadedPlanStudio()
+        let exact = app.buttons["lightIntensityExact"]
+        revealStudioContent(exact, in: app)
+        waitForEnabledStudioControl(exact)
+        XCTAssertEqual(exact.value as? String, "900 cd")
+        exact.tap()
+
+        let field = app.textFields["precisionValue"]
+        XCTAssertTrue(field.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.navigationBars["Intensity"].exists)
+        XCTAssertEqual(field.value as? String, "900")
+        XCTAssertTrue(field.isHittable)
+        let apply = app.buttons["precisionApply"]
+        let cancel = app.buttons["precisionCancel"]
+        waitForEnabledStudioControl(apply)
+        waitForEnabledStudioControl(cancel)
+        XCTAssertTrue(apply.isHittable && cancel.isHittable)
+        try auditCurrentScreen(app, name: "Accessibility-exact-light-intensity")
+    }
+
+    @MainActor
+    private func auditCurrentScreen(_ app: XCUIApplication, name: String) throws {
+        // Preserve the actual screen before an audit can report a failure.
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = name + "-before-audit"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+
+        let hierarchy = app.debugDescription
+        let byteLimit = 32_768
+        var excerpt = String(decoding: hierarchy.utf8.prefix(byteLimit), as: UTF8.self)
+        if hierarchy.utf8.count > byteLimit {
+            excerpt += "\n[AX tree truncated after 32,768 UTF-8 bytes.]\n"
+        }
+        let tree = XCTAttachment(string: excerpt)
+        tree.name = name + "-AX-before-audit"
+        tree.lifetime = .keepAlways
+        add(tree)
+
+        // Navigation remains fail-fast. Report every issue from this audit,
+        // then restore the previous policy even if the audit throws.
+        let previousContinueAfterFailure = continueAfterFailure
+        continueAfterFailure = true
+        defer { continueAfterFailure = previousContinueAfterFailure }
+        try app.performAccessibilityAudit()
+    }
+}

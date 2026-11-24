@@ -1,0 +1,368 @@
+--- /dev/null
++++ b/App/StudioGuideView.swift
+@@ -0,0 +1,171 @@
++import SwiftUI
++
++/// Contextual help owns only its navigation. It has no access to the editor,
++/// project store, reference image or room measurements.
++struct StudioGuideView: View {
++    @Environment(\.dismiss) private var dismiss
++
++    var body: some View {
++        NavigationStack {
++            List {
++                Section {
++                    VStack(alignment: .leading, spacing: 8) {
++                        Text("Plan a portrait, step by step")
++                            .font(.title3.weight(.semibold))
++                            .accessibilityIdentifier("studioGuideOverview")
++                        Text("Follow the workflow or open the topic you need. Your current studio stays open while you read.")
++                            .font(.subheadline).foregroundStyle(.secondary)
++                    }
++                    .fixedSize(horizontal: false, vertical: true)
++                    .padding(.vertical, 4)
++                }
++                Section("Workflow") {
++                    ForEach(StudioGuideTopic.allCases) { topic in
++                        NavigationLink {
++                            page(topic)
++                        } label: {
++                            HStack(alignment: .firstTextBaseline, spacing: 12) {
++                                Text("\(topic.rawValue)")
++                                    .font(.headline.monospacedDigit())
++                                    .foregroundStyle(.secondary)
++                                    .accessibilityHidden(true)
++                                VStack(alignment: .leading, spacing: 4) {
++                                    Text(topic.title).font(.headline)
++                                        .foregroundStyle(.primary)
++                                    Text(topic.summary).font(.subheadline)
++                                        .foregroundStyle(.secondary)
++                                }
++                                .fixedSize(horizontal: false, vertical: true)
++                            }
++                            .frame(minHeight: 44, alignment: .leading)
++                        }
++                        .accessibilityLabel(Text(topic.title))
++                        .accessibilityHint(Text(topic.summary))
++                        .accessibilityIdentifier("studioGuideTopic-\(topic.rawValue)")
++                    }
++                }
++            }
++            .listStyle(.insetGrouped)
++            .navigationTitle("Studio guide")
++            .navigationBarTitleDisplayMode(.inline)
++            .toolbar {
++                ToolbarItem(placement: .confirmationAction) { closeButton }
++            }
++        }
++    }
++
++    private var closeButton: some View {
++        Button("Done") { dismiss() }
++            .frame(minWidth: 44, minHeight: 44)
++            .accessibilityIdentifier("closeStudioGuide")
++    }
++
++    private func page(_ topic: StudioGuideTopic) -> some View {
++        List { sections(for: topic) }
++            .listStyle(.insetGrouped)
++            .navigationTitle(topic.title)
++            .navigationBarTitleDisplayMode(.inline)
++            .toolbar {
++                // Capture the sheet's dismiss action, including on pushed pages.
++                ToolbarItem(placement: .confirmationAction) { closeButton }
++            }
++    }
++
++    @ViewBuilder
++    private func sections(for topic: StudioGuideTopic) -> some View {
++        switch topic {
++        case .recipe:
++            step("Open a starting rig",
++                 "Tap Recipes at the top of the studio. Three-point portrait gives you Key, Fill and Rim lights. Rembrandt, Butterfly and Silhouette offer other starting arrangements.")
++            step("Keep what you want",
++                 "Choosing a recipe replaces the current setup. Undo restores the previous setup. Tap Save before exploring if you want a saved version to return to.")
++            step("Shape the portrait",
++                 "Begin with the Key light's side, height and intensity. Balance Fill to control shadow depth, then use Rim for separation. Adjust the starting layout for your subject and real equipment.")
++        case .editing:
++            step("Select a light",
++                 "Tap a light in Plan or in the Lights list. Its inspector appears below. Use the + beside Scene or Add light in the list to extend the setup.")
++            step("Place it precisely",
++                 "Adjust Horizontal, Depth and Height in meters. Tap a value with the pencil, type an exact number, then choose Apply value. Cancel leaves the value unchanged. Intensity is in candela (cd), and Temperature is in kelvin (K).")
++            step("Choose the emitting surface",
++                 "In Emitter, choose Bare point, Directional or Rectangular softbox. The softbox Width and Height describe its emitting face. For aimed emitters, keep Aim at subject on or turn it off to set Aim X, Aim Y and Aim Z.")
++            step("Compare edits",
++                 "Undo and Redo at the bottom let you compare changes. Save keeps the current setup locally; edit history belongs to the current editing session.")
++        case .previews:
++            step("Layout and framing",
++                 "Plan shows the overhead layout on a 1 m grid. In 3D, drag to orbit and use Fit setup to frame the whole rig. Camera previews the setup from your camera position, using the chosen focal length and aiming at the subject.")
++            step("Light and shadow",
++                 "Switch to Study and choose Sphere for a simple light check or Bust for a neutral mannequin. Use the camera controls below to change framing. Study shows direct light, shadows and relative color.")
++            step("Read the meter",
++                 "Meter compares light on an ideal camera-facing plane at the subject. White balance and Relative exposure change the neutral-card and Study display. A rim light may read zero on that plane while lighting the back of the subject.")
++            step("Check with a test photograph",
++                 "3D shading is illustrative. Study and Meter are diagnostic models, not calibrated skin, camera exposure or a reconstruction of a person. Confirm the result with your real lights and a test photograph.")
++        case .reference:
++            step("Bring a visual target",
++                 "Open Reference photo, then Choose photo. Compare direction, shadow edges and fill against the neutral study. The app's photo copy is kept only while this view is open; your original remains unchanged.")
++            step("Describe what you see",
++                 "Choose Key side, Shadow edges, Shadow fill and Rim highlight, then tap Build two starting rigs. This is manually guided: leave uncertain cues unknown. A visible key direction is needed to build alternatives.")
++            step("Compare assumptions",
++                 "Try Closer starting rig and Farther starting rig. Read Basis for this rig to separate Your observations, Assumed cues and Chosen starting values. Preview current setup returns to your existing light study. Exact geometry, intensity and color remain starting assumptions.")
++            step("Keep an alternative",
++                 "Choose Apply selected rig and confirm Apply rig. Only the lights change; the studio camera and subject stay in place. Undo restores the previous lights. Save separately to keep the edit.")
++        case .room:
++            step("Measure, then enter",
++                 "Open Room placement after shaping the rig. Measure Width and Depth and the subject's distances From left wall and From near wall. Press Set after each changed entry so it becomes part of the current measured layout.")
++            step("Turn and place the rig",
++                 "Adjust Rig rotation or use Rotate 180°. Read each camera and light center's wall distances and height. Rectangular emitting-face projections flag wall crossings. This is manual placement using your measurements; the app does not scan or track the room.")
++            step("Check the real equipment",
++                 "Check the fixture, stands, booms, cables and ceiling clearance physically. The diagram covers centers and rectangular emitting faces, rather than the full equipment.")
++            step("Take the notes with you",
++                 "Use Review and share notes, then Share measurement notes. Notes include committed entries, so press Set first. Room measurements are session-only and are not part of the saved project or lighting PDF.")
++        case .saving:
++            step("Keep a local project",
++                 "Tap Save and wait for Saved locally. Projects lets you open, rename, duplicate and archive saved setups. Save your current edits before opening or changing another project.")
++            step("Share a readable plan",
++                 "Open Export lighting plan beside Projects, then Lighting plan (PDF). Choose Paper and Units, review the preview, then Share PDF. The PDF communicates the diagram, equipment and scene settings; use an editable copy when you want to reopen a setup.")
++            step("Keep an editable copy",
++                 "Choose Editable project copy, then Save editable copy to write a file you can reopen. In Projects, Import editable project creates a separate project from that file and keeps existing projects.")
++            step("Know what is included",
++                 "Exports capture the setup when you opened Export lighting plan, including unsaved edits. Exporting does not save to Projects. Photos and room measurements are not included in the PDF or editable copy. Editable copies also omit edit history; share room notes separately.")
++        }
++    }
++
++    private func step(_ title: LocalizedStringKey, _ explanation: LocalizedStringKey) -> some View {
++        Section {
++            Text(explanation)
++                .font(.body)
++                .fixedSize(horizontal: false, vertical: true)
++                .padding(.vertical, 4)
++        } header: {
++            Text(title).textCase(nil)
++        }
++    }
++}
++
++private enum StudioGuideTopic: Int, CaseIterable, Identifiable {
++    case recipe = 1
++    case editing, previews, reference, room, saving
++
++    var id: Int { rawValue }
++
++    var title: LocalizedStringKey {
++        switch self {
++        case .recipe: return "Start with a recipe"
++        case .editing: return "Edit the lighting"
++        case .previews: return "Read the previews"
++        case .reference: return "Explore a reference"
++        case .room: return "Measure the room"
++        case .saving: return "Save and share"
++        }
++    }
++
++    var summary: LocalizedStringKey {
++        switch self {
++        case .recipe: return "Choose a portrait starting point."
++        case .editing: return "Position, output, color and emitters."
++        case .previews: return "Plan, 3D, Camera, Study and Meter."
++        case .reference: return "Build alternatives from your observations."
++        case .room: return "Place equipment with measured distances."
++        case .saving: return "Local projects, PDF plans and editable copies."
++        }
++    }
++}
+--- a/App/StudioView.swift
++++ b/App/StudioView.swift
+@@ -14,6 +14,7 @@
+     @State private var studySubject: StudySubject = .sphere
+     @State private var orbitFitRequest = 0
+     @State private var showRecipes = false
++    @State private var showStudioGuide = false
+     @State private var showMeter = false
+     @State private var meterNavigationRequest = 0
+     @State private var confirmRemove = false
+@@ -113,6 +114,7 @@
+                 }
+             }
+             .sheet(isPresented: $showRecipes) { recipeSheet }
++            .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
+             .sheet(isPresented: $showReference) { ReferenceComparisonView(scene: scene) { rig in
+                 guard libraryOperation.allowsSceneMutation(from: generation) else { return }
+                 replace(rig); mode = "Study"
+@@ -158,8 +160,8 @@
+ 
+     private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
+ 
+-    // Keep the editing canvas above the fold on compact phones. Fall back to
+-    // two rows for long names, narrow widths and accessibility text sizes.
++    // Prefer one row when the full title and action labels fit. At narrower
++    // widths or larger text sizes, place the title above the adaptive actions.
+     private var header: some View {
+         Group {
+             if dynamicTypeSize.isAccessibilitySize {
+@@ -172,7 +174,7 @@
+                     HStack(alignment: .center, spacing: 8) {
+                         projectHeading.fixedSize(horizontal: true, vertical: false)
+                         Spacer(minLength: 0)
+-                        projectActions
++                        projectActions.fixedSize(horizontal: true, vertical: false)
+                     }
+                     VStack(alignment: .leading, spacing: 8) {
+                         projectHeading
+@@ -203,17 +205,45 @@
+     }
+ 
+     private var projectActions: some View {
++        ViewThatFits(in: .horizontal) {
++            HStack(spacing: 8) {
++                projectLibraryButton
++                projectUtilityActions
++            }
++            .fixedSize(horizontal: true, vertical: false)
++            VStack(alignment: .leading, spacing: 8) {
++                projectLibraryButton
++                projectUtilityActions
++            }
++        }
++    }
++
++    private var projectLibraryButton: some View {
++        Button { showProjects = true } label: {
++            Label("Projects", systemImage: "folder")
++                .font(.subheadline)
++                .padding(.horizontal, 8)
++                .frame(minWidth: 44, minHeight: 44)
++                .contentShape(Rectangle())
++        }
++        .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("openProjectLibrary")
++    }
++
++    private var projectUtilityActions: some View {
+         HStack(spacing: 8) {
+-            Button { showProjects = true } label: {
+-                Label("Projects", systemImage: "folder")
+-                    .font(.subheadline)
+-                    .padding(.horizontal, 8)
+-                    .frame(minWidth: 44, minHeight: 44)
+-                    .contentShape(Rectangle())
+-            }
+-            .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("openProjectLibrary")
+             LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
+                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
++            Button { showStudioGuide = true } label: {
++                Label("Guide", systemImage: "questionmark.circle")
++                    .labelStyle(.iconOnly)
++                    .font(.headline)
++                    .frame(width: 44, height: 44)
++                    .contentShape(Rectangle())
++            }
++            .disabled(libraryOperation.isBusy || editHistory.isEditing)
++            .accessibilityLabel("Studio guide")
++            .accessibilityHint("Read the workflow while keeping your current setup open")
++            .accessibilityIdentifier("openStudioGuide")
+         }
+     }
+ 
+--- a/UITests/StudioSmokeTests.swift
++++ b/UITests/StudioSmokeTests.swift
+@@ -275,4 +275,99 @@
+         assertStatus("Saved data protected", in: app)
+         XCTAssertFalse(app.buttons["saveProject"].isEnabled)
+     }
++
++    func testStudioGuideKeepsUnsavedSetupSelectionAndHistory() throws {
++        let app = makeApp()
++        app.launch()
++        waitForEnabledStudioControl(app.buttons["recipes"])
++        assertStatus("Unsaved changes", in: app)
++        let projectName = app.staticTexts["projectName"].label
++        XCTAssertFalse(projectName.isEmpty)
++
++        func assertLightCount(_ count: Int, line: UInt = #line) {
++            XCTAssertTrue(app.staticTexts["\(count) lights"].waitForExistence(timeout: 10),
++                          "Expected the actual studio to contain \(count) lights", line: line)
++        }
++
++        // Leave genuine unsaved edits and both history branches available.
++        assertLightCount(3)
++        let addLight = app.buttons["addLightShortcut"]
++        for count in [4, 5] {
++            revealStudioContent(addLight, in: app, towardBottom: false)
++            addLight.tap()
++            assertLightCount(count)
++        }
++        let undo = app.buttons["undo"]
++        let redo = app.buttons["redo"]
++        waitForEnabledStudioControl(undo)
++        undo.tap()
++        assertLightCount(4)
++        let key = app.buttons["Select Key on plan"]
++        revealStudioContent(key, in: app, towardBottom: false)
++        key.tap()
++        XCTAssertTrue(key.isSelected)
++        XCTAssertTrue(undo.isEnabled && redo.isEnabled)
++        XCTAssertTrue(app.buttons["light-Light 1"].exists)
++        XCTAssertFalse(app.buttons["light-Light 2"].exists)
++        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
++        XCTAssertTrue(plan.isSelected)
++        assertStatus("Unsaved changes", in: app)
++
++        let guide = app.buttons["openStudioGuide"]
++        revealStudioContent(guide, in: app, towardBottom: false)
++        waitForEnabledStudioControl(guide)
++        XCTAssertGreaterThanOrEqual(guide.frame.width, 44)
++        XCTAssertGreaterThanOrEqual(guide.frame.height, 44)
++        XCTAssertTrue(app.buttons["openProjectLibrary"].isHittable)
++        XCTAssertTrue(app.buttons["exportLightingPlan"].isHittable)
++        guide.tap()
++        let overview = app.staticTexts["studioGuideOverview"]
++        XCTAssertTrue(overview.waitForExistence(timeout: 10))
++        let attachment = XCTAttachment(screenshot: app.screenshot())
++        attachment.name = "Studio-guide-overview"
++        attachment.lifetime = .keepAlways
++        add(attachment)
++
++        let referenceTopic = app.buttons["studioGuideTopic-4"]
++        revealStudioContent(referenceTopic, in: app)
++        referenceTopic.tap()
++        let referenceBar = app.navigationBars["Explore a reference"]
++        XCTAssertTrue(referenceBar.waitForExistence(timeout: 10))
++        let back = referenceBar.buttons.element(boundBy: 0)
++        XCTAssertTrue(back.isHittable)
++        XCTAssertLessThan(back.frame.midX, app.frame.midX, "Use the native back action, not Done")
++        back.tap()
++        XCTAssertTrue(overview.waitForExistence(timeout: 10))
++
++        let savingTopic = app.buttons["studioGuideTopic-6"]
++        revealStudioContent(savingTopic, in: app)
++        savingTopic.tap()
++        XCTAssertTrue(app.navigationBars["Save and share"].waitForExistence(timeout: 10))
++        let done = app.buttons["closeStudioGuide"]
++        done.tap()
++        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: done)
++        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
++                       "Done on a topic page must dismiss the entire guide")
++
++        assertStatus("Unsaved changes", in: app)
++        XCTAssertEqual(app.staticTexts["projectName"].label, projectName)
++        assertLightCount(4)
++        XCTAssertTrue(plan.isSelected)
++        XCTAssertTrue(key.isSelected, "Reading the guide must keep the selected light")
++        XCTAssertTrue(app.buttons["light-Light 1"].exists)
++        XCTAssertFalse(app.buttons["light-Light 2"].exists)
++        XCTAssertTrue(undo.isEnabled && redo.isEnabled)
++
++        // Exercise the retained entries, not just the enabled state of the arrows.
++        redo.tap()
++        assertLightCount(5)
++        XCTAssertTrue(app.buttons["light-Light 2"].exists)
++        undo.tap()
++        assertLightCount(4)
++        XCTAssertFalse(app.buttons["light-Light 2"].exists)
++        undo.tap()
++        assertLightCount(3)
++        XCTAssertFalse(app.buttons["light-Light 1"].exists)
++        assertStatus("Unsaved changes", in: app)
++    }
+ }

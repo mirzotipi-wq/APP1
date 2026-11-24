@@ -1,0 +1,102 @@
+--- a/UITests/StudioSmokeTests.swift
++++ b/UITests/StudioSmokeTests.swift
+@@ -275,4 +275,99 @@
+         assertStatus("Saved data protected", in: app)
+         XCTAssertFalse(app.buttons["saveProject"].isEnabled)
+     }
++
++    func testStudioGuideKeepsUnsavedSetupSelectionAndHistory() throws {
++        let app = makeApp()
++        app.launch()
++        waitForEnabledStudioControl(app.buttons["recipes"])
++        assertStatus("Unsaved changes", in: app)
++        let projectName = app.staticTexts["projectName"].label
++        XCTAssertFalse(projectName.isEmpty)
++
++        func assertLightCount(_ count: Int, line: UInt = #line) {
++            XCTAssertTrue(app.staticTexts["\(count) lights"].waitForExistence(timeout: 10),
++                          "Expected the actual studio to contain \(count) lights", line: line)
++        }
++
++        // Leave genuine unsaved edits and both history branches available.
++        assertLightCount(3)
++        let addLight = app.buttons["addLightShortcut"]
++        for count in [4, 5] {
++            revealStudioContent(addLight, in: app, towardBottom: false)
++            addLight.tap()
++            assertLightCount(count)
++        }
++        let undo = app.buttons["undo"]
++        let redo = app.buttons["redo"]
++        waitForEnabledStudioControl(undo)
++        undo.tap()
++        assertLightCount(4)
++        let key = app.buttons["Select Key on plan"]
++        revealStudioContent(key, in: app, towardBottom: false)
++        key.tap()
++        XCTAssertTrue(key.isSelected)
++        XCTAssertTrue(undo.isEnabled && redo.isEnabled)
++        XCTAssertTrue(app.buttons["light-Light 1"].exists)
++        XCTAssertFalse(app.buttons["light-Light 2"].exists)
++        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
++        XCTAssertTrue(plan.isSelected)
++        assertStatus("Unsaved changes", in: app)
++
++        let guide = app.buttons["openStudioGuide"]
++        revealStudioContent(guide, in: app, towardBottom: false)
++        waitForEnabledStudioControl(guide)
++        XCTAssertGreaterThanOrEqual(guide.frame.width, 44)
++        XCTAssertGreaterThanOrEqual(guide.frame.height, 44)
++        XCTAssertTrue(app.buttons["openProjectLibrary"].isHittable)
++        XCTAssertTrue(app.buttons["exportLightingPlan"].isHittable)
++        guide.tap()
++        let overview = app.staticTexts["studioGuideOverview"]
++        XCTAssertTrue(overview.waitForExistence(timeout: 10))
++        let attachment = XCTAttachment(screenshot: app.screenshot())
++        attachment.name = "Studio-guide-overview"
++        attachment.lifetime = .keepAlways
++        add(attachment)
++
++        let referenceTopic = app.buttons["studioGuideTopic-4"]
++        revealStudioContent(referenceTopic, in: app)
++        referenceTopic.tap()
++        let referenceBar = app.navigationBars["Explore a reference"]
++        XCTAssertTrue(referenceBar.waitForExistence(timeout: 10))
++        let back = referenceBar.buttons.element(boundBy: 0)
++        XCTAssertTrue(back.isHittable)
++        XCTAssertLessThan(back.frame.midX, app.frame.midX, "Use the native back action, not Done")
++        back.tap()
++        XCTAssertTrue(overview.waitForExistence(timeout: 10))
++
++        let savingTopic = app.buttons["studioGuideTopic-6"]
++        revealStudioContent(savingTopic, in: app)
++        savingTopic.tap()
++        XCTAssertTrue(app.navigationBars["Save and share"].waitForExistence(timeout: 10))
++        let done = app.buttons["closeStudioGuide"]
++        done.tap()
++        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: done)
++        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
++                       "Done on a topic page must dismiss the entire guide")
++
++        assertStatus("Unsaved changes", in: app)
++        XCTAssertEqual(app.staticTexts["projectName"].label, projectName)
++        assertLightCount(4)
++        XCTAssertTrue(plan.isSelected)
++        XCTAssertTrue(key.isSelected, "Reading the guide must keep the selected light")
++        XCTAssertTrue(app.buttons["light-Light 1"].exists)
++        XCTAssertFalse(app.buttons["light-Light 2"].exists)
++        XCTAssertTrue(undo.isEnabled && redo.isEnabled)
++
++        // Exercise the retained entries, not just the enabled state of the arrows.
++        redo.tap()
++        assertLightCount(5)
++        XCTAssertTrue(app.buttons["light-Light 2"].exists)
++        undo.tap()
++        assertLightCount(4)
++        XCTAssertFalse(app.buttons["light-Light 2"].exists)
++        undo.tap()
++        assertLightCount(3)
++        XCTAssertFalse(app.buttons["light-Light 1"].exists)
++        assertStatus("Unsaved changes", in: app)
++    }
+ }

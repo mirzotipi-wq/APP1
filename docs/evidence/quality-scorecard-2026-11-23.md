@@ -17,3 +17,17 @@ This is a conservative **20/100 supported-points floor**, not an overall quality
 | Total | 100 | 20 | Evidence floor; all mandatory release gates still apply |
 
 [92/92 Debug and Release, zero failures](https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597/artifacts/14865369722). [Historical native CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45267130194/job/138016896671) and [current source CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45274350597). Actual native simulator Metal max error 1/255; no real-device or calibrated portrait evidence. Do not claim a score of 95 or release readiness until all gates and independent evidence pass. The allocation is an internal review convention, not a replacement for docs/QUALITY.md.
+
+
+## Source-eleven checkpoint note — 2026-11-24
+
+The allocation and20-point floor above are unchanged historical review judgments. The later [independent quality review](2026-11-24-autonomous/quality-review.md) re-supported those same buckets at source0d63dd8; neither that result nor this note awards new points at95e9c24. This is not a new independent release review or a completion percentage.
+
+Current integrated source95e9c2446b7bb05e6df38d103063b4254bb07c92 has full local and remote257/257 portable tests per configuration plus28Python passes. Its83native methods/23UI are authored inventories; native builds and acceptance remain pending. Historical5cd passed both unsigned builds/native65 but finalized with20UI passes,2failures and1interrupted scenario. The new slider/plan implementation and controlled tests require exact native gesture, visual and accessibility evidence. [Checkpoint11](2026-11-24-autonomous/checkpoint-11.md), [retained source10 final UI evidence](2026-11-24-autonomous/source10-studio-final/result.md).
+
+No score increase, protected threshold change, device/calibration claim or release promotion follows. M01 remains active; native_build and persistence_smoke are unverified at the newer source.
+
+
+### Later native observation at source95 —12:57UTC
+
+Both unsigned builds and83/83 native methods subsequently passed, including15tracking/3UIKit and15actor cases; native_build is now supported at95. The earlier pending paragraph remains its dated checkpoint observation. The actual dragged-slider scenario, complete UI/persistence acceptance and native plan/device accessibility remain unresolved. The programmed UIKit checks are not a VoiceOver or two-screen audit. [Actual native result](2026-11-24-autonomous/native-result-95e9c24.md). No evidence points, milestone, release or later guide/budget/audit approval are added.

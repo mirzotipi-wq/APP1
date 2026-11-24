@@ -119,3 +119,14 @@ The tool-returned complete decoded logs were saved as UTF-8, retaining their ini
 | [5cd7eb4-native-job.log](5cd7eb4-native-job.log) |754,457|`d4c2f751f371b5c7305e43866c08dbfa85f54ec79f33324cac157f4431fea8a3`|
 
 The prior approximately11:47 UTC observation remains a valid dated record of unfinished native work. This report supplies the later finalized source10 build/unit results; it does not reinterpret source9's21/22 UI failure or certify any newer candidate.
+
+
+## Final studio/export observation and successor
+
+At the direct **12:39:52 UTC** observation, source-10 workflow45383556829 and studio/export job138417363754 had finalized **failure at12:38:51 UTC**. All nine studio/export methods started; eight completed with **seven passes and one optics failure**, while sphere/bust switching was interrupted by the unchanged32-minute deadline. The original line87 expectation remained **0.6m**, but read **2.25m**. Both exports, camera, corrupt-storage, meter, recipe and study-frame passed. The interrupted method was progressing through its Sphere return and Undo lookup; the deadline does not establish a hang or deadlock.
+
+Result export explicitly reported no finalized XCTest bundle. The verified29,629-byte artifact contains six text/environment/build files and no screenshots or xcresult. The complete decoded job log is474,504 UTF-8 bytes, SHA-256 `bb6337e6b0b2a556a48175b01a8de93c5d526b42df19479bd2433090bc7a99fc`; the archive SHA-256 is `4df1c88d4b41f0c993c1e06eb0962012cba4c6fad4dda5fb818110761146e156`. [Full result, exact timings, retained logs and artifact](source10-studio-final/result.md).
+
+Combined source-10 UI totals are **23 started,22 completed:20 passed,two failed,one interrupted** (library8/9,room5/5,studio7/8 completed). Its actual65 native methods and both unsigned builds remain passes, but the complete regression/persistence acceptance is unresolved. These observations supplement the earlier snapshots above without replacing them.
+
+The same final observation found exact source11 `95e9c2446b7bb05e6df38d103063b4254bb07c92` workflow45394444997 **in progress**, updated12:38:55UTC after source10 completion. No source11 method/build result was observed. All source10 results in this report are historical relative to that newer source; source11 native gates remain pending. No workflow, assertion or timeout was changed during evidence collection.
