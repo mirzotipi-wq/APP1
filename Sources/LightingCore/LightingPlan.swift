@@ -10,6 +10,23 @@ public enum PlanUnits: String, CaseIterable, Sendable {
         let values = [position.x, position.y, position.z].map { Self.number(fromMeters($0), decimals: 2) }
         return "(\(values.joined(separator: ", "))) \(symbol)"
     }
+    /// Editable parameters retain up to six fractional digits in the report.
+    /// Keep a minimum for familiar readouts; derived distances remain at two.
+    public static func parameterNumber(_ value: Double, minimumDecimals: Int = 0) -> String {
+        let minimum = min(6, max(0, minimumDecimals))
+        var text = number(value, decimals: 6)
+        guard let dot = text.firstIndex(of: ".") else { return text }
+        while text.last == "0", text.distance(from: dot, to: text.endIndex) > minimum + 1 { text.removeLast() }
+        if text.last == "." { text.removeLast() }
+        return text
+    }
+    public func parameterDistance(_ meters: Double) -> String {
+        "\(Self.parameterNumber(fromMeters(meters), minimumDecimals: 2)) \(symbol)"
+    }
+    public func parameterCoordinates(_ position: Position) -> String {
+        let values = [position.x, position.y, position.z].map { Self.parameterNumber(fromMeters($0), minimumDecimals: 2) }
+        return "(\(values.joined(separator: ", "))) \(symbol)"
+    }
     public static func number(_ value: Double, decimals: Int = 1) -> String {
         // Foundation on Apple SDKs rejects the dynamic-precision vararg
         // signature used here previously. A fixed, bounded format has one Double.
@@ -91,19 +108,19 @@ public struct PlanLight: Equatable, Sendable {
     public let heightMeters: Double?
 
     public func settings(units: PlanUnits) -> String {
-        let output = "\(PlanUnits.number(candela)) cd · \(PlanUnits.number(kelvin, decimals: 0)) K"
+        let output = "\(PlanUnits.parameterNumber(candela, minimumDecimals: 1)) cd · \(PlanUnits.parameterNumber(kelvin)) K"
         if let widthMeters, let heightMeters {
-            return "\(output) · \(units.distance(widthMeters)) × \(units.distance(heightMeters))"
+            return "\(output) · \(units.parameterDistance(widthMeters)) × \(units.parameterDistance(heightMeters))"
         }
         return output
     }
     public func placement(units: PlanUnits) -> String {
-        "XYZ \(units.coordinates(position)) · Subject distance \(units.distance(subjectDistance))"
+        "XYZ \(units.parameterCoordinates(position)) · Subject distance \(units.distance(subjectDistance))"
     }
     public func aim(units: PlanUnits) -> String {
         guard let aimTarget else { return "Omnidirectional ideal source · no aiming direction" }
         guard aimIsValid else { return "Aim undefined: target coincides with source" }
-        return "Aim \(units.coordinates(aimTarget)) · \(followsSubject ? "follows subject" : "manual target")"
+        return "Aim \(units.parameterCoordinates(aimTarget)) · \(followsSubject ? "follows subject" : "manual target")"
     }
 }
 
@@ -158,11 +175,26 @@ public struct LightingPlan: Equatable, Sendable {
     }
     public var pageCount: Int { 1 + equipmentPages.count }
     public var cameraSettings: String {
-        "\(PlanUnits.number(scene.effectiveCameraLens.focalLengthMillimeters, decimals: 0)) mm · 36 × 24 mm sensor · \(units.distance(scene.camera.distance(to: scene.subject))) to subject"
+        "\(PlanUnits.parameterNumber(scene.effectiveCameraLens.focalLengthMillimeters)) mm · 36 × 24 mm sensor · \(units.distance(scene.camera.distance(to: scene.subject))) to subject"
     }
     public var previewSettings: String {
         let settings = scene.effectivePreviewSettings
-        return "\(PlanUnits.number(settings.whiteBalanceKelvin, decimals: 0)) K balance · \(PlanUnits.number(settings.exposureStops, decimals: 2)) relative stops"
+        return "\(PlanUnits.parameterNumber(settings.whiteBalanceKelvin)) K balance · \(PlanUnits.parameterNumber(settings.exposureStops, minimumDecimals: 2)) relative stops"
+    }
+
+    /// Same validated snapshot, settings and aim semantics used by the vector PDF.
+    /// Deliberately excludes reference images, paths and other project data.
+    public var plainText: String {
+        let header = ["Key & Fill: \(title) lighting plan",
+                      "Coordinates: XYZ in \(units.symbol); Y is elevation.",
+                      "Subject: \(units.parameterCoordinates(scene.subject))",
+                      "Camera: \(units.parameterCoordinates(scene.camera)); \(cameraSettings)",
+                      "Test card: \(previewSettings)"]
+        let entries = lights.map { light in
+            "\(light.number). \(light.name): \(light.kind.title) · \(light.settings(units: units)) · \(light.placement(units: units)) · \(light.aim(units: units))"
+        }
+        return (header + entries + ["Entered settings and converted coordinates rounded to six fractional digits; derived distances to two.",
+                                    "Ideal source parameters; not calibrated photometry. No reference images included."]).joined(separator: "\n")
     }
 
     /// A square-world-unit overhead projection; +X points right, +Z down.

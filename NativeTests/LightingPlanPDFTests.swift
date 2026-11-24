@@ -35,6 +35,33 @@ final class LightingPlanPDFTests: XCTestCase {
         }
     }
 
+    @MainActor func testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits() throws {
+        var scene = LightingScene.portrait()
+        scene.camera.x = -5.137
+        scene.cameraLens = .init(focalLengthMillimeters: 73.125)
+        scene.previewSettings = .init(whiteBalanceKelvin: 4321.5, exposureStops: -0.375)
+        scene.lights[0].position.x = -1.237
+        scene.lights[0].candela = 4321.125
+        scene.lights[0].kelvin = 5600.25
+        scene.lights[0].optics = .init(kind: .rectangle, aimTarget: .init(x: 4.125, y: 1.5, z: 0),
+                                     widthMeters: 1.237, heightMeters: 0.053)
+        for paper in PlanPaper.allCases {
+            for units in PlanUnits.allCases {
+                let plan = try LightingPlan(scene: scene, title: "Precision export", units: units, paper: paper)
+                let pdf = try XCTUnwrap(PDFDocument(data: LightingPlanPDF.make(plan)))
+                let content = (0..<pdf.pageCount).compactMap { pdf.page(at: $0)?.string }.joined(separator: " ")
+                    .split(whereSeparator: \.isWhitespace).joined(separator: " ")
+                for value in ["73.125 mm", "4321.5 K", "-0.375 relative stops", "4321.125 cd", "5600.25 K",
+                              units.parameterDistance(1.237), units.parameterDistance(0.053),
+                              PlanUnits.parameterNumber(units.fromMeters(-1.237), minimumDecimals: 2),
+                              PlanUnits.parameterNumber(units.fromMeters(4.125), minimumDecimals: 2),
+                              PlanUnits.parameterNumber(units.fromMeters(-5.137), minimumDecimals: 2)] {
+                    XCTAssertTrue(content.contains(value), "\(paper) \(units): missing \(value)")
+                }
+            }
+        }
+    }
+
     @MainActor func testEmptySceneStillProducesReadableDiagramAndSchedule() throws {
         var scene = LightingScene.portrait(); scene.lights = []
         let plan = try LightingPlan(scene: scene, title: "Empty")

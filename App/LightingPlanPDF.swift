@@ -86,8 +86,8 @@ import LightingCore
         text("S  Subject    C  Camera    1–12  Lights    Solid outline  Diffuser    Dashed arrows  Aim", x: 40, y: 544, width: width, height: 18, size: 10, minimum: 8.5, weight: .medium)
         text("\(diagram.scaleLabel) · +X right / +Z down · Y is elevation · Leaders mark displaced labels", x: 40, y: 566, width: width, height: 24, size: 9.5, color: muted)
         stroke(cg, from: CGPoint(x: 40, y: 594), to: CGPoint(x: bounds.width - 40, y: 594), color: rule)
-        text("SUBJECT   \(plan.units.coordinates(plan.scene.subject))", x: 40, y: 605, width: width, height: 18, size: 11, weight: .semibold)
-        text("CAMERA    \(plan.units.coordinates(plan.scene.camera))", x: 40, y: 626, width: width, height: 18, size: 11, weight: .semibold)
+        text("SUBJECT   \(plan.units.parameterCoordinates(plan.scene.subject))", x: 40, y: 605, width: width, height: 18, size: 11, weight: .semibold)
+        text("CAMERA    \(plan.units.parameterCoordinates(plan.scene.camera))", x: 40, y: 626, width: width, height: 18, size: 11, weight: .semibold)
         text(plan.cameraSettings, x: 40, y: 647, width: width, height: 18, size: 10.5, color: muted)
         text(plan.previewSettings, x: 40, y: 668, width: width, height: 18, size: 10.5, color: muted)
         text("Planning geometry only. Output in cd is ideal luminous intensity, not electrical watts or a measured fixture profile. Camera framing and exposure are ideal/relative. No reference images are embedded.", x: 40, y: 692, width: width, height: 38, size: 9.5, color: muted)
@@ -106,7 +106,7 @@ import LightingCore
             text(light.aim(units: plan.units), x: x, y: y + 80, width: rowWidth, height: 20, size: 10.5, minimum: 9, color: light.aimIsValid ? muted : amber)
             stroke(cg, from: CGPoint(x: 40, y: y + 105), to: CGPoint(x: bounds.width - 40, y: y + 105), color: rule)
         }
-        text("XYZ in \(plan.units.symbol) · distances are center-to-center in 3D · source parameters are ideal, not calibrated equipment readings.", x: 40, y: 715, width: width, height: 24, size: 9, color: muted)
+        text("XYZ in \(plan.units.symbol) · entered settings rounded to six fractional digits · derived center-to-center 3D distances rounded to two.", x: 40, y: 715, width: width, height: 24, size: 9, color: muted)
     }
 
     private static func text(_ string: String, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat,

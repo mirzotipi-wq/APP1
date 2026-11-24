@@ -16,14 +16,16 @@ struct LightingPlanPDFItem: Transferable, Sendable {
 struct LightingPlanExportMenu: View {
     let scene: LightingScene
     let title: String
-    let textSettings: String
+    let textSettings: String?
     @State private var showPDF = false
 
     var body: some View {
         Menu {
             Button("Lighting plan (PDF)", systemImage: "doc.richtext") { showPDF = true }
                 .accessibilityIdentifier("prepareLightingPlanPDF")
-            ShareLink(item: textSettings) { Label("Share text settings", systemImage: "text.alignleft") }
+            if let textSettings {
+                ShareLink(item: textSettings) { Label("Share text settings", systemImage: "text.alignleft") }
+            }
         } label: {
             Image(systemName: "square.and.arrow.up").font(.headline).frame(width: 44, height: 44)
                 .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))

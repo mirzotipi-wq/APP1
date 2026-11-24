@@ -17,6 +17,51 @@ final class LightingPlanTests: XCTestCase {
         XCTAssertEqual(PlanUnits.number(0.125, decimals: 3), "0.125")
     }
 
+    func testAdaptiveParameterFormattingRetainsPrecisionWithoutFalseNegativeZero() {
+        XCTAssertEqual(PlanUnits.parameterNumber(73.125), "73.125")
+        XCTAssertEqual(PlanUnits.parameterNumber(4321.5), "4321.5")
+        XCTAssertEqual(PlanUnits.parameterNumber(900, minimumDecimals: 1), "900.0")
+        XCTAssertEqual(PlanUnits.parameterNumber(1.2, minimumDecimals: 2), "1.20")
+        XCTAssertEqual(PlanUnits.parameterNumber(-0.0000001, minimumDecimals: 2), "0.00")
+        XCTAssertEqual(PlanUnits.parameterNumber(0.12345678), "0.123457")
+        XCTAssertEqual(PlanUnits.imperial.parameterDistance(0.3048), "1.00 ft")
+        XCTAssertEqual(PlanUnits.metric.parameterCoordinates(.init(x: -0.0001, y: 1.237, z: -2.5)), "(-0.0001, 1.237, -2.50) m")
+        XCTAssertEqual(PlanUnits.metric.distance(1.237), "1.24 m")
+    }
+
+    func testPrecisePDFModelAndPlainTextShareTheSameValidatedParameters() throws {
+        var scene = LightingScene.portrait()
+        scene.camera.x = -5.137
+        scene.cameraLens = .init(focalLengthMillimeters: 73.125)
+        scene.previewSettings = .init(whiteBalanceKelvin: 4321.5, exposureStops: -0.375)
+        scene.lights[0].candela = 4321.125
+        scene.lights[0].kelvin = 5600.25
+        scene.lights[0].position.x = -1.237
+        scene.lights[0].optics = .init(kind: .rectangle,
+            aimTarget: .init(x: 4.125, y: 1.5, z: 0),
+            widthMeters: 1.237, heightMeters: 0.053)
+        scene.lights[1].optics = .init(kind: .directional, aimTarget: scene.lights[1].position)
+        let metric = try LightingPlan(scene: scene, title: "Precise")
+        let light = metric.lights[0]
+        XCTAssertEqual(light.settings(units: .metric), "4321.125 cd · 5600.25 K · 1.237 m × 0.053 m")
+        XCTAssertTrue(light.placement(units: .metric).contains("-1.237"))
+        XCTAssertTrue(light.aim(units: .metric).contains("4.125"))
+        XCTAssertTrue(metric.cameraSettings.contains("73.125 mm"))
+        XCTAssertTrue(metric.previewSettings.contains("4321.5 K balance · -0.375 relative stops"))
+        for units in PlanUnits.allCases {
+            let report = try LightingPlan(scene: scene, title: "Precise", units: units)
+            let entry = report.lights[0]
+            for value in [report.cameraSettings, report.previewSettings, entry.settings(units: units),
+                          entry.placement(units: units), entry.aim(units: units),
+                          units.parameterCoordinates(scene.camera)] {
+                XCTAssertTrue(report.plainText.contains(value), "Missing \(value)")
+            }
+            XCTAssertTrue(report.plainText.contains("Aim undefined"))
+            XCTAssertTrue(report.plainText.contains("No reference images"))
+            XCTAssertEqual(report.scene, scene)
+        }
+    }
+
     func testEquipmentRowsPreserveSceneValuesAndAimSemantics() throws {
         var scene = LightingScene.portrait()
         scene.lights[0].optics = .init(kind: .rectangle, aimTarget: .init(x: 2, y: 1.8, z: -0.3), widthMeters: 1.2, heightMeters: 0.65)

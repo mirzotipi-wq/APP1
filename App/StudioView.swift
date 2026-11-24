@@ -617,16 +617,8 @@ struct StudioView: View {
         }
     }
 
-    private var exportText: String {
-        func coordinates(_ p: Position) -> String { String(format: "(%.2f, %.2f, %.2f) m", p.x, p.y, p.z) }
-        let entries = scene.lights.map { light -> String in
-            let optics = light.effectiveOptics
-            var result = "\(light.name): \(optics.kind.title), \(coordinates(light.position)), \(String(format: "%.1f", light.candela)) cd, \(String(format: "%.0f", light.kelvin)) K"
-            if optics.kind.isAimed { result += "; aim \(coordinates(light.target(subject: scene.subject)))" }
-            if optics.kind == .rectangle { result += String(format: "; surface %.2f × %.2f m", optics.widthMeters, optics.heightMeters) }
-            return result
-        }
-        return (["Key & Fill — \(projectName) lighting plan", "Coordinates: x, y, z in meters.", "Subject: \(coordinates(scene.subject))", "Camera: \(coordinates(scene.camera)); \(String(format: "%.0f", scene.effectiveCameraLens.focalLengthMillimeters)) mm, full frame 36 × 24 mm", "Test card: \(String(format: "%.0f", scene.effectivePreviewSettings.whiteBalanceKelvin)) K balance, \(String(format: "%+.2f", scene.effectivePreviewSettings.exposureStops)) relative stops"] + entries + ["Ideal source parameters; not calibrated photometry."]).joined(separator: "\n")
+    private var exportText: String? {
+        (try? LightingPlan(scene: scene, title: projectName))?.plainText
     }
     private func remember(_ previous: LightingScene) {
         if history.last != previous { history.append(previous) }
