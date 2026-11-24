@@ -8,6 +8,26 @@ enum BoundedFileReader {
         case notRegularFile, unreadable, tooLarge
     }
 
+    /// Reject a known nonregular final path component before file coordination.
+    /// This requests metadata only; it does not open or read file contents.
+    /// Missing or inaccessible metadata is left to the coordinator/provider.
+    /// Passing this check is not authorization to read: the opened descriptor
+    /// must still pass the no-follow, type and byte-limit checks below.
+    static func rejectKnownNonRegularFile(at url: URL) throws {
+        try Task.checkCancellation()
+        guard url.isFileURL else { throw ReadError.unreadable }
+        var info = stat()
+        let status = url.withUnsafeFileSystemRepresentation { path -> Int32? in
+            guard let path else { return nil }
+            return Darwin.lstat(path, &info)
+        }
+        guard let status else { throw ReadError.unreadable }
+        guard status == 0 else { return }
+        guard info.st_mode & mode_t(S_IFMT) == mode_t(S_IFREG) else {
+            throw ReadError.notRegularFile
+        }
+    }
+
     /// A pathname metadata check cannot prove what a later open will read.
     /// O_NOFOLLOW rejects a final symbolic link and O_NONBLOCK prevents a FIFO
     /// from blocking before fstat validates the actual opened descriptor.

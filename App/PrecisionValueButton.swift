@@ -50,12 +50,20 @@ private struct PrecisionValueEditor: View {
     @FocusState private var focused: Bool
     @State private var draft = ""
     @State private var initialDraft = ""
+    @State private var requiresReplacementDraft = false
     @State private var invalid = false
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
+                    if requiresReplacementDraft {
+                        Text("Current value: \(StudioNumericInput.formattedValue(value, unit: unit, locale: locale))")
+                            .font(.body.monospacedDigit())
+                            .accessibilityIdentifier("precisionPreservedValue")
+                        Text("This value needs scientific notation. Leave the field empty to keep it, or enter a new decimal value.")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
                     HStack {
                         TextField("Value", text: $draft)
                             .font(.body.monospacedDigit())
@@ -93,7 +101,9 @@ private struct PrecisionValueEditor: View {
                 }
             }
             .onAppear {
-                initialDraft = format(value)
+                let exact = StudioNumericInput.editableText(value, decimalSeparator: locale.decimalSeparator ?? ".")
+                requiresReplacementDraft = exact == nil
+                initialDraft = exact ?? ""
                 draft = initialDraft
             }
             .onChange(of: draft) { _, _ in invalid = false }
@@ -103,9 +113,8 @@ private struct PrecisionValueEditor: View {
     private func format(_ number: Double) -> String {
         // ASCII digits plus the user's decimal separator avoid hidden bidi
         // marks in editable text while accepting local decimal digits on input.
-        let posix = number.formatted(.number.precision(.fractionLength(0...12))
-            .grouping(.never).locale(Locale(identifier: "en_US_POSIX")))
-        return posix.replacingOccurrences(of: ".", with: locale.decimalSeparator ?? ".")
+        StudioNumericInput.editableText(number, decimalSeparator: locale.decimalSeparator ?? ".") ??
+            StudioNumericInput.formattedValue(number, locale: locale)
     }
 
     private func apply() {

@@ -10,6 +10,78 @@ final class BoundedFileReaderTests: XCTestCase {
         return url
     }
 
+    func testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading() throws {
+        let folder = try directory()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let source = folder.appendingPathComponent("source.dat")
+        let bytes = Data("unchanged source".utf8)
+        try bytes.write(to: source)
+        let link = folder.appendingPathComponent("link.dat")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: source)
+        let fifo = folder.appendingPathComponent("pipe.dat")
+        XCTAssertEqual(Darwin.mkfifo(fifo.path, mode_t(0o600)), 0)
+        for url in [link, folder, fifo] {
+            XCTAssertThrowsError(try BoundedFileReader.rejectKnownNonRegularFile(at: url)) {
+                XCTAssertEqual($0 as? BoundedFileReader.ReadError, .notRegularFile)
+            }
+        }
+        XCTAssertEqual(try Data(contentsOf: source), bytes)
+    }
+
+    func testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination() throws {
+        let folder = try directory()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let source = folder.appendingPathComponent("source.dat")
+        let bytes = Data("unchanged source".utf8)
+        try bytes.write(to: source)
+        try BoundedFileReader.rejectKnownNonRegularFile(at: source)
+        try BoundedFileReader.rejectKnownNonRegularFile(at: folder.appendingPathComponent("not-materialized.dat"))
+        XCTAssertEqual(try Data(contentsOf: source), bytes)
+        let remote = try XCTUnwrap(URL(string: "https://example.invalid/project.json"))
+        XCTAssertThrowsError(try BoundedFileReader.rejectKnownNonRegularFile(at: remote)) {
+            XCTAssertEqual($0 as? BoundedFileReader.ReadError, .unreadable)
+        }
+    }
+
+    func testPassingMetadataPreflightCannotAuthorizeAReplacementPath() throws {
+        let folder = try directory()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let selected = folder.appendingPathComponent("selected.dat")
+        let other = folder.appendingPathComponent("other.dat")
+        let bytes = Data("unrelated original".utf8)
+        try bytes.write(to: other)
+        for useFIFO in [false, true] {
+            try Data("selected".utf8).write(to: selected)
+            try BoundedFileReader.rejectKnownNonRegularFile(at: selected)
+            try FileManager.default.removeItem(at: selected)
+            if useFIFO {
+                XCTAssertEqual(Darwin.mkfifo(selected.path, mode_t(0o600)), 0)
+            } else {
+                try FileManager.default.createSymbolicLink(at: selected, withDestinationURL: other)
+            }
+            XCTAssertThrowsError(try BoundedFileReader.read(from: selected, maximumBytes: 1024)) {
+                XCTAssertEqual($0 as? BoundedFileReader.ReadError, .notRegularFile)
+            }
+            try FileManager.default.removeItem(at: selected)
+        }
+        XCTAssertEqual(try Data(contentsOf: other), bytes)
+    }
+
+    func testMetadataPreflightHonorsActualTaskCancellation() async throws {
+        let folder = try directory()
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let operation = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            try BoundedFileReader.rejectKnownNonRegularFile(at: folder)
+        }
+        do {
+            try await operation.value
+            XCTFail("A cancelled preflight must stop before checking the selected path")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "Unexpected error: \(error)")
+        }
+    }
+
     func testReadsEmptyAndExactLimitFilesWithoutChangingBytes() throws {
         let folder = try directory()
         defer { try? FileManager.default.removeItem(at: folder) }

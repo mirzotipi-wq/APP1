@@ -46,7 +46,7 @@ final class StudioAccessibleValueTests: XCTestCase {
         let original = 73.123456789
         var scene = LightingScene.portrait()
         scene.cameraLens = .init(focalLengthMillimeters: original)
-        XCTAssertEqual(StudioNumericInput.formattedValue(original, unit: "mm", locale: locale), "73.123457 mm")
+        XCTAssertEqual(StudioNumericInput.formattedValue(original, unit: "mm", locale: locale), "73.123456789 mm")
         XCTAssertEqual(scene.effectiveCameraLens.focalLengthMillimeters, original)
         XCTAssertEqual(StudioNumericInput.formattedValue(50, locale: locale), "50")
         XCTAssertEqual(StudioNumericInput.formattedValue(20_000.125, locale: locale), "20000.125")

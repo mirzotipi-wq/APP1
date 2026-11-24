@@ -48,22 +48,72 @@ final class ProjectDocumentIOTests: XCTestCase {
         XCTAssertEqual((attributes[.size] as? NSNumber)?.intValue, LightingProjectDocument.maximumBytes + 1)
     }
 
-    func testSymbolicLinkDirectoryAndFIFOAreRejectedWithoutFollowingOrBlocking() throws {
+    func testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt() async throws {
+        try await assertNonRegularRejection(.symbolicLink)
+    }
+
+    func testDirectoryIsRejectedBeforeCoordinationWithoutBlocking() async throws {
+        try await assertNonRegularRejection(.directory)
+    }
+
+    func testFIFOIsRejectedBeforeCoordinationWithoutBlocking() async throws {
+        try await assertNonRegularRejection(.fifo)
+    }
+
+    private enum NonRegularKind { case symbolicLink, directory, fifo }
+
+    /// Test-only synchronized outcome storage avoids waiting indefinitely for a
+    /// stalled operation after XCTest has already recorded its timeout failure.
+    private final class ReadOutcome: @unchecked Sendable {
+        private let lock = NSLock()
+        private var value: Result<LightingProjectDocument, Error>?
+        func record(_ result: Result<LightingProjectDocument, Error>) {
+            lock.lock(); defer { lock.unlock() }
+            value = result
+        }
+        func snapshot() -> Result<LightingProjectDocument, Error>? {
+            lock.lock(); defer { lock.unlock() }
+            return value
+        }
+    }
+
+    private func assertNonRegularRejection(_ kind: NonRegularKind) async throws {
         let folder = try directory()
         defer { try? FileManager.default.removeItem(at: folder) }
         let bytes = try LightingProjectDocument(name: "Original", scene: .portrait()).encode()
         let source = folder.appendingPathComponent("source.json")
         try bytes.write(to: source)
-        let link = folder.appendingPathComponent("linked.json")
-        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: source)
-        let fifo = folder.appendingPathComponent("pipe.json")
-        XCTAssertEqual(Darwin.mkfifo(fifo.path, mode_t(0o600)), 0)
-        for file in [link, folder, fifo] {
-            XCTAssertThrowsError(try ProjectDocumentIO.readFile(from: file)) {
-                XCTAssertEqual($0 as? ProjectDocumentIO.ImportError, .notRegularFile)
-            }
+        let selected: URL
+        switch kind {
+        case .symbolicLink:
+            selected = folder.appendingPathComponent("linked.json")
+            try FileManager.default.createSymbolicLink(at: selected, withDestinationURL: source)
+        case .directory:
+            selected = folder
+        case .fifo:
+            selected = folder.appendingPathComponent("pipe.json")
+            XCTAssertEqual(Darwin.mkfifo(selected.path, mode_t(0o600)), 0)
         }
+        let finished = expectation(description: "Nonregular import finishes within five seconds")
+        let outcome = ReadOutcome()
+        let operation = Task {
+            do { outcome.record(.success(try await ProjectDocumentIO.read(from: selected))) }
+            catch { outcome.record(.failure(error)) }
+            finished.fulfill()
+        }
+        defer { operation.cancel() }
+        await fulfillment(of: [finished], timeout: 5)
         XCTAssertEqual(try Data(contentsOf: source), bytes)
+        guard let result = outcome.snapshot() else {
+            XCTFail("The selected nonregular file did not finish; cancellation requested")
+            return
+        }
+        switch result {
+        case .success:
+            XCTFail("A nonregular selected file must not return an editable project")
+        case .failure(let error):
+            XCTAssertEqual(error as? ProjectDocumentIO.ImportError, .notRegularFile)
+        }
     }
 
     func testMalformedAndNonFileInputsDoNotChangeExistingBytes() throws {

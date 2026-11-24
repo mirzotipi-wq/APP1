@@ -76,6 +76,15 @@ enum ProjectDocumentIO {
         defer {
             if scopedAccess { url.stopAccessingSecurityScopedResource() }
         }
+        // Do not hand a known symlink, directory or FIFO to coordination. A
+        // metadata-only preflight can reject those without opening provider
+        // content; unavailable metadata still gets the provider's normal path.
+        // The descriptor check inside the accessor remains authoritative if
+        // the pathname changes after this early check.
+        do { try BoundedFileReader.rejectKnownNonRegularFile(at: url) }
+        catch let error as BoundedFileReader.ReadError {
+            throw importError(for: error)
+        }
         // A false scope result is normal for files already inside the sandbox.
         // Keep the scope open while a provider materializes the file and while
         // the accessor reads it. Scope permission alone does not coordinate a
@@ -106,16 +115,20 @@ enum ProjectDocumentIO {
             contents = try BoundedFileReader.read(from: url, maximumBytes: LightingProjectDocument.maximumBytes,
                                                   checkCancellation: cancellation.checkCancellation)
         } catch let error as BoundedFileReader.ReadError {
-            switch error {
-            case .tooLarge: throw LightingProjectDocument.DocumentError.tooLarge
-            case .notRegularFile: throw ImportError.notRegularFile
-            case .unreadable: throw ImportError.unreadable
-            }
+            throw importError(for: error)
         }
         try cancellation.checkCancellation()
         let project = try LightingProjectDocument.decode(contents)
         try cancellation.checkCancellation()
         return project
+    }
+
+    private static func importError(for error: BoundedFileReader.ReadError) -> Error {
+        switch error {
+        case .tooLarge: return LightingProjectDocument.DocumentError.tooLarge
+        case .notRegularFile: return ImportError.notRegularFile
+        case .unreadable: return ImportError.unreadable
+        }
     }
 
     /// Only cancel() crosses the coordinator's worker thread; Foundation
