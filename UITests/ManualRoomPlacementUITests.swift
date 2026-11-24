@@ -13,13 +13,13 @@ final class ManualRoomPlacementUITests: XCTestCase {
         XCTAssertTrue(open.isHittable)
         open.tap()
         let status = app.descendants(matching: .any)["roomPlacementStatus"].firstMatch
-        let allInside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label CONTAINS %@", "All 5 positions inside room"), object: status)
+        let allInside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label CONTAINS %@", "All 5 center positions inside room"), object: status)
         XCTAssertEqual(XCTWaiter.wait(for: [allInside], timeout: 15), .completed)
         let rotate = app.buttons["roomHalfTurn"]
         for _ in 0..<8 where !rotate.isHittable { app.swipeUp() }
         XCTAssertTrue(rotate.isHittable)
         rotate.tap()
-        let outside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "positions outside room"), object: status)
+        let outside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "center positions outside room"), object: status)
         XCTAssertEqual(XCTWaiter.wait(for: [outside], timeout: 10), .completed)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Manual-room-placement"

@@ -14,23 +14,42 @@ struct ManualRoomPlacementView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Measure the room").font(.title2.bold())
-                        Text("Enter real wall distances and the subject's floor position. Place each camera and light center using the measurements below.")
+                        Text("Enter real wall distances and the subject's floor position. Place each camera and light center using the measurements below, and check rectangular modifier projections.")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                     inputs
                     if let plan {
                         VStack(alignment: .leading, spacing: 10) {
-                            Label(plan.outsideCount == 0 ? "All \(plan.points.count) positions inside room" :
-                                  "\(plan.outsideCount) of \(plan.points.count) positions outside room",
+                            Label(plan.outsideCount == 0 ? "All \(plan.points.count) center positions inside room" :
+                                  "\(plan.outsideCount) of \(plan.points.count) center positions outside room",
                                   systemImage: plan.outsideCount == 0 ? "checkmark.circle" : "exclamationmark.triangle")
                                 .font(.headline)
                                 .accessibilityIdentifier("roomPlacementStatus")
+                            if !plan.modifierFootprints.isEmpty {
+                                if plan.crossingModifierCount > 0 {
+                                    Label("\(plan.crossingModifierCount) rectangular modifiers cross a wall",
+                                          systemImage: "exclamationmark.triangle")
+                                        .foregroundStyle(.orange)
+                                        .accessibilityIdentifier("modifierCrossingStatus")
+                                } else if plan.unavailableModifierCount == 0 {
+                                    Label("Rectangular emitting faces within room outline",
+                                          systemImage: "checkmark.circle")
+                                        .foregroundStyle(.secondary)
+                                        .accessibilityIdentifier("modifierCrossingStatus")
+                                }
+                                if plan.unavailableModifierCount > 0 {
+                                    Label("\(plan.unavailableModifierCount) modifier projections unavailable; check aim",
+                                          systemImage: "questionmark.circle")
+                                        .foregroundStyle(.secondary)
+                                        .accessibilityIdentifier("modifierUnavailableStatus")
+                                }
+                            }
                             map(plan)
-                            Text("Near wall at bottom · left wall at left. Only in-room centers are drawn.")
+                            Text("Near wall at bottom · left wall at left. Rectangular emitting faces are projected to the floor and clipped to the room outline; dashed orange outlines cross a wall.")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         ForEach(plan.points) { point in
-                            measurements(point)
+                            measurements(point, footprint: plan.modifierFootprints.first { $0.id.uuidString == point.id })
                             Divider()
                         }
                     } else {
@@ -38,7 +57,7 @@ struct ManualRoomPlacementView: View {
                     }
                     Label("Manual measurements only", systemImage: "ruler")
                         .font(.headline)
-                    Text("Center coordinates are calculated at 1:1 scale from your entries. This does not measure the actual room, detect collisions, account for modifier size or ensure ceiling clearance. Check stands, cables and clearances physically. Room settings are session-only and do not change the saved lighting setup.")
+                    Text("Center coordinates and rectangular emitting-face projections are calculated at 1:1 scale from your entries. These checks do not measure the actual room, detect collisions, include the entire fixture or guarantee clearance. Check housing, stands, booms, cables and ceiling clearance physically. Room settings are session-only and do not change the saved lighting setup.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
@@ -105,6 +124,24 @@ struct ManualRoomPlacementView: View {
                 Rectangle().stroke(Color.white.opacity(0.55), lineWidth: 1)
                     .frame(width: w, height: h)
                     .position(x: left + w / 2, y: top + h / 2)
+                Canvas { context, _ in
+                    for footprint in plan.modifierFootprints where footprint.isAvailable {
+                        var outline = Path()
+                        for (index, corner) in footprint.corners.enumerated() {
+                            let p = CGPoint(x: CGFloat(corner.xFromLeft) * scale,
+                                            y: h - CGFloat(corner.zFromNear) * scale)
+                            if index == 0 { outline.move(to: p) } else { outline.addLine(to: p) }
+                        }
+                        outline.closeSubpath()
+                        let crosses = !footprint.crossedWalls.isEmpty
+                        context.stroke(outline, with: .color(crosses ? .orange : .white.opacity(0.75)),
+                                       style: StrokeStyle(lineWidth: 2, dash: crosses ? [4, 3] : []))
+                    }
+                }
+                .frame(width: w, height: h)
+                .clipped()
+                .position(x: left + w / 2, y: top + h / 2)
+                .accessibilityHidden(true)
                 ForEach(plan.points.filter(\.insideRoom)) { point in
                     Image(systemName: symbol(point.kind))
                         .font(.caption.bold())
@@ -123,12 +160,27 @@ struct ManualRoomPlacementView: View {
         .accessibilityIdentifier("roomPlacementMap")
     }
 
-    private func measurements(_ point: RoomPlacementPoint) -> some View {
+    private func measurements(_ point: RoomPlacementPoint, footprint: RoomModifierFootprint?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Label(point.name, systemImage: symbol(point.kind)).font(.headline)
             if !point.insideRoom {
                 Label("Outside room", systemImage: "exclamationmark.triangle")
                     .font(.subheadline).foregroundStyle(.orange)
+            }
+            if let footprint {
+                if !footprint.isAvailable {
+                    Label("Modifier projection unavailable", systemImage: "questionmark.circle")
+                        .foregroundStyle(.secondary)
+                } else if !footprint.crossedWalls.isEmpty {
+                    Label("Emitting face crosses " + footprint.crossedWalls.map(\.rawValue).joined(separator: ", ") + " wall boundary",
+                          systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                }
+                if let clearance = footprint.minimumWallClearanceMeters {
+                    Text(clearance < 0 ? "Projected wall overhang: \(meters(-clearance))" :
+                         "Minimum projected wall distance: \(meters(clearance))")
+                        .foregroundStyle(.secondary)
+                }
             }
             Text("X from left wall: \(meters(point.xFromLeft))")
             Text("Z from near wall: \(meters(point.zFromNear))")
