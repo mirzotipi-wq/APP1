@@ -184,7 +184,7 @@ struct StudioView: View {
     private var projectHeading: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
-            Text(saveBlocked ? "Project unavailable" : StudioDisplayName.display(projectName))
+            Text(saveBlocked ? "Project unavailable" : StudioDisplayName.label(projectName, fallback: "Unnamed project"))
                 .font(.title2.bold())
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                 .accessibilityIdentifier("projectName")
@@ -335,8 +335,10 @@ struct StudioView: View {
             }
             if mode == "Camera" || mode == "Study" {
                 Divider()
+                let owner = editOwner("camera")
                 CameraInspector(position: cameraPositionBinding, lens: cameraLensBinding,
-                                subject: scene.subject, onEditingChanged: editChanged)
+                                subject: scene.subject, onEditingChanged: editHandler(owner: owner))
+                    .id(owner)
             }
         }.padding(14)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
@@ -452,9 +454,9 @@ struct StudioView: View {
                     .position(point(scene.camera, w, h, scale, center))
                 ForEach(scene.lights) { light in
                     Button { selected = light.id } label: {
-                        marker(light.name, icon: lightIcon(light), color: amber, active: selected == light.id)
+                        marker(lightDisplayName(light), icon: lightIcon(light), color: amber, active: selected == light.id)
                     }.buttonStyle(.plain)
-                        .accessibilityLabel("Select \(StudioDisplayName.display(light.name)) on plan")
+                        .accessibilityLabel("Select \(lightDisplayName(light)) on plan")
                         .accessibilityAddTraits(selected == light.id ? .isSelected : [])
                         .position(point(light.position, w, h, scale, center))
                 }
@@ -471,6 +473,12 @@ struct StudioView: View {
         case .directional: return "flashlight.on.fill"
         case .rectangle: return "rectangle.inset.filled"
         }
+    }
+
+    private func lightDisplayName(_ light: StudioLight) -> String {
+        let fallback = scene.lights.firstIndex(where: { $0.id == light.id })
+            .map { "Light \($0 + 1)" } ?? "Light \(light.id.uuidString.prefix(8))"
+        return StudioDisplayName.label(light.name, fallback: fallback)
     }
 
     private func marker(_ name: String, icon: String, color: Color, active: Bool) -> some View {
@@ -514,8 +522,10 @@ struct StudioView: View {
             .accessibilityIdentifier("meterDisclosure")
             if showMeter {
                 Divider().padding(.vertical, 12)
+                let owner = editOwner("preview")
                 NeutralCardInspector(scene: scene, settings: previewSettingsBinding,
-                                     onEditingChanged: editChanged)
+                                     onEditingChanged: editHandler(owner: owner))
+                    .id(owner)
             }
         }
         .padding(14)
@@ -542,7 +552,7 @@ struct StudioView: View {
                         Image(systemName: lightIcon(light)).foregroundStyle(amber).frame(width: 36, height: 36)
                             .background(amber.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(StudioDisplayName.display(light.name)).font(.subheadline.weight(.semibold))
+                            Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
                             Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
                             Text("\(light.position.distance(to: scene.subject), specifier: "%.2f") m · \(light.kelvin, specifier: "%.0f") K")
                                 .font(.caption).foregroundStyle(.secondary)
@@ -554,7 +564,7 @@ struct StudioView: View {
                     }.padding(8).frame(minHeight: 52)
                         .background(selected == light.id ? amber.opacity(0.12) : Color(uiColor: .tertiarySystemGroupedBackground),
                                     in: RoundedRectangle(cornerRadius: 12))
-                }.buttonStyle(.plain).accessibilityIdentifier("light-\(StudioDisplayName.display(light.name))")
+                }.buttonStyle(.plain).accessibilityIdentifier("light-\(lightDisplayName(light))")
                     .accessibilityAddTraits(selected == light.id ? .isSelected : [])
             }
         }.padding(14)
@@ -566,7 +576,7 @@ struct StudioView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("LIGHT INSPECTOR").font(.caption2.weight(.semibold)).tracking(1.4).foregroundStyle(.secondary)
-                    Text(StudioDisplayName.display(light.name)).font(.title3.bold())
+                    Text(lightDisplayName(light)).font(.title3.bold())
                 }
                 Spacer()
                 Button(role: .destructive) { confirmRemove = true } label: {
@@ -589,7 +599,10 @@ struct StudioView: View {
                 }
             }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
                 .background(amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
-            OpticsInspector(optics: opticsBinding(for: light.id), subject: scene.subject, onEditingChanged: editChanged)
+            let opticsOwner = editOwner("light.\(light.id.uuidString).optics")
+            OpticsInspector(optics: opticsBinding(for: light.id), subject: scene.subject,
+                            onEditingChanged: editHandler(owner: opticsOwner))
+                .id(opticsOwner)
             Divider()
             control("Horizontal", id: light.id, key: \.position.x, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightX")
             control("Depth", id: light.id, key: \.position.z, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightZ")
@@ -615,15 +628,21 @@ struct StudioView: View {
                 scene.lights[i] = next
             })
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
+        // Capture this project, light and field identity. A late callback must
+        // not consult a newer selected light or project that shares light IDs.
+        let owner = editOwner("light.\(id.uuidString).\(fieldID)")
         return VStack(alignment: .leading, spacing: 5) {
             HStack {
                 Text(title).font(.subheadline.weight(.medium))
                 Spacer()
                 PrecisionValueButton(title: title, unit: unit, id: fieldID,
                                      value: value, range: domain)
-                    .id(id)
+                    .id(owner)
             }
-            Slider(value: value, in: bounds, step: step, onEditingChanged: editChanged)
+            Slider(value: value, in: bounds, step: step) { [owner] editing in
+                editChanged(editing, owner: owner)
+            }
+                .id(owner)
                 .accessibilityLabel(title)
                 .accessibilityValue(StudioNumericInput.formattedValue(value.wrappedValue, unit: unit))
                 .accessibilityIdentifier(fieldID)
@@ -664,11 +683,25 @@ struct StudioView: View {
         })
     }
 
-    private func editChanged(_ editing: Bool) {
+    /// Each editor has one stable draft scope until its first saved project.
+    /// Copies may share light UUIDs, so project identity is part of ownership.
+    private func editOwner(_ control: String) -> String {
+        "\(library?.activeID.uuidString ?? "draft").\(control)"
+    }
+
+    /// The owner is captured while constructing the control, never looked up
+    /// from the current selection when an old callback eventually arrives.
+    private func editHandler(owner: String) -> (Bool, String) -> Void {
+        { [owner] editing, fieldID in
+            editChanged(editing, owner: "\(owner).\(fieldID)")
+        }
+    }
+
+    private func editChanged(_ editing: Bool, owner: String) {
         if editing {
-            editHistory.begin(scene: scene)
+            editHistory.begin(scene: scene, owner: owner)
         } else {
-            editHistory.end(scene: scene)
+            editHistory.end(scene: scene, owner: owner)
         }
     }
 

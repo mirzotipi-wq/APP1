@@ -5,7 +5,7 @@ import LightingCore
 struct OpticsInspector: View {
     @Binding var optics: LightOptics
     let subject: Position
-    let onEditingChanged: (Bool) -> Void
+    let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
 
     var body: some View {
@@ -88,7 +88,9 @@ struct OpticsInspector: View {
                 Spacer()
                 PrecisionValueButton(title: title, unit: "m", id: id, value: value, range: domain)
             }
-            Slider(value: value, in: limits, step: step, onEditingChanged: onEditingChanged)
+            Slider(value: value, in: limits, step: step) { editing in
+                onEditingChanged(editing, id)
+            }
                 .accessibilityLabel(title)
                 .accessibilityValue(StudioNumericInput.formattedValue(actual, unit: "m", locale: locale))
                 .accessibilityIdentifier(id)

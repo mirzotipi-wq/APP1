@@ -33,16 +33,30 @@ final class MetalStudyRenderer {
         pipeline = try device.makeComputePipelineState(function: function)
     }
 
-    /// Far-away or extreme geometry stays on the Double-precision oracle.
-    /// Translation to subject-relative coordinates already minimizes error.
+    /// Far-away geometry and potentially ambiguous near-field masks stay on
+    /// the Double-precision oracle. Routing does not invalidate this backend.
     static func supports(_ scene: LightingScene) -> Bool {
-        scene.camera.distance(to: scene.subject) <= 20 &&
-        scene.lights.allSatisfy { $0.position.distance(to: scene.subject) <= 20 }
+        StudyFloat32Eligibility.supports(scene)
     }
 
     func render(scene: LightingScene, width: Int) throws -> StudyImage {
         guard Self.supports(scene) else { throw MetalStudyError.precisionDomain }
-        let input = try StudyComputeInput(scene: scene, width: width)
+        return try compute(StudyComputeInput(scene: scene, width: width))
+    }
+
+    /// Internal parity-only path: retain the deliberately unsupported fixture
+    /// even though production routing now chooses CPU for near-field scenes.
+    /// Input validation and the relative-coordinate limit still apply. The
+    /// render engine never uses this entry point to publish a user's frame.
+    func renderValidationFixture(scene: LightingScene, width: Int) throws -> StudyImage {
+        let limit = StudyFloat32Eligibility.maximumRelativeDistanceMeters
+        guard scene.camera.distance(to: scene.subject) <= limit,
+              scene.lights.allSatisfy({ $0.position.distance(to: scene.subject) <= limit })
+        else { throw MetalStudyError.precisionDomain }
+        return try compute(StudyComputeInput(scene: scene, width: width))
+    }
+
+    private func compute(_ input: StudyComputeInput) throws -> StudyImage {
         guard let params = buffer(input.parameters),
               let samples = buffer(input.samples),
               let areas = buffer(input.areas),
@@ -81,7 +95,7 @@ final class MetalStudyRenderer {
             let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 48,
                                                                isCancelled: isCancelled)
             guard !isCancelled() else { throw StudyError.cancelled }
-            let candidate = try render(scene: fixture.scene, width: 48)
+            let candidate = try renderValidationFixture(scene: fixture.scene, width: 48)
             // A submitted GPU command must finish before its buffers can be
             // read, but cancellation prevents starting another fixture.
             guard !isCancelled() else { throw StudyError.cancelled }
@@ -105,7 +119,7 @@ final class MetalStudyRenderer {
 
 /// Single worker serializes compute submissions and CPU fallbacks. A cancelled
 /// request cannot publish a stale frame. GPU commands already submitted are
-/// allowed to complete, then discarded; CPU scans can stop at each row.
+/// allowed to complete, then discarded; CPU pixel work checks cancellation at most every eight evaluations.
 actor StudyRenderEngine {
     static let shared = StudyRenderEngine()
     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }

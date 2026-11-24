@@ -20,9 +20,10 @@ struct ProjectBackupView: View {
         NavigationStack {
             Form {
                 Section("Lighting setup") {
-                    Text(StudioDisplayName.display(name)).font(.headline)
+                    Text(StudioDisplayName.label(name, fallback: "Unnamed project")).font(.headline)
                         .accessibilityIdentifier("editableCopyProjectName")
                     Label("\(scene.lights.count) lights", systemImage: "lightbulb")
+                        .accessibilityIdentifier("editableCopyLightCount")
                     Text("Includes the project name, lights, camera and preview settings from the studio when you opened this sheet.")
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
@@ -59,6 +60,7 @@ struct ProjectBackupView: View {
                     Text("In Projects, choose Import editable project. Importing creates a separate project and keeps existing projects.")
                     Text("Reference photos, room measurements and edit history are not included. Your current studio edits stay open after exporting.")
                         .font(.footnote).foregroundStyle(.secondary)
+                        .accessibilityIdentifier("editableCopyScope")
                 }
             }
             .navigationTitle("Editable project copy")

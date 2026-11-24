@@ -196,4 +196,23 @@ final class LightingPlanTests: XCTestCase {
         XCTAssertEqual(plan.title.count, 80)
         XCTAssertTrue(plan.title.hasSuffix("…"))
     }
+
+    func testInvisibleReportNamesHaveContextWithoutRenamingEditableData() throws {
+        var scene = LightingScene.portrait()
+        scene.lights[0].name = "\u{200C}"
+        scene.lights[1].name = "\u{FE0F}"
+        scene.lights[2].name = "نور\u{200C}پردازی"
+        let projectName = "\u{200D}"
+        let document = try LightingProjectDocument(name: projectName, scene: scene)
+        let before = try document.encode()
+        let report = try LightingPlan(scene: scene, title: projectName)
+
+        XCTAssertEqual(report.title, "Portrait setup")
+        XCTAssertEqual(report.lights.map(\.name), ["Light 1", "Light 2", "نور\u{200C}پردازی"])
+        XCTAssertTrue(report.plainText.contains("1. Light 1:"))
+        XCTAssertTrue(report.plainText.contains("2. Light 2:"))
+        XCTAssertEqual(report.scene, scene)
+        XCTAssertEqual(document.name, projectName)
+        XCTAssertEqual(try document.encode(), before)
+    }
 }

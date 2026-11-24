@@ -58,6 +58,14 @@ jobs:
           "$RUNNER_TEMP/prepare-kernel-fixtures" "$RUNNER_TEMP/kernel-fixtures"
           clang++ -std=c++17 -O2 -Wall -Wextra -Werror scripts/verify-kernel-host.cpp -o "$RUNNER_TEMP/verify-kernel-host"
           "$RUNNER_TEMP/verify-kernel-host" "$RUNNER_TEMP"/kernel-fixtures/*.bin | tee study-kernel.log
+      - name: Verify far-camera Float32 precision regressions
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/precision-boundary.swift -o "$RUNNER_TEMP/prepare-precision-boundary"
+          "$RUNNER_TEMP/prepare-precision-boundary" "$RUNNER_TEMP/precision-boundary"
+          "$RUNNER_TEMP/verify-kernel-host" --maximum-channel-error 1 \
+            "$RUNNER_TEMP"/precision-boundary/area-camera-*.bin \
+            "$RUNNER_TEMP"/precision-boundary/world-translation-*.bin | tee study-precision.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,13 +79,14 @@ jobs:
             core-release-tests.log
             study-render.log
             study-kernel.log
+            study-precision.log
             study-artifacts/
   simulator:
     # Standard public-repository Intel pool: test an alternative after repeated arm64 queue cancellations.
     runs-on: macos-26-intel
     needs: core
     # Build evidence is independent of long UI suites. Native unit tests follow.
-    timeout-minutes: 35
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
       - name: Record Apple toolchain and test the portable package on macOS
@@ -92,6 +101,11 @@ jobs:
             git rev-parse HEAD
           } | tee macos-environment.log
           swift test --jobs 2 2>&1 | tee macos-core-tests.log
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
       - name: Generate project
         run: |
           set -euo pipefail
@@ -187,6 +201,7 @@ jobs:
           name: native-unit-and-build-evidence
           path: |
             macos-environment.log
+            metal-toolchain.log
             macos-core-tests.log
             xcodegen-version.log
             simulators.json
@@ -216,7 +231,8 @@ jobs:
     # entire result bundle when a different test class overruns its budget.
     needs: core
     runs-on: macos-26-intel
-    timeout-minutes: 70
+    # Reserve setup and evidence time beyond the 12 + 25 + 32 minute step bounds.
+    timeout-minutes: 85
     strategy:
       fail-fast: false
       max-parallel: 2
@@ -236,6 +252,11 @@ jobs:
             xcodebuild -showsdks
             git rev-parse HEAD
           } | tee macos-environment.log
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
       - name: Generate project
         run: |
           set -euo pipefail
@@ -300,6 +321,7 @@ jobs:
           name: ui-${{ matrix.shard }}-evidence
           path: |
             macos-environment.log
+            metal-toolchain.log
             macos-core-tests.log
             xcodegen-version.log
             simulators.json

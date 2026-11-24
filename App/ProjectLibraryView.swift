@@ -303,7 +303,7 @@ struct ProjectLibraryView: View {
                 try apply { next in
                     try next.create(name: document.name, scene: document.scene)
                 }
-                importMessage = "Imported “\(StudioDisplayName.display(document.name))” as a new project."
+                importMessage = "Imported “\(StudioDisplayName.label(document.name, fallback: "Unnamed project"))” as a new project."
                 importTask = nil
             } catch {
                 guard !Task.isCancelled, request == importRequest else { return }

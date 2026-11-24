@@ -12,7 +12,9 @@ final class StudyRendererTests: XCTestCase {
         let renderer = try MetalStudyRenderer(device: device)
         for fixture in StudyValidationFixtures.all() {
             let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 96)
-            let candidate = try renderer.render(scene: fixture.scene, width: 96)
+            // Exercise all raw kernels, including the deliberate invalid-mask
+            // fixture that production precision routing sends to Double CPU.
+            let candidate = try renderer.renderValidationFixture(scene: fixture.scene, width: 96)
             let metrics = try XCTUnwrap(StudyParityMetrics(reference: reference, candidate: candidate))
             print("Metal \(fixture.name): mean \(metrics.meanChannelError), max \(metrics.maximumChannelError), outliers \(metrics.fractionAboveFour), invalid match \(metrics.invalidCountMatches)")
             XCTAssertTrue(metrics.passes, "\(fixture.name): \(metrics)")
@@ -47,6 +49,26 @@ final class StudyRendererTests: XCTestCase {
         let engine = StudyRenderEngine()
         let rendered = try await engine.render(scene: scene, width: 48)
         XCTAssertEqual(rendered.backend, .cpu)
+    }
+
+    func testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal() async throws {
+        guard MTLCreateSystemDefaultDevice() != nil else {
+            throw XCTSkip("No Metal device available; per-scene GPU routing cannot be verified.")
+        }
+        let engine = StudyRenderEngine()
+        let normal = LightingScene.portrait()
+        let first = try await engine.render(scene: normal, width: 48)
+        XCTAssertEqual(first.backend, .metal)
+
+        let guarded = try XCTUnwrap(StudyValidationFixtures.all().first { $0.name == "near-field" }).scene
+        XCTAssertFalse(MetalStudyRenderer.supports(guarded))
+        let fallback = try await engine.render(scene: guarded, width: 48)
+        XCTAssertEqual(fallback.backend, .cpu)
+        XCTAssertEqual(fallback.image, try ReferenceStudyRenderer.render(scene: guarded, width: 48))
+
+        let last = try await engine.render(scene: normal, width: 48)
+        XCTAssertEqual(last.backend, .metal)
+        XCTAssertEqual(last.image, first.image)
     }
 
     private final class CancellationProbe: @unchecked Sendable {

@@ -156,15 +156,7 @@ public struct LightingPlan: Equatable, Sendable {
     /// Prevent line/control injection; keep ordinary Unicode names. Bound hostile
     /// long combining sequences before handing them to text layout.
     private static func printable(_ text: String) -> String {
-        let scalars = text.unicodeScalars.prefix(320).map { scalar -> Unicode.Scalar in
-            switch scalar.properties.generalCategory {
-            case .control, .lineSeparator, .paragraphSeparator: return " "
-            default: return scalar
-            }
-        }
-        let cleaned = String(String.UnicodeScalarView(scalars)).trimmingCharacters(in: .whitespacesAndNewlines)
-        if cleaned.count > 80 || text.unicodeScalars.count > 320 { return String(cleaned.prefix(79)) + "…" }
-        return cleaned
+        StudioDisplayName.display(text)
     }
 
     public var equipmentPages: [[PlanLight]] {

@@ -6,7 +6,7 @@ struct CameraInspector: View {
     @Binding var position: Position
     @Binding var lens: CameraLens
     let subject: Position
-    let onEditingChanged: (Bool) -> Void
+    let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
 
     private var framing: CameraFraming? {
@@ -67,7 +67,9 @@ struct CameraInspector: View {
                 Spacer()
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: domain)
             }
-            Slider(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged)
+            Slider(value: value, in: bounds, step: step) { editing in
+                onEditingChanged(editing, id)
+            }
                 .accessibilityLabel(title).accessibilityValue(formatted)
                 .accessibilityIdentifier(id)
         }

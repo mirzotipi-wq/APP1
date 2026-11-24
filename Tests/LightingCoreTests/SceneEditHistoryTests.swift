@@ -142,4 +142,114 @@ final class SceneEditHistoryTests: XCTestCase {
         XCTAssertNil(history.undo(current: b))
         XCTAssertNil(history.redo(current: a))
     }
+
+    func testLateEndFromAnotherControlDoesNotCloseNewGesture() {
+        let a = scene(0), b = scene(1), c = scene(2), d = scene(3)
+        var history = SceneEditHistory()
+        history.begin(scene: a, owner: "light-A.intensity")
+        history.end(scene: b) // Save or selection change closes A explicitly.
+        history.begin(scene: b, owner: "camera.focalLength")
+        history.end(scene: c, owner: "light-A.intensity") // A's delayed end.
+        XCTAssertTrue(history.isEditing, "A delayed end must not close another control's edit")
+        // Model the binding's real fallback for changes outside a transaction.
+        if !history.isEditing { history.record(previous: c) }
+        history.end(scene: d, owner: "camera.focalLength")
+        XCTAssertEqual(history.undo(current: d), b, "B should remain one complete undo step")
+        XCTAssertEqual(history.undo(current: b), a)
+        XCTAssertNil(history.undo(current: a))
+    }
+
+    func testDifferentLightOwnersCommitSeparateStepsWithoutExplicitClose() {
+        let a = scene(0), b = scene(1), c = scene(2), d = scene(3)
+        var history = SceneEditHistory()
+        history.begin(scene: a, owner: "light-A.width")
+        history.begin(scene: b, owner: "light-B.width")
+        history.end(scene: c, owner: "light-A.width")
+        XCTAssertTrue(history.isEditing)
+        history.end(scene: d, owner: "light-B.width")
+        XCTAssertEqual(history.undo(current: d), b)
+        XCTAssertEqual(history.undo(current: b), a)
+        XCTAssertNil(history.undo(current: a))
+        XCTAssertEqual(history.redo(current: a), b)
+        XCTAssertEqual(history.redo(current: b), d)
+    }
+
+    func testRepeatedBeginFromSameOwnerKeepsTheOriginalScene() {
+        let a = scene(0), b = scene(1), c = scene(2)
+        var history = SceneEditHistory()
+        history.begin(scene: a, owner: "preview.exposure")
+        history.begin(scene: b, owner: "preview.exposure")
+        history.end(scene: c, owner: "preview.exposure")
+        XCTAssertEqual(history.undo(current: c), a)
+        XCTAssertNil(history.undo(current: a))
+        XCTAssertEqual(history.redo(current: a), c)
+    }
+
+    func testPreviousProjectEndCannotCloseSameLightFieldInAnotherProject() {
+        let old = scene(0), opened = scene(2), changed = scene(3)
+        var history = SceneEditHistory()
+        history.begin(scene: old, owner: "project-A.shared-light.width")
+        history.reset() // Switching projects must remove the old undo graph.
+        history.begin(scene: opened, owner: "project-B.shared-light.width")
+        history.end(scene: changed, owner: "project-A.shared-light.width")
+        XCTAssertTrue(history.isEditing)
+        history.end(scene: changed, owner: "project-B.shared-light.width")
+        XCTAssertEqual(history.undo(current: changed), opened)
+        XCTAssertNil(history.undo(current: opened))
+        XCTAssertEqual(history.redo(current: opened), changed)
+    }
+
+    func testUnmatchedEndPreservesNewOwnerRollbackAndRedo() {
+        let a = scene(0), b = scene(1), c = scene(2)
+        var history = SceneEditHistory()
+        history.record(previous: a)
+        XCTAssertEqual(history.undo(current: b), a)
+        history.begin(scene: a, owner: "old")
+        history.end(scene: a) // Unchanged forced close keeps the redo branch.
+        history.begin(scene: a, owner: "new")
+        history.end(scene: c, owner: "old")
+        XCTAssertTrue(history.isEditing)
+        XCTAssertTrue(history.canRedo)
+        XCTAssertEqual(history.cancel(), a)
+        history.end(scene: c, owner: "new") // End after rollback cannot commit.
+        XCTAssertEqual(history.redo(current: a), b)
+        history.begin(scene: b, owner: "new")
+        history.reset()
+        XCTAssertEqual(history, SceneEditHistory())
+        history.end(scene: c, owner: "new")
+        XCTAssertNil(history.undo(current: c))
+    }
+
+    func testOwnedAndLegacyEditsKeepExplicitForceCloseSemantics() {
+        let a = scene(0), b = scene(1), c = scene(2), d = scene(3)
+        var history = SceneEditHistory()
+        history.begin(scene: a)
+        history.begin(scene: b, owner: "camera")
+        history.begin(scene: c) // Legacy owner is distinct from camera.
+        history.end(scene: d, owner: "camera")
+        XCTAssertTrue(history.isEditing)
+        history.end(scene: d) // Explicitly closes the legacy edit.
+        XCTAssertFalse(history.isEditing)
+        XCTAssertEqual(history.undo(current: d), c)
+        XCTAssertEqual(history.undo(current: c), b)
+        XCTAssertEqual(history.undo(current: b), a)
+        XCTAssertNil(history.undo(current: a))
+    }
+
+    func testOwnerChangesRespectHistoryLimitAndLateEndsKeepRedo() {
+        let a = scene(0), b = scene(1), c = scene(2), d = scene(3), e = scene(4)
+        var history = SceneEditHistory(limit: 2)
+        history.begin(scene: a, owner: "first")
+        history.begin(scene: b, owner: "second")
+        history.begin(scene: c, owner: "third")
+        history.begin(scene: d, owner: "fourth")
+        history.end(scene: e)
+        XCTAssertEqual(history.undo(current: e), d)
+        XCTAssertEqual(history.undo(current: d), c)
+        XCTAssertNil(history.undo(current: c))
+        history.end(scene: c, owner: "first")
+        history.end(scene: c, owner: "fourth")
+        XCTAssertEqual(history.redo(current: c), d)
+        XCTAssertEqual(history.redo(current: d), e)
+    }
 }

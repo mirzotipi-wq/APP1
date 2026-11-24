@@ -5,7 +5,7 @@ import LightingCore
 struct NeutralCardInspector: View {
     let scene: LightingScene
     @Binding var settings: PreviewSettings
-    let onEditingChanged: (Bool) -> Void
+    let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
     @State private var sample: Sample?
 
@@ -113,7 +113,9 @@ struct NeutralCardInspector: View {
                 Spacer()
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
             }
-            Slider(value: value, in: range, step: step, onEditingChanged: onEditingChanged)
+            Slider(value: value, in: range, step: step) { editing in
+                onEditingChanged(editing, id)
+            }
                 .accessibilityLabel(title).accessibilityValue(formatted)
                 .accessibilityIdentifier(id)
         }

@@ -191,9 +191,15 @@ struct ManualRoomPlacementView: View {
         .accessibilityIdentifier("roomPlacementMap")
     }
 
+    private func pointDisplayName(_ point: RoomPlacementPoint) -> String {
+        let fallback = scene.lights.firstIndex(where: { $0.id.uuidString == point.id })
+            .map { "Light \($0 + 1)" } ?? point.kind.rawValue.capitalized
+        return StudioDisplayName.label(point.name, fallback: fallback)
+    }
+
     private func measurements(_ point: RoomPlacementPoint, footprint: RoomModifierFootprint?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Label(StudioDisplayName.display(point.name), systemImage: symbol(point.kind)).font(.headline)
+            Label(pointDisplayName(point), systemImage: symbol(point.kind)).font(.headline)
             if !point.insideRoom {
                 Label("Outside room", systemImage: "exclamationmark.triangle")
                     .font(.subheadline).foregroundStyle(.orange)

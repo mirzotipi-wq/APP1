@@ -76,6 +76,61 @@ final class StudioDisplayNameTests: XCTestCase {
         XCTAssertEqual(StudioDisplayName.display(oversized, maximumCharacters: Int.max).count, 80)
     }
 
+    func testNewNamesNeedContentBeyondInvisibleFormattingCharacters() {
+        let invisibleNames = ["\u{200C}", "\u{200D}", "\u{FE0F}", "\u{034F}",
+                              "\u{115F}", "\u{3164}", "\u{2060}", "\u{00AD}",
+                              "\u{FEFF}", "\u{E0067}", " \u{200C}\u{200D}\u{FE0F} "]
+        for name in invisibleNames {
+            XCTAssertThrowsError(try StudioDisplayName.newInput(name)) {
+                XCTAssertEqual($0 as? StudioDisplayName.NameError, .empty)
+            }
+        }
+    }
+
+    func testInvisibleLegacyNamesRemainStoredButSelectTheVisibleIdentityFallback() throws {
+        for name in ["\u{200C}", "\u{200D}", "\u{FE0F}", "\u{034F}\u{FE0F}"] {
+            let library = try ProjectLibrary(name: name, scene: .portrait())
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .sortedKeys
+            let encoded = try encoder.encode(library)
+            let reopened = try JSONDecoder().decode(ProjectLibrary.self, from: encoded).validated()
+            let project = try XCTUnwrap(reopened.activeProject)
+            XCTAssertEqual(project.name, name)
+            // Projects and recovery already map an empty display to "Unnamed
+            // project" and include the short ID when it differs from storage.
+            XCTAssertEqual(StudioDisplayName.display(project.name), "")
+            XCTAssertNotEqual(StudioDisplayName.display(project.name), project.name)
+            XCTAssertEqual(try encoder.encode(reopened), encoded)
+        }
+        // Do not scan beyond the existing scalar budget looking for a glyph.
+        // The ellipsis remains truthful when the unseen suffix may be visible.
+        let hiddenPrefix = String(repeating: "\u{034F}", count: 500) + "Portrait"
+        XCTAssertEqual(StudioDisplayName.display(hiddenPrefix), "…")
+        assertBounds(StudioDisplayName.display(hiddenPrefix))
+    }
+
+    func testInvisibleCharactersWithinVisibleScriptsAndEmojiArePreserved() throws {
+        for name in ["❤️", "🏳️‍🌈", "क्‍ष", "\u{200C}نور\u{200C}", "e\u{0301}"] {
+            XCTAssertEqual(try StudioDisplayName.newInput(name), name)
+            XCTAssertEqual(StudioDisplayName.display(name), name)
+            let library = try ProjectLibrary(name: name, scene: .portrait())
+            XCTAssertEqual(library.activeProject?.name, name)
+        }
+    }
+
+    func testContextualLabelsPreserveVisibleNamesAndBoundTheirFallbacks() {
+        for name in ["\u{200C}", "\u{200D}", "\u{FE0F}", "\u{034F}\u{FE0F}"] {
+            XCTAssertEqual(StudioDisplayName.label(name, fallback: "Unnamed project"), "Unnamed project")
+            XCTAssertEqual(StudioDisplayName.label(name, fallback: "Light 2"), "Light 2")
+        }
+        for name in ["نور\u{200C}پردازی", "Family 👨‍👩‍👧‍👦", "e\u{0301}"] {
+            XCTAssertEqual(StudioDisplayName.label(name, fallback: "Unnamed project"), name)
+        }
+        let fallback = "Light " + String(repeating: "💡", count: 500)
+        assertBounds(StudioDisplayName.label("\u{200C}", fallback: fallback))
+        XCTAssertTrue(StudioDisplayName.label("\u{200C}", fallback: fallback).hasSuffix("…"))
+    }
+
     private func assertBounds(_ label: String, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertLessThanOrEqual(label.count, StudioDisplayName.maximumCharacters, file: file, line: line)
         XCTAssertLessThanOrEqual(label.unicodeScalars.count, StudioDisplayName.maximumScalars, file: file, line: line)

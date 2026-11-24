@@ -17,12 +17,17 @@ inline bool kfFinite(float3 v) { return isfinite(v.x) && isfinite(v.y) && isfini
 inline uchar4 kfInvalid() { return uchar4(255, 0, 255, 0); }
 
 inline float kfSphereHit(float3 origin, float3 ray, float radius, float minimum) {
-    const float b = dot(origin, ray);
-    const float c = dot(origin, origin) - radius * radius;
-    const float discriminant = b * b - c;
+    // Use the closest point on the ray instead of subtracting two large
+    // squared distances. At a 20 m camera distance, b*b-c loses enough
+    // Float32 precision to perturb the surface and produce false shadows.
+    // Keep the length term: a normalized Float32 ray is not exactly unit.
+    const float lengthSquared = dot(ray, ray);
+    const float centerT = -dot(origin, ray) / lengthSquared;
+    const float3 closest = origin + ray * centerT;
+    const float discriminant = radius * radius - dot(closest, closest);
     if (discriminant < 0.0f) return INFINITY;
-    const float root = sqrt(discriminant);
-    const float nearT = -b - root, farT = -b + root;
+    const float root = sqrt(discriminant / lengthSquared);
+    const float nearT = centerT - root, farT = centerT + root;
     if (nearT >= minimum) return nearT;
     return farT >= minimum ? farT : INFINITY;
 }

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 using std::abs; using std::min; using std::max; using std::isfinite;
 using std::sqrt; using std::pow; using std::floor; using std::clamp;
@@ -44,7 +45,7 @@ static std::vector<float4> rows(std::istream& s,uint32_t n) {
     for(uint32_t i=0;i<n;++i){float4 r; r.x=readF32(s);r.y=readF32(s);r.z=readF32(s);r.w=readF32(s);v.push_back(r);}
     return v;
 }
-static bool compare(const char* file) {
+static bool compare(const char* file, uint maximumAllowedError) {
     std::ifstream s(file,std::ios::binary);
     const uint w=readU32(s),h=readU32(s),np=readU32(s),ns=readU32(s),na=readU32(s),expectedInvalid=readU32(s);
     if(w<24||w>192||w%3||h!=w*2/3||np!=6||ns>12*64*3||na>36||ns%3||na%3)
@@ -63,13 +64,28 @@ static bool compare(const char* file) {
         for(uint i=0;i<3;++i){const uint e=uint(abs(int(rgb[i])-int(ref[offset+i])));total+=e;maximum=max(maximum,e);outliers+=e>4;}
     }
     const double count=double(w)*h*3,mean=total/count,fraction=outliers/count;
-    const bool pass=invalid==expectedInvalid&&mean<=1.0&&fraction<=0.005;
+    const bool pass=invalid==expectedInvalid&&mean<=1.0&&fraction<=0.005&&maximum<=maximumAllowedError;
     std::cout<<file<<": mean="<<mean<<", max="<<maximum<<", >4 fraction="<<fraction
-             <<", invalid="<<invalid<<"/"<<expectedInvalid<<", "<<(pass?"PASS":"FAIL")<<"\n";
+             <<", invalid="<<invalid<<"/"<<expectedInvalid;
+    if(maximumAllowedError<255)std::cout<<", max-limit="<<maximumAllowedError;
+    std::cout<<", "<<(pass?"PASS":"FAIL")<<"\n";
     return pass;
 }
 int main(int argc,char** argv) {
     if(argc<2)return 2;
-    try{bool pass=true;for(int i=1;i<argc;++i)pass=compare(argv[i])&&pass;return pass?0:1;}
+    try{
+        int first=1;uint maximumAllowedError=255;
+        if(std::string(argv[1])=="--maximum-channel-error"){
+            if(argc<4)throw std::runtime_error("maximum channel error requires a value and fixture");
+            const std::string argument(argv[2]);std::size_t consumed=0;
+            const int value=std::stoi(argument,&consumed);
+            if(consumed!=argument.size()||value<0||value>255)
+                throw std::runtime_error("maximum channel error must be an integer in 0...255");
+            maximumAllowedError=uint(value);first=3;
+        }
+        bool pass=true;
+        for(int i=first;i<argc;++i)pass=compare(argv[i],maximumAllowedError)&&pass;
+        return pass?0:1;
+    }
     catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 2;}
 }

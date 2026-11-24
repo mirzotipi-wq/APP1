@@ -77,7 +77,7 @@ struct ReferenceComparisonView: View {
                     guidedPanel
                     VStack(alignment: .leading, spacing: 7) {
                         Label("On-device comparison", systemImage: "lock.shield").font(.headline)
-                        Text("Key & Fill keeps a reduced, metadata-free copy in memory only. Closing this view or removing the photo discards that copy. It is not included in saved projects or PDF exports. Photos may retrieve an iCloud original through the system picker. Your original is never modified.")
+                        Text("Key & Fill keeps a reduced copy without the original photo metadata in memory only. Closing this view or removing the photo discards that copy. It is not included in saved projects or PDF exports. Photos may retrieve an iCloud original through the system picker. Your original is never modified.")
                             .font(.footnote).foregroundStyle(.secondary)
                         Text("The reference is displayed as SDR sRGB, without exposure matching. No exact rig, intensity, or white balance can be inferred from this view alone.")
                             .font(.footnote).foregroundStyle(.secondary)

@@ -1,6 +1,6 @@
 # Persistent engineering backlog
 
-Updated 2026-11-24 at executable revision `5ac2d1e2e8e8762c84ababa93e1982ec914fbef8`. 30 unresolved packets, not completed work. M01 active; honor dependencies in state.json and protected docs/QUALITY.md. No confirmed current P0. S/M/L/XL are relative complexity, not a duration guarantee. Existing evidence is context, not proof of completion. In progress means actual CI or implemented changes awaiting verification, not background assistant work. New modules explicitly marked. Prioritize verified P0/P1 defects.
+Updated 2026-11-24 at executable revision `0fce248b4e61bace88002b40f6c56fddedb19c8a`. 32 unresolved packets, not completed work. M01 active; honor dependencies in state.json and protected docs/QUALITY.md. No confirmed current P0. S/M/L/XL are relative complexity, not a duration guarantee. Existing evidence is context, not proof of completion. In progress means actual CI or implemented changes awaiting verification, not background assistant work. New modules explicitly marked. Prioritize verified P0/P1 defects.
 
 | ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Status | Evidence |
 |---|---|---|---|---|---|---|---|---|---|
@@ -33,7 +33,7 @@ Updated 2026-11-24 at executable revision `5ac2d1e2e8e8762c84ababa93e1982ec914fb
 
 | KF-026 | P1 | Mannequin mesh intersection and display validation | Sources/LightingCore/PortraitHeadMesh.swift; PortraitStudy.swift; ReferenceStudy.swift; App/StudioView.swift | KF-006/008 | BVH agrees with independent brute-force nearest-hit and finite segments across fixed deterministic ray cases; oblique render and scene-only switch verified; calibrated material and performance separately measured | Portable oracle, native UI and physical-device test | L | Portable independent300-ray oracle and silhouette regression passed; native/physical pending | docs/evidence/m02-mannequin-study-2026-11-24.md |
 
-Next: inspect current https://github.com/mirzotipi-wq/APP1/actions/runs/45354563409; complete current native build/persistence evidence before promoting M01. Integrate the reviewed room-note and selected-file security work, retain explicit historical scope for delayed results, and keep physical/calibrated gates separate.
+Next: inspect current https://github.com/mirzotipi-wq/APP1/actions/runs/45355893140; repair the observed missing-Metal compiler environment, complete native persistence evidence, then reassess M01. Preserve exact-revision and historical scope.
 
 ## Autonomous session follow-up packets (2026-11-24)
 
@@ -43,3 +43,7 @@ Next: inspect current https://github.com/mirzotipi-wq/APP1/actions/runs/45354563
 | KF-028 | P2 | Interrupted continuous edits and history ownership | SceneEditHistory.swift; StudioView.swift | KF-011 | One step per gesture, safe lifecycle close, old/new callback ownership | portable state-machine and native interrupted gestures | M | Serial callback model passed; arbitrary overlap native unverified | same checkpoint |
 | KF-029 | P2 | Translated scene viewport and bounded grid | StudioSceneBounds.swift; SpatialPreview.swift; StudioView.swift | KF-001 | Full geometry fits; orbit retained; grid work bounded and labeled | portable geometry plus actual SceneKit projection/UI | M | Portable passed; native pending | same checkpoint |
 | KF-030 | P2 | Legacy Unicode labels and exact spoken values | StudioDisplayName.swift; StudioNumericInput.swift; inspectors | KF-012 | Bounded labels without stored data loss; exact localized spoken values | portable locales/names and native accessibility | M | Portable passed; native/device pending | same checkpoint |
+
+| KF-031 | P2 | Resolve duplicate editable-document envelope keys | LightingProjectDocument.swift; ProjectDocumentAdversarialTests.swift | KF-004/027 | Reject ambiguous duplicate keys, including escaped spellings, without narrowing supported valid JSON or changing persistence protections | Raw-wire regressions and independent parser review | M | Open; Foundation first-wins probe documented, canonical exports unique | docs/evidence/2026-11-24-autonomous/document-import-review.md |
+
+| KF-032 | P2 | Keep large valid library operations responsive | App/ProjectStore.swift; App/StudioView.swift; Sources/LightingCore/ProjectLibrary.swift | KF-004/013; complete CAS design | Move full serialized read/validate/compare/write operation off the main actor with explicit captured-scene adoption and stale-result guards; preserve exact-byte failure safety | Large library latency, concurrent edit/save/switch and native responsiveness | L | Open; actual Linux tmpfs save median 669.938 ms for an 8 MB valid legacy-name case; not a device benchmark | docs/evidence/2026-11-24-autonomous/storage-benchmark.md |

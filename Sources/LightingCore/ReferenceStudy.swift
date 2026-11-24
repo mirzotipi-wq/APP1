@@ -301,6 +301,23 @@ private struct StudySetup {
     }
 }
 
+/// Shared cooperative work bound for the two deterministic CPU renderers.
+struct StudyPixelCancellation {
+    private var pixelsUntilCheck = 0
+
+    /// Call before each pixel, including background/unsupported pixels. A
+    /// close-up with many area lights can make a whole scanline expensive;
+    /// bound cooperative work between checks without changing pixel sampling.
+    @inline(__always)
+    mutating func check(_ isCancelled: () -> Bool) throws {
+        if pixelsUntilCheck == 0 {
+            guard !isCancelled() else { throw StudyError.cancelled }
+            pixelsUntilCheck = 8
+        }
+        pixelsUntilCheck -= 1
+    }
+}
+
 /// Deterministic CPU oracle/diagnostic preview. Direct light only; deliberately small
 /// bounded images. Not a real-time production GPU renderer or photographic ground truth.
 public enum ReferenceStudyRenderer {
@@ -313,12 +330,13 @@ public enum ReferenceStudyRenderer {
         let halfW = setup.halfW, halfH = setup.halfH
         var pixels = [UInt8](repeating: 255, count: width * height * 4)
         var unsupported = 0
+        var cancellation = StudyPixelCancellation()
         let sphere: StudyMaterial = .dielectric(reflectance: 0.18, roughness: 0.32, f0: 0.04)
         let panel: StudyMaterial = .diffuse(reflectance: 0.30)
         for y in 0..<height {
-            if isCancelled() { throw StudyError.cancelled }
             let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfH
             for x in 0..<width {
+                try cancellation.check(isCancelled)
                 let px = (2 * (Double(x) + 0.5) / Double(width) - 1) * halfW
                 guard let ray = normalized3(forward + right * px + up * py) else { throw StudyError.invalidCamera }
                 let minT = CameraFraming.minimumDepthMeters / dot3(ray, forward)

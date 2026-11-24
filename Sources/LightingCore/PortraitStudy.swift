@@ -182,10 +182,11 @@ public enum PortraitStudyRenderer {
         let height = width * 2 / 3
         var pixels = [UInt8](repeating: 255, count: width * height * 4)
         var unsupported = 0
+        var cancellation = StudyPixelCancellation()
         for y in 0..<height {
-            if isCancelled() { throw StudyError.cancelled }
             let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfH
             for x in 0..<width {
+                try cancellation.check(isCancelled)
                 let index = 4 * (y * width + x)
                 let px = (2 * (Double(x) + 0.5) / Double(width) - 1) * halfW
                 guard let ray = portraitUnit(forward + right * px + up * py) else {
