@@ -15,6 +15,7 @@ struct StudioView: View {
     @State private var mode = "Plan"
     @State private var showRecipes = false
     @State private var showMeter = false
+    @State private var meterNavigationRequest = 0
     @State private var confirmRemove = false
     @State private var loaded = false
     @State private var saveBlocked = false
@@ -22,56 +23,68 @@ struct StudioView: View {
     @State private var saveConflict = false
     @State private var confirmReloadConflict = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let store = ProjectStore()
     private let amber = Color(red: 0.96, green: 0.65, blue: 0.30)
     private let charcoal = Color(red: 0.075, green: 0.085, blue: 0.10)
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    header
-                    if saveBlocked {
-                        ContentUnavailableView {
-                            Label("Saved project unavailable", systemImage: "externaldrive.badge.exclamationmark")
-                        } description: {
-                            Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
-                        } actions: {
-                            Button("Retry loading saved project") { load() }
-                                .buttonStyle(.borderedProminent)
-                        }
-                    } else if !loaded {
-                        ProgressView("Opening projects…")
-                            .frame(maxWidth: .infinity, minHeight: 160)
-                    } else {
-                        if saveConflict { conflictRecoveryPanel }
-                        Button { showReference = true } label: {
-                            Label("Compare reference photo", systemImage: "rectangle.split.2x1")
-                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                        }
-                        .buttonStyle(.bordered)
-                        .accessibilityIdentifier("openReference")
-                        workspace
-                        Button { showRoomPlacement = true } label: {
-                            Label("Room placement", systemImage: "ruler")
-                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                        }
-                        .buttonStyle(.bordered)
-                        .accessibilityIdentifier("openRoomPlacement")
-                        meter
-                        rack
-                        if let light = scene.lights.first(where: { $0.id == selected }) {
-                            inspector(light)
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        header
+                        if saveBlocked {
+                            ContentUnavailableView {
+                                Label("Saved project unavailable", systemImage: "externaldrive.badge.exclamationmark")
+                            } description: {
+                                Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
+                            } actions: {
+                                Button("Retry loading saved project") { load() }
+                                    .buttonStyle(.borderedProminent)
+                            }
+                        } else if !loaded {
+                            ProgressView("Opening projects…")
+                                .frame(maxWidth: .infinity, minHeight: 160)
                         } else {
-                            ContentUnavailableView("No light selected", systemImage: "lightbulb",
-                                description: Text("Add a light or choose a recipe."))
+                            if saveConflict { conflictRecoveryPanel }
+                            Button { showReference = true } label: {
+                                Label("Compare reference photo", systemImage: "rectangle.split.2x1")
+                                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityIdentifier("openReference")
+                            workspace
+                            meter.id("meterPanel")
+                            Button { showRoomPlacement = true } label: {
+                                Label("Room placement", systemImage: "ruler")
+                                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityIdentifier("openRoomPlacement")
+                            rack
+                            if let light = scene.lights.first(where: { $0.id == selected }) {
+                                inspector(light)
+                            } else {
+                                ContentUnavailableView("No light selected", systemImage: "lightbulb",
+                                    description: Text("Add a light or choose a recipe."))
+                            }
+                            Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
+                                .font(.footnote).foregroundStyle(.secondary)
                         }
-                        Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
-                            .font(.footnote).foregroundStyle(.secondary)
+                        if let message, !saveConflict { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
                     }
-                    if let message, !saveConflict { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
+                    .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
                 }
-                .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
+                .onChange(of: meterNavigationRequest) { _, _ in
+                    if reduceMotion {
+                        proxy.scrollTo("meterPanel", anchor: .top)
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            proxy.scrollTo("meterPanel", anchor: .top)
+                        }
+                    }
+                }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 if loaded && !saveBlocked {
@@ -213,7 +226,22 @@ struct StudioView: View {
         VStack(spacing: 10) {
             HStack {
                 Label("Scene", systemImage: "viewfinder").font(.headline)
-                Spacer()
+                Spacer(minLength: 8)
+                Button {
+                    showMeter = true
+                    meterNavigationRequest += 1
+                } label: {
+                    Label("Meter", systemImage: "light.metering.center.weighted")
+                        .font(.subheadline.weight(.medium))
+                        .padding(.horizontal, 8)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.accentColor)
+                .accessibilityLabel("Open light meter and test card")
+                .accessibilityHint("Opens and scrolls to the meter controls")
+                .accessibilityIdentifier("openMeter")
             }
             Picker("View", selection: $mode) {
                 Text("Plan").tag("Plan")
@@ -241,9 +269,6 @@ struct StudioView: View {
                 Text("Neutral sphere and panel · direct light, finite-source shadows and relative color. Not a portrait or calibrated exposure.")
                     .font(.caption).foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Button("Adjust preview color and exposure") { showMeter = true }
-                    .font(.subheadline).frame(minHeight: 44)
-                    .disabled(showMeter)
             }
             if mode == "Camera" || mode == "Study" {
                 Divider()

@@ -104,6 +104,7 @@ jobs:
               f.write("SIMULATOR_ID=" + device["udid"] + "\n")
           PY
       - name: Build unsigned simulator app
+        id: debug_build
         run: |
           set -euo pipefail
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
@@ -129,6 +130,10 @@ jobs:
             -parallel-testing-enabled NO -resultBundlePath StudioSmoke.xcresult \
             CODE_SIGNING_ALLOWED=NO test 2>&1 | tee ui-tests.log
       - name: Build unsigned release simulator application
+        id: release_build
+        # A failed UI assertion must not mask independent Release build evidence.
+        # The workflow still fails if the UI suite fails.
+        if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}
         run: |
           set -euo pipefail
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
@@ -136,6 +141,15 @@ jobs:
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
           python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee icon-release.log
           python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee privacy-release.log
+          mkdir -p artifacts
+          ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator-release.zip
+      - name: Upload unsigned release simulator application
+        if: ${{ !cancelled() && steps.release_build.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-iOS-Simulator-Release
+          path: artifacts/KeyAndFill-simulator-release.zip
+          if-no-files-found: error
       - name: Export genuine XCTest attachments
         if: always()
         run: |
@@ -146,6 +160,16 @@ jobs:
           else
             echo "No XCTest result bundle was produced."
           fi
+      - name: Upload compact UI screenshot and text evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-ui-attachments
+          path: |
+            artifacts/ui-attachments/manifest.json
+            artifacts/ui-attachments/*.png
+            artifacts/ui-attachments/*.txt
+          if-no-files-found: warn
       - name: Upload test evidence
         if: always()
         uses: actions/upload-artifact@v4

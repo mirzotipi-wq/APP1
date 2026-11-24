@@ -128,16 +128,43 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(focal.value as? String, "85 mm")
     }
 
+    private func assertMeterState(_ value: String, disclosure: XCUIElement, in app: XCUIApplication,
+                                  file: StaticString = #filePath, line: UInt = #line) {
+        let predicate = NSPredicate(format: "exists == true AND value == %@", value)
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: disclosure)
+        let result = XCTWaiter.wait(for: [expectation], timeout: 10)
+        if result != .completed {
+            let screenshot = XCTAttachment(screenshot: app.screenshot())
+            screenshot.name = "Meter-state-failure"; screenshot.lifetime = .keepAlways; self.add(screenshot)
+            let hierarchy = XCTAttachment(string: app.debugDescription)
+            hierarchy.name = "Meter-accessibility-failure"; hierarchy.lifetime = .keepAlways; self.add(hierarchy)
+        }
+        XCTAssertEqual(result, .completed, "Expected meter to be \(value)", file: file, line: line)
+    }
+
+    private func openMeterFromScene(in app: XCUIApplication) {
+        let shortcut = app.buttons["openMeter"]
+        reveal(shortcut, in: app, direction: false)
+        shortcut.tap()
+        let disclosure = app.buttons["meterDisclosure"]
+        assertMeterState("Expanded", disclosure: disclosure, in: app)
+        XCTAssertTrue(disclosure.isHittable, "The shortcut must reveal the meter, not merely change state offscreen")
+    }
+
     func testMeterBalanceSaveUndoAndRelaunch() throws {
         let app = makeApp()
         app.launch()
         assertStatus("Unsaved changes", in: app)
         let disclosure = app.buttons["meterDisclosure"]
-        reveal(disclosure, in: app)
-        XCTAssertEqual(disclosure.value as? String, "Collapsed")
+        assertMeterState("Collapsed", disclosure: disclosure, in: app)
+        // Navigate from the visible Scene toolbar before exercising the disclosure.
+        openMeterFromScene(in: app)
         disclosure.tap()
-        let expanded = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Expanded"), object: disclosure)
-        XCTAssertEqual(XCTWaiter.wait(for: [expanded], timeout: 10), .completed)
+        assertMeterState("Collapsed", disclosure: disclosure, in: app)
+        XCTAssertFalse(app.staticTexts["combinedLux"].exists)
+        XCTAssertTrue(disclosure.isHittable)
+        disclosure.tap()
+        assertMeterState("Expanded", disclosure: disclosure, in: app)
         let lux = app.staticTexts["combinedLux"]
         let meterReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label ENDSWITH %@", " lx"), object: lux)
         XCTAssertEqual(XCTWaiter.wait(for: [meterReady], timeout: 15), .completed)
@@ -167,8 +194,8 @@ final class StudioSmokeTests: XCTestCase {
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)
-        reveal(disclosure, in: app)
-        disclosure.tap()
+        assertMeterState("Collapsed", disclosure: disclosure, in: app)
+        openMeterFromScene(in: app)
         reveal(balance, in: app)
         XCTAssertEqual(balance.value as? String, "3200 K")
     }
