@@ -21,6 +21,18 @@ public struct ManualRoom: Equatable, Sendable {
         self.subjectX = subjectX; self.subjectZ = subjectZ; self.yawDegrees = yawDegrees
     }
 
+    /// Resizing is independent of the subject's location. The editor must
+    /// require an explicit subject move before accepting a smaller room.
+    public var widthEditRange: ClosedRange<Double> { dimensionRangePreserving(subjectX) }
+    public var depthEditRange: ClosedRange<Double> { dimensionRangePreserving(subjectZ) }
+
+    private func dimensionRangePreserving(_ offset: Double) -> ClosedRange<Double> {
+        guard offset.isFinite, offset >= 0, offset <= Self.dimensionRange.upperBound else {
+            return Self.dimensionRange
+        }
+        return max(Self.dimensionRange.lowerBound, offset)...Self.dimensionRange.upperBound
+    }
+
     public var isValid: Bool {
         widthMeters.isFinite && depthMeters.isFinite &&
         Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(depthMeters) &&
@@ -36,14 +48,37 @@ public enum RoomMeasurementInput {
     public static func parse(_ text: String, decimalSeparator: String = ".",
                              in range: ClosedRange<Double>) -> Double? {
         let input = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !input.isEmpty, input.count <= 24, !decimalSeparator.isEmpty,
-              decimalSeparator == "." || !input.contains(".") else { return nil }
-        let canonical = input.replacingOccurrences(of: decimalSeparator, with: ".")
-        guard canonical.allSatisfy({ $0 == "." || ("0"..."9").contains($0) }),
-              canonical.filter({ $0 == "." }).count <= 1,
-              let value = Double(canonical), value.isFinite,
-              range.contains(value) else { return nil }
-        return value
+        guard let first = input.first, input.count <= 24,
+              first != "+", first != "-", first != "−" else { return nil }
+        // Share the scene editor's strict decimal grammar and support local digits.
+        return StudioNumericInput.parse(input, decimalSeparator: decimalSeparator, in: range)
+    }
+
+    /// Editable text uses ASCII digits and the selected decimal separator, not
+    /// locale-inserted grouping or directional marks. Unchanged drafts must
+    /// not be written back as rounded measurements.
+    public static func draft(_ value: Double, decimalSeparator: String = ".") -> String {
+        value.formatted(.number.precision(.fractionLength(0...12)).grouping(.never)
+            .locale(Locale(identifier: "en_US_POSIX")))
+            .replacingOccurrences(of: ".", with: decimalSeparator)
+    }
+}
+
+/// Display calculated room geometry without disguising a nonzero overhang
+/// or signed wall coordinate as zero. These are model calculations, not a
+/// measurement-accuracy guarantee. Use a bounded readout for tiny distances.
+public enum RoomMeasurementDisplay {
+    public static func distance(_ value: Double, locale: Locale = .current) -> String {
+        guard value.isFinite else { return "Unavailable" }
+        let limit = 0.000001
+        let style = FloatingPointFormatStyle<Double>.number.precision(.fractionLength(2...6))
+            .grouping(.never).locale(locale)
+        if value != 0, abs(value) < limit {
+            let threshold = limit.formatted(style)
+            let negativeThreshold = (-limit).formatted(style)
+            return value < 0 ? "between \(negativeThreshold) and 0 m" : "less than \(threshold) m"
+        }
+        return (value == 0 ? 0.0 : value).formatted(style) + " m"
     }
 }
 

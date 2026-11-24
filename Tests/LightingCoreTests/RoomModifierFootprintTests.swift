@@ -27,6 +27,18 @@ final class RoomModifierFootprintTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(face.minimumWallClearanceMeters), -0.25, accuracy: 1e-10)
     }
 
+    func testSubMillimeterOverhangIsNotDisplayedAsZero() throws {
+        let light = rectangle(at: .init(x: -1.5001, y: 1.5, z: 0),
+                              aim: .init(x: -1.5001, y: 1.5, z: 1))
+        let plan = try RoomPlacementPlan(scene: scene(light: light), room: room)
+        let face = try XCTUnwrap(plan.modifierFootprints.first)
+        XCTAssertEqual(plan.outsideCount, 0)
+        XCTAssertEqual(face.crossedWalls, [.left])
+        let clearance = try XCTUnwrap(face.minimumWallClearanceMeters)
+        XCTAssertEqual(clearance, -0.0001, accuracy: 1e-10)
+        XCTAssertEqual(RoomMeasurementDisplay.distance(-clearance, locale: Locale(identifier: "en_US_POSIX")), "0.0001 m")
+    }
+
     func testQuarterTurnChangesWallButPreservesOverhang() throws {
         let light = rectangle(at: .init(x: -1.75, y: 1.5, z: 0), aim: .init(x: -1.75, y: 1.5, z: 1))
         var rotated = room

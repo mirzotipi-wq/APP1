@@ -78,6 +78,62 @@ final class RoomPlacementTests: XCTestCase {
         XCTAssertNil(RoomMeasurementInput.parse(String(repeating: "1", count: 40), in: range))
     }
 
+    func testRoomInputSupportsLocalDigitsWithoutGroupingOrSigns() {
+        XCTAssertEqual(RoomMeasurementInput.parse("٦٫٣٥", decimalSeparator: "٫", in: 1...30), 6.35)
+        XCTAssertEqual(RoomMeasurementInput.parse("۶,۳۵", decimalSeparator: ",", in: 1...30), 6.35)
+        XCTAssertEqual(RoomMeasurementInput.draft(1.23456789, decimalSeparator: ","), "1,23456789")
+        XCTAssertEqual(RoomMeasurementInput.parse(RoomMeasurementInput.draft(1.23456789, decimalSeparator: "٫"),
+                                                  decimalSeparator: "٫", in: 1...30), 1.23456789)
+        for input in ["-0", "−0", "+1", "6٬٣٥", "6٫٣٫٥", "²", "1e1", "1 2"] {
+            XCTAssertNil(RoomMeasurementInput.parse(input, decimalSeparator: "٫", in: 0...30), input)
+        }
+        XCTAssertNil(RoomMeasurementInput.parse("6.35", decimalSeparator: "..", in: 0...30))
+    }
+
+    func testResizeRangesPreserveSubjectWithoutSilentRelocation() throws {
+        var room = ManualRoom()
+        XCTAssertEqual(room.widthEditRange, 3...30)
+        XCTAssertEqual(room.depthEditRange, 2...30)
+        XCTAssertNil(RoomMeasurementInput.parse("2", in: room.widthEditRange))
+        XCTAssertNil(RoomMeasurementInput.parse("1.5", in: room.depthEditRange))
+        let originalSubject = (room.subjectX, room.subjectZ)
+        room.widthMeters = try XCTUnwrap(RoomMeasurementInput.parse("3.25", in: room.widthEditRange))
+        room.depthMeters = try XCTUnwrap(RoomMeasurementInput.parse("2.5", in: room.depthEditRange))
+        XCTAssertTrue(room.isValid)
+        XCTAssertEqual(room.subjectX, originalSubject.0)
+        XCTAssertEqual(room.subjectZ, originalSubject.1)
+        room.subjectX = 0.25
+        room.subjectZ = 0.75
+        XCTAssertEqual(room.widthEditRange, ManualRoom.dimensionRange)
+        XCTAssertEqual(room.depthEditRange, ManualRoom.dimensionRange)
+        room.widthMeters = try XCTUnwrap(RoomMeasurementInput.parse("1", in: room.widthEditRange))
+        XCTAssertTrue(room.isValid)
+        XCTAssertEqual(room.subjectX, 0.25)
+        room.subjectX = 1
+        XCTAssertEqual(room.widthEditRange, 1...30)
+        room.subjectX = .nan
+        XCTAssertEqual(room.widthEditRange, ManualRoom.dimensionRange)
+    }
+
+    func testSignedRoomDisplayDoesNotRoundRealCrossingToZero() throws {
+        let locale = Locale(identifier: "en_US_POSIX")
+        let scene = LightingScene.portrait()
+        let crossing = try RoomPlacementPlan(scene: scene, room: .init(subjectX: 1.4999))
+        let key = try XCTUnwrap(crossing.points.first { $0.name == "Key" })
+        XCTAssertFalse(key.insideRoom)
+        XCTAssertEqual(RoomMeasurementDisplay.distance(key.xFromLeft, locale: locale), "-0.0001 m")
+        let touching = try RoomPlacementPlan(scene: scene, room: .init(subjectX: 1.5))
+        let contact = try XCTUnwrap(touching.points.first { $0.name == "Key" })
+        XCTAssertTrue(contact.insideRoom)
+        XCTAssertEqual(RoomMeasurementDisplay.distance(contact.xFromLeft, locale: locale), "0.00 m")
+        XCTAssertEqual(RoomMeasurementDisplay.distance(0.003, locale: locale), "0.003 m")
+        XCTAssertEqual(RoomMeasurementDisplay.distance(0.00000001, locale: locale), "less than 0.000001 m")
+        XCTAssertEqual(RoomMeasurementDisplay.distance(-0.00000001, locale: locale), "between -0.000001 and 0 m")
+        XCTAssertEqual(RoomMeasurementDisplay.distance(-0.0, locale: locale), "0.00 m")
+        XCTAssertEqual(RoomMeasurementDisplay.distance(3.25, locale: Locale(identifier: "fr_FR")), "3,25 m")
+        XCTAssertEqual(RoomMeasurementDisplay.distance(.nan, locale: locale), "Unavailable")
+    }
+
     func testRejectsInvalidRoomAndScene() throws {
         for room in [
             ManualRoom(widthMeters: 0), ManualRoom(depthMeters: .infinity),

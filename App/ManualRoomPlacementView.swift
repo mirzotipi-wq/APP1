@@ -5,6 +5,7 @@ import LightingCore
 struct ManualRoomPlacementView: View {
     let scene: LightingScene
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
     @State private var room = ManualRoom()
     private var plan: RoomPlacementPlan? { try? RoomPlacementPlan(scene: scene, room: room) }
 
@@ -58,7 +59,7 @@ struct ManualRoomPlacementView: View {
                     }
                     Label("Manual measurements only", systemImage: "ruler")
                         .font(.headline)
-                    Text("Center coordinates and rectangular emitting-face projections are calculated at 1:1 scale from your entries. These checks do not measure the actual room, detect collisions, include the entire fixture or guarantee clearance. Check housing, stands, booms, cables and ceiling clearance physically. Room settings are session-only and do not change the saved lighting setup.")
+                    Text("Center coordinates and rectangular emitting-face projections are calculated at 1:1 scale from your entries. Displayed distances are calculated, not a guarantee of measurement precision. These checks do not measure the actual room, detect collisions, include the entire fixture or guarantee clearance. Check housing, stands, booms, cables and ceiling clearance physically. Room settings are session-only and do not change the saved lighting setup.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
@@ -77,16 +78,12 @@ struct ManualRoomPlacementView: View {
     private var inputs: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Room dimensions").font(.headline)
-            RoomMeasurementField(title: "Width", id: "roomWidth", value: Binding(
-                get: { room.widthMeters }, set: {
-                    room.widthMeters = $0
-                    room.subjectX = min(room.subjectX, $0)
-                }), range: ManualRoom.dimensionRange)
-            RoomMeasurementField(title: "Depth", id: "roomDepth", value: Binding(
-                get: { room.depthMeters }, set: {
-                    room.depthMeters = $0
-                    room.subjectZ = min(room.subjectZ, $0)
-                }), range: ManualRoom.dimensionRange)
+            RoomMeasurementField(title: "Width", id: "roomWidth", value: $room.widthMeters,
+                                 range: room.widthEditRange)
+            RoomMeasurementField(title: "Depth", id: "roomDepth", value: $room.depthMeters,
+                                 range: room.depthEditRange)
+            Text("Room size changes keep the subject's wall offsets. To enter a smaller room, first move the subject closer to the corresponding wall.")
+                .font(.caption).foregroundStyle(.secondary)
             Divider()
             Text("Subject floor position").font(.headline)
             RoomMeasurementField(title: "From left wall", id: "roomSubjectX", value: $room.subjectX,
@@ -193,7 +190,7 @@ struct ManualRoomPlacementView: View {
     }
 
     private func meters(_ value: Double) -> String {
-        value.formatted(.number.precision(.fractionLength(2))) + " m"
+        RoomMeasurementDisplay.distance(value, locale: locale)
     }
 
     private func symbol(_ kind: RoomPlacementPoint.Kind) -> String {
@@ -252,10 +249,16 @@ private struct RoomMeasurementField: View {
     }
 
     private func format(_ number: Double) -> String {
-        number.formatted(.number.precision(.fractionLength(0...6)).grouping(.never).locale(locale))
+        RoomMeasurementInput.draft(number, decimalSeparator: locale.decimalSeparator ?? ".")
     }
 
     private func apply() {
+        // Applying an untouched formatted draft must not round its value.
+        if draft == format(value), range.contains(value) {
+            invalid = false
+            focused = false
+            return
+        }
         guard let next = RoomMeasurementInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
                                                     in: range) else {
             invalid = true
