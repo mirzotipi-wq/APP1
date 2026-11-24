@@ -4,7 +4,7 @@
 
 Key & Fill is a native iOS lighting workspace for photographers and filmmakers: explore a reference, edit a plausible rig, preview its geometry, place it in a room, and export a practical plan.
 
-**Status: active development.** M01 remains active; this is not a release candidate. Implemented features and verified release gates are tracked separately.
+**Status: active development.** M01 is complete on the recorded foundation evidence; M02 is active. Implemented features and verified release gates are tracked separately, and this is not a release candidate.
 
 ## Current implementation
 
@@ -46,7 +46,9 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and remaining gates
 
-At the recorded `c74c3b7` checkpoint, [CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45481676220) passed 261 portable tests in each of Debug and Release, 28 Python checks, both unsigned simulator builds and 84 native tests. All 27 UI scenarios completed: 22 passed and five failed, so the overall workflow failed. Foundation save/relaunch and corrupt-file protection passed. Subsequent Intel-simulator rendering, Reference presentation and keyboard-readiness corrections require their own native results. The four measured-room PDF variants were visually reviewed at the earlier `394e28e` source. The [development checkpoint](docs/evidence/development-completion-2026-11-24.md) records exact revisions, simulator failures, fixes and remaining verification.
+At the recorded `22e51d7` checkpoint, [CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826) passed 261 portable tests in each of Debug and Release, 28 Python checks, both unsigned simulator builds, 84 native tests and all 11 studio/export UI workflows. The latter include save/relaunch, corrupt-file protection, optics undo/redo, 3D Fit and the simulator's AR/manual fallback in feet. The actual 3D screenshot was independently inspected.
+
+The room/precision suite passed four of five methods; a status query timed out after notes dismissal, while the captured screen and accessibility label showed the expected committed layout. The library UI job was cancelled before executing tests. The overall run concluded cancelled and does not establish a full UI regression pass. The subsequent Arrangement presenter and room-status query corrections need their own native run; Reference and keyboard repairs also await completed library coverage. The four measured-room PDF variants were visually reviewed at the earlier `394e28e` source. The [development checkpoint](docs/evidence/development-completion-2026-11-24.md) records exact revisions, historical failures, fixes and remaining verification.
 
 Physical-device tracking, accessibility and performance, calibrated rendering, purchase sandbox scenarios, signing, customer validation and owner release approval remain outstanding. See the [quality contract](docs/QUALITY.md) and [milestone state](agents/state.json).
 

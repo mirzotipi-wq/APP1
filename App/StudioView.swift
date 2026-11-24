@@ -20,7 +20,6 @@ struct StudioView: View {
     @State private var renameGeneration: UUID?
     @State private var planDrag: PlanDrag?
     @State private var luxTarget: LuxTarget?
-    @State private var showArrangement = false
     @State private var showARPlacement = false
     @State private var showSettings = false
     @State private var editHistory = SceneEditHistory()
@@ -200,12 +199,10 @@ struct StudioView: View {
                     replace(next)
                 }
             }
-            .sheet(isPresented: $showArrangement) {
-                if let context = arrangementContext {
-                    SceneArrangementView(scene: context.scene) { next in
-                        guard acceptsSceneResult(from: context) else { return }
-                        replace(next)
-                    }
+            .sheet(item: $arrangementContext) { context in
+                SceneArrangementView(scene: context.scene) { next in
+                    guard acceptsSceneResult(from: context) else { return }
+                    replace(next)
                 }
             }
             .background {
@@ -368,7 +365,7 @@ struct StudioView: View {
             Menu {
                 Button("Subject position", systemImage: "person.crop.rectangle") { showSubject = true }
                 Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath") {
-                    arrangementContext = sceneContext(); showArrangement = true
+                    arrangementContext = sceneContext()
                 }
                 Button("Place in AR", systemImage: "arkit") {
                     arContext = sceneContext(); showARPlacement = true
@@ -1133,7 +1130,6 @@ struct StudioView: View {
     private func dismissSceneEditors() {
         showRoomPlacement = false
         showSubject = false
-        showArrangement = false
         showARPlacement = false
         showRecipes = false
         showRenameLight = false

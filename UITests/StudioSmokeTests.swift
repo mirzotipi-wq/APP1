@@ -74,6 +74,26 @@ final class StudioSmokeTests: XCTestCase {
         app.buttons["closeARPlacement"].tap()
         XCTAssertTrue(orbit.waitForExistence(timeout: 10))
         XCTAssertTrue(orbit.isSelected)
+
+        revealStudioContent(tools, in: app, towardBottom: false)
+        tools.tap()
+        let arrange = app.buttons["Arrange setup"]
+        XCTAssertTrue(arrange.waitForExistence(timeout: 10))
+        arrange.tap()
+        let setupPosition = app.buttons["setupXExact"]
+        XCTAssertTrue(setupPosition.waitForExistence(timeout: 10), "Arrangement must present its coordinate editor")
+        revealStudioContent(setupPosition, in: app, towardBottom: false)
+        XCTAssertTrue(setupPosition.isEnabled)
+        let arrangementScreenshot = XCTAttachment(screenshot: app.screenshot())
+        arrangementScreenshot.name = "Studio-arrangement-feet"
+        arrangementScreenshot.lifetime = .keepAlways
+        add(arrangementScreenshot)
+        let cancelArrangement = app.buttons["cancelArrangement"]
+        XCTAssertTrue(cancelArrangement.exists && cancelArrangement.isHittable)
+        cancelArrangement.tap()
+        XCTAssertTrue(orbit.waitForExistence(timeout: 10))
+        revealStudioContent(orbit, in: app, towardBottom: false)
+        XCTAssertTrue(orbit.isSelected, "Cancelling Arrangement must preserve the selected 3D mode")
     }
     #endif
 

@@ -1,8 +1,35 @@
+# Current handoff
+
+## Source-six final results and source-seven publication packet
+
+- Published/tested source is **`22e51d7f85b709840128c11b0501be86a4c99c03`**, tree **`ba3c1a5cc68a3596d2050976419b26ef76ce7bac`**. [Run 45490703826](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826), attempt 1, is **completed/cancelled**; root read the API at **22:22:48 UTC**, with `updated_at` **22:20:36Z**. Core/native/studio succeeded; room failed; library was cancelled. **100 assignments** remain recorded.
+- Exact core **261 Debug / 261 Release / 28 Python**, both unsigned builds and **84/84 native methods** passed. Studio **11/11** passed, including actual **3D + Fit + Feet + unsupported-AR manual fallback**, original optics and both exports. **Recipe 62.278 s + Corrupt 20.820 s revalidate M01 smoke at 22e**; initial M01 acceptance remains tied to c74. Root and specialist 90 independently reviewed the actual 3D image, with readable controls and visible scene; substantial empty space and low-contrast stands/camera remain noted. [Detailed receipts and artifact digests](../docs/evidence/development-completion-2026-11-24.md).
+- Room completed **4/5**, all methods finished. Resize failed its second status expectation immediately after closing notes: approximately **14.22 s** was spent on `exists` within the unchanged **15-second deadline**, without a logged label Find. Actual PNG/AX showed correct committed **6 m**, preserved subject **3**, and later the correct status label/finite frame. **The failed assertion remains a failure; the delay cause is not established.** Room export succeeded and its finalized artifacts are retained.
+- Source-six aggregate: **15/16 executed UI passes, one failure, no interruption**; **11 library cases were unexecuted** because the original build attempt was cancelled. Cancellation cause remains unknown. **No targeted rerun was requested.** Normal source-seven CI will provide fresh library verification.
+- **Source seven is unpublished and unverified.** Three source files are reviewed: item-driven Arrangement in `App/StudioView.swift`; a **20-line** addition to the existing Settings/3D/AR method; and Resize-only typed `Other` plus `label CONTAINS` querying in `ManualRoomPlacementUITests.swift`. Arrangement has a **source-confirmed repeated blank-sheet risk, not a reproduced failure**. The room correction does not prove the delay cause. Root approved the actual diffs; specialist 90 audited all **18** presenters. No new method, assertion removal, deadline change or retry. Root will structurally check and publish nine files, including its README and these five records; no future SHA or runtime pass is claimed.
+- **M01 remains complete and revalidated at 22e; M02 remains active with scoped photometry pass and rendering/performance unresolved; M03–M07 remain pending.** No device/calibration or release acceptance follows.
+
+The lower sections are retained chronological snapshots. Their pending states and plans describe their stated observation times.
+
+## Source-six unsigned builds and cancelled library attempt — 21:44:42 UTC
+
+- Exact source **`22e51d7`**, [run 45490703826](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826): **unsigned Debug and Release build steps SUCCEEDED**, with retained app artifacts/digests. **native_build now passes at this source**, alongside core_tests and scoped photometry. Native methods remain running; no final count is claimed.
+- Library `138789718986` is **completed/cancelled**. The finalized 92,131-byte log shows UI-build start **21:34:44.829343Z**, cancellation **21:34:55.865328Z**, no compiler output and **zero app/UI tests**. Selected run was skipped; export failed without a finalized xcresult. Cause is **unknown**. Artifact `14966023088` contains only toolchain and successful **5m28s boot/preflight**. [Exact artifact sizes/digests](../docs/evidence/development-completion-2026-11-24.md).
+- Studio `138789718925` and room `138789718719` still build at this observation. Root may make **at most one targeted library retry after the full workflow is terminal**; no retry is recorded yet. Preserve this cancellation regardless of later results. **Current smoke/full regression/UI repairs remain unverified; M01 acceptance stays at c74c3b7, M02 active with rendering/performance unresolved, assignments 100.**
+
+## Published source six — core and declared-fixture photometry accepted
+
+- Current code **`22e51d7f85b709840128c11b0501be86a4c99c03`**, tree **`ba3c1a5cc68a3596d2050976419b26ef76ce7bac`**, branch **`development/completion-final-20261124`**. All implementation changes received independent 100/root source approval before publication. Assignment count remains **100**. [Run 45490703826](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826).
+- Core `138787937446` completed **success: 261 Debug (11.559 s), 261 Release (5.683 s), 28 Python**; syntax, shard accounting, host kernel parity and precision passed. Root read the finalized **204,860-byte** log. **Current core_tests and photometry pass at this exact source.**
+- Photometry review: point inverse-square/cosine; **six analytic rectangle cases, maximum 0.0233347%**; **four independent 160-subdivision Simpson off-axis cases, maximum 0.0176492%**; eight grazing cases with 0.2% assertions plus boundary/invalid/transition/scaling. This is a **declared-fixture** pass for the documented ideal model and separation limits, not a global error bound or photographic/equipment/GPU/device calibration. Study sample-grid convergence is separate. [Exact evidence and limits](../docs/evidence/development-completion-2026-11-24.md).
+- Apple jobs started: native `138789718752`, studio `138789718925`, library `138789718986`, room `138789718719`. **No terminal Apple result is supplied; current builds, smoke, full regression and UI repairs remain unverified.**
+- **M01 remains complete on exact `c74c3b7` proof; M02 active with only rendering/performance unresolved; M03–M07 pending.** Source-five acceptance does not certify current-source native/smoke. Retain the actual Intel crash, Reference/keyboard failures and two AX Code=-56 failures until current execution establishes their outcomes. This is an evidence-only update; no future result or release approval is inferred.
+
+## Retained prepublication review
+
 ## Source-six review receipt
 
 The functional Intel-simulator SceneKit fallback and Reference/keyboard corrections have completed independent source review. The lead inspected the actual CoreRE crash, blank Reference screenshot and keyboard before/after frames. Native verification of these working changes remains pending; the completed M01 evidence below is tied to c74c3b7.
-
-# Current handoff
 
 ## Source-five terminal UI and M01 acceptance — 2026-11-24
 

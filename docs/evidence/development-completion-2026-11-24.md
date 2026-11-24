@@ -1,5 +1,101 @@
 # Development completion checkpoint — 2026-11-24
 
+## Source-six final results and source-seven publication packet
+
+Published/tested source remains **`22e51d7f85b709840128c11b0501be86a4c99c03`**, tree **`ba3c1a5cc68a3596d2050976419b26ef76ce7bac`**. Root read [run 45490703826](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826) at **22:22:48 UTC**: **completed/cancelled**, attempt **1**, `updated_at` **22:20:36Z**. The run conclusion differs from its job results: core, native and studio succeeded; room failed; library was cancelled before tests. The cancellation cause remains unknown. **100 assignments** remain recorded.
+
+**M01 was initially accepted at c74c3b7 and is revalidated at 22e51d7 by current native and direct studio smoke. M02 remains active with scoped photometry pass; rendering/performance remain unresolved. M03–M07 remain pending.** Source seven is an unpublished candidate with no runtime acceptance. No targeted source-six rerun was requested; its normal new-source CI will provide fresh library verification.
+
+### Exact source-six native and studio evidence
+
+Core passed **261 Debug / 261 Release / 28 Python**, plus the recorded syntax, shard, parity and precision checks. Native job **138789718752** completed success. Root read its finalized **828,403-byte** log at **21:52 UTC**. Debug `BUILD SUCCEEDED` occurred **21:33:02.976868Z**, Release **21:36:58.538634Z**. **84/84 native methods passed**, zero failures, **24.398 s test / 24.962 s overall**; embedded All tests finished **21:49:48.957**, `TEST SUCCEEDED` **21:51:15.371452Z**. All three SpatialPreview methods and actual Metal/CPU match (**4.318 s**), parity and cancellation methods passed. No native test-skip lines occurred; “Skipped export” messages concern absent attachments.
+
+Studio job **138789718925** completed **success: 11/11**, zero failures, **740.970 s test / 740.987 s overall**. Suite finish was **21:58:44.919**, `TEST EXECUTE SUCCEEDED` **21:58:47.776318Z**; root read the finalized **533,856-byte** log at **21:59:41 UTC**. Both Export methods passed (**86.349 / 138.056 s**). Studio methods passed: Camera **71.613**, Corrupt **20.820**, Meter **79.815**, Optics **76.472**, Recipe **62.278**, SettingsFeet3DFitAndSimulatorARManualFallback **79.343**, Guide **64.811**, Sphere **23.635**, Mannequin **37.778 seconds**. This directly verifies **actual 3D entry, Fit, Feet and unsupported-AR manual fallback**, original optics acceptance and foundation smoke at this exact source. It does not verify the later Arrangement extension.
+
+### Actual 3D visual review
+
+Root and specialist 90 independently reviewed genuine PNG **`8554DB46-28D8-4A25-9B76-2A4393475479.png`** from the studio compact artifact. The central subject, three light heads/stands, camera and floor are inside the viewport with no obvious crop. Both captions are readable and untruncated; selected 3D, three-light count, Fit and Feet status are complete, and the toolbar is unobstructed. Substantial empty space above and low-contrast stands/camera remain, though discernible. This is an **actual still-image review**, not gesture, performance, calibration or physical-device RealityKit acceptance.
+
+### Terminal room and full UI inventory
+
+Room job **138789718719 failed**. Root read the finalized **473,175-byte** log at **22:21 UTC**. All five methods completed: **four passed, one failed**, **1170.333 s test / 1170.463 s overall**. Selected tests finished **22:17:30.428**; `TEST EXECUTE FAILED` was **22:19:12.850430Z**, exit **65**. ManualRoom passed **122.997 s**; Resize failed **266.799 s**; PrecisionCamera **248.644 s**, Intensity **260.192 s** and Modifier **271.700 s** passed. Result export succeeded.
+
+The Resize failure was the **second status expectation immediately after closing notes**, at `ManualRoomPlacementUITests.swift:58`. Root and specialist 90 independently inspected the trace and actual PNG **`1BC9EA46-A17C-45D2-A53A-CCE144B4F72D.png`**. The `exists` check consumed approximately **14.22 seconds of the unchanged 15-second deadline**, without a logged label Find. Actual captured state showed correct committed **6 m** notes and preserved subject **3**. Later diagnostics found one `Other` with the correct **All 5…** label and finite frame. **The failed assertion remains a failure.** These observations do not prove whether simulator/framework behavior or app snapshot delay caused the wait.
+
+| Source-six UI shard | Executed/completed | Passed | Failed | Unexecuted | Job conclusion |
+|---|---:|---:|---:|---:|---|
+| Studio/export | 11 | 11 | 0 | 0 | Success |
+| Room/precision | 5 | 4 | 1 | 0 | Failure |
+| Library/reference | 0 | 0 | 0 | 11 | Cancelled before tests |
+| **Total** | **16** | **15** | **1** | **11** | No interrupted methods |
+
+The original library cancellation, its zero executed tests and its boot/toolchain-only artifact remain retained below. No application assertion ran in that job. Normal source-seven CI replaces the abandoned targeted retry plan; **no source-six rerun request was made**.
+
+| Actual source-six artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Native compact 14968023187](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14968023187) | 332,368 | `bb66c0a51653f04ab85703b8660d5b1014cf8248b6ae2cb37372f1e5c07269b7` |
+| [Native full 14967558752](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14967558752) | 77,762,112 | `b9ceb8099a9869a551a079c68f47989f804eec748da2449a57fb8c84455a73a5` |
+| [Studio compact 14969325330](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14969325330) | 3,398,333 | `b4054f2a8bbc4e5c6147da2aa6be85f3e127355efd62017eb9cbc3e8f3eed2c2` |
+| [Studio full 14969300526](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14969300526) | 9,521,124 | `983703f7d3b22f1dea7c3f31716cf7ed1dbcbe7a218199876879b91c2869e8c7` |
+| [Room compact 14969727633](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14969727633) | 1,460,529 | `08fc8425f695c26bf301eb4d32c92fad940616a121de3693a5e1e1aba7f84f6c` |
+| [Room full 14968868751](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14968868751) | 111,748,381 | `509fbe1c62a4fd39b9c1cd8b544c753ebb5d3198730c04b17a04dcf829eff24b` |
+
+Root verified the actual studio and room compact ZIP digests. Earlier app/library artifacts and failed evidence remain retained.
+
+### Source-seven candidate: three source files reviewed, not executed
+
+**Arrangement:** specialist 100 implemented and root independently reviewed `App/StudioView.swift` and the extension in `UITests/StudioSmokeTests.swift`. Arrangement uses **`.sheet(item: $arrangementContext)`**, removes the separate Bool/assignments, and preserves owner/scene/generation checks and nil cleanup. The risk is a **source-confirmed repeat of the Bool+optional deferred-content blank-sheet pattern**; no Arrangement failure was reproduced.
+
+The existing **SettingsFeet3DFitAndSimulatorARManualFallback** method gains **20 lines**: Tools → Arrange setup → actual `setupXExact` enabled/hittable via the existing helper → keepAlways **Studio-arrangement-feet** screenshot → Cancel → same 3D selection. Root confirmed the actual menu and identifier composition. Specialist 90 audited all **18 App sheet declarations and related APIs**, finding no remaining duplicate deferred-content construction after the candidate. Room/AR/manual fallback unwrap context in the enclosing body and bind presenter identity; PhotoComparison always constructs a real destination, including an empty import UI for nil reference. This is source evidence only.
+
+**Room status query:** specialist 90 diagnosed the actual source-six artifacts, and root independently viewed the PNG/trace and approved the actual `UITests/ManualRoomPlacementUITests.swift` diff. Only Resize's status query becomes **`app.otherElements["roomPlacementStatus"]`**, and its predicate becomes **`label CONTAINS` the same text**, with a brief evidence comment. The **15-second deadline**, first workflow, every dimension/status string, diagnostics and later signed-coordinate/save/relaunch checks remain unchanged. This is a **query correction candidate**, not proof of the delay cause or a runtime pass.
+
+There is **no new test method, removed assertion, changed deadline or retry**. Candidate source seven is **unpublished**, with no SHA or runtime result claimed. Root will run required structural checks and publish **nine files**: these three source files, its separately maintained README and the five formal records. Normal new-source CI must verify Arrangement, room status and fresh library behavior. Exact source-six evidence does not certify the candidate; all protected gates and historical failures remain intact.
+
+The lower sections are retained chronological snapshots. Pending results and earlier plans describe their stated observation times.
+
+## Source-six unsigned builds and library cancellation — observation 21:44:42 UTC
+
+At exact source **`22e51d7f85b709840128c11b0501be86a4c99c03`**, tree **`ba3c1a5cc68a3596d2050976419b26ef76ce7bac`**, native job **138789718752** has **successful unsigned Debug and Release build steps**. **native_build passes at this SHA. Native methods are still running**, so no completed method total or pass is claimed.
+
+Library job **138789718986 completed/cancelled**. Root read its finalized **92,131-byte** log: the UI build began **21:34:44.829343Z** and was cancelled at **21:34:55.865328Z** with “The operation was canceled.” There is **no compiler output, no application assertion and zero UI tests executed**. The selected test run was skipped; result export failed and there is **no finalized xcresult**. The cancellation cause is **unknown**. Its artifact contains only toolchain information and a successful **5m28s simulator boot/preflight**, with **no native-ui-build log**.
+
+| Actual source-six artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Debug app 14966252505](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14966252505) | 3,459,507 | `6b238b5a1ea6dc0b4197690182c152919015e4b9637f244d001928ce8af579dd` |
+| [Release app 14966842650](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14966842650) | 3,987,658 | `5abcf076091d55bf26032d9bd8ee9d3965e4dd9c880a7a9b4cd4b7c87bd2700f` |
+| [Cancelled library logs 14966023088](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826/artifacts/14966023088) | 9,525 | `968c5111b9c87a29fd38ec4f4f5084b097790b536f3d88d64940093b77a090ed` |
+
+Studio **138789718925** and room **138789718719** are still building at **21:44:42 UTC**. Root may make **at most one bounded targeted library retry after the full workflow becomes terminal**; no retry request/execution is recorded here. The original cancellation must remain even if a later retry succeeds.
+
+Current **core_tests, native_build and declared-fixture photometry pass**; native method results, current persistence smoke, complete regression and UI repairs remain pending. **M01 remains accepted at c74c3b7; M02 remains active with rendering/performance unresolved; M03–M07 pending; assignments remain 100.** A cancelled setup step with no app assertion is not evidence of a failed application scenario or a passed repair. Earlier snapshots remain below.
+
+## Published source six — core and photometry gate receipt
+
+Current published code is **`22e51d7f85b709840128c11b0501be86a4c99c03`**, tree **`ba3c1a5cc68a3596d2050976419b26ef76ce7bac`**, on `development/completion-final-20261124`. All source-six implementation changes received independent specialist-100/root approval before publication. The actual assignment count remains **100**.
+
+[Run 45490703826](https://github.com/mirzotipi-wq/APP1/actions/runs/45490703826), **core job 138787937446**, completed success: **261 Debug tests (11.559 s), 261 Release tests (5.683 s), 28 Python tests**. Syntax, shard accounting, host kernel parity and precision checks passed. Root read the finalized **204,860-byte** exact-source log. **core_tests passes at this SHA.**
+
+### Photometry: pass at the declared fixtures and domain
+
+Specialist 100 reviewed the protected gate and source; root confirmed that the current log actually executed the evidence methods. **photometry passes at `22e51d7`** without changing its acceptance thresholds.
+
+| Executed evidence | Cases / result |
+|---|---|
+| `SceneTests.testInverseSquare`; `SurfacePhotometryTests.testPointCosineAndInverseSquare` | Point inverse-square and cosine fixtures passed with tolerances stricter than the protected 1% point requirement. |
+| `testRectangleMatchesAnalyticParallelFixtures` | Six cases; maximum fractional error **0.00023334691793906986**, equivalent to **0.0233347%**. Parallel assertions are stricter than 1%. |
+| `testRectangleMatchesIndependentOffAxisNumericalReference` | Four cases against an **independent 160-subdivision Simpson reference**; maximum fractional error **0.00017649163172442342**, equivalent to **0.0176492%**. Assertions meet the protected 5% area requirement. |
+| Two grazing methods | Eight cases with **0.2% assertions**. |
+| Boundary, invalid-input, transition and scaling methods | Passed within the current executed suite. |
+
+The declared model uses **SI meters/candela/lux** and an **ideal uniform one-sided Lambertian rectangle**. Point distance is **at least 0.05 m**; rectangular-source separation is **at least max(0.05 m, longest side / 4)**. These are **declared-fixture results**, not a global error bound or photographic, equipment, GPU or device calibration. **Study 8×8-versus-32×32 convergence is separate and is not the independent numerical reference.**
+
+### Current Apple evidence and milestone scope
+
+Native `138789718752`, studio `138789718925`, library `138789718986` and room `138789718719` have started. **No terminal build/native/UI result has been supplied.** The source-reviewed Intel SceneKit compatibility, Reference presentation and keyboard readiness repairs, current smoke and full regression remain pending actual execution.
+
+**M01 remains complete on the exact `c74c3b7` core/build/Recipe/Corrupt proof retained below.** That acceptance does not transfer native or smoke success to `22e51d7`. **M02 remains active; photometry now passes and rendering/performance remain unresolved. M03–M07 remain pending.** All historical failures, including source-five UI **22/27**, the actual Intel crash, blank Reference modal, stale keyboard readiness and two AX Code=-56 errors, remain preserved. No device/calibrated/release approval follows. This checkpoint records evidence only and performs no test, CI query or commit.
+
 ## Source-five terminal UI: M01 complete at the exact accepted source
 
 **M01 is complete at `c74c3b77b2cca811b7b747a2d2cf4a5f2e0e37ee` (tree `72fce94bd52240e4d47af2365b39041b4371e82e`); M02 is active and M03–M07 remain pending.** Root explicitly authorized this transition after specialist 100's independent assessment and the actual same-source **RecipeEditSaveAndReopen pass (65.729 s)** plus **CorruptProjectBlocksSavingAcrossRelaunch pass (20.527 s)**. Explicit library creation/rename/relaunch corroborates the direct first-save/edit/relaunch/corrupt-storage evidence. Existing **261 Debug / 261 Release / 28 Python, both unsigned builds and 84 native passes** complete the M01 gate set. All **100 assignments** and prior failed evidence remain recorded. This acceptance is source-specific, not release approval or acceptance of the current source-six working changes.

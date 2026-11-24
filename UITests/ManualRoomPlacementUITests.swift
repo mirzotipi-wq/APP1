@@ -50,9 +50,11 @@ final class ManualRoomPlacementUITests: XCTestCase {
         XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 15))
         let width = app.textFields["roomWidth"]
         let subject = app.textFields["roomSubjectX"]
-        let status = app.descendants(matching: .any)["roomPlacementStatus"].firstMatch
+        // Captures identify an Other; redundant existence snapshots exhausted
+        // the status wait after notes dismissal before its label was read.
+        let status = app.otherElements["roomPlacementStatus"]
         func expect(_ text: String) {
-            let predicate = NSPredicate(format: "exists == true AND label CONTAINS %@", text)
+            let predicate = NSPredicate(format: "label CONTAINS %@", text)
             let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: status)], timeout: 15)
             if result != .completed { recordRoomFailure(in: app) }
             XCTAssertEqual(result, .completed)
