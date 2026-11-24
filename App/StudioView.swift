@@ -639,7 +639,7 @@ struct StudioView: View {
                                      value: value, range: domain)
                     .id(owner)
             }
-            Slider(value: value, in: bounds, step: step) { [owner] editing in
+            StudioSlider(value: value, in: bounds, step: step) { [owner] editing in
                 editChanged(editing, owner: owner)
             }
                 .id(owner)

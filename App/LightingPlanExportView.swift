@@ -17,34 +17,81 @@ struct LightingPlanExportMenu: View {
     let scene: LightingScene
     let title: String
     let textSettings: String?
-    @State private var showPDF = false
-    @State private var backupSnapshot: BackupSnapshot?
-
-    private struct BackupSnapshot: Identifiable {
-        let id = UUID()
-        let name: String
-        let scene: LightingScene
-    }
+    @State private var snapshot: LightingPlanExportSnapshot?
 
     var body: some View {
-        Menu {
-            Button("Lighting plan (PDF)", systemImage: "doc.richtext") { showPDF = true }
-                .accessibilityIdentifier("prepareLightingPlanPDF")
-            Button("Editable project copy", systemImage: "doc.badge.arrow.up") {
-                backupSnapshot = .init(name: title, scene: scene)
-            }
-            .accessibilityIdentifier("prepareEditableProjectCopy")
-            if let textSettings {
-                ShareLink(item: textSettings) { Label("Share text settings", systemImage: "text.alignleft") }
-            }
+        Button {
+            snapshot = .init(name: title, scene: scene, textSettings: textSettings)
         } label: {
             Image(systemName: "square.and.arrow.up").font(.headline).frame(width: 44, height: 44)
                 .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
         }
         .accessibilityLabel("Export lighting plan")
         .accessibilityIdentifier("exportLightingPlan")
-        .sheet(isPresented: $showPDF) { LightingPlanExportView(scene: scene, title: title) }
-        .sheet(item: $backupSnapshot) { snapshot in
+        .sheet(item: $snapshot) { snapshot in
+            LightingPlanExportFlow(snapshot: snapshot).id(snapshot.id)
+        }
+    }
+}
+
+private struct LightingPlanExportSnapshot: Identifiable {
+    let id = UUID()
+    let name: String
+    let scene: LightingScene
+    let textSettings: String?
+}
+
+/// One stable sheet owns the format choice and the chosen document screen.
+/// Format buttons change its content, avoiding a Menu dismissal racing a new
+/// sheet presentation. The item and its scene remain unchanged until dismissal.
+private struct LightingPlanExportFlow: View {
+    let snapshot: LightingPlanExportSnapshot
+    @Environment(\.dismiss) private var dismiss
+    @State private var destination = Destination.formats
+
+    private enum Destination { case formats, pdf, editableCopy }
+
+    var body: some View {
+        switch destination {
+        case .formats:
+            NavigationStack {
+                Form {
+                    Section("Lighting setup") {
+                        Text(StudioDisplayName.label(snapshot.name, fallback: "Unnamed project"))
+                            .font(.headline)
+                            .accessibilityIdentifier("exportSnapshotProjectName")
+                        Label("\(snapshot.scene.lights.count) lights", systemImage: "lightbulb")
+                            .accessibilityIdentifier("exportSnapshotLightCount")
+                    }
+                    Section {
+                        Button("Lighting plan (PDF)", systemImage: "doc.richtext") { destination = .pdf }
+                            .frame(minHeight: 44)
+                            .accessibilityIdentifier("prepareLightingPlanPDF")
+                        Button("Editable project copy", systemImage: "doc.badge.arrow.up") { destination = .editableCopy }
+                            .frame(minHeight: 44)
+                            .accessibilityIdentifier("prepareEditableProjectCopy")
+                        if let textSettings = snapshot.textSettings {
+                            ShareLink(item: textSettings) {
+                                Label("Share text settings", systemImage: "text.alignleft")
+                                    .frame(minHeight: 44)
+                            }
+                        }
+                    } footer: {
+                        Text("Export includes your current studio settings and unsaved changes. Your project and edit history stay unchanged.")
+                    }
+                }
+                .navigationTitle("Export lighting plan")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { dismiss() }
+                            .accessibilityIdentifier("closeLightingPlanExportFormats")
+                    }
+                }
+            }
+        case .pdf:
+            LightingPlanExportView(scene: snapshot.scene, title: snapshot.name)
+        case .editableCopy:
             ProjectBackupView(name: snapshot.name, scene: snapshot.scene)
         }
     }
@@ -105,7 +152,12 @@ struct LightingPlanExportView: View {
             }
             .navigationTitle("Export lighting plan")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                        .accessibilityIdentifier("closeLightingPlanPDF")
+                }
+            }
             .task(id: options) { await prepare(options) }
         }
     }

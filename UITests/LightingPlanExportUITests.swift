@@ -40,6 +40,7 @@ final class LightingPlanExportUITests: XCTestCase {
             XCTAssertTrue(export.waitForExistence(timeout: 10))
             XCTAssertTrue(export.isEnabled && export.isHittable)
             export.tap()
+            assertFormatChooser(in: app, expectedLights: expectedLights)
             let prepare = app.buttons["prepareEditableProjectCopy"]
             XCTAssertTrue(prepare.waitForExistence(timeout: 5))
             prepare.tap()
@@ -62,6 +63,7 @@ final class LightingPlanExportUITests: XCTestCase {
             close.tap()
             let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: close)
             XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)
+            XCTAssertTrue(app.buttons["exportLightingPlan"].isHittable)
         }
 
         openCopy(expectedLights: 4)
@@ -70,6 +72,18 @@ final class LightingPlanExportUITests: XCTestCase {
         attachment.lifetime = .keepAlways
         self.add(attachment)
         closeCopy()
+
+        // Reuse the same presenter for a different format while the library is
+        // full and the fourth light is still unsaved. The chooser must reset;
+        // neither the earlier copy screen nor its prepared state may survive.
+        app.buttons["exportLightingPlan"].tap()
+        assertFormatChooser(in: app, expectedLights: 4)
+        app.buttons["prepareLightingPlanPDF"].tap()
+        let fullLibraryPages = app.staticTexts["lightingPlanPDFPages"]
+        XCTAssertTrue(fullLibraryPages.waitForExistence(timeout: 15))
+        XCTAssertTrue(fullLibraryPages.label.contains("2 pages"))
+        XCTAssertTrue(app.buttons["shareLightingPlanPDF"].exists)
+        closePDF(in: app)
         assertLabel(status, "Unsaved changes")
         XCTAssertTrue(addedLight.exists)
         XCTAssertTrue(undo.isEnabled && undo.isHittable)
@@ -112,17 +126,54 @@ final class LightingPlanExportUITests: XCTestCase {
         let export = app.buttons["exportLightingPlan"]
         XCTAssertTrue(export.waitForExistence(timeout: 15))
         export.tap()
+        assertFormatChooser(in: app, expectedLights: 3)
+
+        // Cancelling before choosing a format must dismiss the sole sheet
+        // without preparing a document or changing the editor/history.
+        let cancel = app.buttons["closeLightingPlanExportFormats"]
+        cancel.tap()
+        let cancelled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: cancel)
+        XCTAssertEqual(XCTWaiter.wait(for: [cancelled], timeout: 10), .completed)
+        XCTAssertTrue(export.isHittable)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
+        XCTAssertFalse(app.buttons["undo"].isEnabled)
+        XCTAssertFalse(app.buttons["redo"].isEnabled)
+
+        export.tap()
+        assertFormatChooser(in: app, expectedLights: 3)
         let prepare = app.buttons["prepareLightingPlanPDF"]
-        if prepare.waitForExistence(timeout: 5) { prepare.tap() }
-        else { app.buttons["Lighting plan (PDF)"].tap() }
+        XCTAssertTrue(prepare.waitForExistence(timeout: 5))
+        prepare.tap()
         let pages = app.staticTexts["lightingPlanPDFPages"]
         XCTAssertTrue(pages.waitForExistence(timeout: 15))
         XCTAssertTrue(pages.label.contains("2 pages"))
         XCTAssertTrue(app.buttons["shareLightingPlanPDF"].exists)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Lighting-plan-preview"; attachment.lifetime = .keepAlways; add(attachment)
-        app.buttons["Done"].tap()
+        closePDF(in: app)
         XCTAssertTrue(export.waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
+        XCTAssertFalse(app.buttons["undo"].isEnabled)
+        XCTAssertFalse(app.buttons["redo"].isEnabled)
+    }
+
+    private func assertFormatChooser(in app: XCUIApplication, expectedLights: Int) {
+        XCTAssertTrue(app.buttons["closeLightingPlanExportFormats"].waitForExistence(timeout: 5),
+                      "The export sheet must become interactive before a document format is selected")
+        XCTAssertEqual(app.staticTexts["exportSnapshotProjectName"].label, "Portrait setup")
+        XCTAssertEqual(app.staticTexts["exportSnapshotLightCount"].label, "\(expectedLights) lights")
+        XCTAssertTrue(app.buttons["prepareLightingPlanPDF"].isHittable)
+        XCTAssertTrue(app.buttons["prepareEditableProjectCopy"].isHittable)
+        XCTAssertFalse(app.staticTexts["lightingPlanPDFPages"].exists)
+        XCTAssertFalse(app.staticTexts["editableCopyProjectName"].exists)
+    }
+
+    private func closePDF(in app: XCUIApplication) {
+        let close = app.buttons["closeLightingPlanPDF"]
+        XCTAssertTrue(close.isHittable)
+        close.tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: close)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)
+        XCTAssertTrue(app.buttons["exportLightingPlan"].isHittable)
     }
 }

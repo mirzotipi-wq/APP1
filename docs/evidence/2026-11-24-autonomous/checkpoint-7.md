@@ -1,6 +1,6 @@
 # Native correction candidate — checkpoint 7
 
-Prepared source `15a1b348c680423a46d94ecf739321a5a57bc0a7`, tree `9ac414a06f5ffb61b9d243fbac0ec56a5697dbaf`, parent `ff8b683098a720b4c7abdddf212f85a79f3cfd39`. The Git object exists remotely and its tree matches the immutable tested index export. **At this draft checkpoint, main has not yet been advanced**: the lead is allowing the already-running source-six studio/export UI shard to finish so its result is not lost to workflow cancellation. The next update must record the actual main read-back and new workflow, not infer them.
+Prepared source `15a1b348c680423a46d94ecf739321a5a57bc0a7`, tree `9ac414a06f5ffb61b9d243fbac0ec56a5697dbaf`, parent `ff8b683098a720b4c7abdddf212f85a79f3cfd39`. The Git object exists remotely and its tree matches the immutable tested index export. At preparation, main had not yet advanced while the existing studio/export shard finished. It was then integrated as the parent of `816e7123cafbf214bef47e09d3e14abd993a83c7` through a non-forced main update. The exact read-back and new workflow are recorded in [checkpoint8](checkpoint-8.md); there is no separate source-seven workflow.
 
 ## Acceptance before integration
 

@@ -113,7 +113,7 @@ struct NeutralCardInspector: View {
                 Spacer()
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
             }
-            Slider(value: value, in: range, step: step) { editing in
+            StudioSlider(value: value, in: range, step: step) { editing in
                 onEditingChanged(editing, id)
             }
                 .accessibilityLabel(title).accessibilityValue(formatted)

@@ -88,7 +88,7 @@ struct OpticsInspector: View {
                 Spacer()
                 PrecisionValueButton(title: title, unit: "m", id: id, value: value, range: domain)
             }
-            Slider(value: value, in: limits, step: step) { editing in
+            StudioSlider(value: value, in: limits, step: step) { editing in
                 onEditingChanged(editing, id)
             }
                 .accessibilityLabel(title)
