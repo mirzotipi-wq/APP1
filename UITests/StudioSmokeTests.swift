@@ -58,25 +58,27 @@ final class StudioSmokeTests: XCTestCase {
         app.launch()
         assertStatus("Unsaved changes", in: app)
         let emitter = app.buttons["emitterKind"]
-        reveal(emitter, in: app)
+        revealStudioContent(emitter, in: app)
         emitter.tap()
         app.buttons["Rectangular softbox"].tap()
         XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
         let width = app.sliders["emitterWidth"]
-        reveal(width, in: app)
+        revealStudioContent(width, in: app)
+        let initialWidth = try XCTUnwrap(width.value as? String)
         width.adjust(toNormalizedSliderPosition: 0.5)
-        let editedWidth = width.value as? String
-        XCTAssertNotNil(editedWidth)
+        let editedWidth = try XCTUnwrap(width.value as? String)
+        XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
 
         let undo = app.buttons["undo"]
         reveal(undo, in: app, direction: false)
         undo.tap()
-        reveal(width, in: app)
-        XCTAssertNotEqual(width.value as? String, editedWidth)
+        XCTAssertEqual(emitter.value as? String, "Rectangular softbox", "Undo width, not the preceding emitter selection")
+        revealStudioContent(width, in: app)
+        XCTAssertEqual(width.value as? String, initialWidth)
         let redo = app.buttons["redo"]
         reveal(redo, in: app, direction: false)
         redo.tap()
-        reveal(width, in: app)
+        revealStudioContent(width, in: app)
         XCTAssertEqual(width.value as? String, editedWidth)
 
         let attachment = XCTAttachment(screenshot: app.screenshot())
@@ -85,9 +87,9 @@ final class StudioSmokeTests: XCTestCase {
         app.terminate()
         app.launch()
         assertStatus("Saved locally", in: app)
-        reveal(emitter, in: app)
+        revealStudioContent(emitter, in: app)
         XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
-        reveal(width, in: app)
+        revealStudioContent(width, in: app)
         XCTAssertEqual(width.value as? String, editedWidth)
     }
 

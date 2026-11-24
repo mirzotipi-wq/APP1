@@ -2,21 +2,7 @@ import XCTest
 
 final class PrecisionEditingUITests: XCTestCase {
     private func reveal(_ target: XCUIElement, in app: XCUIApplication, towardBottom: Bool = true) {
-        // AX can mark an offscreen SwiftUI row as hittable. Require a finite,
-        // usable onscreen center, clear of navigation and edit-history bars.
-        for _ in 0..<12 {
-            if target.exists {
-                let frame = target.frame
-                if target.isHittable, !frame.isEmpty, frame.midY.isFinite,
-                   frame.midY > app.frame.minY + 100, frame.midY < app.frame.maxY - 100 {
-                    return
-                }
-            }
-            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: towardBottom ? 0.78 : 0.30))
-            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: towardBottom ? 0.30 : 0.78))
-            start.press(forDuration: 0.05, thenDragTo: end)
-        }
-        XCTFail("Exact value control was not reachable in the inspector")
+        revealStudioContent(target, in: app, towardBottom: towardBottom)
     }
 
     private func replaceText(_ field: XCUIElement, with text: String) {

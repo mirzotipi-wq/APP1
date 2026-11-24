@@ -48,20 +48,9 @@ struct StudioView: View {
                                 .frame(maxWidth: .infinity, minHeight: 160)
                         } else {
                             if saveConflict { conflictRecoveryPanel }
-                            Button { showReference = true } label: {
-                                Label("Compare reference photo", systemImage: "rectangle.split.2x1")
-                                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                            }
-                            .buttonStyle(.bordered)
-                            .accessibilityIdentifier("openReference")
+                            workflowActions
                             workspace
                             meter.id("meterPanel")
-                            Button { showRoomPlacement = true } label: {
-                                Label("Room placement", systemImage: "ruler")
-                                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                            }
-                            .buttonStyle(.bordered)
-                            .accessibilityIdentifier("openRoomPlacement")
                             rack
                             if let light = scene.lights.first(where: { $0.id == selected }) {
                                 inspector(light)
@@ -220,6 +209,33 @@ struct StudioView: View {
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
+    }
+
+    /// Reference and measured-room placement are primary workflow actions,
+    /// not controls hidden below the canvas or the sticky edit-history bar.
+    private var workflowActions: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
+        return layout {
+            Button { showReference = true } label: {
+                Label("Reference photo", systemImage: "rectangle.split.2x1")
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel("Compare reference photo")
+            .accessibilityIdentifier("openReference")
+            Button { showRoomPlacement = true } label: {
+                Label("Room placement", systemImage: "ruler")
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel("Room placement")
+            .accessibilityHint("Enter measured room dimensions and check equipment positions")
+            .accessibilityIdentifier("openRoomPlacement")
+        }
     }
 
     private var workspace: some View {
