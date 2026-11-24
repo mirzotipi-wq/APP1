@@ -91,6 +91,82 @@ final class SurfacePhotometryTests: XCTestCase {
         }
     }
 
+    /// Independent composite Simpson reference on vertical slices for a
+    /// centered receiver at z=0.25. The positive region is x+slope*y>cut.
+    /// Integrate only its exact domain, rather than sharing polygon or
+    /// Gaussian integration code with the production implementation.
+    private func grazingReference(cut: Double, slope: Double) -> Double {
+        let depth = 0.25, width = 1.0, height = 0.6, n = 160
+        let normalLength = (1 + slope * slope + (cut / depth) * (cut / depth)).squareRoot()
+        let x0 = max(-width / 2, cut - slope * height / 2)
+        let x1 = width / 2
+        if x0 >= x1 { return 0 }
+        let dx = (x1 - x0) / Double(n)
+        func weight(_ i: Int) -> Double { i == 0 || i == n ? 1 : (i % 2 == 0 ? 2 : 4) }
+        var sum = 0.0
+        for i in 0...n {
+            let x = x0 + Double(i) * dx
+            let y0 = slope == 0 ? -height / 2 : max(-height / 2, (cut - x) / slope)
+            let y1 = height / 2
+            if y0 >= y1 { continue }
+            let dy = (y1 - y0) / Double(n)
+            var slice = 0.0
+            for j in 0...n {
+                let y = y0 + Double(j) * dy
+                let r2 = x * x + y * y + depth * depth
+                let projection = max(0, (x + slope * y - cut) / normalLength)
+                slice += weight(j) * depth * projection / (r2 * r2)
+            }
+            sum += weight(i) * slice * dy / 3
+        }
+        return sum * dx / 3 * 1000 / (width * height)
+    }
+
+    func testGrazingStripDoesNotDisappearBetweenMidpointSamples() throws {
+        let e = try emitter(), receiver = Position(x: 0, y: 0, z: 0.25)
+        // At 0.499 m, the positive strip is only 1 mm wide. A 32x32
+        // midpoint grid on a 1 m emitter has no sample inside it.
+        for cut in [0.45, 0.48, 0.499, 0.49999] {
+            let n = try direction(1, 0, cut / 0.25)
+            let actual = try XCTUnwrap(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: n))
+            let expected = grazingReference(cut: cut, slope: 0)
+            XCTAssertGreaterThan(expected, 0)
+            XCTAssertGreaterThan(actual, 0)
+            let relativeError = abs(actual - expected) / expected
+            print("Grazing strip cut \(cut) m: actual \(actual) lx, reference \(expected) lx, relative error \(relativeError)")
+            XCTAssertLessThan(relativeError, 0.002)
+            let mirrored = try direction(-1, 0, cut / 0.25)
+            let mirrorLux = try XCTUnwrap(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: mirrored))
+            XCTAssertEqual(mirrorLux, actual, accuracy: expected * 0.002)
+        }
+        for cut in [0.5, 0.501] {
+            let n = try direction(1, 0, cut / 0.25)
+            XCTAssertEqual(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: n), 0)
+        }
+    }
+
+    func testGrazingCornerAndSingleBoundaryVertexRemainPhysicallyConsistent() throws {
+        let e = try emitter(), receiver = Position(x: 0, y: 0, z: 0.25)
+        for cut in [0.6, 0.79, 0.799, 0.79999] {
+            let n = try direction(1, 1, cut / 0.25)
+            let actual = try XCTUnwrap(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: n))
+            let expected = grazingReference(cut: cut, slope: 1)
+            XCTAssertGreaterThan(expected, 0)
+            XCTAssertGreaterThan(actual, 0)
+            let relativeError = abs(actual - expected) / expected
+            print("Grazing corner cut \(cut) m: actual \(actual) lx, reference \(expected) lx, relative error \(relativeError)")
+            XCTAssertLessThan(relativeError, 0.002)
+        }
+        // Exactly zero-area contact is physically zero. Allow only floating-
+        // point residuals at this representational boundary, not a tolerance
+        // that could erase a finite illuminated area.
+        let tangent = try direction(1, 1, 0.8 / 0.25)
+        let actual = try XCTUnwrap(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: tangent))
+        XCTAssertEqual(actual, 0, accuracy: 1e-20)
+        let away = try direction(1, 1, 0.81 / 0.25)
+        XCTAssertEqual(Photometry.rectangularIlluminance(emitter: e, receiver: receiver, receiverNormal: away), 0)
+    }
+
     func testRectangleBackfaceNearPlaneAndInvalidGeometry() throws {
         let e = try emitter(), toward = try direction(0, 0, -1), away = try direction(0, 0, 1)
         XCTAssertEqual(Photometry.rectangularIlluminance(emitter: e, receiver: .init(x: 0, y: 0, z: -1), receiverNormal: away), 0)

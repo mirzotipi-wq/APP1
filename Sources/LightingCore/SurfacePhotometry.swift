@@ -50,6 +50,30 @@ public struct LambertianRectangle: Sendable {
     }
 }
 
+/// A vertex of the emitting face in its local meter coordinates. Incidence
+/// is the unnormalized projection toward the receiver's front hemisphere.
+/// Keeping it at vertices permits stable positive barycentric interpolation
+/// even for a very narrow, nearly tangent contributing part of the face.
+private struct IncidenceVertex {
+    let point: SIMD2<Double>
+    let incidence: Double
+}
+
+/// Eight-point Gauss-Legendre nodes and weights mapped to [0, 1].
+/// We integrate the clipped polygon as a fan of triangles using a square-to-
+/// triangle map. These constants integrate polynomials through degree 15
+/// along each axis; smooth inverse-distance terms converge numerically.
+private let gauss8: [(node: Double, weight: Double)] = [
+    (0.0198550717512319, 0.0506142681451881),
+    (0.101666761293187, 0.111190517226687),
+    (0.237233795041836, 0.156853322938944),
+    (0.408282678752175, 0.181341891689181),
+    (0.591717321247825, 0.181341891689181),
+    (0.762766204958164, 0.156853322938944),
+    (0.898333238706813, 0.111190517226687),
+    (0.980144928248768, 0.0506142681451881)
+]
+
 extension Photometry {
     /// Ideal isotropic point source incident on an oriented surface, in lux.
     /// Intensity is the candela in the receiver's direction; no occlusion.
@@ -63,11 +87,14 @@ extension Photometry {
         return normalLux * min(1, max(0, dot(delta / distance, receiverNormal.vector)))
     }
 
-    /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2.
-    /// L = on-axis cd / emitter area; a fixed 32x32 midpoint grid bounds work.
-    /// The receiver must be separated from the emitter plane by at least 5 cm
-    /// and one quarter of its longest side. Nearer configurations return nil
-    /// rather than pretending that coarse quadrature is reliable.
+    /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2,
+    /// with L = on-axis cd / emitter area. Clip the rectangular face to the
+    /// receiver's front hemisphere before integrating. This avoids losing
+    /// a narrow positive-incidence region between fixed midpoint samples.
+    /// A convex rectangle clipped by a half-plane has at most five vertices;
+    /// 8x8 Gaussian quadrature per triangle keeps the diagnostic cost bounded.
+    /// The receiver must still be separated from the emitter plane by at least
+    /// 5 cm and one quarter of the longest side; nearer configurations abstain.
     /// No occlusion, reflection, spectral effects or modifier transmission.
     public static func rectangularIlluminance(emitter: LambertianRectangle, receiver: Position,
                                               receiverNormal: UnitDirection) -> Double? {
@@ -78,21 +105,60 @@ extension Photometry {
         guard abs(depth) >= minimumDepth else { return nil }
         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
 
-        let samples = 32
-        let candelaPerCell = emitter.onAxisCandela / Double(samples * samples)
-        var lux = 0.0
-        for j in 0..<samples {
-            let y = ((Double(j) + 0.5) / Double(samples) - 0.5) * emitter.heightMeters
-            for i in 0..<samples {
-                let x = ((Double(i) + 0.5) / Double(samples) - 0.5) * emitter.widthMeters
-                let delta = toReceiver - emitter.right.vector * x - emitter.up.vector * y
-                let r2 = dot(delta, delta)
-                let direction = delta / r2.squareRoot()
-                let emission = min(1, max(0, dot(direction, emitter.normal)))
-                let incidence = min(1, max(0, -dot(direction, receiverNormal.vector)))
-                lux += candelaPerCell * emission * incidence / r2
+        let right = emitter.right.vector, up = emitter.up.vector
+        let normal = receiverNormal.vector
+        let nx = dot(right, normal), ny = dot(up, normal)
+        let offset = dot(toReceiver, normal)
+        let halfWidth = emitter.widthMeters / 2
+        let halfHeight = emitter.heightMeters / 2
+        let corners: [SIMD2<Double>] = [
+            .init(-halfWidth, -halfHeight), .init(halfWidth, -halfHeight),
+            .init(halfWidth, halfHeight), .init(-halfWidth, halfHeight)
+        ]
+        let vertices = corners.map { p in
+            IncidenceVertex(point: p, incidence: nx * p.x + ny * p.y - offset)
+        }
+        var polygon: [IncidenceVertex] = []
+        polygon.reserveCapacity(5)
+        // Sutherland-Hodgman clipping against one affine half-plane. A
+        // boundary vertex has zero contribution; avoid duplicating it.
+        for i in vertices.indices {
+            let a = vertices[(i + vertices.count - 1) % vertices.count]
+            let b = vertices[i]
+            if (a.incidence < 0 && b.incidence > 0) || (a.incidence > 0 && b.incidence < 0) {
+                let t = a.incidence / (a.incidence - b.incidence)
+                polygon.append(.init(point: a.point + (b.point - a.point) * t, incidence: 0))
+            }
+            if b.incidence >= 0 { polygon.append(b) }
+        }
+        guard polygon.count >= 3 else { return 0 }
+
+        var integral = 0.0
+        let a = polygon[0]
+        for i in 1..<(polygon.count - 1) {
+            let b = polygon[i], c = polygon[i + 1]
+            let ab = b.point - a.point, ac = c.point - a.point
+            let determinant = abs(ab.x * ac.y - ab.y * ac.x)
+            if determinant == 0 { continue }
+            // Duffy map: p = a + u(b-a) + (1-u)v(c-a).
+            // The Jacobian is determinant * (1-u).
+            for (u, wu) in gauss8 {
+                let remaining = 1 - u
+                for (v, wv) in gauss8 {
+                    let cWeight = remaining * v
+                    let aWeight = remaining * (1 - v)
+                    let p = a.point + ab * u + ac * cWeight
+                    // The signed projection is affine across each triangle.
+                    // Its three nonnegative vertex values prevent cancellation
+                    // from erasing a sliver of grazing-angle illumination.
+                    let incidence = aWeight * a.incidence + u * b.incidence + cWeight * c.incidence
+                    let delta = toReceiver - right * p.x - up * p.y
+                    let r2 = dot(delta, delta)
+                    integral += determinant * wu * wv * remaining * depth * incidence / (r2 * r2)
+                }
             }
         }
-        return lux
+        let radiance = emitter.onAxisCandela / (emitter.widthMeters * emitter.heightMeters)
+        return radiance * integral
     }
 }
