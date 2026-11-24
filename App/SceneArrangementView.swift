@@ -89,7 +89,7 @@ struct SceneArrangementView: View {
             Text(label)
                 .frame(maxWidth: .infinity, alignment: .leading)
             DistanceValueButton(title: "Setup " + label.lowercased(), id: id,
-                                value: value, range: Position.coordinateRange)
+                                value: value, range: Position.coordinateRange, compactReadout: true)
         }
     }
 

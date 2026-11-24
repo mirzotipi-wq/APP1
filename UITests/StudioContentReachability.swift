@@ -39,7 +39,9 @@ extension XCTestCase {
             proceed.tap()
             // UIKit can retain the hidden introduction in its accessibility tree.
             // Require the actual transition to usable typing keys instead.
-            let typingKey = app.keyboards.firstMatch.keys.firstMatch
+            // The keyboard's first Key can be zero-size Padding-Left.
+            let typingKey = app.keyboards.firstMatch.keys
+                .matching(NSPredicate(format: "label == %@ OR label == %@", "q", "Q")).firstMatch
             let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
                 (!proceed.exists || !proceed.isHittable) && typingKey.exists && typingKey.isHittable
             }, object: typingKey)

@@ -9,6 +9,8 @@ struct PrecisionValueButton: View {
     let id: String
     @Binding var value: Double
     let range: ClosedRange<Double>
+    // Compact visual text leaves the accessible value and editor exact.
+    var visualReadout: String? = nil
     @Environment(\.locale) private var locale
     @State private var showingEditor = false
 
@@ -21,7 +23,7 @@ struct PrecisionValueButton: View {
             showingEditor = true
         } label: {
             HStack(spacing: 5) {
-                Text(display).font(.subheadline.monospacedDigit())
+                Text(visualReadout ?? display).font(.subheadline.monospacedDigit())
                 Image(systemName: "pencil").font(.caption2)
             }
             .padding(.horizontal, 4)

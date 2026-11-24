@@ -8,6 +8,8 @@ struct DistanceValueButton: View {
     let id: String
     @Binding var value: Double
     let range: ClosedRange<Double>
+    var compactReadout = false
+    @Environment(\.locale) private var locale
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRawValue = PlanUnits.metric.rawValue
 
@@ -16,7 +18,10 @@ struct DistanceValueButton: View {
         let displayRange = Self.convertedRange(range, units: units)
         PrecisionValueButton(title: title, unit: units.symbol, id: id,
                              value: displayedValue(units: units, range: displayRange),
-                             range: displayRange ?? (0...0))
+                             range: displayRange ?? (0...0),
+                             visualReadout: compactReadout
+                                ? PlacementMeasurementDisplay.distance(value, units: units, locale: locale)
+                                : nil)
             .disabled(displayRange == nil || !units.fromMeters(value).isFinite)
             // A preference change cancels an open draft instead of reinterpreting
             // its existing digits in another unit.
