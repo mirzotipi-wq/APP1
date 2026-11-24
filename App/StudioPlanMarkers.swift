@@ -12,6 +12,8 @@ struct StudioPlanMarker: Identifiable {
     let accessibilityLabel: String
     var accessibilityIdentifier = ""
     var action: (() -> Void)?
+    var onDragChanged: ((CGSize) -> Void)? = nil
+    var onDragEnded: (() -> Void)? = nil
 }
 
 struct StudioPlanLabelNoticeKey: PreferenceKey {
@@ -76,7 +78,7 @@ struct StudioPlanMarkers: View {
                     }
                 }
                 ForEach(markers) { marker in
-                    markerControl(marker)
+                    StudioPlanMarkerControl(marker: marker)
                         .position(marker.anchor)
                         // Coincident equipment is never separated cosmetically.
                         // Keep the selected icon on top; all lights remain in the list.
@@ -105,20 +107,80 @@ struct StudioPlanMarkers: View {
         return .init(size: CGSize(width: min(textWidth + 8, maximumWidth), height: textHeight + 4),
                      shortened: textWidth + 8 > maximumWidth)
     }
+}
 
-    @ViewBuilder private func markerControl(_ marker: StudioPlanMarker) -> some View {
-        if let action = marker.action {
-            Button(action: action) { markerIcon(marker) }
-                .buttonStyle(.plain)
-                .accessibilityLabel(marker.accessibilityLabel)
-                .accessibilityIdentifier(marker.accessibilityIdentifier)
-                .accessibilityAddTraits(marker.selected ? .isSelected : [])
+/// ForEach supplies the stable marker identity, so a moving anchor does not
+/// replace the gesture's state or its captured completion callback.
+private struct StudioPlanMarkerControl: View {
+    let marker: StudioPlanMarker
+    @GestureState private var dragRecognized = false
+    @State private var dragInProgress = false
+    @State private var dragCompletion: (() -> Void)?
+
+    var body: some View {
+        control
+            .accessibilityLabel(marker.accessibilityLabel)
+            .accessibilityIdentifier(marker.accessibilityIdentifier)
+            .accessibilityAddTraits(marker.selected ? .isSelected : [])
+            .onChange(of: dragInProgress && !dragRecognized) { _, needsCompletion in
+                // GestureState also resets when the system cancels a gesture;
+                // include ownership so a start and cancel in one render still
+                // closes the transaction even if no true state was rendered.
+                if needsCompletion { finishDrag() }
+            }
+            .onChange(of: marker.onDragChanged != nil) { _, enabled in
+                if !enabled { finishDrag() }
+            }
+            .onDisappear { finishDrag() }
+    }
+
+    @ViewBuilder private var control: some View {
+        if marker.onDragChanged != nil {
+            markerIcon
+                // Exclusive recognition preserves taps while preventing a drag
+                // from also opening the subject or camera inspector. Simultaneous
+                // attachment lets an enclosing scroll view recognize its gesture.
+                .simultaneousGesture(dragGesture.exclusively(before:
+                    TapGesture().onEnded { marker.action?() }))
+                .accessibilityAddTraits(marker.action == nil ? [] : .isButton)
+                .accessibilityAction { marker.action?() }
+        } else if let action = marker.action {
+            Button(action: action) { markerIcon }.buttonStyle(.plain)
         } else {
-            markerIcon(marker).accessibilityLabel(marker.accessibilityLabel)
+            markerIcon
         }
     }
 
-    private func markerIcon(_ marker: StudioPlanMarker) -> some View {
+    private var dragGesture: some Gesture {
+        // Global translation stays stable while the projected marker itself
+        // moves. The parent converts this cumulative offset using a frozen scale.
+        DragGesture(minimumDistance: 10, coordinateSpace: .global)
+            .updating($dragRecognized) { _, recognized, _ in recognized = true }
+            .onChanged { value in
+                guard let changed = marker.onDragChanged else { return }
+                if !dragInProgress {
+                    dragInProgress = true
+                    dragCompletion = marker.onDragEnded
+                }
+                changed(value.translation)
+            }
+            .onEnded { value in
+                if dragInProgress { marker.onDragChanged?(value.translation) }
+                finishDrag()
+            }
+    }
+
+    private func finishDrag() {
+        guard dragInProgress else { return }
+        // Clear ownership before invoking the parent: completion may remove this
+        // marker, disable dragging, or change the scene synchronously.
+        dragInProgress = false
+        let completion = dragCompletion
+        dragCompletion = nil
+        completion?()
+    }
+
+    private var markerIcon: some View {
         Image(systemName: marker.icon)
             .font(.system(size: 17, weight: .medium)).foregroundStyle(marker.color)
             .frame(width: 34, height: 34)

@@ -10,6 +10,12 @@ struct StudioView: View {
     @State private var showProjects = false
     @State private var showReference = false
     @State private var showRoomPlacement = false
+    @State private var showSubject = false
+    @State private var renamingLightID: UUID?
+    @State private var lightNameDraft = ""
+    @State private var showRenameLight = false
+    @State private var renameGeneration: UUID?
+    @State private var planDrag: PlanDrag?
     @State private var editHistory = SceneEditHistory()
     @State private var mode = "Plan"
     @State private var studySubject: StudySubject = .sphere
@@ -32,6 +38,14 @@ struct StudioView: View {
     @Environment(\.scenePhase) private var scenePhase
     private let amber = Color(red: 0.96, green: 0.65, blue: 0.30)
     private let charcoal = Color(red: 0.075, green: 0.085, blue: 0.10)
+
+    private struct PlanDrag {
+        let lightID: UUID
+        let generation: UUID
+        let scene: LightingScene
+        let pointsPerMeter: Double
+        let owner: String
+    }
 
     var body: some View {
         let generation = libraryOperation.generation
@@ -72,6 +86,7 @@ struct StudioView: View {
                     }
                     .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
                 }
+                .scrollDisabled(planDrag != nil)
                 .onChange(of: meterNavigationRequest) { _, _ in
                     if reduceMotion {
                         proxy.scrollTo("meterPanel", anchor: .top)
@@ -123,6 +138,32 @@ struct StudioView: View {
             .sheet(isPresented: $showRoomPlacement) {
                 ManualRoomPlacementView(scene: scene)
             }
+            .sheet(isPresented: $showSubject) {
+                NavigationStack {
+                    ScrollView {
+                        let owner = editOwner("subject")
+                        SubjectInspector(position: subjectPositionBinding,
+                                         onEditingChanged: editHandler(owner: owner))
+                            .id(owner).padding(20)
+                            .disabled(libraryOperation.isBusy)
+                    }
+                    .navigationTitle("Subject position")
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") { showSubject = false }
+                        }
+                    }
+                }
+            }
+            .alert("Rename light", isPresented: $showRenameLight) {
+                TextField("Light name", text: $lightNameDraft)
+                    .textInputAutocapitalization(.words)
+                Button("Cancel", role: .cancel) { renamingLightID = nil }
+                Button("Rename", action: sceneAction { renameSelectedLight() })
+                    .disabled(!isValidLightName(lightNameDraft))
+            } message: {
+                Text("Use a descriptive name of up to 80 characters.")
+            }
             .sheet(isPresented: $showProjects) {
                 ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
                                    isWorking: libraryOperation.isBusy,
@@ -151,11 +192,11 @@ struct StudioView: View {
             }
             .task { if !loaded { load(from: generation) } }
             .onChange(of: scenePhase) { _, phase in
-                if phase != .active { editHistory.end(scene: scene) }
+                if phase != .active { finishPlanDrag(); editHistory.end(scene: scene) }
             }
-            .onChange(of: mode) { _, _ in editHistory.end(scene: scene) }
-            .onChange(of: selected) { _, _ in editHistory.end(scene: scene) }
-            .onDisappear { editHistory.end(scene: scene) }
+            .onChange(of: mode) { _, _ in finishPlanDrag(); editHistory.end(scene: scene) }
+            .onChange(of: selected) { _, _ in finishPlanDrag(); editHistory.end(scene: scene) }
+            .onDisappear { finishPlanDrag(); editHistory.end(scene: scene) }
         }
     }
 
@@ -352,7 +393,7 @@ struct StudioView: View {
             .onPreferenceChange(StudioPlanLabelNoticeKey.self) { planNeedsLabelNotice = $0 }
             if mode == "Plan" {
                 if let light = scene.lights.first(where: { $0.id == selected }) {
-                    Text("Selected: " + lightDisplayName(light))
+                    Text("Selected: " + lightDisplayName(light) + " · Drag its marker to move")
                         .font(.caption.weight(.medium))
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -430,7 +471,7 @@ struct StudioView: View {
     private var plan: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
-            let bounds = try? StudioSceneBounds(scene: scene)
+            let bounds = try? StudioSceneBounds(scene: planDrag?.scene ?? scene)
             let fit = bounds?.overheadFit(width: Double(w), height: Double(h), padding: min(48, Double(min(w, h)) * 0.2), minimumSpanMeters: 4)
             let grid = fit?.grid()
             let center = bounds?.center ?? scene.subject
@@ -528,10 +569,12 @@ struct StudioView: View {
     }
 
     private func planMarkers(width: CGFloat, height: CGFloat, scale: CGFloat, center: Position) -> [StudioPlanMarker] {
+        let generation = libraryOperation.generation
         var markers = [
             StudioPlanMarker(id: "subject", anchor: point(scene.subject, width, height, scale, center),
                              name: "Subject", icon: "person.fill", color: .white, selected: false,
-                             accessibilityLabel: "Subject"),
+                             accessibilityLabel: "Edit subject position", accessibilityIdentifier: "editSubject",
+                             action: { showSubject = true }),
             StudioPlanMarker(id: "camera", anchor: point(scene.camera, width, height, scale, center),
                              name: "Camera", icon: "camera.fill", color: .white, selected: false,
                              accessibilityLabel: "Edit camera position and lens", accessibilityIdentifier: "editCamera",
@@ -542,7 +585,11 @@ struct StudioView: View {
                              name: lightDisplayName(light), icon: lightIcon(light), color: amber,
                              selected: selected == light.id,
                              accessibilityLabel: "Select \(lightDisplayName(light)) on plan",
-                             action: sceneAction { selected = light.id })
+                             action: sceneAction { selected = light.id },
+                             onDragChanged: selected == light.id ? { translation in
+                                 dragLight(light.id, translation: translation, scale: Double(scale), generation: generation)
+                             } : nil,
+                             onDragEnded: { finishPlanDrag(lightID: light.id, generation: generation) })
         }
         return markers
     }
@@ -634,6 +681,21 @@ struct StudioView: View {
                     Text(lightDisplayName(light)).font(.title3.bold())
                 }
                 Spacer()
+                Menu {
+                    Button("Rename light", systemImage: "pencil") {
+                        renamingLightID = light.id
+                        renameGeneration = libraryOperation.generation
+                        lightNameDraft = light.name
+                        showRenameLight = true
+                    }
+                    Button("Duplicate light", systemImage: "plus.square.on.square",
+                           action: sceneAction { duplicateLight(light.id) })
+                        .disabled(scene.lights.count >= 12)
+                } label: {
+                    Image(systemName: "ellipsis.circle").frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("Light actions")
+                .accessibilityIdentifier("lightActions")
                 Button(role: .destructive) { confirmRemove = true } label: {
                     Image(systemName: "trash").frame(width: 44, height: 44)
                 }.accessibilityLabel("Remove selected light")
@@ -724,6 +786,16 @@ struct StudioView: View {
             guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.camera else { return }
             if !editHistory.isEditing { remember(scene) }
             scene.camera = new
+        })
+    }
+
+    private var subjectPositionBinding: Binding<Position> {
+        let generation = libraryOperation.generation
+        return Binding(get: { scene.subject }, set: { new in
+            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid,
+                  new != scene.subject else { return }
+            if !editHistory.isEditing { remember(scene) }
+            scene.subject = new
         })
     }
 
@@ -855,6 +927,72 @@ struct StudioView: View {
         let light = StudioLight(name: "Light \(n)", position: .init(x: 1, y: 2, z: 1), candela: 500, kelvin: 5600)
         next.lights.append(light); replace(next); selected = light.id
     }
+
+    private func isValidLightName(_ value: String) -> Bool {
+        let name = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !name.isEmpty && name.count <= 80 &&
+            !StudioDisplayName.display(name, maximumCharacters: 80).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func renameSelectedLight() {
+        guard let id = renamingLightID, isValidLightName(lightNameDraft),
+              renameGeneration == libraryOperation.generation,
+              let index = scene.lights.firstIndex(where: { $0.id == id }) else { return }
+        var next = scene
+        next.lights[index].name = lightNameDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        replace(next)
+        renamingLightID = nil
+    }
+
+    private func duplicateLight(_ id: UUID) {
+        guard scene.lights.count < 12, let original = scene.lights.first(where: { $0.id == id }) else { return }
+        var copy = original
+        copy.id = UUID()
+        let stem = String(original.name.prefix(65))
+        var number = 1
+        repeat {
+            copy.name = stem + (number == 1 ? " copy" : " copy \(number)")
+            number += 1
+        } while scene.lights.contains(where: { $0.name == copy.name })
+        // Preserve exact equipment geometry; duplicating never silently moves a rig.
+        var next = scene
+        next.lights.append(copy)
+        replace(next)
+        selected = copy.id
+    }
+
+    private func dragLight(_ id: UUID, translation: CGSize, scale: Double, generation: UUID) {
+        guard libraryOperation.allowsSceneMutation(from: generation), selected == id,
+              scale.isFinite, scale > 0,
+              translation.width.isFinite, translation.height.isFinite else { return }
+        if planDrag == nil {
+            let owner = editOwner("plan.\(id.uuidString)")
+            planDrag = PlanDrag(lightID: id, generation: generation, scene: scene,
+                                pointsPerMeter: scale, owner: owner)
+            editHistory.begin(scene: scene, owner: owner)
+        }
+        guard let drag = planDrag, drag.lightID == id, drag.generation == generation,
+              let source = drag.scene.lights.first(where: { $0.id == id }),
+              let index = scene.lights.firstIndex(where: { $0.id == id }) else { return }
+        let range = Position.coordinateRange
+        var position = source.position
+        position.x = min(range.upperBound, max(range.lowerBound,
+            source.position.x + Double(translation.width) / drag.pointsPerMeter))
+        position.z = min(range.upperBound, max(range.lowerBound,
+            source.position.z + Double(translation.height) / drag.pointsPerMeter))
+        guard position.isValid else { return }
+        scene.lights[index].position = position
+    }
+
+    private func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {
+        guard let drag = planDrag,
+              lightID == nil || lightID == drag.lightID,
+              generation == nil || generation == drag.generation else { return }
+        if drag.generation == libraryOperation.generation {
+            editHistory.end(scene: scene, owner: drag.owner)
+        }
+        planDrag = nil
+    }
     private func load(from generation: UUID) {
         guard !libraryOperation.isBusy else { return }
         do { _ = try beginLibraryOperation(.load, from: generation) }
@@ -875,6 +1013,7 @@ struct StudioView: View {
     /// that sheet's observer. A committed receipt must always be reconciled.
     private func beginLibraryOperation(_ operation: ProjectLibraryOperation,
                                        from generation: UUID) throws -> Task<Void, Error> {
+        finishPlanDrag()
         switch operation {
         case .load: break
         default:

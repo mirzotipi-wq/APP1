@@ -31,29 +31,47 @@ struct ReferenceStudyPreview: View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomLeading) {
                 Color.black
-                if let frame, frame.request == request {
+                // A previous scene may remain visible while it updates, but a
+                // different subject or an old error must never stand in for it.
+                if let frame,
+                   frame.request == request || (frame.image != nil && frame.request.subject == subject) {
+                    let isCurrent = frame.request == request
                     if let image = frame.image {
                         let width = min(geometry.size.width, geometry.size.height * 1.5)
-                        Image(image, scale: 1, orientation: .up, label: Text(imageLabel))
+                        let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). Updating light study."
+                        Image(image, scale: 1, orientation: .up, label: Text(label))
                             .resizable().interpolation(.medium)
                             .frame(width: width, height: width / 1.5)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .accessibilityLabel(imageLabel)
-                            .accessibilityIdentifier("studyPreview")
-                        if let backend = frame.backend {
+                            .accessibilityLabel(label)
+                            .accessibilityIdentifier(isCurrent ? "studyPreview" : "studyPreviousPreview")
+                        if isCurrent, let backend = frame.backend {
                             Text(backend.rawValue).font(.caption2.monospaced())
                                 .foregroundStyle(.white.opacity(0.8))
                                 .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                                 .padding(8).accessibilityIdentifier("studyBackend")
                         }
-                        if frame.unsupportedPixels > 0 {
+                        if isCurrent, frame.unsupportedPixels > 0 {
                             Label("\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.",
                                   systemImage: "exclamationmark.triangle.fill")
                                 .font(.caption2.weight(.medium))
                                 .foregroundStyle(.white)
                                 .padding(8).background(.black.opacity(0.85))
                                 .accessibilityIdentifier("studyWarning")
+                        }
+                        if !isCurrent {
+                            ProgressView("Updating light study")
+                                .controlSize(.small)
+                                .font(.caption.weight(.medium))
+                                .tint(.white).foregroundStyle(.white)
+                                .padding(8)
+                                .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
+                                .padding(8)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .accessibilityLabel("Updating light study")
+                                .accessibilityValue("Showing the previous scene")
+                                .accessibilityIdentifier("studyUpdating")
                         }
                     } else {
                         VStack(spacing: 8) {
