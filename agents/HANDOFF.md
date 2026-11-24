@@ -1,5 +1,18 @@
 # Current handoff
 
+## Active autonomous session checkpoint — 2026-11-24
+
+- Started at `968e4bb1b3932c5140b735b404c9538d909bab23`; integrated and remote-verified `a9a2e8e74d0eb5090ec02948f6e1fe894e7364a1` on main. Actual code tree `1fe0bed45fe7ebd853fdc86a8cb21d1e460ba586`.
+- **180/180 local Debug and Release** tests pass in an isolated exact-tree checkout. [Evidence and raw logs](../docs/evidence/2026-11-24-autonomous/checkpoint-1.md). [GitHub core passed](https://github.com/mirzotipi-wq/APP1/actions/runs/45351150862); simulator build/unit and three UI shards queued. M01 remains active.
+- Implemented full-capacity archived recovery with fresh-capacity safety; bounded transaction history; relative room rotation; translated 2D/3D framing and explicit fit; bounded truthful grid; safe name display without legacy-data truncation; exact spoken numeric values; reference replacement cancellation preserving prior work.
+- Three waves of six actual specialists completed; fourth wave active. Maximum three workers concurrently plus integration lead. No simulated workforce.
+- Current next task: editable project JSON export/import as a data-preservation escape when all 64 library records are active; then independent BVH oracle and actual CPU rendering measurements. Keep native verification separate, inspect current failures before claiming M01 complete.
+- No calibrated portrait, physical device performance/accessibility, AR, commerce, customer validation or release approval. Arbitrarily overlapping stale/new slider callbacks remain unverified beyond the modeled serial callback stream.
+
+## Retained earlier handoff
+
+# Current handoff
+
 ## Native verification repair and continuous mannequin study (2026-11-24)
 
 - Starting main `d9a05fa852cdacb9cabe7e11ea4b51ceb7867706`. Source commits [ad837f2e](https://github.com/mirzotipi-wq/APP1/commit/ad837f2e69898c6956f21519dee5a4795cdb4d32) interaction repair, [cab67417](https://github.com/mirzotipi-wq/APP1/commit/cab674175233249e8785797d283e414da23765fd) native sharding, [2a4fce44](https://github.com/mirzotipi-wq/APP1/commit/2a4fce44f7b176fee6b0580375956e22fbb0977e) diagnostic bust, [c986ec33](https://github.com/mirzotipi-wq/APP1/commit/c986ec332d661e9b7ac592a63d6d00c920bdeaaf) continuous head, [ceeb4e98](https://github.com/mirzotipi-wq/APP1/commit/ceeb4e9880da6d0b9c5eb41613f6adc82a31e821) grazing normal and fixture regression. Current executable revision `ceeb4e9880da6d0b9c5eb41613f6adc82a31e821`.
