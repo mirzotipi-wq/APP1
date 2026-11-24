@@ -2,12 +2,14 @@
 
 ## Active autonomous session checkpoint — 2026-11-24
 
-- Started at `968e4bb1b3932c5140b735b404c9538d909bab23`; integrated and remote-verified `a9a2e8e74d0eb5090ec02948f6e1fe894e7364a1` on main. Actual code tree `1fe0bed45fe7ebd853fdc86a8cb21d1e460ba586`.
-- **180/180 local Debug and Release** tests pass in an isolated exact-tree checkout. [Evidence and raw logs](../docs/evidence/2026-11-24-autonomous/checkpoint-1.md). [GitHub core passed](https://github.com/mirzotipi-wq/APP1/actions/runs/45351150862); simulator build/unit and three UI shards queued. M01 remains active.
-- Implemented full-capacity archived recovery with fresh-capacity safety; bounded transaction history; relative room rotation; translated 2D/3D framing and explicit fit; bounded truthful grid; safe name display without legacy-data truncation; exact spoken numeric values; reference replacement cancellation preserving prior work.
-- Three waves of six actual specialists completed; fourth wave active. Maximum three workers concurrently plus integration lead. No simulated workforce.
-- Current next task: editable project JSON export/import as a data-preservation escape when all 64 library records are active; then independent BVH oracle and actual CPU rendering measurements. Keep native verification separate, inspect current failures before claiming M01 complete.
-- No calibrated portrait, physical device performance/accessibility, AR, commerce, customer validation or release approval. Arbitrarily overlapping stale/new slider callbacks remain unverified beyond the modeled serial callback stream.
+- Session started at `968e4bb1b3932c5140b735b404c9538d909bab23`; current integrated and remote-verified source `e45a1c8b0c1b01468f9f9f52812e118db18928fa`, tree `839e5c66a1b5733bc473759198cb7c3190ae434c`.
+- **187/187 local Debug and Release**, plus **24/24 Python** tests passed on the exact source snapshot. [Checkpoint2](../docs/evidence/2026-11-24-autonomous/checkpoint-2.md). [Current workflow](https://github.com/mirzotipi-wq/APP1/actions/runs/45353070472) core in progress; native not yet started. Native syntax is not SDK verification. M01 remains active.
+- New editable project copies preserve current unsaved scenes even at64-project capacity. Coordinated bounded provider import creates a separate project; legacy names, exact values and validated migrations retained. Native dialogs, provider cancellation and app flows remain pending.
+- Earlier source `a9a2e8e` delivered safe full-capacity recovery, bounded transaction history, relative room rotation, centered2D/3D fit, truthful adaptive grid, bounded names, precise spoken values and reference replacement cancellation. [Checkpoint1](../docs/evidence/2026-11-24-autonomous/checkpoint-1.md):180/180 local tests and actual GitHub core success.
+- Historical cab67417 now has both unsigned builds,10/10 native unit and7/7 library/reference UI pass; room tests2/2 pass but shard timed out during precision. Two genuine historical screenshots inspected. Ledger marks these historical so they cannot satisfy current gates. UI build and test now have separate budgets; class discovery is recursive with regression tests.
+- Four complete waves of six real specialists; all six fifth-wave specialists assigned, renderer validation/optimization active. Maximum three workers plus integration lead. No workforce or physical testing simulated.
+- Next integrate independent BVH oracle and numerical silhouette tie correction, measured visibility optimization and photometry invariants; inspect native CI and verify editable-copy/recovery workflows.
+- No calibrated portrait, physical-device performance/accessibility, AR, commerce, customer validation or release approval. Arbitrarily overlapping stale/new slider callbacks remain unverified beyond the modeled serial stream.
 
 ## Retained earlier handoff
 
