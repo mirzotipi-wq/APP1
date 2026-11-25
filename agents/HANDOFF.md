@@ -1,6 +1,17 @@
 # Current handoff
 
-## Current source nine
+## Current source ten and pending source eleven
+
+Published/tested code **`fb643b156acae5831b60d1acaea26cc79adcfb47`**, tree **`978a36a789340bdb3947cd03f1ea7b4d3ee5404a`**, branch `development/completion-final-20261124`. [Run 45527563115](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115) has successful core/native, studio and room receipts. **All 16 methods with terminal UI receipts passed**; the library terminal result is still pending, with unknown case counts. Exactly **100 assignments** and **six net new test methods** remain recorded.
+
+- **261 Debug / 261 Release / 28 Python, scoped photometry, both unsigned builds and native 84/84 pass. M01 is revalidated at fb643b1** by Recipe **57.368 s** and Corrupt **19.501 s**. M02 remains active with rendering/performance outstanding; M03–M07 pending.
+- Studio **11/11** and room **5/5** passed. Optics **72.602 s** completes the original 0.6 m → real normalized 0.5 gesture → new completion predicate → Undo → Redo → save → terminate/relaunch → exact width workflow. Tracking committed **0.8 m** before the predicate; the relaunched process also recorded **0.8 m**. Source ten added **one new bounded 10-second wait**; original assertions and deadlines remain. The broader ten-repeat editing gate is not promoted.
+- Library UI started **02:17:20Z** and was running at **02:22:01.924Z**. Its actual started/completed counts and outcome are unknown; do not infer zero execution or final cancellation. Root plans a fresh stage check, then intentional supersession by source-eleven normal CI; specialist 100 will inspect the final old-source log afterward.
+- Source eleven is **applied/reviewed but unpublished and unverified** in `App/PhotoComparisonView.swift` only: snapshot Bool `isEmpty` before the Sendable PhotosPicker label to address the actual line-135 compiler warning. Literal label/localization and lifecycle/bindings/IDs remain. No production failure was established. All normal source-eleven gates, including **27 UI scenarios**, require new execution.
+
+[Exact logs, artifacts and acceptance limits](../docs/evidence/development-completion-2026-11-24.md). Earlier failures and source-nine diagnosis remain preserved below.
+
+## Retained source-nine terminal evidence
 
 Published source **`38a3b52f23ba6777125f0503fcc2d3420fa037df`**, tree **`5f05a01ac8f3b16a8eaec8841f2b6f1df8a0e4ef`**, branch `development/completion-final-20261124`. [Run 45519751726](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726) is **completed/failure**, attempt **1**, updated **2026-11-25 01:25:26Z**; API retrieved **01:25:56Z**, final jobs confirmed **01:26:58Z**. Native **84/84** passed. All **27 UI methods completed: 24 passed, 3 failed, zero skips/interruption**. Exactly **100 assignments** remain recorded.
 

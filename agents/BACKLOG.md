@@ -1,8 +1,23 @@
 # Persistent engineering backlog
 
+Updated **2026-11-25** for published/tested source **`fb643b156acae5831b60d1acaea26cc79adcfb47`**, tree **`978a36a789340bdb3947cd03f1ea7b4d3ee5404a`**, on `development/completion-final-20261124`. **M01 complete and revalidated at this SHA; M02 active; M03–M07 pending.** Protected dependencies and `docs/QUALITY.md` thresholds are unchanged. The historical packet list below has **not** been recounted or fully reassessed; its former “34 unresolved” tally is not a current completion claim.
+
+## Current checkpoint
+
+- Exact current core **261 Debug / 261 Release / 28 Python**, unsigned builds and **84/84 native methods** pass. Studio **11/11** and room **5/5** pass, including the complete original optics gesture/Undo/Redo/save/relaunch workflow and current Recipe/Corrupt smoke.
+- Library UI started **02:17:20Z** and was in progress at **02:22:01.924Z**; its actual case counts and outcome remain unknown. Full regression and current library/audit acceptance are unverified. Historical source-nine AX failures and earlier native/optics failures remain preserved.
+- M02 still needs calibrated rendering/performance evidence; the protected ten-repeat editing requirement and later device/external/owner gates are not promoted by these simulator results.
+- Source-eleven `App/PhotoComparisonView.swift` Bool-snapshot warning correction is applied/reviewed but **unpublished and unverified**. Normal full CI must verify the new app source and all **27 UI scenarios**. Root plans intentional supersession of unfinished old library work only after a fresh stage snapshot; no cancellation result is claimed yet.
+
+Current evidence: [development completion checkpoint](../docs/evidence/development-completion-2026-11-24.md). Exactly **100 assignments** and **six net new test methods** remain; existing wait/assertion updates add no methods.
+
+## Archived checkpoint at 394e28e — historical only
+
+The following older checkpoint and all packet-row status/evidence columns record prior SHAs. They are retained for reassessment and do not override the current checkpoint or establish a fresh unresolved-packet count.
+
 Updated 2026-11-24 for implementation revision `394e28e163be345b9db135d8a10a3a1dfafe6617` on `development/completion-20261124`. 34 unresolved packets, not completed work. M01 active; honor dependencies in state.json and protected docs/QUALITY.md. No confirmed current P0. S/M/L/XL are relative complexity, not a duration guarantee. Existing evidence is context, not proof of completion. In progress means actual CI or implemented changes awaiting verification, not background assistant work. New modules explicitly marked. Prioritize verified P0/P1 defects.
 
-## Current checkpoint — 2026-11-24
+### Historical checkpoint — 2026-11-24
 
 - At `394e28e`, remote core CI passed **261/261 Debug, 261/261 Release and 28 Python tests** in [workflow 45465026704, job 138698953169](https://github.com/mirzotipi-wq/APP1/actions/runs/45465026704/job/138698953169). Native/UI verification was still running at this observation; current native_build and persistence_smoke acceptance remain unverified.
 - Prior `10ba0ef` passed both unsigned builds and 83 native methods. Its room shard passed 4/5; the obsolete saved-status assertion was corrected in `394e28e`, awaiting native verification. Its library shard passed 7/11, with two unresolved AXCode56 audit timeouts, a first-use iOS keyboard tutorial blocking the Keep input (confirmed in the recording), and a broad UI-test swipe apparently dragging a light to −100 m. Pending test corrections handle the specific keyboard tutorial and use edge scrolling while retaining the original exact values, dirty guard and deadlines; their native acceptance remains open.
@@ -10,7 +25,9 @@ Updated 2026-11-24 for implementation revision `394e28e163be345b9db135d8a10a3a1d
 
 Next: collect finalized `394e28e` native/UI evidence, constrain the broad test swipe, investigate the Keep field input loss, and verify persisted room edits with Undo/Redo and save/relaunch. Preserve the original 0.6m optics expectation, 15-second Projects readiness diagnostics and all historical failures.
 
-| ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Status | Evidence |
+## Historical packet rows
+
+| ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Recorded status (historical) | Historical evidence |
 |---|---|---|---|---|---|---|---|---|---|
 | KF-001 | P1 | Current native SDK and bundle validation | App/; project.yml; workflow | current CI | Debug/Release unsigned builds, icon/manifest and SDK valid | CI and bundle inspection | S | Current95 both unsigned Debug/Release SDK builds, icon/privacy bundle checks and83/83 native methods actually passed. Native_build gate supported at95; broader device/distribution acceptance remains separate | docs/evidence/2026-11-24-autonomous/native-result-95e9c24.md |
 | KF-002 | P1 | Verify primary room workflow | App/StudioView.swift; App/ManualRoomPlacementView.swift; UITests/ManualRoomPlacementUITests.swift | 001 | Visible room action opens; rotate, centers and crossings correct; room measurements persist with project save/relaunch; room edits support Undo/Redo while equipment geometry is preserved | native assertions/videos | M | Historical source10 room2/2 and precision3/3 passed; source9 room passed before explicit status label, so earlier source8 cause remains untraced. Current95 native selection/layout/status acceptance pending | docs/evidence/2026-11-24-autonomous/room-status-native-followup.md |
@@ -45,7 +62,7 @@ Historical source11 next-step note (`95e9c24`): inspect finalized source11 UI sh
 
 ## Autonomous session follow-up packets (2026-11-24)
 
-| ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Status | Evidence |
+| ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Recorded status (historical) | Historical evidence |
 |---|---|---|---|---|---|---|---|---|---|
 | KF-027 | P1 | Full-capacity conflict recovery including no archived records | ProjectLibrary.swift; RecoveryCapacityView.swift; new project backup IO | KF-004 | Preserve editable unsaved setup without silent overwrite; explicit deletion; fresh-capacity append | core races/size failures and native cancel/relaunch/files | M | Source10 full-capacity recovery/relaunch and stale-copy/reload UI passed with actor implementation; source11 exact native acceptance pending. Keep failure-byte/candidate/capacity contracts | docs/evidence/2026-11-24-autonomous/native-result-5cd7eb4.md |
 | KF-028 | P2 | Interrupted continuous edits and history ownership | SceneEditHistory.swift; StudioSliderEditing.swift; StudioSliderTracking.swift; StudioView.swift | KF-011 | One step per gesture, safe lifecycle close, old/new callback ownership | portable state-machine and native interrupted gestures | M | Current95 controlled tracking15 and real programmatic UIKit3 passed with captured native sessions and parent ownership boundaries. Actual interrupted touch/cancel/VoiceOver/optics acceptance remains pending | docs/evidence/2026-11-24-autonomous/native-result-95e9c24.md |
@@ -63,7 +80,7 @@ Historical source11 next-step note (`95e9c24`): inspect finalized source11 UI sh
 
 ## Resolved portable packets
 
-| ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Status | Evidence |
+| ID | Priority | Work packet | Relevant source | Dependencies | Acceptance | Verification | Complexity | Recorded status (historical) | Historical evidence |
 |---|---|---|---|---|---|---|---|---|---|
 | KF-031 | P2 | Reject duplicate editable-document envelope keys | LightingProjectDocument.swift; ProjectDocumentEnvelopeIntegrityTests.swift | KF-027 document format | Reject root duplicates including escaped spellings while preserving supported unique JSON and canonical bytes | 18/18 targeted Debug/Release; independent 1,152 unique and 3,840 duplicate variants; full245/245 both | M | Implemented and portable-verified in ff8b683; native provider/Apple integration remains under KF-004/034 | docs/evidence/2026-11-24-autonomous/document-parser-review.md |
 | KF-035 | P2 | Reject ambiguous nested editable-document fields | LightingProjectDocument.swift; ProjectDocumentEnvelopeIntegrityTests.swift | KF-031 format validation | Unique decoded keys in every object; preserve valid unique/canonical documents and existing size/schema limits | Six new regressions;24/24 targeted both configurations;251/251 full source-eight Debug/Release; independent nested/deep/wide probes | M | Implemented and portable-verified in816e712; actual provider integration remains under KF-004/034 | docs/evidence/2026-11-24-autonomous/nested-document-review.md |

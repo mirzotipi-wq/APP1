@@ -1,6 +1,73 @@
 # Development completion checkpoint — 2026-11-24
 
-## Current source nine
+## Current source ten and pending source eleven
+
+Published/tested code **`fb643b156acae5831b60d1acaea26cc79adcfb47`**, tree **`978a36a789340bdb3947cd03f1ea7b4d3ee5404a`**, branch `development/completion-final-20261124`. [Run 45527563115](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115) has successful core/native, studio and room receipts. **All 16 methods with terminal UI receipts passed**; the library terminal result is still pending, with unknown case counts. Exactly **100 assignments** and **six net new test methods** remain recorded.
+
+Source ten was published **2026-11-25 01:41:14 UTC** in seven files; the reviewed remote tree matched the staged index and root confirmed a clean synchronization. Its normal run was created **01:41:16Z**. Current observations do not establish a terminal whole-workflow result.
+
+### Verified source-ten outcomes
+
+| Job | Actual receipt |
+|---|---|
+| Core `138914574890` | **261 Debug (8.880 s), 261 Release (4.229 s), 28 Python (0.276 s)**; zero failures/skips. Completed **01:43:46Z**; finalized log **204,889 UTF-8 bytes**. State/shards/host parity/precision passed. |
+| Native `138915571868` | **84/84**, zero failures/skips; **21.785 s tests / 23.011 s overall**. **810,356-byte** log retrieved **01:58:40Z**. |
+| Studio `138915571838` | **11/11**, zero failures/skips; **769.571 s tests / 769.587 s overall**. Job completed **02:14:03Z**, API confirmed **02:17:36Z**. Log **519,194 UTF-8 bytes**; exact initial retrieval time was not separately captured. |
+| Room `138915571876` | **5/5**, zero failures/skips; **842.208 s tests / 842.233 s overall**. Job completed **02:14:18Z**. Specialist 100 verified **471,451 characters** of raw log; no UTF-8 byte count is asserted. |
+| Library `138915571926` | UI execution started **02:17:20Z**; in progress at **02:22:01.924Z**. Started/completed case counts and terminal outcome are **unknown**. |
+
+Native All-tests finished **01:55:39.216Z**; `TEST SUCCEEDED` **01:56:46.7994850Z**. Debug/Release `BUILD SUCCEEDED` markers are **01:47:08.0554740Z / 01:49:11.8044330Z**. Earlier **01:47:09Z / 01:49:12Z** were API step-completion timestamps; uploads completed **01:47:11Z / 01:49:14Z**. MetalMatchesCPU passed **3.278 s**.
+
+**Scoped photometry passes** from current complete core execution under unchanged declared fixtures and protected bounds: SI meters/candela/lux, ideal uniform one-sided Lambertian rectangle, point distance at least **0.05 m**, rectangle separation at least **max(0.05 m, longest side / 4)**. The analytic parallel and independent off-axis Simpson reference remain distinct from Study grid convergence. This is declared-fixture acceptance, not a global, photographic/equipment/GPU/device calibration claim.
+
+### Studio and room execution
+
+All studio/export methods passed: ExportPreview **108.091 s**, FullLibraryEditableCopy **126.996 s**, Camera **66.540 s**, Corrupt **19.501 s**, Meter **66.464 s**, Optics **72.602 s**, Recipe **57.368 s**, Settings/3D/Fit/AR/Arrangement **94.305 s**, Guide **68.453 s**, Sphere **24.315 s**, MannequinSwitch **64.934 s**. The two export methods total **235.088 s**, the nine studio methods **534.483 s**. UI ran **01:59:04–02:13:08Z**; trace collection and both evidence uploads succeeded.
+
+The full original optics workflow passed with **initial 0.6 m** and real **normalized 0.5** gesture. The source-ten change adds **one new bounded 10-second synchronization wait**; all 112 original assertion lines and nine methods remain, plus one completion assertion, with original timeout values/workflow deadlines unchanged.
+
+| Optics event | Actual UTC observation |
+|---|---|
+| Gesture | **02:07:12.259** |
+| Native end | **02:07:14.418956**, committed **0.8 m**, tracking false |
+| Completion predicate starts | **02:07:16.442**, after tracking ended |
+| Undo / Redo | **02:07:24.121 / 02:07:27.756**, original/edited values restored |
+| Save / Saved locally | **02:07:30.361 / 02:07:33.850** |
+| Terminate / Relaunch | **02:07:34.354 / 02:07:35.505** |
+| Relaunched native configuration | **02:07:40.976417**, PID 45485, emitterWidth **0.8** |
+| Saved locally / final width read / pass | **02:07:43.886 / 02:07:55.592 / 02:07:56.340** |
+
+Pre-Undo attachment **F59861BA-A882-4845-9D28-ECE90E4BDBD4.txt** records initial **0.6 m**, edited **0.8 m**, Undo enabled and Redo disabled. Trace collection and test both exited **0** over **01:59:05–02:13:09 UTC**; the only stderr was the nonfatal `getpwuid_r` uid 501 message. This verifies the source-ten synchronization correction. Source-seven/eight unchanged-width causes remain unproved.
+
+All room methods passed: ManualRoom **71.713 s**, Resize/signed coordinates **329.209 s**, PrecisionCamera **107.973 s**, PrecisionIntensity **145.514 s**, PrecisionModifier **187.799 s**. The UI step succeeded over **01:57:55–02:13:12Z**; full/compact uploads succeeded.
+
+### Current source-ten artifacts
+
+| Artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Core 14982822625](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14982822625) | 61,477 | `47a186c8e4d8c32822ef7816c417ec9d6ec78c3c194d6c4415bb089652054128` |
+| [Debug app 14983282950](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14983282950) | 3,479,747 | `cf52953301ea2f2ef5641bb531f960e924cee54d9990ebce77444ec91505b34e` |
+| [Release app 14983602637](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14983602637) | 3,981,150 | `c5e5604577fb673be9d9fdbe30df5bd61accad461b376e7e98bb91bcddaa8040` |
+| [Native full 14983234842](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14983234842) | 69,683,148 | `5cd5d6bcb44218c59c70748ed3a5b08c847a7fcb5238afded0579895541de873` |
+| [Native compact 14983234848](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14983234848) | 332,383 | `816bbd2ed37cbe206dbeb4615ef684d16a1bb51a43164936da766bcb746e0849` |
+| [Studio full 14984143003](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14984143003) | 9,841,517 | `98aafaa2666853b6898c8afb51d3fae322d3ffdfa58193b3be903a1e103154fe` |
+| [Studio compact 14984272715](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14984272715) | 3,500,417 | `759323ae316d19374073ba2e74f804047252449aca1248de611597784a74bb18` |
+| [Room full 14984552901](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14984552901) | 6,227,899 | `80163d739b78676afabbc65c0a4d5f1a88dd1661fc5d5ae4096ede060ae6f901` |
+| [Room compact 14984452921](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115/artifacts/14984452921) | 1,679,359 | `8c302dbf5a950e6e32af534e8b0cca706c8b8297c56e4bc511c059e4f799becc` |
+
+Only the studio compact ZIP's actual bytes/hash were independently verified in memory by specialist 90. All other listed digests are **API metadata**; room API digests also match upload-log metadata, without downloaded-byte verification. No library artifact/result is claimed.
+
+### Acceptance and source-eleven candidate
+
+**M01 remains complete and is revalidated at fb643b1** by exact core/build and Recipe **57.368 s** / Corrupt **19.501 s**; native 84/84 and the full optics persistence workflow also pass. **M02 remains active with rendering/performance outstanding; M03–M07 pending.** One successful optics execution does not close the protected **ten repeatable core workflow runs** editing criterion. Full regression/accessibility/library acceptance remains unverified.
+
+The source-eleven candidate changes **only `App/PhotoComparisonView.swift`**. Source-ten compilation reported the line-135 warning about reading main-actor `ComparisonPhotoSlot.image` inside a Sendable PhotosPicker label. The reviewed correction snapshots only Bool `isEmpty` on the inherited main actor before an explicit `return VStack`, preserving the literal label ternary and localization overload. No image is retained and lifecycle/state/bindings/identifiers remain unchanged. **No production failure was established.** Specialist 90 approved the source; root applied it at **02:10:34Z** and reports exact-patch/diff checks passed.
+
+The app correction is **unpublished and unverified** and needs **normal full source-eleven CI**, including all **27 UI scenarios** anew. There are no new methods, skips, timeout or workflow changes. Root owns the app patch and README; this checkpoint updates six record files. No future SHA or pass is claimed.
+
+Root and specialist 100 reviewed intentional supersession of unfinished source-ten library work after terminal studio/room proof. The **latest known library stage is running UI**, not merely building; actual case counts remain unknown. Root will take a fresh stage snapshot before publication, and specialist 100 will collect the final old-source log afterward. **No final cancellation, zero-execution count or library result is claimed now.** Older failure/cancellation receipts remain below.
+
+## Retained source-nine terminal evidence
 
 Published source **`38a3b52f23ba6777125f0503fcc2d3420fa037df`**, tree **`5f05a01ac8f3b16a8eaec8841f2b6f1df8a0e4ef`**, branch `development/completion-final-20261124`. [Run 45519751726](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726) is **completed/failure**, attempt **1**, updated **2026-11-25 01:25:26Z**; API retrieved **01:25:56Z**, final jobs confirmed **01:26:58Z**. Native **84/84** passed. All **27 UI methods completed: 24 passed, 3 failed, zero skips/interruption**. Exactly **100 assignments** remain recorded.
 

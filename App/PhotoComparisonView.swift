@@ -129,10 +129,11 @@ struct PhotoComparisonView: View {
 
     private func importControls(_ slot: ComparisonPhotoSlot, selection: Binding<PhotosPickerItem?>,
                                 role: ComparisonPhotoRole) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let isEmpty = slot.image == nil
+        return VStack(alignment: .leading, spacing: 10) {
             Text(role.title).font(.headline)
             PhotosPicker(selection: selection, matching: .images, preferredItemEncoding: .current) {
-                Label(slot.image == nil ? "Choose \(role.pickerName)" : "Replace \(role.pickerName)",
+                Label(isEmpty ? "Choose \(role.pickerName)" : "Replace \(role.pickerName)",
                       systemImage: "photo.on.rectangle")
                     .frame(maxWidth: .infinity, minHeight: 44)
             }
