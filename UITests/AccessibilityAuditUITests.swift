@@ -10,7 +10,7 @@ final class AccessibilityAuditUITests: XCTestCase {
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         app.launch()
         waitForEnabledStudioControl(app.buttons["recipes"])
-        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
+        let plan = app.buttons["viewMode-Plan"]
         XCTAssertTrue(plan.waitForExistence(timeout: 10))
         XCTAssertTrue(plan.isSelected, "Audit the initial Plan studio, not another preview mode")
         XCTAssertEqual(app.staticTexts["projectName"].label, "Portrait setup")

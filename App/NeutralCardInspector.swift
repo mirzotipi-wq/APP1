@@ -7,7 +7,14 @@ struct NeutralCardInspector: View {
     @Binding var settings: PreviewSettings
     let onEditingChanged: (Bool, String) -> Void
     @Environment(\.locale) private var locale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var sample: Sample?
+
+    private var fieldLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout())
+    }
 
     private struct Sample {
         let scene: LightingScene
@@ -59,12 +66,16 @@ struct NeutralCardInspector: View {
             slider("Relative exposure", value: $settings.exposureStops,
                    range: PreviewSettings.exposureRange, step: 0.25, unit: "stops",
                    id: "previewExposure")
-            Button("Reset card settings") {
+            Button {
                 let defaults = PreviewSettings()
                 guard settings != defaults else { return }
                 onEditingChanged(true, "resetCardSettings")
                 settings = defaults
                 onEditingChanged(false, "resetCardSettings")
+            } label: {
+                Text("Reset card settings")
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
             }
                 .disabled(settings == PreviewSettings())
                 .accessibilityIdentifier("resetCardSettings")
@@ -120,9 +131,9 @@ struct NeutralCardInspector: View {
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>,
                         step: Double, unit: String, id: String) -> some View {
         return VStack(alignment: .leading, spacing: 4) {
-            HStack {
+            fieldLayout {
                 Text(title).font(.subheadline.weight(.medium))
-                Spacer()
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                 PrecisionValueButton(title: title, unit: unit, id: id, value: value, range: range)
             }
             StudioSlider(value: value, in: range, step: step,

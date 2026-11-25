@@ -85,8 +85,31 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["confirmProjectName"].tap()
         XCTAssertTrue(app.buttons["Options for Campaign"].waitForExistence(timeout: 10))
         app.buttons["Open Editorial"].tap()
-        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", "Current project: Editorial"), object: activeRow)
-        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
+        // Resolve identity and the required state in one AX query. Resolving
+        // exists and then label separately exhausted the prior wait budget.
+        let selected = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier == %@ AND label == %@",
+                                  "activeProjectRow", "Current project: Editorial")).firstMatch
+        let selectedInTime = selected.waitForExistence(timeout: 10)
+        if !selectedInTime {
+            let details: String
+            do {
+                let snapshot = try activeRow.snapshot()
+                details = "Expected: Current project: Editorial\nActual: \(snapshot.label)\n" +
+                    "identifier: \(snapshot.identifier), selected: \(snapshot.isSelected), frame: \(snapshot.frame)"
+            } catch {
+                details = "Expected: Current project: Editorial\nSnapshot error: \(error.localizedDescription)"
+            }
+            let diagnostic = XCTAttachment(string: String(details.prefix(4_096)))
+            diagnostic.name = "Active-project-switch-failure"
+            diagnostic.lifetime = .keepAlways
+            add(diagnostic)
+            let screen = XCTAttachment(screenshot: app.screenshot())
+            screen.name = "Active-project-switch-failure-screen"
+            screen.lifetime = .keepAlways
+            add(screen)
+        }
+        XCTAssertTrue(selectedInTime, "The library must identify Editorial as its current project")
         XCTAssertFalse(app.buttons["Open Editorial"].exists)
         waitUntilEnabled(app.buttons["Options for Editorial"])
         app.buttons["Done"].tap()

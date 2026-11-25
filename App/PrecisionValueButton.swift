@@ -82,6 +82,7 @@ private struct PrecisionValueEditor: View {
                     HStack {
                         TextField("Value", text: $draft)
                             .font(.body.monospacedDigit())
+                            .frame(minHeight: 44)
                             .keyboardType(.numbersAndPunctuation)
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
@@ -97,10 +98,14 @@ private struct PrecisionValueEditor: View {
                             .foregroundStyle(.primary)
                             .accessibilityIdentifier("precisionError")
                     }
-                    Button("Apply value") { apply() }
-                        .font(.body.weight(.semibold))
+                    Button { apply() } label: {
+                        Text("Apply value")
+                            .font(.body.weight(.semibold))
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
                         .foregroundStyle(StudioPalette.action)
-                        .frame(minHeight: 44)
                         .accessibilityIdentifier("precisionApply")
                 } footer: {
                     Text("Allowed: \(format(range.lowerBound)) to \(format(range.upperBound)) \(unit). No grouping or scientific notation. The value is not snapped to slider increments.")

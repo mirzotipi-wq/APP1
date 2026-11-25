@@ -4,7 +4,7 @@
 
 Key & Fill is a native iOS lighting workspace for photographers and filmmakers: explore a reference, edit a plausible rig, preview its geometry, place it in a room, and export a practical plan.
 
-**Status: active code development.** M01 is complete. M02 is being completed before M03 under the owner's [code-only acceptance contract](docs/acceptance/m02-m03-code.md), approved on 25 November 2026. Unavailable physical calibration, human reviews and device measurements are removed from those two development milestones; they remain unperformed and are not claimed. M04–M07 and release acceptance remain separate.
+**Status: active code development.** M01 and M02 are complete; M03 implementation is in native validation under the owner's [code-only acceptance contract](docs/acceptance/m02-m03-code.md), approved on 25 November 2026. Unavailable physical calibration, human reviews and device measurements are removed from those two development milestones; they remain unperformed and are not claimed. M04–M07 and release acceptance remain separate.
 
 ## Current implementation
 

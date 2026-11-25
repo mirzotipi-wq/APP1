@@ -41,11 +41,12 @@ extension XCTestCase {
             // Require the actual transition to usable typing keys instead.
             // The keyboard's first Key can be zero-size Padding-Left.
             let typingKey = app.keyboards.firstMatch.keys
-                .matching(NSPredicate(format: "label == %@ OR label == %@", "q", "Q")).firstMatch
+                .matching(NSPredicate(format: "label IN %@", ["q", "Q", "1"])).firstMatch
             let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                // Avoid resolving a removed Continue button for a hit point.
-                // A retained button must still be non-hittable before typing.
-                (!proceed.exists || !proceed.isHittable) && typingKey.isHittable
+                // Readiness belongs to the real keyboard. Querying the removed
+                // system Continue button consumed the previous wait budget.
+                // Subsequent workflows still type and assert the exact value.
+                typingKey.isHittable
             }, object: typingKey)
             let result = XCTWaiter.wait(for: [ready], timeout: 10)
             if result != .completed {
@@ -104,7 +105,7 @@ extension XCTestCase {
                 add(screen)
             }
             XCTAssertEqual(result, .completed,
-                           "The keyboard introduction must close and expose typing keys", file: file, line: line)
+                           "The keyboard introduction must expose usable typing keys", file: file, line: line)
             return
         }
     }
@@ -114,24 +115,58 @@ extension XCTestCase {
     /// Only for scrolling content, never fixed navigation or edit-history buttons.
     func revealStudioContent(_ target: XCUIElement, in app: XCUIApplication,
                              towardBottom: Bool = true,
+                             fullyVisible: Bool = false,
                              file: StaticString = #filePath, line: UInt = #line) {
         for _ in 0..<12 {
-            let viewport = app.frame.insetBy(dx: 0, dy: 100)
+            var viewport = app.frame.insetBy(dx: 0, dy: 100)
+            if fullyVisible {
+                // The keyboard and fixed edit bar can cover scroll content.
+                // Full-frame assertions opt in; ordinary functional navigation
+                // retains its established midpoint/hit-point requirement.
+                let navigationBar = app.navigationBars.firstMatch
+                if navigationBar.exists {
+                    let bottom = viewport.maxY
+                    viewport.origin.y = max(viewport.minY, navigationBar.frame.maxY + 8)
+                    viewport.size.height = max(0, bottom - viewport.minY)
+                }
+                let keyboard = app.keyboards.firstMatch
+                if keyboard.exists {
+                    viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY - 8) - viewport.minY)
+                }
+                let undo = app.buttons["undo"]
+                if undo.exists, undo.isHittable {
+                    viewport.size.height = max(0, min(viewport.maxY, undo.frame.minY - 8) - viewport.minY)
+                }
+            }
             var down = towardBottom
             if target.exists {
                 let frame = target.frame
                 if !frame.isEmpty, frame.midX.isFinite, frame.midY.isFinite {
-                    if viewport.contains(CGPoint(x: frame.midX, y: frame.midY)), target.isHittable {
+                    let contained = fullyVisible ? viewport.contains(frame)
+                        : viewport.contains(CGPoint(x: frame.midX, y: frame.midY))
+                    if contained, target.isHittable {
                         return
                     }
                     // Use actual position when AX provides a meaningful frame.
-                    if frame.midY <= viewport.minY { down = false }
-                    else if frame.midY >= viewport.maxY { down = true }
+                    if (fullyVisible ? frame.minY : frame.midY) <= viewport.minY { down = false }
+                    else if (fullyVisible ? frame.maxY : frame.midY) >= viewport.maxY { down = true }
                 }
             }
             // Drag on the edge so an ordinary scroll cannot adjust a slider.
-            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: down ? 0.78 : 0.30))
-            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: down ? 0.30 : 0.78))
+            let startY: CGFloat
+            let endY: CGFloat
+            if fullyVisible {
+                // Keep the gesture itself above the keyboard/fixed controls.
+                // A full-window drag could begin on a key instead of the Form.
+                guard viewport.height >= 48, app.frame.height > 0 else { break }
+                startY = (viewport.minY - app.frame.minY + viewport.height * (down ? 0.78 : 0.30)) / app.frame.height
+                endY = (viewport.minY - app.frame.minY + viewport.height * (down ? 0.30 : 0.78)) / app.frame.height
+            } else {
+                startY = down ? 0.78 : 0.30
+                endY = down ? 0.30 : 0.78
+            }
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: startY))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: endY))
             start.press(forDuration: 0.05, thenDragTo: end)
         }
         let screenshot = XCTAttachment(screenshot: app.screenshot())

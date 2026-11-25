@@ -7,12 +7,11 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-# Let main's active native suite finish and finalize its evidence. GitHub's
-# default single pending slot keeps only the newest queued revision, so frequent
-# pushes cannot create an ever-growing queue. PR/other branch runs still cancel.
+# Source changes supersede obsolete runs; documentation-only updates are
+# excluded above. Preserve completed-step evidence for any superseded revision.
 concurrency:
   group: keyfill-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: true
 jobs:
   # Portable verification does not need the scarce macOS simulator runner.
   core:
@@ -240,23 +239,10 @@ jobs:
         timeout-minutes: 10
         run: |
           set -euo pipefail
-          {
-            xcrun simctl list devices available -j > simulator-preflight.json
-            python3 - <<'PY'
-          import json, os
-          selected = os.environ["SIMULATOR_ID"]
-          data = json.load(open("simulator-preflight.json"))
-          devices = [d for group in data["devices"].values() for d in group]
-          device = next((d for d in devices if d.get("udid") == selected and d.get("isAvailable")), None)
-          if device is None:
-              raise SystemExit("Selected simulator is unavailable before native tests: " + selected)
-          print("Verified available simulator destination: " + selected, flush=True)
-          if device.get("state") != "Booted":
-              import subprocess
-              subprocess.run(["xcrun", "simctl", "boot", selected], check=True)
-          PY
-            xcrun simctl bootstatus "$SIMULATOR_ID" -b
-          } 2>&1 | tee simulator-boot.log
+          python3 scripts/boot_simulator.py --udid "$SIMULATOR_ID" \
+            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \
+            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+            --output simulator-startup 2>&1 | tee simulator-boot.log
       - name: Run native unit tests
         timeout-minutes: 18
         env:
@@ -292,6 +278,7 @@ jobs:
                   raise SystemExit(f"Required Metal test {method}: expected one pass; observed {outcomes}")
           print("Required Metal methods executed and passed; no native methods skipped.")
           PY
+          python3 scripts/native_test_shards.py verify-log unit native-tests.log
       - name: Export finalized XCTest result bundle and genuine attachments
         if: always()
         run: |
@@ -315,7 +302,7 @@ jobs:
             macos-core-tests.log
             xcodegen-version.log
             simulators.json
-            simulator-preflight.json
+            simulator-startup/
             simulator-boot.log
             build.log
             release-build.log
@@ -352,10 +339,10 @@ jobs:
     strategy:
       fail-fast: false
       # Each required shard has its own simulator and bounded budget.
-      # Keep at most three active while all four complete independently.
+      # Keep at most three active while all five required shards complete independently.
       max-parallel: 3
       matrix:
-        shard: [room-precision, library-reference, studio-export, studio-optics]
+        shard: [room-precision, library-reference, studio-export, studio-optics, app-accessibility]
         include:
           - shard: room-precision
             runner: macos-26-intel
@@ -363,7 +350,7 @@ jobs:
             ui_test_minutes: 32
             job_minutes: 85
           - shard: library-reference
-            # Use the acquired Intel pool; keep the full accessibility audits enabled.
+            # Required library/reference flows; platform audits have a separate opt-in workflow.
             runner: macos-26-intel
             expected_arch: x86_64
             ui_test_minutes: 32
@@ -374,6 +361,11 @@ jobs:
             ui_test_minutes: 40
             job_minutes: 93
           - shard: studio-optics
+            runner: macos-26-intel
+            expected_arch: x86_64
+            ui_test_minutes: 32
+            job_minutes: 85
+          - shard: app-accessibility
             runner: macos-26-intel
             expected_arch: x86_64
             ui_test_minutes: 32
@@ -433,23 +425,10 @@ jobs:
         timeout-minutes: 10
         run: |
           set -euo pipefail
-          {
-            xcrun simctl list devices available -j > simulator-preflight.json
-            python3 - <<'PY'
-          import json, os
-          selected = os.environ["SIMULATOR_ID"]
-          data = json.load(open("simulator-preflight.json"))
-          devices = [d for group in data["devices"].values() for d in group]
-          device = next((d for d in devices if d.get("udid") == selected and d.get("isAvailable")), None)
-          if device is None:
-              raise SystemExit("Selected simulator is unavailable before UI build/test: " + selected)
-          print("Verified available simulator destination: " + selected, flush=True)
-          if device.get("state") != "Booted":
-              import subprocess
-              subprocess.run(["xcrun", "simctl", "boot", selected], check=True)
-          PY
-            xcrun simctl bootstatus "$SIMULATOR_ID" -b
-          } 2>&1 | tee simulator-boot.log
+          python3 scripts/boot_simulator.py --udid "$SIMULATOR_ID" \
+            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \
+            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+            --output simulator-startup 2>&1 | tee simulator-boot.log
       - name: Capture host conditions before UI tests
         continue-on-error: true
         timeout-minutes: 1
@@ -516,6 +495,7 @@ jobs:
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+          python3 scripts/native_test_shards.py verify-log "$TEST_SHARD" native-tests.log
       - name: Capture host conditions after UI tests
         if: always()
         continue-on-error: true
@@ -619,7 +599,7 @@ jobs:
             privacy-release.log
             native-tests.log
             native-ui-build.log
-            simulator-preflight.json
+            simulator-startup/
             simulator-boot.log
             artifacts/ui-host-*.log
             artifacts/studio-slider-trace*

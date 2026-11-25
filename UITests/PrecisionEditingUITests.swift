@@ -69,7 +69,7 @@ final class PrecisionEditingUITests: XCTestCase {
         app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         app.launch()
-        let camera = app.segmentedControls["viewMode"].buttons["Camera"]
+        let camera = app.buttons["viewMode-Camera"]
         XCTAssertTrue(camera.waitForExistence(timeout: 15))
         camera.tap()
         let exact = app.buttons["cameraFocalLengthExact"]

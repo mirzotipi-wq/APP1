@@ -21,6 +21,18 @@ enum PlacementMeasurementDisplay {
     }
 }
 
+/// The slider's gesture step does not limit a stored room angle's precision.
+struct RoomRotationReadout {
+    let text: String
+    let accessibilityValue: String
+
+    init(degrees: Double, locale: Locale = .current) {
+        let number = StudioNumericInput.formattedValue(degrees, locale: locale)
+        text = number + "°"
+        accessibilityValue = number + " degrees"
+    }
+}
+
 /// Manual alternative to AR. The studio receives committed, valid room edits.
 struct ManualRoomPlacementView: View {
     let scene: LightingScene
@@ -113,7 +125,7 @@ struct ManualRoomPlacementView: View {
                     .accessibilityIdentifier("confirmRemoveRoomFromSetup")
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("The displayed measurements stay here for planning. Save the lighting project to keep the removal for future sessions. Undo in the studio restores the setup from before this room editing session.")
+                Text("The displayed measurements stay here for planning. Save the lighting project to keep the removal for future sessions. Undo in the studio steps back through the applied room changes.")
             }
             .onChange(of: room) { _, next in
                 keepRoom(next)
@@ -163,7 +175,7 @@ struct ManualRoomPlacementView: View {
             .buttonStyle(.bordered)
             .accessibilityIdentifier("removeRoomFromSetup")
             .accessibilityHint("Asks for confirmation before removing the room measurements from this setup. The displayed measurements remain available for planning.")
-            Text("Save the lighting project to keep a removal for future sessions. Undo in the studio restores the setup from before this room editing session.")
+            Text("Save the lighting project to keep a removal for future sessions. Undo in the studio steps back through the applied room changes.")
                 .font(.caption).foregroundStyle(.secondary)
                 .accessibilityIdentifier("removeRoomFromSetupHelp")
         }
@@ -241,7 +253,8 @@ struct ManualRoomPlacementView: View {
     }
 
     private var inputs: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let rotation = RoomRotationReadout(degrees: room.yawDegrees, locale: locale)
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Room dimensions").font(.headline)
             RoomMeasurementField(title: "Width", id: "roomWidth", value: $room.widthMeters,
                                  range: room.widthEditRange, units: units)
@@ -264,9 +277,9 @@ struct ManualRoomPlacementView: View {
             HStack {
                 Slider(value: $room.yawDegrees, in: -180...180, step: 5)
                     .accessibilityLabel("Rig rotation")
-                    .accessibilityValue("\(Int(room.yawDegrees)) degrees")
+                    .accessibilityValue(rotation.accessibilityValue)
                     .accessibilityIdentifier("roomRotation")
-                Text("\(Int(room.yawDegrees))°").monospacedDigit().frame(minWidth: 54, alignment: .trailing)
+                Text(rotation.text).monospacedDigit().frame(minWidth: 54, alignment: .trailing)
             }
             Button("Rotate 180°") { room.rotate(byDegrees: 180) }
                 .frame(minHeight: 44)

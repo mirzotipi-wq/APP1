@@ -5,7 +5,7 @@ final class StudioOpticsUITests: XCTestCase {
 
     private func makeApp(corrupt: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-ui-testing"]
+        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         if corrupt { app.launchEnvironment["KEYFILL_UI_TEST_CORRUPT"] = "1" }
         return app

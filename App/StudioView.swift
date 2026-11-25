@@ -50,8 +50,6 @@ struct StudioView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
-    private let amber = Color(red: 0.96, green: 0.65, blue: 0.30)
-    private let charcoal = Color(red: 0.075, green: 0.085, blue: 0.10)
 
     private struct PlanDrag {
         let lightID: UUID
@@ -505,12 +503,7 @@ struct StudioView: View {
                 .accessibilityHint("Adds and selects a new light in the setup")
                 .accessibilityIdentifier("addLightShortcut")
             }
-            Picker("View", selection: $mode) {
-                Text("Plan").tag("Plan")
-                Text("3D").tag("3D")
-                Text("Camera").tag("Camera")
-                Text("Study").tag("Study")
-            }.pickerStyle(.segmented).accessibilityIdentifier("viewMode")
+            viewModeChoices
             VStack(spacing: 0) {
                 if mode == "Plan" {
                     // The title grows outside the diagram, so larger text
@@ -525,7 +518,7 @@ struct StudioView: View {
                         .allowsHitTesting(false)
                 }
                 ZStack(alignment: .topLeading) {
-                    charcoal
+                    StudioPalette.planBackground
                     if mode == "Plan" { plan }
                     else if mode == "Camera" { cameraPreview }
                     else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
@@ -590,13 +583,7 @@ struct StudioView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if mode == "Study" {
-                Picker("Study subject", selection: $studySubject) {
-                    ForEach(StudySubject.allCases, id: \.self) { subject in
-                        Text(subject.rawValue).tag(subject)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("studySubject")
+                studySubjectChoices
                 Text(studySubject == .sphere
                      ? "Neutral sphere and panel · direct light, finite-source shadows and relative color. Not calibrated exposure."
                      : "Neutral mannequin · head, nose, ears, shoulders and matte clothing. Uses your actual camera framing. CPU direct-light diagnostic, not calibrated skin or a reconstructed person.")
@@ -612,6 +599,71 @@ struct StudioView: View {
             }
         }.padding(14)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    private var choiceLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
+    }
+
+    private var viewModeChoices: some View {
+        choiceLayout {
+            ForEach(["Plan", "3D", "Camera", "Study"], id: \.self) { choice in
+                choiceButton(choice, id: "viewMode-" + choice, isSelected: mode == choice) {
+                    mode = choice
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("View")
+        .accessibilityIdentifier("viewMode")
+    }
+
+    private var studySubjectChoices: some View {
+        choiceLayout {
+            choiceButton("Sphere", id: "studySubject-Sphere", isSelected: studySubject == .sphere) {
+                studySubject = .sphere
+            }
+            choiceButton("Mannequin", id: "studySubject-Mannequin", isSelected: studySubject == .bust) {
+                studySubject = .bust
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Study subject")
+        .accessibilityIdentifier("studySubject")
+    }
+
+    /// The label itself owns the target size; the group keeps each choice
+    /// available as a separate action when the layout becomes vertical.
+    private func choiceButton(_ title: String, id: String, isSelected: Bool,
+                              action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .accessibilityHidden(true)
+                }
+                Text(title)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .font(.subheadline.weight(.medium))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .frame(minWidth: 44,
+                   maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil,
+                   minHeight: 44)
+            .background(Color(uiColor: .tertiarySystemGroupedBackground),
+                        in: RoundedRectangle(cornerRadius: 8))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(StudioPalette.action)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier(id)
     }
 
     private var cameraPreview: some View {
@@ -683,7 +735,7 @@ struct StudioView: View {
                         let targetPosition = optics.kind.isAimed ? light.target(subject: scene.subject) : scene.subject
                         let target = point(targetPosition, w, h, scale, center)
                         var line = Path(); line.move(to: origin); line.addLine(to: target)
-                        context.stroke(line, with: .color(amber.opacity(light.id == selected ? 0.9 : 0.35)),
+                        context.stroke(line, with: .color(StudioPalette.planLight.opacity(light.id == selected ? 0.9 : 0.35)),
                                        style: StrokeStyle(lineWidth: 1, dash: optics.kind.isAimed ? [5, 3] : [2, 5]))
                         if optics.kind.isAimed && optics.aimTarget != nil {
                             var cross = Path()
@@ -691,7 +743,7 @@ struct StudioView: View {
                             cross.addLine(to: CGPoint(x: target.x + 5, y: target.y))
                             cross.move(to: CGPoint(x: target.x, y: target.y - 5))
                             cross.addLine(to: CGPoint(x: target.x, y: target.y + 5))
-                            context.stroke(cross, with: .color(amber), lineWidth: 1.5)
+                            context.stroke(cross, with: .color(StudioPalette.planLight), lineWidth: 1.5)
                         }
                         if optics.kind == .rectangle, let frame = StudioPhotometry.frame(for: light, subject: scene.subject) {
                             var footprint = Path()
@@ -706,8 +758,8 @@ struct StudioView: View {
                                 else { footprint.addLine(to: projected) }
                             }
                             footprint.closeSubpath()
-                            context.fill(footprint, with: .color(amber.opacity(0.2)))
-                            context.stroke(footprint, with: .color(amber), lineWidth: 2)
+                            context.fill(footprint, with: .color(StudioPalette.planLight.opacity(0.2)))
+                            context.stroke(footprint, with: .color(StudioPalette.planLight), lineWidth: 2)
                         }
                     }
                 }.accessibilityHidden(true)
@@ -749,10 +801,13 @@ struct StudioView: View {
         ]
         markers += scene.lights.map { light in
             StudioPlanMarker(id: light.id.uuidString, anchor: point(light.position, width, height, scale, center),
-                             name: lightDisplayName(light), icon: lightIcon(light), color: amber,
+                             name: lightDisplayName(light), icon: lightIcon(light), color: StudioPalette.planLight,
                              selected: selected == light.id,
                              accessibilityLabel: "Select \(lightDisplayName(light)) on plan",
-                             action: sceneAction { selected = light.id },
+                             action: sceneAction {
+                                 guard scene.lights.contains(where: { $0.id == light.id }) else { return }
+                                 selected = light.id
+                             },
                              onDragChanged: selected == light.id ? { translation in
                                  dragLight(light.id, translation: translation, scale: Double(scale), generation: generation)
                              } : nil,
@@ -816,10 +871,13 @@ struct StudioView: View {
             }
             if scene.lights.isEmpty { Text("Start with one light or choose a recipe.").foregroundStyle(StudioPalette.secondaryText) }
             ForEach(scene.lights) { light in
-                Button(action: sceneAction { selected = light.id }) {
+                Button(action: sceneAction {
+                    guard scene.lights.contains(where: { $0.id == light.id }) else { return }
+                    selected = light.id
+                }) {
                     HStack(spacing: 12) {
-                        Image(systemName: lightIcon(light)).foregroundStyle(amber).frame(width: 36, height: 36)
-                            .background(amber.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
+                        Image(systemName: lightIcon(light)).foregroundStyle(StudioPalette.selection).frame(width: 36, height: 36)
+                            .background(StudioPalette.selection.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
                         VStack(alignment: .leading, spacing: 3) {
                             Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
                             Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
@@ -829,9 +887,9 @@ struct StudioView: View {
                         Spacer()
                         Text(StudioMeterReadout.candela(light.candela, locale: locale)).font(.caption.monospacedDigit())
                         Image(systemName: selected == light.id ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(selected == light.id ? amber : Color.secondary)
+                            .foregroundStyle(selected == light.id ? StudioPalette.selection : StudioPalette.secondaryText)
                     }.padding(8).frame(minHeight: 52)
-                        .background(selected == light.id ? amber.opacity(0.12) : Color(uiColor: .tertiarySystemGroupedBackground),
+                        .background(selected == light.id ? StudioPalette.selection.opacity(0.12) : Color(uiColor: .tertiarySystemGroupedBackground),
                                     in: RoundedRectangle(cornerRadius: 12))
                 }.buttonStyle(.plain).accessibilityIdentifier("light-\(lightDisplayName(light))")
                     .accessibilityAddTraits(selected == light.id ? .isSelected : [])
@@ -889,7 +947,7 @@ struct StudioView: View {
                         .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
-                .background(amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+                .background(StudioPalette.selection.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
             let opticsOwner = editOwner("light.\(light.id.uuidString).optics")
             OpticsInspector(optics: opticsBinding(for: light.id), subject: scene.subject,
                             onEditingChanged: editHandler(owner: opticsOwner))
@@ -924,10 +982,14 @@ struct StudioView: View {
         // Capture this project, light and field identity. A late callback must
         // not consult a newer selected light or project that shares light IDs.
         let owner = editOwner("light.\(id.uuidString).\(fieldID)")
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
         return VStack(alignment: .leading, spacing: 5) {
-            HStack {
+            layout {
                 Text(title).font(.subheadline.weight(.medium))
-                Spacer()
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 if unit == "m" {
                     DistanceValueButton(title: title, id: fieldID, value: value, range: domain).id(owner)
                 } else {

@@ -267,7 +267,7 @@ final class StudyRenderCacheTests: XCTestCase {
         let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
         let scene = portraitScene()
         let first = try await engine.render(scene: scene, width: 24, subject: .bust)
-        // Cover both cancellation before lookup and after a matching entry is found.
+        // Cover cancellation at entry and immediately before cache lookup/promotion.
         for check in [1, 2] {
             budget.reset(cancelAt: check)
             await assertCancelled(engine, scene: scene)

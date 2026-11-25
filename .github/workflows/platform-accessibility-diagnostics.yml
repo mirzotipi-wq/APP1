@@ -1,0 +1,220 @@
+name: Platform Accessibility Diagnostics
+# Owner-approved m02-m03-code-v2: preserve Apple's full audits, explicitly opt in.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: keyfill-platform-accessibility-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  app-audit:
+    runs-on: macos-26-intel
+    timeout-minutes: 85
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record Apple toolchain and exact revision
+        env:
+          EXPECTED_RUNNER_ARCH: x86_64
+        run: |
+          set -euo pipefail
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            git rev-parse HEAD
+          } | tee macos-environment.log
+          [ "$(uname -m)" = "$EXPECTED_RUNNER_ARCH" ] || { echo "::error::Expected the configured $EXPECTED_RUNNER_ARCH runner"; exit 1; }
+          [ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
+      - name: Generate project
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee xcodegen-version.log
+          xcodegen generate
+      - name: Select available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > simulators.json
+          python3 - <<'PY'
+          import json, os
+          data = json.load(open("simulators.json"))
+          runtime = "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+          devices = data["devices"].get(runtime, [])
+          device = next((d for d in devices if d.get("isAvailable") and d["name"] == "iPhone 17 Pro"), None)
+          if device is None:
+              raise SystemExit("Required iPhone 17 Pro / iOS 26.5 simulator is unavailable")
+          print({"runtime": runtime, "device": device})
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build native UI test bundle
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
+      - name: Boot selected iPhone simulator
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          python3 scripts/boot_simulator.py --udid "$SIMULATOR_ID" \
+            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \
+            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+            --output simulator-startup 2>&1 | tee simulator-boot.log
+      - name: Capture host conditions before UI tests
+        continue-on-error: true
+        timeout-minutes: 1
+        run: |
+          mkdir -p artifacts
+          python3 - <<'PY' > artifacts/ui-host-before-tests.log 2>&1
+          import datetime, json, os, subprocess, time
+          print("phase=before-ui-tests", flush=True)
+          print("utc=" + datetime.datetime.now(datetime.timezone.utc).isoformat(), flush=True)
+          commands = [
+              ("virtual_memory", ["/usr/bin/vm_stat"]),
+              ("swap_and_memory", ["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]),
+              ("process_cpu_rss", ["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]),
+              ("workspace_and_temp_disk", ["/bin/df", "-k", os.environ["GITHUB_WORKSPACE"], os.environ["RUNNER_TEMP"]]),
+          ]
+          for label, arguments in commands:
+              print("\ncommand=" + label + " argv=" + json.dumps(arguments), flush=True)
+              started = time.monotonic()
+              try:
+                  result = subprocess.run(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                          text=True, errors="replace", timeout=5, check=False)
+                  output = result.stdout
+                  status = "success" if result.returncode == 0 else "failed"
+                  return_code = result.returncode
+              except subprocess.TimeoutExpired as error:
+                  output = error.stdout or ""
+                  if isinstance(output, bytes):
+                      output = output.decode("utf-8", errors="replace")
+                  status, return_code = "timed_out", None
+              except OSError as error:
+                  output = str(error)
+                  status, return_code = "unavailable", None
+              print(output[:65536], flush=True)
+              print(json.dumps({"status": status, "return_code": return_code,
+                                "elapsed_seconds": round(time.monotonic() - started, 3),
+                                "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
+          PY
+      - name: Run selected native UI shard
+        id: selected_ui_tests
+        timeout-minutes: 32
+        env:
+          TEST_SHARD: platform-audit
+        run: |
+          set -euo pipefail
+          selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
+          tests=()
+          while IFS= read -r selector; do
+            tests+=("$selector")
+          done <<< "$selectors"
+          [ "${#tests[@]}" -gt 0 ]
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+          python3 scripts/native_test_shards.py verify-log "$TEST_SHARD" native-tests.log
+      - name: Capture host conditions after UI tests
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 1
+        env:
+          UI_TEST_STEP_OUTCOME: ${{ steps.selected_ui_tests.outcome }}
+        run: |
+          mkdir -p artifacts
+          python3 - <<'PY' > artifacts/ui-host-after-tests.log 2>&1
+          import datetime, json, os, subprocess, time
+          print("phase=after-ui-tests", flush=True)
+          print("utc=" + datetime.datetime.now(datetime.timezone.utc).isoformat(), flush=True)
+          print("github_test_step_outcome=" + os.environ.get("UI_TEST_STEP_OUTCOME", "unavailable"), flush=True)
+          commands = [
+              ("virtual_memory", ["/usr/bin/vm_stat"]),
+              ("swap_and_memory", ["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]),
+              ("process_cpu_rss", ["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]),
+              ("workspace_and_temp_disk", ["/bin/df", "-k", os.environ["GITHUB_WORKSPACE"], os.environ["RUNNER_TEMP"]]),
+          ]
+          for label, arguments in commands:
+              print("\ncommand=" + label + " argv=" + json.dumps(arguments), flush=True)
+              started = time.monotonic()
+              try:
+                  result = subprocess.run(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                          text=True, errors="replace", timeout=5, check=False)
+                  output = result.stdout
+                  status = "success" if result.returncode == 0 else "failed"
+                  return_code = result.returncode
+              except subprocess.TimeoutExpired as error:
+                  output = error.stdout or ""
+                  if isinstance(output, bytes):
+                      output = output.decode("utf-8", errors="replace")
+                  status, return_code = "timed_out", None
+              except OSError as error:
+                  output = str(error)
+                  status, return_code = "unavailable", None
+              print(output[:65536], flush=True)
+              print(json.dumps({"status": status, "return_code": return_code,
+                                "elapsed_seconds": round(time.monotonic() - started, 3),
+                                "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
+          PY
+      - name: Export finalized XCTest result bundle and genuine attachments
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -f NativeTests.xcresult/Info.plist ]; then
+            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            exit 1
+          fi
+          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          mkdir -p artifacts/native-attachments
+          xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload native result and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-platform-audit-evidence
+          path: |
+            macos-environment.log
+            metal-toolchain.log
+            macos-core-tests.log
+            xcodegen-version.log
+            simulators.json
+            build.log
+            release-build.log
+            icon-debug.log
+            privacy-debug.log
+            icon-release.log
+            privacy-release.log
+            native-tests.log
+            native-ui-build.log
+            simulator-startup/
+            simulator-boot.log
+            artifacts/ui-host-*.log
+            artifacts/studio-slider-trace*
+            artifacts/native-results.zip
+            artifacts/native-attachments/
+          if-no-files-found: warn
+      - name: Upload compact native attachments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-platform-audit-evidence-compact
+          path: |
+            artifacts/native-attachments/manifest.json
+            artifacts/native-attachments/*.png
+            artifacts/native-attachments/*.txt
+            artifacts/native-attachments/*.ips
+            artifacts/native-attachments/*.pdf
+            artifacts/studio-slider-trace*
+          if-no-files-found: warn

@@ -25,7 +25,8 @@ class NativeTestShardTests(unittest.TestCase):
         self.source("First.swift", "FirstUITests")
         self.source("Second.swift", "SecondUITests")
         self.shards = {"first": ("FirstUITests",), "second": ("SecondUITests",)}
-        for name, value in (("ROOT", self.root), ("SHARDS", self.shards)):
+        self.diagnostics = {}
+        for name, value in (("ROOT", self.root), ("SHARDS", self.shards), ("DIAGNOSTIC_SHARDS", self.diagnostics)):
             replacement = patch.object(native_test_shards, name, value)
             replacement.start()
             self.addCleanup(replacement.stop)
@@ -101,6 +102,79 @@ class NativeTestShardTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Unknown native test shard"):
                 native_test_shards.main()
         self.assertEqual(output.getvalue(), "")
+
+    def diagnostic_source(self):
+        self.source("Platform.swift", "PlatformUITests")
+        self.diagnostics["platform-audit"] = ("PlatformUITests",)
+        workflow = self.root / ".github/workflows/platform-accessibility-diagnostics.yml"
+        workflow.write_text("on:\n  workflow_dispatch:\njobs:\n  audit:\n    env:\n      TEST_SHARD: platform-audit\n", encoding="utf-8")
+        return workflow
+
+    def test_platform_audit_remains_assigned_and_explicitly_selectable(self):
+        self.diagnostic_source()
+        self.assertEqual(native_test_shards.check(), {"FirstUITests", "SecondUITests", "PlatformUITests"})
+        output = io.StringIO()
+        with patch("sys.argv", [str(SCRIPT), "platform-audit"]), contextlib.redirect_stdout(output):
+            native_test_shards.main()
+        self.assertEqual(output.getvalue(), "-only-testing:KeyAndFillUITests/PlatformUITests\n")
+
+    def test_diagnostic_cannot_be_automatic_unassigned_or_duplicate(self):
+        workflow = self.diagnostic_source()
+        base = workflow.read_text()
+        for source in (base.replace("workflow_dispatch:", "push:"), base + "  schedule:\n",
+                       base.replace("platform-audit", "unknown")):
+            with self.subTest(source=source), self.assertRaises(ValueError):
+                workflow.write_text(source)
+                native_test_shards.check()
+        workflow.write_text(base)
+        self.shards["first"] += ("PlatformUITests",)
+        with self.assertRaisesRegex(ValueError, "assigned to more than one"):
+            native_test_shards.check()
+
+    def test_required_and_diagnostic_shard_names_cannot_collide(self):
+        self.diagnostics["first"] = ("FirstUITests",)
+        with self.assertRaisesRegex(ValueError, "both required and diagnostic"):
+            native_test_shards.check()
+
+    def execution_log(self, events, target="KeyAndFillUITests"):
+        path = self.root / "execution.log"
+        path.write_text("\n".join(f"Test Case '-[{target}.{name} {method}]' {event}."
+                                  for name, method, event in events), encoding="utf-8")
+        return path
+
+    def test_execution_requires_one_start_and_one_pass_for_selected_methods(self):
+        path = self.execution_log([("FirstUITests", "testExample", event) for event in ("started", "passed")])
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(native_test_shards.verify_log("first", path), {"FirstUITests.testExample"})
+
+    def test_incomplete_failed_skipped_duplicate_and_unexpected_events_fail(self):
+        for events in ([], ["started"], ["passed"], ["started", "failed"],
+                       ["started", "skipped"], ["started", "started", "passed"],
+                       ["started", "passed", "passed"]):
+            with self.subTest(events=events), self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                native_test_shards.verify_log("first", self.execution_log(
+                    [("FirstUITests", "testExample", event) for event in events]))
+        events = [(name, "testExample", event) for name in ("FirstUITests", "SecondUITests")
+                  for event in ("started", "passed")]
+        with self.assertRaisesRegex(ValueError, "SecondUITests"):
+            native_test_shards.verify_log("first", self.execution_log(events))
+
+    def test_native_inventory_is_separate_and_empty_selection_cannot_pass(self):
+        directory = self.root / "NativeTests"
+        directory.mkdir()
+        (directory / "Unit.swift").write_text("final class UnitTests: XCTestCase { func testNative() {} }")
+        log = self.execution_log([("UnitTests", "testNative", event) for event in ("started", "passed")], "KeyAndFillTests")
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(native_test_shards.verify_log("unit", log), {"UnitTests.testNative"})
+        self.shards["first"] = ("MissingUITests",)
+        with self.assertRaisesRegex(ValueError, "no methods"):
+            native_test_shards.verify_log("first", log)
+
+    def test_ambiguous_method_container_fails_inventory(self):
+        path = self.root / "UITests/First.swift"
+        path.write_text("class A: XCTestCase { func testA() {} }\nclass B: XCTestCase { func testB() {} }")
+        with self.assertRaisesRegex(ValueError, "Ambiguous XCTest method inventory"):
+            native_test_shards.discover_methods("UITests")
 
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(units.waitForExistence(timeout: 10))
         XCTAssertEqual(units.value as? String, "Feet", "Reopening Settings must retain the preference")
         app.navigationBars["Settings"].buttons["Done"].tap()
-        let orbit = app.segmentedControls["viewMode"].buttons["3D"]
+        let orbit = app.buttons["viewMode-3D"]
         revealStudioContent(orbit, in: app)
         orbit.tap()
         let fit = app.buttons["fitStudioSetup"]
@@ -290,7 +290,7 @@ final class StudioSmokeTests: XCTestCase {
         let app = makeApp()
         app.launch()
         assertStatus("Unsaved changes", in: app)
-        let study = app.segmentedControls["viewMode"].buttons["Study"]
+        let study = app.buttons["viewMode-Study"]
         XCTAssertTrue(study.waitForExistence(timeout: 10))
         study.tap()
         let rendered = app.images["studyPreview"]
@@ -298,7 +298,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(rendered.isHittable)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Studio-light-study"; attachment.lifetime = .keepAlways; self.add(attachment)
-        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
+        let plan = app.buttons["viewMode-Plan"]
         plan.tap()
         XCTAssertTrue(app.buttons["editCamera"].waitForExistence(timeout: 5))
         study.tap()
@@ -309,13 +309,13 @@ final class StudioSmokeTests: XCTestCase {
         let app = makeApp()
         app.launch()
         assertStatus("Unsaved changes", in: app)
-        let study = app.segmentedControls["viewMode"].buttons["Study"]
+        let study = app.buttons["viewMode-Study"]
         XCTAssertTrue(study.waitForExistence(timeout: 15))
         study.tap()
         let rendered = app.images["studyPreview"]
         XCTAssertTrue(rendered.waitForExistence(timeout: 20))
         XCTAssertEqual(rendered.label, "Rendered neutral sphere and panel")
-        let bust = app.segmentedControls["studySubject"].buttons["Bust"]
+        let bust = app.buttons["studySubject-Mannequin"]
         revealStudioContent(bust, in: app)
         bust.tap()
         let predicate = NSPredicate(format: "exists == true AND label == %@", "Rendered neutral mannequin bust")
@@ -326,7 +326,7 @@ final class StudioSmokeTests: XCTestCase {
         attachment.name = "Studio-mannequin-study"; attachment.lifetime = .keepAlways; add(attachment)
         XCTAssertFalse(app.buttons["undo"].isEnabled)
         assertStatus("Unsaved changes", in: app)
-        let sphere = app.segmentedControls["studySubject"].buttons["Sphere"]
+        let sphere = app.buttons["studySubject-Sphere"]
         revealStudioContent(sphere, in: app)
         sphere.tap()
         let spherePredicate = NSPredicate(format: "exists == true AND label == %@", "Rendered neutral sphere and panel")
@@ -380,7 +380,7 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertTrue(undo.isEnabled && redo.isEnabled)
         XCTAssertTrue(app.buttons["light-Light 1"].exists)
         XCTAssertFalse(app.buttons["light-Light 2"].exists)
-        let plan = app.segmentedControls["viewMode"].buttons["Plan"]
+        let plan = app.buttons["viewMode-Plan"]
         XCTAssertTrue(plan.isSelected)
         assertStatus("Unsaved changes", in: app)
 
