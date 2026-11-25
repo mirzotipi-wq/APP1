@@ -1,0 +1,11 @@
+# Static accessibility control: 9ed terminal nonexecution
+
+The [control job 139268550686](https://github.com/mirzotipi-wq/APP1/actions/runs/45632330705/job/139268550686) completed with failure at 14:37:24 UTC on 2026-11-25, source `9eddd97c5e638edf1768332d9d83d7dc2cccb72a`. Its isolated app and UI test **built successfully** on standard macOS 26 Intel, image 20260824.0517.1, macOS 26.6.1/25G76, Xcode 26.6/17F113 and the iOS 26.5 SDK/runtime.
+
+The raw job log explicitly reports the boot step's **10-minute timeout at 14:29:23**. The retained boot log later reaches terminal Finished at 14:31:03 with elapsed 11:35. It contains 509 Data Migration observations followed by 54 Waiting on System App observations. LaunchServices migration is recorded from elapsed 00:49–05:26, and CoreLocation migration from 06:03–09:35. These are bootstatus observations, not profiler measurements or a cause attribution.
+
+The audit step was skipped: **zero test starts, zero terminal tests, no audit markers, no native test log and no xcresult**. The always-run verifier wrote the original failed/not_started summary and the raw job log reports exit 1 at 14:31:03; it contains no separate verifier-timeout annotation. Export recorded the missing finalized xcresult and exited 1 at 14:32:03, also without a timeout annotation. Upload succeeded. This run supplies no Code=-56 or completed-audit result.
+
+For comparison, cbf's library job used the same image/toolchain/runtime on a different VM and the same build-before-boot plus `simctl boot`/`bootstatus -b` mechanism. Its boot log finished at elapsed 02:57; the API boot step lasted 216 seconds. The primary additionally verifies Metal and builds the larger app. Neither boot log identifies dyld, cache or Metal as a cause. Different VM conditions and preparation prevent a causal comparison.
+
+The [compact terminal packet](../validation/accessibility-control-9ed-terminal/) retains original verifier/source manifests, environment, terminal metadata, raw excerpts, boot observations, installed-runtime fields and provenance. Artifact 15032966993 is 36,733 bytes, verified SHA256 `2579981479194b662b2b0d77d0b99220fddccfc54a3467b92b8e88bb2ee84d36`. All five copied sources independently match both manifests and the exact git revision. Full raw evidence remains at `/dev/shm/keyfill-a100-control-9ed/`.

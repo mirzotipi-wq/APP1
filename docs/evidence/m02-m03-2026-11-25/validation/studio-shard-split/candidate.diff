@@ -1,0 +1,332 @@
+diff --git a/.github/workflows/ios-prototype.yml b/.github/workflows/ios-prototype.yml
+index 0432771..645b0de 100644
+--- a/.github/workflows/ios-prototype.yml
++++ b/.github/workflows/ios-prototype.yml
+@@ -327,11 +327,11 @@ jobs:
+     timeout-minutes: ${{ matrix.job_minutes }}
+     strategy:
+       fail-fast: false
+-      # Each shard has its own simulator and bounded budget. Run all three so
+-      # the studio/export result need not wait for another UI shard to finish.
++      # Each required shard has its own simulator and bounded budget.
++      # Keep at most three active while all four complete independently.
+       max-parallel: 3
+       matrix:
+-        shard: [room-precision, library-reference, studio-export]
++        shard: [room-precision, library-reference, studio-export, studio-optics]
+         include:
+           - shard: room-precision
+             runner: macos-26-intel
+@@ -349,6 +349,11 @@ jobs:
+             expected_arch: x86_64
+             ui_test_minutes: 40
+             job_minutes: 93
++          - shard: studio-optics
++            runner: macos-26-intel
++            expected_arch: x86_64
++            ui_test_minutes: 32
++            job_minutes: 85
+     name: ui (${{ matrix.shard }})
+     steps:
+       - uses: actions/checkout@v4
+@@ -471,7 +476,7 @@ jobs:
+             tests+=("$selector")
+           done <<< "$selectors"
+           [ "${#tests[@]}" -gt 0 ]
+-          if [ "$TEST_SHARD" = "studio-export" ]; then
++          if [ "$TEST_SHARD" = "studio-export" ] || [ "$TEST_SHARD" = "studio-optics" ]; then
+             printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
+             record_studio_trace_end() {
+               studio_test_exit_code=$?
+@@ -529,7 +534,7 @@ jobs:
+                                 "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
+           PY
+       - name: Export studio slider unified log
+-        if: ${{ always() && matrix.shard == 'studio-export' }}
++        if: ${{ always() && (matrix.shard == 'studio-export' || matrix.shard == 'studio-optics') }}
+         continue-on-error: true
+         timeout-minutes: 2
+         env:
+diff --git a/UITests/StudioSmokeTests.swift b/UITests/StudioSmokeTests.swift
+index 483a84a..da5677a 100644
+--- a/UITests/StudioSmokeTests.swift
++++ b/UITests/StudioSmokeTests.swift
+@@ -175,105 +175,6 @@ final class StudioSmokeTests: XCTestCase {
+         XCTAssertTrue(element.exists && element.isHittable)
+     }
+ 
+-    func testOpticsEditingUndoRedoAndRelaunch() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability02() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability03() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability04() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability05() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability06() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability07() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability08() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability09() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    func testOpticsRepeatability10() throws {
+-        try runOpticsEditingUndoRedoAndRelaunch()
+-    }
+-
+-    private func runOpticsEditingUndoRedoAndRelaunch() throws {
+-        let app = makeApp()
+-        app.launchEnvironment["KEYFILL_UI_TEST_SLIDER_TRACE"] = "1"
+-        app.launch()
+-        assertStatus("Unsaved changes", in: app)
+-        let emitter = app.buttons["emitterKind"]
+-        revealStudioContent(emitter, in: app)
+-        emitter.tap()
+-        app.buttons["Rectangular softbox"].tap()
+-        XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
+-        let width = app.sliders["emitterWidth"]
+-        revealStudioContent(width, in: app)
+-        XCTAssertEqual(app.sliders.matching(identifier: "emitterWidth").count, 1,
+-                       "One native slider must own the width accessibility metadata")
+-        let initialWidth = try XCTUnwrap(width.value as? String)
+-        XCTAssertEqual(width.label, "Width in meters", "The native slider must retain its accessible label")
+-        XCTAssertEqual(initialWidth, "0.6 m", "The native slider must expose the model readout, not a percentage")
+-        width.adjust(toNormalizedSliderPosition: 0.5)
+-        let undo = app.buttons["undo"]
+-        let gestureCompleted = XCTNSPredicateExpectation(
+-            predicate: NSPredicate { _, _ in
+-                guard let currentWidth = width.value as? String,
+-                      currentWidth != initialWidth else { return false }
+-                return undo.exists && undo.isEnabled
+-            }, object: width)
+-        XCTAssertEqual(XCTWaiter.wait(for: [gestureCompleted], timeout: 10), .completed,
+-                       "The width must change and finish its edit before capturing the value for Undo and Redo")
+-
+-        let editedWidth = try XCTUnwrap(width.value as? String)
+-        XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
+-
+-        XCTAssertTrue(undo.exists && undo.isHittable)
+-        let state = XCTAttachment(string: "Initial width: \(initialWidth)\nEdited width: \(editedWidth)\nUndo enabled: \(undo.isEnabled)\nRedo enabled: \(app.buttons["redo"].isEnabled)\n\(width.debugDescription)\n\(undo.debugDescription)")
+-        state.name = "Optics-tracking-before-undo"; state.lifetime = .keepAlways; add(state)
+-        XCTAssertTrue(undo.isEnabled, "The completed width gesture must close its edit before Undo")
+-        undo.tap()
+-        XCTAssertEqual(emitter.value as? String, "Rectangular softbox", "Undo width, not the preceding emitter selection")
+-        revealStudioContent(width, in: app)
+-        XCTAssertEqual(width.value as? String, initialWidth)
+-        let redo = app.buttons["redo"]
+-        XCTAssertTrue(redo.exists && redo.isHittable)
+-        XCTAssertTrue(redo.isEnabled, "Undo must complete and enable Redo")
+-        redo.tap()
+-        revealStudioContent(width, in: app)
+-        XCTAssertEqual(width.value as? String, editedWidth)
+-
+-        let attachment = XCTAttachment(screenshot: app.screenshot())
+-        attachment.name = "Studio-optics"; attachment.lifetime = .keepAlways; self.add(attachment)
+-        app.buttons["saveProject"].tap()
+-        waitForCommittedProject(in: app)
+-        app.terminate()
+-        app.launch()
+-        assertStatus("Saved locally", in: app)
+-        revealStudioContent(emitter, in: app)
+-        XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
+-        revealStudioContent(width, in: app)
+-        XCTAssertEqual(width.value as? String, editedWidth)
+-    }
+-
+     func testCameraFocalLengthUndoAndRelaunch() throws {
+         let app = makeApp()
+         app.launch()
+diff --git a/scripts/native_test_shards.py b/scripts/native_test_shards.py
+index 123f53a..30300f7 100644
+--- a/scripts/native_test_shards.py
++++ b/scripts/native_test_shards.py
+@@ -9,6 +9,7 @@ SHARDS = {
+     "room-precision": ("ManualRoomPlacementUITests", "PrecisionEditingUITests"),
+     "library-reference": ("ProjectLibraryUITests", "ReferenceComparisonUITests", "AccessibilityAuditUITests"),
+     "studio-export": ("StudioSmokeTests", "LightingPlanExportUITests"),
++    "studio-optics": ("StudioOpticsUITests",),
+ }
+ 
+ 
+diff --git a/UITests/StudioOpticsUITests.swift b/UITests/StudioOpticsUITests.swift
+new file mode 100644
+index 0000000..d8a3ac9
+--- /dev/null
++++ b/UITests/StudioOpticsUITests.swift
+@@ -0,0 +1,155 @@
++import XCTest
++
++final class StudioOpticsUITests: XCTestCase {
++    override func setUpWithError() throws { continueAfterFailure = false }
++
++    private func makeApp(corrupt: Bool = false) -> XCUIApplication {
++        let app = XCUIApplication()
++        app.launchArguments = ["-ui-testing"]
++        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
++        if corrupt { app.launchEnvironment["KEYFILL_UI_TEST_CORRUPT"] = "1" }
++        return app
++    }
++
++    private func assertStatus(_ value: String, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
++        let status = app.staticTexts["projectStatus"]
++        let predicate = NSPredicate(format: "exists == true AND label == %@", value)
++        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: status)
++        let result = XCTWaiter.wait(for: [expectation], timeout: 10)
++        if result != .completed {
++            // Inspect one immutable snapshot only after the original wait fails.
++            // Raw output survives a run that cannot finalize its result bundle.
++            let metadata: String
++            do {
++                let snapshot = try status.snapshot()
++                metadata = [
++                    "expectedLabel: \(value)",
++                    "identifier: \(snapshot.identifier)",
++                    "label: \(snapshot.label)",
++                    "elementType: \(snapshot.elementType)",
++                    "frame: \(snapshot.frame)",
++                    "isEnabled: \(snapshot.isEnabled)",
++                    "isSelected: \(snapshot.isSelected)"
++                ].joined(separator: "\n")
++            } catch {
++                metadata = "expectedLabel: \(value)\nstatusSnapshotError: \(error.localizedDescription)"
++            }
++            let byteLimit = 4_096
++            let prefix = Array(metadata.utf8.prefix(byteLimit + 1))
++            var endIndex = min(byteLimit, prefix.count)
++            if prefix.count > byteLimit {
++                // A continuation byte at the boundary belongs to the scalar
++                // that must be omitted; valid UTF-8 needs at most three trims.
++                while endIndex > 0 && (prefix[endIndex] & 0xC0) == 0x80 {
++                    endIndex -= 1
++                }
++            }
++            var excerpt = String(decoding: prefix.prefix(endIndex), as: UTF8.self)
++            if prefix.count > byteLimit {
++                excerpt += "\n[Truncated after 4,096 UTF-8 bytes.]"
++            }
++            print("Studio-status-readiness-failure:\n\(excerpt)")
++        }
++        XCTAssertEqual(result, .completed, file: file, line: line)
++    }
++
++    func testOpticsEditingUndoRedoAndRelaunch() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability02() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability03() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability04() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability05() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability06() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability07() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability08() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability09() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    func testOpticsRepeatability10() throws {
++        try runOpticsEditingUndoRedoAndRelaunch()
++    }
++
++    private func runOpticsEditingUndoRedoAndRelaunch() throws {
++        let app = makeApp()
++        app.launchEnvironment["KEYFILL_UI_TEST_SLIDER_TRACE"] = "1"
++        app.launch()
++        assertStatus("Unsaved changes", in: app)
++        let emitter = app.buttons["emitterKind"]
++        revealStudioContent(emitter, in: app)
++        emitter.tap()
++        app.buttons["Rectangular softbox"].tap()
++        XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
++        let width = app.sliders["emitterWidth"]
++        revealStudioContent(width, in: app)
++        XCTAssertEqual(app.sliders.matching(identifier: "emitterWidth").count, 1,
++                       "One native slider must own the width accessibility metadata")
++        let initialWidth = try XCTUnwrap(width.value as? String)
++        XCTAssertEqual(width.label, "Width in meters", "The native slider must retain its accessible label")
++        XCTAssertEqual(initialWidth, "0.6 m", "The native slider must expose the model readout, not a percentage")
++        width.adjust(toNormalizedSliderPosition: 0.5)
++        let undo = app.buttons["undo"]
++        let gestureCompleted = XCTNSPredicateExpectation(
++            predicate: NSPredicate { _, _ in
++                guard let currentWidth = width.value as? String,
++                      currentWidth != initialWidth else { return false }
++                return undo.exists && undo.isEnabled
++            }, object: width)
++        XCTAssertEqual(XCTWaiter.wait(for: [gestureCompleted], timeout: 10), .completed,
++                       "The width must change and finish its edit before capturing the value for Undo and Redo")
++
++        let editedWidth = try XCTUnwrap(width.value as? String)
++        XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
++
++        XCTAssertTrue(undo.exists && undo.isHittable)
++        let state = XCTAttachment(string: "Initial width: \(initialWidth)\nEdited width: \(editedWidth)\nUndo enabled: \(undo.isEnabled)\nRedo enabled: \(app.buttons["redo"].isEnabled)\n\(width.debugDescription)\n\(undo.debugDescription)")
++        state.name = "Optics-tracking-before-undo"; state.lifetime = .keepAlways; add(state)
++        XCTAssertTrue(undo.isEnabled, "The completed width gesture must close its edit before Undo")
++        undo.tap()
++        XCTAssertEqual(emitter.value as? String, "Rectangular softbox", "Undo width, not the preceding emitter selection")
++        revealStudioContent(width, in: app)
++        XCTAssertEqual(width.value as? String, initialWidth)
++        let redo = app.buttons["redo"]
++        XCTAssertTrue(redo.exists && redo.isHittable)
++        XCTAssertTrue(redo.isEnabled, "Undo must complete and enable Redo")
++        redo.tap()
++        revealStudioContent(width, in: app)
++        XCTAssertEqual(width.value as? String, editedWidth)
++
++        let attachment = XCTAttachment(screenshot: app.screenshot())
++        attachment.name = "Studio-optics"; attachment.lifetime = .keepAlways; self.add(attachment)
++        app.buttons["saveProject"].tap()
++        waitForCommittedProject(in: app)
++        app.terminate()
++        app.launch()
++        assertStatus("Saved locally", in: app)
++        revealStudioContent(emitter, in: app)
++        XCTAssertEqual(emitter.value as? String, "Rectangular softbox")
++        revealStudioContent(width, in: app)
++        XCTAssertEqual(width.value as? String, editedWidth)
++    }
++
++}

@@ -1,0 +1,9 @@
+# Independent keyboard-helper review
+
+**Scoped source approval** for `UITests/StudioContentReachability.swift`, SHA256 `cde53fae85e741f18d10fea9ac2c23080cf3b7dd225c7ae8affa6eb459bac05f`, against `9eddd97c5e638edf1768332d9d83d7dc2cccb72a`. Candidate diff SHA256: `790f1321d243b7548cec57e98c39899cc3ad01915c4a27f619eafcefff40a2cb`.
+
+Apple's [isHittable documentation](https://developer.apple.com/documentation/xcuiautomation/xcuielement/ishittable.md) states that absent elements are not hittable. Under those documented states, replacing the redundant existence reads with `!proceed.isHittable && typingKey.isHittable` preserves both required conditions and their order. The original identification guard, Continue lookup/tap, q/Q selection, one 10-second wait, returned result and final assertion are retained. Caller source and production code are unchanged. This equivalence does not prove how many underlying live AX requests are made or that runtime improves.
+
+The failed-wait branch takes one app snapshot, consistent with the [snapshot API](https://developer.apple.com/documentation/xcuiautomation/xcuielementsnapshotproviding/snapshot().md), and reads attributes from that captured hierarchy. Pending/visited accounting bounds traversal to 256 nodes; excess children explicitly mark truncation. UTF-8 boundary trimming keeps each label/identifier within 256 bytes and the excerpt within 16,384 bytes before its marker. Snapshot errors are caught, a genuine screen attachment is retained, and the original readiness assertion is not replaced or retried. Snapshot capture itself has no new hard time bound.
+
+The owner’s source/Boolean and Linux Swift syntax receipts were inspected; the final source hash and diff scope were independently verified. No Apple compile, UI execution, measured speedup, new retry, fallback, test omission or relaxed assertion is claimed. The separate class-sharding proposal is outside this review.

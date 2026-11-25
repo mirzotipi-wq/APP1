@@ -1,5 +1,20 @@
 # Current handoff
 
+## UI shard repair and runtime comparison — source candidate after 9ed
+
+**M01 remains complete; M02 is active; M03 is dependency pending.** Current published base is **9eddd97c5e638edf1768332d9d83d7dc2cccb72a**. The [integration packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-ci-shards-and-runtime-control.md) records the reviewed source changes and exact completed CI evidence.
+
+The cbf [application run 45623581873](https://github.com/mirzotipi-wq/APP1/actions/runs/45623581873) completed with failure at **14:41:50 UTC**. Core passed **319 Debug / 319 Release / 35 Python**; unsigned builds and **110 native tests**, including all three Metal methods, passed. All 36 UI methods started: **32 passed, three failed, one was interrupted, zero skipped/unstarted**. Room/precision passed 5/5. Library completed all eleven methods: eight passed and three failed. Two full audits threw Code=-56, and archived-delete stopped at keyboard introduction readiness before typing/deleting. Earlier initial/relaunch readiness failures did not recur. Studio completed 19 passes, including all ten optics workflows; the last Study-switching method was interrupted by the forty-minute aggregate deadline.
+
+The keyboard recording shows the introduction gone and q visible at failure, while AX identity/hittability remained unobserved. The reviewed helper removes existence reads redundant under Apple's documented isHittable semantics, preserving both conditions/order and the ten-second wait. It captures a bounded immutable snapshot only after failure. The reviewed class split moves the ten optics methods and common workflow unchanged into a new required StudioOpticsUITests shard. All 36 method bodies remain exact, assigned once across eight classes/four shards. Existing deadlines and three-job UI concurrency remain; the new optics shard has 32-minute tests/85-minute job. Extra hosted setup may increase total wall time. Actual new-source Apple execution is pending.
+
+The separate 9ed [control run 45632330705](https://github.com/mirzotipi-wq/APP1/actions/runs/45632330705) was admitted and built, but exceeded its ten-minute simulator boot limit. Its test was skipped: **zero audit starts/results**. Late boot completion at elapsed 11:35 does not change that outcome. The next control changes only its runtime to installed iOS 26.4.1, keeping Xcode 26.6/SDK26.5, app/test and all bounds. Primary application jobs remain on iOS 26.5. No dyld/Metal/runtime cause is established.
+
+Root intentionally cancelled superseded primary 9ed run45632330628 during core, before any Apple step executed. Its failure/cancellation is preserved separately from completed cbf evidence. All 100 initial workers remain complete; follow-ups reuse them. Editing remains unverified; accessibility and regression remain failed/incomplete. The twelve calibrated scenes/photographer review, physical performance/thermal measurements and manual device accessibility remain unrun.
+
+**Next executable action:** publish the reviewed combined candidate; verify actual build and all four UI shards, then inspect the control's actual boot/audit phase. No retry-until-green, omitted test, relaxed assertion, deadline increase to an existing job, or protected-contract change is authorized by this packet. Earlier sections below are timestamped history.
+
+
 ## Control startup correction after first publication
 
 The independent control was published as **b26d3caa498d9f5e75758718a4a932cb0c0ac172**, then [run 45630592265](https://github.com/mirzotipi-wq/APP1/actions/runs/45630592265) was rejected at **14:07:15 UTC** with zero jobs/tests. The workflow used three `runner.temp` expressions in job-level environment settings, where the official context table does not permit `runner`. Syntax parsing and the initial review missed that placement rule. The [rejection receipt](../docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-context-repair/rejected-run.json) preserves the nonexecution and limits; the browser did not expose annotation text.

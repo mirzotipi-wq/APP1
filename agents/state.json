@@ -97,10 +97,10 @@
     "date": "2026-11-25",
     "baseRevision": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
     "destinationBranch": "main",
-    "status": "m01_verified_editing_reopened_after_terminal_ui_timeouts",
+    "status": "m01_verified_ui_shard_repair_and_control_runtime_experiment_pending",
     "requestedDistinctWorkers": 100,
     "concurrentWorkerSlots": 3,
-    "report": "docs/evidence/m02-m03-main-2026-11-25.md",
+    "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-ci-shards-and-runtime-control.md",
     "nativeCandidateResult": "pass",
     "remainingMandatoryGates": [
       "calibrated_rendering_review",
@@ -109,100 +109,27 @@
       "automatic_accessibility_current_source",
       "manual_device_accessibility"
     ],
-    "sourceRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
-    "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+    "sourceRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
+    "testedRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
     "latestWorkflow": {
       "id": 45623581873,
       "sourceRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
       "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45623581873",
-      "status": "in_progress",
-      "conclusion": null,
-      "observedAtUTC": "2026-11-25T13:57:07Z",
-      "jobs": [
-        {
-          "id": 139250318959,
-          "name": "core",
-          "status": "completed",
-          "conclusion": "success",
-          "startedAtUTC": "2026-11-25T13:47:29Z",
-          "completedAtUTC": "2026-11-25T13:50:53Z",
-          "runnerID": 1000000809,
-          "currentStep": null
-        },
-        {
-          "id": 139252380108,
-          "name": "simulator",
-          "status": "in_progress",
-          "conclusion": null,
-          "startedAtUTC": "2026-11-25T13:51:00Z",
-          "completedAtUTC": null,
-          "runnerID": 1000000810,
-          "currentStep": {
-            "name": "Build unsigned simulator app and native unit test bundle",
-            "status": "in_progress",
-            "conclusion": null,
-            "number": 9,
-            "started_at": "2026-11-25T13:56:21Z",
-            "completed_at": null
-          }
-        },
-        {
-          "id": 139252380171,
-          "name": "ui (room-precision)",
-          "status": "in_progress",
-          "conclusion": null,
-          "startedAtUTC": "2026-11-25T13:50:58Z",
-          "completedAtUTC": null,
-          "runnerID": 1000000812,
-          "currentStep": {
-            "name": "Boot selected iPhone simulator",
-            "status": "in_progress",
-            "conclusion": null,
-            "number": 8,
-            "started_at": "2026-11-25T13:54:36Z",
-            "completed_at": null
-          }
-        },
-        {
-          "id": 139252380183,
-          "name": "ui (studio-export)",
-          "status": "in_progress",
-          "conclusion": null,
-          "startedAtUTC": "2026-11-25T13:50:57Z",
-          "completedAtUTC": null,
-          "runnerID": 1000000811,
-          "currentStep": {
-            "name": "Boot selected iPhone simulator",
-            "status": "in_progress",
-            "conclusion": null,
-            "number": 8,
-            "started_at": "2026-11-25T13:54:58Z",
-            "completed_at": null
-          }
-        },
-        {
-          "id": 139252380291,
-          "name": "ui (library-reference)",
-          "status": "in_progress",
-          "conclusion": null,
-          "startedAtUTC": "2026-11-25T13:50:58Z",
-          "completedAtUTC": null,
-          "runnerID": 1000000813,
-          "currentStep": {
-            "name": "Boot selected iPhone simulator",
-            "status": "in_progress",
-            "conclusion": null,
-            "number": 8,
-            "started_at": "2026-11-25T13:54:39Z",
-            "completed_at": null
-          }
-        }
-      ],
-      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint9-progress.json",
-      "scope": "Actual progress at capture: core success, native build active, all three UI bundles built and booting. No UI/audit/control outcome inferred."
+      "status": "completed",
+      "conclusion": "failure",
+      "observedAtUTC": "2026-11-25 14:53:32 UTC",
+      "updatedAtUTC": "2026-11-25T14:41:50Z",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/cbf-terminal-workflow.json",
+      "nativePassed": 110,
+      "uiPassed": 32,
+      "uiFailed": 3,
+      "uiInterrupted": 1,
+      "uiNotStarted": 0,
+      "uiSkipped": 0,
+      "scope": "Exact completed cbf invocation. Studio's final Study-switching method was interrupted by the unchanged40-minute test-step deadline. Three library failures were two full-audit Code=-56 errors and the keyboard-introduction helper. No full-CI or physical-device pass."
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "M01 retains actual core/build/native and completed create/edit/save/relaunch/corrupt smoke evidence. M02 remains active; M03 is dependency pending, editing unverified and accessibility failed. The terminal214 workflow passed core,110 native,5 room/precision and20 studio/export methods including all ten optics workflows, with no executed native/UI failures or skips. Its ARM library job acquired no runner and executed zero methods, causing overall workflow failure; prior f6 library readiness failures remain unresolved. Current cbf workflow45623581873 had core success, native build active and all three UI bundles built before boot at13:57:07UTC. No full cbf or independent-control result is inferred; physical/calibrated/manual gates remain open. Later actual cbf native execution passed all110 methods and all three required Metal methods, with unsigned Debug/Release success. The new control at b26 was rejected before jobs at14:07:15; a source-context repair is prepared, with no audit execution claimed.",
+    "note": "M01 retains actual core/build/native and complete foundation smoke evidence. Exact cbf finished with failure: 319 Debug,319 Release,35 Python,110 native and5 room/precision passed; all10 optics workflows passed. UI inventory36:32 passed,3 failed,1 interrupted,0 skipped/unstarted. Library completed all11 methods: two full audits threw Code=-56 and archived-delete stopped at keyboard readiness before typing/deleting. Its earlier Projects/Save and large-library readiness failures did not recur. Studio passed19 and its final Study-switching method was interrupted by40-minute shard deadline. Editing remains unverified and accessibility failed; no data-loss or host-pressure cause is established. Separate control9ed compiled, but exceeded its10-minute boot limit before any audit; late boot completion is not an audit result. The working helper correction, class split and control-only26.4.1 runtime experiment require fresh Apple execution. M02 calibrated rendering/performance and M03 manual accessibility remain unverified. The superseded9ed primary run was intentionally cancelled before Apple execution.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -214,7 +141,7 @@
       "uiInventory": 36,
       "nativeResult": "pass",
       "nativeTestedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "scope": "Recorded portable/native evidence at exact f6, not execution of the working diagnostic/order candidate. Current 214ca90 core status is recorded separately."
+      "scope": "Historical local/CI portable and native evidence at exact f6; newer exact cbf results are recorded in latestWorkflow/latestNativeExecution. This field does not claim execution of the current helper, class split or runtime-control candidate."
     },
     "grazingCPUCost": "Open diagnostic risk: 17.56\u201335.10% median area-frame slowdown in a short paired host benchmark; discarded inlining did not establish a gain.",
     "previousCompletedWorkflow": {
@@ -370,8 +297,8 @@
     },
     "editingAcceptance": {
       "result": "unverified",
-      "testedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
-      "applicableUnchangedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "testedRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
+      "applicableUnchangedRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
       "priorPassedDecision": {
         "result": "pass",
         "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
@@ -392,20 +319,23 @@
       "latestOpticsRunsFailed": 0,
       "roomPrecisionPassed": 5,
       "nativeOwnershipAndRegressionPassed": true,
-      "reason": "Exact214 completed all ten optics workflows, all five room/precision methods and110 native methods. Editing remains unverified because the earlier f6 library readiness failures await revalidation: the214 ARM library job acquired no runner and executed no methods. Current cbf UI results remain pending at the captured observation.",
-      "scope": "Fresh optics repeatability is supported. Outstanding library readiness paths still require actual complete execution under unchanged assertions and deadlines. Preserve f6 failures and newly captured diagnostics; no disk-loss cause is established.",
+      "reason": "Cbf completed all10 optics and5 room/precision methods plus110 native tests. Earlier library initial/relaunch readiness paths passed, but archived-delete failed at keyboard introduction readiness and the last Study-switching method was interrupted by the aggregate studio deadline.",
+      "scope": "Fresh optics repeatability is supported; current complete editing acceptance is unverified. The keyboard video shows visible keys but does not establish AX identity/hittability. No persistence-loss cause is established.",
       "artifacts": [
         "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json",
         "docs/evidence/m02-m03-2026-11-25/validation/library-f6-terminal/receipt.json",
         "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json",
         "docs/evidence/m02-m03-2026-11-25/validation/214-studio-terminal/terminal-summary.json",
-        "docs/evidence/m02-m03-2026-11-25/validation/214-room-terminal/terminal-summary.json"
+        "docs/evidence/m02-m03-2026-11-25/validation/214-room-terminal/terminal-summary.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/cbf-studio-terminal/terminal-summary.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/cbf-room-terminal/terminal-summary.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/cbf-library-terminal/method-accounting.json"
       ],
       "latestRepeatabilityEvidence": {
-        "revision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+        "revision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
         "passed": 10,
-        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/214-studio-terminal/terminal-summary.json",
-        "scope": "All ten optics workflows completed; current editing remains unverified until the outstanding f6 library readiness workflows are revalidated."
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/cbf-studio-terminal/terminal-summary.json",
+        "scope": "All10 optics workflows passed. Library keyboard readiness and unfinished Study switching prevent full editing revalidation."
       },
       "priorOpticsObservation": {
         "revision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
@@ -414,8 +344,8 @@
         "reason": "Newer actual f6 execution failed the tenth complete optics workflow and did not finish all required UI methods. Prior b298 ten-pass evidence remains historical support, but no longer suffices to claim repeatable current end-to-end acceptance.",
         "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json"
       },
-      "latestOpticsRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
-      "unresolvedReadinessFailureRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be"
+      "latestOpticsRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
+      "unresolvedReadinessFailureRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11"
     },
     "libraryRunnerCandidate": {
       "baseRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
@@ -470,16 +400,16 @@
     },
     "nativeBuildAcceptance": {
       "result": "pass",
-      "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "applicableUnchangedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "testedRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
+      "applicableUnchangedRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
       "unsignedDebugBuild": "passed",
       "unsignedReleaseBuild": "passed",
       "nativePassed": 110,
       "nativeFailed": 0,
       "nativeSkipped": 0,
       "requiredMetalPassed": 3,
-      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json",
-      "scope": "Actual f6 Intel Xcode 26.6/iOS 26.5 build/native evidence; unchanged published application inputs through 214ca90 support applicability. Current workflow and working diagnostic changes retain their own execution scope."
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/cbf-native-terminal/terminal-summary.json",
+      "scope": "Actual cbf Intel Xcode26.6/iOS26.5 unsigned Debug/Release and110 native passes, including all3 Metal methods. Production/native inputs remain unchanged in this candidate; new UI/helper compilation is not inferred."
     },
     "m01Acceptance": {
       "result": "complete",
@@ -1182,13 +1112,13 @@
     ],
     "uiDiagnosticsCandidate": {
       "baseRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
-      "status": "reviewed_working_candidate_requires_Apple_execution",
+      "status": "published_at_cbf_and_Apple_executed",
       "buildOrderReport": "docs/evidence/m02-m03-2026-11-25/followups/followup-ui-build-boot-order.md",
       "initialOrderingOnlySHA256": "f771ff14b9f5c5dad21eeedbf831c66df587447ce177d2caa3270e117f1b6f48",
       "initialOrderingReview": "a097 and root approved exact adjacent build/boot relocation; later telemetry additions require their own review.",
-      "scope": "Prepared source changes improve outcome provenance and bounded error/host observations; no product fix, resource-pressure cause, speedup, AX completion or runtime pass is established. The required UI shell body is byte-identical; new host steps are optional and bounded. Current application/runtime evidence remains separately source-bound.",
+      "scope": "Cbf built all UI bundles before boot and executed all36 methods, with32 passes,3 failures and1 interruption. The library before-test ps capture exceeded its requested5-second command bound; studio before-test optional capture exceeded its1-minute step. These are observed diagnostic delays, not established resource-pressure causes. Original failure diagnostics compiled; no measured speedup or full acceptance is claimed.",
       "testDiagnostics": {
-        "status": "prepared_and_root_reviewed; Apple compilation/runtime unverified",
+        "status": "Apple_compiled_at_cbf; original_failure_paths_did_not_recur",
         "sourceSHA256": {
           "UITests/ProjectLibraryUITests.swift": "bb226a7267c345209f1aad9d3fce53d37ef0b74508f955dfeb7d5a428eb1c004",
           "UITests/StudioSmokeTests.swift": "34895840aa5885514f36fa08d88a668f437e5d0957e939fdf75ca01c02d6f9ee"
@@ -1236,19 +1166,20 @@
         "inlinePythonBlocksParsed": 7,
         "requiredUIRunBodyByteIdentical": true,
         "finalDeltaOnlyLibraryMatrixValuesAndComment": true,
-        "AppleExecution": "unverified",
+        "AppleExecution": "all_UI_bundles_built_at_cbf; full_result_failed",
         "scope": "Initial approved diagnostic/ordering candidate: YAML, 29 shell blocks, 7 inline Python blocks, original run-body and full-document restoration checks. Final candidate: exact-byte proof of only two matrix values plus rationale comment, full YAML structure comparison, diff check; executable run bodies unchanged from initial validation."
-      }
+      },
+      "executionArtifact": "docs/evidence/m02-m03-2026-11-25/validation/cbf-terminal-workflow.json"
     },
     "accessibilityControlCandidate": {
       "baseRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
-      "status": "context_repair_prepared_not_admitted",
+      "status": "runtime264_experiment_prepared_unrun",
       "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control.md",
       "workflow": ".github/workflows/accessibility-control.yml",
       "sourceDirectory": "scripts/diagnostics/accessibility-control",
       "owner": "Reused worker a100 implementation; a097 independent review; root integration",
-      "question": "Can the full Apple .all audit complete on a separate standard SwiftUI screen in the current Intel/Xcode26.6/iOS26.5 environment?",
-      "AppleExecution": "not_run_workflow_rejected_before_jobs",
+      "question": "Can the same full Apple .all audit complete on the separate control with installed iOS26.4.1, under unchanged Xcode26.6/SDK26.5 and bounds?",
+      "AppleExecution": "9ed_build_passed_boot_deadline_exceeded_zero_tests; runtime264_candidate_unrun",
       "productionGateChanges": false,
       "validation": {
         "head": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
@@ -1292,9 +1223,38 @@
         "change": "Move exactly three unchanged temporary paths from unsupported job-level runner expressions into exported RUNNER_TEMP shell variables in the existing first record step and persist through GITHUB_ENV.",
         "validation": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-context-repair/validation.json",
         "review": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control-context-review.md",
-        "GitHubAdmission": "unverified",
-        "auditExecution": "unverified",
+        "GitHubAdmission": "verified_at_9ed",
+        "auditExecution": "not_started_boot_failed",
         "primaryWorkflowAndAuditCodeUnchanged": true
+      },
+      "lastInvocation": {
+        "sourceRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
+        "runID": 45632330705,
+        "jobID": 139268550686,
+        "conclusion": "failure",
+        "build": "passed",
+        "boot": "failed_deadline",
+        "testStep": "skipped",
+        "testStarts": 0,
+        "testTerminals": 0,
+        "auditOutcome": "not_started",
+        "lateBootLogElapsed": "11:35",
+        "sourceHashesStable": true,
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-9ed-terminal/execution-summary.json",
+        "scope": "Pre-audit nonexecution. The retained boot log eventually reached Finished after the step deadline; no Code=-56 reproduction or control audit result."
+      },
+      "runtimeExperiment": {
+        "baseRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
+        "status": "reviewed_working_candidate_requires_Apple_execution",
+        "runtime": "26.4.1",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-4",
+        "Xcode": "26.6",
+        "buildSDK": "26.5",
+        "primaryAppRuntime": "26.5",
+        "workflowSHA256": "ef07fb2d5013b5d3815c8a4e93e0d06b186871e6211711a664268e70489afe0a",
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-runtime264/validation.json",
+        "review": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control-runtime264-review.md",
+        "scope": "Four control-only runtime selection/guard/message changes; same app/test/bounds. Hosted-machine variation is uncontrolled, so a future difference is not causal proof."
       }
     },
     "latestNativeExecution": {
@@ -1309,6 +1269,41 @@
       "wallSeconds": 22.13,
       "artifact": "docs/evidence/m02-m03-2026-11-25/validation/cbf-native-terminal/terminal-summary.json",
       "scope": "Actual native and unsigned Debug/Release success; UI and separate control results not inferred."
+    },
+    "keyboardReadinessCandidate": {
+      "baseRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
+      "status": "reviewed_working_candidate_requires_Apple_execution",
+      "sourceSHA256": "cde53fae85e741f18d10fea9ac2c23080cf3b7dd225c7ae8affa6eb459bac05f",
+      "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-keyboard-helper-semantics.md",
+      "review": "docs/evidence/m02-m03-2026-11-25/followups/followup-keyboard-helper-independent-review.md",
+      "scope": "Remove existence reads redundant under documented isHittable semantics; keep both conditions/order and10-second boundary. One bounded failure-only immutable snapshot and screen, no retries or measured speedup."
+    },
+    "studioShardSplit": {
+      "baseRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
+      "status": "independently_reviewed_working_candidate_requires_Apple_execution",
+      "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-studio-shard-split.md",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/studio-shard-split/validation.json",
+      "primaryWorkflowSHA256": "83dbc72b9ce729514c304cb11e450cc76fcd8bd4929edb06e7e9fd858e22be60",
+      "uiMethods": 36,
+      "uiClasses": 8,
+      "shards": {
+        "room-precision": 5,
+        "library-reference": 11,
+        "studio-export": 10,
+        "studio-optics": 10
+      },
+      "maxParallelUIJobs": 3,
+      "newOpticsTestMinutes": 32,
+      "newOpticsJobMinutes": 85,
+      "scope": "Ten optics bodies and their helper moved byte-for-byte into a new required class; same setup/private helper bodies. Original3 deadlines unchanged. One additional standard hosted job/setup, without higher simultaneous UI concurrency or guaranteed wall-time gain.",
+      "review": "docs/evidence/m02-m03-2026-11-25/followups/followup-studio-shard-split-independent-review.md"
+    },
+    "supersededPrimaryRun": {
+      "id": 45632330628,
+      "sourceRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
+      "conclusion": "cancelled",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/superseded-primary-9ed.json",
+      "scope": "Root requested cancellation of the superseded primary run during core; zero Apple steps executed. The separate control completed independently."
     }
   }
 }

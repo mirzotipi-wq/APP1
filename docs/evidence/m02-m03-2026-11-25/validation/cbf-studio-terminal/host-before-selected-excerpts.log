@@ -1,0 +1,52 @@
+phase=before-ui-tests
+utc=2026-11-25T14:00:48.578595+00:00
+
+command=virtual_memory argv=["/usr/bin/vm_stat"]
+Mach Virtual Memory Statistics: (page size of 4096 bytes)
+Pages free:                                     4018.
+Pages active:                                1459221.
+Pages inactive:                              1426439.
+Pages speculative:                             33763.
+Pages throttled:                                   0.
+Pages wired down:                             686488.
+Pages purgeable:                               24734.
+"Translation faults":                       54641934.
+Pages copy-on-write:                         2679443.
+Pages zero filled:                          33586648.
+Pages reactivated:                            277102.
+Pages purged:                                  14999.
+File-backed pages:                           1709791.
+Anonymous pages:                             1209632.
+Pages stored in compressor:                   153589.
+Pages occupied by compressor:                  57776.
+Decompressions:                                  323.
+Compressions:                                 153861.
+Pageins:                                     2734073.
+Pageouts:                                      11224.
+Swapins:                                           0.
+Swapouts:                                          0.
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.203, "timeout_seconds": 5, "output_truncated": false}
+
+command=swap_and_memory argv=["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]
+vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
+hw.memsize: 15032385536
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.784, "timeout_seconds": 5, "output_truncated": false}
+
+command=process_cpu_rss argv=["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]
+11848  9870 103.6  24684 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/StreamingExtractor.framework/XPCServices/STExtractionService.xpc/STExtractionService
+10077  9870  49.6 118432 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/usr/libexec/diagnosticd
+11977  9870  28.9 125816 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/WorkflowKit.framework/XPCServices/BackgroundShortcutRunner.xpc/BackgroundShortcutRunner
+10085     1  26.4   5952 /usr/libexec/diagnosticd
+11294  9870  23.5  55928 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/FitnessIntelligenceDaemonCore.framework/XPCServices/FitnessIntelligenceSnapshotService.xpc/FitnessIntelligenceSnapshotService
+10084  9870  18.2  48840 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/ApplePushService.framework/apsd
+ 5715     1  15.9  54472 /usr/libexec/diskimagesiod
+10036  9870  14.2 103108 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/Frameworks/HealthKit.framework/healthd
+{"status": "success", "return_code": 0, "elapsed_seconds": 4.787, "timeout_seconds": 5, "output_truncated": true}
+command=workspace_and_temp_disk argv=["/bin/df", "-k", "/Users/runner/work/APP1/APP1", "/Users/runner/work/_temp"]
+Filesystem   1024-blocks      Used Available Capacity iused      ifree %iused  Mounted on
+/dev/disk1s1   340451288 184155040 139642400    57% 1887339 1396424000    0%   /System/Volumes/Data
+/dev/disk1s1   340451288 184155040 139642400    57% 1887339 1396424000    0%   /System/Volumes/Data
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.143, "timeout_seconds": 5, "output_truncated": false}

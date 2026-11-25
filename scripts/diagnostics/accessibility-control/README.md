@@ -36,11 +36,23 @@ The source manifest maps each original path to its retained copy. The workflow
 copy uses a visible filename so artifact upload does not omit a hidden directory.
 
 The fixed environment is standard `macos-26-intel`, explicit Xcode 26.6
-(build 17F113), iOS 26.5 simulator SDK/runtime, and iPhone 17 Pro. Build precedes
+(build 17F113), iOS 26.5 simulator SDK, iOS 26.4.1 runtime, and iPhone 17 Pro. The
+runtime identifier is `com.apple.CoreSimulator.SimRuntime.iOS-26-4`; selection
+also requires the recorded runtime version to equal `26.4.1`. Build precedes
 explicit boot. Its 10-minute boot limit matches the primary workflow and covers
 previously observed multi-minute hosted-simulator startup. The workflow has a
 32-minute job limit; individual step bounds total 30 minutes, leaving setup/cleanup
 margin. There is no alternate-version matrix.
+
+This runtime-only experiment follows [run 45632330705](https://github.com/mirzotipi-wq/APP1/actions/runs/45632330705),
+whose iOS 26.5 simulator exceeded the boot-step limit before any test started.
+Its retained boot log later reached Finished at elapsed 11:35. That run's own
+runtime inventory reports iOS 26.4.1 (build 23E254a) and an iPhone 17 Pro as
+available. The experiment keeps the host label, Xcode, build SDK, app, test,
+assertions, and all time bounds unchanged. It adds no runtime preparation or
+download. Hosted-machine variation remains uncontrolled, so a different outcome
+would be evidence for that invocation, not proof of a runtime-specific cause.
+The primary APP1 workflow continues to require iOS 26.5.
 
 A timeout after `audit_begin` records an independent unfinished control audit;
 a captured `audit_threw` with Code=-56 additionally establishes that exact error.

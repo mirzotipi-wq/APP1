@@ -1,0 +1,23 @@
+2026-11-25T14:19:07.8279520Z 
+2026-11-25T14:19:07.8892250Z ** TEST BUILD SUCCEEDED **
+2026-11-25T14:19:07.8893250Z 
+2026-11-25T14:29:22.4754140Z 	Waiting on Data Migration
+2026-11-25T14:29:23.0053070Z ##[error]The action 'Boot selected simulator after build' has timed out after 10 minutes.
+2026-11-25T14:29:26.5611310Z ##[group]Run mkdir -p "$CONTROL_EVIDENCE"
+2026-11-25T14:30:07.5419210Z {
+2026-11-25T14:30:07.5719290Z   "status": "failed",
+2026-11-25T14:30:09.8737340Z   "expectedTest": "AccessibilityControlUITests.AccessibilityControlUITests testStaticScreenFullAccessibilityAudit",
+2026-11-25T14:30:10.5388780Z   "testStepOutcome": "skipped",
+2026-11-25T14:30:12.3556090Z   "commandExit": {},
+2026-11-25T14:30:13.1526580Z   "rawLogPresent": false,
+2026-11-25T14:31:03.1777470Z ##[error]Process completed with exit code 1.
+2026-11-25T14:31:39.5146060Z ##[group]Run set -euo pipefail
+2026-11-25T14:31:39.5149900Z [36;1mif [ ! -f "$CONTROL_RESULT/Info.plist" ]; then[0m
+2026-11-25T14:31:39.5152020Z [36;1m  printf '%s\n' 'No finalized xcresult; raw log and any partial bundle are retained.' > "$CONTROL_EVIDENCE/result-export-status.txt"[0m
+2026-11-25T14:31:39.5154170Z [36;1m  exit 1[0m
+2026-11-25T14:31:55.3251690Z ##[endgroup]
+2026-11-25T14:32:03.2473040Z ##[error]Process completed with exit code 1.
+2026-11-25T14:32:07.4152430Z ##[group]Run actions/upload-artifact@v4
+2026-11-25T14:32:53.2088850Z [command]/usr/local/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-25T14:32:56.3014320Z Cleaning up orphan processes
+2026-11-25T14:37:14.5926170Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

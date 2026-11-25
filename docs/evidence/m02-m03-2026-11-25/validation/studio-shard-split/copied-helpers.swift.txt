@@ -1,0 +1,52 @@
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    private func makeApp(corrupt: Bool = false) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"]
+        app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        if corrupt { app.launchEnvironment["KEYFILL_UI_TEST_CORRUPT"] = "1" }
+        return app
+    }
+
+    private func assertStatus(_ value: String, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        let status = app.staticTexts["projectStatus"]
+        let predicate = NSPredicate(format: "exists == true AND label == %@", value)
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: status)
+        let result = XCTWaiter.wait(for: [expectation], timeout: 10)
+        if result != .completed {
+            // Inspect one immutable snapshot only after the original wait fails.
+            // Raw output survives a run that cannot finalize its result bundle.
+            let metadata: String
+            do {
+                let snapshot = try status.snapshot()
+                metadata = [
+                    "expectedLabel: \(value)",
+                    "identifier: \(snapshot.identifier)",
+                    "label: \(snapshot.label)",
+                    "elementType: \(snapshot.elementType)",
+                    "frame: \(snapshot.frame)",
+                    "isEnabled: \(snapshot.isEnabled)",
+                    "isSelected: \(snapshot.isSelected)"
+                ].joined(separator: "\n")
+            } catch {
+                metadata = "expectedLabel: \(value)\nstatusSnapshotError: \(error.localizedDescription)"
+            }
+            let byteLimit = 4_096
+            let prefix = Array(metadata.utf8.prefix(byteLimit + 1))
+            var endIndex = min(byteLimit, prefix.count)
+            if prefix.count > byteLimit {
+                // A continuation byte at the boundary belongs to the scalar
+                // that must be omitted; valid UTF-8 needs at most three trims.
+                while endIndex > 0 && (prefix[endIndex] & 0xC0) == 0x80 {
+                    endIndex -= 1
+                }
+            }
+            var excerpt = String(decoding: prefix.prefix(endIndex), as: UTF8.self)
+            if prefix.count > byteLimit {
+                excerpt += "\n[Truncated after 4,096 UTF-8 bytes.]"
+            }
+            print("Studio-status-readiness-failure:\n\(excerpt)")
+        }
+        XCTAssertEqual(result, .completed, file: file, line: line)
+    }
+

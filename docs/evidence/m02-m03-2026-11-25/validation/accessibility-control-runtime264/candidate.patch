@@ -1,0 +1,60 @@
+diff --git a/.github/workflows/accessibility-control.yml b/.github/workflows/accessibility-control.yml
+index 896ed91..d28c4e8 100644
+--- a/.github/workflows/accessibility-control.yml
++++ b/.github/workflows/accessibility-control.yml
+@@ -82,13 +82,13 @@ jobs:
+           python3 - <<'PY'
+           import json, os, pathlib
+           evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+-          runtime = "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
++          runtime = "com.apple.CoreSimulator.SimRuntime.iOS-26-4"
+           runtimes = json.loads((evidence / "runtimes.json").read_text())["runtimes"]
+-          selected_runtime = next((r for r in runtimes if r.get("identifier") == runtime and r.get("isAvailable") and r.get("version") == "26.5"), None)
++          selected_runtime = next((r for r in runtimes if r.get("identifier") == runtime and r.get("isAvailable") and r.get("version") == "26.4.1"), None)
+           devices = json.loads((evidence / "simulators.json").read_text())["devices"].get(runtime, [])
+           device = next((d for d in devices if d.get("isAvailable") and d.get("name") == "iPhone 17 Pro"), None)
+           if selected_runtime is None or device is None:
+-              raise SystemExit("Required iPhone 17 Pro / available iOS 26.5 runtime is missing")
++              raise SystemExit("Required iPhone 17 Pro / available iOS 26.4.1 runtime is missing")
+           selected = {"runtime": selected_runtime, "device": device}
+           (evidence / "selected-simulator.json").write_text(json.dumps(selected, indent=2) + "\n")
+           print(json.dumps(selected, indent=2))
+@@ -114,7 +114,7 @@ jobs:
+           import json, os, pathlib, subprocess
+           evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+           data = json.loads((evidence / "preboot-simulators.json").read_text())
+-          devices = data["devices"].get("com.apple.CoreSimulator.SimRuntime.iOS-26-5", [])
++          devices = data["devices"].get("com.apple.CoreSimulator.SimRuntime.iOS-26-4", [])
+           device = next((d for d in devices if d.get("udid") == os.environ["SIMULATOR_ID"] and d.get("isAvailable") and d.get("name") == "iPhone 17 Pro"), None)
+           if device is None:
+               raise SystemExit("Selected simulator is unavailable before boot")
+diff --git a/scripts/diagnostics/accessibility-control/README.md b/scripts/diagnostics/accessibility-control/README.md
+index 2638140..f2da077 100644
+--- a/scripts/diagnostics/accessibility-control/README.md
++++ b/scripts/diagnostics/accessibility-control/README.md
+@@ -36,12 +36,24 @@ The source manifest maps each original path to its retained copy. The workflow
+ copy uses a visible filename so artifact upload does not omit a hidden directory.
+ 
+ The fixed environment is standard `macos-26-intel`, explicit Xcode 26.6
+-(build 17F113), iOS 26.5 simulator SDK/runtime, and iPhone 17 Pro. Build precedes
++(build 17F113), iOS 26.5 simulator SDK, iOS 26.4.1 runtime, and iPhone 17 Pro. The
++runtime identifier is `com.apple.CoreSimulator.SimRuntime.iOS-26-4`; selection
++also requires the recorded runtime version to equal `26.4.1`. Build precedes
+ explicit boot. Its 10-minute boot limit matches the primary workflow and covers
+ previously observed multi-minute hosted-simulator startup. The workflow has a
+ 32-minute job limit; individual step bounds total 30 minutes, leaving setup/cleanup
+ margin. There is no alternate-version matrix.
+ 
++This runtime-only experiment follows [run 45632330705](https://github.com/mirzotipi-wq/APP1/actions/runs/45632330705),
++whose iOS 26.5 simulator exceeded the boot-step limit before any test started.
++Its retained boot log later reached Finished at elapsed 11:35. That run's own
++runtime inventory reports iOS 26.4.1 (build 23E254a) and an iPhone 17 Pro as
++available. The experiment keeps the host label, Xcode, build SDK, app, test,
++assertions, and all time bounds unchanged. It adds no runtime preparation or
++download. Hosted-machine variation remains uncontrolled, so a different outcome
++would be evidence for that invocation, not proof of a runtime-specific cause.
++The primary APP1 workflow continues to require iOS 26.5.
++
+ A timeout after `audit_begin` records an independent unfinished control audit;
+ a captured `audit_threw` with Code=-56 additionally establishes that exact error.
+ A build, boot, launch, or readiness timeout does not establish an audit timeout.

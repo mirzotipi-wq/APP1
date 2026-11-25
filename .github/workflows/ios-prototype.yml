@@ -327,11 +327,11 @@ jobs:
     timeout-minutes: ${{ matrix.job_minutes }}
     strategy:
       fail-fast: false
-      # Each shard has its own simulator and bounded budget. Run all three so
-      # the studio/export result need not wait for another UI shard to finish.
+      # Each required shard has its own simulator and bounded budget.
+      # Keep at most three active while all four complete independently.
       max-parallel: 3
       matrix:
-        shard: [room-precision, library-reference, studio-export]
+        shard: [room-precision, library-reference, studio-export, studio-optics]
         include:
           - shard: room-precision
             runner: macos-26-intel
@@ -349,6 +349,11 @@ jobs:
             expected_arch: x86_64
             ui_test_minutes: 40
             job_minutes: 93
+          - shard: studio-optics
+            runner: macos-26-intel
+            expected_arch: x86_64
+            ui_test_minutes: 32
+            job_minutes: 85
     name: ui (${{ matrix.shard }})
     steps:
       - uses: actions/checkout@v4
@@ -471,7 +476,7 @@ jobs:
             tests+=("$selector")
           done <<< "$selectors"
           [ "${#tests[@]}" -gt 0 ]
-          if [ "$TEST_SHARD" = "studio-export" ]; then
+          if [ "$TEST_SHARD" = "studio-export" ] || [ "$TEST_SHARD" = "studio-optics" ]; then
             printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
             record_studio_trace_end() {
               studio_test_exit_code=$?
@@ -529,7 +534,7 @@ jobs:
                                 "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
           PY
       - name: Export studio slider unified log
-        if: ${{ always() && matrix.shard == 'studio-export' }}
+        if: ${{ always() && (matrix.shard == 'studio-export' || matrix.shard == 'studio-optics') }}
         continue-on-error: true
         timeout-minutes: 2
         env:

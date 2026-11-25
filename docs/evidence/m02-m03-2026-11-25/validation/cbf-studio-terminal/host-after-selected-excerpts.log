@@ -1,0 +1,52 @@
+phase=after-ui-tests
+utc=2026-11-25T14:41:08.359770+00:00
+github_test_step_outcome=failure
+
+command=virtual_memory argv=["/usr/bin/vm_stat"]
+Mach Virtual Memory Statistics: (page size of 4096 bytes)
+Pages free:                                    26337.
+Pages active:                                1221461.
+Pages inactive:                              1204487.
+Pages speculative:                             16563.
+Pages throttled:                                   0.
+Pages wired down:                             804895.
+Pages purgeable:                                8349.
+"Translation faults":                      141295363.
+Pages copy-on-write:                        16372470.
+Pages zero filled:                          66158371.
+Pages reactivated:                            669121.
+Pages purged:                                  56689.
+File-backed pages:                           1310934.
+Anonymous pages:                             1131577.
+Pages stored in compressor:                   728487.
+Pages occupied by compressor:                 394711.
+Decompressions:                               213237.
+Compressions:                                 991904.
+Pageins:                                     4376808.
+Pageouts:                                      85160.
+Swapins:                                           0.
+Swapouts:                                          0.
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.021, "timeout_seconds": 5, "output_truncated": false}
+
+command=swap_and_memory argv=["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]
+vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
+hw.memsize: 15032385536
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.054, "timeout_seconds": 5, "output_truncated": false}
+command=process_cpu_rss argv=["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]
+83088  9870  70.3 222452 /Users/runner/Library/Developer/CoreSimulator/Devices/12FCFD0F-7FCF-463F-A605-132A7E18B5D5/data/Containers/Bundle/Application/39E7B2AB-E938-4E65-9C9B-DD604ED76BC1/KeyAndFill.app/KeyAndFill
+10077  9870  68.0  53368 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/usr/libexec/diagnosticd
+10084  9870  52.4  49204 /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/ApplePushService.framework/apsd
+10085     1  31.6   5616 /usr/libexec/diagnosticd
+ 5128  5124  21.2  68940 /Users/runner/actions-runner/cached/2.338.2/bin/Runner.Worker
+12175     1  19.2 314692 /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild
+83858 83856  17.6  11244 /usr/local/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python
+18077     1  17.5 638092 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTEncoderXPCService.xpc/Contents/MacOS/VTEncoderXPCService
+{"status": "success", "return_code": 0, "elapsed_seconds": 3.888, "timeout_seconds": 5, "output_truncated": true}
+command=workspace_and_temp_disk argv=["/bin/df", "-k", "/Users/runner/work/APP1/APP1", "/Users/runner/work/_temp"]
+Filesystem   1024-blocks      Used Available Capacity iused      ifree %iused  Mounted on
+/dev/disk1s1   340451288 184078996 139718444    57% 1894079 1397184440    0%   /System/Volumes/Data
+/dev/disk1s1   340451288 184078996 139718444    57% 1894079 1397184440    0%   /System/Volumes/Data
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.055, "timeout_seconds": 5, "output_truncated": false}

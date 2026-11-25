@@ -9,6 +9,7 @@ SHARDS = {
     "room-precision": ("ManualRoomPlacementUITests", "PrecisionEditingUITests"),
     "library-reference": ("ProjectLibraryUITests", "ReferenceComparisonUITests", "AccessibilityAuditUITests"),
     "studio-export": ("StudioSmokeTests", "LightingPlanExportUITests"),
+    "studio-optics": ("StudioOpticsUITests",),
 }
 
 
