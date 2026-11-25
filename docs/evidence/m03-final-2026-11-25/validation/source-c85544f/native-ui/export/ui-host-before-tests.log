@@ -1,0 +1,46 @@
+phase=before-ui-tests
+utc=2026-11-25T23:02:11.116892+00:00
+
+command=virtual_memory argv=["/usr/bin/vm_stat"]
+Mach Virtual Memory Statistics: (page size of 4096 bytes)
+Pages free:                                    83798.
+Pages active:                                1415493.
+Pages inactive:                              1393188.
+Pages speculative:                             84756.
+Pages throttled:                                   0.
+Pages wired down:                             690758.
+Pages purgeable:                               29692.
+"Translation faults":                       62576072.
+Pages copy-on-write:                         4338974.
+Pages zero filled:                          35521683.
+Pages reactivated:                             19539.
+Pages purged:                                  11381.
+File-backed pages:                           1594653.
+Anonymous pages:                             1298784.
+Pages stored in compressor:                     2748.
+Pages occupied by compressor:                    748.
+Decompressions:                                    0.
+Compressions:                                   2748.
+Pageins:                                     2601711.
+Pageouts:                                       8430.
+Swapins:                                           0.
+Swapouts:                                          0.
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.051, "timeout_seconds": 5, "output_truncated": false}
+
+command=swap_and_memory argv=["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]
+vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
+hw.memsize: 15032385536
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.18, "timeout_seconds": 5, "output_truncated": false}
+
+command=process_cpu_rss argv=["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]
+
+{"status": "timed_out", "return_code": null, "elapsed_seconds": 48.738, "timeout_seconds": 5, "output_truncated": false}
+
+command=workspace_and_temp_disk argv=["/bin/df", "-k", "/Users/runner/work/APP1/APP1", "/Users/runner/work/_temp"]
+Filesystem   1024-blocks      Used Available Capacity iused      ifree %iused  Mounted on
+/dev/disk1s1   340451288 182838992 140958448    57% 1891823 1409584480    0%   /System/Volumes/Data
+/dev/disk1s1   340451288 182838992 140958448    57% 1891823 1409584480    0%   /System/Volumes/Data
+
+{"status": "success", "return_code": 0, "elapsed_seconds": 0.133, "timeout_seconds": 5, "output_truncated": false}

@@ -35,7 +35,17 @@
     "/tmp/app1-f2fcfcdabdca/workers/w098-c855-macos-accounting.json",
     "/tmp/app1-f2fcfcdabdca/workers/w098-c855-packet-accounting.json",
     "/tmp/app1-f2fcfcdabdca/workers/w098-c855-ci-service.json",
-    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-job-log-service.json"
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-job-log-service.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/5d8b065-core.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/5d8b065-atomic-linux.zip",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-5d8b065/ci-core/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-5d8b065/source-equivalence.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-atomic-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-core-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-packet-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-source-equivalence-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-ci-service.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-job-log-service.json"
   ],
   "findings": [],
   "tests": [
@@ -935,22 +945,293 @@
         "EFBIG/process interruption/injected EIO on recorded hosts do not establish ENOSPC, device power-loss or provider behavior. No suite/probe/renderer was rerun and no repository source or documentation was edited."
       ],
       "outcome": "No material defect or receipt mismatch found for exact c85544f core, Linux atomic and macOS EFBIG evidence; one nonmaterial extra trailing newline in the supplied job log is recorded. This supersedes c86 as the current review revision while preserving the full earlier chronology. Native/UI/Metal and full acceptance remain unverified."
+    },
+    {
+      "review": "Exact 5d8b065 fresh core/Linux atomic evidence, assembled packet and source equivalence",
+      "reviewedAtUTC": "2026-11-25T23:42:40.187428+00:00",
+      "sourceRevision": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+      "observedHEAD": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+      "pathsChangedFromReviewedRevisionToHEAD": [],
+      "buildSourceInputPathsChangedFromReviewedRevisionToHEAD": [],
+      "workflowRun": 45720754048,
+      "coreJobID": 139579558459,
+      "coreJobConclusion": "completed/success, independently fetched from GitHub; every core step successful",
+      "findings": [],
+      "nonmaterialObservations": [
+        "The supplied local core job log equals the independently fetched exact GitHub job log plus one final newline. All substantive content is identical; no test/result/revision content was changed."
+      ],
+      "checks": [
+        "Recomputed both expected archive digests and compared every extracted file: core ZIP 35/35 files and Linux atomic ZIP 101/101 files match exact archived bytes. GitHub artifact metadata independently confirms core artifact 15072716011 and Linux atomic artifact 15071623445 belong to run 45720754048 and exact source 5d8b065, with matching SHA256 digests.",
+        "Fetched exact core job 139579558459 status and log independently. Job status is completed/success with no failed core step. Local job content differs only by an additional trailing newline. Checkout revision, exact executed commands, environment, every raw XCTest pass line, renderer/kernel/precision log line, and both finalized artifact IDs/digests agree.",
+        "Actual current host read from these artifacts: Swift 6.4.2 (swift-6.4.2-RELEASE), Ubuntu 24.04.5 LTS, Linux 7.0.0-1017-azure, Python 3.12.3, AMD EPYC 9V74 80-Core Processor, x86_64, four reported and four active processors. This independently observed combination replaces prior c855 host details for the current review.",
+        "Atomic source binding: all 32 compiled Swift inputs and four diagnostic sources independently SHA256-match exact 5d8b065 Git objects. Before/after compilation and after-probe input maps agree; raw revision, EFBIG working-tree/provenance, and interruption helper provenance agree. Three compile-manifest copies are identical; the successful -O compiler source-argument set is exactly the 32 recorded inputs. Compile and both runtime helper binary hashes match; retained C interposer independently rehashed.",
+        "Raw EFBIG is RLIMIT_FSIZE 32768 confined to the injection child, with production save attempted/thrown, errno reset before save and immediately captured errno 27. Parent resource/signal state is unchanged. Raw helper phase JSON agrees with each receipt. Cocoa 512 without underlying POSIX child is preserved honestly; the direct reset/capture errno observation establishes EFBIG.",
+        "Before-rename: one target-matched renameat before-call witness, real rename not called, full candidate staged, SIGSTOP 19 followed by owned SIGKILL and terminal -9; exact prior bytes survive. After-rename: one target-matched after-success witness, actual rename returns 0, SIGSTOP 19/owned SIGKILL/terminal -9; exact complete candidate bytes survive. Rename-EIO: one rejected target witness, actual rename not called, errno 5; raw save throws with immediately captured errno 5 and preserves exact prior bytes.",
+        "Independently rehashed every listed scenario snapshot/control file and compared decoded identities/records. Prior is 3,900 bytes with three records; candidate is 242,569 bytes with 64 records. Active ID, prior ID set, both unrelated full records, exact expected prior/candidate bytes and unrestricted controls remain correct in all scenarios. Raw hook witnesses and fresh-process setup/control/reopen payloads match receipts, and owned-process cleanup remains recorded and consistent.",
+        "All nine actual current filesystem observations independently reconcile successful raw findmnt JSON, target paths and stat identities: ext4 at /, /dev/nvme0n1p1, st_dev 66305 / major:minor 259:1. Each target/mount device agrees, target identity is unchanged during observation, and stderr is empty. Current inode identities are retained in this review rather than copied from earlier runs.",
+        "Debug and Release each have 357 unique starts and 357 unique passing methods, identical method sets, zero failures/skips/missing or unexpected methods, and terminal 357/0 totals. Actual test durations are 13.415 seconds Debug and 5.993 seconds Release. Python tooling reports exactly 92 tests in 18.904 seconds and OK. Empty native-syntax.log is syntax parsing only; it is not Apple/native execution evidence.",
+        "All twelve scene JSON files parse and all twelve actual RGB PPMs decode at expected/manifest dimensions. Every named fixture has manifest passed=true, no validation errors, zero unsupported pixels, matching raw render log and current SHA256. Every PPM and scene JSON byte stream equals the previously reviewed c855 artifact. The packet visual-review carry-forward is supported by direct image-byte equality, with no fresh render or inferred new visual detail.",
+        "Six shared-Float32 host cases satisfy the required numeric limits: maximum mean channel error 0.0000542535, maximum channel error 1, fraction above 4 zero, invalid-mask mismatches zero, and near-field invalid counts 84/84. Eight strict precision cases have explicit max limit 1, observed maximum error 0, and matching invalid counts/mask positions. These are host harness results, not newly executed Metal results.",
+        "Optimized benchmark retains eight frame workloads, twelve observed cancellations and four visibility workloads. All frame/visibility workloads have seven finite raw samples; every p50/p95 recomputes under nearest-rank accounting. Warm-up values are valid and frame unsupported counts zero; every cancellation has valid requested/observed/finished ordering. Unchanged benchmark/renderer sources still require repeated frame bytes to agree with warm-up. Host timing values remain diagnostic.",
+        "All 17 copied original files in the assembled current ci-core packet exactly match the independently reviewed originals. Receipt revision/run/job, counts/durations, current host, both artifact IDs/digests, nine filesystem entries, all 36 source/diagnostic hash checks, numeric maxima and workload counts reconcile. Twelve-entry render-comparison.json and visual-review.json byte-equivalence claims agree with current and prior actual artifacts.",
+        "Independently reconstructed source-equivalence.json scope from both Git trees: exactly 188 tracked inputs across App, Sources, Tests, NativeTests, UITests, scripts, .github, Package.swift and project.yml. All 186 unchanged blob IDs match both revisions. Both changed tested/candidate blob pairs are exact: NativeTests/StudioTextFieldTests.swift and UITests/StudioAppAccessibilityUITests.swift. The only changes within that source/build input scope are those two test files. The 141 additional changed paths outside the scope are documentation/evidence/metadata; they do not contradict the scoped claim.",
+        "Application/core/resources/project, portable tests/diagnostics, and required Metal test sources remain unchanged within the verified input comparison. This is source equivalence only. Corrected native/UI tests still require current actual execution; earlier failed/interrupted full suites are not reclassified as passing."
+      ],
+      "artifacts": [
+        {
+          "kind": "core",
+          "artifactID": 15072716011,
+          "path": "/tmp/app1-f2fcfcdabdca/evidence/5d8b065-core.zip",
+          "sha256": "df75ce1d9e7dc516c9bccba8d22d8c9a435cdee743915d8bd780c5d93abf7f96",
+          "filesVerified": 35
+        },
+        {
+          "kind": "atomic-linux",
+          "artifactID": 15071623445,
+          "path": "/tmp/app1-f2fcfcdabdca/evidence/5d8b065-atomic-linux.zip",
+          "sha256": "a85f759cdf8119ac853a47a5722972766650f7fd2fb6e771ceed03c4845257d3",
+          "filesVerified": 101
+        }
+      ],
+      "atomicBinding": {
+        "compiledSourceCount": 32,
+        "diagnosticCount": 4,
+        "helperBinarySHA256": "19664c51275a1d2bb701b97673842f92213772b81e3cc3f15b577f8302cff2f8",
+        "helperBinaryRetained": false,
+        "compileManifestSHA256": "457ca49facf8c1565ae3cc8d252e0767e2a33befa118ad7ce8e4a476c10c389f",
+        "interposerSHA256": "402a9a650b93c4d7c65eeb5ea6f8b30f7f1362abf9119b8529356218d1107300"
+      },
+      "filesystemObservations": [
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442253,
+            "kind": "directory"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442284,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442291,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442316,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442323,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442347,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442345,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442358,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442365,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        }
+      ],
+      "jobLogServiceBinding": {
+        "exact": false,
+        "exactlyOneAppendedNewline": true,
+        "allContentPreserved": true,
+        "serviceSHA256": "c47bac5b9ed7ef8e4619493c657416c8a0aa080487b7d518fad89d228006a799",
+        "localSHA256": "bd8ca787677510a679bbdc18daa9121d80b3821e5f0af52135c7cf6ef4437937"
+      },
+      "sourceEquivalence": {
+        "comparedInputs": 188,
+        "unchangedInputs": 186,
+        "changedInputs": [
+          "NativeTests/StudioTextFieldTests.swift",
+          "UITests/StudioAppAccessibilityUITests.swift"
+        ],
+        "exactInputScopeVerified": true,
+        "outsideScopeDocumentationMetadataChanges": 141,
+        "correctedNativeUITestsRequireNewExecution": true
+      },
+      "packetChecks": {
+        "all_17_raw_copies_match": true,
+        "zip_receipt_hashes_match": true,
+        "receipt_current_revision_run_job": true,
+        "36_source_check_names_and_values_match": true,
+        "raw_filesystems_match_receipt": true,
+        "debug_receipt_exact": true,
+        "release_receipt_exact": true,
+        "tooling_receipt_exact": true,
+        "host_receipt_exact": true,
+        "kernel_receipt_exact": true,
+        "precision_receipt_exact": true,
+        "benchmark_receipt_exact": true,
+        "all12_actual_image_comparisons_match": true,
+        "comparison_revisions_and_aggregate": true,
+        "visual_review_byte_equivalence_supported": true,
+        "source_equivalence_188_input_claim_verified": true
+      },
+      "accountingFiles": [
+        "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-atomic-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-core-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-packet-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-source-equivalence-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-ci-service.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-5d8-job-log-service.json"
+      ],
+      "limits": [
+        "The temporary Swift helper executable is absent from the archive; source hashes and matching compile/runtime binary receipts establish recorded binding, while a fresh direct helper hash is unavailable. The retained C interposer was directly rehashed.",
+        "Fresh exact-5d8 macOS host, native unit, UI and actual Metal execution receipts have not been reviewed. Earlier c855/c86 macOS/native receipts remain explicitly historical; unchanged source alone does not turn a prior failed/interrupted whole suite into a pass.",
+        "No suite, probe, renderer or native command was rerun. No repository source, documentation, state, commit or branch was edited. Only temporary accounting and this worker report were written.",
+        "Linux EFBIG, process interruption and injected EIO on observed ext4 targets establish no ENOSPC, provider behavior or physical power-loss durability. No full M02/M03/native/Metal acceptance follows from this review."
+      ],
+      "outcome": "No material defect or receipt mismatch found in fresh exact-5d8 core/Linux evidence or the scoped 188-input source-equivalence claim. One extra final newline in the local job log is the only nonmaterial packaging difference. Fresh macOS/native/UI/Metal receipts and full milestone acceptance remain pending."
     }
   ],
-  "reportChronology": "Initial root-level tests/outcome/pending and earlier followups are preserved historical c86 reviews. The latest followup plus currentInspectedRevision/currentOutcome/currentPending governs current c855 evidence; prior macOS or native claims are never implicitly carried to c855.",
-  "currentOutcome": "Exact c85544f core (357 Debug / 357 Release / 92 tooling), all 12 renders, 6 kernel / 8 precision cases, all benchmark workloads, Linux EFBIG/interruption/EIO and macOS EFBIG evidence independently verified; assembled packets reconcile with no material mismatch. Current host-specific evidence supersedes c86 as latest. Required native/UI/Metal final receipts remain unverified; no full milestone acceptance.",
+  "reportChronology": "All initial c86 work and later c86/c855 followups are preserved historical reviews. The latest exact-5d8 followup and currentInspectedRevision/currentOutcome/currentPending govern current evidence. Earlier execution results are never silently relabeled as a new current run.",
+  "currentOutcome": "Fresh exact 5d8b065 core (357 Debug / 357 Release / 92 tooling), all twelve image artifacts, six kernel/eight precision cases, every benchmark workload, and Linux EFBIG/before-after-rename/EIO evidence independently verified. Current packet and exact 188-input source equivalence reconcile with no material mismatch. This supersedes c855 as the current review revision; fresh macOS/native/UI/Metal final evidence remains unverified and no full acceptance is asserted.",
   "currentPending": [
-    "Exact c85544f final native unit results and finalized method accounting for the parent-specified 132 required methods, including actual Metal execution.",
-    "Exact c85544f final required UI shard results and finalized method accounting for the parent-specified 35 required methods; unsigned app artifact uploads are not UI outcomes.",
-    "Exact c85544f final macOS portable core raw test logs/receipt review; macOS atomic EFBIG is now independently verified and no longer pending.",
-    "Any subsequent source change requires refreshed affected evidence or explicit unchanged-source justification."
+    "Fresh exact-5d8b065 macOS host core/atomic final raw evidence; c855/c86 observations remain historical.",
+    "Fresh exact-5d8b065 native unit execution and finalized required method accounting, including actual Metal execution.",
+    "Fresh exact-5d8b065 required UI shard results and finalized method accounting, especially the corrected native/UI test oracles.",
+    "Any later source change requires affected evidence refresh or explicit verified unchanged-source justification."
   ],
   "currentLimits": [
-    "Temporary Swift helper executables are not retained in the Linux/macOS ZIPs; source hashes and compile/runtime hash receipts establish the recorded binding, while a fresh direct helper-binary hash is unavailable. The retained Linux C interposer was rehashed.",
-    "Current macOS portable core raw tests and final native/UI/Metal receipts have not been reviewed. The observed unsigned Debug/Release app artifact uploads are build artifacts, not native unit or UI test outcomes.",
-    "The parent-specified 132 native and 35 required UI methods remain pending final exact method accounting; this report asserts no native/Metal/full M02/M03 acceptance.",
-    "EFBIG/process interruption/injected EIO on recorded hosts do not establish ENOSPC, device power-loss or provider behavior. No suite/probe/renderer was rerun and no repository source or documentation was edited."
+    "The temporary Swift helper executable is absent from the archive; source hashes and matching compile/runtime binary receipts establish recorded binding, while a fresh direct helper hash is unavailable. The retained C interposer was directly rehashed.",
+    "Fresh exact-5d8 macOS host, native unit, UI and actual Metal execution receipts have not been reviewed. Earlier c855/c86 macOS/native receipts remain explicitly historical; unchanged source alone does not turn a prior failed/interrupted whole suite into a pass.",
+    "No suite, probe, renderer or native command was rerun. No repository source, documentation, state, commit or branch was edited. Only temporary accounting and this worker report were written.",
+    "Linux EFBIG, process interruption and injected EIO on observed ext4 targets establish no ENOSPC, provider behavior or physical power-loss durability. No full M02/M03/native/Metal acceptance follows from this review."
   ],
-  "currentInspectedRevision": "c85544f121cf3781499636527d3b9329ca6affba",
-  "currentObservedHEAD": "c85544f121cf3781499636527d3b9329ca6affba"
+  "currentInspectedRevision": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+  "currentObservedHEAD": "5d8b065ec935faa2d85671725cd9b20adc1b035f"
 }

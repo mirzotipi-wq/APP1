@@ -207,6 +207,130 @@
       "kind": "limits",
       "phase": "nativeTextFieldRepair",
       "detail": "No UIKit/SwiftUI runtime, Xcode build, native test, AX frame, IME, or platform-audit success is claimed from this Linux worker. Actual native sizing, responder ordering and marked-text behavior require execution of the new native tests and root integration checks. Worker094 was sent a two-file READY signal for independent source review."
+    },
+    {
+      "kind": "authorizedReadOnlyFollowup",
+      "phase": "c855LibraryReadOnlyReview",
+      "detail": "Reviewed the exact C855 app/test source and recovered library logs for bridge/name-sheet focus, binding and disposal explanations. No source, callers, project files, docs, tests, commits or live CI settings changed. Root new run 45720754048 was left undisturbed."
+    },
+    {
+      "kind": "revisionEvidence",
+      "phase": "c855LibraryReadOnlyReview",
+      "reviewedRevision": "c85544f121cf3781499636527d3b9329ca6affba",
+      "currentRevisionAtReview": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+      "sourceSHA256": {
+        "App/StudioTextField.swift": "21e357f253793bb93ea397355b3874e88f589fbb2f48079f66a43d3a1f7149f2",
+        "App/ProjectLibraryView.swift": "9a4ea2cba37be95a7064fd5eb82b45fc9ea417ecaee548fdfb4bf5157cea1ded",
+        "UITests/ProjectLibraryUITests.swift": "2169b7e04a892f13542fa3d45f94f85deb16cd67c0481a4104db81bdd9a3f1cd",
+        "UITests/StudioContentReachability.swift": "0469bbc357c9b4efe9ef326a5e72a4eac2724808bbb8fdc9053b391b52524efa"
+      },
+      "sourceReferences": {
+        "App/StudioTextField.swift": {
+          "func configure(": [
+            135
+          ],
+          "func invalidate()": [
+            186
+          ],
+          "func textFieldDidEndEditing(": [
+            215
+          ],
+          "private func publishNativeText()": [
+            240
+          ],
+          "if current != modelText": [
+            243
+          ],
+          "private func scheduleFocusUpdate()": [
+            293
+          ],
+          "private func synchronizeFocusRequest()": [
+            307
+          ]
+        },
+        "App/ProjectLibraryView.swift": {
+          ".sheet(item: $naming)": [
+            193
+          ],
+          "Button(\"Duplicate\"": [
+            232
+          ],
+          "StudioTextField(\"Name\"": [
+            505
+          ],
+          ".onAppear { focused = true }": [
+            558
+          ],
+          "private func submit()": [
+            595
+          ],
+          "private var boundedDraft: Binding<String>": [
+            616
+          ]
+        }
+      },
+      "detail": "git diff c85544f 5d8b065 -- App UITests/ProjectLibraryUITests.swift produced no changes. The rerun therefore has identical app source and library workflow source for this review; the two changed test oracles do not fix a library app defect."
+    },
+    {
+      "kind": "actualMethodAccounting",
+      "phase": "c855LibraryReadOnlyReview",
+      "artifact": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-library/native-method-accounting.json",
+      "expected": 9,
+      "started": 5,
+      "passed": 0,
+      "failed": 3,
+      "startedWithoutTerminal": 2,
+      "unstarted": 4,
+      "detail": "Preserved the actual failed/incomplete shard. No partial workflow, native unit pass, later cancellation, or new rerun changes that outcome."
+    },
+    {
+      "kind": "observedTrace",
+      "phase": "c855LibraryReadOnlyReview",
+      "artifact": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-library/native-tests.log",
+      "detail": "Archived-delete workflow: clearProjectName tap began at t=121.91; synthesis at 137.36. projectNameInput tap began at 138.09. Keyboard introduction Continue was tapped at 186.93; actual typing-key readiness predicate followed at 190.92. typeText Keep began at 191.75; value==Keep predicate began at 194.68; expectation failed at UITests/ProjectLibraryUITests.swift:172. Failure attachments were named in the log but their contents are absent from recovered artifacts. The actual resulting text and first-responder identity cannot be read from this log."
+    },
+    {
+      "kind": "observedTrace",
+      "phase": "c855LibraryReadOnlyReview",
+      "artifact": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-library/native-tests.log",
+      "detail": "Create/duplicate workflow: Editorial text was typed at t=75.83; the exact value expectation completed; confirmProjectName was enabled and tapped at 87.07; Options for Editorial appeared and was tapped at 94.60. Duplicate was tapped at 111.08. At 175.83/175.89 XCTest reported missing event-loop idle/animation-complete notifications; the next projectNameInput query timed out at test line71. The next workflow could not terminate the same app pid24060. This supports successful intermediate name entry/save, not a passed workflow or identified cause of the later stall."
+    },
+    {
+      "kind": "timeOrdering",
+      "phase": "c855LibraryReadOnlyReview",
+      "detail": "Worker096 independently supplied full job-log UTC error times: Keep expectation 23:09:09.682821Z, duplicate query 23:13:53.295385Z, terminate failure 23:15:53.945236Z. The later cancellation is 23:22:00.662597Z. The recovered native log also records XPC interruptions at 23:16:34/35 and a runner restart before a new method at 23:20:33. Earlier terminal failures are not explained away by that later cancellation."
+    },
+    {
+      "kind": "knownSourceBehavior",
+      "phase": "c855LibraryReadOnlyReview",
+      "detail": "ProjectNameEditor boundedDraft accepts bounded raw input including Keep/Editorial, rejecting only oversized scalar input. Clear sets name empty, clears its error and requests focus. Successful submit sets isSubmitting=true and focused=false before asynchronously awaiting save and dismissing. Naming sheet items each carry a new UUID. The bridge has per-instance tokenized focus work; invalidate rotates the token, cancels queued focus, removes configuration/bindings and disables/resigns before stale callbacks can publish. Ordinary focus callbacks equality-guard writes; programmatic configuration/focus changes suppress callback echoes. No synchronous or self-reenqueuing source loop was found on these paths."
+    },
+    {
+      "kind": "reachablePolicyAndUnprovenCausality",
+      "phase": "c855LibraryReadOnlyReview",
+      "source": "StudioNativeTextField.publishNativeText current != modelText branch",
+      "detail": "If an external Clear changes the live binding before configure refreshes cached modelText, the next editingChanged event restores the external value and returns without publishing its native text. This is the existing deliberate stale-event priority. A genuinely new first key arriving in that window would also be discarded. The C855 trace does not establish that ordering: approximately 54 seconds separate Clear synthesis and typing, with several intervening UI waits, and the resulting field value is unavailable. This is a concrete source behavior and a conditional data-loss hypothesis, not a demonstrated cause of the Keep failure or authorization for a speculative patch."
+    },
+    {
+      "kind": "unprovenFocusHypothesis",
+      "phase": "c855LibraryReadOnlyReview",
+      "detail": "Autofocus is scheduled on the next main-queue turn and requires window!=nil; it does not wait for sheet/menu transition completion. If becomeFirstResponder returns false, no retry occurs until another configure or window attachment. That can leave requested focus true while native focus is false, but the logs contain no responder return values, callback trace, or recovered sheet snapshot establishing this occurred. Duplicate followed a Menu action, so transition timing is a focused hypothesis only. The successfully submitted preceding editor explicitly cleared its focus request before dismissal, so the source offers no direct old-editor refocus path in that observed successful-save sequence."
+    },
+    {
+      "kind": "evidenceGap",
+      "phase": "c855LibraryReadOnlyReview",
+      "detail": "The keyboard-introduction helper checks a real q/Q/1 typing key is hittable, not that projectNameInput remains first responder after Continue; the test taps the name field before that introduction. This identifies missing causal evidence, not a proven helper/app defect. No changed assertions, delays, retries or source patches were made."
+    },
+    {
+      "kind": "limitedSupportingNativeEvidence",
+      "phase": "c855LibraryReadOnlyReview",
+      "artifact": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-native/native-tests.log",
+      "detail": "Read the actual C855 StudioTextFieldTests results: 13 methods passed and the hosted-geometry method failed because the direct accessibilityFrame getter was 0 twice. Accepted/rejected text, marked input/Clear, focus callbacks, current binding, identity and invalidation methods passed in that isolated native run. Those checks do not exercise repeated ProjectNameEditor sheets or the keyboard introduction and do not prove the library workflow correct. The geometry failure remains a failure; its newer oracle is a separate rerun."
+    },
+    {
+      "kind": "reviewConclusion",
+      "phase": "c855LibraryReadOnlyReview",
+      "detail": "No causally established StudioTextField/ProjectNameEditor defect can be concluded from the recovered C855 library evidence. A bounded stale-event ordering and sheet-autofocus timing remain targeted hypotheses, with exact source behavior distinguished above. Native repeated-sheet/focus traces and the missing actual name-entry value would be needed to select a concrete repair. Root requested no speculative changes; source stayed unchanged."
     }
   ],
   "tests": [
@@ -304,8 +428,21 @@
         "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents"
       ],
       "result": "Sources include hosted UIWindow/UIHostingController Form actual native and accessibility frame checks at default and largest accessibility text; expanded width and body-font fit; disabled-environment propagation; accepted/rejected and incomplete raw drafts; caret; unchanged-render preservation; stale external reset; marked-text publication and explicit Clear; focus; submit; updated binding; reentrant identity; invalidation. Authored, not run: UIKit/Xcode unavailable to this worker."
+    },
+    {
+      "name": "C855 library read-only source and trace review",
+      "phase": "c855LibraryReadOnlyReview",
+      "commands": [
+        "git show c85544f:App/StudioTextField.swift",
+        "git show c85544f:App/ProjectLibraryView.swift",
+        "git diff c85544f 5d8b065 -- App UITests/ProjectLibraryUITests.swift",
+        "Read recovered c85544f-library/native-tests.log and native-method-accounting.json",
+        "Read exact inventory-c85544f ProjectLibraryUITests and StudioContentReachability source",
+        "Read scoped StudioTextFieldTests events in c85544f-native/native-tests.log"
+      ],
+      "result": "Read-only evidence analysis completed. App/library workflow diff empty; no new tests run, no source edits, no native rerun or pass claimed."
     }
   ],
-  "outcome": "Bounded palette consistency patch completed and syntax-checked. Exact source-to-background mappings and adjacent concerns recorded for root integration. No commit created. Authorized followup completed: room-notes prominent label foreground and three non-warning secondary status colors now use the tested production palette; syntax parse and diff check repeated successfully for ManualRoomPlacementView.swift. Original findings, tests and background mappings are retained; no native pass or commit claimed. Root-authorized native text-field repair followup is implemented in two new files only, with 14 focused native test methods and successful Linux syntax parsing. Root IME and coordinator import findings were addressed before READY handoff to root and independent worker094. Native execution remains unrun; no commit created by this worker.",
+  "outcome": "Bounded palette consistency patch completed and syntax-checked. Exact source-to-background mappings and adjacent concerns recorded for root integration. No commit created. Authorized followup completed: room-notes prominent label foreground and three non-warning secondary status colors now use the tested production palette; syntax parse and diff check repeated successfully for ManualRoomPlacementView.swift. Original findings, tests and background mappings are retained; no native pass or commit claimed. Root-authorized native text-field repair followup is implemented in two new files only, with 14 focused native test methods and successful Linux syntax parsing. Root IME and coordinator import findings were addressed before READY handoff to root and independent worker094. Native execution remains unrun; no commit created by this worker. Read-only C855 library followup completed: preserved 9 expected/5 started/0 passed/3 failed/2 started without terminal/4 unstarted. Exact app source is unchanged in 5d8b065. No causal bridge/name-sheet defect established; documented stale-event ordering and transition-time autofocus as bounded hypotheses only. No source edits or speculative repairs.",
   "canonicalAgent": "/root/w007_review_coordinator/w038_inspector_palette"
 }

@@ -1,7 +1,7 @@
 {
   "sourceCommit": "c85544f121cf3781499636527d3b9329ca6affba",
   "workflowRun": 45716080681,
-  "scope": "Actual source-specific execution; required native and app-accessibility methods failed. Remaining UI shards are still in progress.",
+  "scope": "Actual c85544f source-specific execution. Native and app-accessibility methods failed; all four remaining UI jobs were cancelled. Three library methods had already failed before cancellation. No interrupted or unstarted method is a pass.",
   "jobs": {
     "native": {
       "jobID": 139564013051,
@@ -36,10 +36,138 @@
       "failedMethods": [
         "StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
       ]
+    },
+    "room": {
+      "jobID": 139564013128,
+      "jobConclusion": "cancelled",
+      "artifactID": 15072261706,
+      "counts": {
+        "expected": 5,
+        "started": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": 5,
+        "invalid": 5,
+        "startedWithoutTerminalEvent": 0
+      },
+      "failedMethods": [],
+      "startedWithoutTerminalEvent": [],
+      "unstartedMethods": [
+        "ManualRoomPlacementUITests.testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+        "ManualRoomPlacementUITests.testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates",
+        "PrecisionEditingUITests.testExactCameraFocalLengthUndoRedoAndReopen",
+        "PrecisionEditingUITests.testExactLightIntensityValidationUndoRedoAndReopen",
+        "PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters"
+      ],
+      "methodAccountingStatus": "failed",
+      "receipt": "room/receipt.json"
+    },
+    "library": {
+      "jobID": 139564013151,
+      "jobConclusion": "cancelled",
+      "artifactID": 15072101516,
+      "counts": {
+        "expected": 9,
+        "started": 5,
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "unstarted": 4,
+        "invalid": 9,
+        "startedWithoutTerminalEvent": 2
+      },
+      "failedMethods": [
+        "ProjectLibraryUITests.testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch",
+        "ProjectLibraryUITests.testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup"
+      ],
+      "startedWithoutTerminalEvent": [
+        "ProjectLibraryUITests.testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+        "ProjectLibraryUITests.testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch"
+      ],
+      "unstartedMethods": [
+        "ProjectLibraryUITests.testStaleSaveReloadRequiresConfirmation",
+        "ProjectLibraryUITests.testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+        "ReferenceComparisonUITests.testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        "ReferenceComparisonUITests.testReferenceComparisonOpensWithRealStudyAndNoPhoto"
+      ],
+      "methodAccountingStatus": "failed",
+      "receipt": "library/receipt.json"
+    },
+    "export": {
+      "jobID": 139564013167,
+      "jobConclusion": "cancelled",
+      "artifactID": 15072266737,
+      "counts": {
+        "expected": 10,
+        "started": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": 0,
+        "invalid": 0,
+        "startedWithoutTerminalEvent": 0
+      },
+      "failedMethods": [],
+      "startedWithoutTerminalEvent": [],
+      "unstartedMethods": [],
+      "methodAccountingStatus": "passed",
+      "receipt": "export/receipt.json"
+    },
+    "optics": {
+      "jobID": 139564013216,
+      "jobConclusion": "cancelled",
+      "artifactID": 15071538413,
+      "counts": {
+        "expected": 10,
+        "started": 5,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": 5,
+        "invalid": 6,
+        "startedWithoutTerminalEvent": 1
+      },
+      "failedMethods": [],
+      "startedWithoutTerminalEvent": [
+        "StudioOpticsUITests.testOpticsRepeatability05"
+      ],
+      "unstartedMethods": [
+        "StudioOpticsUITests.testOpticsRepeatability06",
+        "StudioOpticsUITests.testOpticsRepeatability07",
+        "StudioOpticsUITests.testOpticsRepeatability08",
+        "StudioOpticsUITests.testOpticsRepeatability09",
+        "StudioOpticsUITests.testOpticsRepeatability10"
+      ],
+      "methodAccountingStatus": "failed",
+      "receipt": "optics/receipt.json"
     }
   },
   "failureDispositions": {
     "native": "One of 132 methods failed with two assertions: the hosted unit-test field.accessibilityFrame height was zero at both requested text sizes. Its actual native bounds, font growth and width checks passed. The real app accessibility run separately observed a 44-point precision field. Native test harness diagnosis is in progress; no full native pass is claimed.",
-    "ax": "The exact test expected Balance 3200 kelvin but the pinned en_US app exposed Balance 3,200 kelvin. The real screenshot and hierarchy also show grouped preset text. Default precision entry, Apply, Undo, Redo and Cancel executed before the failure; library, naming and AXXXL portions were not reached."
+    "ax": "The exact test expected Balance 3200 kelvin but the pinned en_US app exposed Balance 3,200 kelvin. The real screenshot and hierarchy also show grouped preset text. Default precision entry, Apply, Undo, Redo and Cancel executed before the failure; library, naming and AXXXL portions were not reached.",
+    "room": "All five methods unstarted; selected xcodebuild invocation was cancelled and no finalized result was exported.",
+    "library": "Three actual terminal failures preceded the later job cancellation: exact Keep value wait at test line 172; duplicate naming-sheet accessibility query timeout at line 71; subsequent app termination failure at line 289. Original failure outcomes remain failures. Two further methods started without terminal events and four were unstarted. No application-bug or host-cause diagnosis is established; finalized result and attachments are absent.",
+    "export": "All ten methods have exactly one start and one pass, an xcodebuild TEST EXECUTE SUCCEEDED marker and a finalized result export. GitHub nevertheless reports the test step and job cancelled. Preserve the ten actual method passes separately from the unsuccessful workflow job.",
+    "optics": "Four methods passed; repeatability05 started without a terminal event; five methods never started. Selected xcodebuild invocation and job were cancelled; no finalized result export."
+  },
+  "requiredUIAggregate": {
+    "expected": 35,
+    "started": 21,
+    "passed": 14,
+    "failed": 4,
+    "skipped": 0,
+    "unstarted": 14,
+    "invalid": 21,
+    "startedWithoutTerminalEvent": 3,
+    "meaning": "35 required UI methods at c85544f: 21 started, 14 passed, 4 failed, 3 started without a terminal event and 14 unstarted. Required UI acceptance remains unsuccessful."
+  },
+  "independentReview": {
+    "worker": "096",
+    "canonicalAgent": "/root/w007_review_coordinator/w096_final_ui_accounting",
+    "observedAt": "2026-11-25T23:32:37.790Z",
+    "testsRerun": false,
+    "finalCandidateAcceptance": false
   }
 }

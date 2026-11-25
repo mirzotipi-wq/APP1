@@ -1,0 +1,143 @@
+{
+  "id": "096",
+  "task": "Independent initial C855 remaining-UI artifact accounting and library failure chronology; authorized source-specific receipt retention",
+  "canonicalAgent": "/root/w007_review_coordinator/w096_final_ui_accounting",
+  "files": [
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/room/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/library/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/export/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/optics/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/executed-summary.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/github-observation.json",
+    "UITests/ProjectLibraryUITests.swift",
+    "/tmp/app1-f2fcfcdabdca/evidence/inventory-c85544f/scripts/native_test_shards.py"
+  ],
+  "findings": [
+    "All four final GitHub job conclusions are cancelled. Native/AX original receipts, job entries and failure dispositions are unchanged.",
+    "C855 full required-UI accounting: expected35, started21, passed14, failed4 (including preserved AX failure), skipped0, startedWithoutTerminalEvent3, unstarted14. The four reviewed shards alone have expected34, started20, passed14, failed3, incomplete3, unstarted14.",
+    "Library Keep exact-value expectation failed at source line172, GitHub timestamp 2026-11-25T23:09:09.6828210Z; method failed 23:09:11.2080550Z. Duplicate naming-sheet AX query timed out at line71, 23:13:53.2953850Z; method failed 23:14:23.3612730Z. Next method could not terminate app pid24060 at line289, 23:15:53.9452360Z; method failed 23:16:23.7113030Z. These failures preceded newer commit timestamp23:21:37Z and later cancellation23:22:00.6625970Z.",
+    "After Keep failure, the next method entered Editorial, satisfied exact value, saved it and reached its Options, then stalled after Duplicate. This limits blanket-binding-break claims; neither an application bug nor a host cause is established.",
+    "Library logged adding diagnostic attachments but no finalized result bundle or exported attachments are present; large-valid-library and stale-save recovery have starts without terminal test events. Unstarted/interrupted methods remain nonpasses.",
+    "Export has ten complete start/pass sequences, TEST EXECUTE SUCCEEDED and a CRC-valid finalized xcresult archive (71 members, Info.plist) plus ten image attachments. Preserve these actual method passes separately from its cancelled workflow step/job.",
+    "Room has five unstarted methods; optics has four passed, repeatability05 started without a terminal event and five unstarted. Neither has a finalized result bundle.",
+    "All four preparatory simulator-startup reports failed despite GitHub continue-on-error steps reporting success. Exact reports and host diagnostics are retained; this establishes no cause or app pass."
+  ],
+  "tests": [
+    {
+      "check": "agent_cycle.py check and next",
+      "result": "Structure valid; M03 editing/accessibility/persistence still outstanding; no runtime pass implied"
+    },
+    {
+      "check": "27 exact-source inventory files compared byte-for-byte with git show c85544f",
+      "result": "All match; frozen C855 method inventory and parser used"
+    },
+    {
+      "check": "Four artifact ZIP SHA256/byte lengths versus fresh GitHub metadata and zipfile.testzip CRC",
+      "result": "All match and pass; all available extracted members match original ZIP bytes"
+    },
+    {
+      "check": "Exact-C855 verify_log rerun over original logs plus separate independent event parser",
+      "result": "All expected/started/passed/failed/skipped/unstarted/invalid lists match archived CI; export accounting passes, other three fail closed as expected; no test reruns"
+    },
+    {
+      "check": "Fresh GitHub job logs compared with archived native-test event sequences",
+      "result": "All four match exactly; raw timestamps/errors/cancellations retained"
+    },
+    {
+      "check": "Final retained-file hashes and protected native/AX content",
+      "result": "49 retained files verified; 20 protected native/AX files and their summary/observation entries unchanged"
+    },
+    {
+      "check": "git diff C855..5d8 of app/core/scripts/fixtures/workflow/build files",
+      "result": "Unchanged; changed code files are only NativeTests/StudioTextFieldTests.swift and UITests/StudioAppAccessibilityUITests.swift"
+    }
+  ],
+  "outcome": "Initial C855 failure/outcome review completed with authorized receipt updates. Required C855 UI acceptance remains unsuccessful. This is not final5d8 acceptance; same worker context may resume final35-UI reconciliation.",
+  "testedRevision": "c85544f121cf3781499636527d3b9329ca6affba",
+  "inspectedHead": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+  "workflowRun": 45716080681,
+  "artifacts": {
+    "room": {
+      "artifactID": 15072261706,
+      "artifactSHA256": "e2effb15d6ef32949f551fd2d3c8e08f65cffd8157943bcb0e927c33f25f07a7",
+      "artifactBytes": 52495,
+      "counts": {
+        "expected": 5,
+        "started": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": 5,
+        "invalid": 5,
+        "startedWithoutTerminalEvent": 0
+      },
+      "jobID": 139564013128,
+      "jobConclusion": "cancelled"
+    },
+    "library": {
+      "artifactID": 15072101516,
+      "artifactSHA256": "0f62c0924ce940272a943e09dec37c4b9f9adcfc828fc69f68c3441ee07fe4b6",
+      "artifactBytes": 49603,
+      "counts": {
+        "expected": 9,
+        "started": 5,
+        "passed": 0,
+        "failed": 3,
+        "skipped": 0,
+        "unstarted": 4,
+        "invalid": 9,
+        "startedWithoutTerminalEvent": 2
+      },
+      "jobID": 139564013151,
+      "jobConclusion": "cancelled"
+    },
+    "export": {
+      "artifactID": 15072266737,
+      "artifactSHA256": "16aa7783b11fa81eff9b8feec190f72493af2e212dc45f6c73520966bb496cf0",
+      "artifactBytes": 7340071,
+      "counts": {
+        "expected": 10,
+        "started": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": 0,
+        "invalid": 0,
+        "startedWithoutTerminalEvent": 0
+      },
+      "jobID": 139564013167,
+      "jobConclusion": "cancelled"
+    },
+    "optics": {
+      "artifactID": 15071538413,
+      "artifactSHA256": "ac2769aca997c03a99611f004f5d2d2ea1fdee51923b60cd46b1a085849ce397",
+      "artifactBytes": 59872,
+      "counts": {
+        "expected": 10,
+        "started": 5,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "unstarted": 5,
+        "invalid": 6,
+        "startedWithoutTerminalEvent": 1
+      },
+      "jobID": 139564013216,
+      "jobConclusion": "cancelled"
+    }
+  },
+  "limits": [
+    "No application/test/source edits, commits, test reruns, or new agents.",
+    "No runtime reproduction by this worker; archived actual CI execution only.",
+    "Newer commit timestamp is not an independently retrieved push-event timestamp.",
+    "No physical/device/VoiceOver/platform-audit acceptance claim."
+  ],
+  "authorizedReceiptEdits": [
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/room/",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/library/",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/export/",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/optics/",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/executed-summary.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/github-observation.json"
+  ]
+}
