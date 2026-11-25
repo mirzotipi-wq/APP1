@@ -1,5 +1,13 @@
 # Current handoff
 
+## Actual control audit result and contrast repair — candidate after 8fa
+
+Published source **8fa4399f50554836ce70ec2929a28534f70ba4b0** contains the reviewed keyboard guard and diagnostic budget. The [new integration packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-control-contrast-integration.md) records the control's actual result: **one test started/failed; full .all returned in5.121seconds with one contrast issue** on the white-text/default-blue Confirm control button. No Code18, Code=-56 or outer timeout occurred in this invocation. Summary/attachment export succeeded; its zero-failure check correctly failed. The4m21s command finished inside both old and new bounds, so budget causation is not inferred.
+
+A control-only candidate uses adaptive system label tint and system background foreground for that identified button. Native style, size, action, identifier, runtime26.4.1, workflow, test, full audit, zero-issue requirement and bounds remain. a097 independently approved the exact change; actual repaired-source Apple execution is required. APP1's initial-screen audit timeout is a separate unresolved result.
+
+Application6f3 optics is still running at the last observation;8fa normal application CI is pending behind it. Preserve productive runs and inspect actual terminal state before assigning any pending-run supersession. The keyboard helper change is still unverified on Apple. M01 remains complete,M02active,M03dependency pending; calibrated/physical/manual gates remain unrun. Prior sections retain their original timestamps/scopes.
+
 ## Keyboard readiness and control startup — candidate after 6f3
 
 **M01 remains complete; M02 active; M03 dependency pending.** Published/tested base is **6f3da3341f350084eac4a05b35a5bfd408d50193**. The [current packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-keyboard-and-control-startup.md) records exact core319/319/35 and native110/0fail/0skip/3Metal success. The application workflow is still in progress; use each terminal receipt for its own shard. Library completed9passes/2failures: the numeric full audit passed, initial full audit returned Code=-56, and archived-delete failed at keyboard readiness before typing/deletion.

@@ -1,0 +1,65 @@
+Command line invocation:
+    /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project scripts/diagnostics/accessibility-control/AccessibilityControl.xcodeproj -scheme AccessibilityControl -configuration Debug -destination id=A6574FEC-AE06-46C2-92CC-F2BBAB2A5601 -derivedDataPath /Users/runner/work/_temp/accessibility-control-build -parallel-testing-enabled NO -resultBundlePath /Users/runner/work/_temp/accessibility-control-evidence/Control.xcresult "-only-testing:AccessibilityControlUITests/AccessibilityControlUITests/testStaticScreenFullAccessibilityAudit" CODE_SIGNING_ALLOWED=NO test-without-building
+
+Build settings from command line:
+    CODE_SIGNING_ALLOWED = NO
+
+Writing result bundle at path:
+	/Users/runner/work/_temp/accessibility-control-evidence/Control.xcresult
+
+2026-11-25 16:02:21.340100+0000 AccessibilityControlUITests-Runner[22750:67617] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+2026-11-25 16:02:38.481 xcodebuild[19690:59490] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-11-25 16:02:38.481 xcodebuild[19690:59490] [MT] IDELaunchParametersSnapshot: no debugger version
+Test Suite 'Selected tests' started at 2026-11-25 16:02:35.457.
+Test Suite 'AccessibilityControlUITests.xctest' started at 2026-11-25 16:02:35.458.
+Test Suite 'AccessibilityControlUITests' started at 2026-11-25 16:02:35.458.
+Test Case '-[AccessibilityControlUITests.AccessibilityControlUITests testStaticScreenFullAccessibilityAudit]' started.
+    t =     0.00s Start Test at 2026-11-25 16:02:35.461
+    t =     0.43s Set Up
+AX_CONTROL {"phase":"test_body_started","uptimeNanoseconds":"1830326447103"}
+AX_CONTROL {"phase":"launch_begin","uptimeNanoseconds":"1830344905134"}
+    t =     0.45s Open com.example.keyandfill.accessibilitycontrol
+    t =     0.45s     Launch com.example.keyandfill.accessibilitycontrol
+    t =    15.51s         Setting up automation session
+    t =    19.48s         Wait for com.example.keyandfill.accessibilitycontrol to idle
+AX_CONTROL {"phase":"launch_returned","uptimeNanoseconds":"1851890411135"}
+    t =    22.00s Waiting 15.0s for "control.status" StaticText to exist
+    t =    23.01s     Checking `Expect predicate `existsNoRetry == 1` for object "control.status" StaticText`
+    t =    23.01s         Checking existence of `"control.status" StaticText`
+    t =    23.31s Find the "control.status" StaticText
+    t =    23.36s Checking existence of `"control.confirm" Button`
+    t =    23.39s Find the "control.confirm" Button
+    t =    23.72s Find the "control.confirm" Button
+AX_CONTROL {"phase":"screen_ready","uptimeNanoseconds":"1853708546621"}
+    t =    23.82s Find the Target Application 'com.example.keyandfill.accessibilitycontrol'
+    t =    24.40s Added attachment named 'Accessibility-control-before-audit'
+AX_CONTROL {"phase":"before_audit_screenshot_attached","uptimeNanoseconds":"1854292026657"}
+AX_CONTROL {"auditTypes":"all","phase":"audit_begin","uptimeNanoseconds":"1854292094102"}
+AX_CONTROL {"auditTypeRawValue":"1","compactDescription":"Contrast nearly passed","compactDescriptionTruncated":"false","detailedDescription":"Contrast is not high enough for SwiftUI.AccessibilityNode unless font size is larger.","detailedDescriptionTruncated":"false","index":"1","phase":"audit_issue","uptimeNanoseconds":"1857699652278"}
+    t =    27.81s Find the Any (Descendant with identity binding to AX element pid: 24041, elementOrHash.elementID: 4401028176.10)
+    t =    27.98s Checking existence of `"control.confirm" Button`
+    t =    28.05s Find the "control.confirm" Button
+/Users/runner/work/APP1/APP1/scripts/diagnostics/accessibility-control/UITests.swift:42: error: -[AccessibilityControlUITests.AccessibilityControlUITests testStaticScreenFullAccessibilityAudit] : Contrast nearly passed
+AX_CONTROL {"issueCount":"1","phase":"audit_returned","uptimeNanoseconds":"1859412644739"}
+    t =    29.52s Tear Down
+Test Case '-[AccessibilityControlUITests.AccessibilityControlUITests testStaticScreenFullAccessibilityAudit]' failed (36.282 seconds).
+Test Suite 'AccessibilityControlUITests' failed at 2026-11-25 16:03:11.743.
+	 Executed 1 test, with 1 failure (0 unexpected) in 36.282 (36.285) seconds
+Test Suite 'AccessibilityControlUITests.xctest' failed at 2026-11-25 16:03:11.744.
+	 Executed 1 test, with 1 failure (0 unexpected) in 36.282 (36.286) seconds
+Test Suite 'Selected tests' failed at 2026-11-25 16:03:11.745.
+	 Executed 1 test, with 1 failure (0 unexpected) in 36.282 (36.289) seconds
+2026-11-25 16:04:16.261 xcodebuild[19690:59490] [MT] IDETestOperationsObserverDebug: 164.368 elapsed -- Testing started completed.
+2026-11-25 16:04:16.261 xcodebuild[19690:59490] [MT] IDETestOperationsObserverDebug: 0.001 sec, +0.001 sec -- start
+2026-11-25 16:04:16.261 xcodebuild[19690:59490] [MT] IDETestOperationsObserverDebug: 164.368 sec, +164.367 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/runner/work/_temp/accessibility-control-evidence/Control.xcresult
+
+Failing tests:
+	AccessibilityControlUITests.testStaticScreenFullAccessibilityAudit()
+
+** TEST EXECUTE FAILED **
+
+Testing started

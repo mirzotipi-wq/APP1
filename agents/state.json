@@ -97,10 +97,10 @@
     "date": "2026-11-25",
     "baseRevision": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
     "destinationBranch": "main",
-    "status": "m01_verified_keyboard_and_control_startup_candidates_pending",
+    "status": "m01_verified_keyboard_execution_pending_control_contrast_candidate",
     "requestedDistinctWorkers": 100,
     "concurrentWorkerSlots": 3,
-    "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-keyboard-and-control-startup.md",
+    "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-control-contrast-integration.md",
     "nativeCandidateResult": "pass",
     "remainingMandatoryGates": [
       "calibrated_rendering_review",
@@ -109,7 +109,7 @@
       "automatic_accessibility_current_source",
       "manual_device_accessibility"
     ],
-    "sourceRevision": "6f3da3341f350084eac4a05b35a5bfd408d50193",
+    "sourceRevision": "8fa4399f50554836ce70ec2929a28534f70ba4b0",
     "testedRevision": "6f3da3341f350084eac4a05b35a5bfd408d50193",
     "latestWorkflow": {
       "id": 45641483928,
@@ -145,7 +145,7 @@
       "uiRemaining": 10
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "Exact6f3 core passed319 Debug/319 Release/35 Python and native110 with zero skips, including3Metal. The library terminal log reports9passes/2failures: numeric-editor full.all passed, initial-plan full.all Code=-56 failed, and archived-delete stopped at keyboard readiness before typing/deletion. Other UI shards are still being reconciled. The full snapshot contains q enabled with normalframe; Continue lookup retried before the key query. A narrow absent-Continue short-circuit candidate retains both conditions and10s. Separatecontrol6f3 built/booted26.4.1 but never started a test; Code18 timing is confounded by the6-minute outer deadline. The control-only10-minute observation budget requires fresh execution. All external calibrated/device/manual gates remain unverified.",
+    "note": "Latest application execution remains6f3: core319/319/35,native110/3Metal,room5 andstudio-export10 passed; library9passed2failed, optics still running at last capture. Numeric full audit passed; initial Plan full audit Code=-56 and archived-delete keyboard readiness failed. The absent-Continue guard is published8fa and awaits normal Apple CI. Separate8fa control actually completed one full.all audit in5.120550637s with one identified Confirm control contrast finding; one test/job failed and no Code18/Code56/outertimeout occurred. A two-color control-only repair is prepared; full.audit and failure rules remain. M02 calibrated rendering/performance and M03 manual device accessibility remain unverified.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -1203,13 +1203,13 @@
     },
     "accessibilityControlCandidate": {
       "baseRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
-      "status": "startup_budget_working_candidate_requires_Apple_execution",
+      "status": "contrast_repair_reviewed_requires_Apple_execution",
       "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control.md",
       "workflow": ".github/workflows/accessibility-control.yml",
       "sourceDirectory": "scripts/diagnostics/accessibility-control",
       "owner": "Reused worker a100 implementation; a097 independent review; root integration",
-      "question": "Can the unchanged full control audit reach and finish its test with an outer10-minute test command and36-minute job, on the same26.4.1 runtime/Xcode26.6/SDK26.5?",
-      "AppleExecution": "6f3_build_boot_passed_zero_tests; startup_budget_candidate_unrun",
+      "question": "Does the same isolated full.all audit return zero issues after correcting the specifically identified Confirm control contrast?",
+      "AppleExecution": "8fa_one_test_failed_full_audit_returned_one_contrast_issue",
       "productionGateChanges": false,
       "validation": {
         "head": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
@@ -1258,30 +1258,26 @@
         "primaryWorkflowAndAuditCodeUnchanged": true
       },
       "lastInvocation": {
-        "sourceRevision": "6f3da3341f350084eac4a05b35a5bfd408d50193",
-        "runID": 45641484079,
-        "jobID": 139301011312,
-        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45641484079",
-        "conclusion": "failure",
+        "sourceRevision": "8fa4399f50554836ce70ec2929a28534f70ba4b0",
+        "runID": 45649843132,
+        "jobID": 139331028628,
+        "auditElapsedSeconds": 5.120550637,
+        "testStarts": 1,
+        "testPassed": 0,
+        "testFailed": 1,
+        "testSkipped": 0,
+        "auditOutcome": "returned_with_issues",
+        "auditIssues": 1,
+        "issueCropSHA256": "5ad4e93b7f388cdcd3adfabf093727c8c47a15565346a292a77a044ca097c89c",
+        "rootVisualObservation": "Actual failure crop is the Confirm control button, white text on blue fill. Original finding is retained; no pixel-only conformance claim.",
+        "scope": "Root independently read marker/count JSON and viewed genuine issue crop. Full audit returned, but test/job failed. This is separate from APP1 initial-screen Code=-56.",
         "build": "passed",
         "boot": "passed",
         "runtime": "26.4.1",
-        "testStep": "failed_outer_deadline",
-        "testStarts": 0,
-        "testTerminals": 0,
-        "auditMarkers": 0,
-        "auditOutcome": "not_started",
-        "testStepStartUTC": "2026-11-25T15:14:24Z",
-        "nominalSixMinuteBoundaryUTC": "2026-11-25T15:20:24Z",
-        "AXLoadingStartUTC": "2026-11-25T15:19:20.602Z",
-        "AXErrorUTC": "2026-11-25T15:20:27.826563Z",
-        "AXError": "XCTDaemonErrorDomain Code=18: Timed out waiting for AX loaded notification",
-        "timeoutAnnotationUTC": "2026-11-25T15:20:38.096274Z",
-        "firstCancellationSignal": "not retained",
-        "interpretation": "AX initialization error occurred after the nominal outer deadline and before the timeout annotation. Intrinsic initialization failure versus deadline interference is not resolved. No .all audit or Code=-56 reproduction occurred.",
-        "verification": "Root reviewed source/timing before reset; a097 independently refetched the terminal log and verified zero starts/markers plus exact Code18/timeout rows. Full phase receipt is separate.",
-        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/control-startup-budget/root-preceding-invocation.json",
-        "verifiedArtifact": "docs/evidence/m02-m03-2026-11-25/validation/control-startup-budget/original-run-receipt.json"
+        "conclusion": "failure",
+        "testStep": "failed_actual_contrast_finding",
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-8fa-contrast/root-observation.json",
+        "firstCancellationSignal": "not applicable to this outcome; command completed before outer deadline"
       },
       "runtimeExperiment": {
         "baseRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
@@ -1312,6 +1308,32 @@
           "sourceHashesStable": true,
           "artifact": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-9ed-terminal/execution-summary.json",
           "scope": "Pre-audit nonexecution. The retained boot log eventually reached Finished after the step deadline; no Code=-56 reproduction or control audit result."
+        },
+        {
+          "sourceRevision": "6f3da3341f350084eac4a05b35a5bfd408d50193",
+          "runID": 45641484079,
+          "jobID": 139301011312,
+          "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45641484079",
+          "conclusion": "failure",
+          "build": "passed",
+          "boot": "passed",
+          "runtime": "26.4.1",
+          "testStep": "failed_outer_deadline",
+          "testStarts": 0,
+          "testTerminals": 0,
+          "auditMarkers": 0,
+          "auditOutcome": "not_started",
+          "testStepStartUTC": "2026-11-25T15:14:24Z",
+          "nominalSixMinuteBoundaryUTC": "2026-11-25T15:20:24Z",
+          "AXLoadingStartUTC": "2026-11-25T15:19:20.602Z",
+          "AXErrorUTC": "2026-11-25T15:20:27.826563Z",
+          "AXError": "XCTDaemonErrorDomain Code=18: Timed out waiting for AX loaded notification",
+          "timeoutAnnotationUTC": "2026-11-25T15:20:38.096274Z",
+          "firstCancellationSignal": "not retained",
+          "interpretation": "AX initialization error occurred after the nominal outer deadline and before the timeout annotation. Intrinsic initialization failure versus deadline interference is not resolved. No .all audit or Code=-56 reproduction occurred.",
+          "verification": "Root reviewed source/timing before reset; a097 independently refetched the terminal log and verified zero starts/markers plus exact Code18/timeout rows. Full phase receipt is separate.",
+          "artifact": "docs/evidence/m02-m03-2026-11-25/validation/control-startup-budget/root-preceding-invocation.json",
+          "verifiedArtifact": "docs/evidence/m02-m03-2026-11-25/validation/control-startup-budget/original-run-receipt.json"
         }
       ],
       "startupBudgetCandidate": {
@@ -1322,7 +1344,16 @@
         "allOtherBoundsUnchanged": true,
         "artifact": "docs/evidence/m02-m03-2026-11-25/validation/control-startup-budget/validation.json",
         "review": "docs/evidence/m02-m03-2026-11-25/validation/control-startup-budget/a097-independent-review.md",
-        "scope": "Independent diagnostic observation only; original failure, full audit and primary workflow preserved."
+        "scope": "Independent diagnostic observation only; original failure, full audit and primary workflow preserved.",
+        "actual8faOutcome": "Full audit returned in5.120550637s with1issue; command finished4m21s, within both prior6min and current10min. No causal budget/startup inference."
+      },
+      "contrastCandidate": {
+        "baseRevision": "8fa4399f50554836ce70ec2929a28534f70ba4b0",
+        "appSHA256": "d0c972b0529118065be99fc8fae802f83fdf59a5888ce016c2d1fd68eb66fa86",
+        "scope": "Only adaptive system label tint/system background foreground on the identified button. All workflow/test/project/runtime/bounds/audit/failure requirements unchanged.",
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-8fa-contrast/root-observation.json",
+        "review": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-8fa-contrast/independent-review.md",
+        "validation": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-8fa-contrast/candidate-validation.json"
       }
     },
     "latestNativeExecution": {
@@ -1340,7 +1371,7 @@
     },
     "keyboardReadinessCandidate": {
       "baseRevision": "6f3da3341f350084eac4a05b35a5bfd408d50193",
-      "status": "reviewed_working_candidate_requires_Apple_execution",
+      "status": "published_8fa_requires_Apple_execution",
       "sourceSHA256": "b2153c08e683875d3a0ac929993e4a1abf87ca2b206c24abd9206235b91f2a64",
       "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-keyboard-and-control-startup.md",
       "review": "docs/evidence/m02-m03-2026-11-25/validation/keyboard-absence-guard/independent-review.md",
@@ -1352,7 +1383,8 @@
         "qSnapshot": "present_enabled_normal_frame; isHittable unmeasured",
         "continueQuery": "implicit retries before first key lookup"
       },
-      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/keyboard-absence-guard/candidate-source.json"
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/keyboard-absence-guard/candidate-source.json",
+      "publishedRevision": "8fa4399f50554836ce70ec2929a28534f70ba4b0"
     },
     "studioShardSplit": {
       "baseRevision": "9eddd97c5e638edf1768332d9d83d7dc2cccb72a",
@@ -1382,6 +1414,14 @@
       "conclusion": "cancelled",
       "artifact": "docs/evidence/m02-m03-2026-11-25/validation/superseded-primary-9ed.json",
       "scope": "Root requested cancellation of the superseded primary run during core; zero Apple steps executed. The separate control completed independently."
+    },
+    "pendingApplicationWorkflow": {
+      "id": 45649843650,
+      "sourceRevision": "8fa4399f50554836ce70ec2929a28534f70ba4b0",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45649843650",
+      "status": "pending",
+      "scope": "Observed pending behind productive6f3; no8fa app method execution or cancellation inferred.",
+      "observedAtUTC": "2026-11-25 16:15:06 UTC"
     }
   }
 }

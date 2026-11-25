@@ -1,0 +1,52 @@
+diff --git a/scripts/diagnostics/accessibility-control/App.swift b/scripts/diagnostics/accessibility-control/App.swift
+index 5a1722a..979a015 100644
+--- a/scripts/diagnostics/accessibility-control/App.swift
++++ b/scripts/diagnostics/accessibility-control/App.swift
+@@ -23,6 +23,8 @@ private struct AccessibilityControlScreen: View {
+                 confirmed = true
+             }
+             .buttonStyle(.borderedProminent)
++            .tint(Color(uiColor: .label))
++            .foregroundStyle(Color(uiColor: .systemBackground))
+             .controlSize(.large)
+             .accessibilityIdentifier("control.confirm")
+         }
+diff --git a/scripts/diagnostics/accessibility-control/README.md b/scripts/diagnostics/accessibility-control/README.md
+index 93f8e9e..52927fa 100644
+--- a/scripts/diagnostics/accessibility-control/README.md
++++ b/scripts/diagnostics/accessibility-control/README.md
+@@ -65,13 +65,32 @@ recorded. The error falls after the nominal 15:20:24 deadline and before that
+ annotation, so an intrinsic initialization failure cannot be distinguished from
+ interference by the outer deadline. This is not an audit Code=-56 result.
+ 
+-This follow-up changes only the diagnostic test-step budget from six to ten
++The subsequent budget experiment changed only the diagnostic test-step budget from six to ten
+ minutes and the diagnostic job budget from 32 to 36 minutes, retaining two
+ minutes beyond the sum of individual step bounds for setup/finalization. It
+-preserves the runtime, app/test source, readiness assertions, full audit and all
++preserved the runtime, app/test source, readiness assertions, full audit and all
+ other step bounds. The extra observation time does not promise completion or
+ establish a cause; the preceding six-minute failure remains part of the evidence.
+ 
++In [run 45649843132](https://github.com/mirzotipi-wq/APP1/actions/runs/45649843132)
++at source `8fa4399f50554836ce70ec2929a28534f70ba4b0`, the single selected test
++started and failed, and the full audit returned in 5.121 seconds with one real
++contrast issue. The exported element screenshot identifies the white-text,
++default-blue **Confirm control** button. The native summary records one failed
++test and zero passes or skips. Summary and attachment export succeeded; the
++export step then correctly failed its zero-failure count requirement. There was
++no Code=18, Code=-56, or outer timeout. The test command finished in 4 minutes
++21 seconds, so this invocation does not show that the larger budget caused its
++faster startup.
++
++The current repair changes only that button's colors: its tint uses the adaptive
++system label color and its foreground uses the adaptive system background color.
++The bordered-prominent style, large control size, text, identifier and action
++remain the same. Workflow, runtime, test, full audit, zero-issue requirement and
++time bounds are unchanged. This addresses the identified control contrast issue;
++Apple compilation and the full audit on the repaired source remain pending.
++The preceding failed test and its genuine issue attachments remain evidence.
++
+ A timeout after `audit_begin` records an independent unfinished control audit;
+ a captured `audit_threw` with Code=-56 additionally establishes that exact error.
+ A build, boot, launch, or readiness timeout does not establish an audit timeout.

@@ -23,6 +23,8 @@ private struct AccessibilityControlScreen: View {
                 confirmed = true
             }
             .buttonStyle(.borderedProminent)
+            .tint(Color(uiColor: .label))
+            .foregroundStyle(Color(uiColor: .systemBackground))
             .controlSize(.large)
             .accessibilityIdentifier("control.confirm")
         }
