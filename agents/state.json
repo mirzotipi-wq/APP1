@@ -97,7 +97,7 @@
     "date": "2026-11-25",
     "baseRevision": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
     "destinationBranch": "main",
-    "status": "repairing_hosted_runner_acquisition_with_standard_intel_pool",
+    "status": "reviewed_sdk_repair_ready_for_publication_ui_in_progress",
     "requestedDistinctWorkers": 100,
     "concurrentWorkerSlots": 3,
     "report": "docs/evidence/m02-m03-main-2026-11-25.md",
@@ -109,14 +109,16 @@
       "editing_and_automatic_accessibility_current_source",
       "manual_device_accessibility"
     ],
-    "sourceRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
-    "testedRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
+    "sourceRevision": "b298b1333f3abb901c23a198187628fe94331427",
+    "testedRevision": "b298b1333f3abb901c23a198187628fe94331427",
     "latestWorkflow": {
-      "id": 45597735891,
-      "sourceRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
-      "status": "queued",
+      "id": 45600372389,
+      "sourceRevision": "b298b1333f3abb901c23a198187628fe94331427",
+      "status": "in_progress",
       "conclusion": null,
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45597735891",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45600372389",
+      "observedAtUTC": "2026-11-25T11:24:14Z",
+      "coreJobID": 139158445903,
       "coreConclusion": "success",
       "debugPassed": 319,
       "releasePassed": 319,
@@ -124,11 +126,103 @@
       "efbigChecksPassed": 11,
       "interruptionScenariosPassed": 3,
       "nativeResult": "unverified",
-      "uiResult": "unverified",
-      "observedAtUTC": "2026-11-25T10:52:27Z"
+      "uiResult": "in_progress",
+      "nativeJob": {
+        "id": 139160177457,
+        "status": "completed",
+        "conclusion": "failure",
+        "runner": "macos-26-intel",
+        "architecture": "x86_64",
+        "portableTestsPassed": 319,
+        "portableTestAggregateSeconds": 51.919,
+        "failedStep": "Verify bounded atomic library write failure on macOS host",
+        "failurePhase": "Swift helper compilation; EFBIG fixture not executed",
+        "diagnostic": "<unknown>:0: error: unable to load standard library for target 'x86_64-apple-macosx26.0'",
+        "nativeBuildsExecuted": 0,
+        "nativeMethodsExecuted": 0,
+        "macOSEFBIGResult": "unverified",
+        "secondaryFailure": "Result export correctly reports no finalized XCTest bundle because native tests did not execute"
+      },
+      "uiJobs": [
+        {
+          "id": 139160177561,
+          "name": "ui (room-precision)",
+          "status": "in_progress",
+          "conclusion": null,
+          "startedAt": "2026-11-25T11:05:45Z",
+          "completedAt": null,
+          "steps": [
+            {
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-11-25T11:10:40Z",
+              "completedAt": "2026-11-25T11:15:15Z"
+            },
+            {
+              "name": "Run selected native UI shard",
+              "status": "in_progress",
+              "conclusion": null,
+              "startedAt": "2026-11-25T11:15:15Z",
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": 139160177595,
+          "name": "ui (library-reference)",
+          "status": "in_progress",
+          "conclusion": null,
+          "startedAt": "2026-11-25T11:05:45Z",
+          "completedAt": null,
+          "steps": [
+            {
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-11-25T11:10:17Z",
+              "completedAt": "2026-11-25T11:20:15Z"
+            },
+            {
+              "name": "Run selected native UI shard",
+              "status": "in_progress",
+              "conclusion": null,
+              "startedAt": "2026-11-25T11:20:15Z",
+              "completedAt": null
+            }
+          ]
+        },
+        {
+          "id": 139160177597,
+          "name": "ui (studio-export)",
+          "status": "in_progress",
+          "conclusion": null,
+          "startedAt": "2026-11-25T11:05:49Z",
+          "completedAt": null,
+          "steps": [
+            {
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "success",
+              "startedAt": "2026-11-25T11:10:50Z",
+              "completedAt": "2026-11-25T11:20:07Z"
+            },
+            {
+              "name": "Run selected native UI shard",
+              "status": "in_progress",
+              "conclusion": null,
+              "startedAt": "2026-11-25T11:20:07Z",
+              "completedAt": null
+            }
+          ]
+        }
+      ],
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-progress.json",
+      "latestUIArtifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-ui-progress.json",
+      "initialObservationAtUTC": "2026-11-25T11:17:46Z"
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "Exact main 18f387a Linux CI passes all portable and persistence probes. Earlier d99 native jobs failed to acquire ARM64 runners and executed no tests; failure predates the next push. Standard Intel runner repair is prepared with unchanged assertions/shards/deadlines and same pinned toolchain/runtime. Current-source Apple execution remains unverified; external gates remain open.",
+    "note": "Exact b298b13 Linux CI passed 319 Debug/319 Release/28 Python, eleven EFBIG checks and three interruption/rename scenarios. Intel runners were acquired. The macOS job passed 319 portable tests then failed direct swiftc helper compilation; its EFBIG fixture, unsigned app-build steps and native methods did not execute. At 11:24:14 UTC all three UI bundles had built successfully and all three test shards were running. The separately hash-bound working SDK repair passed 35 Python tests and real Linux probes and received independent review; repaired macOS execution and current native/UI terminal results remain unverified.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -161,7 +255,8 @@
       "strictScenariosPassed": 3,
       "artifact": "docs/evidence/m02-m03-2026-11-25/validation/commit-interruption-final/wrapper-result.json",
       "diagnostics": "working follow-up with exact hashes in compile manifest; current production LightingCore sources unchanged from d99c9bd",
-      "ciResult": "passed at 18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c, workflow45597735891/core139148176539"
+      "ciResult": "passed at b298b1333f3abb901c23a198187628fe94331427, workflow45600372389/core139158445903; prior 18f387a result preserved separately",
+      "previousCIResult": "passed at 18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c, workflow45597735891/core139148176539"
     },
     "runnerAcquisitionFailure": {
       "runID": 45593950430,
@@ -180,7 +275,61 @@
       "simulatorOS": "26.5",
       "device": "iPhone 17 Pro",
       "scope": "Standard Intel simulator; SceneKit fallback, not ARM RealityKit. All methods retained; native skips rejected and three real Metal passes required.",
-      "result": "unverified"
+      "result": "runner_acquisition_succeeded",
+      "validationResult": "incomplete; macOS host-helper compilation failed and UI shards remain in progress",
+      "observedAtUTC": "2026-11-25T11:17:46Z",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-progress.json"
+    },
+    "previousWorkflow": {
+      "id": 45597735891,
+      "sourceRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45597735891",
+      "updatedAtUTC": "2026-11-25T11:02:35Z",
+      "coreConclusion": "success",
+      "coreJobID": 139148176539,
+      "debugPassed": 319,
+      "releasePassed": 319,
+      "pythonPassed": 28,
+      "efbigChecksPassed": 11,
+      "interruptionScenariosPassed": 3,
+      "appleJobConclusion": "cancelled",
+      "affectedAppleJobs": 4,
+      "executedAppleSteps": 0,
+      "executedNativeMethods": 0,
+      "executedUIMethods": 0,
+      "capacityNotices": 12,
+      "cause": "Hosted macOS ARM64 runner acquisition failed; actual run-summary annotations record acquisition errors, twelve capacity notices and an internal server error. Linux results remain valid.",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint4-runner-capacity.json"
+    },
+    "macOSHelperFix": {
+      "baseRevision": "b298b1333f3abb901c23a198187628fe94331427",
+      "status": "reviewed_ready_for_publication",
+      "implementationWorker": "a097",
+      "independentReviewer": "a100",
+      "hypothesis": "Select and record the active macOS SDK explicitly for direct host swiftc helper compilation.",
+      "executionResult": "unverified",
+      "note": "Actual Linux compilation/probes and all 35 Python tests passed; seven new SDK tests mock child execution and do not establish Darwin behavior. Independent review accepted the frozen repair. Repaired macOS helper compilation, EFBIG execution and native results remain unverified pending publication and CI.",
+      "preparedChange": "Darwin-only xcrun --sdk macosx --show-sdk-path with a bounded ten-second lookup, explicit -sdk compiler argument and SDK-selection provenance.",
+      "wrapperSHA256": "d8c036aa7348fba636c4f9c41d3d6468e112c34445756eff4cf98befe87ae7d3",
+      "regressionFileSHA256": "a82c613240110043c95f0606f32600316fde383f33e6f79e6e512dacc35eae64",
+      "independentReview": "approved scoped review by a100; no blocking finding",
+      "reviewArtifact": "docs/evidence/m02-m03-2026-11-25/followups/followup-macos-host-sdk-review.md",
+      "validation": {
+        "scope": "working source based on b298b13, identified by wrapper/regression hashes; not an exact-commit gate pass",
+        "pythonPassed": 35,
+        "mockedSDKTests": 7,
+        "realLinuxWrapper": "passed",
+        "compileSeconds": 26.318,
+        "compiledSwiftSources": 31,
+        "compiledSourcesUnchanged": true,
+        "efbigChecksPassed": 11,
+        "interruptionScenariosPassed": 3,
+        "linuxSDKArgumentAbsent": true,
+        "linuxSDKLookupAbsent": true,
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/sdk-repair/summary.json"
+      }
     }
   }
 }

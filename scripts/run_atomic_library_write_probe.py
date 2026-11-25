@@ -116,6 +116,38 @@ def run_logged(arguments, repository, output, name, timeout, graceful_timeout_se
     return observation
 
 
+def host_sdk_arguments(repository, output, manifest, manifest_path):
+    if platform.system() != "Darwin":
+        return []
+    # A direct Xcode swiftc invocation needs an explicit host SDK. xcrun uses
+    # the same inherited developer/toolchain selection as the compiler lookup;
+    # selecting macosx explicitly also avoids an inherited iOS SDKROOT.
+    sdk = {"name": "macosx", "environment": {
+        name: os.environ.get(name) for name in ("DEVELOPER_DIR", "TOOLCHAINS", "SDKROOT")
+    }}
+    manifest["hostSDK"] = sdk
+    write_json(manifest_path, manifest)
+    xcrun = shutil.which("xcrun")
+    require(xcrun is not None, "xcrun is required to discover the macOS host SDK")
+    arguments = [os.path.abspath(xcrun), "--sdk", "macosx", "--show-sdk-path"]
+    sdk["discoveryArguments"] = arguments
+    write_json(manifest_path, manifest)
+    sdk["discovery"] = run_logged(arguments, repository, output, "macos-sdk", METADATA_TIMEOUT_SECONDS)
+    # Retain the lookup receipt even when its exit status, output, or path is
+    # invalid. A discovery failure must never fall through to compilation.
+    write_json(manifest_path, manifest)
+    require(sdk["discovery"].get("returnCode") == 0, "macOS host SDK discovery failed or timed out")
+    sdk_path = (output / "macos-sdk.stdout.log").read_text(encoding="utf-8").strip()
+    sdk["path"] = sdk_path
+    write_json(manifest_path, manifest)
+    require(bool(sdk_path) and "\n" not in sdk_path and "\r" not in sdk_path
+            and Path(sdk_path).is_absolute() and Path(sdk_path).is_dir(),
+            "macOS host SDK discovery did not return one existing absolute directory")
+    sdk["resolvedPath"] = str(Path(sdk_path).resolve())
+    write_json(manifest_path, manifest)
+    return ["-sdk", sdk_path]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path, help="New evidence directory")
@@ -158,10 +190,11 @@ def main():
         manifest["sourceSHA256BeforeCompilation"] = manifest["sourceSHA256"]
         manifest["diagnosticSHA256BeforeCompilation"] = diagnostic_hashes(repository, args.with_commit_interruption)
         manifest_path = output / "compile-manifest.json"
+        sdk_arguments = host_sdk_arguments(repository, output, manifest, manifest_path)
         with tempfile.TemporaryDirectory(prefix="atomic-library-write-build-") as build_directory:
             build = Path(build_directory)
             helper = build / "atomic-library-write-probe"
-            command = [compiler, "-O", "-module-cache-path", str(build / "module-cache")]
+            command = [compiler, "-O"] + sdk_arguments + ["-module-cache-path", str(build / "module-cache")]
             command += [str(repository / path) for path in manifest["sourceSHA256"]]
             command += ["-o", str(helper)]
             manifest["compileArguments"] = command
