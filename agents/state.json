@@ -97,7 +97,7 @@
     "date": "2026-11-25",
     "baseRevision": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
     "destinationBranch": "main",
-    "status": "published_implementation_awaiting_apple_runners_with_verified_persistence_followup",
+    "status": "repairing_hosted_runner_acquisition_with_standard_intel_pool",
     "requestedDistinctWorkers": 100,
     "concurrentWorkerSlots": 3,
     "report": "docs/evidence/m02-m03-main-2026-11-25.md",
@@ -107,27 +107,28 @@
       "calibrated_rendering_review",
       "physical_performance_thermal",
       "editing_and_automatic_accessibility_current_source",
-      "manual_device_accessibility",
-      "persistence_followup_ci"
+      "manual_device_accessibility"
     ],
-    "sourceRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
-    "testedRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
+    "sourceRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
+    "testedRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
     "latestWorkflow": {
-      "id": 45593950430,
-      "sourceRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
+      "id": 45597735891,
+      "sourceRevision": "18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c",
       "status": "queued",
       "conclusion": null,
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45593950430",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45597735891",
       "coreConclusion": "success",
       "debugPassed": 319,
       "releasePassed": 319,
       "pythonPassed": 28,
+      "efbigChecksPassed": 11,
+      "interruptionScenariosPassed": 3,
       "nativeResult": "unverified",
       "uiResult": "unverified",
-      "observedAtUTC": "2026-11-25T10:38:40Z"
+      "observedAtUTC": "2026-11-25T10:52:27Z"
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "Current app source has green exact-revision Linux CI; all four Apple jobs are queued. M01 is reopened for current-source build/save verification, so dependent milestones remain pending. Earlier passing foundation and failed accessibility receipts are preserved. The follow-up adds reviewed Linux interruption/rename probes with passing local source-hash receipts; no external gate is promoted.",
+    "note": "Exact main 18f387a Linux CI passes all portable and persistence probes. Earlier d99 native jobs failed to acquire ARM64 runners and executed no tests; failure predates the next push. Standard Intel runner repair is prepared with unchanged assertions/shards/deadlines and same pinned toolchain/runtime. Current-source Apple execution remains unverified; external gates remain open.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -159,7 +160,27 @@
       "efbigChecksPassed": 11,
       "strictScenariosPassed": 3,
       "artifact": "docs/evidence/m02-m03-2026-11-25/validation/commit-interruption-final/wrapper-result.json",
-      "diagnostics": "working follow-up with exact hashes in compile manifest; current production LightingCore sources unchanged from d99c9bd"
+      "diagnostics": "working follow-up with exact hashes in compile manifest; current production LightingCore sources unchanged from d99c9bd",
+      "ciResult": "passed at 18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c, workflow45597735891/core139148176539"
+    },
+    "runnerAcquisitionFailure": {
+      "runID": 45593950430,
+      "sourceRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
+      "conclusion": "failure",
+      "completedAtUTC": "2026-11-25T10:40:00Z",
+      "affectedJobs": 4,
+      "executedNativeMethods": 0,
+      "executedUIMethods": 0,
+      "cause": "Hosted macOS ARM64 runner acquisition failed after repeated attempts; capacity notices and internal-server-error annotation.",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint3-runner-capacity.json"
+    },
+    "runnerRepair": {
+      "runner": "macos-26-intel",
+      "xcode": "26.6",
+      "simulatorOS": "26.5",
+      "device": "iPhone 17 Pro",
+      "scope": "Standard Intel simulator; SceneKit fallback, not ARM RealityKit. All methods retained; native skips rejected and three real Metal passes required.",
+      "result": "unverified"
     }
   }
 }

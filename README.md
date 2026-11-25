@@ -46,13 +46,15 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and remaining gates
 
-The published app checkpoint `d99c9bd` has [319 Debug / 319 Release portable tests, 28 Python checks, six shared-kernel comparisons, eight strict precision comparisons and the Linux atomic-write probe passing](https://github.com/mirzotipi-wq/APP1/actions/runs/45593950430). Its four Apple jobs are queued at the recorded observation; all 110 native and 36 UI methods require execution on that app source.
+The latest verified Linux checkpoint `18f387a` has [319 Debug / 319 Release portable tests, 28 Python checks, six shared-kernel comparisons, eight strict precision comparisons, eleven write-failure checks and three process-interruption/rename scenarios passing](https://github.com/mirzotipi-wq/APP1/actions/runs/45597735891). Its four Apple jobs are queued at the recorded observation; all 110 native and 36 UI methods still require current-source execution.
+
+The previous app checkpoint's Apple jobs failed to acquire hosted ARM64 runners and executed no tests. The reviewed CI repair selects the supported standard Intel pool with the same pinned Xcode 26.6 and iPhone 17 Pro/iOS 26.5 environment. All tests remain; skipped native methods or missing real Metal passes fail the job. Intel verifies the existing SceneKit fallback, and current ARM RealityKit execution remains separate.
 
 The earlier completed main checkpoint `9602683` passed both unsigned simulator builds, 110 native methods and 34/36 UI methods, including ten complete optics workflows. Two complete accessibility audits failed with ten issues. The current implementation repairs exact validity-mask comparison, room/cardinal and composed-transform boundaries, discrete inspector Undo ownership, stale feet drafts, and adaptive Save, Cancel and plan text. Earlier failures remain recorded; current native success is not inferred from portable tests.
 
 All **100 distinct workers** completed their initial assignments, in batches. Reports and independent reviews are retained in the [worker ledger](docs/evidence/m02-m03-2026-11-25/README.md); follow-ups reuse existing workers.
 
-The final integrated local persistence command passed all eleven EFBIG checks plus three actual rename-boundary scenarios: interruption before replacement, interruption after successful replacement, and explicit rename failure. Fresh processes verified complete old/new libraries, exact bytes, active identity and unrelated records. Linux CI now includes those probes; macOS retains the write-failure probe. These are controlled host results, not physical power-loss or iOS evidence. See [receipts and limitations](docs/evidence/m02-m03-main-2026-11-25.md).
+The final integrated persistence command passed locally and in exact-main Linux CI: all eleven EFBIG checks plus three actual rename-boundary scenarios: interruption before replacement, interruption after successful replacement, and explicit rename failure. Fresh processes verified complete old/new libraries, exact bytes, active identity and unrelated records. Linux CI now includes those probes; macOS retains the write-failure probe. These are controlled host results, not physical power-loss or iOS evidence. See [receipts and limitations](docs/evidence/m02-m03-main-2026-11-25.md).
 
 The grazing-light correction passes declared numerical/continuity and shared Float32 checks, but CPU area-frame medians increased 17.56–35.10% in a short shared-host pair. Physical performance remains unverified.
 
