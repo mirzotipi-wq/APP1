@@ -64,9 +64,16 @@ actor ProjectStore {
     /// Reading choices must never adopt the latest library over the unsaved
     /// editor. The confirmed replacement still rechecks the complete candidate.
     func recoveryCandidates() throws -> [LightingProject] {
+        let latest = try recoveryLibrarySnapshot()
+        return latest.projects.filter { $0.isArchived && $0.id != latest.activeID }
+    }
+
+    /// Presentation needs all names and IDs before filtering archived choices.
+    /// This read does not adopt a project or mutate any saved or unsaved scene.
+    func recoveryLibrarySnapshot() throws -> ProjectLibrary {
         try Task.checkCancellation()
         guard let latest = try prepareStore().load() else { throw ProjectLibraryError.invalidLibrary }
-        return latest.projects.filter { $0.isArchived && $0.id != latest.activeID }
+        return latest
     }
 
     private func prepareStore() -> ProjectLibraryFileStore {

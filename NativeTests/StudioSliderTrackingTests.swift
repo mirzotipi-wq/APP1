@@ -11,6 +11,7 @@ final class StudioSliderTrackingTests: XCTestCase {
         var ends = 0
         var writes = 0
         var afterBegin: (() -> Void)?
+        var afterEnd: (() -> Void)?
         var afterWrite: (() -> Void)?
 
         init(width: Double = 0.6) {
@@ -39,6 +40,7 @@ final class StudioSliderTrackingTests: XCTestCase {
                 } else {
                     self.ends += 1
                     self.history.end(scene: self.scene, owner: captured + ".width")
+                    self.afterEnd?()
                 }
             })
         }
@@ -156,6 +158,50 @@ final class StudioSliderTrackingTests: XCTestCase {
         tracking.finish(next, finalDisplay: 1)
         XCTAssertEqual(replacement.width, 2)
         XCTAssertEqual(original.width, 4)
+    }
+
+    func testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken() throws {
+        let original = Editor(), interrupted = Editor(width: 0.8), replacement = Editor(width: 1.1)
+        let tracking = StudioSliderTracking(), mapping = self.mapping
+        let originalInitial = original.scene, replacementInitial = replacement.scene
+        let first = try XCTUnwrap(tracking.begin(editing: original.adapter(), mapping: mapping,
+                                               displayedValue: mapping.normalized(original.width)!))
+        tracking.change(mapping.normalized(1.3)!, for: first)
+        var replacementToken: StudioSliderTracking.Token?
+        original.afterEnd = {
+            replacementToken = tracking.begin(editing: replacement.adapter(), mapping: mapping,
+                                              displayedValue: mapping.normalized(replacement.width)!)
+        }
+
+        let retired = try XCTUnwrap(tracking.begin(editing: interrupted.adapter(), mapping: mapping,
+                                                 displayedValue: mapping.normalized(interrupted.width)!))
+        let current = try XCTUnwrap(replacementToken)
+        XCTAssertEqual(tracking.currentToken, current)
+        XCTAssertNotEqual(retired, current)
+        XCTAssertEqual(original.ends, 1)
+        XCTAssertFalse(original.history.isEditing)
+        XCTAssertEqual(original.history.undo(current: original.scene), originalInitial)
+        XCTAssertEqual(interrupted.begins, 0)
+        XCTAssertEqual(replacement.begins, 1)
+        XCTAssertTrue(replacement.history.isEditing)
+
+        for stale in [first, retired] {
+            tracking.change(1, for: stale)
+            tracking.finish(stale, finalDisplay: 1)
+        }
+        XCTAssertEqual(tracking.currentToken, current)
+        XCTAssertEqual(original.ends, 1)
+        XCTAssertEqual(interrupted.writes, 0)
+        XCTAssertEqual(interrupted.ends, 0)
+        XCTAssertEqual(replacement.scene, replacementInitial)
+        XCTAssertEqual(replacement.ends, 0)
+
+        tracking.finish(current, finalDisplay: mapping.normalized(1.85)!)
+        XCTAssertEqual(replacement.width, 1.85, accuracy: 1e-12)
+        XCTAssertEqual(replacement.ends, 1)
+        XCTAssertFalse(replacement.history.isEditing)
+        XCTAssertFalse(tracking.isTracking)
+        XCTAssertEqual(replacement.history.undo(current: replacement.scene), replacementInitial)
     }
 
     func testCapturedGenerationCannotWriteOrCloseNewProjectEdit() throws {

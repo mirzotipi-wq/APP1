@@ -58,11 +58,15 @@ final class StudioSliderTracking {
     @discardableResult
     func begin(editing: StudioSliderEditing, mapping: StudioSliderMapping,
                displayedValue: Float) -> Token? {
-        if let previous = session { finish(previous.token) }
-        let initial = editing.read()
-        guard initial.isFinite, displayedValue.isFinite else { return nil }
         sequence &+= 1
         let token = Token(sequence: sequence)
+        if let previous = session { finish(previous.token) }
+        let initial = editing.read()
+        // Ending the previous owner or reading this binding can synchronously
+        // begin a newer session. Return this retired token so caller cleanup
+        // cannot cancel that newer owner, and never overwrite its session.
+        guard sequence == token.sequence else { return token }
+        guard initial.isFinite, displayedValue.isFinite else { return nil }
         session = Session(token: token, editing: editing, mapping: mapping,
                           initialValue: initial, initialDisplay: displayedValue,
                           lastDisplay: displayedValue)

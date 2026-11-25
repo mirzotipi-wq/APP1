@@ -12,10 +12,12 @@ struct ProjectLibraryView: View {
     let onSave: () throws -> Task<Void, Error>
     let onApply: (ProjectLibraryCommand) throws -> Task<Void, Error>
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var naming: Naming?
     @State private var errorMessage: String?
-    @State private var pendingDeletion: LightingProject?
+    @State private var pendingDeletion: ProjectLibraryRowPresentation?
     @State private var confirmDeletion = false
+    @State private var searchText = ""
     @State private var showImporter = false
     @State private var isImporting = false
     @State private var isCommittingImport = false
@@ -45,6 +47,13 @@ struct ProjectLibraryView: View {
     }
 
     var body: some View {
+        // Determine identities from the whole library before filtering. A
+        // search must not make two saved projects appear to be the same record.
+        let projects = ProjectLibraryRowPresentation.make(for: library?.projects ?? [])
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let visibleProjects = projects.filter { $0.matches(query) }
+        let savedProjects = visibleProjects.filter { !$0.project.isArchived }
+        let archivedProjects = visibleProjects.filter { $0.project.isArchived }
         NavigationStack {
             List {
                 if hasUnsavedChanges {
@@ -85,10 +94,15 @@ struct ProjectLibraryView: View {
                             .accessibilityIdentifier("projectImportMessage")
                     }
                 }
-                Section("On this device") {
+                Section {
                     if let library {
-                        ForEach(library.projects.filter { !$0.isArchived }) { project in
+                        ForEach(savedProjects) { project in
                             projectRow(project, active: project.id == library.activeID)
+                        }
+                        if savedProjects.isEmpty {
+                            Text("No project names match in this section.")
+                                .foregroundStyle(.secondary)
+                                .accessibilityIdentifier("projectSearchEmpty")
                         }
                     } else {
                         Text("No saved projects yet.").foregroundStyle(.secondary)
@@ -115,36 +129,22 @@ struct ProjectLibraryView: View {
                         Text("64-project limit reached, including archived projects. Remove an archived project to free a slot.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
+                } header: {
+                    Text("On this device")
+                } footer: {
+                    if !projects.isEmpty {
+                        Text("Saved top views: circles mark subjects, triangles mark cameras and squares mark lights.")
+                    }
                 }
-                if let library, library.projects.contains(where: { $0.isArchived }) {
+                if projects.contains(where: { $0.project.isArchived }) {
                     Section("Archived") {
-                        ForEach(library.projects.filter(\.isArchived)) { project in
-                            HStack {
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(displayName(project)).font(.headline)
-                                    if displayName(project) != project.name {
-                                        Text("Project ID: \(project.id.uuidString.prefix(8))")
-                                            .font(.caption.monospaced()).foregroundStyle(.secondary)
-                                    }
-                                    Text("\(project.scene.lights.count) lights").font(.caption).foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                Button("Restore") { change(.restore(project.id)) }
-                                    .buttonStyle(.borderless).disabled(!canMutate)
-                                    .frame(minHeight: 44)
-                                    .accessibilityLabel("Restore \(displayName(project))")
-                                    .accessibilityValue(identityValue(project))
-                                Button(role: .destructive) {
-                                    pendingDeletion = project
-                                    confirmDeletion = true
-                                } label: {
-                                    Image(systemName: "trash")
-                                        .frame(width: 44, height: 44).contentShape(Rectangle())
-                                }
-                                .buttonStyle(.borderless).disabled(!canMutate)
-                                .accessibilityLabel("Delete archived \(displayName(project))")
-                                .accessibilityValue(identityValue(project))
-                            }
+                        ForEach(archivedProjects) { project in
+                            archivedProjectRow(project)
+                        }
+                        if archivedProjects.isEmpty {
+                            Text("No archived project names match your search.")
+                                .foregroundStyle(.secondary)
+                                .accessibilityIdentifier("archivedProjectSearchEmpty")
                         }
                         Text("Archived projects can be restored or permanently removed from this library.")
                             .font(.caption).foregroundStyle(.secondary)
@@ -152,6 +152,9 @@ struct ProjectLibraryView: View {
                 }
             }
             .navigationTitle("Projects")
+            .searchable(text: boundedSearch, placement: .navigationBarDrawer(displayMode: .automatic),
+                        prompt: "Search project names")
+            .scrollDismissesKeyboard(.interactively)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { acceptingImports = false; cancelImport(); dismiss() }
@@ -167,8 +170,9 @@ struct ProjectLibraryView: View {
                 // actual read starts, closing Projects must cancel that read.
                 if !showImporter { acceptingImports = false; cancelImport() }
             }
-            .alert("Delete archived project?", isPresented: $confirmDeletion, presenting: pendingDeletion) { project in
+            .alert("Delete archived project?", isPresented: $confirmDeletion, presenting: pendingDeletion) { presentation in
                 Button("Delete project", role: .destructive) {
+                    let project = presentation.project
                     guard library?.projects.first(where: { $0.id == project.id }) == project else {
                         pendingDeletion = nil
                         errorMessage = ProjectLibraryError.staleSnapshot.localizedDescription
@@ -180,8 +184,8 @@ struct ProjectLibraryView: View {
                     pendingDeletion = nil
                 }
                 Button("Cancel", role: .cancel) { pendingDeletion = nil }
-            } message: { project in
-                Text("Remove “\(confirmationName(project))” and its saved lighting setup from this library? This cannot be undone here. Existing exports and legacy migration backups are not erased.")
+            } message: { presentation in
+                Text("Remove “\(presentation.confirmationName)” and its saved lighting setup from this library? This cannot be undone here. Existing exports and legacy migration backups are not erased.")
             }
             .sheet(item: $naming) { action in
                 ProjectNameEditor(title: action.title, initial: action.initial) { name in
@@ -195,26 +199,27 @@ struct ProjectLibraryView: View {
         }
     }
 
-    private func projectRow(_ project: LightingProject, active: Bool) -> some View {
-        HStack(spacing: 12) {
+    private func projectRow(_ presentation: ProjectLibraryRowPresentation, active: Bool) -> some View {
+        let project = presentation.project
+        return HStack(spacing: 12) {
             if active {
                 // This is a status row, not a disabled action. Keep the active
                 // project's name readable and expose its selection to VoiceOver.
-                projectRowLabel(project, active: true)
+                projectRowLabel(presentation, active: true)
                     .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("Current project: \(displayName(project))")
-                    .accessibilityValue("\(project.scene.lights.count) lights" + identityValue(project, prefix: ". "))
+                    .accessibilityLabel("Current project: \(presentation.name)")
+                    .accessibilityValue("\(project.scene.lights.count) lights" + presentation.identityValue(prefix: ". "))
                     .accessibilityAddTraits(.isSelected)
                     .accessibilityIdentifier("activeProjectRow")
             } else {
                 Button {
                     change(.select(project.id))
                 } label: {
-                    projectRowLabel(project, active: false)
+                    projectRowLabel(presentation, active: false)
                 }
                 .buttonStyle(.borderless).disabled(!canMutate)
-                .accessibilityLabel("Open \(displayName(project))")
-                .accessibilityValue(identityValue(project))
+                .accessibilityLabel("Open \(presentation.name)")
+                .accessibilityValue(presentation.identityValue())
             }
             Menu {
                 Button("Rename", systemImage: "pencil") {
@@ -232,28 +237,71 @@ struct ProjectLibraryView: View {
                     .frame(width: 44, height: 44).contentShape(Rectangle())
             }
             .disabled(!canMutate)
-            .accessibilityLabel("Options for \(displayName(project))")
-            .accessibilityValue(identityValue(project))
+            .accessibilityLabel("Options for \(presentation.name)")
+            .accessibilityValue(presentation.identityValue())
         }
     }
 
-    private func projectRowLabel(_ project: LightingProject, active: Bool) -> some View {
-        HStack {
-            Image(systemName: active ? "checkmark.circle.fill" : "square.stack")
-                .foregroundStyle(active ? Color.accentColor : Color.secondary)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(displayName(project)).font(.headline).foregroundStyle(.primary)
-                if displayName(project) != project.name {
-                    Text("Project ID: \(project.id.uuidString.prefix(8))")
-                        .font(.caption.monospaced()).foregroundStyle(Color.primary)
-                }
-                Text("\(project.scene.lights.count) lights" + (active ? " · Open" : ""))
-                    .font(.caption).foregroundStyle(Color.primary)
-            }
-            Spacer(minLength: 0)
+    private func projectRowLabel(_ presentation: ProjectLibraryRowPresentation, active: Bool) -> some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+        return layout {
+            ProjectLibraryThumbnail(scene: presentation.project.scene)
+            projectRowText(presentation, active: active)
         }
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
         .contentShape(Rectangle())
-        .frame(minHeight: 44)
+    }
+
+    private func projectRowText(_ presentation: ProjectLibraryRowPresentation, active: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(presentation.name).font(.headline).foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+            if let identifier = presentation.identifier {
+                Text("Project ID: \(identifier)")
+                    .font(.caption.monospaced()).foregroundStyle(Color.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack(spacing: 4) {
+                if active {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Color.accentColor)
+                }
+                Text("\(presentation.project.scene.lights.count) lights" + (active ? " · Open" : ""))
+                    .foregroundStyle(Color.primary)
+            }
+            .font(.caption)
+        }
+    }
+
+    private func archivedProjectRow(_ presentation: ProjectLibraryRowPresentation) -> some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+        return layout {
+            projectRowLabel(presentation, active: false)
+            HStack(spacing: 8) {
+                Button("Restore") { change(.restore(presentation.id)) }
+                    .buttonStyle(.borderless).disabled(!canMutate)
+                    .frame(minHeight: 44)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .accessibilityLabel("Restore \(presentation.name)")
+                    .accessibilityValue(presentation.identityValue())
+                Button(role: .destructive) {
+                    // Freeze the name and distinguishing ID with the complete
+                    // record, so filtering or refresh cannot relabel this alert.
+                    pendingDeletion = presentation
+                    confirmDeletion = true
+                } label: {
+                    Image(systemName: "trash")
+                        .frame(width: 44, height: 44).contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless).disabled(!canMutate)
+                .accessibilityLabel("Delete archived \(presentation.name)")
+                .accessibilityValue(presentation.identityValue())
+            }
+        }
     }
 
     private func apply(_ command: ProjectLibraryCommand) throws -> Task<Void, Error> {
@@ -263,17 +311,12 @@ struct ProjectLibraryView: View {
         return try onApply(command)
     }
 
-    private func displayName(_ project: LightingProject) -> String {
-        let name = StudioDisplayName.display(project.name)
-        return name.isEmpty ? "Unnamed project" : name
-    }
-
-    private func identityValue(_ project: LightingProject, prefix: String = "") -> String {
-        displayName(project) == project.name ? "" : prefix + "Project ID \(project.id.uuidString.prefix(8))"
-    }
-
-    private func confirmationName(_ project: LightingProject) -> String {
-        displayName(project) + (displayName(project) == project.name ? "" : " (ID \(project.id.uuidString.prefix(8)))")
+    private var boundedSearch: Binding<String> {
+        Binding(get: { searchText }, set: { next in
+            // Search is transient. Bound a paste by Unicode scalars so even a
+            // single unusually long grapheme cannot expand native text layout.
+            searchText = String(next.unicodeScalars.prefix(StudioDisplayName.maximumScalars))
+        })
     }
 
     private func change(_ command: ProjectLibraryCommand) {
@@ -365,6 +408,65 @@ struct ProjectLibraryView: View {
         importTask?.cancel()
         importTask = nil
         isImporting = false
+    }
+}
+
+/// Presentation-only identity. Stored names and UUIDs remain untouched. Build
+/// once per library render so each name is sanitized once, including legacy
+/// names whose small grapheme count may hide a large number of Unicode scalars.
+struct ProjectLibraryRowPresentation: Identifiable {
+    let project: LightingProject
+    let name: String
+    let identifier: String?
+
+    var id: UUID { project.id }
+
+    var confirmationName: String {
+        name + (identifier.map { " (ID \($0))" } ?? "")
+    }
+
+    func identityValue(prefix: String = "") -> String {
+        identifier.map { prefix + "Project ID \($0)" } ?? ""
+    }
+
+    func matches(_ query: String) -> Bool {
+        query.isEmpty || name.localizedStandardContains(query)
+    }
+
+    static func make(for projects: [LightingProject]) -> [Self] {
+        let names = projects.map { StudioDisplayName.label($0.name, fallback: "Unnamed project") }
+        let comparableNames = names.map { name in
+            let folded = name.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: .current)
+            // Invisible suffixes can leave different names looking identical.
+            // Ignore them only in comparison keys: scripts and joined emoji
+            // still need their original scalars in the displayed label.
+            return String(String.UnicodeScalarView(folded.unicodeScalars.filter {
+                !$0.properties.isDefaultIgnorableCodePoint
+            }))
+        }
+        let counts = Dictionary(grouping: comparableNames, by: { $0 }).mapValues(\.count)
+        let ids = projects.map { $0.id.uuidString }
+
+        return projects.indices.map { index in
+            let needsIdentity = names[index] != projects[index].name || (counts[comparableNames[index]] ?? 0) > 1
+            var identifier: String?
+            if needsIdentity {
+                // A fixed eight-character prefix can itself collide. Expand
+                // at UUID group boundaries until the identifier is unambiguous
+                // among all records, including those hidden by the search.
+                for length in [8, 13, 18, 23, 36] {
+                    let candidate = String(ids[index].prefix(length))
+                    let collision = ids.indices.contains { other in
+                        other != index && ids[other].hasPrefix(candidate)
+                    }
+                    if !collision {
+                        identifier = candidate
+                        break
+                    }
+                }
+            }
+            return .init(project: projects[index], name: names[index], identifier: identifier)
+        }
     }
 }
 

@@ -7,8 +7,10 @@
 #include <metal_stdlib>
 using namespace metal;
 #define KF_DEVICE device
+#define KF_THREAD thread
 #else
 #define KF_DEVICE
+#define KF_THREAD
 #endif
 
 inline float3 kfXYZ(float4 v) { return float3(v.x, v.y, v.z); }
@@ -62,6 +64,87 @@ inline float kfResponse(float3 n, float3 l, float3 v, float nl, bool sphere) {
     const float fresnel = 0.04f + 0.96f * pow(1.0f - vh, 5.0f);
     return 0.18f * (1.0f - fresnel)
         + (denominator > 0.0f ? distributionTimesPi * fresnel / denominator : 0.0f);
+}
+
+// Positive receiver incidence in the normalized emitter square. One hemisphere
+// plus two column planes creates at most seven vertices; eight slots are shared
+// with the Swift two-hemisphere contract. Read/write buffers never overlap.
+inline uint kfClipStudyPolygon(KF_THREAD const float3 *input, uint count, float3 plane,
+                                KF_THREAD float3 *output) {
+    if (count == 0) return 0;
+    uint result = 0;
+    float3 previous = input[count-1];
+    float previousDistance = plane.x + plane.y*previous.x + plane.z*previous.y;
+    for (uint i=0; i<count; ++i) {
+        const float3 current = input[i];
+        const float distance = plane.x + plane.y*current.x + plane.z*current.y;
+        if ((previousDistance < 0.0f && distance > 0.0f) || (previousDistance > 0.0f && distance < 0.0f)) {
+            const float t = previousDistance/(previousDistance-distance);
+            output[result++] = previous+(current-previous)*t;
+        }
+        if (distance >= 0.0f) output[result++] = current;
+        previous = current; previousDistance = distance;
+    }
+    return result;
+}
+
+struct KFStudySlice { float x; float lower; float upper; float weight; };
+
+// Exact column area and centroid x, with vertical samples inside the lit region.
+// As the clipped face fills the rectangle, this tends to the original midpoint
+// grid. No full/partial cell switches between incompatible quadrature rules.
+inline KFStudySlice kfStudyAreaSlice(KF_THREAD const float3 *polygon, uint count, float3 plane,
+                                    uint col, uint grid, float minimum, float maximum) {
+    const float a = minimum+(maximum-minimum)*(float)col/(float)grid;
+    const float b = minimum+(maximum-minimum)*(float)(col+1)/(float)grid;
+    const float3 zero = float3(0.0f,0.0f,0.0f);
+    float3 left[8] = {zero,zero,zero,zero,zero,zero,zero,zero};
+    float3 column[8] = {zero,zero,zero,zero,zero,zero,zero,zero};
+    const uint leftCount = kfClipStudyPolygon(polygon,count,float3(-a,1.0f,0.0f),left);
+    const uint columnCount = kfClipStudyPolygon(left,leftCount,float3(b,-1.0f,0.0f),column);
+    if (columnCount < 3) return {0.0f,0.0f,0.0f,0.0f};
+    const float3 anchor = column[0];
+    float twiceArea = 0.0f, momentX = 0.0f;
+    for (uint i=1; i+1<columnCount; ++i) {
+        const float3 u = column[i]-anchor, v = column[i+1]-anchor;
+        const float cross = abs(u.x*v.y-u.y*v.x);
+        twiceArea += cross;
+        momentX += cross*(u.x+v.x)/3.0f;
+    }
+    if (twiceArea <= 0.0f) return {0.0f,0.0f,0.0f,0.0f};
+    const float x = clamp(anchor.x+momentX/twiceArea,a,b);
+    const float atX = plane.x+plane.y*x;
+    float lower = -1.0f, upper = 1.0f;
+    if (plane.z > 0.0f) lower = max(lower,-atX/plane.z);
+    else if (plane.z < 0.0f) upper = min(upper,-atX/plane.z);
+    else if (atX <= 0.0f) return {0.0f,0.0f,0.0f,0.0f};
+    if (lower >= upper) return {0.0f,0.0f,0.0f,0.0f};
+    return {x,lower,upper,twiceArea*(float)grid/8.0f};
+}
+
+struct KFStudyIncident { float3 direction; float nl; float lux; bool valid; };
+inline KFStudyIncident kfStudyIncident(float3 source, float candela, float4 axis, float3 p, float3 n) {
+    const float3 delta = source-p;
+    const float r2 = dot(delta,delta);
+    if (r2 < 0.0025f) return {float3(0.0f,0.0f,0.0f),0.0f,0.0f,false};
+    const float3 wi = delta/sqrt(r2);
+    const float nl = kfSaturate(dot(n,wi));
+    const float emitted = axis.w == 0.0f ? 1.0f : kfSaturate(-dot(kfXYZ(axis),wi));
+    return {wi,nl,candela*emitted*nl/r2,true};
+}
+
+struct KFStudyContribution { float3 xyz; bool valid; };
+inline KFStudyContribution kfStudyContribution(float3 source, float candela, float4 axis, float3 color,
+                                               float3 p, float3 n, float3 view, float3 shadowOrigin,
+                                               float radius, float extent, bool sphere) {
+    const KFStudyIncident incident = kfStudyIncident(source,candela,axis,p,n);
+    if (!incident.valid) return {float3(0.0f,0.0f,0.0f),false};
+    if (incident.lux == 0.0f) return {float3(0.0f,0.0f,0.0f),true};
+    const float3 segment = source-shadowOrigin;
+    const float distance = sqrt(dot(segment,segment));
+    if (kfOccluded(shadowOrigin,segment/distance,distance,radius,extent))
+        return {float3(0.0f,0.0f,0.0f),true};
+    return {color*(incident.lux*kfResponse(n,incident.direction,view,incident.nl,sphere)/1000.0f),true};
 }
 
 inline float3 kfBradford(float3 v) {
@@ -132,24 +215,59 @@ inline uchar4 kfStudyPixel(KF_DEVICE const float4 *parameters,
         if (dot(separation,separation) < center.w*center.w) return kfInvalid();
     }
     float3 xyz = float3(0.0f,0.0f,0.0f);
-    for (uint i=0; i<sampleCount; ++i) {
+    const uint grid = (uint)parameters[5].w;
+    if (areaCount > 0 && grid != 8) return kfInvalid();
+    for (uint i=0; i<sampleCount;) {
         const float4 source = samples[3*i], axis = samples[3*i+1], color = samples[3*i+2];
-        const float3 delta = kfXYZ(source)-p;
-        const float r2 = dot(delta,delta);
-        if (r2 < 0.0025f) return kfInvalid();
-        const float3 wi = delta/sqrt(r2);
-        const float nl = kfSaturate(dot(n,wi));
-        if (nl == 0.0f) continue;
-        const float emitted = axis.w == 0.0f ? 1.0f : kfSaturate(-dot(kfXYZ(axis),wi));
-        if (emitted == 0.0f) continue;
-        const float3 segment = kfXYZ(source)-shadowOrigin;
-        const float distance = sqrt(dot(segment,segment));
-        if (kfOccluded(shadowOrigin,segment/distance,distance,radius,extent)) continue;
-        const float lux = source.w*emitted*nl/r2;
-        xyz += kfXYZ(color)*(lux*kfResponse(n,wi,-ray,nl,sphere)/1000.0f);
+        if (color.w == 0.0f) {
+            const KFStudyContribution c = kfStudyContribution(kfXYZ(source),source.w,axis,kfXYZ(color),
+                                                            p,n,-ray,shadowOrigin,radius,extent,sphere);
+            if (!c.valid) return kfInvalid();
+            xyz += c.xyz;
+            ++i;
+            continue;
+        }
+        const uint areaIndex = (uint)color.w-1;
+        if (areaIndex >= areaCount || i+grid*grid > sampleCount) return kfInvalid();
+        const float4 center = areas[3*areaIndex], ar = areas[3*areaIndex+1], au = areas[3*areaIndex+2];
+        const float3 plane = float3(dot(n,kfXYZ(center)-p),dot(n,kfXYZ(ar))*ar.w,dot(n,kfXYZ(au))*au.w);
+        const float span = abs(plane.y)+abs(plane.z);
+        if (plane.x >= span) {
+            for (uint offset=0; offset<grid*grid; ++offset) {
+                const float4 full = samples[3*(i+offset)];
+                const KFStudyContribution c = kfStudyContribution(kfXYZ(full),full.w,axis,kfXYZ(color),
+                                                                p,n,-ray,shadowOrigin,radius,extent,sphere);
+                if (!c.valid) return kfInvalid();
+                xyz += c.xyz;
+            }
+        } else if (plane.x > -span) {
+            const float3 square[4] = {float3(-1.0f,-1.0f,0.0f),float3(1.0f,-1.0f,0.0f),
+                                     float3(1.0f,1.0f,0.0f),float3(-1.0f,1.0f,0.0f)};
+            const float3 zero = float3(0.0f,0.0f,0.0f);
+            float3 polygon[8] = {zero,zero,zero,zero,zero,zero,zero,zero};
+            const uint count = kfClipStudyPolygon(square,4,plane,polygon);
+            if (count >= 3) {
+                float minimum = polygon[0].x, maximum = minimum;
+                for (uint j=1; j<count; ++j) { minimum = min(minimum,polygon[j].x); maximum = max(maximum,polygon[j].x); }
+                for (uint col=0; col<grid; ++col) {
+                    const KFStudySlice slice = kfStudyAreaSlice(polygon,count,plane,col,grid,minimum,maximum);
+                    if (slice.weight == 0.0f) continue;
+                    for (uint row=0; row<grid; ++row) {
+                        const float sy = slice.lower+(slice.upper-slice.lower)*((float)row+0.5f)/(float)grid;
+                        const float3 position = kfXYZ(center)+kfXYZ(ar)*(slice.x*ar.w)+kfXYZ(au)*(sy*au.w);
+                        const KFStudyContribution c = kfStudyContribution(position,source.w*slice.weight,axis,kfXYZ(color),
+                                                                        p,n,-ray,shadowOrigin,radius,extent,sphere);
+                        if (!c.valid) return kfInvalid();
+                        xyz += c.xyz;
+                    }
+                }
+            }
+        }
+        i += grid*grid;
     }
     return kfDisplay(xyz,parameters[4]);
 }
 
 #undef KF_DEVICE
+#undef KF_THREAD
 #endif

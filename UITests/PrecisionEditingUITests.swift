@@ -138,7 +138,9 @@ final class PrecisionEditingUITests: XCTestCase {
         setRoomMeasurement("1.6", id: "roomSubjectX", in: app)
         expect(centers, contains: "All 5 center positions inside room")
         expect(faces, contains: "1 rectangular modifier crosses a wall")
-        reveal(faces, in: app)
+        // The summary is above the measurements. Keep moving toward it when
+        // its frame reaches the sheet's navigation bar but is not yet hittable.
+        reveal(faces, in: app, towardBottom: false)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Manual-room-modifier-crossing"; attachment.lifetime = .keepAlways; add(attachment)
         app.buttons["closeRoomPlacement"].tap()

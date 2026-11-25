@@ -89,7 +89,66 @@ public enum SceneTransform {
             .init(x: diagonal * p.x + cross * p.z, y: p.y,
                   z: cross * p.x - diagonal * p.z)
         }
+        // Retain every rounding residual when adding a translated diagonal's
+        // three bounded scene coordinates. Even a tiny third term can decide
+        // which side of a halfway result the exact sum lies on.
+        func sum(_ a: Double, _ b: Double) -> (value: Double, residual: Double) {
+            let value = a + b
+            let part = value - a
+            return (value, (a - (value - part)) + (b - part))
+        }
+        func affineSum(_ a: Double, _ b: Double, _ c: Double) -> Double {
+            var partials: [Double] = []
+            for var term in [a, b, c] {
+                var count = 0
+                for partial in partials {
+                    let combined = sum(term, partial)
+                    if combined.residual != 0 {
+                        partials[count] = combined.residual
+                        count += 1
+                    }
+                    term = combined.value
+                }
+                partials.removeSubrange(count..<partials.count)
+                if term != 0 { partials.append(term) }
+            }
+            guard var result = partials.popLast() else { return 0 }
+            var residual = 0.0
+            while let partial = partials.popLast() {
+                let combined = sum(result, partial)
+                result = combined.value
+                residual = combined.residual
+                if residual != 0 { break }
+            }
+            // At a halfway result, a remaining term with the residual's sign
+            // selects the adjacent value. The exact-step check distinguishes
+            // this tie from a residual that must leave the rounded sum alone.
+            if let remaining = partials.last,
+               (residual > 0 && remaining > 0) || (residual < 0 && remaining < 0) {
+                let step = 2 * residual
+                let adjacent = result + step
+                if adjacent - result == step { result = adjacent }
+            }
+            return result
+        }
         func mirrored(_ p: Position) -> Position {
+            // Use exact axis/diagonal formulas only for exact camera directions.
+            // They avoid cancelling the source against its displacement and
+            // preserve an axis-aligned plane's unchanged coordinate verbatim.
+            if dx == 0 {
+                return .init(x: 2 * center.x - p.x, y: p.y, z: p.z)
+            }
+            if dz == 0 {
+                return .init(x: p.x, y: p.y, z: 2 * center.z - p.z)
+            }
+            if dx == dz {
+                return .init(x: affineSum(p.z, center.x, -center.z), y: p.y,
+                             z: affineSum(p.x, center.z, -center.x))
+            }
+            if dx == -dz {
+                return .init(x: affineSum(-p.z, center.x, center.z), y: p.y,
+                             z: affineSum(-p.x, center.z, center.x))
+            }
             let x = p.x - center.x, z = p.z - center.z
             return .init(x: p.x + ((diagonal - 1) * x + cross * z), y: p.y,
                          z: p.z + (cross * x - (diagonal + 1) * z))

@@ -122,8 +122,49 @@ final class MetalStudyRenderer {
 /// allowed to complete, then discarded; CPU pixel work checks cancellation at most every eight evaluations.
 actor StudyRenderEngine {
     static let shared = StudyRenderEngine()
+    // Bound both the number of scene snapshots and retained RGBA storage.
+    // Four small frames fit; at 192 × 128 the byte limit retains at most two.
+    static let maximumCachedFrames = 4
+    static let maximumCachedPixelBytes = 256 * 1024
+
+    private struct CacheKey: Equatable {
+        let scene: LightingScene
+        let width: Int
+        let subject: StudySubject
+
+        init?(scene: LightingScene, width: Int, subject: StudySubject) {
+            // A hit must never bypass validation of metadata that the renderer
+            // otherwise rejects. Leave errors and their ordering to the actual
+            // render path when validation fails.
+            guard (try? scene.validated()) != nil else { return nil }
+            var snapshot = scene
+            snapshot.lights = scene.lights.map { light in
+                var copy = light
+                // Display names do not affect pixels. Do not retain arbitrary
+                // Unicode storage: the 80-character limit is not a byte limit.
+                copy.name = ""
+                return copy
+            }
+            // Retain every other scene value, including complete optics, light
+            // order, camera, exposure and room metadata. Equality is exact;
+            // there is no hash-only or rounded-coordinate cache identity.
+            self.scene = snapshot
+            self.width = width
+            self.subject = subject
+        }
+    }
+
+    private struct CachedFrame {
+        let key: CacheKey
+        let frame: StudyRenderedFrame
+    }
+
     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
     private var state = State.unchecked
+    // Least recently used first. Validated keys contain at most twelve lights
+    // and only bounded, fixed-size values after display names are removed.
+    private var cachedFrames: [CachedFrame] = []
+    private var cachedPixelBytes = 0
     private let additionalCancellation: @Sendable () -> Bool
 
     /// An additional cooperative cancellation source is useful to callers that
@@ -137,13 +178,22 @@ actor StudyRenderEngine {
         let additionalCancellation = additionalCancellation
         let isCancelled = { Task.isCancelled || additionalCancellation() }
         guard !isCancelled() else { throw StudyError.cancelled }
+        let renderWidth = subject == .bust ? min(width, PortraitStudyRenderer.maximumWidth) : width
+        let key = CacheKey(scene: scene, width: renderWidth, subject: subject)
+        if let key, let index = cachedFrames.firstIndex(where: { $0.key == key }) {
+            let cached = cachedFrames[index]
+            guard !isCancelled() else { throw StudyError.cancelled }
+            cachedFrames.remove(at: index)
+            cachedFrames.append(cached)
+            return cached.frame
+        }
         if subject == .bust {
             // The mannequin has additional geometry. Do not send it
             // to the sphere-only Metal kernel or claim a validated GPU path.
-            let image = try PortraitStudyRenderer.render(scene: scene, width: min(width, PortraitStudyRenderer.maximumWidth),
+            let image = try PortraitStudyRenderer.render(scene: scene, width: renderWidth,
                                                         isCancelled: isCancelled)
             guard !isCancelled() else { throw StudyError.cancelled }
-            return StudyRenderedFrame(image: image, backend: .cpu)
+            return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
         }
         if case .unchecked = state {
             do {
@@ -158,7 +208,7 @@ actor StudyRenderEngine {
                 throw error
             } catch {
                 guard !isCancelled() else { throw StudyError.cancelled }
-                state = .cpu
+                selectCPU()
             }
         }
         guard !isCancelled() else { throw StudyError.cancelled }
@@ -166,19 +216,45 @@ actor StudyRenderEngine {
             do {
                 let image = try renderer.render(scene: scene, width: width)
                 guard !isCancelled() else { throw StudyError.cancelled }
-                return StudyRenderedFrame(image: image, backend: .metal)
+                return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)
             } catch let error as StudyError {
                 // Validation/cancellation is a scene error, not a backend failure.
                 if error != .invalidComputeOutput { throw error }
                 guard !isCancelled() else { throw StudyError.cancelled }
-                state = .cpu
+                selectCPU()
             } catch {
                 guard !isCancelled() else { throw StudyError.cancelled }
-                state = .cpu
+                selectCPU()
             }
         }
         let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
         guard !isCancelled() else { throw StudyError.cancelled }
-        return StudyRenderedFrame(image: image, backend: .cpu)
+        return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+    }
+
+    private func selectCPU() {
+        state = .cpu
+        // A runtime backend failure invalidates its old frames as well. A later
+        // hit must not resurrect Metal after the engine has failed closed.
+        for index in cachedFrames.indices.reversed() where cachedFrames[index].frame.backend == .metal {
+            cachedPixelBytes -= cachedFrames.remove(at: index).frame.image.rgba.count
+        }
+    }
+
+    /// Only called after the final cooperative cancellation check. There is no
+    /// suspension between that check, cache admission and returning the frame.
+    private func retain(_ frame: StudyRenderedFrame, for key: CacheKey?) -> StudyRenderedFrame {
+        let byteCount = frame.image.rgba.count
+        guard let key, byteCount <= Self.maximumCachedPixelBytes else { return frame }
+        // Evict before appending, so storage never temporarily exceeds either
+        // limit. Subtraction avoids overflow even if image bounds later grow.
+        while !cachedFrames.isEmpty &&
+                (cachedFrames.count >= Self.maximumCachedFrames ||
+                 cachedPixelBytes > Self.maximumCachedPixelBytes - byteCount) {
+            cachedPixelBytes -= cachedFrames.removeFirst().frame.image.rgba.count
+        }
+        cachedFrames.append(CachedFrame(key: key, frame: frame))
+        cachedPixelBytes += byteCount
+        return frame
     }
 }

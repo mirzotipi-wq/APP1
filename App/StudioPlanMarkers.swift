@@ -22,7 +22,7 @@ struct StudioPlanLabelNoticeKey: PreferenceKey {
 }
 
 /// Captions have their own layout; the 44pt controls stay on the exact world
-/// projection. Text is measured and drawn with the same explicitly scaled font.
+/// projection. Semantic caption fonts and their measured sizes scale together.
 struct StudioPlanMarkers: View {
     let markers: [StudioPlanMarker]
     let gridTitle: String
@@ -67,14 +67,16 @@ struct StudioPlanMarkers: View {
                 ForEach(Array(markers.enumerated()), id: \.element.id) { index, marker in
                     if let frame = layout?.captionFrames[index] {
                         Text(marker.name)
-                            .font(.system(size: captionPointSize, weight: .semibold))
+                            .font(.caption2.weight(.semibold))
                             .lineLimit(1).truncationMode(.tail).foregroundStyle(.white)
                             .frame(width: max(0, CGFloat(frame.width) - 8),
                                    height: max(0, CGFloat(frame.height) - 4))
                             .padding(.horizontal, 4).padding(.vertical, 2)
                             .background(.black.opacity(0.8), in: Capsule())
                             .position(x: CGFloat(frame.centerX), y: CGFloat(frame.centerY))
-                            .accessibilityHidden(true).allowsHitTesting(false)
+                            // The caption is displaced from the marker's action
+                            // frame; expose the visible text at its own location.
+                            .allowsHitTesting(false)
                     }
                 }
                 ForEach(markers) { marker in
@@ -85,8 +87,9 @@ struct StudioPlanMarkers: View {
                         .zIndex(marker.selected ? 2 : 1)
                 }
                 Text(gridTitle)
-                    .font(.system(size: captionPointSize, weight: .medium, design: .monospaced))
-                    .foregroundStyle(.white.opacity(0.75))
+                    .font(.caption2.monospaced().weight(.medium))
+                    .foregroundStyle(.white)
+                    .background(StudioPalette.planBackground)
                     .padding(10).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .allowsHitTesting(false)
             }

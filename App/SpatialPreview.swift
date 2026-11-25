@@ -287,7 +287,15 @@ struct SpatialPreview: UIViewRepresentable {
             case .rectangle: geometry = SCNBox(width: CGFloat(optics.widthMeters), height: CGFloat(optics.heightMeters), length: 0.055, chamferRadius: 0.012)
             }
             let fixture = object(geometry, color: color, at: pos, in: root)
-            if let frame { orient(fixture, to: frame) }
+            if let frame {
+                orient(fixture, to: frame)
+                if let box = geometry as? SCNBox {
+                    // The local +Z face is the authored emitting plane. Keep
+                    // the housing behind it, including after aim and roll.
+                    // The light source and stand retain their authored anchors.
+                    fixture.localTranslate(by: SCNVector3(0, 0, -Float(box.length) / 2))
+                }
+            }
             if !cameraMode {
                 coordinator.lightIDs[ObjectIdentifier(fixture)] = light.id
                 // A wire outline marks selection without changing light output

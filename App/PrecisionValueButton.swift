@@ -31,7 +31,7 @@ struct PrecisionValueButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .foregroundStyle(Color.accentColor)
+        .foregroundStyle(StudioPalette.action)
         .accessibilityLabel("Enter exact " + title.lowercased())
         .accessibilityValue(display)
         .accessibilityHint("Opens a numeric editor")
@@ -70,7 +70,7 @@ private struct PrecisionValueEditor: View {
                             .font(.body.monospacedDigit())
                             .accessibilityIdentifier("precisionPreservedValue")
                         Text("This value needs scientific notation. Leave the field empty to keep it, or enter a new decimal value.")
-                            .font(.footnote).foregroundStyle(.secondary)
+                            .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     }
                     HStack {
                         TextField("Value", text: $draft)
@@ -82,7 +82,7 @@ private struct PrecisionValueEditor: View {
                             .accessibilityLabel(title + " in " + unit)
                             .accessibilityIdentifier("precisionValue")
                             .onSubmit { apply() }
-                        Text(unit).foregroundStyle(.secondary)
+                        Text(unit).font(.body).foregroundStyle(StudioPalette.secondaryText)
                     }
                     if invalid {
                         Label("Enter a valid decimal within the allowed range.",
@@ -91,21 +91,29 @@ private struct PrecisionValueEditor: View {
                             .accessibilityIdentifier("precisionError")
                     }
                     Button("Apply value") { apply() }
-                        .fontWeight(.semibold)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(StudioPalette.action)
                         .frame(minHeight: 44)
                         .accessibilityIdentifier("precisionApply")
                 } header: {
                     Text("Exact value")
+                        .font(.headline)
+                        .foregroundStyle(StudioPalette.secondaryText)
                 } footer: {
                     Text("Allowed: \(format(range.lowerBound)) to \(format(range.upperBound)) \(unit). No grouping or scientific notation. The value is not snapped to slider increments.")
+                        .font(.footnote)
+                        .foregroundStyle(StudioPalette.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { cancel() }
-                        .accessibilityIdentifier("precisionCancel")
+                    Button { cancel() } label: {
+                        Text("Cancel").font(.body)
+                    }
+                    .accessibilityIdentifier("precisionCancel")
                 }
             }
             .onAppear {
@@ -125,6 +133,7 @@ private struct PrecisionValueEditor: View {
             .onChange(of: range) { _, _ in if active { cancel() } }
             .onDisappear { active = false }
         }
+        .tint(StudioPalette.action)
     }
 
     private func format(_ number: Double) -> String {

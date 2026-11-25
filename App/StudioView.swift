@@ -82,57 +82,58 @@ struct StudioView: View {
     var body: some View {
         let generation = libraryOperation.generation
         return NavigationStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        header
-                        if saveBlocked {
-                            ContentUnavailableView {
-                                Label("Saved project unavailable", systemImage: "externaldrive.badge.exclamationmark")
-                            } description: {
-                                Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
-                            } actions: {
-                                Button("Retry loading saved project") { load(from: generation) }
-                                    .buttonStyle(.borderedProminent)
-                                    .disabled(libraryOperation.isBusy)
-                            }
-                        } else if !loaded {
-                            ProgressView("Opening projects…")
-                                .frame(maxWidth: .infinity, minHeight: 160)
-                        } else {
-                            if saveConflict { conflictRecoveryPanel.disabled(libraryOperation.isBusy) }
-                            workflowActions.disabled(libraryOperation.isBusy)
-                            workspace.disabled(libraryOperation.isBusy)
-                            meter.id("meterPanel").disabled(libraryOperation.isBusy)
-                            rack.disabled(libraryOperation.isBusy)
-                            if let light = scene.lights.first(where: { $0.id == selected }) {
-                                inspector(light).disabled(libraryOperation.isBusy)
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            header
+                            if saveBlocked {
+                                ContentUnavailableView {
+                                    Label("Saved project unavailable", systemImage: "externaldrive.badge.exclamationmark")
+                                } description: {
+                                    Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
+                                } actions: {
+                                    Button("Retry loading saved project") { load(from: generation) }
+                                        .buttonStyle(.borderedProminent)
+                                        .disabled(libraryOperation.isBusy)
+                                }
+                            } else if !loaded {
+                                ProgressView("Opening projects…")
+                                    .frame(maxWidth: .infinity, minHeight: 160)
                             } else {
-                                ContentUnavailableView("No light selected", systemImage: "lightbulb",
-                                    description: Text("Add a light or choose a recipe."))
+                                if saveConflict { conflictRecoveryPanel.disabled(libraryOperation.isBusy) }
+                                workflowActions.disabled(libraryOperation.isBusy)
+                                workspace.disabled(libraryOperation.isBusy)
+                                meter.id("meterPanel").disabled(libraryOperation.isBusy)
+                                rack.disabled(libraryOperation.isBusy)
+                                if let light = scene.lights.first(where: { $0.id == selected }) {
+                                    inspector(light).disabled(libraryOperation.isBusy)
+                                } else {
+                                    ContentUnavailableView("No light selected", systemImage: "lightbulb",
+                                        description: Text("Add a light or choose a recipe."))
+                                }
+                                Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
+                                    .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                             }
-                            Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
-                                .font(.footnote).foregroundStyle(.secondary)
+                            if let message, !saveConflict { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
                         }
-                        if let message, !saveConflict { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
+                        .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
                     }
-                    .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
-                }
-                .scrollDisabled(planDrag != nil)
-                .onChange(of: meterNavigationRequest) { _, _ in
-                    if reduceMotion {
-                        proxy.scrollTo("meterPanel", anchor: .top)
-                    } else {
-                        withAnimation(.easeInOut(duration: 0.25)) {
+                    .scrollDisabled(planDrag != nil)
+                    .onChange(of: meterNavigationRequest) { _, _ in
+                        if reduceMotion {
                             proxy.scrollTo("meterPanel", anchor: .top)
+                        } else {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                proxy.scrollTo("meterPanel", anchor: .top)
+                            }
                         }
                     }
                 }
-            }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
+                .clipped()
                 if loaded && !saveBlocked {
                     HStack(spacing: 12) {
-                        Text("Edit history").font(.caption).foregroundStyle(.secondary)
+                        Text("Edit history").font(.caption).foregroundStyle(StudioPalette.secondaryText)
                         Spacer()
                         Button(action: sceneAction { undo() }) {
                             Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
@@ -145,10 +146,12 @@ struct StudioView: View {
                         }
                         .disabled(libraryOperation.isBusy || !editHistory.canRedo || editHistory.isEditing).accessibilityLabel("Redo").accessibilityIdentifier("redo")
                     }
-                    .padding(.horizontal, 16).background(.bar)
+                    .padding(.horizontal, 16)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
                 }
             }
             .background(Color(uiColor: .systemGroupedBackground))
+            .tint(StudioPalette.action)
             .navigationTitle("Key & Fill")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -157,7 +160,9 @@ struct StudioView: View {
                         .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("recipes")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") { save(from: generation) }.fontWeight(.semibold)
+                    Button { save(from: generation) } label: {
+                        Text("Save").font(.body.weight(.semibold))
+                    }
                         .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("saveProject")
                 }
             }
@@ -254,7 +259,8 @@ struct StudioView: View {
             }
             .sheet(isPresented: $showRecoveryCapacity) {
                 RecoveryCapacityView(onLoad: {
-                    try await store.recoveryCandidates()
+                    let snapshot = try await store.recoveryLibrarySnapshot()
+                    return snapshot.projects
                 }, onReplace: { candidate in
                     try beginLibraryOperation(.recover(name: recoveryProjectName, replacing: candidate), from: generation)
                 })
@@ -317,13 +323,13 @@ struct StudioView: View {
 
     private var projectHeading: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(.secondary)
+            Text("LIGHTING STUDIO").font(.caption2.weight(.semibold)).tracking(2).foregroundStyle(StudioPalette.secondaryText)
             Text(saveBlocked ? "Project unavailable" : StudioDisplayName.label(projectName, fallback: "Unnamed project"))
                 .font(.title2.bold())
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                 .accessibilityIdentifier("projectName")
             Text(saveBlocked ? "Saved data protected" : (saved == scene ? "Saved locally" : "Unsaved changes"))
-                .font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("projectStatus")
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText).accessibilityIdentifier("projectStatus")
             if let operation = libraryOperation.pending?.operation {
                 HStack(spacing: 8) {
                     ProgressView()
@@ -406,7 +412,7 @@ struct StudioView: View {
             Button("Reload latest saved library") { confirmReloadConflict = true }
                 .frame(minHeight: 44).accessibilityIdentifier("reloadConflict")
             if let message {
-                Text(message).font(.footnote).foregroundStyle(.secondary)
+                Text(message).font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     .accessibilityIdentifier("conflictMessage")
             }
         }
@@ -459,7 +465,7 @@ struct StudioView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(StudioPalette.action)
                 .accessibilityLabel("Open light meter and test card")
                 .accessibilityHint("Opens and scrolls to the meter controls")
                 .accessibilityIdentifier("openMeter")
@@ -512,13 +518,13 @@ struct StudioView: View {
                         .accessibilityIdentifier("planSelectedLight")
                     if lightDisplayName(light) != light.name {
                         Text("Light ID: \(light.id.uuidString.prefix(8))")
-                            .font(.caption2.monospaced()).foregroundStyle(.secondary)
+                            .font(.caption2.monospaced()).foregroundStyle(StudioPalette.secondaryText)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
                 if planNeedsLabelNotice {
                     Text("Use the light list below to select lights in crowded positions.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityIdentifier("planLabelNotice")
                 }
@@ -533,10 +539,10 @@ struct StudioView: View {
                         .accessibilityIdentifier("fitStudioSetup")
                 }
                 Text(displayUnits == .metric ? "Meters · cd · K" : "Feet · cd · K").monospaced()
-            }.font(.caption).foregroundStyle(.secondary)
+            }.font(.caption).foregroundStyle(StudioPalette.secondaryText)
             if mode == "3D" {
                 Text("Drag to orbit · Pinch to zoom · Two fingers to pan · Tap a light to select")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if mode == "Study" {
@@ -550,7 +556,7 @@ struct StudioView: View {
                 Text(studySubject == .sphere
                      ? "Neutral sphere and panel · direct light, finite-source shadows and relative color. Not calibrated exposure."
                      : "Neutral mannequin · head, nose, ears, shoulders and matte clothing. Uses your actual camera framing. CPU direct-light diagnostic, not calibrated skin or a reconstructed person.")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if mode == "Camera" || mode == "Study" {
@@ -723,12 +729,12 @@ struct StudioView: View {
                         Label("Light meter & test card", systemImage: "sun.max")
                             .font(.headline)
                         Text("Ideal direct light · relative color preview")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     }
                     Spacer(minLength: 8)
                     Image(systemName: showMeter ? "chevron.up" : "chevron.down")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(StudioPalette.secondaryText)
                         .accessibilityHidden(true)
                 }
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
@@ -764,7 +770,7 @@ struct StudioView: View {
                 .disabled(scene.lights.count >= 12 || !loaded)
                 .accessibilityIdentifier("addLight")
             }
-            if scene.lights.isEmpty { Text("Start with one light or choose a recipe.").foregroundStyle(.secondary) }
+            if scene.lights.isEmpty { Text("Start with one light or choose a recipe.").foregroundStyle(StudioPalette.secondaryText) }
             ForEach(scene.lights) { light in
                 Button(action: sceneAction { selected = light.id }) {
                     HStack(spacing: 12) {
@@ -774,7 +780,7 @@ struct StudioView: View {
                             Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
                             Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
                             Text("\(displayUnits.fromMeters(light.position.distance(to: scene.subject)), specifier: "%.2f") \(displayUnits.symbol) · \(light.kelvin, specifier: "%.0f") K")
-                                .font(.caption).foregroundStyle(.secondary)
+                                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                         }
                         Spacer()
                         Text(StudioMeterReadout.candela(light.candela, locale: locale)).font(.caption.monospacedDigit())
@@ -794,7 +800,7 @@ struct StudioView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("LIGHT INSPECTOR").font(.caption2.weight(.semibold)).tracking(1.4).foregroundStyle(.secondary)
+                    Text("LIGHT INSPECTOR").font(.caption2.weight(.semibold)).tracking(1.4).foregroundStyle(StudioPalette.secondaryText)
                     Text(lightDisplayName(light)).font(.title3.bold())
                 }
                 Spacer()
@@ -825,18 +831,18 @@ struct StudioView: View {
                 }.accessibilityLabel("Remove selected light")
             }
             VStack(alignment: .leading, spacing: 5) {
-                Text("CAMERA-FACING PLANE · IDEAL").font(.caption2.weight(.medium)).foregroundStyle(.secondary)
+                Text("CAMERA-FACING PLANE · IDEAL").font(.caption2.weight(.medium)).foregroundStyle(StudioPalette.secondaryText)
                 if let lux = StudioPhotometry.illuminance(for: light, in: scene) {
                     Text(StudioMeterReadout.lux(lux, locale: locale))
                         .font(.system(.title2, design: .monospaced).weight(.semibold))
                         .accessibilityIdentifier("idealLux")
                     Text("Direct incident light at the subject center. Rim lights may read zero on this plane.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                 } else {
                     Label("Estimate unavailable", systemImage: "exclamationmark.triangle")
                         .font(.subheadline.weight(.semibold)).accessibilityIdentifier("idealLux")
                     Text("Check the aim and separation of the emitter, subject and camera. Near-field geometry can fall outside the model.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                 }
             }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
                 .background(amber.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
@@ -980,7 +986,7 @@ struct StudioView: View {
                     Text(recipeUsesCurrentPlacement
                          ? "Place a starting rig around your subject, facing your camera. Camera settings and measured room stay with the setup. Undo restores the previous lights."
                          : "Start from the recipe's subject, camera and lights. This also resets measured room and preview settings. Undo restores your previous setup.")
-                        .font(.subheadline).foregroundStyle(.secondary)
+                        .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                     if let recipeMessage {
                         Text(recipeMessage).font(.subheadline).foregroundStyle(.red)
                             .accessibilityIdentifier("recipeMessage")
@@ -996,12 +1002,12 @@ struct StudioView: View {
                             HStack(spacing: 12) {
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(recipe.rawValue).font(.headline).foregroundStyle(.primary)
-                                    Text(recipe.detail).font(.subheadline).foregroundStyle(.secondary)
+                                    Text(recipe.detail).font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                                     Text("\(recipe.lightCount) \(recipe.lightCount == 1 ? "light" : "lights")")
-                                        .font(.caption).foregroundStyle(.secondary)
+                                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                                 }
                                 Spacer(minLength: 8)
-                                Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                                Image(systemName: "chevron.right").foregroundStyle(StudioPalette.secondaryText)
                             }
                             .padding(14)
                             .frame(maxWidth: .infinity, minHeight: 60, alignment: .leading)
@@ -1017,7 +1023,7 @@ struct StudioView: View {
                         .accessibilityIdentifier("recipe-\(recipe.rawValue)")
                     }
                     Text(LightingRecipe.threePoint.assumptions)
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
             }
@@ -1168,11 +1174,13 @@ struct StudioView: View {
     }
     private func addLight() {
         guard !libraryOperation.isBusy, scene.lights.count < 12 else { return }
-        var next = scene
-        var n = 1
-        while next.lights.contains(where: { $0.name == "Light \(n)" }) { n += 1 }
-        let light = StudioLight(name: "Light \(n)", position: .init(x: 1, y: 2, z: 1), candela: 500, kelvin: 5600)
-        next.lights.append(light); replace(next); selected = light.id
+        do {
+            let next = try SceneLightCreation.addingLight(to: scene)
+            replace(next)
+            selected = next.lights.last?.id
+        } catch {
+            message = error.localizedDescription
+        }
     }
 
     private func isValidLightName(_ value: String) -> Bool {

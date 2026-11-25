@@ -1,11 +1,12 @@
 import Foundation
 
 public enum StudyQuality: Sendable {
-    /// 8×8 midpoint samples per rectangle. Intended for a small diagnostic image.
+    /// 8×8 samples per rectangle. Full faces retain their midpoint grid; grazing
+    /// faces redistribute the same number of samples over the positive region.
     case interactive
     /// 32×32 midpoint samples per rectangle, matching the diagnostic meter for fully
-    /// front-facing receivers. The meter clips partial faces at grazing incidence;
-    /// this precomputed, occlusion-capable renderer retains its fixed sample grid.
+    /// front-facing receivers. Partial faces use bounded, continuous clipped-area
+    /// sampling, including per-sample visibility and material evaluation.
     case reference
     fileprivate var grid: Int { self == .interactive ? 8 : 32 }
 }
@@ -100,14 +101,113 @@ public struct StudySurfaceSignal: Equatable, Sendable {
     public let signalXYZ: RelativeXYZ
 }
 
+/// Positive receiver incidence in normalized emitter coordinates [-1, 1]².
+struct StudyAreaSamplingPlane {
+    let center: Double
+    let x: Double
+    let y: Double
+    var isFull: Bool { center >= abs(x) + abs(y) }
+    var isEmpty: Bool { center <= -abs(x) - abs(y) }
+    func at(_ p: SIMD2<Double>) -> Double { center + x * p.x + y * p.y }
+}
+
+/// A fixed number of samples over a moving convex domain. Clip the emitter once,
+/// divide its x projection into equal columns, and use each column's exact area
+/// and centroid x. Uniform vertical samples stay inside the illuminated interval.
+/// Column areas and centroids vary continuously when a clip crosses a grid edge;
+/// at the full-face limit the positions/weights approach the original midpoints.
+/// Visibility can still have the usual discrete shadow-sampling transitions.
+enum StudyAreaSliceSampling {
+    static func forEach(grid: Int, normal: StudyAreaSamplingPlane, geometric: StudyAreaSamplingPlane? = nil,
+                        _ body: (SIMD2<Double>, Double) throws -> Void) rethrows {
+        guard !normal.isEmpty, !(geometric?.isEmpty ?? false) else { return }
+        // A rectangle clipped by two hemisphere and two column planes has at
+        // most eight vertices. Four separate buffers avoid input/output aliasing.
+        try withUnsafeTemporaryAllocation(of: SIMD2<Double>.self, capacity: 32) { storage in
+            let first = UnsafeMutableBufferPointer(rebasing: storage[0..<8])
+            let second = UnsafeMutableBufferPointer(rebasing: storage[8..<16])
+            let left = UnsafeMutableBufferPointer(rebasing: storage[16..<24])
+            let column = UnsafeMutableBufferPointer(rebasing: storage[24..<32])
+            first[0] = .init(-1, -1); first[1] = .init(1, -1)
+            first[2] = .init(1, 1); first[3] = .init(-1, 1)
+            var count = clip(first, count: 4, plane: normal, into: second)
+            var polygon = second
+            if let geometric {
+                count = clip(second, count: count, plane: geometric, into: first)
+                polygon = first
+            }
+            guard count >= 3 else { return }
+            var minimum = polygon[0].x, maximum = minimum
+            for i in 1..<count { minimum = min(minimum, polygon[i].x); maximum = max(maximum, polygon[i].x) }
+            guard minimum < maximum else { return }
+            for col in 0..<grid {
+                let a = minimum + (maximum - minimum) * Double(col) / Double(grid)
+                let b = minimum + (maximum - minimum) * Double(col + 1) / Double(grid)
+                let leftCount = clip(polygon, count: count, plane: .init(center: -a, x: 1, y: 0), into: left)
+                let columnCount = clip(left, count: leftCount, plane: .init(center: b, x: -1, y: 0), into: column)
+                guard columnCount >= 3 else { continue }
+                let anchor = column[0]
+                var twiceArea = 0.0, momentX = 0.0
+                for i in 1..<(columnCount - 1) {
+                    let u = column[i] - anchor, v = column[i + 1] - anchor
+                    let cross = abs(u.x * v.y - u.y * v.x)
+                    twiceArea += cross
+                    momentX += cross * (u.x + v.x) / 3
+                }
+                guard twiceArea > 0 else { continue }
+                let x = min(b, max(a, anchor.x + momentX / twiceArea))
+                var lower = -1.0, upper = 1.0
+                func constrain(_ plane: StudyAreaSamplingPlane) {
+                    let atX = plane.center + plane.x * x
+                    if plane.y > 0 { lower = max(lower, -atX / plane.y) }
+                    else if plane.y < 0 { upper = min(upper, -atX / plane.y) }
+                    else if atX <= 0 { upper = lower }
+                }
+                constrain(normal)
+                if let geometric { constrain(geometric) }
+                guard lower < upper else { continue }
+                // twiceArea / 8 is the column's fraction of the whole emitter.
+                // Each row takes 1/grid of it; base samples carry candela/grid².
+                let weight = twiceArea * Double(grid) / 8
+                for row in 0..<grid {
+                    let y = lower + (upper - lower) * (Double(row) + 0.5) / Double(grid)
+                    try body(.init(x, y), weight)
+                }
+            }
+        }
+    }
+
+    private static func clip(_ input: UnsafeMutableBufferPointer<SIMD2<Double>>, count: Int,
+                             plane: StudyAreaSamplingPlane, into output: UnsafeMutableBufferPointer<SIMD2<Double>>) -> Int {
+        guard count > 0 else { return 0 }
+        var result = 0, previous = input[count - 1], previousDistance = plane.at(previous)
+        for i in 0..<count {
+            let current = input[i], distance = plane.at(current)
+            // Intersect only strict sign crossings and retain exact tangencies.
+            // Rounding can produce coincident vertices; their triangles have
+            // zero area in the column moment calculation.
+            if (previousDistance < 0 && distance > 0) || (previousDistance > 0 && distance < 0) {
+                let t = previousDistance / (previousDistance - distance)
+                output[result] = previous + (current - previous) * t
+                result += 1
+            }
+            if distance >= 0 { output[result] = current; result += 1 }
+            previous = current; previousDistance = distance
+        }
+        return result
+    }
+}
+
 /// Prepared light samples are shared across surface evaluations. Rectangular sources
-/// use area-weighted midpoint samples; sample intensity sums to on-axis candela.
+/// retain midpoint samples on full faces and redistribute them continuously on
+/// clipped faces, with weights proportional to the actual illuminated area.
 public struct StudyLighting: Sendable {
     private struct Sample: Sendable {
         let position: SIMD3<Double>
         let emittingNormal: SIMD3<Double>?
         let candela: Double
         let xyz: SIMD3<Double>
+        let areaIndex: Int?
     }
     private struct AreaGuard: Sendable {
         let center: SIMD3<Double>
@@ -127,6 +227,7 @@ public struct StudyLighting: Sendable {
     }
     private let samples: [Sample]
     private let areaGuards: [AreaGuard]
+    private let grid: Int
 
     public init(scene: LightingScene, quality: StudyQuality = .interactive) throws {
         guard (try? scene.validated()) != nil else { throw StudyError.invalidScene }
@@ -137,15 +238,16 @@ public struct StudyLighting: Sendable {
             let xyz = SIMD3<Double>(color.x, color.y, color.z)
             let optics = light.effectiveOptics, center = vec(light.position)
             if optics.kind == .point {
-                result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz))
+                result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz, areaIndex: nil))
             } else {
                 guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }
                 let axis = vec(frame.normal)
                 if optics.kind == .directional {
-                    result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz))
+                    result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz, areaIndex: nil))
                 } else {
                     let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
                     let perCell = light.candela / Double(grid * grid)
+                    let areaIndex = guards.count
                     guards.append(.init(center: center, right: right, up: up,
                                         halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
                                         minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))
@@ -153,13 +255,14 @@ public struct StudyLighting: Sendable {
                         let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters
                         for col in 0..<grid {
                             let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
-                            result.append(.init(position: center + right * x + up * y, emittingNormal: axis, candela: perCell, xyz: xyz))
+                            result.append(.init(position: center + right * x + up * y, emittingNormal: axis,
+                                                candela: perCell, xyz: xyz, areaIndex: areaIndex))
                         }
                     }
                 }
             }
         }
-        samples = result; areaGuards = guards
+        samples = result; areaGuards = guards; grid = quality.grid
     }
 
     public var sampleCount: Int { samples.count }
@@ -168,7 +271,8 @@ public struct StudyLighting: Sendable {
     // Translate positions to the subject center to reduce Float32 roundoff.
     fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
         samples.flatMap { s in
-            [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1), pack(s.xyz, 0)]
+            [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),
+             pack(s.xyz, s.areaIndex.map { Double($0 + 1) } ?? 0)]
         }
     }
 
@@ -189,7 +293,7 @@ public struct StudyLighting: Sendable {
 
     /// Internal direct-light evaluator shared by the sphere and mannequin
     /// diagnostics. The additional visibility function is CPU-only; the sphere
-    /// and its fixed-grid Metal oracle retain the original sampling contract.
+    /// and its Metal oracle share the clipped-area sampling contract.
     func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
                   material: StudyMaterial, geometry: StudyGeometry? = nil,
                   occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil,
@@ -197,31 +301,60 @@ public struct StudyLighting: Sendable {
         if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }
         var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero
         let shadowOrigin = receiver + (geometricNormal ?? normal) * 1e-5
-        for sample in samples {
-            let delta = sample.position - receiver
+        func accumulate(position: SIMD3<Double>, candela: Double, sample: Sample) throws {
+            let delta = position - receiver
             let r2 = dot3(delta, delta)
             guard r2 >= 0.0025 else { throw StudyError.invalidSurface }
             let distance = sqrt(r2), wi = delta / distance
             // Mesh shading normals must not admit light from below the actual face.
             // Analytic sphere and planar receivers retain their original path.
-            if let geometricNormal, dot3(geometricNormal, wi) <= 0 { continue }
+            if let geometricNormal, dot3(geometricNormal, wi) <= 0 { return }
             let nl = min(1, max(0, dot3(normal, wi)))
-            if nl == 0 { continue }
+            if nl == 0 { return }
             let emitted = sample.emittingNormal.map { min(1, max(0, -dot3($0, wi))) } ?? 1
-            if emitted == 0 { continue }
-            let lux = sample.candela * emitted * nl / r2
+            if emitted == 0 { return }
+            let lux = candela * emitted * nl / r2
             total += lux
             // Offset origin while keeping the shadow ray aimed at the actual source sample.
             if geometry != nil || occlusionTest != nil {
-                let segment = sample.position - shadowOrigin
+                let segment = position - shadowOrigin
                 let length = sqrt(dot3(segment, segment))
                 let shadowDirection = segment / length
                 if geometry?.occludes(from: shadowOrigin, to: shadowDirection, distance: length) == true ||
-                    occlusionTest?(shadowOrigin, shadowDirection, length) == true { continue }
+                    occlusionTest?(shadowOrigin, shadowDirection, length) == true { return }
             }
             visible += lux
             let scale = lux * material.response(normal: normal, light: wi, view: view, nl: nl) / 1000
             xyz += sample.xyz * scale
+        }
+        var index = 0
+        while index < samples.count {
+            let sample = samples[index]
+            guard let areaIndex = sample.areaIndex else {
+                try accumulate(position: sample.position, candela: sample.candela, sample: sample)
+                index += 1
+                continue
+            }
+            let area = areaGuards[areaIndex]
+            func plane(_ n: SIMD3<Double>) -> StudyAreaSamplingPlane {
+                .init(center: dot3(n, area.center - receiver),
+                      x: dot3(n, area.right) * area.halfWidth,
+                      y: dot3(n, area.up) * area.halfHeight)
+            }
+            let shading = plane(normal), geometric = geometricNormal.map(plane)
+            if shading.isFull && (geometric?.isFull ?? true) {
+                // Keep both positions and accumulation order on ordinary full faces.
+                for offset in 0..<(grid * grid) {
+                    let full = samples[index + offset]
+                    try accumulate(position: full.position, candela: full.candela, sample: full)
+                }
+            } else {
+                try StudyAreaSliceSampling.forEach(grid: grid, normal: shading, geometric: geometric) { p, weight in
+                    let position = area.center + area.right * (p.x * area.halfWidth) + area.up * (p.y * area.halfHeight)
+                    try accumulate(position: position, candela: sample.candela * weight, sample: sample)
+                }
+            }
+            index += grid * grid
         }
         return .init(visibleLux: visible, unoccludedLux: total, signalXYZ: .init(x: xyz.x, y: xyz.y, z: xyz.z))
     }
@@ -254,7 +387,8 @@ public struct StudyImage: Equatable, Sendable {
 /// Optional GPU backend input, generated from the same validated source samples,
 /// camera, and display transform as the CPU oracle. Every row is a 16-byte float4.
 /// Parameters: 0 origin/halfW, 1 forward/halfH, 2 right/radius, 3 up/panelHalfExtent,
-/// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/reserved.
+/// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/grid count.
+/// Sample color.w is zero for a point/directional source or a one-based area index.
 public struct StudyComputeInput: Sendable {
     public let width: Int
     public let height: Int
@@ -273,7 +407,7 @@ public struct StudyComputeInput: Sendable {
         parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),
                       pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),
                       setup.transform.computeParameters,
-                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 0)]
+                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 8)]
     }
 }
 

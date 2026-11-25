@@ -4,11 +4,12 @@ import LightingCore
 /// Keep the unsaved editor untouched while choosing a specific archived record.
 /// The store rechecks the complete displayed record inside the write transaction.
 struct RecoveryCapacityView: View {
+    /// Load the whole validated library so hidden records still disambiguate IDs.
     let onLoad: () async throws -> [LightingProject]
     let onReplace: (LightingProject) throws -> Task<Void, Error>
     @Environment(\.dismiss) private var dismiss
-    @State private var candidates: [LightingProject] = []
-    @State private var selected: LightingProject?
+    @State private var candidates: [ProjectLibraryRowPresentation] = []
+    @State private var selected: ProjectLibraryRowPresentation?
     @State private var confirmReplacement = false
     @State private var loaded = false
     @State private var loadFailed = false
@@ -58,18 +59,22 @@ struct RecoveryCapacityView: View {
                     }
                 } else if !candidates.isEmpty {
                     Section("Choose an archived project") {
-                        ForEach(candidates) { project in
+                        ForEach(candidates) { presentation in
                             Button {
-                                selected = project
+                                // Freeze the displayed identity with the complete
+                                // record that the replacement transaction rechecks.
+                                selected = presentation
                                 confirmReplacement = true
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text(displayName(project)).font(.headline)
-                                    if displayName(project) != project.name {
-                                        Text("Project ID: \(project.id.uuidString.prefix(8))")
+                                    Text(presentation.name).font(.headline)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    if let identifier = presentation.identifier {
+                                        Text("Project ID: \(identifier)")
                                             .font(.caption.monospaced()).foregroundStyle(.secondary)
+                                            .fixedSize(horizontal: false, vertical: true)
                                     }
-                                    Text("\(project.scene.lights.count) lights · Archived")
+                                    Text("\(presentation.project.scene.lights.count) lights · Archived")
                                         .font(.caption).foregroundStyle(.secondary)
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
@@ -77,8 +82,8 @@ struct RecoveryCapacityView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(isLoading || isReplacing)
-                            .accessibilityLabel("Replace archived \(displayName(project))")
-                            .accessibilityValue(displayName(project) == project.name ? "" : "Project ID \(project.id.uuidString.prefix(8))")
+                            .accessibilityLabel("Replace archived \(presentation.name)")
+                            .accessibilityValue(presentation.identityValue())
                         }
                     }
                 }
@@ -92,14 +97,14 @@ struct RecoveryCapacityView: View {
                         .accessibilityIdentifier("cancelRecoveryReplacement")
                 }
             }
-            .alert("Replace archived project?", isPresented: $confirmReplacement, presenting: selected) { project in
+            .alert("Replace archived project?", isPresented: $confirmReplacement, presenting: selected) { presentation in
                 // Keep this a native alert action. A custom accessibility
                 // identifier produced nested duplicate Button nodes on the
                 // tested iOS simulator; the action already has a clear label.
-                Button("Replace and save setup", role: .destructive) { replace(project) }
+                Button("Replace and save setup", role: .destructive) { replace(presentation.project) }
                 Button("Cancel", role: .cancel) { selected = nil }
-            } message: { project in
-                Text("Save your current setup as a new recovery project? If the library is still full, “\(confirmationName(project))” will be removed. That removal cannot be undone here. If space is available, the archived project is kept. Existing exported files are kept.")
+            } message: { presentation in
+                Text("Save your current setup as a new recovery project? If the library is still full, “\(presentation.confirmationName)” will be removed. That removal cannot be undone here. If space is available, the archived project is kept. Existing exported files are kept.")
             }
             .task { if !loaded { reload() } }
             .onDisappear { cancelLoad() }
@@ -122,7 +127,10 @@ struct RecoveryCapacityView: View {
             do {
                 let latest = try await onLoad()
                 guard !Task.isCancelled, request == loadRequest else { return }
-                candidates = latest
+                // Compute identities before hiding unarchived projects. The
+                // validated library cannot have an archived active project.
+                candidates = ProjectLibraryRowPresentation.make(for: latest)
+                    .filter { $0.project.isArchived }
                 loaded = true
                 loadFailed = false
                 message = preservingMessage
@@ -141,15 +149,6 @@ struct RecoveryCapacityView: View {
         loadTask?.cancel()
         loadTask = nil
         isLoading = false
-    }
-
-    private func displayName(_ project: LightingProject) -> String {
-        let name = StudioDisplayName.display(project.name)
-        return name.isEmpty ? "Unnamed project" : name
-    }
-
-    private func confirmationName(_ project: LightingProject) -> String {
-        displayName(project) + (displayName(project) == project.name ? "" : " (ID \(project.id.uuidString.prefix(8)))")
     }
 
     private func replace(_ project: LightingProject) {

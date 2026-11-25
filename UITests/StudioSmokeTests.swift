@@ -141,6 +141,46 @@ final class StudioSmokeTests: XCTestCase {
     }
 
     func testOpticsEditingUndoRedoAndRelaunch() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability02() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability03() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability04() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability05() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability06() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability07() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability08() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability09() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    func testOpticsRepeatability10() throws {
+        try runOpticsEditingUndoRedoAndRelaunch()
+    }
+
+    private func runOpticsEditingUndoRedoAndRelaunch() throws {
         let app = makeApp()
         app.launchEnvironment["KEYFILL_UI_TEST_SLIDER_TRACE"] = "1"
         app.launch()

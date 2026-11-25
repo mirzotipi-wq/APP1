@@ -13,7 +13,7 @@ Key & Fill is a native iOS lighting workspace for photographers and filmmakers: 
 - **Reference workflow:** on-device Vision checks support a bounded brighter-side proposal for suitable portraits. Applying a proposed rig requires explicit acceptance; manual starting rigs remain available. Single-image analysis does not reconstruct an exact lighting setup.
 - **Photo comparison:** import two actual photographs for side-by-side or wipe comparison. Reduced, metadata-stripped photo copies remain in memory for the session and are excluded from saved projects and PDF exports.
 - **Room placement:** ARKit/RealityKit placement on supported devices includes equipment markers and ideal emitting faces. Manual placement provides coordinates and floor, wall and optional ceiling checks. Committed room measurements persist with the project and appear in exports.
-- **Projects and export:** named projects, duplication, archive/restore, recovery, migration and conflict handling; editable project backup/import; vector PDF and text lighting plans.
+- **Projects and export:** searchable named projects with saved-rig thumbnails, duplication, archive/restore, disambiguated recovery, migration and conflict handling; editable project backup/import; vector PDF and text lighting plans.
 - **Purchases:** StoreKit 2 product loading, purchase, restore and entitlement handling are implemented. The product identifier defaults to unconfigured; no owner-approved feature gates are enabled.
 
 ## Build and run
@@ -46,12 +46,11 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and remaining gates
 
-At the recorded `fb643b1` checkpoint, [CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115) passed 261 portable tests in each of Debug and Release, 28 Python checks, both unsigned simulator builds and all 84 native tests. All eleven studio/export and five room/precision UI workflows passed. The original optics workflow passed its real gesture, Undo, Redo, save, relaunch and exact restored-width assertions. Its trace and attachment record an initial 0.6 m and a final saved 0.8 m. At the 2026-11-25 02:19 UTC observation, the library/reference job had reached UI execution; its eleven cases and the overall run had no terminal result.
+The latest completed main checkpoint, `cebb259`, has [261 Debug /261 Release portable tests,28 Python checks, both unsigned simulator builds and84/84 native tests passing](https://github.com/mirzotipi-wq/APP1/actions/runs/45573249046). Studio/export passed11/11, including the original width gesture, Undo, Redo and saved2.1m after relaunch. The complete run failed: two accessibility audits reported real contrast/text-scaling issues, and one room-summary navigation test failed. These failures remain recorded.
 
-The optics correction adds one bounded 10-second wait for an actual changed width and enabled Undo before capturing the expected value. This addresses the demonstrated premature capture at `38a3b52`, while preserving the gesture, all original assertions and application history behavior. The earlier run's two accessibility audits failed with Code -56 timeouts; their cause remains unknown. Earlier unchanged-width and delayed-name failures remain recorded without an inferred cause. The four measured-room PDF variants were visually reviewed at `394e28e`, and actual 3D and Arrangement screenshots at `29c8efe`.
+The next implementation checkpoint adds bounded render reuse, searchable saved-rig thumbnails, clearer project identities, relative light creation, geometry/boundary corrections and the actual accessibility/navigation fixes. Local287Debug/287Release tests and28Python checks pass; new-source Apple validation remains pending. Ten separate optics workflows now test repeatability while preserving the original scenario.
 
-A subsequent compiler correction snapshots only a Boolean on the main actor before constructing the photo-picker label, avoiding a direct actor-isolated image-property read inside that sendable closure. Its Apple verification is pending and requires a new normal CI run. The [development checkpoint](docs/evidence/development-completion-2026-11-24.md) records exact revisions, failures, corrections and remaining verification.
-
+The grazing-light study correction passes declared numerical/continuity and shared Float32 checks, but measured CPU area-frame costs increased17.56–35.10% in a short shared-host pair. Physical device performance remains unverified. See the [current session report](docs/evidence/m02-m03-main-2026-11-25.md) for exact provenance, failed evidence, worker reviews and remaining acceptance.
 Physical-device tracking, accessibility and performance, calibrated rendering, purchase sandbox scenarios, signing, customer validation and owner release approval remain outstanding. See the [quality contract](docs/QUALITY.md) and [milestone state](agents/state.json).
 
 ## Development references

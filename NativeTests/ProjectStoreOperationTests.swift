@@ -315,6 +315,30 @@ final class ProjectStoreOperationTests: XCTestCase {
         XCTAssertEqual(try backingStore(base).load(), library)
     }
 
+    func testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes() async throws {
+        let base = directory()
+        defer { try? FileManager.default.removeItem(at: base) }
+        let archivedID = UUID(uuidString: "12345678-1234-1234-1234-000000000001")!
+        let activeID = UUID(uuidString: "12345678-1234-1234-1234-000000000002")!
+        var library = try ProjectLibrary(name: "Studio", scene: .portrait(), id: archivedID)
+        try library.create(name: "Studio", scene: .portrait(), id: activeID)
+        try library.archive(archivedID)
+        let fileStore = backingStore(base)
+        try fileStore.save(library, replacing: nil)
+        let originalBytes = try Data(contentsOf: fileStore.url)
+        let store = worker(base)
+
+        let snapshot = try await store.recoveryLibrarySnapshot()
+        XCTAssertEqual(snapshot, library)
+        let rows = ProjectLibraryRowPresentation.make(for: snapshot.projects)
+        let choice = try XCTUnwrap(rows.first { $0.id == archivedID })
+        XCTAssertEqual(choice.identifier, archivedID.uuidString)
+        XCTAssertEqual(choice.project, library.projects.first { $0.id == archivedID })
+        let candidates = try await store.recoveryCandidates()
+        XCTAssertEqual(candidates.map(\.id), [archivedID])
+        XCTAssertEqual(try Data(contentsOf: fileStore.url), originalBytes)
+    }
+
     func testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity() async throws {
         let base = directory()
         defer { try? FileManager.default.removeItem(at: base) }
