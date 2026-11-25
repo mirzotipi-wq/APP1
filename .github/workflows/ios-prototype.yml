@@ -319,7 +319,7 @@ jobs:
     # Independent class-level shards retain all scenarios and avoid losing an
     # entire result bundle when a different test class overruns its budget.
     needs: core
-    runs-on: macos-26-intel
+    runs-on: ${{ matrix.runner }}
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     # The 16-minute setup/evidence allowance includes the 10-minute boot preflight.
@@ -334,18 +334,27 @@ jobs:
         shard: [room-precision, library-reference, studio-export]
         include:
           - shard: room-precision
+            runner: macos-26-intel
+            expected_arch: x86_64
             ui_test_minutes: 32
             job_minutes: 85
           - shard: library-reference
+            # Full accessibility audits completed on ARM; Intel's AX service timed out.
+            runner: macos-26
+            expected_arch: arm64
             ui_test_minutes: 32
             job_minutes: 85
           - shard: studio-export
+            runner: macos-26-intel
+            expected_arch: x86_64
             ui_test_minutes: 40
             job_minutes: 93
     name: ui (${{ matrix.shard }})
     steps:
       - uses: actions/checkout@v4
       - name: Record Apple toolchain and exact revision
+        env:
+          EXPECTED_RUNNER_ARCH: ${{ matrix.expected_arch }}
         run: |
           set -euo pipefail
           {
@@ -356,7 +365,7 @@ jobs:
             xcodebuild -showsdks
             git rev-parse HEAD
           } | tee macos-environment.log
-          [ "$(uname -m)" = x86_64 ] || { echo "::error::Expected the standard Intel runner"; exit 1; }
+          [ "$(uname -m)" = "$EXPECTED_RUNNER_ARCH" ] || { echo "::error::Expected the configured $EXPECTED_RUNNER_ARCH runner"; exit 1; }
           [ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }
       - name: Verify Metal compiler component
         timeout-minutes: 12
