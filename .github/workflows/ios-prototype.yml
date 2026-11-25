@@ -340,7 +340,9 @@ jobs:
       fail-fast: false
       # Each required shard has its own simulator and bounded budget.
       # Keep at most three active while all five required shards complete independently.
-      max-parallel: 3
+      # Separate hosted runners and per-test stores make all five shards
+      # independent. Start app accessibility alongside the longer workflows.
+      max-parallel: 5
       matrix:
         shard: [room-precision, library-reference, studio-export, studio-optics, app-accessibility]
         include:
