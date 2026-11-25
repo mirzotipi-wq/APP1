@@ -1,6 +1,79 @@
 # Development completion checkpoint — 2026-11-24
 
-## Current source eight
+## Current source nine
+
+Published source **`38a3b52f23ba6777125f0503fcc2d3420fa037df`**, tree **`5f05a01ac8f3b16a8eaec8841f2b6f1df8a0e4ef`**, branch `development/completion-final-20261124`. [Run 45519751726](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726) is **completed/failure**, attempt **1**, updated **2026-11-25 01:25:26Z**; API retrieved **01:25:56Z**, final jobs confirmed **01:26:58Z**. Native **84/84** passed. All **27 UI methods completed: 24 passed, 3 failed, zero skips/interruption**. Exactly **100 assignments** remain recorded.
+
+### Exact-source verification
+
+| Job | Terminal receipt |
+|---|---|
+| Core `138888331558` | **261 Debug (10.323 s), 261 Release (6.170 s), 28 Python (0.387 s)**; zero failures/skips. **204,986-byte** log read **00:43:54 UTC**. Syntax/shard/host-kernel/precision passed. |
+| Native `138889688697` | **84/84**, zero failures/skips; **33.154 s tests / 35.165 s overall**. **816,704-byte** log read **01:04:38 UTC**. |
+| Studio `138889688745` | **10/11**, zero skips; **963.139 s tests / 963.169 s overall**. **502,153-byte** log read **01:14:24 UTC**. |
+| Library `138889688958` | **9/11**, zero skips; **1137.965 s tests / 1138.000 s overall**. **451,679-byte** log read **01:24:45 UTC**. |
+| Room `138889688766` | **5/5**, zero failures/skips; **909.794 s tests / 909.820 s overall**. **513,009-byte** log read **01:25:56 UTC**. |
+
+**Scoped photometry passes:** maximum parallel fractional error **0.00023334691793906986 (0.0233347%)** and independent off-axis **0.00017649163172442342 (0.0176492%)** retain the declared SI/ideal uniform one-sided Lambertian fixture bounds. Point distance remains at least **0.05 m**; rectangle separation at least **max(0.05 m, longest side / 4)**. Four off-axis cases use the independent **160-subdivision Simpson** reference; the six parallel cases are analytic fixtures. Separate Study grid convergence **0.0032798081798638967** is not that reference. Protected thresholds remain unchanged; no global/calibrated/device claim.
+
+Native All-tests finished **01:01:26.966Z**; `TEST SUCCEEDED` was **01:03:11.992401Z**. Actual `BUILD SUCCEEDED` markers are **00:48:03.694174Z** (Debug) and **00:51:07.384866Z** (Release); earlier **00:48:04Z / 00:51:08Z** were API step completions. Actual MetalMatchesCPU passed **5.032 s**. This current pass does not change the unexplained source-eight zero-execution failure.
+
+### Actual UI outcomes
+
+**Studio/export:** ExportPreview **70.278 s**, FullLibraryEditableCopy **148.378 s**, Camera **94.269 s**, Corrupt **27.397 s**, Meter **132.570 s**, Recipe **87.357 s**, Settings/3D/AR/Arrangement **145.861 s**, Guide **87.612 s**, Sphere **32.480 s** and Mannequin **46.997 s** passed. Optics failed **89.940 s** at **line 178**, comparing Redo **1.1500000000000001 m** with transient captured editedWidth **1.2000000000000002 m**. **First change and Undo passed; save/relaunch were not reached.** Embedded suite finish was **01:11:13.062Z**; `TEST FAILED` **01:12:39.012133Z**, exit **65** at **01:12:50.110001Z**.
+
+**Library/reference:** all seven project-library methods passed: ArchivedDelete **265.841 s**, CreateDuplicateRenameSwitchAndRelaunch **174.466 s**, FullLibraryRecovery **74.290 s**, LargeValidLibrary **65.444 s**, StaleSavePreserve **88.403 s**, StaleSaveReload **44.867 s**, UnsavedSetup **51.163 s**. ReferenceGuidedRig **155.383 s** and ReferenceComparison **31.973 s** also passed. Only the exact-intensity **138.945 s** and initial-plan **47.188 s** audits failed, both **AX Code=-56** at `AccessibilityAuditUITests.swift:75`; no filter, skip or retry was applied. Suite finish **01:18:39.862Z**; `TEST FAILED` **01:20:17.952844Z**, exit **65** at **01:20:40.753015Z**.
+
+The q/Q introduction branch was **actually exercised**: Continue tapped at **t110.49**, key-readiness predicate at **t114.57**, Key exists/hittable queries at **t119.29 / t119.45**, Type Keep at **t120.38**, exact Keep predicate at **t125.16**, followed by passing confirmation, deletion and relaunch. This verifies the branch at source nine; the source-eight delayed-name cause remains unknown.
+
+**Room:** ManualRoom **73.050 s**, Resize/signed coordinates **242.147 s**, PrecisionCamera **79.866 s**, PrecisionIntensity **116.502 s**, PrecisionModifier **398.229 s** passed. Suite finish **01:20:49.751Z**; `TEST SUCCEEDED` **01:21:03.226782Z**.
+
+### Trace diagnosis and its scope
+
+Diagnostic collection succeeded with **exit 0**, preserving original test **exit 65**, over **00:54:24–01:12:51 UTC**. Trace/status/stderr sizes are **4,142 / 169 / 44 bytes**. The stderr `getpwuid_r did not find a match for uid 501` was nonfatal. Root and specialists 90/100 reviewed these events:
+
+| Event | UTC / observed state |
+|---|---|
+| Begin | **01:04:04.041688**, model **0.6**, tracking true |
+| Intermediate value | **01:04:04.748298**, model **1.85**, tracking true |
+| Transient value | **01:04:05.171833 / 01:04:05.745068**, model **1.2**, tracking true |
+| editedWidth query | Starts at test **t62.37**; log receipt **01:04:05.515740** |
+| Final value | **01:04:07.140624**, model **1.15**, tracking true |
+| End | **01:04:07.544814**, model **1.15**, tracking false |
+| Ignored late value | **01:04:07.552781**, model remains **1.15**, tracking false |
+| Undo existence query | Log receipt **01:04:07.684711** |
+
+Before-Undo attachment **6240C8C2-58CF-4942-B324-48BD5725AE88.txt** corroborates stored Edited width **1.2**, live Slider **1.15** and Undo enabled. Undo correctly restores **0.6**; Redo correctly restores final **1.15**. This proves **premature expected-value capture in the source-nine test**, not a production history defect. It does **not** establish the cause of the earlier source-seven/eight first-change failures.
+
+### Current artifacts
+
+| Artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Core 14979901542](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14979901542) | 61,700 | `534f226aba549d4c1d4d0fd6d9a15fc8f465c4612fbf04b9d6351bb15ac5cfe9` |
+| [Debug app 14979658403](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14979658403) | 3,479,755 | `bae966619c09b7d27617e646d9a9709984bd66302139cb591bbca80ba083275b` |
+| [Release app 14979664186](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14979664186) | 3,980,941 | `04675264489a76bc0d36fe3ed663008d8b7ae85d19e03fba7055c1ac40dabf91` |
+| [Native full 14981261179](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14981261179) | 72,516,854 | `e1fbbf7a162eebba1d1681222c3384cbb13558b2b16398c060c6a770da2dc418` |
+| [Native compact 14980363942](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14980363942) | 332,371 | `2aa683b3158c0c9afbed28e4d684538562614b2ec8f7cd10bf1e6bfc25311d27` |
+| [Studio full 14980619102](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14980619102) | 132,621,632 | `bc6c4eb2a6bbd375a79275e9df5b9061d25c23d549a856490c4d244d97578944` |
+| [Studio compact 14981143265](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14981143265) | 3,274,408 | `61471d1b34afde3d17c43428a56b03f234e57a1ec6c656af6fbc02ccb826dcb7` |
+| [Library full 14981574140](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14981574140) | 129,161,796 | `fb98f48844b52c6f50c2ba474be5d781a86878034445032972a04280cf015099` |
+| [Library compact 14982525386](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14982525386) | 1,588,341 | `15a6901f021909ee64205fc948d9bac3fa1a3f2fe521b5f2483fada8da08f944` |
+| [Room full 14981254535](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14981254535) | 6,361,213 | `a03f190af2a4c9b130beb1c912530c6a5547811d03154c30cb59023bd50da427` |
+| [Room compact 14981753851](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726/artifacts/14981753851) | 1,757,803 | `f7e859e1d7bfaa9693170ad9c84c2278516535947dcf50c2e2e01096110f9cc9` |
+
+Only the source-nine studio compact bytes/digest were verified by root. All other listed digests, including native/library/room artifacts, are **API metadata**.
+
+### Acceptance and applied source-ten candidate
+
+**M01 remains complete and is revalidated at 38a3b52** by same-source core/build and **Recipe 87.357 s / Corrupt 27.397 s**; native 84/84, all project-library methods and room 5/5 also pass. **M02 remains active with rendering/performance outstanding; M03–M07 pending.** Full UI/regression still fails at **24/27**.
+
+The source-ten candidate is **applied locally and independently reviewed, but unpublished**. It changes **only `UITests/StudioSmokeTests.swift`**, adding **one bounded 10-second synchronization wait**: require actual nonnil changed width, then Undo exists/enabled, then capture editedWidth. All **112 original XCTAssert lines** are retained, plus **one new completion assertion**; the same **nine StudioSmoke methods** remain. Original normalized 0.5 gesture, 0.6 m checks, Undo/Redo/save/relaunch, existing timeout values and workflow deadlines are unchanged. This explicitly adds one wait; there are **no app/workflow/helper changes, new methods, sleeps or retries**.
+
+Specialist 90 supplied the patch; specialist 100 independently approved the exact block and full restored local diff. Root applied the approved patch and README and reports exact-replacement/source checks and diff check passed. Candidate native/UI validation awaits **normal CI after publication**; no future SHA or pass is claimed. The seven-file packet consists of the UI test, root's README and these five records. Source-nine is terminal, so no jobs will be canceled. No source-eight native retry was requested.
+
+The executor was unavailable approximately **01:19–01:29 UTC**. Outage work was read-only remote preparation: **no local edits/checks or GitHub tree/commit/ref/PR**. Restoration retained the repo at 38a3b52 and all five pending records; work resumed locally. Root owns final preflight/publication. Historical source-eight and older receipts below remain preserved.
+
+## Retained source-eight terminal evidence
 
 Published source **`29c8efe87fafd03a9b9b544bcf783cfbef85bc37`**, tree **`a71bc83fc79fa5985f7cea8e8193a541be3170af`**, branch `development/completion-final-20261124`. [Run 45511267264](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264) is **completed/failure**, attempt **1**, `updated_at` **2026-11-25 00:18:23Z**. All **27 UI methods completed: 23 passed, 4 failed, zero skips**. Exactly **100 assignments** remain recorded.
 

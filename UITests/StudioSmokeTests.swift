@@ -158,10 +158,19 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertEqual(width.label, "Width in meters", "The native slider must retain its accessible label")
         XCTAssertEqual(initialWidth, "0.6 m", "The native slider must expose the model readout, not a percentage")
         width.adjust(toNormalizedSliderPosition: 0.5)
+        let undo = app.buttons["undo"]
+        let gestureCompleted = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                guard let currentWidth = width.value as? String,
+                      currentWidth != initialWidth else { return false }
+                return undo.exists && undo.isEnabled
+            }, object: width)
+        XCTAssertEqual(XCTWaiter.wait(for: [gestureCompleted], timeout: 10), .completed,
+                       "The width must change and finish its edit before capturing the value for Undo and Redo")
+
         let editedWidth = try XCTUnwrap(width.value as? String)
         XCTAssertNotEqual(editedWidth, initialWidth, "The width adjustment must actually change the model before testing undo")
 
-        let undo = app.buttons["undo"]
         XCTAssertTrue(undo.exists && undo.isHittable)
         let state = XCTAttachment(string: "Initial width: \(initialWidth)\nEdited width: \(editedWidth)\nUndo enabled: \(undo.isEnabled)\nRedo enabled: \(app.buttons["redo"].isEnabled)\n\(width.debugDescription)\n\(undo.debugDescription)")
         state.name = "Optics-tracking-before-undo"; state.lifetime = .keepAlways; add(state)

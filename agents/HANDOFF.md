@@ -1,6 +1,18 @@
 # Current handoff
 
-## Current source eight
+## Current source nine
+
+Published source **`38a3b52f23ba6777125f0503fcc2d3420fa037df`**, tree **`5f05a01ac8f3b16a8eaec8841f2b6f1df8a0e4ef`**, branch `development/completion-final-20261124`. [Run 45519751726](https://github.com/mirzotipi-wq/APP1/actions/runs/45519751726) is **completed/failure**, attempt **1**, updated **2026-11-25 01:25:26Z**; API retrieved **01:25:56Z**, final jobs confirmed **01:26:58Z**. Native **84/84** passed. All **27 UI methods completed: 24 passed, 3 failed, zero skips/interruption**. Exactly **100 assignments** remain recorded.
+
+- **Core 261 Debug / 261 Release / 28 Python, scoped photometry, both unsigned builds and native 84/84 pass. M01 is revalidated at 38a3b52** by Recipe **87.357 s** and Corrupt **27.397 s**. M02 remains active with rendering/performance outstanding; M03–M07 pending.
+- Studio **10/11**: optics failed at **Redo, line 178**, comparing final **1.15 m** with transient captured **1.2 m**. First change and Undo passed; save/relaunch were not reached. Actual trace and attachment prove **premature expected-value capture in the source-nine test**, not a production history defect or the cause of earlier source-seven/eight failures. Trace capture exited **0** while preserving test exit **65**.
+- Library **9/11**: all seven project-library methods and both Reference methods passed; only the two **AX Code=-56** audits failed. The q/Q introduction branch was actually exercised before exact Keep entry, confirmation, deletion and relaunch passed. Room **5/5** passed. Source-eight failures remain historical.
+- Source ten is **applied locally, independently reviewed and unpublished** in `UITests/StudioSmokeTests.swift` only. It adds **one bounded 10-second synchronization wait** before expected-value capture. All **112 original assertion lines** and **nine methods** remain, plus one completion assertion; original timeout values/workflow deadlines are unchanged. Candidate CI is pending.
+- Executor restoration retained the local records. Outage work was read-only remote preparation: **no tree/commit/ref/PR and no local edits/checks**. Root applied the reviewed candidate and README and owns final preflight/publication. No source-eight retry was requested; source-nine is terminal, so no jobs will be canceled.
+
+[Exact receipts, trace and artifacts](../docs/evidence/development-completion-2026-11-24.md). Earlier evidence below is retained.
+
+## Retained source-eight terminal evidence
 
 Published source **`29c8efe87fafd03a9b9b544bcf783cfbef85bc37`**, tree **`a71bc83fc79fa5985f7cea8e8193a541be3170af`**, branch `development/completion-final-20261124`. [Run 45511267264](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264) is **completed/failure**, attempt **1**, `updated_at` **2026-11-25 00:18:23Z**. All **27 UI methods completed: 23 passed, 4 failed, zero skips**. Exactly **100 assignments** remain recorded.
 
