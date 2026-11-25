@@ -97,7 +97,7 @@
     "date": "2026-11-25",
     "baseRevision": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
     "destinationBranch": "main",
-    "status": "m01_and_editing_revalidated_waiting_full_workflow_results",
+    "status": "m01_verified_editing_reopened_after_terminal_ui_timeouts",
     "requestedDistinctWorkers": 100,
     "concurrentWorkerSlots": 3,
     "report": "docs/evidence/m02-m03-main-2026-11-25.md",
@@ -105,23 +105,139 @@
     "remainingMandatoryGates": [
       "calibrated_rendering_review",
       "physical_performance_thermal",
+      "editing_full_workflow_revalidation",
       "automatic_accessibility_current_source",
       "manual_device_accessibility"
     ],
-    "sourceRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+    "sourceRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
     "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
     "latestWorkflow": {
-      "id": 45609587344,
-      "sourceRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45609587344",
-      "status": "pending",
+      "id": 45613203857,
+      "sourceRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45613203857",
+      "status": "in_progress",
       "conclusion": null,
-      "observedAtUTC": "2026-11-25T12:19:13Z",
-      "reason": "Pending at captured time behind active f6 workflow under global concurrency.",
-      "scope": "No execution/pass/cancellation is inferred for a1ef. Any later supersession must be observed separately."
+      "observedAtUTC": "2026-11-25T13:17:43Z",
+      "coreConclusion": "success",
+      "libraryJob": {
+        "id": 139221045245,
+        "status": "completed",
+        "conclusion": "cancelled",
+        "queuedSinceUTC": "2026-11-25T12:57:40Z",
+        "runnerAcquired": false,
+        "scope": "Terminal cancellation without runner acquisition or any execution. Initial API started_at denotes queue creation, not runner execution.",
+        "observedAtUTC": "2026-11-25T13:13:38.170Z",
+        "runnerID": 0,
+        "completedAtUTC": "2026-11-25T13:12:42Z",
+        "queuedSeconds": 902,
+        "executedSteps": 0,
+        "executedUIMethods": 0,
+        "requiredUIMethods": 11,
+        "annotationsCount": 4,
+        "cause": "Official annotations identify hosted-runner acquisition failure after multiple attempts and three explicit ARM capacity notices; scope is this job, not a global outage.",
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/library-arm-214-terminal/receipt.json",
+        "priorCauseObservation": {
+          "observedAtUTC": "2026-11-25T13:13:38.170Z",
+          "cause": "Unattributed pending official annotation text."
+        },
+        "causeVerifiedAtUTC": "2026-11-25T13:17:43Z",
+        "annotationsArtifact": "docs/evidence/m02-m03-2026-11-25/validation/library-arm-214-terminal/annotations.json",
+        "acquisitionErrors": 1,
+        "capacityNotices": 3
+      },
+      "scope": "Combined timestamped receipts: workflow/core/native/Intel-UI progress at 13:04:55; ARM library terminal cancellation observed 13:13:38.170 with no runner or steps; official acquisition/capacity annotations retained 13:17:43. Other job statuses are not refreshed by these library-only observations. No whole-run success or global outage is inferred.",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint8-progress.json",
+      "core": {
+        "jobID": 139218751349,
+        "status": "completed",
+        "conclusion": "success",
+        "debug": {
+          "passed": 319,
+          "failures": 0,
+          "seconds": 13.091
+        },
+        "release": {
+          "passed": 319,
+          "failures": 0,
+          "seconds": 5.885
+        },
+        "python": {
+          "passed": 35,
+          "seconds": 0.486
+        },
+        "efbigChecksPassed": 11,
+        "commitBoundaryScenarios": [
+          {
+            "mode": "before-rename",
+            "status": "passed"
+          },
+          {
+            "mode": "after-rename",
+            "status": "passed"
+          },
+          {
+            "mode": "rename-eio",
+            "status": "passed"
+          }
+        ],
+        "kernelFixturesPassed": 6,
+        "precisionFixturesPassed": 8
+      },
+      "jobs": [
+        {
+          "id": 139218751349,
+          "name": "core",
+          "status": "completed",
+          "conclusion": "success",
+          "runnerID": 1000000802,
+          "currentStep": null,
+          "observedAtUTC": "2026-11-25T13:04:55Z"
+        },
+        {
+          "id": 139221045238,
+          "name": "simulator",
+          "status": "in_progress",
+          "conclusion": null,
+          "runnerID": 1000000803,
+          "currentStep": "Build unsigned release simulator application",
+          "observedAtUTC": "2026-11-25T13:04:55Z"
+        },
+        {
+          "id": 139221045245,
+          "name": "ui (library-reference)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runnerID": 0,
+          "currentStep": null,
+          "observedAtUTC": "2026-11-25T13:13:38.170Z",
+          "completedAtUTC": "2026-11-25T13:12:42Z",
+          "executedSteps": 0,
+          "artifact": "docs/evidence/m02-m03-2026-11-25/validation/library-arm-214-terminal/receipt.json"
+        },
+        {
+          "id": 139221045251,
+          "name": "ui (room-precision)",
+          "status": "in_progress",
+          "conclusion": null,
+          "runnerID": 1000000805,
+          "currentStep": "Build native UI test bundle",
+          "observedAtUTC": "2026-11-25T13:04:55Z"
+        },
+        {
+          "id": 139221045264,
+          "name": "ui (studio-export)",
+          "status": "in_progress",
+          "conclusion": null,
+          "runnerID": 1000000804,
+          "currentStep": "Build native UI test bundle",
+          "observedAtUTC": "2026-11-25T13:04:55Z"
+        }
+      ],
+      "workflowStatusObservedAtUTC": "2026-11-25T13:04:55Z",
+      "subsequentLibraryArtifact": "docs/evidence/m02-m03-2026-11-25/validation/library-arm-214-terminal/receipt.json"
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "M01 is complete: f6 core 319/319/35 and both unsigned builds/native 110 pass, with b298 real create/edit/save/relaunch/corrupt-file smoke on identical application inputs. f6 room/precision also passed 5/5. The editing gate passes from actual native ownership regressions and source-equivalent b298 ten complete UI workflows, exact editing, stable selection and preservation checks. Eight Git tree/blob IDs match across b298/f6/a1ef. M02 is active for calibrated rendering and physical performance; M03 remains dependency pending despite editing/persistence passes because M02 and accessibility are incomplete. f6 full workflow remains in progress at captured time; a1ef pending. No explicit cancellation was performed; no new resulting commit or workflow is invented.",
+    "note": "M01 retains actual f6 core/unsigned-build/native success plus completed create/duplicate/edit/save/relaunch and corrupt-file smoke. Newer f6 terminal UI failures reopen editing: only nine of ten optics workflows passed; two methods were interrupted and five never started. Native 110 and room 5/5 remain passed. Overall UI inventory is 23 pass, 6 fail, 2 started/incomplete, 5 not started, zero skipped. Initial save and restored width 2.1 do not establish a disk-loss cause for the post-relaunch status failure. M02 remains active; M03 is dependency pending with editing unverified and accessibility failed. Current 214ca90 workflow is separate: core passed; its ARM library job later ended cancelled without a runner or steps. Official annotations now identify hosted-runner acquisition failure and ARM capacity notices; other job outcomes require their own receipts.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -133,9 +249,9 @@
       "uiInventory": 36,
       "nativeResult": "pass",
       "nativeTestedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "scope": "Recorded portable/native evidence at f6, not execution of a1ef or a future documentation commit."
+      "scope": "Recorded portable/native evidence at exact f6, not execution of the working diagnostic/order candidate. Current 214ca90 core status is recorded separately."
     },
-    "grazingCPUCost": "Open diagnostic risk: 17.56–35.10% median area-frame slowdown in a short paired host benchmark; discarded inlining did not establish a gain.",
+    "grazingCPUCost": "Open diagnostic risk: 17.56\u201335.10% median area-frame slowdown in a short paired host benchmark; discarded inlining did not establish a gain.",
     "previousCompletedWorkflow": {
       "id": 45582259076,
       "sourceRevision": "960268360c67755979619b2f34c0651a193fbf58",
@@ -156,8 +272,12 @@
       "strictScenariosPassed": 3,
       "artifact": "docs/evidence/m02-m03-2026-11-25/validation/commit-interruption-final/wrapper-result.json",
       "diagnostics": "working follow-up with exact hashes in compile manifest; current production LightingCore sources unchanged from d99c9bd",
-      "ciResult": "passed at b298b1333f3abb901c23a198187628fe94331427, workflow 45600372389/core 139158445903; prior 18f387a result preserved separately",
-      "previousCIResult": "passed at 18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c, workflow 45597735891/core 139148176539"
+      "ciResult": "passed at 214ca90bbd166482277d33d63b89c1472ba9abf6, workflow 45613203857/core 139218751349; eleven EFBIG and three commit-boundary scenarios verified in actual terminal log",
+      "previousCIResult": "passed at 18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c, workflow 45597735891/core 139148176539",
+      "priorCIResults": [
+        "passed at b298b1333f3abb901c23a198187628fe94331427, workflow 45600372389/core 139158445903; prior 18f387a result preserved separately",
+        "passed at 18f387aa0db3ac06d21dfe241eb6dcbbc19f9b4c, workflow 45597735891/core 139148176539"
+      ]
     },
     "runnerAcquisitionFailure": {
       "runID": 45593950430,
@@ -256,184 +376,11 @@
       "nativeArtifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json"
     },
     "latestCompletedWorkflow": {
-      "id": 45600372389,
-      "sourceRevision": "b298b1333f3abb901c23a198187628fe94331427",
-      "status": "completed",
-      "conclusion": "failure",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45600372389",
-      "coreJobID": 139158445903,
-      "coreConclusion": "success",
-      "debugPassed": 319,
-      "releasePassed": 319,
-      "pythonPassed": 28,
-      "efbigChecksPassed": 11,
-      "interruptionScenariosPassed": 3,
-      "nativeResult": "unverified",
-      "uiResult": "failure",
-      "nativeJob": {
-        "id": 139160177457,
-        "status": "completed",
-        "conclusion": "failure",
-        "runner": "macos-26-intel",
-        "architecture": "x86_64",
-        "portableTestsPassed": 319,
-        "portableTestAggregateSeconds": 51.919,
-        "failedStep": "Verify bounded atomic library write failure on macOS host",
-        "failurePhase": "Swift helper compilation; EFBIG fixture not executed",
-        "diagnostic": "<unknown>:0: error: unable to load standard library for target 'x86_64-apple-macosx26.0'",
-        "nativeBuildsExecuted": 0,
-        "nativeMethodsExecuted": 0,
-        "macOSEFBIGResult": "unverified",
-        "secondaryFailure": "Result export correctly reports no finalized XCTest bundle because native tests did not execute"
-      },
-      "uiJobs": [
-        {
-          "id": 139160177561,
-          "shard": "room",
-          "status": "completed",
-          "conclusion": "success",
-          "passed": 5,
-          "failed": 0,
-          "skipped": 0
-        },
-        {
-          "id": 139160177595,
-          "shard": "library",
-          "status": "completed",
-          "conclusion": "failure",
-          "passed": 9,
-          "failed": 2,
-          "skipped": 0
-        },
-        {
-          "id": 139160177597,
-          "shard": "studio",
-          "status": "completed",
-          "conclusion": "success",
-          "passed": 20,
-          "failed": 0,
-          "skipped": 0
-        }
-      ],
-      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json",
-      "latestUIArtifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json",
-      "initialObservationAtUTC": "2026-11-25T11:17:46Z",
-      "updatedAtUTC": "2026-11-25T11:44:28Z",
-      "uiPassed": 34,
-      "uiFailed": 2,
-      "uiExecuted": 36,
-      "uiSkipped": 0,
-      "opticsWorkflowRunsPassed": 10,
-      "jobs": [
-        {
-          "id": 139158445903,
-          "name": "core",
-          "status": "completed",
-          "conclusion": "success",
-          "startedAt": "2026-11-25T11:02:38Z",
-          "completedAt": "2026-11-25T11:05:41Z"
-        },
-        {
-          "id": 139160177457,
-          "name": "simulator",
-          "status": "completed",
-          "conclusion": "failure",
-          "startedAt": "2026-11-25T11:05:45Z",
-          "completedAt": "2026-11-25T11:10:28Z"
-        },
-        {
-          "id": 139160177561,
-          "name": "ui (room-precision)",
-          "status": "completed",
-          "conclusion": "success",
-          "startedAt": "2026-11-25T11:05:45Z",
-          "completedAt": "2026-11-25T11:39:39Z"
-        },
-        {
-          "id": 139160177595,
-          "name": "ui (library-reference)",
-          "status": "completed",
-          "conclusion": "failure",
-          "startedAt": "2026-11-25T11:05:45Z",
-          "completedAt": "2026-11-25T11:39:48Z"
-        },
-        {
-          "id": 139160177597,
-          "name": "ui (studio-export)",
-          "status": "completed",
-          "conclusion": "success",
-          "startedAt": "2026-11-25T11:05:49Z",
-          "completedAt": "2026-11-25T11:44:28Z"
-        }
-      ],
-      "accessibility": {
-        "issue": "Both complete .all audit calls failed with Apple accessibility-audit Code=-56: Audit failed to complete in time.",
-        "stepDeadlineExpired": false,
-        "issueHandlerAttachments": 0,
-        "priorTenFindings": "remain unverified",
-        "compactArtifact": {
-          "id": 15017049069,
-          "bytes": 1277140,
-          "sha256": "af8254ad5ca489ca6d2b56cbb364ea51f20b2eddffc49e5970d5f915d015b335",
-          "verifiedBy": "a100 actual downloaded bytes"
-        }
-      },
-      "priorProgressArtifacts": [
-        "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-progress.json",
-        "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-ui-progress.json"
-      ]
-    },
-    "persistenceSmoke": {
-      "result": "pass",
-      "testedRevision": "b298b1333f3abb901c23a198187628fe94331427",
-      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json",
-      "scope": "Actual Recipe/edit/save/relaunch, corrupt-file save blocking across relaunch, all ten optics workflows and library create/recovery flows passed. This is simulator app smoke, not physical durability."
-    },
-    "editingAcceptance": {
-      "result": "pass",
-      "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "uiRepeatabilityRevision": "b298b1333f3abb901c23a198187628fe94331427",
-      "applicableUnchangedRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
-      "uiRepeatabilityRunsPassed": 10,
-      "roomPrecisionPassed": 5,
-      "roomPrecisionRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "nativeOwnershipAndRegressionPassed": true,
-      "scope": "Protected editing criteria are supported by source-equivalent executed core/native and b298 UI evidence: exact units, history, stable selection, valid gesture/model transforms, preservation of edits and ten complete workflow runs. This does not pass accessibility or complete dependency-blocked M03.",
-      "artifacts": [
-        "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json",
-        "docs/evidence/m02-m03-2026-11-25/validation/f6-room-terminal/terminal-summary.json",
-        "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json"
-      ]
-    },
-    "libraryRunnerCandidate": {
-      "baseRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "status": "published_workflow_pending_at_capture",
-      "workflowSHA256": "78fa24a8a6da06f60e95989256d186853604392b9feea21f151a7210338f4e0e",
-      "implementationWorker": "a097",
-      "independentReviewer": "a100",
-      "reviewResult": "approved; no blocking finding",
-      "change": "Only library-reference UI routes to standard macos-26/arm64; native-unit, room-precision and studio-export remain macos-26-intel/x86_64. Xcode 26.6, iOS 26.5, full audits, methods, deadlines, artifacts and concurrency remain unchanged.",
-      "reason": "Intel full audit calls timed out with Code=-56. Earlier ARM calls completed and reported ten findings; routing aims to complete the audits, not declare those findings repaired.",
-      "validation": {
-        "yaml": "parsed",
-        "bashBlocksParsed": 27,
-        "inlinePythonBlocksParsed": 5,
-        "uiClasses": 7,
-        "uiShards": 3,
-        "pythonPassed": 35,
-        "scope": "Static/syntax/local Python checks only; ARM route not executed."
-      },
-      "executionResult": "unverified",
-      "publishedRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
-      "workflowID": 45609587344
-    },
-    "inProgressPredecessorWorkflow": {
       "id": 45604744523,
       "sourceRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45604744523",
-      "observedAtUTC": "2026-11-25T12:19:13Z",
       "coreJobID": 139181130570,
       "coreConclusion": "success",
       "debugPassed": 319,
@@ -447,7 +394,7 @@
       "kernelFixturesPassed": 6,
       "precisionFixturesPassed": 8,
       "nativeResult": "pass",
-      "uiResult": "partial; room 5/5 passed, studio/library terminal results not yet recorded",
+      "uiResult": "failure",
       "jobs": [
         {
           "id": 139181130570,
@@ -478,19 +425,34 @@
         {
           "id": 139182923449,
           "name": "ui (studio-export)",
-          "status": "in_progress",
-          "conclusion": null,
-          "observedAtUTC": "2026-11-25T12:19:13Z",
-          "step": "Run selected native UI shard",
-          "stepStartedAtUTC": "2026-11-25T12:10:51Z"
+          "status": "completed",
+          "conclusion": "failure",
+          "passed": 14,
+          "failed": 1,
+          "completed": 15,
+          "started": 16,
+          "incomplete": 1,
+          "notStarted": 4,
+          "skipped": 0,
+          "stepDeadlineMinutes": 40,
+          "finalizedXCResult": false,
+          "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json"
         },
         {
           "id": 139182923356,
           "name": "ui (library-reference)",
-          "status": "in_progress",
-          "conclusion": null,
-          "observedAtUTC": "2026-11-25T12:19:13Z",
-          "step": "Run selected native UI shard"
+          "status": "completed",
+          "conclusion": "failure",
+          "passed": 4,
+          "failed": 5,
+          "completed": 9,
+          "started": 10,
+          "incomplete": 1,
+          "notStarted": 1,
+          "skipped": 0,
+          "stepDeadlineMinutes": 32,
+          "finalizedXCResult": false,
+          "artifact": "docs/evidence/m02-m03-2026-11-25/validation/library-f6-terminal/receipt.json"
         }
       ],
       "macOSProbeStepResult": "success",
@@ -513,8 +475,7 @@
         "observedPOSIXErrno": 27,
         "artifact": "docs/evidence/m02-m03-2026-11-25/validation/macos-sdk-ci/verified-summary.json"
       },
-      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint6-progress.json",
-      "scope": "Exact f6 core/native/room outcomes are terminal success. Root API snapshot at 12:19:13 UTC shows studio and library running their selected UI shards; full workflow remains in progress. a1ef is separately pending at the same capture.",
+      "scope": "Exact f6 terminal result. Core/native/room succeeded; library and studio failed and exceeded their unchanged test deadlines, leaving incomplete coverage. Partial method outcomes are not a complete-suite pass.",
       "nativePassed": 110,
       "nativeFailed": 0,
       "nativeSkipped": 0,
@@ -534,16 +495,139 @@
         "testSeconds": 695.447,
         "wallSeconds": 695.46,
         "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-room-terminal/terminal-summary.json"
+      },
+      "updatedAtUTC": "2026-11-25T12:53:33Z",
+      "uiPassed": 23,
+      "uiFailed": 6,
+      "uiCompleted": 29,
+      "uiStarted": 31,
+      "uiIncomplete": 2,
+      "uiNotStarted": 5,
+      "uiInventory": 36,
+      "uiSkipped": 0,
+      "opticsWorkflowRunsPassed": 9,
+      "opticsWorkflowRunsFailed": 1,
+      "supportingArtifacts": [
+        "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/library-f6-terminal/receipt.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/f6-room-terminal/terminal-summary.json"
+      ],
+      "initialObservationAtUTC": "2026-11-25T12:19:13Z",
+      "priorProgressArtifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint6-progress.json",
+      "artifact": "docs/evidence/m02-m03-main-2026-11-25.md",
+      "libraryFailure": {
+        "jobID": 139182923356,
+        "auditTimeouts": 2,
+        "auditCode": -56,
+        "readinessTimeouts": 3,
+        "readinessCallSiteLines": [
+          115,
+          390,
+          334
+        ],
+        "readinessPredicate": "exists == true AND enabled == true",
+        "readinessWaitSeconds": 15,
+        "interruptedMethod": "ReferenceComparisonUITests.testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        "notStartedMethod": "ReferenceComparisonUITests.testReferenceComparisonOpensWithRealStudyAndNoPhoto",
+        "finalizedXCResult": false,
+        "dataLossEstablished": false,
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/library-f6-terminal/receipt.json"
+      },
+      "studioFailure": {
+        "jobID": 139182923449,
+        "failedMethod": "StudioSmokeTests.testOpticsRepeatability10",
+        "failedCallSiteLine": 235,
+        "failure": "Post-relaunch Saved locally status wait timed out; initial save predicate had succeeded.",
+        "opticsPassed": 9,
+        "opticsFailed": 1,
+        "restoredEmitterWidthMeters": 2.1,
+        "interruptedMethod": "StudioSmokeTests.testRecipeEditSaveAndReopen",
+        "notStartedMethods": 4,
+        "finalizedXCResult": false,
+        "diagnosticExitCodeIsAuthoritative": false,
+        "dataLossEstablished": false,
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json"
       }
+    },
+    "persistenceSmoke": {
+      "result": "pass",
+      "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+      "earlierRevision": "b298b1333f3abb901c23a198187628fe94331427",
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json",
+      "supportingArtifact": "docs/evidence/m02-m03-2026-11-25/validation/library-f6-terminal/receipt.json",
+      "scope": "Actual f6 camera/meter and nine optics save/relaunch workflows, corrupt-file save blocking across relaunch, and library create/duplicate/rename/switch/relaunch completed successfully. Preserve the tenth optics post-relaunch status failure, three library readiness failures and incomplete Recipe/reference cases separately; no full reliability or physical durability claim."
+    },
+    "editingAcceptance": {
+      "result": "unverified",
+      "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+      "applicableUnchangedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "priorPassedDecision": {
+        "result": "pass",
+        "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+        "uiRepeatabilityRevision": "b298b1333f3abb901c23a198187628fe94331427",
+        "applicableUnchangedRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+        "uiRepeatabilityRunsPassed": 10,
+        "roomPrecisionPassed": 5,
+        "roomPrecisionRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+        "nativeOwnershipAndRegressionPassed": true,
+        "scope": "Protected editing criteria are supported by source-equivalent executed core/native and b298 UI evidence: exact units, history, stable selection, valid gesture/model transforms, preservation of edits and ten complete workflow runs. This does not pass accessibility or complete dependency-blocked M03.",
+        "artifacts": [
+          "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json",
+          "docs/evidence/m02-m03-2026-11-25/validation/f6-room-terminal/terminal-summary.json",
+          "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json"
+        ]
+      },
+      "latestOpticsRunsPassed": 9,
+      "latestOpticsRunsFailed": 1,
+      "roomPrecisionPassed": 5,
+      "nativeOwnershipAndRegressionPassed": true,
+      "reason": "Newer actual f6 execution failed the tenth complete optics workflow and did not finish all required UI methods. Prior b298 ten-pass evidence remains historical support, but no longer suffices to claim repeatable current end-to-end acceptance.",
+      "scope": "Reopened validation; causes of readiness/status timeouts remain unresolved. No disk loss is established by the available logs. Require fresh complete workflows under unchanged assertions and deadlines.",
+      "artifacts": [
+        "docs/evidence/m02-m03-2026-11-25/validation/f6-studio-terminal/terminal-summary.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/library-f6-terminal/receipt.json",
+        "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json"
+      ]
+    },
+    "libraryRunnerCandidate": {
+      "baseRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+      "status": "published_ARM_route_cancelled_without_execution",
+      "workflowSHA256": "78fa24a8a6da06f60e95989256d186853604392b9feea21f151a7210338f4e0e",
+      "implementationWorker": "a097",
+      "independentReviewer": "a100",
+      "reviewResult": "approved; no blocking finding",
+      "change": "Only library-reference UI routes to standard macos-26/arm64; native-unit, room-precision and studio-export remain macos-26-intel/x86_64. Xcode 26.6, iOS 26.5, full audits, methods, deadlines, artifacts and concurrency remain unchanged.",
+      "reason": "Intel full audit calls timed out with Code=-56. Earlier ARM calls completed and reported ten findings; routing aims to complete the audits, not declare those findings repaired.",
+      "validation": {
+        "yaml": "parsed",
+        "bashBlocksParsed": 27,
+        "inlinePythonBlocksParsed": 5,
+        "uiClasses": 7,
+        "uiShards": 3,
+        "pythonPassed": 35,
+        "scope": "Static/syntax/local Python checks only; ARM route not executed."
+      },
+      "executionResult": "not_executed; ARM library job 139221045245 completed/cancelled at 13:12:42 with runner_id 0 and zero steps",
+      "publishedRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+      "workflowID": 45609587344,
+      "currentWorkflowID": 45613203857,
+      "currentPublishedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "currentObservedAtUTC": "2026-11-25T13:17:43Z",
+      "terminalArtifact": "docs/evidence/m02-m03-2026-11-25/validation/library-arm-214-terminal/receipt.json",
+      "terminalCause": "Official annotations identify hosted-runner acquisition failure after multiple attempts and three explicit ARM capacity notices; scope is this job, not a global outage.",
+      "nextCandidate": "Return library/reference to standard Intel with build-before-boot sequencing and bounded diagnostics; runtime scheduling/AX improvement unproven.",
+      "annotationsArtifact": "docs/evidence/m02-m03-2026-11-25/validation/library-arm-214-terminal/annotations.json"
     },
     "nativeCandidateTestedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
     "sourceEquivalence": {
       "revisions": [
         "b298b1333f3abb901c23a198187628fe94331427",
         "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-        "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a"
+        "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+        "214ca90bbd166482277d33d63b89c1472ba9abf6"
       ],
-      "method": "Independent git rev-parse of each revision:path; identical tree/blob object IDs across all three commits.",
+      "method": "Independent git rev-parse of each revision:path; identical eight tree/blob object IDs across b298, f6, a1ef and published 214ca90.",
       "gitObjectIDs": {
         "App": "9c4a916fb3bcc78fafb8721afa4308c7f178a30c",
         "Sources": "13c754cee20ea55c473473e2f097c3f6585fc927",
@@ -555,12 +639,12 @@
         "Package.swift": "a574497006b00a96ee33d29439b1da5be8eb9363"
       },
       "result": "identical",
-      "scope": "Application, core, tests, resources and project/package inputs are unchanged. Workflow/diagnostic/evidence changes are not asserted identical, and a1ef workflow execution is not inferred."
+      "scope": "Published application, core, test, resource and project/package inputs are unchanged across these revisions. Working test diagnostics and workflow candidates are outside this equality claim; no later run success is inferred."
     },
     "nativeBuildAcceptance": {
       "result": "pass",
       "testedRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "applicableUnchangedRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+      "applicableUnchangedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
       "unsignedDebugBuild": "passed",
       "unsignedReleaseBuild": "passed",
       "nativePassed": 110,
@@ -568,25 +652,466 @@
       "nativeSkipped": 0,
       "requiredMetalPassed": 3,
       "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json",
-      "scope": "Actual Intel Xcode 26.6/iOS 26.5 simulator evidence at f6; code/project equality supports current application applicability, not an a1ef run result."
+      "scope": "Actual f6 Intel Xcode 26.6/iOS 26.5 build/native evidence; unchanged published application inputs through 214ca90 support applicability. Current workflow and working diagnostic changes retain their own execution scope."
     },
     "m01Acceptance": {
       "result": "complete",
-      "coreRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+      "coreRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
       "nativeBuildRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
-      "persistenceSmokeRevision": "b298b1333f3abb901c23a198187628fe94331427",
-      "applicableUnchangedRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
-      "basis": "All three protected M01 gates have real passing evidence; unchanged application/core/test/project inputs justify combining revision-bound receipts."
+      "persistenceSmokeRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+      "applicableUnchangedRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "basis": "All three protected M01 gates retain real passing evidence: f6 core and unsigned builds; completed f6 library create/duplicate/relaunch, camera/meter/nine optics saves/relaunches and corrupt-file protection. Newer failed/incomplete full workflows reopen editing reliability without erasing completed smoke or proving disk loss."
     },
     "cancellationObservation": {
-      "performed": false,
-      "scope": "No explicit f6 or a1ef workflow cancellation was performed. The available connector exposed no cancellation action and the inspected browser menu did not expose one.",
-      "planCorrection": "Earlier proposed cancellation was not executed. Active f6 continues; pending a1ef may only be marked superseded after an actual outcome is observed."
+      "explicitCancellationPerformed": false,
+      "scope": "No explicit cancellation of active f6 occurred; it finished with failure.",
+      "pendingSupersession": {
+        "workflowID": 45609587344,
+        "sourceRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "observedAtUTC": "2026-11-25T12:22:57Z",
+        "reason": "Actual pending-run cancellation after publication of 214ca90 under normal global concurrency; this was not cancellation of active f6."
+      },
+      "previousObservation": {
+        "performed": false,
+        "scope": "No explicit f6 or a1ef workflow cancellation was performed. The available connector exposed no cancellation action and the inspected browser menu did not expose one.",
+        "planCorrection": "Earlier proposed cancellation was not executed. Active f6 continues; pending a1ef may only be marked superseded after an actual outcome is observed."
+      }
     },
     "publicationObservation": {
-      "sourceRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
-      "observedAtUTC": "2026-11-25T12:19:13Z",
-      "scope": "Last observed published main at capture; the pending documentation/evidence publication will have its own actual commit and workflow."
+      "sourceRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "tree": "d110bedef6ed70eccc004ff03fdf58c26b934862",
+      "observedAtUTC": "2026-11-25T13:04:55Z",
+      "scope": "Last observed published main at capture. Prepared workflow/test diagnostics remain working changes, not a new published SHA or execution result."
+    },
+    "completedWorkflowHistory": [
+      {
+        "id": 45600372389,
+        "sourceRevision": "b298b1333f3abb901c23a198187628fe94331427",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45600372389",
+        "coreJobID": 139158445903,
+        "coreConclusion": "success",
+        "debugPassed": 319,
+        "releasePassed": 319,
+        "pythonPassed": 28,
+        "efbigChecksPassed": 11,
+        "interruptionScenariosPassed": 3,
+        "nativeResult": "unverified",
+        "uiResult": "failure",
+        "nativeJob": {
+          "id": 139160177457,
+          "status": "completed",
+          "conclusion": "failure",
+          "runner": "macos-26-intel",
+          "architecture": "x86_64",
+          "portableTestsPassed": 319,
+          "portableTestAggregateSeconds": 51.919,
+          "failedStep": "Verify bounded atomic library write failure on macOS host",
+          "failurePhase": "Swift helper compilation; EFBIG fixture not executed",
+          "diagnostic": "<unknown>:0: error: unable to load standard library for target 'x86_64-apple-macosx26.0'",
+          "nativeBuildsExecuted": 0,
+          "nativeMethodsExecuted": 0,
+          "macOSEFBIGResult": "unverified",
+          "secondaryFailure": "Result export correctly reports no finalized XCTest bundle because native tests did not execute"
+        },
+        "uiJobs": [
+          {
+            "id": 139160177561,
+            "shard": "room",
+            "status": "completed",
+            "conclusion": "success",
+            "passed": 5,
+            "failed": 0,
+            "skipped": 0
+          },
+          {
+            "id": 139160177595,
+            "shard": "library",
+            "status": "completed",
+            "conclusion": "failure",
+            "passed": 9,
+            "failed": 2,
+            "skipped": 0
+          },
+          {
+            "id": 139160177597,
+            "shard": "studio",
+            "status": "completed",
+            "conclusion": "success",
+            "passed": 20,
+            "failed": 0,
+            "skipped": 0
+          }
+        ],
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json",
+        "latestUIArtifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-terminal.json",
+        "initialObservationAtUTC": "2026-11-25T11:17:46Z",
+        "updatedAtUTC": "2026-11-25T11:44:28Z",
+        "uiPassed": 34,
+        "uiFailed": 2,
+        "uiExecuted": 36,
+        "uiSkipped": 0,
+        "opticsWorkflowRunsPassed": 10,
+        "jobs": [
+          {
+            "id": 139158445903,
+            "name": "core",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-25T11:02:38Z",
+            "completedAt": "2026-11-25T11:05:41Z"
+          },
+          {
+            "id": 139160177457,
+            "name": "simulator",
+            "status": "completed",
+            "conclusion": "failure",
+            "startedAt": "2026-11-25T11:05:45Z",
+            "completedAt": "2026-11-25T11:10:28Z"
+          },
+          {
+            "id": 139160177561,
+            "name": "ui (room-precision)",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-25T11:05:45Z",
+            "completedAt": "2026-11-25T11:39:39Z"
+          },
+          {
+            "id": 139160177595,
+            "name": "ui (library-reference)",
+            "status": "completed",
+            "conclusion": "failure",
+            "startedAt": "2026-11-25T11:05:45Z",
+            "completedAt": "2026-11-25T11:39:48Z"
+          },
+          {
+            "id": 139160177597,
+            "name": "ui (studio-export)",
+            "status": "completed",
+            "conclusion": "success",
+            "startedAt": "2026-11-25T11:05:49Z",
+            "completedAt": "2026-11-25T11:44:28Z"
+          }
+        ],
+        "accessibility": {
+          "issue": "Both complete .all audit calls failed with Apple accessibility-audit Code=-56: Audit failed to complete in time.",
+          "stepDeadlineExpired": false,
+          "issueHandlerAttachments": 0,
+          "priorTenFindings": "remain unverified",
+          "compactArtifact": {
+            "id": 15017049069,
+            "bytes": 1277140,
+            "sha256": "af8254ad5ca489ca6d2b56cbb364ea51f20b2eddffc49e5970d5f915d015b335",
+            "verifiedBy": "a100 actual downloaded bytes"
+          }
+        },
+        "priorProgressArtifacts": [
+          "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-progress.json",
+          "docs/evidence/m02-m03-2026-11-25/validation/checkpoint5-ui-progress.json"
+        ]
+      }
+    ],
+    "workflowObservations": [
+      {
+        "id": 45609587344,
+        "sourceRevision": "a1ef72fef6b10b6a11f5d62cf1a9410499c92e9a",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45609587344",
+        "status": "pending",
+        "conclusion": null,
+        "observedAtUTC": "2026-11-25T12:19:13Z",
+        "reason": "Pending at captured time behind active f6 workflow under global concurrency.",
+        "scope": "No execution/pass/cancellation is inferred for a1ef. Any later supersession must be observed separately."
+      },
+      {
+        "id": 45604744523,
+        "sourceRevision": "f6f43dde19be7a554bc5c6924e3239c18b34d1be",
+        "status": "in_progress",
+        "conclusion": null,
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45604744523",
+        "observedAtUTC": "2026-11-25T12:19:13Z",
+        "coreJobID": 139181130570,
+        "coreConclusion": "success",
+        "debugPassed": 319,
+        "debugSeconds": 11.638,
+        "releasePassed": 319,
+        "releaseSeconds": 5.948,
+        "pythonPassed": 35,
+        "pythonSeconds": 0.445,
+        "efbigChecksPassed": 11,
+        "interruptionScenariosPassed": 3,
+        "kernelFixturesPassed": 6,
+        "precisionFixturesPassed": 8,
+        "nativeResult": "pass",
+        "uiResult": "partial; room 5/5 passed, studio/library terminal results not yet recorded",
+        "jobs": [
+          {
+            "id": 139181130570,
+            "name": "core",
+            "status": "completed",
+            "conclusion": "success"
+          },
+          {
+            "id": 139182923426,
+            "name": "simulator",
+            "status": "completed",
+            "conclusion": "success",
+            "nativePassed": 110,
+            "nativeFailed": 0,
+            "nativeSkipped": 0,
+            "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json"
+          },
+          {
+            "id": 139182923435,
+            "name": "ui (room-precision)",
+            "status": "completed",
+            "conclusion": "success",
+            "passed": 5,
+            "failed": 0,
+            "skipped": 0,
+            "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-room-terminal/terminal-summary.json"
+          },
+          {
+            "id": 139182923449,
+            "name": "ui (studio-export)",
+            "status": "in_progress",
+            "conclusion": null,
+            "observedAtUTC": "2026-11-25T12:19:13Z",
+            "step": "Run selected native UI shard",
+            "stepStartedAtUTC": "2026-11-25T12:10:51Z"
+          },
+          {
+            "id": 139182923356,
+            "name": "ui (library-reference)",
+            "status": "in_progress",
+            "conclusion": null,
+            "observedAtUTC": "2026-11-25T12:19:13Z",
+            "step": "Run selected native UI shard"
+          }
+        ],
+        "macOSProbeStepResult": "success",
+        "macOSProbeArtifact": {
+          "id": 15017404141,
+          "bytes": 39276,
+          "sha256": "c26208e64bdf0f68681e39596c0657afcb23b162306be8ae30aae5ae0f377b42",
+          "inspection": "Independent a097 verification complete: downloaded digest/CRC, all 31 Swift sources and two diagnostics match exact f6 Git revision, manifests/runtime helper hash and all raw phases/fixture bytes verified.",
+          "macOSSDK": "26.5",
+          "compilerReturnCode": 0,
+          "compileSeconds": 57.307,
+          "wrapperResult": "passed",
+          "probeResult": "passed",
+          "efbigChecksPassed": 11,
+          "efbigCheckCount": 11,
+          "verifiedAtUTC": "2026-11-25T11:54:31.604207+00:00",
+          "compiledSourcesVerifiedAgainstGitRevision": 31,
+          "diagnosticsVerifiedAgainstGitRevision": 2,
+          "probeSeconds": 0.396,
+          "observedPOSIXErrno": 27,
+          "artifact": "docs/evidence/m02-m03-2026-11-25/validation/macos-sdk-ci/verified-summary.json"
+        },
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint6-progress.json",
+        "scope": "Exact f6 core/native/room outcomes are terminal success. Root API snapshot at 12:19:13 UTC shows studio and library running their selected UI shards; full workflow remains in progress. a1ef is separately pending at the same capture.",
+        "nativePassed": 110,
+        "nativeFailed": 0,
+        "nativeSkipped": 0,
+        "requiredMetalPassed": 3,
+        "unsignedDebugBuild": "passed",
+        "unsignedReleaseBuild": "passed",
+        "nativeArtifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-native-terminal/terminal-summary.json",
+        "nativeObservedAtUTC": "2026-11-25T12:06:41Z",
+        "roomUI": {
+          "status": "completed",
+          "conclusion": "success",
+          "jobID": 139182923435,
+          "unique": 5,
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0,
+          "testSeconds": 695.447,
+          "wallSeconds": 695.46,
+          "artifact": "docs/evidence/m02-m03-2026-11-25/validation/f6-room-terminal/terminal-summary.json"
+        }
+      },
+      {
+        "id": 45613203857,
+        "sourceRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45613203857",
+        "status": "in_progress",
+        "conclusion": null,
+        "observedAtUTC": "2026-11-25T13:01:10Z",
+        "coreConclusion": "success",
+        "libraryJob": {
+          "id": 139221045245,
+          "status": "queued",
+          "conclusion": null,
+          "queuedSinceUTC": "2026-11-25T12:57:40Z",
+          "runnerAcquired": false,
+          "scope": "Queued without a runner at the captured observation; no capacity failure or ARM test result is inferred."
+        },
+        "scope": "Observed current workflow; core passed, Apple execution requires its own terminal receipts. A future candidate SHA or workflow is not invented."
+      },
+      {
+        "id": 45613203857,
+        "sourceRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+        "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45613203857",
+        "status": "in_progress",
+        "conclusion": null,
+        "observedAtUTC": "2026-11-25T13:04:55Z",
+        "coreConclusion": "success",
+        "libraryJob": {
+          "id": 139221045245,
+          "status": "queued",
+          "conclusion": null,
+          "queuedSinceUTC": "2026-11-25T12:57:40Z",
+          "runnerAcquired": false,
+          "scope": "Queued without a runner at the captured observation; no capacity failure or ARM test result is inferred.",
+          "observedAtUTC": "2026-11-25T13:04:55Z",
+          "runnerID": 0
+        },
+        "scope": "Exact 214ca90 progress: core 319/319/35 plus all 11 EFBIG/three interruption/six kernel/eight precision checks passed. Native is building Release after Debug success; Intel room/studio are building UI; ARM library remains queued without a runner. No complete workflow, native-method or current UI result is inferred.",
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/checkpoint8-progress.json",
+        "core": {
+          "jobID": 139218751349,
+          "status": "completed",
+          "conclusion": "success",
+          "debug": {
+            "passed": 319,
+            "failures": 0,
+            "seconds": 13.091
+          },
+          "release": {
+            "passed": 319,
+            "failures": 0,
+            "seconds": 5.885
+          },
+          "python": {
+            "passed": 35,
+            "seconds": 0.486
+          },
+          "efbigChecksPassed": 11,
+          "commitBoundaryScenarios": [
+            {
+              "mode": "before-rename",
+              "status": "passed"
+            },
+            {
+              "mode": "after-rename",
+              "status": "passed"
+            },
+            {
+              "mode": "rename-eio",
+              "status": "passed"
+            }
+          ],
+          "kernelFixturesPassed": 6,
+          "precisionFixturesPassed": 8
+        },
+        "jobs": [
+          {
+            "id": 139218751349,
+            "name": "core",
+            "status": "completed",
+            "conclusion": "success",
+            "runnerID": 1000000802,
+            "currentStep": null
+          },
+          {
+            "id": 139221045238,
+            "name": "simulator",
+            "status": "in_progress",
+            "conclusion": null,
+            "runnerID": 1000000803,
+            "currentStep": "Build unsigned release simulator application"
+          },
+          {
+            "id": 139221045245,
+            "name": "ui (library-reference)",
+            "status": "queued",
+            "conclusion": null,
+            "runnerID": 0,
+            "currentStep": null
+          },
+          {
+            "id": 139221045251,
+            "name": "ui (room-precision)",
+            "status": "in_progress",
+            "conclusion": null,
+            "runnerID": 1000000805,
+            "currentStep": "Build native UI test bundle"
+          },
+          {
+            "id": 139221045264,
+            "name": "ui (studio-export)",
+            "status": "in_progress",
+            "conclusion": null,
+            "runnerID": 1000000804,
+            "currentStep": "Build native UI test bundle"
+          }
+        ]
+      }
+    ],
+    "uiDiagnosticsCandidate": {
+      "baseRevision": "214ca90bbd166482277d33d63b89c1472ba9abf6",
+      "status": "reviewed_working_candidate_requires_Apple_execution",
+      "buildOrderReport": "docs/evidence/m02-m03-2026-11-25/followups/followup-ui-build-boot-order.md",
+      "initialOrderingOnlySHA256": "f771ff14b9f5c5dad21eeedbf831c66df587447ce177d2caa3270e117f1b6f48",
+      "initialOrderingReview": "a097 and root approved exact adjacent build/boot relocation; later telemetry additions require their own review.",
+      "scope": "Prepared source changes improve outcome provenance and bounded error/host observations; no product fix, resource-pressure cause, speedup, AX completion or runtime pass is established. The required UI shell body is byte-identical; new host steps are optional and bounded. Current application/runtime evidence remains separately source-bound.",
+      "testDiagnostics": {
+        "status": "prepared_and_root_reviewed; Apple compilation/runtime unverified",
+        "sourceSHA256": {
+          "UITests/ProjectLibraryUITests.swift": "bb226a7267c345209f1aad9d3fce53d37ef0b74508f955dfeb7d5a428eb1c004",
+          "UITests/StudioSmokeTests.swift": "34895840aa5885514f36fa08d88a668f437e5d0957e939fdf75ca01c02d6f9ee"
+        },
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/failure-diagnostics/source-validation.json",
+        "scope": "Error-path logging only: no extra library query; one bounded studio snapshot; 4,096-byte UTF-8 prefix with truncation marker. All 36 UI methods, original wait bounds and assertions retained. Swift syntax parsing and source-preservation checks passed; not an Apple typecheck or product fix."
+      },
+      "requestedRunnerChange": "Implemented final candidate returns only library-reference from macos-26/arm64 to macos-26-intel/x86_64; all current native/UI runner labels are Intel. Test/build/boot/job bounds, selectors and full audits remain unchanged.",
+      "workflowSHA256": "6792b1c16bd96ceba120e1906c9ee7ebdbaab01d8b8fbfaf0da39f8b2c29fbdb",
+      "workflowDiffSHA256": "b7ecd7ac867e1f05007f7438b98a401c2237ef01f5d88dc068c26f06c358a208",
+      "workflowArtifact": "docs/evidence/m02-m03-2026-11-25/validation/ui-host-diagnostics/validation.json",
+      "workflowReport": "docs/evidence/m02-m03-2026-11-25/followups/followup-ui-host-diagnostics.md",
+      "workflowReview": "Root approved ordering/diagnostics; a100 independently approved the final library-only Intel fallback with no blocking finding.",
+      "runnerChange": {
+        "shard": "library-reference",
+        "fromRunner": "macos-26",
+        "fromArchitecture": "arm64",
+        "toRunner": "macos-26-intel",
+        "toArchitecture": "x86_64",
+        "reason": "Actual 214 ARM job ended cancelled after approximately 15 minutes with runner_id 0 and zero executed steps; acquisition fallback, not an AX result.",
+        "otherRunnerChoicesUnchanged": true
+      },
+      "hostSnapshots": {
+        "steps": 2,
+        "commandsPerStep": 4,
+        "secondsPerCommand": 5,
+        "stepTimeoutMinutes": 1,
+        "loggedCharactersPerCommand": 65536,
+        "continueOnError": true,
+        "afterCondition": "always()",
+        "processFields": [
+          "pid",
+          "ppid",
+          "pcpu",
+          "rss",
+          "comm"
+        ],
+        "fullArgumentsOrEnvironmentDumped": false
+      },
+      "githubOutcomeSource": "steps.selected_ui_tests.outcome",
+      "shellExitField": "observed_shell_exit_code",
+      "validation": {
+        "yamlParsed": true,
+        "shellBlocksParsed": 29,
+        "inlinePythonBlocksParsed": 7,
+        "requiredUIRunBodyByteIdentical": true,
+        "finalDeltaOnlyLibraryMatrixValuesAndComment": true,
+        "AppleExecution": "unverified",
+        "scope": "Initial approved diagnostic/ordering candidate: YAML, 29 shell blocks, 7 inline Python blocks, original run-body and full-document restoration checks. Final candidate: exact-byte proof of only two matrix values plus rationale comment, full YAML structure comparison, diff check; executable run bodies unchanged from initial validation."
+      }
     }
   }
 }

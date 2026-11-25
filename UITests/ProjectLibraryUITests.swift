@@ -13,6 +13,9 @@ final class ProjectLibraryUITests: XCTestCase {
             let description = "Application state: \(app.state.rawValue)\n" +
                 "Requested element:\n\(String(element.debugDescription.prefix(8_000)))\n" +
                 "Application hierarchy:\n\(String(app.debugDescription.prefix(24_000)))"
+            // Keep the same captured state when an interrupted run cannot
+            // finalize its result bundle. This adds no accessibility queries.
+            print("Project-control-readiness-failure:\n\(description)")
             let state = XCTAttachment(string: description)
             state.name = "Project-control-readiness-failure"
             state.lifetime = .keepAlways

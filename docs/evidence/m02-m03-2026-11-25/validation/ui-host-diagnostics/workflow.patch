@@ -1,0 +1,153 @@
+diff --git a/.github/workflows/ios-prototype.yml b/.github/workflows/ios-prototype.yml
+index 2f615da..0432771 100644
+--- a/.github/workflows/ios-prototype.yml
++++ b/.github/workflows/ios-prototype.yml
+@@ -339,9 +339,9 @@ jobs:
+             ui_test_minutes: 32
+             job_minutes: 85
+           - shard: library-reference
+-            # Full accessibility audits completed on ARM; Intel's AX service timed out.
+-            runner: macos-26
+-            expected_arch: arm64
++            # Use the acquired Intel pool; keep the full accessibility audits enabled.
++            runner: macos-26-intel
++            expected_arch: x86_64
+             ui_test_minutes: 32
+             job_minutes: 85
+           - shard: studio-export
+@@ -393,6 +393,13 @@ jobs:
+           with open(os.environ["GITHUB_ENV"], "a") as f:
+               f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+           PY
++      - name: Build native UI test bundle
++        timeout-minutes: 25
++        run: |
++          set -euo pipefail
++          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
++            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
++            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
+       - name: Boot selected iPhone simulator
+         timeout-minutes: 10
+         run: |
+@@ -414,14 +421,45 @@ jobs:
+           PY
+             xcrun simctl bootstatus "$SIMULATOR_ID" -b
+           } 2>&1 | tee simulator-boot.log
+-      - name: Build native UI test bundle
+-        timeout-minutes: 25
++      - name: Capture host conditions before UI tests
++        continue-on-error: true
++        timeout-minutes: 1
+         run: |
+-          set -euo pipefail
+-          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+-            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+-            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
++          mkdir -p artifacts
++          python3 - <<'PY' > artifacts/ui-host-before-tests.log 2>&1
++          import datetime, json, os, subprocess, time
++          print("phase=before-ui-tests", flush=True)
++          print("utc=" + datetime.datetime.now(datetime.timezone.utc).isoformat(), flush=True)
++          commands = [
++              ("virtual_memory", ["/usr/bin/vm_stat"]),
++              ("swap_and_memory", ["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]),
++              ("process_cpu_rss", ["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]),
++              ("workspace_and_temp_disk", ["/bin/df", "-k", os.environ["GITHUB_WORKSPACE"], os.environ["RUNNER_TEMP"]]),
++          ]
++          for label, arguments in commands:
++              print("\ncommand=" + label + " argv=" + json.dumps(arguments), flush=True)
++              started = time.monotonic()
++              try:
++                  result = subprocess.run(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
++                                          text=True, errors="replace", timeout=5, check=False)
++                  output = result.stdout
++                  status = "success" if result.returncode == 0 else "failed"
++                  return_code = result.returncode
++              except subprocess.TimeoutExpired as error:
++                  output = error.stdout or ""
++                  if isinstance(output, bytes):
++                      output = output.decode("utf-8", errors="replace")
++                  status, return_code = "timed_out", None
++              except OSError as error:
++                  output = str(error)
++                  status, return_code = "unavailable", None
++              print(output[:65536], flush=True)
++              print(json.dumps({"status": status, "return_code": return_code,
++                                "elapsed_seconds": round(time.monotonic() - started, 3),
++                                "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
++          PY
+       - name: Run selected native UI shard
++        id: selected_ui_tests
+         timeout-minutes: ${{ matrix.ui_test_minutes }}
+         env:
+           TEST_SHARD: ${{ matrix.shard }}
+@@ -449,15 +487,60 @@ jobs:
+             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+             -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
+             CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
++      - name: Capture host conditions after UI tests
++        if: always()
++        continue-on-error: true
++        timeout-minutes: 1
++        env:
++          UI_TEST_STEP_OUTCOME: ${{ steps.selected_ui_tests.outcome }}
++        run: |
++          mkdir -p artifacts
++          python3 - <<'PY' > artifacts/ui-host-after-tests.log 2>&1
++          import datetime, json, os, subprocess, time
++          print("phase=after-ui-tests", flush=True)
++          print("utc=" + datetime.datetime.now(datetime.timezone.utc).isoformat(), flush=True)
++          print("github_test_step_outcome=" + os.environ.get("UI_TEST_STEP_OUTCOME", "unavailable"), flush=True)
++          commands = [
++              ("virtual_memory", ["/usr/bin/vm_stat"]),
++              ("swap_and_memory", ["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]),
++              ("process_cpu_rss", ["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]),
++              ("workspace_and_temp_disk", ["/bin/df", "-k", os.environ["GITHUB_WORKSPACE"], os.environ["RUNNER_TEMP"]]),
++          ]
++          for label, arguments in commands:
++              print("\ncommand=" + label + " argv=" + json.dumps(arguments), flush=True)
++              started = time.monotonic()
++              try:
++                  result = subprocess.run(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
++                                          text=True, errors="replace", timeout=5, check=False)
++                  output = result.stdout
++                  status = "success" if result.returncode == 0 else "failed"
++                  return_code = result.returncode
++              except subprocess.TimeoutExpired as error:
++                  output = error.stdout or ""
++                  if isinstance(output, bytes):
++                      output = output.decode("utf-8", errors="replace")
++                  status, return_code = "timed_out", None
++              except OSError as error:
++                  output = str(error)
++                  status, return_code = "unavailable", None
++              print(output[:65536], flush=True)
++              print(json.dumps({"status": status, "return_code": return_code,
++                                "elapsed_seconds": round(time.monotonic() - started, 3),
++                                "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
++          PY
+       - name: Export studio slider unified log
+         if: ${{ always() && matrix.shard == 'studio-export' }}
+         continue-on-error: true
+         timeout-minutes: 2
++        env:
++          UI_TEST_STEP_OUTCOME: ${{ steps.selected_ui_tests.outcome }}
+         run: |
+           set -euo pipefail
+           mkdir -p artifacts
+-          printf 'simulator=%s\nstart=%s\nend=%s\ntest_exit_code=%s\n' \
++          # The EXIT trap observes the shell; GitHub records the test-step outcome.
++          printf 'simulator=%s\nstart=%s\nend=%s\ngithub_test_step_outcome=%s\nobserved_shell_exit_code=%s\n' \
+             "${SIMULATOR_ID:-}" "${STUDIO_TRACE_START:-}" "${STUDIO_TRACE_END:-}" \
++            "${UI_TEST_STEP_OUTCOME:-unavailable}" \
+             "${STUDIO_TRACE_TEST_EXIT_CODE:-unavailable}" > artifacts/studio-slider-trace-status.txt
+           if [ -z "${SIMULATOR_ID:-}" ] || [ -z "${STUDIO_TRACE_START:-}" ] || [ -z "${STUDIO_TRACE_END:-}" ]; then
+             printf 'collection=unavailable\n' >> artifacts/studio-slider-trace-status.txt
+@@ -509,6 +592,7 @@ jobs:
+             native-ui-build.log
+             simulator-preflight.json
+             simulator-boot.log
++            artifacts/ui-host-*.log
+             artifacts/studio-slider-trace*
+             artifacts/native-results.zip
+             artifacts/native-attachments/
