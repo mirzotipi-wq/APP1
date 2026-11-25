@@ -78,7 +78,7 @@ struct ReferenceStudyPreview: View {
                                 .padding(8)
                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
                                 .padding(8)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                                 .accessibilityLabel("Updating light study")
                                 .accessibilityValue("Showing the previous scene")
                                 .accessibilityIdentifier("studyUpdating")

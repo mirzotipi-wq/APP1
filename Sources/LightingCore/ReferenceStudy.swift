@@ -367,20 +367,34 @@ public struct StudyImage: Equatable, Sendable {
     public let height: Int
     public let rgba: Data
     public let unsupportedPixels: Int
+    /// One byte per pixel in RGBA row order: 1 is unsupported, 0 is valid.
+    /// Retained separately so an opaque magenta color is never mistaken for a flag.
+    public let unsupportedPixelMask: Data
+
+    // Keep the existing internal initializer available, but missing metadata
+    // remains an empty mask and cannot pass parity validation.
+    init(width: Int, height: Int, rgba: Data, unsupportedPixels: Int,
+         unsupportedPixelMask: Data = Data()) {
+        self.width = width; self.height = height; self.rgba = rgba
+        self.unsupportedPixels = unsupportedPixels
+        self.unsupportedPixelMask = unsupportedPixelMask
+    }
 
     /// Compute buffer uses alpha 0 exclusively as an invalid-surface flag. Restore
-    /// opaque alpha and count flags, without guessing from the visible RGB color.
+    /// opaque alpha and retain flags, without guessing from the visible RGB color.
     public static func fromComputeRGBA(width: Int, height: Int, data: Data) throws -> StudyImage {
         guard (24...192).contains(width), width.isMultiple(of: 3), height == width * 2 / 3,
               data.count == width * height * 4 else { throw StudyError.invalidComputeOutput }
         var bytes = [UInt8](data), unsupported = 0
+        var unsupportedMask = [UInt8](repeating: 0, count: width * height)
         for i in stride(from: 0, to: bytes.count, by: 4) {
             if bytes[i+3] == 0 {
                 guard bytes[i] == 255, bytes[i+1] == 0, bytes[i+2] == 255 else { throw StudyError.invalidComputeOutput }
-                unsupported += 1; bytes[i+3] = 255
+                unsupported += 1; unsupportedMask[i / 4] = 1; bytes[i+3] = 255
             } else if bytes[i+3] != 255 { throw StudyError.invalidComputeOutput }
         }
-        return .init(width: width, height: height, rgba: Data(bytes), unsupportedPixels: unsupported)
+        return .init(width: width, height: height, rgba: Data(bytes), unsupportedPixels: unsupported,
+                     unsupportedPixelMask: Data(unsupportedMask))
     }
 }
 
@@ -463,6 +477,7 @@ public enum ReferenceStudyRenderer {
         let forward = vec(camera.forward), right = vec(camera.right), up = vec(camera.up)
         let halfW = setup.halfW, halfH = setup.halfH
         var pixels = [UInt8](repeating: 255, count: width * height * 4)
+        var unsupportedMask = [UInt8](repeating: 0, count: width * height)
         var unsupported = 0
         var cancellation = StudyPixelCancellation()
         let sphere: StudyMaterial = .dielectric(reflectance: 0.18, roughness: 0.32, f0: 0.04)
@@ -498,12 +513,14 @@ public enum ReferenceStudyRenderer {
                     pixels[index] = byte(color.red); pixels[index + 1] = byte(color.green); pixels[index + 2] = byte(color.blue)
                 } catch StudyError.invalidSurface {
                     unsupported += 1
+                    unsupportedMask[index / 4] = 1
                     pixels[index] = 255; pixels[index + 1] = 0; pixels[index + 2] = 255
                 }
             }
         }
         if isCancelled() { throw StudyError.cancelled }
-        return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported)
+        return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported,
+                     unsupportedPixelMask: Data(unsupportedMask))
     }
 
     private static func byte(_ v: Double) -> UInt8 { UInt8((min(1, max(0, v)) * 255).rounded()) }

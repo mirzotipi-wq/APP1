@@ -44,7 +44,10 @@ struct SubjectInspector: View {
         let selected = position.y == height
         let display = DistanceValueButton.formattedValue(height, units: units, locale: locale)
         return Button {
+            guard position.y != height else { return }
+            onEditingChanged(true, id)
             position.y = height
+            onEditingChanged(false, id)
         } label: {
             VStack(spacing: 3) {
                 HStack(spacing: 4) {

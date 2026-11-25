@@ -181,6 +181,7 @@ public enum PortraitStudyRenderer {
         let halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
         let height = width * 2 / 3
         var pixels = [UInt8](repeating: 255, count: width * height * 4)
+        var unsupportedMask = [UInt8](repeating: 0, count: width * height)
         var unsupported = 0
         var cancellation = StudyPixelCancellation()
         for y in 0..<height {
@@ -209,12 +210,14 @@ public enum PortraitStudyRenderer {
                     pixels[index + 2] = byte(color.blue)
                 } catch StudyError.invalidSurface {
                     unsupported += 1
+                    unsupportedMask[index / 4] = 1
                     pixels[index] = 255; pixels[index + 1] = 0; pixels[index + 2] = 255
                 }
             }
         }
         guard !isCancelled() else { throw StudyError.cancelled }
-        return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported)
+        return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported,
+                     unsupportedPixelMask: Data(unsupportedMask))
     }
 
     private static func byte(_ value: Double) -> UInt8 {

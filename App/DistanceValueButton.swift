@@ -19,6 +19,7 @@ struct DistanceValueButton: View {
         PrecisionValueButton(title: title, unit: units.symbol, id: id,
                              value: displayedValue(units: units, range: displayRange),
                              range: displayRange ?? (0...0),
+                             underlyingValue: $value,
                              visualReadout: compactReadout
                                 ? PlacementMeasurementDisplay.distance(value, units: units, locale: locale)
                                 : nil)

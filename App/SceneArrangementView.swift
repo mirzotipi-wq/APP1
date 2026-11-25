@@ -96,13 +96,9 @@ struct SceneArrangementView: View {
     private func apply() {
         guard !didFinish else { return }
         do {
-            var next = scene
-            if yaw != 0 { next = try SceneTransform.rotatingLights(next, byDegrees: yaw) }
-            if mirror { next = try SceneTransform.mirroringLights(next) }
-            next = try SceneTransform.translated(next, by: .init(
-                x: destination.x - scene.subject.x,
-                y: destination.y - scene.subject.y,
-                z: destination.z - scene.subject.z))
+            let next = try SceneTransform.arranged(scene, subjectAt: destination,
+                                                  rotatingLightsByDegrees: yaw,
+                                                  mirroringLights: mirror)
             // Close the transaction before invoking the parent, which can
             // synchronously update the scene or dismiss this editor.
             didFinish = true

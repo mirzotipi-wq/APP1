@@ -71,8 +71,19 @@ public struct EmitterFrame: Equatable, Sendable {
             self.right = r; self.up = u; self.normal = n
             return
         }
-        let radians = rollDegrees * .pi / 180
-        let c = cos(radians), s = sin(radians)
+        // Exact cardinal coefficients keep mathematical wall/floor/ceiling
+        // contact from becoming a trigonometric overhang. Do not snap other
+        // angles or physical coordinates: real overhangs must remain outside.
+        let c: Double
+        let s: Double
+        switch rollDegrees {
+        case 90: c = 0; s = 1
+        case -90: c = 0; s = -1
+        case -180, 180: c = -1; s = 0
+        default:
+            let radians = rollDegrees * .pi / 180
+            c = cos(radians); s = sin(radians)
+        }
         guard let rolledRight = UnitDirection(x: c * r.x + s * u.x,
                                               y: c * r.y + s * u.y,
                                               z: c * r.z + s * u.z),

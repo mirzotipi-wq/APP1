@@ -9,6 +9,7 @@ struct StudioView: View {
     @State private var scene = LightingScene.portrait()
     @State private var selected: UUID?
     @State private var planNeedsLabelNotice = false
+    @State private var planGridTitle = StudioPlanGridTitleKey.defaultValue
     @State private var saved: LightingScene?
     @State private var library: ProjectLibrary?
     @State private var showProjects = false
@@ -131,24 +132,7 @@ struct StudioView: View {
                     }
                 }
                 .clipped()
-                if loaded && !saveBlocked {
-                    HStack(spacing: 12) {
-                        Text("Edit history").font(.caption).foregroundStyle(StudioPalette.secondaryText)
-                        Spacer()
-                        Button(action: sceneAction { undo() }) {
-                            Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
-                                .frame(width: 44, height: 44)
-                        }
-                        .disabled(libraryOperation.isBusy || !editHistory.canUndo || editHistory.isEditing).accessibilityLabel("Undo").accessibilityIdentifier("undo")
-                        Button(action: sceneAction { redo() }) {
-                            Label("Redo", systemImage: "arrow.uturn.forward").labelStyle(.iconOnly)
-                                .frame(width: 44, height: 44)
-                        }
-                        .disabled(libraryOperation.isBusy || !editHistory.canRedo || editHistory.isEditing).accessibilityLabel("Redo").accessibilityIdentifier("redo")
-                    }
-                    .padding(.horizontal, 16)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                }
+                editingBar
             }
             .background(Color(uiColor: .systemGroupedBackground))
             .tint(StudioPalette.action)
@@ -158,12 +142,6 @@ struct StudioView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Recipes", systemImage: "square.stack") { showRecipes = true }
                         .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("recipes")
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { save(from: generation) } label: {
-                        Text("Save").font(.body.weight(.semibold))
-                    }
-                        .disabled(!loaded || saveBlocked || libraryOperation.isBusy).accessibilityIdentifier("saveProject")
                 }
             }
             .sheet(isPresented: $showRecipes) { recipeSheet }
@@ -294,6 +272,52 @@ struct StudioView: View {
 
     private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
     private var displayUnits: PlanUnits { StudioPreferences.units(from: unitsRaw) }
+
+    /// Keep Save reachable while scrolling, with content-sized text rather
+    /// than a navigation-bar height limit. It remains visible while blocked.
+    private var editingBar: some View {
+        let generation = libraryOperation.generation
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .trailing, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+        return layout {
+            if loaded && !saveBlocked {
+                HStack(spacing: 12) {
+                    Text("Edit history")
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                    Button(action: sceneAction { undo() }) {
+                        Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
+                            .frame(width: 44, height: 44)
+                    }
+                    .disabled(libraryOperation.isBusy || !editHistory.canUndo || editHistory.isEditing || planDrag != nil).accessibilityLabel("Undo").accessibilityIdentifier("undo")
+                    Button(action: sceneAction { redo() }) {
+                        Label("Redo", systemImage: "arrow.uturn.forward").labelStyle(.iconOnly)
+                            .frame(width: 44, height: 44)
+                    }
+                    .disabled(libraryOperation.isBusy || !editHistory.canRedo || editHistory.isEditing || planDrag != nil).accessibilityLabel("Redo").accessibilityIdentifier("redo")
+                }
+                .frame(maxWidth: .infinity)
+            }
+            Button { save(from: generation) } label: {
+                Text("Save")
+                    .font(.body.weight(.semibold))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 12)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(StudioPalette.action)
+            .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
+            .accessibilityIdentifier("saveProject")
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+    }
 
     // Prefer one row when the full title and action labels fit. At narrower
     // widths or larger text sizes, place the title above the adaptive actions.
@@ -487,28 +511,48 @@ struct StudioView: View {
                 Text("Camera").tag("Camera")
                 Text("Study").tag("Study")
             }.pickerStyle(.segmented).accessibilityIdentifier("viewMode")
-            ZStack(alignment: .topLeading) {
-                charcoal
-                if mode == "Plan" { plan }
-                else if mode == "Camera" { cameraPreview }
-                else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
-                else {
-                    RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in
-                        guard libraryOperation.allowsSceneMutation(from: generation),
-                              scene.lights.contains(where: { $0.id == id }) else { return }
-                        selected = id
+            VStack(spacing: 0) {
+                if mode == "Plan" {
+                    // The title grows outside the diagram, so larger text
+                    // cannot cover equipment or change the world projection.
+                    Text(planGridTitle)
+                        .font(.caption2.monospaced().weight(.medium))
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(10)
+                        .background(StudioPalette.planBackground)
+                        .allowsHitTesting(false)
+                }
+                ZStack(alignment: .topLeading) {
+                    charcoal
+                    if mode == "Plan" { plan }
+                    else if mode == "Camera" { cameraPreview }
+                    else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
+                    else {
+                        RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in
+                            guard libraryOperation.allowsSceneMutation(from: generation),
+                                  scene.lights.contains(where: { $0.id == id }) else { return }
+                            selected = id
+                        }
+                        .id(generation)
+                        .accessibilityLabel("Illustrative 3D lighting preview")
                     }
-                    .id(generation)
-                    .accessibilityLabel("Illustrative 3D lighting preview")
+                    if mode != "Plan" {
+                        Text(mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
+                            .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
+                            .padding(10).allowsHitTesting(false)
+                    }
                 }
-                if mode != "Plan" {
-                    Text(mode == "Camera" ? "CAMERA / 3:2" : mode == "Study" ? "LIGHT STUDY / DIRECT ONLY" : "3D / DRAG TO ORBIT")
-                        .font(.caption2.monospaced().weight(.medium)).foregroundStyle(.white.opacity(0.75))
-                        .padding(10).allowsHitTesting(false)
-                }
+                .frame(height: 280)
             }
-            .frame(height: 280).clipShape(RoundedRectangle(cornerRadius: 16))
-            .onPreferenceChange(StudioPlanLabelNoticeKey.self) { planNeedsLabelNotice = $0 }
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .onPreferenceChange(StudioPlanLabelNoticeKey.self) { value in
+                if planNeedsLabelNotice != value { planNeedsLabelNotice = value }
+            }
+            .onPreferenceChange(StudioPlanGridTitleKey.self) { value in
+                if mode == "Plan", planGridTitle != value { planGridTitle = value }
+            }
             if mode == "Plan" {
                 if let light = scene.lights.first(where: { $0.id == selected }) {
                     Text("Selected: " + lightDisplayName(light) + " · Drag its marker to move")
@@ -667,10 +711,10 @@ struct StudioView: View {
                         }
                     }
                 }.accessibilityHidden(true)
-                StudioPlanMarkers(
-                    markers: planMarkers(width: w, height: h, scale: scale, center: center),
-                    gridTitle: grid.map { "OVERHEAD / " + PlanUnits.number(displayUnits.fromMeters($0.spacingMeters), decimals: 2) + " " + displayUnits.symbol.uppercased() + " GRID" } ?? "OVERHEAD")
+                StudioPlanMarkers(markers: planMarkers(width: w, height: h, scale: scale, center: center))
             }
+            .preference(key: StudioPlanGridTitleKey.self,
+                        value: grid.map { "OVERHEAD / " + PlanUnits.number(displayUnits.fromMeters($0.spacingMeters), decimals: 2) + " " + displayUnits.symbol.uppercased() + " GRID" } ?? "OVERHEAD")
         }
     }
 
@@ -1163,12 +1207,12 @@ struct StudioView: View {
         if !scene.lights.contains(where: { $0.id == selected }) { selected = scene.lights.first?.id }
     }
     private func undo() {
-        guard !libraryOperation.isBusy else { return }
+        guard !libraryOperation.isBusy, !editHistory.isEditing, planDrag == nil else { return }
         guard let previous = editHistory.undo(current: scene) else { return }
         scene = previous; repairSelection()
     }
     private func redo() {
-        guard !libraryOperation.isBusy else { return }
+        guard !libraryOperation.isBusy, !editHistory.isEditing, planDrag == nil else { return }
         guard let next = editHistory.redo(current: scene) else { return }
         scene = next; repairSelection()
     }

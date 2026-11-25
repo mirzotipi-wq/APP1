@@ -49,7 +49,11 @@ struct CameraInspector: View {
                                      count: dynamicTypeSize.isAccessibilitySize ? 2 : 5), spacing: 8) {
                 ForEach([24.0, 35.0, 50.0, 85.0, 135.0], id: \.self) { mm in
                     Button {
+                        guard lens.focalLengthMillimeters != mm else { return }
+                        let id = "cameraFocalLengthPreset-\(Int(mm))"
+                        onEditingChanged(true, id)
                         lens.focalLengthMillimeters = mm
+                        onEditingChanged(false, id)
                     } label: {
                         Text("\(Int(mm))").font(.caption.monospacedDigit().weight(.medium))
                             .frame(maxWidth: .infinity, minHeight: 44)

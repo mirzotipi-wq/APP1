@@ -25,7 +25,10 @@ struct OpticsInspector: View {
             Menu {
                 ForEach(EmitterKind.allCases, id: \.self) { kind in
                     Button {
+                        guard optics.kind != kind else { return }
+                        onEditingChanged(true, "emitterKind")
                         var next = optics; next.kind = kind; optics = next
+                        onEditingChanged(false, "emitterKind")
                     } label: {
                         if kind == optics.kind { Label(kind.title, systemImage: "checkmark") }
                         else { Text(kind.title) }
@@ -50,7 +53,10 @@ struct OpticsInspector: View {
                 Toggle("Aim at subject", isOn: Binding(
                     get: { optics.aimTarget == nil },
                     set: { follows in
+                        guard follows != (optics.aimTarget == nil) else { return }
+                        onEditingChanged(true, "aimAtSubject")
                         var next = optics; next.aimTarget = follows ? nil : subject; optics = next
+                        onEditingChanged(false, "aimAtSubject")
                     }
                 )).accessibilityIdentifier("aimAtSubject")
                 if optics.aimTarget != nil {

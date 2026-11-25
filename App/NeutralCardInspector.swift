@@ -39,7 +39,11 @@ struct NeutralCardInspector: View {
             HStack(spacing: 0) {
                 ForEach([3200.0, 5600.0, 6500.0], id: \.self) { k in
                     Button {
+                        guard settings.whiteBalanceKelvin != k else { return }
+                        let id = "balance-\(Int(k))"
+                        onEditingChanged(true, id)
                         settings.whiteBalanceKelvin = k
+                        onEditingChanged(false, id)
                     } label: {
                         Text("\(Int(k)) K")
                             .font(.caption.monospacedDigit().weight(.medium))
@@ -55,7 +59,13 @@ struct NeutralCardInspector: View {
             slider("Relative exposure", value: $settings.exposureStops,
                    range: PreviewSettings.exposureRange, step: 0.25, unit: "stops",
                    id: "previewExposure")
-            Button("Reset card settings") { settings = PreviewSettings() }
+            Button("Reset card settings") {
+                let defaults = PreviewSettings()
+                guard settings != defaults else { return }
+                onEditingChanged(true, "resetCardSettings")
+                settings = defaults
+                onEditingChanged(false, "resetCardSettings")
+            }
                 .disabled(settings == PreviewSettings())
                 .accessibilityIdentifier("resetCardSettings")
             Text("18% neutral card at subject center, with a relative 1000 lx reference. These controls affect the card and Study viewport, not the illustrative 3D shading. No measured fixture spectra, indirect light, actual camera response or exposure calibration.")

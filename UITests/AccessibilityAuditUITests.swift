@@ -72,6 +72,60 @@ final class AccessibilityAuditUITests: XCTestCase {
         let previousContinueAfterFailure = continueAfterFailure
         continueAfterFailure = true
         defer { continueAfterFailure = previousContinueAfterFailure }
-        try app.performAccessibilityAudit()
+        var issueIndex = 0
+        try app.performAccessibilityAudit(for: .all) { issue in
+            issueIndex += 1
+            self.attachAuditIssue(issue, name: "\(name)-AX-issue-\(issueIndex)")
+            // Apple defines false as reporting the original issue as a failure.
+            // Diagnostics must never filter, waive, or replace an audit failure.
+            return false
+        }
+    }
+
+    @MainActor
+    private func attachAuditIssue(_ issue: XCUIAccessibilityAuditIssue, name: String) {
+        let element = issue.element
+        let details = XCTAttachment(string: [
+            "auditType.rawValue: \(issue.auditType.rawValue)",
+            "auditType.isContrast: \(issue.auditType.contains(.contrast))",
+            "compactDescription: \(boundedAuditText(issue.compactDescription))",
+            "detailedDescription: \(boundedAuditText(issue.detailedDescription))",
+            "elementProvided: \(element != nil)"
+        ].joined(separator: "\n"))
+        details.name = name + "-details"
+        details.lifetime = .keepAlways
+        add(details)
+
+        // Preserve the issue itself before attempting optional element metadata.
+        // A missing element has no query/screenshot fallback. Resolve a supplied
+        // element only once, then read attributes from the immutable snapshot.
+        guard let element else { return }
+        let metadata: String
+        do {
+            let snapshot = try element.snapshot()
+            metadata = [
+                "identifier: \(boundedAuditText(snapshot.identifier))",
+                "label: \(boundedAuditText(snapshot.label))",
+                "elementType: \(snapshot.elementType)",
+                "frame: \(snapshot.frame)",
+                "isEnabled: \(snapshot.isEnabled)",
+                "isSelected: \(snapshot.isSelected)"
+            ].joined(separator: "\n")
+        } catch {
+            // Do not let a diagnostic lookup error escape the issue handler.
+            metadata = "elementSnapshotError: \(boundedAuditText(error.localizedDescription))"
+        }
+        let attachment = XCTAttachment(string: metadata)
+        attachment.name = name + "-element"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    private func boundedAuditText(_ text: String) -> String {
+        let byteLimit = 4_096
+        let prefix = text.utf8.prefix(byteLimit + 1)
+        guard prefix.count > byteLimit else { return text }
+        return String(decoding: prefix.prefix(byteLimit), as: UTF8.self)
+            + "\n[Truncated after 4,096 UTF-8 bytes.]"
     }
 }

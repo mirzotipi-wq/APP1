@@ -50,23 +50,34 @@ static bool compare(const char* file, uint maximumAllowedError) {
     const uint w=readU32(s),h=readU32(s),np=readU32(s),ns=readU32(s),na=readU32(s),expectedInvalid=readU32(s);
     if(w<24||w>192||w%3||h!=w*2/3||np!=6||ns>12*64*3||na>36||ns%3||na%3)
         throw std::runtime_error("invalid fixture header");
+    // Header bounds above make both products safe before allocation/indexing.
+    const std::size_t pixelCount=std::size_t(w)*h,byteCount=pixelCount*4;
+    if(expectedInvalid>pixelCount)throw std::runtime_error("invalid unsupported count");
     const auto p=rows(s,np),samples=rows(s,ns),areas=rows(s,na);
     if(p[5].x!=float(ns/3)||p[5].y!=float(na/3))throw std::runtime_error("invalid sample counts");
-    std::vector<uint8_t> ref(w*h*4);
+    std::vector<uint8_t> ref(byteCount);
     if(!s.read(reinterpret_cast<char*>(ref.data()),ref.size())||s.peek()!=std::char_traits<char>::eof())
         throw std::runtime_error("invalid reference length");
-    uint64_t total=0,outliers=0;uint invalid=0,maximum=0;
+    uint64_t total=0,outliers=0;uint invalid=0,referenceInvalid=0,maskMismatches=0,maximum=0;
     for(uint y=0;y<h;++y)for(uint x=0;x<w;++x){
         const uchar4 c=kfStudyPixel(p.data(),samples.data(),areas.data(),w,h,x,y);
         if(c.w==0){if(c.x!=255||c.y!=0||c.z!=255)throw std::runtime_error("bad invalid flag");++invalid;}
         else if(c.w!=255)throw std::runtime_error("bad alpha");
         const uint8_t rgb[]={c.x,c.y,c.z}; const uint offset=4*(y*w+x);
+        if(ref[offset+3]==0){
+            if(ref[offset]!=255||ref[offset+1]!=0||ref[offset+2]!=255)
+                throw std::runtime_error("bad reference invalid flag");
+            ++referenceInvalid;
+        }
+        else if(ref[offset+3]!=255)throw std::runtime_error("bad reference alpha");
+        maskMismatches+=(c.w==0)!=(ref[offset+3]==0);
         for(uint i=0;i<3;++i){const uint e=uint(abs(int(rgb[i])-int(ref[offset+i])));total+=e;maximum=max(maximum,e);outliers+=e>4;}
     }
+    if(referenceInvalid!=expectedInvalid)throw std::runtime_error("reference invalid count does not match header");
     const double count=double(w)*h*3,mean=total/count,fraction=outliers/count;
-    const bool pass=invalid==expectedInvalid&&mean<=1.0&&fraction<=0.005&&maximum<=maximumAllowedError;
+    const bool pass=invalid==expectedInvalid&&maskMismatches==0&&mean<=1.0&&fraction<=0.005&&maximum<=maximumAllowedError;
     std::cout<<file<<": mean="<<mean<<", max="<<maximum<<", >4 fraction="<<fraction
-             <<", invalid="<<invalid<<"/"<<expectedInvalid;
+             <<", invalid="<<invalid<<"/"<<expectedInvalid<<", invalid-mask-mismatches="<<maskMismatches;
     if(maximumAllowedError<255)std::cout<<", max-limit="<<maximumAllowedError;
     std::cout<<", "<<(pass?"PASS":"FAIL")<<"\n";
     return pass;

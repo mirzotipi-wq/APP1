@@ -33,27 +33,50 @@ public struct StudyParityMetrics: Equatable, Sendable {
     public let maximumChannelError: Int
     public let fractionAboveFour: Double
     public let invalidCountMatches: Bool
+    public let invalidMaskMatches: Bool
 
     /// Allows a small number of Float32 tangent/visibility differences while
     /// rejecting widespread color/geometry drift. These are backend consistency
     /// thresholds, not the protected physical rendering acceptance gate.
     public var passes: Bool {
-        invalidCountMatches && meanChannelError <= 1 && fractionAboveFour <= 0.005
+        invalidCountMatches && invalidMaskMatches && meanChannelError <= 1 && fractionAboveFour <= 0.005
     }
 
     public init?(reference: StudyImage, candidate: StudyImage) {
-        guard reference.width == candidate.width, reference.height == candidate.height,
-              reference.rgba.count == candidate.rgba.count, !reference.rgba.isEmpty else { return nil }
-        let a = [UInt8](reference.rgba), b = [UInt8](candidate.rgba)
-        var total = 0, maximum = 0, outliers = 0, count = 0
-        for i in a.indices where i % 4 != 3 {
-            let error = abs(Int(a[i]) - Int(b[i]))
-            total += error; maximum = max(maximum, error); count += 1
-            if error > 4 { outliers += 1 }
+        guard reference.width > 0, reference.height > 0,
+              reference.width == candidate.width, reference.height == candidate.height else { return nil }
+        let (pixelCount, pixelOverflow) = reference.width.multipliedReportingOverflow(by: reference.height)
+        guard !pixelOverflow else { return nil }
+        let (byteCount, byteOverflow) = pixelCount.multipliedReportingOverflow(by: 4)
+        guard !byteOverflow, reference.rgba.count == byteCount, candidate.rgba.count == byteCount else { return nil }
+
+        func hasValidMask(_ image: StudyImage) -> Bool {
+            guard image.unsupportedPixelMask.count == pixelCount,
+                  (0...pixelCount).contains(image.unsupportedPixels) else { return false }
+            var unsupported = 0
+            for flag in image.unsupportedPixelMask {
+                if flag == 1 { unsupported += 1 }
+                else if flag != 0 { return false }
+            }
+            return unsupported == image.unsupportedPixels
         }
-        meanChannelError = Double(total) / Double(count)
+        guard hasValidMask(reference), hasValidMask(candidate) else { return nil }
+        let a = [UInt8](reference.rgba), b = [UInt8](candidate.rgba)
+        var total = 0.0, maximum = 0, outliers = 0
+        for pixel in 0..<pixelCount {
+            let offset = pixel * 4
+            guard a[offset + 3] == 255, b[offset + 3] == 255 else { return nil }
+            for channel in 0..<3 {
+                let error = abs(Int(a[offset + channel]) - Int(b[offset + channel]))
+                total += Double(error); maximum = max(maximum, error)
+                if error > 4 { outliers += 1 }
+            }
+        }
+        let count = Double(pixelCount) * 3
+        meanChannelError = total / count
         maximumChannelError = maximum
-        fractionAboveFour = Double(outliers) / Double(count)
+        fractionAboveFour = Double(outliers) / count
         invalidCountMatches = reference.unsupportedPixels == candidate.unsupportedPixels
+        invalidMaskMatches = reference.unsupportedPixelMask == candidate.unsupportedPixelMask
     }
 }

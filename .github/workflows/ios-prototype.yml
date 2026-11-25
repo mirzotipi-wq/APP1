@@ -47,6 +47,21 @@ jobs:
         run: |
           set -euo pipefail
           swift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log
+      - name: Verify bounded atomic library write failure on Linux
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          python3 scripts/run_atomic_library_write_probe.py \
+            --output "$RUNNER_TEMP/atomic-library-write-linux" 2>&1 | tee "$RUNNER_TEMP/atomic-library-write-linux.log"
+      - name: Upload Linux atomic library write evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atomic-library-write-linux-evidence
+          path: |
+            ${{ runner.temp }}/atomic-library-write-linux.log
+            ${{ runner.temp }}/atomic-library-write-linux/
+          if-no-files-found: warn
       - name: Render portable reference study images
         run: |
           set -euo pipefail
@@ -106,6 +121,22 @@ jobs:
           } | tee macos-environment.log
           [ "$(uname -m)" = arm64 ] || { echo "::error::Expected an Apple silicon runner"; exit 1; }
           swift test --jobs 2 2>&1 | tee macos-core-tests.log
+      - name: Verify bounded atomic library write failure on macOS host
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          python3 scripts/run_atomic_library_write_probe.py \
+            --swiftc "$(xcrun --find swiftc)" \
+            --output "$RUNNER_TEMP/atomic-library-write-macos" 2>&1 | tee "$RUNNER_TEMP/atomic-library-write-macos.log"
+      - name: Upload macOS atomic library write evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atomic-library-write-macos-evidence
+          path: |
+            ${{ runner.temp }}/atomic-library-write-macos.log
+            ${{ runner.temp }}/atomic-library-write-macos/
+          if-no-files-found: warn
       - name: Verify Metal compiler component
         timeout-minutes: 12
         run: |

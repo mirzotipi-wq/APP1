@@ -21,35 +21,35 @@ struct StudioPlanLabelNoticeKey: PreferenceKey {
     static func reduce(value: inout Bool, nextValue: () -> Bool) { value = value || nextValue() }
 }
 
+struct StudioPlanGridTitleKey: PreferenceKey {
+    static let defaultValue = "OVERHEAD"
+    static func reduce(value: inout String, nextValue: () -> String) { value = nextValue() }
+}
+
 /// Captions have their own layout; the 44pt controls stay on the exact world
 /// projection. Semantic caption fonts and their measured sizes scale together.
 struct StudioPlanMarkers: View {
     let markers: [StudioPlanMarker]
-    let gridTitle: String
-    @ScaledMetric(relativeTo: .caption2) private var captionPointSize: CGFloat = 11
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.legibilityWeight) private var legibilityWeight
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width, height = geometry.size.height
-            let font = UIFont.systemFont(ofSize: captionPointSize, weight: .semibold)
-            let headerFont = UIFont.monospacedSystemFont(ofSize: captionPointSize, weight: .medium)
-            let headerHeight = (gridTitle as NSString).boundingRect(
-                with: CGSize(width: max(1, width - 20), height: .greatestFiniteMagnitude),
-                options: [.usesLineFragmentOrigin, .usesFontLeading],
-                attributes: [.font: headerFont], context: nil).height
+            let font = captionFont
             let measures = markers.map { measure($0.name, font: font, width: width) }
             let items = markers.indices.map { index in
                 StudioPlanLabelLayout.Item(anchorX: Double(markers[index].anchor.x),
                                            anchorY: Double(markers[index].anchor.y),
-                                           captionWidth: Double(measures[index].size.width),
-                                           captionHeight: Double(measures[index].size.height),
+                                           captionWidth: Double(measures[index].width),
+                                           captionHeight: Double(measures[index].height),
                                            isSelected: markers[index].selected)
             }
             let layout = StudioPlanLabelLayout(items: items, width: Double(width), height: Double(height),
-                                               reservedTop: Double(ceil(headerHeight) + 22))
+                                               reservedTop: 8)
             let needsNotice = layout == nil || (layout?.omittedCaptionCount ?? 0) > 0 ||
-                !(layout?.crowdedMarkerIndices.isEmpty ?? true) || measures.contains(where: \.shortened)
+                !(layout?.crowdedMarkerIndices.isEmpty ?? true)
             ZStack(alignment: .topLeading) {
                 Canvas { context, _ in
                     guard let layout else { return }
@@ -67,12 +67,14 @@ struct StudioPlanMarkers: View {
                 ForEach(Array(markers.enumerated()), id: \.element.id) { index, marker in
                     if let frame = layout?.captionFrames[index] {
                         Text(marker.name)
-                            .font(.caption2.weight(.semibold))
-                            .lineLimit(1).truncationMode(.tail).foregroundStyle(.white)
-                            .frame(width: max(0, CGFloat(frame.width) - 8),
-                                   height: max(0, CGFloat(frame.height) - 4))
+                            .font(Font(font))
+                            .lineLimit(nil)
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(width: max(1, CGFloat(frame.width) - 8))
                             .padding(.horizontal, 4).padding(.vertical, 2)
-                            .background(.black.opacity(0.8), in: Capsule())
+                            .background(.black.opacity(0.8), in: RoundedRectangle(cornerRadius: 8))
                             .position(x: CGFloat(frame.centerX), y: CGFloat(frame.centerY))
                             // The caption is displaced from the marker's action
                             // frame; expose the visible text at its own location.
@@ -86,29 +88,61 @@ struct StudioPlanMarkers: View {
                         // Keep the selected icon on top; all lights remain in the list.
                         .zIndex(marker.selected ? 2 : 1)
                 }
-                Text(gridTitle)
-                    .font(.caption2.monospaced().weight(.medium))
-                    .foregroundStyle(.white)
-                    .background(StudioPalette.planBackground)
-                    .padding(10).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .allowsHitTesting(false)
             }
             .preference(key: StudioPlanLabelNoticeKey.self, value: needsNotice)
         }
     }
 
-    private struct Measurement { let size: CGSize; let shortened: Bool }
+    private var captionFont: UIFont {
+        // Resolve the semantic style using this view's actual Dynamic Type
+        // traits. Rendering and measurement use this same font instance.
+        let traits = UITraitCollection(traitsFrom: [
+            UITraitCollection(preferredContentSizeCategory: contentSizeCategory),
+            UITraitCollection(legibilityWeight: legibilityWeight == .bold ? .bold : .regular)
+        ])
+        let preferred = UIFont.preferredFont(forTextStyle: .caption2, compatibleWith: traits)
+        let weight: UIFont.Weight = legibilityWeight == .bold ? .bold : .semibold
+        let descriptor = preferred.fontDescriptor.addingAttributes([
+            .traits: [UIFontDescriptor.TraitKey.weight: weight.rawValue]
+        ])
+        return UIFont(descriptor: descriptor, size: preferred.pointSize)
+    }
 
-    private func measure(_ name: String, font: UIFont, width: CGFloat) -> Measurement {
+    private var contentSizeCategory: UIContentSizeCategory {
+        switch dynamicTypeSize {
+        case .xSmall: return .extraSmall
+        case .small: return .small
+        case .medium: return .medium
+        case .large: return .large
+        case .xLarge: return .extraLarge
+        case .xxLarge: return .extraExtraLarge
+        case .xxxLarge: return .extraExtraExtraLarge
+        case .accessibility1: return .accessibilityMedium
+        case .accessibility2: return .accessibilityLarge
+        case .accessibility3: return .accessibilityExtraLarge
+        case .accessibility4: return .accessibilityExtraExtraLarge
+        case .accessibility5: return .accessibilityExtraExtraExtraLarge
+        @unknown default: return .large
+        }
+    }
+
+    private func measure(_ name: String, font: UIFont, width: CGFloat) -> CGSize {
         // Callers pass the existing bounded StudioDisplayName label. Do not
         // measure raw imported names, which may contain long combining runs.
         let intrinsic = (name as NSString).size(withAttributes: [.font: font])
         let scale = max(1, displayScale)
-        let textWidth = ceil(intrinsic.width * scale) / scale
-        let textHeight = ceil(intrinsic.height * scale) / scale
-        let maximumWidth = max(1, min(128, width - 16))
-        return .init(size: CGSize(width: min(textWidth + 8, maximumWidth), height: textHeight + 4),
-                     shortened: textWidth + 8 > maximumWidth)
+        let standard = UIFont.preferredFont(forTextStyle: .caption2,
+            compatibleWith: UITraitCollection(preferredContentSizeCategory: .large))
+        let maximumWidth = max(9, min(128 * font.pointSize / standard.pointSize, width - 16))
+        let textWidth = max(1, min(ceil(intrinsic.width * scale) / scale, maximumWidth - 8))
+        let bounds = (name as NSString).boundingRect(
+            with: CGSize(width: textWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: font], context: nil)
+        let textHeight = ceil(max(font.lineHeight, bounds.height) * scale) / scale
+        // Only the width constrains Text. Its height remains intrinsic, and a
+        // full multiline caption that cannot fit activates the visible list notice.
+        return CGSize(width: textWidth + 8, height: textHeight + 4)
     }
 }
 

@@ -46,12 +46,15 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and remaining gates
 
-The latest completed main checkpoint, `cebb259`, has [261 Debug /261 Release portable tests,28 Python checks, both unsigned simulator builds and84/84 native tests passing](https://github.com/mirzotipi-wq/APP1/actions/runs/45573249046). Studio/export passed11/11, including the original width gesture, Undo, Redo and saved2.1m after relaunch. The complete run failed: two accessibility audits reported real contrast/text-scaling issues, and one room-summary navigation test failed. These failures remain recorded.
+The latest completed main checkpoint, `9602683`, has [287 Debug / 287 Release portable tests, 28 Python checks, both unsigned simulator builds, and 110 native tests passing](https://github.com/mirzotipi-wq/APP1/actions/runs/45582259076). Studio/export passed 20/20, including ten complete optics workflows; room/precision passed 5/5. Library/reference passed 9/11. The workflow failed because two full accessibility audits reported ten issues. Those failures remain recorded.
 
-The next implementation checkpoint adds bounded render reuse, searchable saved-rig thumbnails, clearer project identities, relative light creation, geometry/boundary corrections and the actual accessibility/navigation fixes. Local287Debug/287Release tests and28Python checks pass; new-source Apple validation remains pending. Ten separate optics workflows now test repeatability while preserving the original scenario.
+The reviewed follow-up adds exact validity-mask checks, strict boundary and composed-transform corrections, independent Undo ownership for discrete inspector actions, underlying-value guards for feet editing, and adaptive Save, Cancel and plan text. Local **319 Debug / 319 Release tests and 28 Python checks pass**. All 110 native and 36 UI methods require execution at the new source. All 100 requested distinct workers completed their initial assignments; their reports and independent reviews are retained in the [worker ledger](docs/evidence/m02-m03-2026-11-25/README.md).
 
-The grazing-light study correction passes declared numerical/continuity and shared Float32 checks, but measured CPU area-frame costs increased17.56–35.10% in a short shared-host pair. Physical device performance remains unverified. See the [current session report](docs/evidence/m02-m03-main-2026-11-25.md) for exact provenance, failed evidence, worker reviews and remaining acceptance.
-Physical-device tracking, accessibility and performance, calibrated rendering, purchase sandbox scenarios, signing, customer validation and owner release approval remain outstanding. See the [quality contract](docs/QUALITY.md) and [milestone state](agents/state.json).
+A bounded Linux write-failure probe observed actual EFBIG and verified exact prior bytes, unrelated records, and fresh-process reopening, with an unrestricted successful control. Its source-bound wrapper is included in Linux and macOS CI. This does not replace abrupt-interruption, rename-only, ENOSPC or device evidence.
+
+The grazing-light correction passes declared numerical/continuity and shared Float32 checks, but CPU area-frame medians increased 17.56–35.10% in a short shared-host pair. Physical performance remains unverified. See the [current session report](docs/evidence/m02-m03-main-2026-11-25.md) for exact source scopes, failed attempts and remaining acceptance.
+
+M02 still needs calibrated controlled scenes and independent photographer review, plus physical performance/thermal/memory measurements. M03 still needs current-source editing/accessibility verification, manual device accessibility and remaining persistence interruption coverage, and depends on M02. Broader release requirements remain in the [quality contract](docs/QUALITY.md) and [milestone state](agents/state.json).
 
 ## Development references
 

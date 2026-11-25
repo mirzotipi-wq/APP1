@@ -19,7 +19,16 @@ import Foundation
             for row in input.parameters + input.samples + input.areas {
                 for v in [row.x, row.y, row.z, row.w] { append(v.bitPattern) }
             }
-            data.append(image.rgba)
+            // Fixture alpha preserves validity, while StudyImage.rgba stays opaque.
+            guard image.unsupportedPixelMask.count == image.width * image.height else {
+                throw StudyError.invalidComputeOutput
+            }
+            var reference = [UInt8](image.rgba)
+            for (pixel, flag) in image.unsupportedPixelMask.enumerated() {
+                guard flag <= 1 else { throw StudyError.invalidComputeOutput }
+                reference[pixel * 4 + 3] = flag == 1 ? 0 : 255
+            }
+            data.append(contentsOf: reference)
             try data.write(to: folder.appendingPathComponent(fixture.name + ".bin"), options: .atomic)
         }
     }
