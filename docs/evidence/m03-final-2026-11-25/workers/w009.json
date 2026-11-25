@@ -37,5 +37,224 @@
     }
   ],
   "outcome": "Implementation ready for root native validation; no runtime/UI pass claimed.",
-  "canonicalAgent": "/root/w007_review_coordinator/w009_accessibility_workflow"
+  "canonicalAgent": "/root/w007_review_coordinator/w009_accessibility_workflow",
+  "followups": [
+    {
+      "task": "Read-only runtime-budget and XCTest query-cost assessment",
+      "sourceRevision": "c86fadd867322b816f400b003de461e0e418dc52",
+      "workspaceHeadAtReview": "24adb70d685acd896e131c3f1950fc8e31dcf93e",
+      "sourceComparison": "git diff c86fadd 24adb70 -- UITests/StudioAppAccessibilityUITests.swift UITests/StudioContentReachability.swift produced no differences.",
+      "observedRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "evidence": {
+        "nativeLog": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-ax/native-tests.log",
+        "beforeHostLog": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-ax/artifacts/ui-host-before-tests.log",
+        "afterHostLog": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-ax/artifacts/ui-host-after-tests.log",
+        "methodAccounting": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-ax/root-method-accounting.json"
+      },
+      "executionScope": "Only early Default workflow executed; failed at Fill marker width 43.99999999999997 versus 44.0. Default did not finish; AXXXL did not start. No later stage costs measured.",
+      "boundaries": {
+        "selectedCommand": "/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillUITests/StudioAppAccessibilityUITests\" test-without-building",
+        "reportedMethodStartUTC": "2026-11-25T21:40:11.594+00:00",
+        "reportedMethodEndUTC": "2026-11-25T21:44:26.624+00:00",
+        "reportedMethodSeconds": 255.03,
+        "reportedMethodIncludes": "XCTest setup, app launch, executed assertions, failure handling and teardown; this is not pure test-body assertion time.",
+        "setupEventSeconds": 3.65,
+        "firstBodyActionOpenAppSeconds": 3.72,
+        "firstReadyPredicateSeconds": 93.31,
+        "launchThroughFirstReadyPredicateSeconds": 89.59,
+        "lastPreFailureQuerySeconds": 220.34,
+        "tearDownStartsSeconds": 235.4,
+        "bodyActionToTearDownBracketSeconds": 231.68,
+        "firstReadyPredicateThroughLastQuerySeconds": 127.03,
+        "lastQueryToTearDownSeconds": 15.06,
+        "tearDownToReportedMethodEndSeconds": 19.63,
+        "lastLoggedAttachmentSeconds": 247.97,
+        "methodBodyBoundaryLimit": "Actual Swift body entry/exit and assertion-failure instant have no separate timestamps; brackets are log-activity boundaries.",
+        "xcodeTestingOperationReportedSeconds": 1003.4,
+        "xcodeTestingOperationReportedEndUTC": "2026-11-25T21:48:42.140+00:00",
+        "testingOperationMinusReportedMethodSeconds": 748.37,
+        "methodEndToObserverCompletionReportSeconds": 255.516,
+        "hostDiagnosticBeforeUTC": "2026-11-25T21:28:06.040741+00:00",
+        "hostDiagnosticAfterUTC": "2026-11-25T21:49:40.952092+00:00",
+        "hostDiagnosticBracketSeconds": 1294.911351,
+        "fullCommandTimingLimit": "The 1294.911351s host bracket is consistent with roughly 21min observed by root, but includes before-host probes, step boundaries and post-test accounting. Native log has no shell command-start/end timestamps. 1003.400s is xcodebuild testing-operation time, not exact full shell-command duration.",
+        "existingOuterStepMinutes": 32,
+        "deadlineAction": "No changes proposed or made."
+      },
+      "queryCost": {
+        "measurementWindowSeconds": [
+          101.57,
+          203.71
+        ],
+        "measurementWindowDurationSeconds": 102.14,
+        "perElement": [
+          {
+            "element": "projectName",
+            "reveal_metadata_start": 101.57,
+            "target_reads_start": 110.05,
+            "containing_surface_reads_start": 113.66,
+            "assertion_metadata_start": 114.69,
+            "next_stage_start": 122.5,
+            "reveal_metadata_seconds": 8.48,
+            "target_reads_seconds": 3.61,
+            "containing_surface_reads_seconds": 1.03,
+            "assertion_metadata_seconds": 7.81,
+            "stage_seconds": 20.93
+          },
+          {
+            "element": "projectStatus",
+            "reveal_metadata_start": 122.5,
+            "target_reads_start": 127.95,
+            "containing_surface_reads_start": 130.6,
+            "assertion_metadata_start": 131.14,
+            "next_stage_start": 135.94,
+            "reveal_metadata_seconds": 5.45,
+            "target_reads_seconds": 2.65,
+            "containing_surface_reads_seconds": 0.54,
+            "assertion_metadata_seconds": 4.8,
+            "stage_seconds": 13.44
+          },
+          {
+            "element": "Plan",
+            "reveal_metadata_start": 135.94,
+            "target_reads_start": 140.76,
+            "containing_surface_reads_start": 143.93,
+            "assertion_metadata_start": 146.34,
+            "next_stage_start": 151.47,
+            "reveal_metadata_seconds": 4.82,
+            "target_reads_seconds": 3.17,
+            "containing_surface_reads_seconds": 2.41,
+            "assertion_metadata_seconds": 5.13,
+            "stage_seconds": 15.53
+          },
+          {
+            "element": "3D",
+            "reveal_metadata_start": 151.47,
+            "target_reads_start": 157.81,
+            "containing_surface_reads_start": 161.57,
+            "assertion_metadata_start": 164.3,
+            "next_stage_start": 168.94,
+            "reveal_metadata_seconds": 6.34,
+            "target_reads_seconds": 3.76,
+            "containing_surface_reads_seconds": 2.73,
+            "assertion_metadata_seconds": 4.64,
+            "stage_seconds": 17.47
+          },
+          {
+            "element": "Camera",
+            "reveal_metadata_start": 168.94,
+            "target_reads_start": 174.91,
+            "containing_surface_reads_start": 178.91,
+            "assertion_metadata_start": 181.23,
+            "next_stage_start": 187.52,
+            "reveal_metadata_seconds": 5.97,
+            "target_reads_seconds": 4.0,
+            "containing_surface_reads_seconds": 2.32,
+            "assertion_metadata_seconds": 6.29,
+            "stage_seconds": 18.58
+          },
+          {
+            "element": "Study",
+            "reveal_metadata_start": 187.52,
+            "target_reads_start": 192.72,
+            "containing_surface_reads_start": 196.55,
+            "assertion_metadata_start": 198.53,
+            "next_stage_start": 203.71,
+            "reveal_metadata_seconds": 5.2,
+            "target_reads_seconds": 3.83,
+            "containing_surface_reads_seconds": 1.98,
+            "assertion_metadata_seconds": 5.18,
+            "stage_seconds": 16.19
+          }
+        ],
+        "totalRevealMetadataSeconds": 36.26,
+        "totalAssertionMetadataSeconds": 33.85,
+        "totalMetadataSeconds": 70.11,
+        "totalTargetReadSeconds": 21.02,
+        "totalContainingSurfaceReadSeconds": 11.01,
+        "metadataScans": 12,
+        "metadataLookupActivities": 84,
+        "repeatedSecondScanLookupActivities": 42,
+        "counts": {
+          "Find the Target Application 'com.example.keyandfill'": 12,
+          "Get all elements bound by index for: Descendants matching type NavigationBar": 12,
+          "Find the NavigationBar (Element at index 0)": 12,
+          "Checking existence of `Keyboard (First Match)`": 12,
+          "Checking existence of `\"undo\" Button`": 12,
+          "Find the \"undo\" Button": 24,
+          "Checking existence of `\"projectName\" StaticText`": 1,
+          "Find the \"projectName\" StaticText": 3,
+          "Checking existence of `ScrollView (First Match)`": 6,
+          "Find the ScrollView (First Match)": 6,
+          "Checking existence of `\"projectStatus\" StaticText`": 1,
+          "Find the \"projectStatus\" StaticText": 3,
+          "Checking existence of `\"viewMode-Plan\" Button`": 1,
+          "Find the \"viewMode-Plan\" Button": 4,
+          "Checking existence of `\"viewMode-3D\" Button`": 1,
+          "Find the \"viewMode-3D\" Button": 4,
+          "Checking existence of `\"viewMode-Camera\" Button`": 1,
+          "Find the \"viewMode-Camera\" Button": 4,
+          "Checking existence of `\"viewMode-Study\" Button`": 1,
+          "Find the \"viewMode-Study\" Button": 4
+        },
+        "duplicateEnabledControlHittability": {
+          "count": 4,
+          "rawIntervalsSeconds": [
+            [
+              143.21,
+              143.93
+            ],
+            [
+              160.74,
+              161.57
+            ],
+            [
+              177.88,
+              178.91
+            ],
+            [
+              195.74,
+              196.55
+            ]
+          ],
+          "summedBracketSeconds": 3.39,
+          "mapping": "Each mode control calls isHittable in successful reveal, then again after its snapshot without an intervening gesture."
+        },
+        "retainedScreenshot": {
+          "name": "Default-Plan-choices",
+          "rawIntervalSeconds": [
+            203.71,
+            213.71
+          ],
+          "durationBracketSeconds": 10.0
+        },
+        "failureEvidence": {
+          "screenshotIntervalSeconds": [
+            235.4,
+            237.67
+          ],
+          "hierarchyIntervalSeconds": [
+            237.67,
+            246.84
+          ],
+          "limit": "Two hierarchy-request activities come from one source debugDescription access; do not infer two redundant source requests."
+        },
+        "measurementLimit": "Durations are consecutive XCTest activity timestamp deltas, including transport/synchronization/other work between log points. They are diagnostic brackets, not isolated API profiling or guaranteed savings. There are no logged swipes/taps in the six-check window."
+      },
+      "minimalProposedPlan": [
+        "Have the final successful full-visibility reveal pass return one measurement observation containing target snapshot, the fresh isHittable result, app frame, navigation-bar frames, keyboard presence/frame, and Undo presence/hittability/frame.",
+        "Within the same control/text measurement, reuse that observation for exact labels, values, enablement, selection, frame, 44pt target, glyph-fit and growth inputs; retain the independent actual containing ScrollView/CollectionView/Table lookup and containment assertion. Compute reachability inset and strict content viewport separately from the same fresh occluder geometry.",
+        "Reacquire all geometry after every swipe, tap, text edit, presentation/dismissal, keyboard transition or relaunch. Do not cache across distinct control/text calls or reuse pre-action snapshots for post-action selection/value checks. Non-scrolling toolbar controls still need their own fresh hit/geometry reads.",
+        "Keep every screenshot, exact assertion and keyboard-presence requirement. Retain source failure diagnostics and method accounting. Current observed duplication justifies this bounded helper consolidation; broader workflow batching and removal of waits/screenshots are not justified.",
+        "If implemented later, root should compare preserved workflow assertions and finalized native results on the changed source. No native rerun, code edit, timeout modification or completion-time prediction was performed in this read-only review."
+      ],
+      "limits": [
+        "Old timings are diagnostic and are not evidence of a timeout or pass on running c86fadd CI.",
+        "Do not multiply the early six-check timings by remaining checks or by two text sizes: later scrolling, sheet/keyboard state, launch and finalization were not observed.",
+        "No hardware/platform-capacity inference and no assumed future deadline failure.",
+        "Only w009.json was extended; repository source and deadlines remained unchanged."
+      ],
+      "outcome": "Measured repeated metadata and hittability reads justify a narrowly scoped future consolidation; no current-source runtime result or duration guarantee."
+    }
+  ]
 }

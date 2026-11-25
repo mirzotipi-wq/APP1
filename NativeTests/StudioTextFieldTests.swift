@@ -80,9 +80,14 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertTrue(field.adjustsFontForContentSizeCategory)
     }
 
-    func testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points() async throws {
+    func testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates() async throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive },
+            "The app-hosted geometry test requires a foreground window scene")
         for category in [ContentSizeCategory.large, .accessibilityExtraExtraExtraLarge] {
-            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 700))
+            let window = UIWindow(windowScene: scene)
+            window.frame = CGRect(x: 0, y: 0, width: 390, height: 700)
             let host = UIHostingController(rootView: AnyView(
                 Form {
                     HStack {
@@ -102,8 +107,17 @@ final class StudioTextFieldTests: XCTestCase {
             let fields = nativeFields(in: host.view)
             XCTAssertEqual(fields.count, 1, "The editable UIKit field must remain the single native input")
             let field = try XCTUnwrap(fields.first)
+            XCTAssertTrue(field.window === window)
+            XCTAssertTrue(window.windowScene === scene)
+            XCTAssertFalse(window.isHidden)
+            // This checks native layout in screen coordinates. The required UI
+            // workflow independently checks the system accessibility snapshot;
+            // the direct accessibilityFrame getter was zero in this unit host.
+            let screenBounds = UIAccessibility.convertToScreenCoordinates(field.bounds, in: field)
+            print("StudioTextField \(category): bounds=\(field.bounds), screenBounds=\(screenBounds)")
             XCTAssertGreaterThanOrEqual(field.bounds.height, 44)
-            XCTAssertGreaterThanOrEqual(field.accessibilityFrame.height, 44)
+            XCTAssertGreaterThanOrEqual(screenBounds.height, 44)
+            XCTAssertGreaterThan(screenBounds.width, 150)
             XCTAssertGreaterThan(field.bounds.width, 150, "The input must expand in the Form/HStack")
             XCTAssertGreaterThanOrEqual(field.bounds.height, try XCTUnwrap(field.font).lineHeight)
             if category == .large {

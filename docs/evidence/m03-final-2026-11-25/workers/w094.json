@@ -223,6 +223,125 @@
         "App/StudioPlanMarkers.swift": true
       },
       "revision_note": "The inspected UI changes were staged by root during final report capture, leaving the unstaged diff empty while HEAD remained9257b6d. Hash recheck confirms reviewed final source stayed unchanged. The recorded diff and assertion-preservation comparisons use baseline4d0c67d against the complete current worktree; this is not an executed fix-revision result."
+    },
+    {
+      "scope": "Root-requested independent read-only review of new native StudioTextField bridge, its14 native regression methods, and four caller integrations after actual c86fadd22-point input accessibility failure.",
+      "actual_head": "24adb70d685acd896e131c3f1950fc8e31dcf93e",
+      "source_baseline": "c86fadd867322b816f400b003de461e0e418dc52",
+      "baseline_note": "HEAD is a documentation/evidence checkpoint. The four committed caller sources match c86fadd; reviewed worktree changes and both new files are identified by hashes below. Read git diff HEAD so staged and unstaged caller edits are included; new files were read in full.",
+      "files": [
+        "App/StudioTextField.swift",
+        "NativeTests/StudioTextFieldTests.swift",
+        "App/PrecisionValueButton.swift",
+        "App/LightTargetLuxView.swift",
+        "App/ManualRoomPlacementView.swift",
+        "App/ProjectLibraryView.swift"
+      ],
+      "worktree_sha256": {
+        "App/StudioTextField.swift": "21e357f253793bb93ea397355b3874e88f589fbb2f48079f66a43d3a1f7149f2",
+        "NativeTests/StudioTextFieldTests.swift": "aca8835a9edee06e600ddacdf15bcfabb65013cdd95def3f95dce64a20b3027a",
+        "App/PrecisionValueButton.swift": "21f57df7d2424426e2ce50d3af8627aa54ac32ce6da05c100c043284ec149bc8",
+        "App/LightTargetLuxView.swift": "7dc77229e6d7f50c767402dc7289e2e1e48e30ecd4845deb5a5596afa6d3b097",
+        "App/ManualRoomPlacementView.swift": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+        "App/ProjectLibraryView.swift": "9a4ea2cba37be95a7064fd5eb82b45fc9ea417ecaee548fdfb4bf5157cea1ded"
+      },
+      "committed_callers_match_c86fadd": {
+        "App/PrecisionValueButton.swift": true,
+        "App/LightTargetLuxView.swift": true,
+        "App/ManualRoomPlacementView.swift": true,
+        "App/ProjectLibraryView.swift": true
+      },
+      "caller_diff_sha256": "746788ed50ed86c50ed0d38398a6274ac6d48561556130b628d64fdbff4d8c6f",
+      "prior_native_result": {
+        "source_revision": "c86fadd867322b816f400b003de461e0e418dc52",
+        "test": "StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize",
+        "result": "Started and failed;0 passed,1 failed. Failure in Default at precisionValue/Intensity in cd target height. Largest accessibility-size workflow and subsequent checks were not reached.",
+        "observed_raw_frame": [
+          32.0,
+          267.0,
+          310.66666666666663,
+          22.0
+        ],
+        "adjusted_height_at_failure": 22.000000000000057,
+        "evidence": "native-tests.log line514 preserves the44-point assertion failure; line552 preserves raw value900 and frame. The preceding endpoint-ULP helper correctly rejects this materially undersized native field.",
+        "artifacts": {
+          "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-ax/native-tests.log": "88097b62f245b7030cf697dc477e17971eda1c71fddb1f23917e857c3dcde1c6",
+          "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-ax/native-method-accounting.json": "d96a6e7bb258fafcff03fc40dc552b8f49955e8723cc283e42fe01349971fee6"
+        }
+      },
+      "resolved_findings": [
+        {
+          "origin": "Worker094 caller review",
+          "issue": "ProjectNameEditor Clear assigned an empty name and focused the field without clearing its existing errorMessage. The new non-echo binding/bridge behavior would retain an obsolete oversized-name error after explicit Clear.",
+          "resolution": "Root now explicitly sets errorMessage=nil in the same Clear action. Independently verified in final source."
+        },
+        {
+          "origin": "Root review of provisional wrapper, relayed by coordinator",
+          "issue": "Provisional marked-text suppression kept the model stale before an explicit Save, while deferred external replacement could leave a cleared composition visible.",
+          "resolution": "Final publishNativeText publishes raw marked text through the bounded binding, without reassigning accepted native text. Actual external model changes replace/unmark immediately; Return is guarded during composition. Native tests use setMarkedText and assert both accepted composition retention and immediate Clear. Independently reviewed final code/tests."
+        },
+        {
+          "origin": "Coordinator compile-scope review",
+          "issue": "New native tests referenced StudioNumericInput without importing its LightingCore module.",
+          "resolution": "Final StudioTextFieldTests.swift explicitly imports LightingCore. Independently verified after worker038 final READY."
+        }
+      ],
+      "checks": [
+        {
+          "area": "Actual native geometry",
+          "result": "StudioNativeTextField itself overrides intrinsicContentSize and sizeThatFits to minimum44 height, uses required vertical compression resistance, and remains the accessible editable UIView. Representable sizeThatFits chooses finite proposed width, minimum44 width, and at least44/intrinsic/fitted height; the SwiftUI wrapper expands horizontally. No accessibilityFrame fabrication or outer-frame-only substitution is present. Actual UIKit layout remains an execution requirement."
+        },
+        {
+          "area": "Dynamic Type",
+          "result": "SwiftUI sizeCategory maps each ordinary/accessibility category to UIKit. Native body text uses preferredFont or UIFontMetrics-scaled17-point monospaced digits, with adjustsFontForContentSizeCategory enabled and intrinsic-size invalidation after font changes. The final source guards nonfinite proposed width before constructing CGSize."
+        },
+        {
+          "area": "Accessibility and caller semantics",
+          "result": "Native UITextField owns isAccessibilityElement, label, identifier and hint; its text remains the native editable value. Precision preserves precisionValue, title/unit label, dynamic error hint, numeric punctuation keyboard and monospaced digits; Return now explicitly shows Done. Lux preserves targetLuxInput/label/hint/decimalPad and its existing Done action. Room preserves every field identifier, units label, decimalPad, monospaced digits and submit closure; native trailing alignment explicitly handles RTL. Project name preserves projectNameInput/Name, Done, disabled-while-saving, no autocapitalization/correction and initial focus request."
+        },
+        {
+          "area": "Binding acceptance and rejection",
+          "result": "Only a changed native string is sent to the binding; the actual binding is read back immediately. Rejected or transformed strings replace the native text with the accepted value and restore/clamp UTF16 selection. Accepted native edits are not assigned back, preserving caret and marked text. Unchanged render updates do not erase an undelivered native edit; a changed external model wins over a late native event even before a render. Existing numeric bounds, oversize flags, same-string guards, optional-room semantics and stale-context checks remain intact."
+        },
+        {
+          "area": "Focus, submit and lifecycle",
+          "result": "Native begin/end callbacks update focus only when needed. Render-triggered focus work is coalesced onto the main queue and reads the latest binding; window attachment retries requests. Programmatic focus synchronization suppresses echo focus writes. Invalidation/identifier change cancels queued work and retires the lifecycle token. Return publishes pending text, then invokes the current submit closure once, unless composition is active or the field is disabled/invalidated. Caller owns whether validation success dismisses focus."
+        },
+        {
+          "area": "Explicit recovery and button geometry",
+          "result": "Room Clear and Restore still clear both rejection states and manage focus directly; Restore and TargetLux Apply now put minimum44 sizing and rectangular contentShape inside actual button labels. Project-name Clear now clears errorMessage. The project-name setter adds a same-string guard without changing size limits, normalization or persistence callbacks."
+        },
+        {
+          "area": "Test integrity",
+          "result": "All existing UITests are byte-unchanged relative to c86fadd, including44-point assertions, raw-frame logging, text oracle, functional checks and deadlines. New native methods assert actual hosted Form native bounds/accessibilityFrame>=44 at default and largest sizes, font growth and horizontal expansion; disabled environment; accepted/rejected editing/caret; pending edit/external reset; marked text/Clear; focus; submission; binding/identity replacement and invalidation. These are authored assertions, not executed passes."
+        }
+      ],
+      "native_test_methods": [
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents"
+      ],
+      "existing_ui_tests_unchanged_vs_c86fadd": true,
+      "validation_by_this_worker": [
+        "Read actual HEAD/status/log and complete pending caller diff including staged changes.",
+        "Read both new files after final READY and re-read final import/finite-width/configuration guards; computed exact SHA256 hashes.",
+        "Read retained c86fadd raw AX failure log and method accounting.",
+        "No native tests, Apple typecheck, syntax parse rerun, full suite, runtime probe or application execution performed. Worker038/root reported successful syntax parses; those are not native compilation or execution and are not counted as this worker checks."
+      ],
+      "limitations": "Native Apple compilation and all14 new tests remain unrun by this worker. Source review does not establish actual UI/AX frame size, hit reachability, keyboard/toolbar presentation, Dynamic Type behavior, IME behavior or completed workflows. Required native app-accessibility and affected room/precision/library/lux regression execution is still necessary at the integrated fix revision.",
+      "outcome": "No remaining confirmed material blocker in the final reviewed wrapper, tests or callers. Recorded caller recovery issue, provisional IME issue and missing module import are resolved in source. Native c86fadd failure remains failed; neither new tests nor syntax reports establish the repair as runtime-passing.",
+      "repository_edits": "None. Only this temporary worker-report followup was written."
     }
   ]
 }

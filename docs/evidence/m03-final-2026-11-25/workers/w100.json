@@ -1,0 +1,963 @@
+{
+  "id": "100",
+  "task": "final_acceptance_review \u2014 substantive preflight pending root-supplied terminal evidence",
+  "canonicalAgent": "/root/w007_review_coordinator/w100_final_acceptance_review",
+  "asOfUTC": "2026-11-25T22:05:33.396273+00:00",
+  "inspectedRevision": "c86fadd867322b816f400b003de461e0e418dc52",
+  "observedHeadAtCompletion": "c86fadd867322b816f400b003de461e0e418dc52",
+  "observedBranch": "main",
+  "reviewedSourceTree": "04da879eb8fa708293861203804090a4870c6859",
+  "reviewMode": "Read-only source and retained evidence reconciliation; no tests, probes, builds, workflow reruns, repository edits, commits or pushes performed.",
+  "files": [
+    "AGENTS.md",
+    "agents/OPERATING_PROTOCOL.md",
+    "agents/HANDOFF.md",
+    "agents/state.json",
+    "agents/evidence.json",
+    "docs/PRODUCT.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROADMAP.md",
+    "docs/QUALITY.md",
+    "docs/DESIGN.md",
+    "docs/acceptance/m02-m03-code.md",
+    "docs/acceptance/m02-m03-external-evidence.md",
+    "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-count-boundary.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-ci-native.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-ci-core.json",
+    "docs/evidence/m03-final-2026-11-25/local-validation.json",
+    "docs/evidence/m03-final-2026-11-25/validation/expected-methods.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/native-ui/executed-summary.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/native-ui/{native,library,export,room,ax}/native-tests.log",
+    "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/ci-core/{receipt,atomic-write-result,commit-interruption-result}.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c86fadd/local/atomic-receipt.json",
+    "scripts/native_test_shards.py",
+    ".github/workflows/ios-prototype.yml",
+    ".github/workflows/platform-accessibility-diagnostics.yml",
+    "App/ManualRoomPlacementView.swift",
+    "UITests/ManualRoomPlacementUITests.swift",
+    "UITests/StudioContentReachability.swift",
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "NativeTests/StudioPaletteTests.swift",
+    "App/StudioPalette.swift"
+  ],
+  "findings": [
+    {
+      "id": "W100-P1",
+      "classification": "required evidence pending; no M03 acceptance",
+      "detail": "Workflow 45709267885 is the current candidate workflow. Parent reports project-state passed and full workflow pending; this worker did not query live CI. No current terminal native/UI receipt is in the inspected packet. A structural project-state pass cannot establish gate completion."
+    },
+    {
+      "id": "W100-H1",
+      "classification": "historical failures preserved",
+      "detail": "Independent raw-event read confirms 4d0c67d native 118/118, library/reference 9/9, studio/export 10/10; room 4/5 and app accessibility 0/1. Room failed testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates at its error assertion; app accessibility failed default Fill marker width 43.99999999999997 against 44. Largest-text phase was not executed in that failed method. Current source repairs require actual new results."
+    },
+    {
+      "id": "W100-L1",
+      "classification": "historical provenance review limitation",
+      "detail": "M02 acceptance is retained at 90d36f9 before M03. That git object is unavailable locally, so a new direct diff to the original accepted source could not be performed. The two raw logs named m02-final-debug.log and m02-final-release.log in m02-count-boundary.json are absent from the manifest directory and current /tmp/app1 packet. This worker therefore verifies the retained historical receipts, not those raw log hashes; no checksum mismatch or product regression is asserted."
+    },
+    {
+      "id": "W100-S1",
+      "classification": "source-reviewed repair, not runtime acceptance",
+      "detail": "Current room binding ignores unchanged text echoes before clearing validation; real room field/Set/half-turn labels have 44-point minima, and rotation uses StudioSlider. Shared UI hit-target accounting permits only endpoint ULP representation loss with coordinate ULP < 1e-9; the design target remains 44. No fresh Apple runtime result is inferred from this review."
+    },
+    {
+      "id": "W100-T1",
+      "classification": "temporal qualification",
+      "detail": "Root updated documentation/state/evidence during review. Earlier 4d source/pending prose is a checkpoint, not an attempted current pass. Latest observed state identifies c86fadd and leaves all three M03 gates unverified; root-owned documentation and new evidence remain uncommitted at the final status observation."
+    }
+  ],
+  "m02HistoricalAcceptance": {
+    "contract": "m02-m03-code-v2",
+    "acceptedCoreSource": "90d36f9120289a33ff8af37d626ea959830ddd38",
+    "nativeExecutedSource": "a6ba92b07d82da173c22a004657713be0db72a33",
+    "nativeWorkflow": 45673913129,
+    "recordedResults": {
+      "portableDebug": 338,
+      "portableRelease": 338,
+      "syntheticImages": 12,
+      "unsupportedPixels": 0,
+      "sharedFloat32Cases": 6,
+      "kernelMaxChannelError": 1,
+      "precisionCases": 8,
+      "precisionMaxChannelError": 0,
+      "frameWorkloads": 8,
+      "cancellationProbes": 12,
+      "visibilityWorkloads": 4,
+      "samplesPerWorkload": 7,
+      "nativeMethods": 110
+    },
+    "nativeCarryForward": "Retained acceptance/native receipts explicitly map unchanged App/NativeTests from a6ba92b to 90d36f9; final portable gates reran after count-validation ordering change. This preflight did not re-execute or reconstruct unavailable original source.",
+    "order": "Latest M02 gates are pass at 90d36f9; M03 depends on M02 and remains active."
+  },
+  "requiredM03Inventory": {
+    "source": "c86fadd867322b816f400b003de461e0e418dc52",
+    "nativeMethods": 118,
+    "requiredUIMethods": 35,
+    "shards": {
+      "room-precision": [
+        "ManualRoomPlacementUITests.testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+        "ManualRoomPlacementUITests.testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates",
+        "PrecisionEditingUITests.testExactCameraFocalLengthUndoRedoAndReopen",
+        "PrecisionEditingUITests.testExactLightIntensityValidationUndoRedoAndReopen",
+        "PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters"
+      ],
+      "library-reference": [
+        "ProjectLibraryUITests.testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch",
+        "ProjectLibraryUITests.testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+        "ProjectLibraryUITests.testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+        "ProjectLibraryUITests.testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+        "ProjectLibraryUITests.testStaleSaveReloadRequiresConfirmation",
+        "ProjectLibraryUITests.testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+        "ReferenceComparisonUITests.testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        "ReferenceComparisonUITests.testReferenceComparisonOpensWithRealStudyAndNoPhoto"
+      ],
+      "studio-export": [
+        "LightingPlanExportUITests.testExportPreviewOpensWithoutSavingOrChangingScene",
+        "LightingPlanExportUITests.testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory",
+        "StudioSmokeTests.testCameraFocalLengthUndoAndRelaunch",
+        "StudioSmokeTests.testCorruptProjectBlocksSavingAcrossRelaunch",
+        "StudioSmokeTests.testMeterBalanceSaveUndoAndRelaunch",
+        "StudioSmokeTests.testRecipeEditSaveAndReopen",
+        "StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback",
+        "StudioSmokeTests.testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+        "StudioSmokeTests.testStudyRendersActualReferenceFrame",
+        "StudioSmokeTests.testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene"
+      ],
+      "studio-optics": [
+        "StudioOpticsUITests.testOpticsEditingUndoRedoAndRelaunch",
+        "StudioOpticsUITests.testOpticsRepeatability02",
+        "StudioOpticsUITests.testOpticsRepeatability03",
+        "StudioOpticsUITests.testOpticsRepeatability04",
+        "StudioOpticsUITests.testOpticsRepeatability05",
+        "StudioOpticsUITests.testOpticsRepeatability06",
+        "StudioOpticsUITests.testOpticsRepeatability07",
+        "StudioOpticsUITests.testOpticsRepeatability08",
+        "StudioOpticsUITests.testOpticsRepeatability09",
+        "StudioOpticsUITests.testOpticsRepeatability10"
+      ],
+      "app-accessibility": [
+        "StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ]
+    },
+    "optionalPlatformDiagnosticMethods": [
+      "AccessibilityAuditUITests.testInitialLoadedPlanStudioAccessibilityAudit",
+      "AccessibilityAuditUITests.testExactLightIntensityEditorAccessibilityAudit"
+    ],
+    "editingRequirements": [
+      "Exact units, gestures, selection and undo/redo without lost edits",
+      "All ten optics workflows plus five room/precision methods, ten studio/export methods and nine library/reference methods",
+      "Create/duplicate/rename/switch, archive/delete confirmation, stale-save and full-library recovery, unsaved protection and relaunch"
+    ],
+    "accessibilityRequirements": [
+      "Meaningful labels, values, actions, enabled/disabled states, localized exact readouts within 1e-9, bounds and undo",
+      "Default and accessibilityExtraExtraExtraLarge essential Plan/inspector/precision/library controls, no lost/clipped essential text, reachable scrolling and actual screenshots",
+      "44-point targets, non-color-only cues, reduced-motion handling",
+      "Recorded light/dark palette/background pairs: text >=4.5:1 and essential non-text >=3:1; concrete past layout/contrast issue dispositions and corresponding observations"
+    ],
+    "persistenceRequirements": [
+      "Core/native migration, atomic-write, malformed/oversized, round-trip, operation/recovery/deletion and relaunch checks",
+      "Bounded write-failure and before/after-rename interruption evidence preserving required bytes, active identities and unrelated records",
+      "Exact source/compiler/host/filesystem/failure-mechanism provenance; current local Linux tmpfs evidence is explicitly distinct from macOS/provider/device behavior"
+    ]
+  },
+  "sourceMappings": {
+    "portable": {
+      "from": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "to": "c86fadd867322b816f400b003de461e0e418dc52",
+      "paths": [
+        "Sources/",
+        "Tests/",
+        "Package.swift"
+      ],
+      "changedPaths": []
+    },
+    "nativePersistence": {
+      "from": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "to": "c86fadd867322b816f400b003de461e0e418dc52",
+      "paths": [
+        "App/ProjectStore.swift",
+        "App/ProjectLibraryOperation.swift",
+        "App/BoundedFileReader.swift",
+        "App/ProjectDocumentIO.swift",
+        "NativeTests/ProjectStoreOperationTests.swift",
+        "NativeTests/ProjectDocumentIOTests.swift",
+        "NativeTests/BoundedFileReaderTests.swift"
+      ],
+      "changedPaths": []
+    },
+    "M02Renderer": {
+      "from": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "to": "c86fadd867322b816f400b003de461e0e418dc52",
+      "paths": [
+        "Sources/LightingCore/SurfacePhotometry.swift",
+        "Sources/LightingCore/ReferenceStudy.swift",
+        "Sources/LightingCore/PortraitStudy.swift",
+        "Sources/LightingCore/StudyFrameCache.swift",
+        "App/MetalStudyRenderer.swift",
+        "App/ReferenceStudyPreview.swift",
+        "App/ReferenceStudy.metal",
+        "App/StudyKernel.h",
+        "scripts/render-study-fixtures.swift",
+        "scripts/prepare-kernel-fixtures.swift",
+        "scripts/verify-kernel-host.cpp",
+        "scripts/precision-boundary.swift",
+        "scripts/benchmark-study.swift"
+      ],
+      "changedPaths": []
+    }
+  },
+  "checkedHistoricalResults": {
+    "revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "portableLogSummaries": [
+      {
+        "log": "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/ci-core/core-tests.log",
+        "lastSummary": [
+          "357",
+          "0"
+        ]
+      },
+      {
+        "log": "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/ci-core/core-release-tests.log",
+        "lastSummary": [
+          "357",
+          "0"
+        ]
+      }
+    ],
+    "rawNativeUIEventCounts": {
+      "native": {
+        "started": 118,
+        "passed": 118,
+        "failed": 0,
+        "skipped": 0
+      },
+      "library": {
+        "started": 9,
+        "passed": 9,
+        "failed": 0,
+        "skipped": 0
+      },
+      "export": {
+        "started": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0
+      },
+      "room": {
+        "started": 5,
+        "passed": 4,
+        "failed": 1,
+        "skipped": 0
+      },
+      "ax": {
+        "started": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0
+      }
+    },
+    "persistWriteFailure": {
+      "status": "passed",
+      "checks": {
+        "activeIdentityPreserved": true,
+        "exactPriorBytesPreserved": true,
+        "freshProcessVerificationSucceeded": true,
+        "injectionReturnedCaughtSaveError": true,
+        "observedPOSIXEFBIG": true,
+        "priorCompleteSnapshotPreserved": true,
+        "setupAndUnrestrictedControlSucceeded": true,
+        "unrelatedRecordsPreserved": true,
+        "unrestrictedControlCandidateReopened": true,
+        "unrestrictedControlExactCandidateBytes": true,
+        "validFixturesBelowApplicationByteLimit": true
+      },
+      "mechanism": "Historical 4d result independently reports caught POSIX EFBIG and 11 true invariants; the repeated local current-source result reports the same invariant set."
+    },
+    "historicalFilesystemLimit": "4d CI receipts report Linux x86_64, Python 3.12.3, kernel 7.0.0-1014-aws, but no filesystem observation; do not infer its type from local tmpfs."
+  },
+  "currentLocalPersistenceEvidence": {
+    "baseRevisionPreserved": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "publishedSourceMapping": "c86fadd867322b816f400b003de461e0e418dc52",
+    "status": "passed",
+    "compiledSourceHashCount": 32,
+    "compiledSourceHashesMatchCurrentWorkingTree": true,
+    "mismatches": [],
+    "archiveHashesMatchReceipt": {
+      "atomic-filesystem-local-fixed.zip": true,
+      "atomic-filesystem-local.zip": true
+    },
+    "filesystemObservations": 9,
+    "filesystems": [
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      },
+      {
+        "deviceMajorMinor": "0:39",
+        "mountPoint": "/tmp",
+        "source": "tmpfs",
+        "type": "tmpfs"
+      }
+    ],
+    "writeFailureChecks": {
+      "activeIdentityPreserved": true,
+      "exactPriorBytesPreserved": true,
+      "freshProcessVerificationSucceeded": true,
+      "injectionReturnedCaughtSaveError": true,
+      "observedPOSIXEFBIG": true,
+      "priorCompleteSnapshotPreserved": true,
+      "setupAndUnrestrictedControlSucceeded": true,
+      "unrelatedRecordsPreserved": true,
+      "unrestrictedControlCandidateReopened": true,
+      "unrestrictedControlExactCandidateBytes": true,
+      "validFixturesBelowApplicationByteLimit": true
+    },
+    "interruptionScenarios": [
+      {
+        "name": "before-rename",
+        "status": "passed",
+        "allRecordedChecksTrue": true,
+        "ownedProcessReturnCode": -9
+      },
+      {
+        "name": "after-rename",
+        "status": "passed",
+        "allRecordedChecksTrue": true,
+        "ownedProcessReturnCode": -9
+      },
+      {
+        "name": "rename-eio",
+        "status": "passed",
+        "allRecordedChecksTrue": true,
+        "ownedProcessReturnCode": 0
+      }
+    ],
+    "scope": "Read existing successful source-bound Linux/tmpfs execution, not a new execution. The earlier failed compilation archive is retained by root and is not counted as a probe pass."
+  },
+  "pendingItems": [
+    "Obtain terminal workflow 45709267885 status, exact c86fadd source mapping and actual Debug/Release application builds.",
+    "Reconcile all 118 native ordered method results, including required actual Metal execution, and finalized native result bundle.",
+    "Reconcile all 35 required UI methods: no unstarted, interrupted, failed, skipped, duplicate or unexpected method may be counted as pass. Current room and app AX repairs specifically require new execution.",
+    "Inspect current default and largest accessibility text screenshots and observed control frames/readouts; retain palette/background/contrast output and issue dispositions.",
+    "Reconcile current hosted persistence/filesystem evidence with the already observed local tmpfs receipt, preserving historical unrecorded filesystem limits and actual failure mechanisms.",
+    "Bind any result carried forward to unchanged relevant source; broad 4d native/UI success cannot be relabeled c86fadd success after app and UI helper changes.",
+    "Finish real 100-context ledger and root documentation/evidence integration, then verify published source/CI. Worker count itself does not satisfy product gates.",
+    "Resume this worker for final acceptance review only after root supplies actual terminal receipts."
+  ],
+  "externalFactorLimits": [
+    "Removed M02 physical controlled-scene capture, calibration, photographer review, physical iPhone 13 performance, five-minute frame-time, fifteen-minute thermal and resident-memory requirements are unperformed, not latent M02/M03 prerequisites.",
+    "Removed M03 manual real-device accessibility audit remains unperformed. Apple .all diagnostics and independent control keep actual failure/error/unrun statuses; Code=-56 or absent issue enumeration never becomes a pass.",
+    "Software images do not establish calibrated photographic/material/skin fidelity; host timing does not establish device FPS, memory or thermal results; app checks are not a VoiceOver session/platform audit.",
+    "EFBIG, SIGKILL interruption and injected rename EIO on observed tmpfs do not establish power-loss durability or storage-provider behavior.",
+    "M01 and M04-M07 contracts remain outside this revision; M02/M03 completion would neither prove release readiness nor authorize publication."
+  ],
+  "tests": [
+    {
+      "kind": "performed read-only review",
+      "checks": [
+        "Read actual git status, branch, HEAD/tree, recent commits and scoped git diffs.",
+        "Parsed current XCTest source inventory without executing tests.",
+        "Counted retained 4d raw XCTest terminal/start events and core test summary lines.",
+        "Read historical M02 terminal receipts and their temporal source mapping.",
+        "Read current local persistence outcomes, all nine filesystem observations and recorded invariant results.",
+        "Recomputed existing current-source compiled Swift hashes and local archive SHA256s."
+      ],
+      "result": "Completed; results and limitations recorded above."
+    },
+    {
+      "kind": "unrun",
+      "checks": [
+        "No XCTest, Swift test, Python test suite, simulator, rendering, benchmark, build or persistence probe was run.",
+        "No live CI observation or real-device/manual accessibility inspection was performed."
+      ],
+      "result": "Not run; no pass claimed."
+    }
+  ],
+  "outcome": "PREFLIGHT COMPLETE \u2014 M02 historical acceptance reconciled; M03 NOT ACCEPTED and remains unverified pending actual current-source native/UI receipts and final visual/evidence reconciliation.",
+  "followups": [
+    {
+      "review": "exact-c855 static acceptance preflight",
+      "asOfUTC": "2026-11-25T22:53:18.324260+00:00",
+      "previousReportSHA256": "8c9114a244225ab7a95b41e7badbe77c422cd73a57fc63155777dc9d7e4132e3",
+      "reviewedRevision": "c85544f121cf3781499636527d3b9329ca6affba",
+      "reviewedTree": "2db78753329e6bde427d9a82119c11bfc44321a1",
+      "observedHead": "c85544f121cf3781499636527d3b9329ca6affba",
+      "observedTree": "2db78753329e6bde427d9a82119c11bfc44321a1",
+      "parentAuthorization": "Read-only exact candidate static acceptance follow-up; no suites, commits or subagents. Final current native/UI/visual receipts pending.",
+      "sourceChanges": [
+        "App/LightTargetLuxView.swift",
+        "App/ManualRoomPlacementView.swift",
+        "App/PrecisionValueButton.swift",
+        "App/ProjectLibraryView.swift",
+        "App/StudioTextField.swift",
+        "NativeTests/StudioTextFieldTests.swift",
+        "UITests/ManualRoomPlacementUITests.swift"
+      ],
+      "sourceMappings": {
+        "portable": {
+          "from": "c86fadd867322b816f400b003de461e0e418dc52",
+          "to": "c85544f121cf3781499636527d3b9329ca6affba",
+          "paths": [
+            "Sources",
+            "Tests",
+            "Package.swift"
+          ],
+          "changedPaths": []
+        },
+        "M02Renderer": {
+          "from": "c86fadd867322b816f400b003de461e0e418dc52",
+          "to": "c85544f121cf3781499636527d3b9329ca6affba",
+          "paths": [
+            "App/ReferenceStudyPreview.swift",
+            "App/MetalStudyRenderer.swift",
+            "App/ReferenceStudy.metal",
+            "App/StudyKernel.h",
+            "scripts/render-study-fixtures.swift",
+            "scripts/prepare-kernel-fixtures.swift",
+            "scripts/verify-kernel-host.cpp",
+            "scripts/precision-boundary.swift",
+            "scripts/benchmark-study.swift"
+          ],
+          "changedPaths": []
+        },
+        "persistence": {
+          "from": "c86fadd867322b816f400b003de461e0e418dc52",
+          "to": "c85544f121cf3781499636527d3b9329ca6affba",
+          "paths": [
+            "App/ProjectStore.swift",
+            "App/ProjectLibraryOperation.swift",
+            "App/BoundedFileReader.swift",
+            "App/ProjectDocumentIO.swift",
+            "NativeTests/ProjectStoreOperationTests.swift",
+            "NativeTests/ProjectDocumentIOTests.swift",
+            "NativeTests/BoundedFileReaderTests.swift",
+            "scripts/probe-atomic-library-write.swift",
+            "scripts/run_atomic_library_write_probe.py",
+            "scripts/probe_atomic_library_write.py",
+            "scripts/probe_library_commit_interruption.py"
+          ],
+          "changedPaths": []
+        },
+        "contract": {
+          "from": "c86fadd867322b816f400b003de461e0e418dc52",
+          "to": "c85544f121cf3781499636527d3b9329ca6affba",
+          "paths": [
+            "AGENTS.md",
+            "docs/acceptance/m02-m03-code.md",
+            "docs/DESIGN.md",
+            "docs/QUALITY.md"
+          ],
+          "changedPaths": []
+        },
+        "shardSelection": {
+          "from": "c86fadd867322b816f400b003de461e0e418dc52",
+          "to": "c85544f121cf3781499636527d3b9329ca6affba",
+          "paths": [
+            "scripts/native_test_shards.py",
+            ".github/workflows/ios-prototype.yml",
+            ".github/workflows/platform-accessibility-diagnostics.yml"
+          ],
+          "changedPaths": []
+        }
+      },
+      "methodInventory": {
+        "source": "c85544f121cf3781499636527d3b9329ca6affba",
+        "nativeMethodCount": 132,
+        "nativeMethodsByClass": {
+          "BoundedFileReaderTests": [
+            "BoundedFileReaderTests.testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+            "BoundedFileReaderTests.testCheckpointCannotSuppressActualTaskCancellation",
+            "BoundedFileReaderTests.testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+            "BoundedFileReaderTests.testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+            "BoundedFileReaderTests.testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+            "BoundedFileReaderTests.testMetadataPreflightHonorsActualTaskCancellation",
+            "BoundedFileReaderTests.testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+            "BoundedFileReaderTests.testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+            "BoundedFileReaderTests.testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+            "BoundedFileReaderTests.testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+            "BoundedFileReaderTests.testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+            "BoundedFileReaderTests.testRejectsOversizeBeforeAnyReadCheckpoint",
+            "BoundedFileReaderTests.testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking"
+          ],
+          "LightingPlanPDFTests": [
+            "LightingPlanPDFTests.testEmptySceneStillProducesReadableDiagramAndSchedule",
+            "LightingPlanPDFTests.testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+            "LightingPlanPDFTests.testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+            "LightingPlanPDFTests.testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits"
+          ],
+          "ProjectDocumentIOTests": [
+            "ProjectDocumentIOTests.testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+            "ProjectDocumentIOTests.testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+            "ProjectDocumentIOTests.testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+            "ProjectDocumentIOTests.testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+            "ProjectDocumentIOTests.testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+            "ProjectDocumentIOTests.testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+            "ProjectDocumentIOTests.testOversizedFileIsRejectedBeforeReadingItsContents",
+            "ProjectDocumentIOTests.testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+            "ProjectDocumentIOTests.testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt"
+          ],
+          "ProjectLibraryPresentationTests": [
+            "ProjectLibraryPresentationTests.testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+            "ProjectLibraryPresentationTests.testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+            "ProjectLibraryPresentationTests.testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+            "ProjectLibraryPresentationTests.testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+            "ProjectLibraryPresentationTests.testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+            "ProjectLibraryPresentationTests.testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+            "ProjectLibraryPresentationTests.testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+            "ProjectLibraryPresentationTests.testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars"
+          ],
+          "ProjectStoreOperationTests": [
+            "ProjectStoreOperationTests.testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+            "ProjectStoreOperationTests.testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+            "ProjectStoreOperationTests.testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+            "ProjectStoreOperationTests.testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+            "ProjectStoreOperationTests.testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+            "ProjectStoreOperationTests.testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+            "ProjectStoreOperationTests.testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+            "ProjectStoreOperationTests.testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+            "ProjectStoreOperationTests.testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+            "ProjectStoreOperationTests.testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+            "ProjectStoreOperationTests.testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+            "ProjectStoreOperationTests.testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+            "ProjectStoreOperationTests.testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+            "ProjectStoreOperationTests.testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+            "ProjectStoreOperationTests.testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+            "ProjectStoreOperationTests.testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects"
+          ],
+          "ReferencePhotoTests": [
+            "ReferencePhotoTests.testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+            "ReferencePhotoTests.testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+            "ReferencePhotoTests.testFileRepresentationConsumesOnlyItsTemporaryFile",
+            "ReferencePhotoTests.testFileSizeBoundBeforeDecode",
+            "ReferencePhotoTests.testRejectsMalformedAndOversizedInputs",
+            "ReferencePhotoTests.testRotatesReducesAndRemovesSourceMetadata",
+            "ReferencePhotoTests.testTransparentAndPartialAlphaRemainExcludedFromReferenceTones"
+          ],
+          "RoomRotationReadoutTests": [
+            "RoomRotationReadoutTests.testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+            "RoomRotationReadoutTests.testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+            "RoomRotationReadoutTests.testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+          ],
+          "SpatialEmitterGeometryTests": [
+            "SpatialEmitterGeometryTests.testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+            "SpatialEmitterGeometryTests.testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+            "SpatialEmitterGeometryTests.testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+            "SpatialEmitterGeometryTests.testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+            "SpatialEmitterGeometryTests.testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes"
+          ],
+          "SpatialPreviewTests": [
+            "SpatialPreviewTests.testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+            "SpatialPreviewTests.testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+            "SpatialPreviewTests.testTranslatedRigAndModifierFitActualSceneKitProjection"
+          ],
+          "StudioPaletteTests": [
+            "StudioPaletteTests.testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+            "StudioPaletteTests.testFixedPlanTextAndLightControlsContrastInBothAppearances",
+            "StudioPaletteTests.testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+            "StudioPaletteTests.testProjectSheetControlsContrastOnTheirProductionSurfaces",
+            "StudioPaletteTests.testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows"
+          ],
+          "StudioSliderEditingTests": [
+            "StudioSliderEditingTests.testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+            "StudioSliderEditingTests.testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+            "StudioSliderEditingTests.testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+            "StudioSliderEditingTests.testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+            "StudioSliderEditingTests.testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+            "StudioSliderEditingTests.testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+            "StudioSliderEditingTests.testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+            "StudioSliderEditingTests.testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue"
+          ],
+          "StudioSliderTrackingTests": [
+            "StudioSliderTrackingTests.testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+            "StudioSliderTrackingTests.testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+            "StudioSliderTrackingTests.testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+            "StudioSliderTrackingTests.testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+            "StudioSliderTrackingTests.testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+            "StudioSliderTrackingTests.testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+            "StudioSliderTrackingTests.testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+            "StudioSliderTrackingTests.testOwnerReassertionCannotWriteAfterReentrantCancellation",
+            "StudioSliderTrackingTests.testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+            "StudioSliderTrackingTests.testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+            "StudioSliderTrackingTests.testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+            "StudioSliderTrackingTests.testReentrantInvalidationAtBeginRejectsSubsequentValues",
+            "StudioSliderTrackingTests.testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+            "StudioSliderTrackingTests.testSessionRetainsOriginalWriterAndRange",
+            "StudioSliderTrackingTests.testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+            "StudioSliderTrackingTests.testValueAfterEndCannotReopenHistoryOrDisableUndo"
+          ],
+          "StudioTextFieldTests": [
+            "StudioTextFieldTests.testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+            "StudioTextFieldTests.testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+            "StudioTextFieldTests.testDisabledEnvironmentReachesNativeControl",
+            "StudioTextFieldTests.testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+            "StudioTextFieldTests.testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+            "StudioTextFieldTests.testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points",
+            "StudioTextFieldTests.testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+            "StudioTextFieldTests.testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+            "StudioTextFieldTests.testNativeSizingAndConfigurationOwnTheAccessibleInput",
+            "StudioTextFieldTests.testReconfigurationUsesCurrentBindingAndSubmitClosure",
+            "StudioTextFieldTests.testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+            "StudioTextFieldTests.testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+            "StudioTextFieldTests.testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+            "StudioTextFieldTests.testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit"
+          ],
+          "StudioTrackingSliderTests": [
+            "StudioTrackingSliderTests.testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+            "StudioTrackingSliderTests.testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+            "StudioTrackingSliderTests.testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble"
+          ],
+          "StudyRenderCacheTests": [
+            "StudyRenderCacheTests.testBustCachePreservesExistingMaximumWidthClamping",
+            "StudyRenderCacheTests.testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+            "StudyRenderCacheTests.testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+            "StudyRenderCacheTests.testCancelledTaskCannotReturnCachedFrame",
+            "StudyRenderCacheTests.testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+            "StudyRenderCacheTests.testEveryRenderingControlKeepsDistinctCacheIdentity",
+            "StudyRenderCacheTests.testInvalidMetadataCannotReuseAValidatedFrame",
+            "StudyRenderCacheTests.testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+            "StudyRenderCacheTests.testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+            "StudyRenderCacheTests.testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+            "StudyRenderCacheTests.testSubjectAndResolutionDoNotShareFrames"
+          ],
+          "StudyRendererTests": [
+            "StudyRendererTests.testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+            "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+            "StudyRendererTests.testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+            "StudyRendererTests.testEnginePublishesRealFrameWithEitherBackend",
+            "StudyRendererTests.testEngineUsesCPUForFarGeometry",
+            "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+            "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal"
+          ]
+        },
+        "addedNativeClass": "StudioTextFieldTests",
+        "addedNativeMethodCount": 14,
+        "previousNativeMethodsPreserved": 118,
+        "requiredUIMethodCount": 35,
+        "requiredShards": {
+          "room-precision": [
+            "ManualRoomPlacementUITests.testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+            "ManualRoomPlacementUITests.testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates",
+            "PrecisionEditingUITests.testExactCameraFocalLengthUndoRedoAndReopen",
+            "PrecisionEditingUITests.testExactLightIntensityValidationUndoRedoAndReopen",
+            "PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters"
+          ],
+          "library-reference": [
+            "ProjectLibraryUITests.testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+            "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch",
+            "ProjectLibraryUITests.testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+            "ProjectLibraryUITests.testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+            "ProjectLibraryUITests.testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+            "ProjectLibraryUITests.testStaleSaveReloadRequiresConfirmation",
+            "ProjectLibraryUITests.testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+            "ReferenceComparisonUITests.testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+            "ReferenceComparisonUITests.testReferenceComparisonOpensWithRealStudyAndNoPhoto"
+          ],
+          "studio-export": [
+            "LightingPlanExportUITests.testExportPreviewOpensWithoutSavingOrChangingScene",
+            "LightingPlanExportUITests.testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory",
+            "StudioSmokeTests.testCameraFocalLengthUndoAndRelaunch",
+            "StudioSmokeTests.testCorruptProjectBlocksSavingAcrossRelaunch",
+            "StudioSmokeTests.testMeterBalanceSaveUndoAndRelaunch",
+            "StudioSmokeTests.testRecipeEditSaveAndReopen",
+            "StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback",
+            "StudioSmokeTests.testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+            "StudioSmokeTests.testStudyRendersActualReferenceFrame",
+            "StudioSmokeTests.testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene"
+          ],
+          "studio-optics": [
+            "StudioOpticsUITests.testOpticsEditingUndoRedoAndRelaunch",
+            "StudioOpticsUITests.testOpticsRepeatability02",
+            "StudioOpticsUITests.testOpticsRepeatability03",
+            "StudioOpticsUITests.testOpticsRepeatability04",
+            "StudioOpticsUITests.testOpticsRepeatability05",
+            "StudioOpticsUITests.testOpticsRepeatability06",
+            "StudioOpticsUITests.testOpticsRepeatability07",
+            "StudioOpticsUITests.testOpticsRepeatability08",
+            "StudioOpticsUITests.testOpticsRepeatability09",
+            "StudioOpticsUITests.testOpticsRepeatability10"
+          ],
+          "app-accessibility": [
+            "StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+          ]
+        },
+        "optionalAuditMethods": [
+          "AccessibilityAuditUITests.testExactLightIntensityEditorAccessibilityAudit",
+          "AccessibilityAuditUITests.testInitialLoadedPlanStudioAccessibilityAudit"
+        ],
+        "selectorSource": "Unchanged dynamic method discovery in scripts/native_test_shards.py; current source inventory counted by read-only regex, not execution.",
+        "retainedInventoryArtifact": "validation/expected-methods.json remains explicitly source-4d0c67d / 118 native; preserve its historical scope and publish a source-c855 inventory with final receipts."
+      },
+      "docStateCheck": {
+        "milestones": [
+          {
+            "id": "M02",
+            "name": "Photometry and interactive 3D studio",
+            "depends": [
+              "M01"
+            ],
+            "gates": [
+              "photometry",
+              "rendering",
+              "performance"
+            ],
+            "status": "complete"
+          },
+          {
+            "id": "M03",
+            "name": "Professional editing and project library",
+            "depends": [
+              "M02"
+            ],
+            "gates": [
+              "editing",
+              "accessibility",
+              "persistence"
+            ],
+            "status": "active"
+          }
+        ],
+        "latestGateEntries": {
+          "photometry": {
+            "revision": "90d36f9120289a33ff8af37d626ea959830ddd38",
+            "artifact": "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+            "contract": "m02-m03-code-v2",
+            "gate": "photometry",
+            "result": "pass"
+          },
+          "rendering": {
+            "revision": "90d36f9120289a33ff8af37d626ea959830ddd38",
+            "artifact": "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+            "contract": "m02-m03-code-v2",
+            "gate": "rendering",
+            "result": "pass"
+          },
+          "performance": {
+            "revision": "90d36f9120289a33ff8af37d626ea959830ddd38",
+            "artifact": "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+            "contract": "m02-m03-code-v2",
+            "gate": "performance",
+            "result": "pass"
+          },
+          "editing": {
+            "revision": "c86fadd867322b816f400b003de461e0e418dc52",
+            "gate": "editing",
+            "result": "unverified",
+            "artifact": "docs/evidence/m03-final-2026-11-25/README.md"
+          },
+          "accessibility": {
+            "revision": "c86fadd867322b816f400b003de461e0e418dc52",
+            "gate": "accessibility",
+            "result": "unverified",
+            "artifact": "docs/evidence/m03-final-2026-11-25/README.md"
+          },
+          "persistence": {
+            "revision": "c86fadd867322b816f400b003de461e0e418dc52",
+            "gate": "persistence",
+            "result": "unverified",
+            "artifact": "docs/evidence/m03-final-2026-11-25/README.md"
+          }
+        },
+        "checkpointSource": "c86fadd867322b816f400b003de461e0e418dc52",
+        "noPrematureM03AcceptanceObserved": true,
+        "detail": "At observation, README keeps active code development, M03 is active and all three M03 gates remain unverified. Handoff/state/evidence/local-validation and campaign README still describe the explicitly c86/118 checkpoint. Root is assembling current evidence; these must be updated to c855/132 with final results, not represented as a current-source runtime pass.",
+        "M02BeforeM03": "Historical three-gate M02 acceptance at 90d36f9 remains intact and M03 depends on M02. Contract and M02 source subset are unchanged from c86; no historical M02 rerun or physical-validation claim introduced."
+      },
+      "c86HistoricalReconciliation": {
+        "source": "c86fadd867322b816f400b003de461e0e418dc52",
+        "workflow": 45709267885,
+        "workflowTermination": "Root reports natural terminal completion before c855 publication, no c86 cancellation. This worker independently checked complete selected raw method accounting but did not query the live workflow API.",
+        "methodResults": [
+          {
+            "shard": "native",
+            "log": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-native/native-tests.log",
+            "accounting": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-native/root-method-accounting.json",
+            "expected": 118,
+            "eventCounts": {
+              "started": 118,
+              "passed": 118,
+              "failed": 0,
+              "skipped": 0
+            },
+            "observedExactlyExpectedMethods": true,
+            "orderedPassCount": 118,
+            "nonPassSequences": {},
+            "status": "passed"
+          },
+          {
+            "shard": "optics",
+            "log": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-optics/native-tests.log",
+            "accounting": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-optics/root-method-accounting.json",
+            "expected": 10,
+            "eventCounts": {
+              "started": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            "observedExactlyExpectedMethods": true,
+            "orderedPassCount": 10,
+            "nonPassSequences": {},
+            "status": "passed"
+          },
+          {
+            "shard": "export",
+            "log": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-export/native-tests.log",
+            "accounting": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-export/root-method-accounting.json",
+            "expected": 10,
+            "eventCounts": {
+              "started": 10,
+              "passed": 10,
+              "failed": 0,
+              "skipped": 0
+            },
+            "observedExactlyExpectedMethods": true,
+            "orderedPassCount": 10,
+            "nonPassSequences": {},
+            "status": "passed"
+          },
+          {
+            "shard": "room",
+            "log": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-room/native-tests.log",
+            "accounting": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-room/root-method-accounting.json",
+            "expected": 5,
+            "eventCounts": {
+              "started": 5,
+              "passed": 5,
+              "failed": 0,
+              "skipped": 0
+            },
+            "observedExactlyExpectedMethods": true,
+            "orderedPassCount": 5,
+            "nonPassSequences": {},
+            "status": "passed"
+          },
+          {
+            "shard": "library",
+            "log": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-library/native-tests.log",
+            "accounting": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-library/root-method-accounting.json",
+            "expected": 9,
+            "eventCounts": {
+              "started": 9,
+              "passed": 9,
+              "failed": 0,
+              "skipped": 0
+            },
+            "observedExactlyExpectedMethods": true,
+            "orderedPassCount": 9,
+            "nonPassSequences": {},
+            "status": "passed"
+          },
+          {
+            "shard": "ax",
+            "log": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-ax/native-tests.log",
+            "accounting": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-ax/root-method-accounting.json",
+            "expected": 1,
+            "eventCounts": {
+              "started": 1,
+              "passed": 0,
+              "failed": 1,
+              "skipped": 0
+            },
+            "observedExactlyExpectedMethods": true,
+            "orderedPassCount": 0,
+            "nonPassSequences": {
+              "StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize": [
+                "started",
+                "failed"
+              ]
+            },
+            "status": "failed"
+          }
+        ],
+        "appAccessibilityFailure": "Actual XCTest assertion: 22.000000000000057 < 44.0 for Intensity in cd target height, raw frame (32.0, 267.0, 310.66666666666663, 22.0). This is a material control-size failure, distinct from the earlier 4d endpoint-ULP comparison.",
+        "persistenceReceiptsRead": {
+          "core": "validation/source-c86fadd/ci-core/receipt.json reports 357 Debug / 357 Release / 92 tooling passes, ext4 at all nine observed Linux targets, EFBIG and before/after-rename/rename-EIO scenarios.",
+          "macOS": "validation/source-c86fadd/ci-macos-atomic/receipt.json reports successful actual macOS EFBIG probe with three APFS target observations; Linux interruption scenarios remain separate.",
+          "scope": "Receipt read only in this follow-up. No new probe or provider/device durability claim; current relevant persistence implementation and diagnostic files are byte-identical."
+        }
+      },
+      "distinct4dHistory": {
+        "source": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+        "optics": "Retained executed-summary now records actual job cancellation when superseded by c86: expected10, started3, passed2, unstarted7; third method lacked terminal outcome. Not a completed editing gate.",
+        "otherFailures": "Prior room 4/5 and appAX 0/1 remain retained. Later c86 room5/5 does not relabel the earlier failure."
+      },
+      "requirementsStillPending": [
+        "Workflow45716080681 current terminal status and finalized Debug/Release app build receipts. Project-state pass is parent-reported structural evidence only.",
+        "All132 native methods including the14 new StudioTextFieldTests must execute successfully; all118 historical methods remain required.",
+        "All35 required UI methods must start and finish successfully at current source; preserve the2 opt-in Apple audit methods separately.",
+        "Actual current precision/room/library/native field size, input composition, identity/focus/rejection behavior and no-lost-edits results; new source cannot inherit c86 functional UI pass after field replacement.",
+        "Actual current default/largest accessibility text screenshots, essential text/control reachability and semantic/contrast observations; workers95-97 actual current evidence reviews remain pending.",
+        "Root current-source evidence inventory, documentation/state/ledger checkpoint and source-mapped final acceptance reconciliation."
+      ],
+      "coordinatedIndependentCodeReview": {
+        "agent": "/root/w007_review_coordinator/w099_final_code_review",
+        "statusAtObservation": "In progress; worker099 reported complete bridge/14-test/caller review with no concrete material source defect identified so far. Final code review and current execution are not inferred from preliminary comments.",
+        "separation": "Worker100 inspected requirements, source file mappings, method inventories, state and historical receipts; avoided repeating the broad bridge implementation audit.",
+        "finalCompletion": {
+          "status": "Worker099 finalized: no confirmed material source defect; source-only.",
+          "report": "/tmp/app1-f2fcfcdabdca/workers/w099.json",
+          "observedReportSHA256": "772550d6e7d92b626fbe43be6e8bd3eac9faed4506d8638895592d8fa11324ba",
+          "matchesWorker099ReportedSHA256": true,
+          "reportedSourceChecks": "All six worker094 final hashes match published c855 (bridge, native tests, four callers); only existing UI delta is the added room Restore44 assertion; methods, deadlines, helpers and semantics retained.",
+          "runtimeLimit": "No current native/UI execution pass claimed."
+        }
+      },
+      "limits": [
+        "No test suite, compiler, simulator, benchmark, persistence probe or app runtime was run by worker100. No repository file was changed; only this /tmp report was appended.",
+        "Removed physical-scene/calibration/photographer/device performance/manual device accessibility requirements remain unperformed and outside these code-phase prerequisites.",
+        "App checks are not platform audit/VoiceOver completion. APFS/ext4/tmpfs host observations do not establish power-loss or provider behavior.",
+        "M04-M07 and release readiness remain separate; no publication authorization or M03 promotion follows from static review."
+      ],
+      "outcome": "SUBSTANTIVE C855 PREFLIGHT COMPLETE; no premature M03 acceptance in inspected docs/state. M03 remains unverified pending actual c855 native/UI/visual receipts and final reconciliation."
+    }
+  ],
+  "lastReviewedRevision": "c85544f121cf3781499636527d3b9329ca6affba",
+  "latestOutcome": "SUBSTANTIVE C855 PREFLIGHT COMPLETE; no premature M03 acceptance in inspected docs/state. M03 remains unverified pending actual c855 native/UI/visual receipts and final reconciliation."
+}

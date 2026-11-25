@@ -153,11 +153,13 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         openMeter.tap()
         let balance = app.sliders["previewWhiteBalance"]
         expectValue(balance, "5600 K")
-        for kelvin in [3200, 5600, 6500] {
+        // SwiftUI localizes interpolated integers in both Text and its spoken
+        // label. This workflow pins en_US, whose preset labels use grouping.
+        for (kelvin, displayedKelvin) in [(3200, "3,200"), (5600, "5,600"), (6500, "6,500")] {
             let preset = app.buttons["balance-\(kelvin)"]
-            let state = try control(preset, label: "Balance \(kelvin) kelvin", in: app)
+            let state = try control(preset, label: "Balance \(displayedKelvin) kelvin", in: app)
             XCTAssertEqual(state.isSelected, kelvin == 5600)
-            try text(preset.staticTexts["\(kelvin) K"], equals: "\(kelvin) K", style: .caption1,
+            try text(preset.staticTexts["\(displayedKelvin) K"], equals: "\(displayedKelvin) K", style: .caption1,
                      category: category, in: app, weight: .medium, monospacedDigits: true)
             if kelvin == 5600 { try selectedCheckmark(in: preset) }
         }

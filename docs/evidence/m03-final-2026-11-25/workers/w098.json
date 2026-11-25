@@ -1,0 +1,956 @@
+{
+  "id": "098",
+  "task": "Independently review final core Debug/Release and write-failure/interruption evidence, exact command/revision correspondence; extend when macOS/native receipts arrive.",
+  "canonicalAgent": "/root/w007_review_coordinator/w098_final_core_evidence",
+  "inspectedRevision": "c86fadd867322b816f400b003de461e0e418dc52",
+  "observedHEAD": "24adb70d685acd896e131c3f1950fc8e31dcf93e",
+  "headSourceRelationship": "Observed HEAD 24adb70d685acd896e131c3f1950fc8e31dcf93e changes agents metadata and docs/evidence only relative to c86fadd; reviewed source is unchanged.",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "scripts/probe-atomic-library-write.swift",
+    "scripts/probe_atomic_library_write.py",
+    "scripts/probe_library_commit_interruption.py",
+    "scripts/run_atomic_library_write_probe.py",
+    "scripts/probe-library-commit-interposer.c",
+    "scripts/benchmark-study.swift",
+    ".github/workflows/ios-prototype.yml",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-atomic-linux.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-atomic-linux/atomic-library-write-linux",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-core.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-core",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-core-job.log",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c86fadd/ci-core/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c86fadd/ci-core/render-comparison.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-atomic-macos.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-atomic-macos/atomic-library-write-macos",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-followup-ci-service.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-core.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-atomic-linux.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-atomic-macos.zip",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/ci-core/receipt.json",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c85544f/ci-macos-atomic/receipt.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-atomic-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-core-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-macos-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-packet-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-ci-service.json",
+    "/tmp/app1-f2fcfcdabdca/workers/w098-c855-job-log-service.json"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "artifact inspection, not execution",
+      "check": "ZIP integrity and extracted byte binding",
+      "result": "Atomic archive SHA256 matches supplied checksum and GitHub upload log; all 101 archived files match extraction. Core archive SHA256 matches supplied checksum and upload log; all 35 archived files match extraction."
+    },
+    {
+      "kind": "source and receipt inspection",
+      "check": "Atomic compiled-source, diagnostics, manifest, and binary correspondence",
+      "result": "32 compiled Swift input hashes and 4 diagnostic hashes independently recomputed from git objects at c86fadd and match. Before/after compilation and after-probe source/diagnostic hashes agree. EFBIG working-tree hash map includes the same 32 Swift files plus its Python driver, all matched. All three compile-manifest copies hash-identical. Manifest, EFBIG helper observation, and interruption helper observation agree on binary SHA256. Actual retained interposer binary independently rehashed and matches. Optimized compile command names exactly the 32 input sources; raw compiler version and successful return code agree."
+    },
+    {
+      "kind": "raw receipt and snapshot inspection",
+      "check": "Bounded EFBIG write failure",
+      "result": "RLIMIT_FSIZE 32768 applied to injection child only; raw inject stdout records production save attempted, thrown Cocoa 512, reset-and-immediately-captured errno 27/EFBIG. Prior 3,900-byte/3-project snapshot preserved exactly in after.json and library/projects.json; unrestricted control has complete 242,569-byte/64-project candidate. All four raw phase payloads match result.json and record returnCode 0."
+    },
+    {
+      "kind": "raw receipt and snapshot inspection",
+      "check": "Before-rename interruption",
+      "result": "Exactly one raw renameat witness matches target, hookState before-call, realRenameCalled false. Observed SIGSTOP 19, parent SIGKILL, terminal -9. at-hook.json equals prior bytes; staged-at-hook.json equals complete candidate; final snapshot remains exact prior. Fresh-process verification and unrestricted control succeed."
+    },
+    {
+      "kind": "raw receipt and snapshot inspection",
+      "check": "After-rename interruption",
+      "result": "Exactly one raw renameat witness matches target, hookState after-success, realRenameCalled true and realReturnCode 0. Observed SIGSTOP 19, parent SIGKILL, terminal -9. at-hook.json, after.json and final library equal all242,569 candidate bytes and 64 complete candidate records. Prior-only flags are correctly false in verify-candidate; fresh-process reopen is the complete candidate."
+    },
+    {
+      "kind": "raw receipt and snapshot inspection",
+      "check": "Rename EIO rejection",
+      "result": "Exactly one raw renameat witness matches target, realRenameCalled false, returnedErrno 5, hookState rejected. Save raw stdout shows throw with reset/immediate errno 5; prior bytes and complete prior snapshot remain unchanged. Verification/control phases succeed."
+    },
+    {
+      "kind": "independent JSON and byte comparison",
+      "check": "IDs, unrelated records, and retained file inventory across all four scenarios",
+      "result": "Recomputed every listed file size and SHA256, all matching. Prior activeID 00000001-0000-4000-8000-000000000000 remains unchanged. Both unrelated IDs ending 000001 and 000002 preserve their complete records across prior/candidate/final; prior ID set retained and final IDs unique. Each unrestricted control exactly equals candidate bytes. All raw phase JSON and three hook JSONL payloads match their receipt copies."
+    },
+    {
+      "kind": "raw filesystem observation inspection",
+      "check": "All nine actual target observations",
+      "result": "Output directory plus eight actual library/control files each have successful findmnt command and matching raw stdout. All nine independently resolve to ext4 at mount /, source /dev/nvme0n1p1, major:minor 259:1. Recorded st_dev 66305 decodes to 259:1 and agrees with mount device; target identity is unchanged during each observation; all stderr logs empty. No inheritance from parent claim."
+    },
+    {
+      "kind": "executed evidence review, no rerun",
+      "check": "Core Debug and Release method accounting",
+      "result": "Exactly 357 distinct started and 357 distinct passed XCTest cases in each log; started/passed sets agree, zero failed or skipped cases, terminal 357 / 0-failure totals in each. Raw pass lines correlate with full job log. Exact commands swift test --jobs 2 and swift test --configuration release --jobs 2 run under set-euo-pipefail at c86fadd. Debug 12.452 s; Release 4.876 s."
+    },
+    {
+      "kind": "executed evidence review, no rerun",
+      "check": "Python tooling and native source parser",
+      "result": "Job log records python3 -m unittest discover -s scripts/tests -p test_*.py, terminal Ran 92 tests in 18.798 s and OK. Swift frontend parser command for App, UITests and NativeTests executes with empty native-syntax.log; this is syntax parsing only, not Apple SDK typechecking/native execution."
+    },
+    {
+      "kind": "artifact and visual inspection",
+      "check": "Twelve actual rendered scene/image pairs",
+      "result": "All 12 names and dimensions agree between manifest, 12 parseable scene JSON files, 12 valid RGB PPMs and raw render log. Each manifest entry passed with zero validation errors and zero unsupported pixels. Viewed all 12 retained images together; found no material geometry/shadow/color/exposure defect in the declared synthetic cases. Warm/3200-white-balance images show blue response; key/fill/rim-only and minus-two-stop cases retain distinct outputs. No physical/calibration claim."
+    },
+    {
+      "kind": "executed numeric-log review",
+      "check": "Shared Float32 kernel and strict precision",
+      "result": "All 6 kernel results PASS with equal invalid counts and zero mask-position mismatches; maximum observed mean channel error 0.0000542535, maximum channel error 1, fraction over 4 equals 0. All 8 strict precision fixtures PASS with explicit max-limit 1, maximum error 0 and exact invalid masks. The near-field kernel case correctly reports 84/84 invalid pixels. These are host shared-kernel results, not actual Metal execution."
+    },
+    {
+      "kind": "raw benchmark and source inspection",
+      "check": "Optimized benchmark workload and percentile accounting",
+      "result": "Eight frame workloads, 12 cancellation probes, 4 visibility workloads. Each frame/visibility workload has 7 finite raw measured samples; every nearest-rank p50/p95 independently recomputed and matched. Frame warm-up durations retained, zero unsupported pixels; source guards every measured image equals warm-up. All 12 probes cancelled. Exact job command compiles benchmark with -O, invokes --samples 7 and c86fadd revision. Host AMD EPYC 9V74, x86_64, Ubuntu 24.04.5, Swift 6.4.3; no portable timing threshold/device-performance inference."
+    },
+    {
+      "kind": "provenance inspection",
+      "check": "Core command, revision, and uploaded artifact correspondence",
+      "result": "Checkout git log, core-environment raw revision, benchmark sourceRevision and atomic manifest all identify c86fadd. All raw environment/render/kernel/precision lines occur in full CI job log. Core artifact ID 15066789397 and atomic ID 15066104543 are finalized with matching ZIP hashes in run 45709267885 log. Parent supplied job 139541710075; job identity itself was not separately queried. No rerun of any suite or probe and no repository edit."
+    }
+  ],
+  "artifacts": {
+    "atomic": {
+      "path": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-atomic-linux.zip",
+      "sha256": "6ec57e40c95e17de4277c79033d33dd001e197ad66b69868c034301942d3e990",
+      "archiveFileCount": 101,
+      "artifactID": 15066104543,
+      "manifestSHA256": "5ed1fa168f8b8c85276e91211b48167b3e862aff412b2e57f733654c6bd31eb1",
+      "helperBinarySHA256": "5c961a7f047147e985ec90ab7747fa2ae9a6d9b3b8ea21d305e3d27464f6c191",
+      "retainedInterposerSHA256": "402a9a650b93c4d7c65eeb5ea6f8b30f7f1362abf9119b8529356218d1107300"
+    },
+    "core": {
+      "path": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-core.zip",
+      "sha256": "3a0a646be0d228aea6cadf278bbfa412559665ed4ff1f9eaee0774e281d6b701",
+      "archiveFileCount": 35,
+      "artifactID": 15066789397,
+      "jobLogSHA256": "c78ac458ffef6ca4024a596578d8b74b82345e3e7c0c46537c23767102ef02ad",
+      "runID": 45709267885,
+      "parentSuppliedJobID": 139541710075
+    },
+    "temporaryVisualContactSheet": "/tmp/app1-f2fcfcdabdca/workers/w098-core-contact.png"
+  },
+  "filesystemObservations": [
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730518,
+        "kind": "directory"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730549,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730556,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730581,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730588,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730612,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730610,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730623,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    },
+    {
+      "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+      "selectedFilesystem": {
+        "deviceMajorMinor": "259:1",
+        "mountPoint": "/",
+        "source": "/dev/nvme0n1p1",
+        "type": "ext4"
+      },
+      "targetStat": {
+        "device": 66305,
+        "deviceMajor": 259,
+        "deviceMinor": 1,
+        "inode": 4730630,
+        "kind": "regular-file"
+      },
+      "rawLogMatched": true,
+      "targetIdentityUnchangedDuringObservation": true
+    }
+  ],
+  "renderFixtures": [
+    "soft",
+    "hard",
+    "warm",
+    "bust-soft",
+    "bust-hard",
+    "bust-side",
+    "key-only-hard",
+    "fill-only-soft",
+    "bust-rim-only",
+    "bust-roll-90",
+    "exposure-minus-two",
+    "white-balance-3200"
+  ],
+  "benchmarkPercentiles": [
+    {
+      "kind": "frames",
+      "name": "sphere-point3-72",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 0.618778,
+      "p95Milliseconds": 0.659559
+    },
+    {
+      "kind": "frames",
+      "name": "sphere-point3-144",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 2.428424,
+      "p95Milliseconds": 2.915737
+    },
+    {
+      "kind": "frames",
+      "name": "sphere-area3-72",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 17.402847,
+      "p95Milliseconds": 18.778548
+    },
+    {
+      "kind": "frames",
+      "name": "sphere-area3-144",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 70.447239,
+      "p95Milliseconds": 70.9191
+    },
+    {
+      "kind": "frames",
+      "name": "bust-point3-72",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 1.71109,
+      "p95Milliseconds": 1.780563
+    },
+    {
+      "kind": "frames",
+      "name": "bust-point3-144",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 6.566135,
+      "p95Milliseconds": 7.96499
+    },
+    {
+      "kind": "frames",
+      "name": "bust-area3-72",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 39.893906,
+      "p95Milliseconds": 41.511155
+    },
+    {
+      "kind": "frames",
+      "name": "bust-area3-144",
+      "visibilityEnabled": null,
+      "p50Milliseconds": 153.328451,
+      "p95Milliseconds": 153.472604
+    },
+    {
+      "kind": "visibility",
+      "name": "bust-point3-receivers",
+      "visibilityEnabled": false,
+      "p50Milliseconds": 0.108521,
+      "p95Milliseconds": 0.115802
+    },
+    {
+      "kind": "visibility",
+      "name": "bust-point3-receivers",
+      "visibilityEnabled": true,
+      "p50Milliseconds": 0.378802,
+      "p95Milliseconds": 0.385342
+    },
+    {
+      "kind": "visibility",
+      "name": "bust-area3-receivers",
+      "visibilityEnabled": false,
+      "p50Milliseconds": 5.432272,
+      "p95Milliseconds": 5.771385
+    },
+    {
+      "kind": "visibility",
+      "name": "bust-area3-receivers",
+      "visibilityEnabled": true,
+      "p50Milliseconds": 24.871902,
+      "p95Milliseconds": 26.958218
+    }
+  ],
+  "limits": [
+    "Swift helper executable was generated in a temporary build directory and is not retained in this archive; binary/source binding is supported by independently verified source hashes and matching compile/runtime hash receipts, not a new direct rehash of the absent helper binary. Retained C interposer was directly rehashed.",
+    "Linux artifact review establishes host EFBIG, owned-process interruption and injected rename-EIO outcomes only; no ENOSPC, physical power-loss, cloud/provider, macOS, iOS or device durability claim.",
+    "Core logs establish Linux execution. Native frontend parse and shared Float32 host harness do not establish Apple SDK compilation, UIKit, actual Metal execution or UI workflow success.",
+    "Current candidate macOS core/atomic and required native/UI receipts have not yet been supplied/reviewed. Their absence remains pending; this report cannot promote M02 or M03 or declare full acceptance."
+  ],
+  "pending": [
+    "Current-candidate macOS core and atomic artifacts/terminal receipts",
+    "Current-candidate required native and UI final receipts, including actual Metal execution; independent review by assigned native reviewer",
+    "Any source revision change requires refreshed affected evidence or explicit unchanged-source justification"
+  ],
+  "outcome": "No material defect found in independently reviewed c86fadd Linux atomic/core artifacts. Their actual executed outcomes pass within the recorded Linux host scope. macOS/native/UI evidence remains pending; no full milestone acceptance.",
+  "followups": [
+    {
+      "review": "Assembled current core packet reconciliation",
+      "reviewedAtUTC": "2026-11-25T22:20:15.109677+00:00",
+      "sourceRevision": "c86fadd867322b816f400b003de461e0e418dc52",
+      "packet": "/workspace/scratch/f2fcfcdabdca/APP1/docs/evidence/m03-final-2026-11-25/validation/source-c86fadd/ci-core",
+      "findings": [],
+      "checks": [
+        "All 17 copied raw files, original ZIPs, logs, and atomic manifests/results are byte-identical to the previously independently verified originals. The two derived JSON files are receipt.json and render-comparison.json.",
+        "receipt.json claims for 357 Debug / 357 Release tests, zero failures, 12.452 / 4.876 seconds, 92 Python tests / 18.798 seconds, 12 renders, 6 shared-Float32 cases, 8 strict precision cases, 8 frame / 12 cancellation / 4 visibility workloads, one warm-up and seven samples, nine Linux filesystem observations, and EFBIG/three interruption scenarios all agree with raw evidence already checked.",
+        "Current Linux environment agrees with raw core-environment.log and benchmark: Swift 6.4.3; Ubuntu 24.04.5 LTS; Python 3.12.3; AMD EPYC 9V74 80-Core Processor; four reported processors and four active processors. No Swift 6.4.2 or prior Intel-host claim is carried into this receipt.",
+        "Reopened both current and prior original core ZIPs. Prior raw environment revision is 4d0c67d258be802f048e74616cabcdf903e2b59d. Independently compared all 12 complete PPM byte strings: each is identical between c86fadd and 4d0c67d. Each SHA256, width, height, unsupportedPixels=0, passed flag, name set, and aggregate allIdentical field agrees with the retained current manifest and render-comparison.json.",
+        "Read-only GitHub job query independently confirms workflow run 45709267885 job 139541710075, name core, status completed, conclusion success; every core step is completed/success. This resolves the initial review limit that job identity/conclusion had not been separately queried.",
+        "Read-only GitHub artifact query independently confirms current run/head SHA c86fadd and matching digests for core artifact 15066789397, Linux atomic artifact 15066104543, and macOS atomic artifact 15068380230. Core and Linux ZIP digest fields in the packet receipt match actual retained bytes and service metadata."
+      ],
+      "receiptSHA256": "56977286bfd5e26842c23688632a8b35e99cf203f2a0b3bd3c45dccfeffd27d0",
+      "renderComparisonSHA256": "8cdbbd00becd52a3eba5c8fade6d8c73b9afe9be940c1d90570315a4e9a1a74e",
+      "priorCoreZIP_SHA256": "194fb5cf416a02fa5ef114d2f824437484667a60bab8ca3da528843827c7c639",
+      "serviceObservationFile": "/tmp/app1-f2fcfcdabdca/workers/w098-followup-ci-service.json",
+      "limits": [
+        "The historical acceptance of the prior M02 images is not re-adjudicated here; the actual current-to-prior PPM byte-equality claim is directly verified.",
+        "Current full native/UI acceptance cannot follow from a successful portable core job."
+      ],
+      "outcome": "No mismatch found in the assembled core receipt or packet against the actual original evidence."
+    },
+    {
+      "review": "Actual current macOS atomic EFBIG artifact",
+      "reviewedAtUTC": "2026-11-25T22:20:15.109677+00:00",
+      "sourceRevision": "c86fadd867322b816f400b003de461e0e418dc52",
+      "archive": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-atomic-macos.zip",
+      "archiveSHA256": "3e0bd0628d67556f87c08c87a0ab3867bd5662b1f2b74a0efcc7d71889521225",
+      "artifactID": 15068380230,
+      "archiveFileCount": 40,
+      "findings": [],
+      "checks": [
+        "Actual ZIP SHA256 equals 3e0bd0628d67556f87c08c87a0ab3867bd5662b1f2b74a0efcc7d71889521225, matching supplied hash and independently fetched GitHub artifact digest; all 40 archived files equal extracted bytes.",
+        "All 32 compiled Swift inputs and both Python diagnostics independently hash-match git objects at c86fadd. Before/after compilation and after-probe hashes agree; raw git revision and manifest/probe revisions agree. Probe working-tree hashes match; no differing compiled source paths. Both compile-manifest copies have identical bytes.",
+        "Optimized successful compile uses exactly the 32 recorded Swift inputs, Apple Swift 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101) from Xcode_26.6. Raw compiler-version stdout matches manifest. Raw xcrun --sdk macosx --show-sdk-path output matches hostSDK.path and the actual -sdk argument: /Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk. Discovery returned 0 with empty stderr. DEVELOPER_DIR points to Xcode_26.6.",
+        "Raw host is Darwin 25.6.0, x86_64, Python 3.14.7; these values remain distinct from the Linux core host. Swift compile and runtime helper observations agree on SHA256 1b26175016d6d7f712056a8660c2dd936b71ec46dc2f41bf08bb469bf90e44b0; wrapper and probe return passed with stable sources.",
+        "RLIMIT_FSIZE 32768 applies only to the injection child. Raw inject JSON shows production save attempted and thrown NSCocoaErrorDomain 512 with underlying NSPOSIXErrorDomain 27/EFBIG; reset/immediately captured errno is also 27. Parent resource limits and signal disposition remain unchanged. All four raw phase payloads equal recorded observed payloads and return 0.",
+        "Independently rehashed every listed snapshot and control file. The 3,900-byte prior, after.json and final library match exactly and contain all 3 prior records. The unrestricted control equals all 242,569 candidate bytes and 64 records. Active ID remains 00000001-0000-4000-8000-000000000000. Both unrelated records ending 000001 and 000002 are unchanged across prior/candidate/final. Fresh-process reopen/control observations agree with actual snapshots.",
+        "Independently parsed each raw df and mount log for the output directory, actual library file, and actual control file. All three command pairs returned 0 with empty stderr; each actual target resolves to APFS /dev/disk1s1 mounted at /System/Volumes/Data with local,journaled,nobrowse,root data options. Target and mount st_dev both equal 16777225; recorded target identity is unchanged during observation.",
+        "commitInterruptionRequested is false; no commitInterruption result or directory exists. This is actual macOS EFBIG evidence only. Before/after-rename interruption and injected rename-EIO scenarios remain established by the Linux artifact, not this macOS artifact."
+      ],
+      "compileManifestSHA256": "b0480f4e53f831f063afd7eb6233824209de3fbf563094b4631dda6d45c8904b",
+      "helperBinarySHA256": "1b26175016d6d7f712056a8660c2dd936b71ec46dc2f41bf08bb469bf90e44b0",
+      "host": {
+        "machine": "x86_64",
+        "python": "3.14.7",
+        "release": "25.6.0",
+        "system": "Darwin"
+      },
+      "compilerVersion": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: x86_64-apple-macosx26.0\n",
+      "hostSDK": {
+        "discovery": {
+          "arguments": [
+            "/usr/bin/xcrun",
+            "--sdk",
+            "macosx",
+            "--show-sdk-path"
+          ],
+          "cwd": "/Users/runner/work/APP1/APP1",
+          "elapsedSeconds": 0.06,
+          "processGroupID": 7287,
+          "returnCode": 0,
+          "stderrPath": "/Users/runner/work/_temp/atomic-library-write-macos/macos-sdk.stderr.log",
+          "stdoutPath": "/Users/runner/work/_temp/atomic-library-write-macos/macos-sdk.stdout.log",
+          "timeoutSeconds": 10
+        },
+        "discoveryArguments": [
+          "/usr/bin/xcrun",
+          "--sdk",
+          "macosx",
+          "--show-sdk-path"
+        ],
+        "environment": {
+          "DEVELOPER_DIR": "/Applications/Xcode_26.6.app/Contents/Developer",
+          "SDKROOT": null,
+          "TOOLCHAINS": null
+        },
+        "name": "macosx",
+        "path": "/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "resolvedPath": "/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+      },
+      "filesystemObservations": [
+        {
+          "target": "/Users/runner/work/_temp/atomic-library-write-macos",
+          "selectedFilesystem": {
+            "mountOptions": [
+              "local",
+              "journaled",
+              "nobrowse",
+              "root data"
+            ],
+            "mountPoint": "/System/Volumes/Data",
+            "source": "/dev/disk1s1",
+            "type": "apfs"
+          },
+          "targetStat": {
+            "device": 16777225,
+            "deviceMajor": 1,
+            "deviceMinor": 9,
+            "inode": 12887835895,
+            "kind": "directory"
+          },
+          "rawDFAndMountMatched": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/Users/runner/work/_temp/atomic-library-write-macos/probe/library/projects.json",
+          "selectedFilesystem": {
+            "mountOptions": [
+              "local",
+              "journaled",
+              "nobrowse",
+              "root data"
+            ],
+            "mountPoint": "/System/Volumes/Data",
+            "source": "/dev/disk1s1",
+            "type": "apfs"
+          },
+          "targetStat": {
+            "device": 16777225,
+            "deviceMajor": 1,
+            "deviceMinor": 9,
+            "inode": 12887836108,
+            "kind": "regular-file"
+          },
+          "rawDFAndMountMatched": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/Users/runner/work/_temp/atomic-library-write-macos/probe/control/projects.json",
+          "selectedFilesystem": {
+            "mountOptions": [
+              "local",
+              "journaled",
+              "nobrowse",
+              "root data"
+            ],
+            "mountPoint": "/System/Volumes/Data",
+            "source": "/dev/disk1s1",
+            "type": "apfs"
+          },
+          "targetStat": {
+            "device": 16777225,
+            "deviceMajor": 1,
+            "deviceMinor": 9,
+            "inode": 12887836115,
+            "kind": "regular-file"
+          },
+          "rawDFAndMountMatched": true,
+          "targetIdentityUnchangedDuringObservation": true
+        }
+      ],
+      "limits": [
+        "The temporary Swift helper executable is absent from the retained archive; independent source hashes and matching build/runtime binary receipts support binding, while a fresh direct helper-binary rehash is unavailable.",
+        "The SDK resolvedPath is a recorded macOS-host resolution; this Linux review verifies raw discovery and compile-argument correspondence and does not attempt to re-resolve that host filesystem path.",
+        "No macOS before/after-rename interruption, injected EIO, device power-loss, ENOSPC, provider behavior, iOS device, or native UI claim follows from this EFBIG-only host run."
+      ],
+      "outcome": "No mismatch or material defect found. Current macOS EFBIG/control persistence evidence passes within its recorded Darwin/APFS scope."
+    },
+    {
+      "review": "Exact c85544f core, Linux atomic, macOS atomic and assembled-packet review",
+      "reviewedAtUTC": "2026-11-25T23:05:17.509881+00:00",
+      "sourceRevision": "c85544f121cf3781499636527d3b9329ca6affba",
+      "observedHEAD": "c85544f121cf3781499636527d3b9329ca6affba",
+      "pathsChangedFromReviewedSourceToHEAD": [],
+      "nonDocumentationPathsChangedFromReviewedSourceToHEAD": [],
+      "workflowRun": 45716080681,
+      "coreJobID": 139562354200,
+      "coreJobConclusion": "success, independently queried from GitHub",
+      "findings": [],
+      "nonmaterialObservations": [
+        "Nonmaterial packaging difference: the retained local job log has one additional final newline; no content differences."
+      ],
+      "checks": [
+        "Recomputed supplied SHA256 values and compared every ZIP member with extraction: core archive 35/35 files and Linux atomic archive 101/101 files match exactly. Current macOS archive 40/40 files also match exactly. Read-only GitHub artifact metadata independently binds all three artifact IDs/digests to run 45716080681 and source c85544f.",
+        "Independently queried core job 139562354200: completed/success, with all steps successful. Fetched that exact job log directly: the supplied local job log equals the service log plus one final newline, with no other content differences. Checkout revision, exact commands, raw test/render/numeric results, artifact IDs and upload digests agree with the reviewed archives.",
+        "Current Linux host is read from its own artifacts: Swift 6.4.2 (swift-6.4.2-RELEASE), Ubuntu 24.04.5 LTS, Linux 7.0.0-1017-azure, Python 3.12.3, AMD EPYC 9V45 96-Core Processor, x86_64, four reported and four active processors. The earlier c86 Swift 6.4.3 / AMD EPYC 9V74 host is historical only.",
+        "Linux atomic: independently rehashed all 32 compiled Swift inputs and 4 diagnostics against git objects at exact c85544f. Source snapshots before/after compilation and after execution agree; the EFBIG working-tree and interruption helper provenance agree. All three manifest copies match. Compile/runtime helper hashes agree; retained interposer was independently rehashed. The -O compile argument source set is exactly the recorded 32 inputs.",
+        "Linux raw EFBIG: injection-only RLIMIT_FSIZE 32768, save attempted and threw, reset/immediate errno 27; Foundation error chain reports Cocoa 512 without a POSIX child. Exact 3,900-byte prior snapshot survives. Before-rename: one target-matched renameat before-call witness, fully staged candidate bytes, SIGSTOP 19 followed by owned SIGKILL/exit -9, exact prior preserved. After-rename: one target-matched after-success witness with real return 0, SIGSTOP 19/owned SIGKILL/exit -9, complete 242,569-byte candidate preserved. Rename-EIO: one target-matched rejected witness, no real rename, returned errno 5, raw save-threw/immediate errno 5, exact prior preserved.",
+        "Recomputed all scenario file hashes/sizes and decoded records. Active ID, all prior IDs, and both unrelated full records remain correct; all unrestricted control files equal complete candidate bytes. All raw setup/control/fresh-reopen JSON payloads and hook JSONL payloads equal receipt copies. Owned process cleanup and unchanged parent resource/signal state are recorded and consistent.",
+        "Independently verified all nine new Linux findmnt/stdout/stat observations, including current inode identities: ext4 at /, source /dev/nvme0n1p1, device 66305 / major:minor 259:1. Every actual target command succeeds, stderr is empty, target/mount devices agree and target identity is unchanged during observation. These are current receipts rather than inherited filesystem claims.",
+        "Core Debug and Release each have 357 unique started and 357 unique passed test methods, equal method sets, zero failed/skipped/missing methods and terminal 357/0 totals. Debug test time 11.543 seconds; Release 6.744 seconds. All raw pass lines occur in the exact job log. Python tooling terminal is 92 tests / 18.658 seconds / OK. Native Swift frontend parse log is empty but remains syntax-only evidence.",
+        "All twelve required actual scene JSONs parse and all twelve PPMs decode at the manifest dimensions. Names, manifest pass flags, zero unsupported pixels, raw render lines and hashes agree. Current PPM and scene JSON bytes are each exactly equal to the previously reviewed c86 outputs, so the earlier visual inspection applies by direct byte equality. No rerender or synthetic replacement was used.",
+        "Six shared-Float32 host comparisons pass: largest mean channel error 0.0000542535, maximum channel error 1, fraction over 4 is zero, invalid-mask mismatches zero, and intentional near-field invalid counts 84/84. Eight strict precision fixtures pass with explicit maximum limit 1, actual maximum error 0, and exact invalid-mask agreement. These host harnesses establish no actual Metal execution.",
+        "Optimized benchmark has 8 frame workloads, 12 observed cancellations and 4 visibility workloads. All frame/visibility workloads retain seven finite raw samples; all p50/p95 values independently recompute with nearest-rank accounting. Frames report zero unsupported pixels and valid warm-ups; every cancellation has consistent requested/observed/finished ordering. Render/benchmark/kernel/precision diagnostic source files are unchanged from the earlier source review; their production checks still require repeated frames to equal warm-up. Timings remain host diagnostics.",
+        "Assembled current core packet: all 17 copied original ZIP/log/manifest/result files are byte-identical to the actual reviewed local originals. Exact receipt counts/timings, current host, numeric maxima, workload counts, filesystem observations, artifact IDs and digests reconcile. The 36 sourceHashChecks contain exactly the 32 compiled inputs plus 4 diagnostics and independently match c85544f. Twelve-entry render comparison matches actual current/prior bytes, dimensions and hashes. Matrix provenance source/output hashes also match retained files.",
+        "Current macOS atomic: independently verified 32 Swift source and 2 Python diagnostic hashes against c85544f, unchanged before/after compilation/execution, identical manifest copies, and matching compile/runtime helper hashes. Actual environment is Apple Swift 6.3.3 from Xcode 26.6, Darwin 25.6.0 x86_64, Python 3.14.7. Raw xcrun discovery and successful optimized compiler -sdk argument agree on MacOSX26.5.sdk.",
+        "macOS raw injection has Cocoa 512 with explicit underlying NSPOSIXErrorDomain 27, reset/immediate errno 27 and production save attempted/thrown. RLIMIT_FSIZE 32768 is confined to the child; parent limits/signals unchanged. Prior/after/final-library bytes are exactly the complete 3,900-byte, 3-record prior; unrestricted control is exactly the 242,569-byte, 64-record candidate. Active identity and both unrelated full records are preserved and all four fresh-process phase payloads match.",
+        "All three current macOS df/mount observations independently resolve the actual output, library and control targets to APFS /dev/disk1s1 at /System/Volumes/Data, with local/journaled/nobrowse/root data options. Target and mount st_dev are 16777224, recorded major/minor 1:8, with current inode identities and unchanged targets. This differs from the historical c86 st_dev 16777225 and is recorded from current evidence.",
+        "Current macOS commitInterruptionRequested is false and there is no interruption result/directory: EFBIG only. Linux before/after-rename and EIO evidence is kept separate. Assembled macOS packet has four exact raw copies; receipt revision/run/artifact/compiler/SDK arguments/host/three-filesystem and 34 source/diagnostic checks reconcile."
+      ],
+      "artifacts": [
+        {
+          "kind": "core",
+          "artifactID": 15069483338,
+          "path": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-core.zip",
+          "sha256": "88aab13c823a048c57868dd694d14f0fd6cb350a03852acdd9f430bddf4084e2",
+          "filesVerified": 35
+        },
+        {
+          "kind": "atomic-linux",
+          "artifactID": 15070206380,
+          "path": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-atomic-linux.zip",
+          "sha256": "7c8590ce77c30bcbbf7c5bb3aa06a467f8f6f3230aa5b7250cbd95911b39edb9",
+          "filesVerified": 101
+        },
+        {
+          "kind": "atomic-macos",
+          "artifactID": 15069708587,
+          "path": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-atomic-macos.zip",
+          "sha256": "db4b4d98d6b87e2031f2d8666de12057243445354a08c4d3684718ff045e524e",
+          "filesVerified": 40
+        }
+      ],
+      "linuxBindingSummary": {
+        "compiledSourceCount": 32,
+        "diagnosticCount": 4,
+        "helperBinarySHA256": "4882ef2d5dd0eb118e128978c1391416602c719a9caa2e2b2ac0d9bc54c2e605",
+        "helperBinaryRetained": false,
+        "compileManifestSHA256": "a15f1cf08833aabcd0345e4b5db9193f740945a0bf46a7887ebb67351a3032bc",
+        "interposerSHA256": "402a9a650b93c4d7c65eeb5ea6f8b30f7f1362abf9119b8529356218d1107300"
+      },
+      "linuxFilesystemObservations": [
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442102,
+            "kind": "directory"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442133,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442140,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442165,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442172,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442196,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442194,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442207,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+          "selectedFilesystem": {
+            "mountPoint": "/",
+            "source": "/dev/nvme0n1p1",
+            "type": "ext4",
+            "deviceMajorMinor": "259:1"
+          },
+          "targetStat": {
+            "device": 66305,
+            "deviceMajor": 259,
+            "deviceMinor": 1,
+            "inode": 9442214,
+            "kind": "regular-file"
+          },
+          "rawVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        }
+      ],
+      "macOSBindingSummary": {
+        "compiledSwiftCount": 32,
+        "diagnosticCount": 2,
+        "helperBinarySHA256": "1b26175016d6d7f712056a8660c2dd936b71ec46dc2f41bf08bb469bf90e44b0",
+        "helperBinaryRetained": false,
+        "compileManifestSHA256": "9fc6c26ac21d485759dcea364d7ade87c656c126bbe2a7ac71c4abbc810fa654",
+        "host": {
+          "machine": "x86_64",
+          "python": "3.14.7",
+          "release": "25.6.0",
+          "system": "Darwin"
+        },
+        "compilerVersion": "Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: x86_64-apple-macosx26.0\n",
+        "hostSDK": {
+          "discovery": {
+            "arguments": [
+              "/usr/bin/xcrun",
+              "--sdk",
+              "macosx",
+              "--show-sdk-path"
+            ],
+            "cwd": "/Users/runner/work/APP1/APP1",
+            "elapsedSeconds": 0.022,
+            "processGroupID": 22453,
+            "returnCode": 0,
+            "stderrPath": "/Users/runner/work/_temp/atomic-library-write-macos/macos-sdk.stderr.log",
+            "stdoutPath": "/Users/runner/work/_temp/atomic-library-write-macos/macos-sdk.stdout.log",
+            "timeoutSeconds": 10
+          },
+          "discoveryArguments": [
+            "/usr/bin/xcrun",
+            "--sdk",
+            "macosx",
+            "--show-sdk-path"
+          ],
+          "environment": {
+            "DEVELOPER_DIR": "/Applications/Xcode_26.6.app/Contents/Developer",
+            "SDKROOT": null,
+            "TOOLCHAINS": null
+          },
+          "name": "macosx",
+          "path": "/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "resolvedPath": "/Applications/Xcode_26.6.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        }
+      },
+      "macOSFilesystemObservations": [
+        {
+          "target": "/Users/runner/work/_temp/atomic-library-write-macos",
+          "selectedFilesystem": {
+            "mountOptions": [
+              "local",
+              "journaled",
+              "nobrowse",
+              "root data"
+            ],
+            "mountPoint": "/System/Volumes/Data",
+            "source": "/dev/disk1s1",
+            "type": "apfs"
+          },
+          "targetStat": {
+            "device": 16777224,
+            "deviceMajor": 1,
+            "deviceMinor": 8,
+            "inode": 12887836828,
+            "kind": "directory"
+          },
+          "rawDFAndMountVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/Users/runner/work/_temp/atomic-library-write-macos/probe/library/projects.json",
+          "selectedFilesystem": {
+            "mountOptions": [
+              "local",
+              "journaled",
+              "nobrowse",
+              "root data"
+            ],
+            "mountPoint": "/System/Volumes/Data",
+            "source": "/dev/disk1s1",
+            "type": "apfs"
+          },
+          "targetStat": {
+            "device": 16777224,
+            "deviceMajor": 1,
+            "deviceMinor": 8,
+            "inode": 12887837011,
+            "kind": "regular-file"
+          },
+          "rawDFAndMountVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        },
+        {
+          "target": "/Users/runner/work/_temp/atomic-library-write-macos/probe/control/projects.json",
+          "selectedFilesystem": {
+            "mountOptions": [
+              "local",
+              "journaled",
+              "nobrowse",
+              "root data"
+            ],
+            "mountPoint": "/System/Volumes/Data",
+            "source": "/dev/disk1s1",
+            "type": "apfs"
+          },
+          "targetStat": {
+            "device": 16777224,
+            "deviceMajor": 1,
+            "deviceMinor": 8,
+            "inode": 12887837018,
+            "kind": "regular-file"
+          },
+          "rawDFAndMountVerified": true,
+          "targetIdentityUnchangedDuringObservation": true
+        }
+      ],
+      "jobLogServiceComparison": {
+        "jobID": 139562354200,
+        "serviceUTF8_SHA256": "f73cc6cd5476b05ef7092b772c7990b40025cd800fc45070372e1129b23be608",
+        "localUTF8_SHA256": "a7fb131f0c1445e296ecf08c9a272adad5a5e56fafa59daa57ca476de0999f9f",
+        "exactlyOneAppendedNewline": true,
+        "allContentPreserved": true,
+        "classification": "Nonmaterial packaging difference: the retained local job log has one additional final newline; no content differences."
+      },
+      "accountingFiles": [
+        "/tmp/app1-f2fcfcdabdca/workers/w098-c855-atomic-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-c855-core-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-c855-macos-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-c855-packet-accounting.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-c855-ci-service.json",
+        "/tmp/app1-f2fcfcdabdca/workers/w098-c855-job-log-service.json"
+      ],
+      "limits": [
+        "Temporary Swift helper executables are not retained in the Linux/macOS ZIPs; source hashes and compile/runtime hash receipts establish the recorded binding, while a fresh direct helper-binary hash is unavailable. The retained Linux C interposer was rehashed.",
+        "Current macOS portable core raw tests and final native/UI/Metal receipts have not been reviewed. The observed unsigned Debug/Release app artifact uploads are build artifacts, not native unit or UI test outcomes.",
+        "The parent-specified 132 native and 35 required UI methods remain pending final exact method accounting; this report asserts no native/Metal/full M02/M03 acceptance.",
+        "EFBIG/process interruption/injected EIO on recorded hosts do not establish ENOSPC, device power-loss or provider behavior. No suite/probe/renderer was rerun and no repository source or documentation was edited."
+      ],
+      "outcome": "No material defect or receipt mismatch found for exact c85544f core, Linux atomic and macOS EFBIG evidence; one nonmaterial extra trailing newline in the supplied job log is recorded. This supersedes c86 as the current review revision while preserving the full earlier chronology. Native/UI/Metal and full acceptance remain unverified."
+    }
+  ],
+  "reportChronology": "Initial root-level tests/outcome/pending and earlier followups are preserved historical c86 reviews. The latest followup plus currentInspectedRevision/currentOutcome/currentPending governs current c855 evidence; prior macOS or native claims are never implicitly carried to c855.",
+  "currentOutcome": "Exact c85544f core (357 Debug / 357 Release / 92 tooling), all 12 renders, 6 kernel / 8 precision cases, all benchmark workloads, Linux EFBIG/interruption/EIO and macOS EFBIG evidence independently verified; assembled packets reconcile with no material mismatch. Current host-specific evidence supersedes c86 as latest. Required native/UI/Metal final receipts remain unverified; no full milestone acceptance.",
+  "currentPending": [
+    "Exact c85544f final native unit results and finalized method accounting for the parent-specified 132 required methods, including actual Metal execution.",
+    "Exact c85544f final required UI shard results and finalized method accounting for the parent-specified 35 required methods; unsigned app artifact uploads are not UI outcomes.",
+    "Exact c85544f final macOS portable core raw test logs/receipt review; macOS atomic EFBIG is now independently verified and no longer pending.",
+    "Any subsequent source change requires refreshed affected evidence or explicit unchanged-source justification."
+  ],
+  "currentLimits": [
+    "Temporary Swift helper executables are not retained in the Linux/macOS ZIPs; source hashes and compile/runtime hash receipts establish the recorded binding, while a fresh direct helper-binary hash is unavailable. The retained Linux C interposer was rehashed.",
+    "Current macOS portable core raw tests and final native/UI/Metal receipts have not been reviewed. The observed unsigned Debug/Release app artifact uploads are build artifacts, not native unit or UI test outcomes.",
+    "The parent-specified 132 native and 35 required UI methods remain pending final exact method accounting; this report asserts no native/Metal/full M02/M03 acceptance.",
+    "EFBIG/process interruption/injected EIO on recorded hosts do not establish ENOSPC, device power-loss or provider behavior. No suite/probe/renderer was rerun and no repository source or documentation was edited."
+  ],
+  "currentInspectedRevision": "c85544f121cf3781499636527d3b9329ca6affba",
+  "currentObservedHEAD": "c85544f121cf3781499636527d3b9329ca6affba"
+}

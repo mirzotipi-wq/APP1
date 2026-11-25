@@ -1,0 +1,2395 @@
+{
+  "id": "097",
+  "canonicalAgent": "/root/w007_review_coordinator/w097_final_native_accounting",
+  "task": "Initial independent actual C855 native/Metal accounting and hosted UITextField failure diagnosis; review proposed native-geometry oracle before implementation. Final native acceptance remains pending; same context may resume for final runtime.",
+  "files": [
+    "NativeTests/BoundedFileReaderTests.swift",
+    "NativeTests/LightingPlanPDFTests.swift",
+    "NativeTests/ProjectDocumentIOTests.swift",
+    "NativeTests/ProjectLibraryPresentationTests.swift",
+    "NativeTests/ProjectStoreOperationTests.swift",
+    "NativeTests/ReferencePhotoTests.swift",
+    "NativeTests/RoomRotationReadoutTests.swift",
+    "NativeTests/SpatialEmitterGeometryTests.swift",
+    "NativeTests/SpatialPreviewTests.swift",
+    "NativeTests/StudioPaletteTests.swift",
+    "NativeTests/StudioSliderEditingTests.swift",
+    "NativeTests/StudioSliderTrackingTests.swift",
+    "NativeTests/StudioTextFieldTests.swift",
+    "NativeTests/StudioTrackingSliderTests.swift",
+    "NativeTests/StudyRenderCacheTests.swift",
+    "NativeTests/StudyRendererTests.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/StudioTextField.swift",
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "scripts/native_test_shards.py",
+    "/tmp/app1-f2fcfcdabdca/workers/worker-brief.md",
+    "/tmp/app1-f2fcfcdabdca/workers/coordinator-plan.json (entry 097 only)",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-native.zip",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-native/native-tests.log",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-native/native-method-accounting.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-native/root-method-accounting.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/native/receipt.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/github-observation.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-ax/native-tests.log",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-ax/artifacts/native-attachments/08A788E9-EBE8-4520-9767-A8D3295F9F9D.txt",
+    "/tmp/app1-f2fcfcdabdca/evidence/c85544f-ax/artifacts/native-attachments/4A5B6CA0-26DA-44A7-8029-22941A6BB4CE.txt"
+  ],
+  "findings": [
+    {
+      "status": "confirmed_actual_failed_run",
+      "severity": "required native acceptance blocker",
+      "location": "NativeTests/StudioTextFieldTests.swift:84-117, direct getter assertion at line 106 in exact C855",
+      "observation": "132 methods ran: 131 passed and one failed. The hosted native-and-accessibility-frame method records two XCTAssertGreaterThanOrEqual failures, 0.0 < 44.0, at line 106, one for each requested text size. The test continues through both iterations. The bounds-height, width, font-line-height/font-growth, enabled-state and single-native-input assertions record no failures. Two assertion failures are one failing test method, not two failing methods.",
+      "disposition": "Preserve the failed run exactly. Do not synthesize a pass or carry it as final native acceptance."
+    },
+    {
+      "status": "source_review_and_primary_contract",
+      "location": "UIWindow(frame:) host in NativeTests/StudioTextFieldTests.swift; UIKit accessibilityFrame contract",
+      "observation": "The unit test creates a UIWindow(frame:) and does not explicitly associate a UIWindowScene. The production UITextField isAccessibilityElement is true and has native minimum sizing; source does not override or synthesize accessibilityFrame. Apple defines accessibilityFrame as screen-coordinate accessibility geometry and says UIView subclasses provide this information by default, so reading it is a legitimate API in principle. This test provides no independent evidence that its direct in-process getter represents the accessibility service snapshot used by the running app.",
+      "hypothesis": "Scene-less hosting and/or accessibility runtime initialization could explain the zero getter. Neither this artifact nor the cited public API contract proves which mechanism caused it. No local UIKit runtime is available to establish causation.",
+      "recommendation": "Accept the root proposal as a narrower native layout test: rename the method and commentary to actual native bounds/screen-coordinate layout; assert field.window === window; preserve the strict >=44 minimum, width >150, exact default size check, font growth/line height, enabled state and single native input. UIAccessibility.convertToScreenCoordinates(field.bounds, in: field) tests native geometry transformed into screen coordinates. It must never be described as an actual accessibility snapshot. Preserve the external XCUIElement snapshot, containment, hittability and 44-point checks. If retaining a direct-getter accessibility claim, prefer a connected foreground UIWindowScene host and verify the resulting runtime; scene association is not a proven fix and is not established as necessary for the pure geometry assertion. Do not force an accessibilityFrame override or enable private accessibility APIs merely to satisfy the test."
+    },
+    {
+      "status": "confirmed_external_partial_execution",
+      "location": "C855 AX observed-frames attachment 08A788E9-EBE8-4520-9767-A8D3295F9F9D.txt and native-tests.log",
+      "observation": "The actual default-size app accessibility snapshot records precisionValue frame (32.0, 256.0, 310.66666666666663, 44.0), enabled true, value 900, label Intensity in cd. The log then records entry of 4321.5, Apply, exact displayed values, Undo to 900, Redo to 4321.5, reopened draft and Cancel preserving the applied value. The sole AX method later fails at its label oracle expecting Balance 3200 kelvin while the app exposes Balance 3,200 kelvin.",
+      "limits": "The largest accessibility text-size iteration, project library and naming sections were not reached in this run. The default-size measurement supports only that observed portion, not a full AX pass or largest-size acceptance."
+    },
+    {
+      "status": "confirmed_actual_metal_execution",
+      "observation": "All three required Metal methods have one ordered start and one pass with no skip. The exact source guards no-device conditions with XCTSkip; parity constructs MetalStudyRenderer and evaluates six fixtures, and the other two methods assert the .metal backend. Runtime log records all six fixture parity metrics and Metal compute engine selection. These are actual simulator Metal backend checks, not the portable shared-kernel harness.",
+      "limits": "This does not establish physical iPhone performance, thermal behavior, calibration or physical-device GPU behavior."
+    },
+    {
+      "status": "reviewed_concrete_fix_no_static_blocker",
+      "location": "Current diff in NativeTests/StudioTextFieldTests.swift and UITests/StudioAppAccessibilityUITests.swift, based on C855",
+      "observation": "Renamed testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates. Foreground UIWindowScene required by XCTUnwrap, UIWindow(windowScene:) used, field.window/window.windowScene/non-hidden attachment checked, actual bounds converted using UIAccessibility.convertToScreenCoordinates. Strict height>=44 both locally and in screen coordinates and native/screen width>150 remain. Existing font-line-height/default-size/font-growth/enabled/single-native-input assertions remain. This is correctly labelled native layout, not an actual accessibility snapshot.",
+      "verdict": "No material static issue found; authorized root publication may proceed. This is not an executed pass."
+    }
+  ],
+  "tests": {
+    "reviewMode": "Read-only evidence/source/primary-documentation review. No test suites, UIKit probes or Apple builds executed by this worker. Only this report was written.",
+    "inspectedSourceCommit": "c85544f121cf3781499636527d3b9329ca6affba",
+    "headObservedBeforeConcurrentEdits": "c85544f121cf3781499636527d3b9329ca6affba",
+    "concurrentWork": "Root owns unrelated documentation and UITest oracle changes; all historical method inventory and source hashes came from git show exact C855, never the evolving working tree.",
+    "workflowRun": 45716080681,
+    "jobID": 139564013051,
+    "artifactID": 15071790479,
+    "jobConclusion": "failure",
+    "provenance": "Local recorded GitHub observation binds artifact digest to workflow head SHA; retained macos-environment.log ends with exact C855 source SHA. No fresh remote API query was performed by this worker.",
+    "archive": {
+      "path": "/tmp/app1-f2fcfcdabdca/evidence/c85544f-native.zip",
+      "bytes": 64566826,
+      "sha256": "bfb7be5a859238bc667d624515c1816533ca909ca007cc5608bc4643f13d0da1",
+      "members": 35,
+      "crcIntegrity": "passed",
+      "nestedResult": {
+        "member": "artifacts/native-results.zip",
+        "bytes": 64373520,
+        "sha256": "fc2a820f728a9c03e2c0ba181507c7a324deccc122782494b161c870b7fdb9e0",
+        "members": 1367,
+        "root": "NativeTests.xcresult",
+        "crcIntegrity": "passed",
+        "resultContentDecodedWithXcresulttool": false
+      }
+    },
+    "retainedPacketChecks": {
+      "sourceHashesVerified": 27,
+      "sourceHashes": {
+        "NativeTests/BoundedFileReaderTests.swift": "748cacfa66e0a9ace34e7ba1bf4c8fe05a1093bac8d7d6612b319ffae1a22dc8",
+        "NativeTests/LightingPlanPDFTests.swift": "de2f570768b6ca27633b0adcfb762b39491a5496c6971cb97b30d09f49badd61",
+        "NativeTests/ProjectDocumentIOTests.swift": "c97fa8adce643b32cc759e1c260e805a27aba9dcce82670e5f840e8c14fa3a39",
+        "NativeTests/ProjectLibraryPresentationTests.swift": "d12585d71d0fa5a05b08d37b59c6f43f6e08825b866a4b99f89cc6c147f908e8",
+        "NativeTests/ProjectStoreOperationTests.swift": "0b529ef1265f39b94f337713cea2617b3240cd046f78c1345269320d480bde13",
+        "NativeTests/ReferencePhotoTests.swift": "cfd30a1f0ae5c416ea1f5fa01bd097d458948a1de3784cd2da9701d868241bee",
+        "NativeTests/RoomRotationReadoutTests.swift": "b54395e1b98e4e551306c1996665d6bb1bf1dd78d9c9a497c294e25e9c6e9f72",
+        "NativeTests/SpatialEmitterGeometryTests.swift": "537f91ff41b0ce69cb3aea882fa8b3d62e99fc5b4d71fa58838d973bc26b2318",
+        "NativeTests/SpatialPreviewTests.swift": "c7d676da2763406998efc2491743c0185dd1c7f4767101eda2beb9fc2812895a",
+        "NativeTests/StudioPaletteTests.swift": "8274a4f39b22768b1bba28e42b1bcc632fd058eae9244a537f983a035d5e5462",
+        "NativeTests/StudioSliderEditingTests.swift": "1b1edc611bd2ddd918b555c675d5c898025ffab765dc67b6baf961f49d36f4e9",
+        "NativeTests/StudioSliderTrackingTests.swift": "71f03868e42cd8a58ccb2aac9dff81e8c940c54a018b6850e29f34e49c9b7fc1",
+        "NativeTests/StudioTextFieldTests.swift": "aca8835a9edee06e600ddacdf15bcfabb65013cdd95def3f95dce64a20b3027a",
+        "NativeTests/StudioTrackingSliderTests.swift": "63dd4eb946922e62bf5c99b327b208b3e31bacaa246627b1a66bbc4e45578e4a",
+        "NativeTests/StudyRenderCacheTests.swift": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3",
+        "NativeTests/StudyRendererTests.swift": "e0b3bfca7d4b8098f783319cf076052b4ebd9a552561898460800d72ac005e30",
+        "UITests/AccessibilityAuditUITests.swift": "51274546aee8d1470210f6fe6243b85232467ca793678595723070ea703c905c",
+        "UITests/LightingPlanExportUITests.swift": "deff32924f65c6d89678de9457b5c4878e34147727c61dc19ab3cf9f7dbd3766",
+        "UITests/ManualRoomPlacementUITests.swift": "b4d93fbd3494041af46dc1379fd12255b1450b88cf1754834208a1d4aa274207",
+        "UITests/PrecisionEditingUITests.swift": "31479ea14d714d6642a967febe61b1369a5d48b557649f0020e773ce37c75c0b",
+        "UITests/ProjectLibraryUITests.swift": "2169b7e04a892f13542fa3d45f94f85deb16cd67c0481a4104db81bdd9a3f1cd",
+        "UITests/ReferenceComparisonUITests.swift": "a352a3419e02a9b58acb476ed62d713267f245634d76a549671009ac9fb38b5b",
+        "UITests/StudioAppAccessibilityUITests.swift": "c26d7bbd0e7a962fda36c0266f97404c7923808ab5d0bf7dd52eabe8dc201cd1",
+        "UITests/StudioContentReachability.swift": "0469bbc357c9b4efe9ef326a5e72a4eac2724808bbb8fdc9053b391b52524efa",
+        "UITests/StudioOpticsUITests.swift": "518df11c68b40634867df9f9e1514f4c76d6fd214de903fb3226361793cd2fb7",
+        "UITests/StudioSmokeTests.swift": "0df18cc60f167d8822cc424cf64a4d4336fa9b8bab2db6427af7d2ae354d8bb3",
+        "scripts/native_test_shards.py": "2b1d2f47b7a519d519d5bc0a0fc1c7fe202481f37abfbc3d5687b0945d1b0f45"
+      },
+      "retainedFilesHashAndSizeVerified": 5,
+      "retainedFilesByteIdenticalToOuterZip": 4,
+      "rootReportEqualsCIExceptLogPath": true
+    },
+    "sourceMethodInventory": {
+      "files": 16,
+      "uniqueMethods": 132,
+      "matchesCIExpected": true
+    },
+    "independentRawLogAccounting": {
+      "events": 264,
+      "orderedMethodSequences": 132,
+      "started": 132,
+      "passed": 131,
+      "failed": 1,
+      "skipped": 0,
+      "unstarted": 0,
+      "unexpected": 0,
+      "duplicateOrMisorderedSequences": 0,
+      "failedAssertionCount": 2,
+      "invalidInPublishedAccounting": 1,
+      "invalidExplanation": "The existing accounting script fails closed for the sole started->failed sequence; it is not an additional failed method."
+    },
+    "bridgeMethods": {
+      "expected": 14,
+      "started": 14,
+      "passed": 13,
+      "failed": 1,
+      "skipped": 0,
+      "unstarted": 0
+    },
+    "paletteMethods": {
+      "expected": 5,
+      "started": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "unstarted": 0
+    },
+    "requiredMetalMethods": [
+      {
+        "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "events": [
+          {
+            "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+            "event": "started",
+            "line": 488
+          },
+          {
+            "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+            "event": "passed",
+            "line": 493,
+            "duration": "1.859 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+        "events": [
+          {
+            "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+            "event": "started",
+            "line": 507
+          },
+          {
+            "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+            "event": "passed",
+            "line": 516,
+            "duration": "6.193 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+        "events": [
+          {
+            "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+            "event": "started",
+            "line": 517
+          },
+          {
+            "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+            "event": "passed",
+            "line": 520,
+            "duration": "1.893 seconds"
+          }
+        ]
+      }
+    ],
+    "actualMetalParityLines": [
+      "Validated engine selected Metal compute",
+      "Metal hard: mean 0.0, max 0, outliers 0.0, invalid match true",
+      "Metal soft: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true",
+      "Metal warm-rotated: mean 0.0, max 0, outliers 0.0, invalid match true",
+      "Metal dark: mean 0.0, max 0, outliers 0.0, invalid match true",
+      "Metal near-field: mean 0.0, max 0, outliers 0.0, invalid match true",
+      "Metal translated: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true"
+    ],
+    "host": {
+      "os": "macOS 26.6.1 (25G76), x86_64",
+      "xcode": "26.6 (17F113)",
+      "swift": "6.3.3",
+      "simulatorSDK": "iOS 26.5",
+      "configuration": "Debug",
+      "destination": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+    },
+    "originalXcodebuildCommand": "/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" test-without-building",
+    "terminalOutcome": "** TEST EXECUTE FAILED **; Executed 132 tests, with 2 assertion failures (0 unexpected).",
+    "orderedMethodOutcomes": [
+      {
+        "method": "BoundedFileReaderTests.testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+            "event": "started",
+            "line": 29
+          },
+          {
+            "method": "BoundedFileReaderTests.testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+            "event": "passed",
+            "line": 30,
+            "duration": "0.018 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testCheckpointCannotSuppressActualTaskCancellation",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testCheckpointCannotSuppressActualTaskCancellation",
+            "event": "started",
+            "line": 31
+          },
+          {
+            "method": "BoundedFileReaderTests.testCheckpointCannotSuppressActualTaskCancellation",
+            "event": "passed",
+            "line": 32,
+            "duration": "0.054 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+            "event": "started",
+            "line": 33
+          },
+          {
+            "method": "BoundedFileReaderTests.testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+            "event": "passed",
+            "line": 34,
+            "duration": "0.107 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+            "event": "started",
+            "line": 35
+          },
+          {
+            "method": "BoundedFileReaderTests.testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+            "event": "passed",
+            "line": 36,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+            "event": "started",
+            "line": 37
+          },
+          {
+            "method": "BoundedFileReaderTests.testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+            "event": "passed",
+            "line": 38,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testMetadataPreflightHonorsActualTaskCancellation",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testMetadataPreflightHonorsActualTaskCancellation",
+            "event": "started",
+            "line": 39
+          },
+          {
+            "method": "BoundedFileReaderTests.testMetadataPreflightHonorsActualTaskCancellation",
+            "event": "passed",
+            "line": 40,
+            "duration": "0.344 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+            "event": "started",
+            "line": 41
+          },
+          {
+            "method": "BoundedFileReaderTests.testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+            "event": "passed",
+            "line": 42,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+            "event": "started",
+            "line": 43
+          },
+          {
+            "method": "BoundedFileReaderTests.testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+            "event": "passed",
+            "line": 44,
+            "duration": "0.008 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+            "event": "started",
+            "line": 45
+          },
+          {
+            "method": "BoundedFileReaderTests.testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+            "event": "passed",
+            "line": 46,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+            "event": "started",
+            "line": 47
+          },
+          {
+            "method": "BoundedFileReaderTests.testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+            "event": "passed",
+            "line": 48,
+            "duration": "0.006 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+            "event": "started",
+            "line": 49
+          },
+          {
+            "method": "BoundedFileReaderTests.testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+            "event": "passed",
+            "line": 50,
+            "duration": "0.203 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testRejectsOversizeBeforeAnyReadCheckpoint",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testRejectsOversizeBeforeAnyReadCheckpoint",
+            "event": "started",
+            "line": 51
+          },
+          {
+            "method": "BoundedFileReaderTests.testRejectsOversizeBeforeAnyReadCheckpoint",
+            "event": "passed",
+            "line": 52,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "BoundedFileReaderTests.testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+        "events": [
+          {
+            "method": "BoundedFileReaderTests.testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+            "event": "started",
+            "line": 53
+          },
+          {
+            "method": "BoundedFileReaderTests.testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+            "event": "passed",
+            "line": 54,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "LightingPlanPDFTests.testEmptySceneStillProducesReadableDiagramAndSchedule",
+        "events": [
+          {
+            "method": "LightingPlanPDFTests.testEmptySceneStillProducesReadableDiagramAndSchedule",
+            "event": "started",
+            "line": 58
+          },
+          {
+            "method": "LightingPlanPDFTests.testEmptySceneStillProducesReadableDiagramAndSchedule",
+            "event": "passed",
+            "line": 59,
+            "duration": "0.099 seconds"
+          }
+        ]
+      },
+      {
+        "method": "LightingPlanPDFTests.testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+        "events": [
+          {
+            "method": "LightingPlanPDFTests.testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+            "event": "started",
+            "line": 60
+          },
+          {
+            "method": "LightingPlanPDFTests.testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+            "event": "passed",
+            "line": 63,
+            "duration": "1.513 seconds"
+          }
+        ]
+      },
+      {
+        "method": "LightingPlanPDFTests.testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+        "events": [
+          {
+            "method": "LightingPlanPDFTests.testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+            "event": "started",
+            "line": 64
+          },
+          {
+            "method": "LightingPlanPDFTests.testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+            "event": "passed",
+            "line": 67,
+            "duration": "0.343 seconds"
+          }
+        ]
+      },
+      {
+        "method": "LightingPlanPDFTests.testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+        "events": [
+          {
+            "method": "LightingPlanPDFTests.testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+            "event": "started",
+            "line": 68
+          },
+          {
+            "method": "LightingPlanPDFTests.testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+            "event": "passed",
+            "line": 69,
+            "duration": "0.286 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+            "event": "started",
+            "line": 73
+          },
+          {
+            "method": "ProjectDocumentIOTests.testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+            "event": "passed",
+            "line": 75,
+            "duration": "0.067 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+            "event": "started",
+            "line": 76
+          },
+          {
+            "method": "ProjectDocumentIOTests.testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+            "event": "passed",
+            "line": 77,
+            "duration": "0.007 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+            "event": "started",
+            "line": 78
+          },
+          {
+            "method": "ProjectDocumentIOTests.testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+            "event": "passed",
+            "line": 79,
+            "duration": "0.007 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+            "event": "started",
+            "line": 80
+          },
+          {
+            "method": "ProjectDocumentIOTests.testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+            "event": "passed",
+            "line": 81,
+            "duration": "0.006 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+            "event": "started",
+            "line": 82
+          },
+          {
+            "method": "ProjectDocumentIOTests.testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+            "event": "passed",
+            "line": 84,
+            "duration": "0.106 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+            "event": "started",
+            "line": 85
+          },
+          {
+            "method": "ProjectDocumentIOTests.testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+            "event": "passed",
+            "line": 86,
+            "duration": "0.014 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testOversizedFileIsRejectedBeforeReadingItsContents",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testOversizedFileIsRejectedBeforeReadingItsContents",
+            "event": "started",
+            "line": 87
+          },
+          {
+            "method": "ProjectDocumentIOTests.testOversizedFileIsRejectedBeforeReadingItsContents",
+            "event": "passed",
+            "line": 88,
+            "duration": "0.009 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+            "event": "started",
+            "line": 89
+          },
+          {
+            "method": "ProjectDocumentIOTests.testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+            "event": "passed",
+            "line": 90,
+            "duration": "0.017 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectDocumentIOTests.testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+        "events": [
+          {
+            "method": "ProjectDocumentIOTests.testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+            "event": "started",
+            "line": 91
+          },
+          {
+            "method": "ProjectDocumentIOTests.testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+            "event": "passed",
+            "line": 92,
+            "duration": "0.007 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+            "event": "started",
+            "line": 96
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+            "event": "passed",
+            "line": 97,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+            "event": "started",
+            "line": 98
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+            "event": "passed",
+            "line": 99,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+            "event": "started",
+            "line": 100
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+            "event": "passed",
+            "line": 101,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+            "event": "started",
+            "line": 102
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+            "event": "passed",
+            "line": 103,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+            "event": "started",
+            "line": 104
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+            "event": "passed",
+            "line": 105,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+            "event": "started",
+            "line": 106
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+            "event": "passed",
+            "line": 107,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+            "event": "started",
+            "line": 108
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+            "event": "passed",
+            "line": 109,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectLibraryPresentationTests.testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars",
+        "events": [
+          {
+            "method": "ProjectLibraryPresentationTests.testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars",
+            "event": "started",
+            "line": 110
+          },
+          {
+            "method": "ProjectLibraryPresentationTests.testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars",
+            "event": "passed",
+            "line": 111,
+            "duration": "0.287 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+            "event": "started",
+            "line": 115
+          },
+          {
+            "method": "ProjectStoreOperationTests.testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+            "event": "passed",
+            "line": 116,
+            "duration": "0.022 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+            "event": "started",
+            "line": 117
+          },
+          {
+            "method": "ProjectStoreOperationTests.testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+            "event": "passed",
+            "line": 119,
+            "duration": "0.013 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+            "event": "started",
+            "line": 120
+          },
+          {
+            "method": "ProjectStoreOperationTests.testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+            "event": "passed",
+            "line": 121,
+            "duration": "0.008 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+            "event": "started",
+            "line": 122
+          },
+          {
+            "method": "ProjectStoreOperationTests.testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+            "event": "passed",
+            "line": 123,
+            "duration": "0.011 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+            "event": "started",
+            "line": 124
+          },
+          {
+            "method": "ProjectStoreOperationTests.testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+            "event": "passed",
+            "line": 125,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+            "event": "started",
+            "line": 126
+          },
+          {
+            "method": "ProjectStoreOperationTests.testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+            "event": "passed",
+            "line": 127,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+            "event": "started",
+            "line": 128
+          },
+          {
+            "method": "ProjectStoreOperationTests.testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+            "event": "passed",
+            "line": 132,
+            "duration": "8.862 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+            "event": "started",
+            "line": 133
+          },
+          {
+            "method": "ProjectStoreOperationTests.testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+            "event": "passed",
+            "line": 134,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+            "event": "started",
+            "line": 135
+          },
+          {
+            "method": "ProjectStoreOperationTests.testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+            "event": "passed",
+            "line": 136,
+            "duration": "0.011 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+            "event": "started",
+            "line": 137
+          },
+          {
+            "method": "ProjectStoreOperationTests.testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+            "event": "passed",
+            "line": 138,
+            "duration": "0.008 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+            "event": "started",
+            "line": 139
+          },
+          {
+            "method": "ProjectStoreOperationTests.testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+            "event": "passed",
+            "line": 140,
+            "duration": "0.011 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+            "event": "started",
+            "line": 141
+          },
+          {
+            "method": "ProjectStoreOperationTests.testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+            "event": "passed",
+            "line": 143,
+            "duration": "0.118 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+            "event": "started",
+            "line": 144
+          },
+          {
+            "method": "ProjectStoreOperationTests.testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+            "event": "passed",
+            "line": 145,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+            "event": "started",
+            "line": 146
+          },
+          {
+            "method": "ProjectStoreOperationTests.testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+            "event": "passed",
+            "line": 147,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+            "event": "started",
+            "line": 148
+          },
+          {
+            "method": "ProjectStoreOperationTests.testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+            "event": "passed",
+            "line": 149,
+            "duration": "0.071 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ProjectStoreOperationTests.testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects",
+        "events": [
+          {
+            "method": "ProjectStoreOperationTests.testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects",
+            "event": "started",
+            "line": 150
+          },
+          {
+            "method": "ProjectStoreOperationTests.testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects",
+            "event": "passed",
+            "line": 151,
+            "duration": "0.026 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+            "event": "started",
+            "line": 155
+          },
+          {
+            "method": "ReferencePhotoTests.testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+            "event": "passed",
+            "line": 157,
+            "duration": "0.188 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+            "event": "started",
+            "line": 158
+          },
+          {
+            "method": "ReferencePhotoTests.testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+            "event": "passed",
+            "line": 159,
+            "duration": "0.010 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testFileRepresentationConsumesOnlyItsTemporaryFile",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testFileRepresentationConsumesOnlyItsTemporaryFile",
+            "event": "started",
+            "line": 160
+          },
+          {
+            "method": "ReferencePhotoTests.testFileRepresentationConsumesOnlyItsTemporaryFile",
+            "event": "passed",
+            "line": 161,
+            "duration": "0.063 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testFileSizeBoundBeforeDecode",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testFileSizeBoundBeforeDecode",
+            "event": "started",
+            "line": 162
+          },
+          {
+            "method": "ReferencePhotoTests.testFileSizeBoundBeforeDecode",
+            "event": "passed",
+            "line": 163,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testRejectsMalformedAndOversizedInputs",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testRejectsMalformedAndOversizedInputs",
+            "event": "started",
+            "line": 164
+          },
+          {
+            "method": "ReferencePhotoTests.testRejectsMalformedAndOversizedInputs",
+            "event": "passed",
+            "line": 166,
+            "duration": "0.009 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testRotatesReducesAndRemovesSourceMetadata",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testRotatesReducesAndRemovesSourceMetadata",
+            "event": "started",
+            "line": 167
+          },
+          {
+            "method": "ReferencePhotoTests.testRotatesReducesAndRemovesSourceMetadata",
+            "event": "passed",
+            "line": 168,
+            "duration": "0.168 seconds"
+          }
+        ]
+      },
+      {
+        "method": "ReferencePhotoTests.testTransparentAndPartialAlphaRemainExcludedFromReferenceTones",
+        "events": [
+          {
+            "method": "ReferencePhotoTests.testTransparentAndPartialAlphaRemainExcludedFromReferenceTones",
+            "event": "started",
+            "line": 169
+          },
+          {
+            "method": "ReferencePhotoTests.testTransparentAndPartialAlphaRemainExcludedFromReferenceTones",
+            "event": "passed",
+            "line": 170,
+            "duration": "0.016 seconds"
+          }
+        ]
+      },
+      {
+        "method": "RoomRotationReadoutTests.testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+        "events": [
+          {
+            "method": "RoomRotationReadoutTests.testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+            "event": "started",
+            "line": 174
+          },
+          {
+            "method": "RoomRotationReadoutTests.testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+            "event": "passed",
+            "line": 175,
+            "duration": "0.051 seconds"
+          }
+        ]
+      },
+      {
+        "method": "RoomRotationReadoutTests.testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+        "events": [
+          {
+            "method": "RoomRotationReadoutTests.testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+            "event": "started",
+            "line": 176
+          },
+          {
+            "method": "RoomRotationReadoutTests.testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+            "event": "passed",
+            "line": 179,
+            "duration": "16.880 seconds"
+          }
+        ]
+      },
+      {
+        "method": "RoomRotationReadoutTests.testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits",
+        "events": [
+          {
+            "method": "RoomRotationReadoutTests.testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits",
+            "event": "started",
+            "line": 180
+          },
+          {
+            "method": "RoomRotationReadoutTests.testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits",
+            "event": "passed",
+            "line": 181,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialEmitterGeometryTests.testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+        "events": [
+          {
+            "method": "SpatialEmitterGeometryTests.testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+            "event": "started",
+            "line": 185
+          },
+          {
+            "method": "SpatialEmitterGeometryTests.testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+            "event": "passed",
+            "line": 187,
+            "duration": "0.074 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialEmitterGeometryTests.testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+        "events": [
+          {
+            "method": "SpatialEmitterGeometryTests.testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+            "event": "started",
+            "line": 188
+          },
+          {
+            "method": "SpatialEmitterGeometryTests.testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+            "event": "passed",
+            "line": 190,
+            "duration": "0.011 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialEmitterGeometryTests.testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+        "events": [
+          {
+            "method": "SpatialEmitterGeometryTests.testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+            "event": "started",
+            "line": 191
+          },
+          {
+            "method": "SpatialEmitterGeometryTests.testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+            "event": "passed",
+            "line": 193,
+            "duration": "0.355 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialEmitterGeometryTests.testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+        "events": [
+          {
+            "method": "SpatialEmitterGeometryTests.testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+            "event": "started",
+            "line": 194
+          },
+          {
+            "method": "SpatialEmitterGeometryTests.testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+            "event": "passed",
+            "line": 196,
+            "duration": "0.008 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialEmitterGeometryTests.testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+        "events": [
+          {
+            "method": "SpatialEmitterGeometryTests.testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+            "event": "started",
+            "line": 197
+          },
+          {
+            "method": "SpatialEmitterGeometryTests.testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+            "event": "passed",
+            "line": 204,
+            "duration": "0.151 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialPreviewTests.testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+        "events": [
+          {
+            "method": "SpatialPreviewTests.testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+            "event": "started",
+            "line": 208
+          },
+          {
+            "method": "SpatialPreviewTests.testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+            "event": "passed",
+            "line": 210,
+            "duration": "0.092 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialPreviewTests.testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+        "events": [
+          {
+            "method": "SpatialPreviewTests.testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+            "event": "started",
+            "line": 211
+          },
+          {
+            "method": "SpatialPreviewTests.testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+            "event": "passed",
+            "line": 213,
+            "duration": "0.007 seconds"
+          }
+        ]
+      },
+      {
+        "method": "SpatialPreviewTests.testTranslatedRigAndModifierFitActualSceneKitProjection",
+        "events": [
+          {
+            "method": "SpatialPreviewTests.testTranslatedRigAndModifierFitActualSceneKitProjection",
+            "event": "started",
+            "line": 214
+          },
+          {
+            "method": "SpatialPreviewTests.testTranslatedRigAndModifierFitActualSceneKitProjection",
+            "event": "passed",
+            "line": 216,
+            "duration": "0.056 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioPaletteTests.testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+        "events": [
+          {
+            "method": "StudioPaletteTests.testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+            "event": "started",
+            "line": 220
+          },
+          {
+            "method": "StudioPaletteTests.testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+            "event": "passed",
+            "line": 285,
+            "duration": "0.242 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioPaletteTests.testFixedPlanTextAndLightControlsContrastInBothAppearances",
+        "events": [
+          {
+            "method": "StudioPaletteTests.testFixedPlanTextAndLightControlsContrastInBothAppearances",
+            "event": "started",
+            "line": 286
+          },
+          {
+            "method": "StudioPaletteTests.testFixedPlanTextAndLightControlsContrastInBothAppearances",
+            "event": "passed",
+            "line": 307,
+            "duration": "0.053 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioPaletteTests.testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+        "events": [
+          {
+            "method": "StudioPaletteTests.testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+            "event": "started",
+            "line": 308
+          },
+          {
+            "method": "StudioPaletteTests.testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+            "event": "passed",
+            "line": 309,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioPaletteTests.testProjectSheetControlsContrastOnTheirProductionSurfaces",
+        "events": [
+          {
+            "method": "StudioPaletteTests.testProjectSheetControlsContrastOnTheirProductionSurfaces",
+            "event": "started",
+            "line": 310
+          },
+          {
+            "method": "StudioPaletteTests.testProjectSheetControlsContrastOnTheirProductionSurfaces",
+            "event": "passed",
+            "line": 327,
+            "duration": "0.025 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioPaletteTests.testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows",
+        "events": [
+          {
+            "method": "StudioPaletteTests.testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows",
+            "event": "started",
+            "line": 328
+          },
+          {
+            "method": "StudioPaletteTests.testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows",
+            "event": "passed",
+            "line": 345,
+            "duration": "0.040 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+            "event": "started",
+            "line": 349
+          },
+          {
+            "method": "StudioSliderEditingTests.testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+            "event": "passed",
+            "line": 350,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+            "event": "started",
+            "line": 351
+          },
+          {
+            "method": "StudioSliderEditingTests.testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+            "event": "passed",
+            "line": 352,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+            "event": "started",
+            "line": 353
+          },
+          {
+            "method": "StudioSliderEditingTests.testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+            "event": "passed",
+            "line": 354,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+            "event": "started",
+            "line": 355
+          },
+          {
+            "method": "StudioSliderEditingTests.testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+            "event": "passed",
+            "line": 356,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+            "event": "started",
+            "line": 357
+          },
+          {
+            "method": "StudioSliderEditingTests.testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+            "event": "passed",
+            "line": 358,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+            "event": "started",
+            "line": 359
+          },
+          {
+            "method": "StudioSliderEditingTests.testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+            "event": "passed",
+            "line": 360,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+            "event": "started",
+            "line": 361
+          },
+          {
+            "method": "StudioSliderEditingTests.testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+            "event": "passed",
+            "line": 362,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderEditingTests.testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue",
+        "events": [
+          {
+            "method": "StudioSliderEditingTests.testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue",
+            "event": "started",
+            "line": 363
+          },
+          {
+            "method": "StudioSliderEditingTests.testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue",
+            "event": "passed",
+            "line": 364,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+            "event": "started",
+            "line": 368
+          },
+          {
+            "method": "StudioSliderTrackingTests.testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+            "event": "passed",
+            "line": 369,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+            "event": "started",
+            "line": 370
+          },
+          {
+            "method": "StudioSliderTrackingTests.testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+            "event": "passed",
+            "line": 371,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+            "event": "started",
+            "line": 372
+          },
+          {
+            "method": "StudioSliderTrackingTests.testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+            "event": "passed",
+            "line": 373,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+            "event": "started",
+            "line": 374
+          },
+          {
+            "method": "StudioSliderTrackingTests.testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+            "event": "passed",
+            "line": 375,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+            "event": "started",
+            "line": 376
+          },
+          {
+            "method": "StudioSliderTrackingTests.testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+            "event": "passed",
+            "line": 377,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+            "event": "started",
+            "line": 378
+          },
+          {
+            "method": "StudioSliderTrackingTests.testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+            "event": "passed",
+            "line": 379,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+            "event": "started",
+            "line": 380
+          },
+          {
+            "method": "StudioSliderTrackingTests.testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+            "event": "passed",
+            "line": 381,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testOwnerReassertionCannotWriteAfterReentrantCancellation",
+            "event": "started",
+            "line": 382
+          },
+          {
+            "method": "StudioSliderTrackingTests.testOwnerReassertionCannotWriteAfterReentrantCancellation",
+            "event": "passed",
+            "line": 383,
+            "duration": "0.073 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+            "event": "started",
+            "line": 384
+          },
+          {
+            "method": "StudioSliderTrackingTests.testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+            "event": "passed",
+            "line": 385,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+            "event": "started",
+            "line": 386
+          },
+          {
+            "method": "StudioSliderTrackingTests.testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+            "event": "passed",
+            "line": 387,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+            "event": "started",
+            "line": 388
+          },
+          {
+            "method": "StudioSliderTrackingTests.testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+            "event": "passed",
+            "line": 389,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testReentrantInvalidationAtBeginRejectsSubsequentValues",
+            "event": "started",
+            "line": 390
+          },
+          {
+            "method": "StudioSliderTrackingTests.testReentrantInvalidationAtBeginRejectsSubsequentValues",
+            "event": "passed",
+            "line": 391,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+            "event": "started",
+            "line": 392
+          },
+          {
+            "method": "StudioSliderTrackingTests.testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+            "event": "passed",
+            "line": 393,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testSessionRetainsOriginalWriterAndRange",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testSessionRetainsOriginalWriterAndRange",
+            "event": "started",
+            "line": 394
+          },
+          {
+            "method": "StudioSliderTrackingTests.testSessionRetainsOriginalWriterAndRange",
+            "event": "passed",
+            "line": 395,
+            "duration": "0.002 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+            "event": "started",
+            "line": 396
+          },
+          {
+            "method": "StudioSliderTrackingTests.testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+            "event": "passed",
+            "line": 397,
+            "duration": "0.010 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioSliderTrackingTests.testValueAfterEndCannotReopenHistoryOrDisableUndo",
+        "events": [
+          {
+            "method": "StudioSliderTrackingTests.testValueAfterEndCannotReopenHistoryOrDisableUndo",
+            "event": "started",
+            "line": 398
+          },
+          {
+            "method": "StudioSliderTrackingTests.testValueAfterEndCannotReopenHistoryOrDisableUndo",
+            "event": "passed",
+            "line": 399,
+            "duration": "0.003 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+            "event": "started",
+            "line": 403
+          },
+          {
+            "method": "StudioTextFieldTests.testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+            "event": "passed",
+            "line": 404,
+            "duration": "0.039 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+            "event": "started",
+            "line": 406
+          },
+          {
+            "method": "StudioTextFieldTests.testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+            "event": "passed",
+            "line": 408,
+            "duration": "1.001 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testDisabledEnvironmentReachesNativeControl",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testDisabledEnvironmentReachesNativeControl",
+            "event": "started",
+            "line": 409
+          },
+          {
+            "method": "StudioTextFieldTests.testDisabledEnvironmentReachesNativeControl",
+            "event": "passed",
+            "line": 413,
+            "duration": "0.168 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+            "event": "started",
+            "line": 414
+          },
+          {
+            "method": "StudioTextFieldTests.testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+            "event": "passed",
+            "line": 416,
+            "duration": "0.083 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+            "event": "started",
+            "line": 417
+          },
+          {
+            "method": "StudioTextFieldTests.testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+            "event": "passed",
+            "line": 418,
+            "duration": "0.014 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points",
+            "event": "started",
+            "line": 419
+          },
+          {
+            "method": "StudioTextFieldTests.testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points",
+            "event": "failed",
+            "line": 424,
+            "duration": "0.972 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+            "event": "started",
+            "line": 425
+          },
+          {
+            "method": "StudioTextFieldTests.testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+            "event": "passed",
+            "line": 426,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+            "event": "started",
+            "line": 427
+          },
+          {
+            "method": "StudioTextFieldTests.testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+            "event": "passed",
+            "line": 428,
+            "duration": "0.028 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testNativeSizingAndConfigurationOwnTheAccessibleInput",
+            "event": "started",
+            "line": 429
+          },
+          {
+            "method": "StudioTextFieldTests.testNativeSizingAndConfigurationOwnTheAccessibleInput",
+            "event": "passed",
+            "line": 430,
+            "duration": "0.006 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testReconfigurationUsesCurrentBindingAndSubmitClosure",
+            "event": "started",
+            "line": 431
+          },
+          {
+            "method": "StudioTextFieldTests.testReconfigurationUsesCurrentBindingAndSubmitClosure",
+            "event": "passed",
+            "line": 432,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+            "event": "started",
+            "line": 433
+          },
+          {
+            "method": "StudioTextFieldTests.testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+            "event": "passed",
+            "line": 434,
+            "duration": "0.023 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+            "event": "started",
+            "line": 435
+          },
+          {
+            "method": "StudioTextFieldTests.testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+            "event": "passed",
+            "line": 438,
+            "duration": "0.063 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+            "event": "started",
+            "line": 439
+          },
+          {
+            "method": "StudioTextFieldTests.testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+            "event": "passed",
+            "line": 440,
+            "duration": "0.008 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTextFieldTests.testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+        "events": [
+          {
+            "method": "StudioTextFieldTests.testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+            "event": "started",
+            "line": 441
+          },
+          {
+            "method": "StudioTextFieldTests.testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+            "event": "passed",
+            "line": 442,
+            "duration": "0.022 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTrackingSliderTests.testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+        "events": [
+          {
+            "method": "StudioTrackingSliderTests.testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+            "event": "started",
+            "line": 446
+          },
+          {
+            "method": "StudioTrackingSliderTests.testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+            "event": "passed",
+            "line": 447,
+            "duration": "0.199 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTrackingSliderTests.testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+        "events": [
+          {
+            "method": "StudioTrackingSliderTests.testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+            "event": "started",
+            "line": 448
+          },
+          {
+            "method": "StudioTrackingSliderTests.testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+            "event": "passed",
+            "line": 449,
+            "duration": "0.005 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudioTrackingSliderTests.testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble",
+        "events": [
+          {
+            "method": "StudioTrackingSliderTests.testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble",
+            "event": "started",
+            "line": 450
+          },
+          {
+            "method": "StudioTrackingSliderTests.testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble",
+            "event": "passed",
+            "line": 451,
+            "duration": "0.008 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testBustCachePreservesExistingMaximumWidthClamping",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testBustCachePreservesExistingMaximumWidthClamping",
+            "event": "started",
+            "line": 455
+          },
+          {
+            "method": "StudyRenderCacheTests.testBustCachePreservesExistingMaximumWidthClamping",
+            "event": "passed",
+            "line": 458,
+            "duration": "2.799 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+            "event": "started",
+            "line": 459
+          },
+          {
+            "method": "StudyRenderCacheTests.testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+            "event": "passed",
+            "line": 460,
+            "duration": "0.018 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+            "event": "started",
+            "line": 461
+          },
+          {
+            "method": "StudyRenderCacheTests.testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+            "event": "passed",
+            "line": 462,
+            "duration": "0.053 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testCancelledTaskCannotReturnCachedFrame",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testCancelledTaskCannotReturnCachedFrame",
+            "event": "started",
+            "line": 463
+          },
+          {
+            "method": "StudyRenderCacheTests.testCancelledTaskCannotReturnCachedFrame",
+            "event": "passed",
+            "line": 464,
+            "duration": "0.015 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+            "event": "started",
+            "line": 465
+          },
+          {
+            "method": "StudyRenderCacheTests.testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+            "event": "passed",
+            "line": 466,
+            "duration": "0.075 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testEveryRenderingControlKeepsDistinctCacheIdentity",
+            "event": "started",
+            "line": 467
+          },
+          {
+            "method": "StudyRenderCacheTests.testEveryRenderingControlKeepsDistinctCacheIdentity",
+            "event": "passed",
+            "line": 468,
+            "duration": "0.217 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testInvalidMetadataCannotReuseAValidatedFrame",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testInvalidMetadataCannotReuseAValidatedFrame",
+            "event": "started",
+            "line": 469
+          },
+          {
+            "method": "StudyRenderCacheTests.testInvalidMetadataCannotReuseAValidatedFrame",
+            "event": "passed",
+            "line": 470,
+            "duration": "0.018 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+            "event": "started",
+            "line": 471
+          },
+          {
+            "method": "StudyRenderCacheTests.testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+            "event": "passed",
+            "line": 472,
+            "duration": "0.022 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+            "event": "started",
+            "line": 473
+          },
+          {
+            "method": "StudyRenderCacheTests.testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+            "event": "passed",
+            "line": 478,
+            "duration": "3.789 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+            "event": "started",
+            "line": 479
+          },
+          {
+            "method": "StudyRenderCacheTests.testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+            "event": "passed",
+            "line": 480,
+            "duration": "0.045 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRenderCacheTests.testSubjectAndResolutionDoNotShareFrames",
+        "events": [
+          {
+            "method": "StudyRenderCacheTests.testSubjectAndResolutionDoNotShareFrames",
+            "event": "started",
+            "line": 481
+          },
+          {
+            "method": "StudyRenderCacheTests.testSubjectAndResolutionDoNotShareFrames",
+            "event": "passed",
+            "line": 482,
+            "duration": "0.024 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+        "events": [
+          {
+            "method": "StudyRendererTests.testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+            "event": "started",
+            "line": 486
+          },
+          {
+            "method": "StudyRendererTests.testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+            "event": "passed",
+            "line": 487,
+            "duration": "0.004 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "events": [
+          {
+            "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+            "event": "started",
+            "line": 488
+          },
+          {
+            "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+            "event": "passed",
+            "line": 493,
+            "duration": "1.859 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+        "events": [
+          {
+            "method": "StudyRendererTests.testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+            "event": "started",
+            "line": 494
+          },
+          {
+            "method": "StudyRendererTests.testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+            "event": "passed",
+            "line": 496,
+            "duration": "0.314 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testEnginePublishesRealFrameWithEitherBackend",
+        "events": [
+          {
+            "method": "StudyRendererTests.testEnginePublishesRealFrameWithEitherBackend",
+            "event": "started",
+            "line": 497
+          },
+          {
+            "method": "StudyRendererTests.testEnginePublishesRealFrameWithEitherBackend",
+            "event": "passed",
+            "line": 502,
+            "duration": "1.751 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testEngineUsesCPUForFarGeometry",
+        "events": [
+          {
+            "method": "StudyRendererTests.testEngineUsesCPUForFarGeometry",
+            "event": "started",
+            "line": 503
+          },
+          {
+            "method": "StudyRendererTests.testEngineUsesCPUForFarGeometry",
+            "event": "passed",
+            "line": 506,
+            "duration": "1.667 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+        "events": [
+          {
+            "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+            "event": "started",
+            "line": 507
+          },
+          {
+            "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+            "event": "passed",
+            "line": 516,
+            "duration": "6.193 seconds"
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+        "events": [
+          {
+            "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+            "event": "started",
+            "line": 517
+          },
+          {
+            "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+            "event": "passed",
+            "line": 520,
+            "duration": "1.893 seconds"
+          }
+        ]
+      }
+    ],
+    "primaryUIKitSources": [
+      {
+        "url": "https://developer.apple.com/documentation/uikit/uiaccessibilityelement/accessibilityframe.md",
+        "sourceRef": "turn709266086view0",
+        "supports": "Accessibility frame is in screen coordinates; UIView subclasses supply it by default."
+      },
+      {
+        "url": "https://developer.apple.com/documentation/uikit/uiaccessibility/converttoscreencoordinates(_:in:)-9ziiu.md",
+        "sourceRef": "turn801797570view2",
+        "supports": "Converts a rectangle in the specified UIView coordinates into screen coordinates, not an accessibility-service query."
+      },
+      {
+        "url": "https://developer.apple.com/documentation/uikit/uiwindow/init(windowscene:).md",
+        "sourceRef": "turn709266086view1",
+        "supports": "Scene initializer explicitly associates the new window with its scene."
+      },
+      {
+        "url": "https://developer.apple.com/documentation/uikit/uiwindow/windowscene.md",
+        "sourceRef": "turn801797570view1",
+        "supports": "windowScene is the containing scene; nil removes the association."
+      }
+    ],
+    "limitations": [
+      "No local UIKit/Apple toolchain execution; exact cause of zero direct getter remains a hypothesis.",
+      "Nested finalized xcresult archive integrity and Info.plist were inspected, but its object store was not decoded using xcresulttool on Linux. Method results were independently reconstructed from the actual retained xcodebuild log.",
+      "External AX run remains failed and largest size was unreached.",
+      "Concrete corrected native harness and pinned-en_US label oracle were subsequently reviewed statically with no blocker; the corrected runtime has not been reviewed."
+    ],
+    "implementationFollowup": {
+      "scope": "Read-only static review of concrete test-only patch requested by root before publication; no test rerun.",
+      "baseCommit": "c85544f121cf3781499636527d3b9329ca6affba",
+      "fileSHA256": {
+        "NativeTests/StudioTextFieldTests.swift": "7e0aa4e559995f9c0541e607d3cd489c684a111cab8052066f2d03c561d62af1",
+        "UITests/StudioAppAccessibilityUITests.swift": "aa9a736d5a97372dde730f5cab99a553b51ebde87f902764844fc1ebffd83ea5"
+      },
+      "diffSHA256": "4a585d1e400f844defce223387bc25614da9b207eb1d2505b77be0aef5f52a29",
+      "diff": "diff --git a/NativeTests/StudioTextFieldTests.swift b/NativeTests/StudioTextFieldTests.swift\nindex cfd85fc..2b7e89a 100644\n--- a/NativeTests/StudioTextFieldTests.swift\n+++ b/NativeTests/StudioTextFieldTests.swift\n@@ -80,9 +80,14 @@ final class StudioTextFieldTests: XCTestCase {\n         XCTAssertTrue(field.adjustsFontForContentSizeCategory)\n     }\n \n-    func testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points() async throws {\n+    func testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates() async throws {\n+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes\n+            .compactMap { $0 as? UIWindowScene }\n+            .first { $0.activationState == .foregroundActive },\n+            \"The app-hosted geometry test requires a foreground window scene\")\n         for category in [ContentSizeCategory.large, .accessibilityExtraExtraExtraLarge] {\n-            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 700))\n+            let window = UIWindow(windowScene: scene)\n+            window.frame = CGRect(x: 0, y: 0, width: 390, height: 700)\n             let host = UIHostingController(rootView: AnyView(\n                 Form {\n                     HStack {\n@@ -102,8 +107,17 @@ final class StudioTextFieldTests: XCTestCase {\n             let fields = nativeFields(in: host.view)\n             XCTAssertEqual(fields.count, 1, \"The editable UIKit field must remain the single native input\")\n             let field = try XCTUnwrap(fields.first)\n+            XCTAssertTrue(field.window === window)\n+            XCTAssertTrue(window.windowScene === scene)\n+            XCTAssertFalse(window.isHidden)\n+            // This checks native layout in screen coordinates. The required UI\n+            // workflow independently checks the system accessibility snapshot;\n+            // the direct accessibilityFrame getter was zero in this unit host.\n+            let screenBounds = UIAccessibility.convertToScreenCoordinates(field.bounds, in: field)\n+            print(\"StudioTextField \\(category): bounds=\\(field.bounds), screenBounds=\\(screenBounds)\")\n             XCTAssertGreaterThanOrEqual(field.bounds.height, 44)\n-            XCTAssertGreaterThanOrEqual(field.accessibilityFrame.height, 44)\n+            XCTAssertGreaterThanOrEqual(screenBounds.height, 44)\n+            XCTAssertGreaterThan(screenBounds.width, 150)\n             XCTAssertGreaterThan(field.bounds.width, 150, \"The input must expand in the Form/HStack\")\n             XCTAssertGreaterThanOrEqual(field.bounds.height, try XCTUnwrap(field.font).lineHeight)\n             if category == .large {\ndiff --git a/UITests/StudioAppAccessibilityUITests.swift b/UITests/StudioAppAccessibilityUITests.swift\nindex 7d245f4..52c6175 100644\n--- a/UITests/StudioAppAccessibilityUITests.swift\n+++ b/UITests/StudioAppAccessibilityUITests.swift\n@@ -153,11 +153,13 @@ final class StudioAppAccessibilityUITests: XCTestCase {\n         openMeter.tap()\n         let balance = app.sliders[\"previewWhiteBalance\"]\n         expectValue(balance, \"5600 K\")\n-        for kelvin in [3200, 5600, 6500] {\n+        // SwiftUI localizes interpolated integers in both Text and its spoken\n+        // label. This workflow pins en_US, whose preset labels use grouping.\n+        for (kelvin, displayedKelvin) in [(3200, \"3,200\"), (5600, \"5,600\"), (6500, \"6,500\")] {\n             let preset = app.buttons[\"balance-\\(kelvin)\"]\n-            let state = try control(preset, label: \"Balance \\(kelvin) kelvin\", in: app)\n+            let state = try control(preset, label: \"Balance \\(displayedKelvin) kelvin\", in: app)\n             XCTAssertEqual(state.isSelected, kelvin == 5600)\n-            try text(preset.staticTexts[\"\\(kelvin) K\"], equals: \"\\(kelvin) K\", style: .caption1,\n+            try text(preset.staticTexts[\"\\(displayedKelvin) K\"], equals: \"\\(displayedKelvin) K\", style: .caption1,\n                      category: category, in: app, weight: .medium, monospacedDigits: true)\n             if kelvin == 5600 { try selectedCheckmark(in: preset) }\n         }\n",
+      "verdict": "NO BLOCKER for publication; final native/UI runtime acceptance remains PENDING.",
+      "nativeHarness": "Renamed testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates. Foreground UIWindowScene required by XCTUnwrap, UIWindow(windowScene:) used, field.window/window.windowScene/non-hidden attachment checked, actual bounds converted using UIAccessibility.convertToScreenCoordinates. Strict height>=44 both locally and in screen coordinates and native/screen width>150 remain. Existing font-line-height/default-size/font-growth/enabled/single-native-input assertions remain. This is correctly labelled native layout, not an actual accessibility snapshot.",
+      "externalUIOracle": "The existing actual XCUIElementSnapshot and 44-point geometry checks remain unchanged. Only pinned-en_US spoken/static-text preset expectations change to grouped 3,200, 5,600 and 6,500; stable identifiers and exact ungrouped slider expectations remain unchanged.",
+      "remainingUncertainty": "Foreground scene availability in the actual test process and corrected behavior require native execution. XCTUnwrap fails closed if no foreground scene. No claim that scene association proved or cured the historical zero getter. New exact-revision artifacts must establish passing native and required external UI methods."
+    }
+  },
+  "outcome": "PENDING final native acceptance. Initial C855 failure, complete 132-method accounting, all three actual Metal passes, fourteen bridge outcomes and partial default-size actual AX evidence are preserved. Concrete test-only harness and localized label fixes reviewed with NO STATIC BLOCKER for root publication. Corrected native and required UI runtime evidence remains necessary. No source, docs, shared state, commits or test runs modified by this worker."
+}

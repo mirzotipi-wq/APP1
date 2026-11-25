@@ -10,7 +10,9 @@
     "App/StudioSettingsView.swift",
     "App/StudioGuideView.swift",
     "App/LightTargetLuxView.swift",
-    "App/ManualRoomPlacementView.swift"
+    "App/ManualRoomPlacementView.swift",
+    "App/StudioTextField.swift",
+    "NativeTests/StudioTextFieldTests.swift"
   ],
   "findings": [
     {
@@ -145,6 +147,66 @@
     {
       "kind": "followupResolution",
       "detail": "The two original remainingAdjacentConcern findings are preserved above as historical observations. Their room-note prominent-foreground and three conditional-secondary issues are now resolved in source by this followup. The explicitly excluded neutral-card decorative Color.secondary border remains unchanged."
+    },
+    {
+      "kind": "authorizedFollowup",
+      "phase": "nativeTextFieldRepair",
+      "files": [
+        "App/StudioTextField.swift",
+        "NativeTests/StudioTextFieldTests.swift"
+      ],
+      "detail": "Root explicitly authorized only a new reusable native text-field bridge and its new native test file; caller integration, project generation, docs, commits and root-owned neutral-card work remain outside this worker followup."
+    },
+    {
+      "kind": "observedFailure",
+      "phase": "nativeTextFieldRepair",
+      "artifact": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-ax/artifacts/native-attachments/9E5FCE5B-A908-4947-9436-BA91C792594D.txt",
+      "screenshot": "/tmp/app1-f2fcfcdabdca/evidence/c86fadd-ax/artifacts/native-attachments/A7BA7EAC-2EA1-4F67-B461-384B0B47C6B8.png",
+      "detail": "Inspected the actual failure attachment and screenshot. At default UICTContentSizeCategoryL, precisionValue / Intensity in cd had AX frame (32.0, 267.0, 310.66666666666663, 22.0) despite its SwiftUI minHeight 44 wrapper. No historical result was relabeled."
+    },
+    {
+      "kind": "implementation",
+      "phase": "nativeTextFieldRepair",
+      "detail": "StudioTextField wraps a UIViewRepresentable whose accessible element is the actual StudioNativeTextField: UITextField. Native intrinsic and fitting heights are at least 44 points; representable fitting respects finite proposed width and body-font height, while the outer frame expands in HStack/Form. UIFont body Dynamic Type and optional monospaced digits are explicit. Environment isEnabled configures the native control. Native editable text remains its accessibility value; no extra accessible wrapper or fabricated AX frame is added."
+    },
+    {
+      "kind": "integrationAPI",
+      "phase": "nativeTextFieldRepair",
+      "detail": "StudioTextField(_ placeholder: String, text: Binding<String>, isFocused: Binding<Bool>, accessibility: StudioTextFieldAccessibility, keyboardType: UIKeyboardType = .default, returnKeyType: UIReturnKeyType = .default, autocapitalizationType: UITextAutocapitalizationType = .none, autocorrectionType: UITextAutocorrectionType = .no, textAlignment: NSTextAlignment = .natural, monospacedDigits: Bool = false, onSubmit: @escaping () -> Void = {}). Accessibility init(label: String, identifier: String, hint: String? = nil). Caller focus uses State Bool; caller visual borders remain external. API sent to root before integration."
+    },
+    {
+      "kind": "eventCorrectness",
+      "phase": "nativeTextFieldRepair",
+      "detail": "Native editing writes only the caller raw text Binding, then reads it back. A rejected oversized replacement is restored in the actual UITextField with prior selection and no second setter call. Accepted edits do not reassign native text. Unchanged model renders preserve caret and in-progress native editing. Explicit external text changes replace the visible text immediately; an already-changed model wins over stale native events. Return publishes any pending text once, invokes the current onSubmit, and leaves focus decisions to the caller."
+    },
+    {
+      "kind": "reviewCorrection",
+      "phase": "nativeTextFieldRepair",
+      "detail": "Root identified that deferring publication of marked text could leave explicit Save/Apply reading a stale draft, and deferring external Clear left composition visible. Corrected before handoff: editingChanged publishes accepted bounded raw marked text without reassigning it; unchanged renders preserve composition; explicit Clear/reset unmarks and replaces immediately. Return remains blocked while marked text is active. Actual UITextField.setMarkedText regression sources cover accepted composition and immediate explicit Clear."
+    },
+    {
+      "kind": "focusAndLifecycle",
+      "phase": "nativeTextFieldRepair",
+      "detail": "Programmatic focus work is deferred and coalesced on the main queue, reads the latest request, and suppresses native callback echoes. Native focus callbacks write only when the focus Binding differs. Native configuration does not publish text/focus state. A changed accessibility identifier rotates lifecycle identity; invalidate cancels pending focus, disables the native field, drops bindings and ignores stale input/focus/submit callbacks."
+    },
+    {
+      "kind": "reviewCorrection",
+      "phase": "nativeTextFieldRepair",
+      "detail": "Coordinator caught missing direct import LightingCore in the test source using StudioNumericInput. Added the import and repeated syntax parsing. Also made representable fitting handle a nonfinite width probe without constructing an infinite CGSize."
+    },
+    {
+      "kind": "sourceSnapshot",
+      "phase": "nativeTextFieldRepair",
+      "revision": "24adb70d685acd896e131c3f1950fc8e31dcf93e plus uncommitted worker bridge/tests and root caller integrations",
+      "sha256": {
+        "App/StudioTextField.swift": "21e357f253793bb93ea397355b3874e88f589fbb2f48079f66a43d3a1f7149f2",
+        "NativeTests/StudioTextFieldTests.swift": "aca8835a9edee06e600ddacdf15bcfabb65013cdd95def3f95dce64a20b3027a"
+      }
+    },
+    {
+      "kind": "limits",
+      "phase": "nativeTextFieldRepair",
+      "detail": "No UIKit/SwiftUI runtime, Xcode build, native test, AX frame, IME, or platform-audit success is claimed from this Linux worker. Actual native sizing, responder ordering and marked-text behavior require execution of the new native tests and root integration checks. Worker094 was sent a two-file READY signal for independent source review."
     }
   ],
   "tests": [
@@ -197,8 +259,53 @@
       "command": "rg -n 'foregroundStyle\\(.*Color.orange|prominentActionText|Color.secondary' App/ManualRoomPlacementView.swift",
       "exitCode": 0,
       "result": "Observed the three original orange conditional branches with StudioPalette.secondaryText else colors at lines 393, 398 and 423, and explicit prominentActionText at line 458. No Color.secondary remains in this file."
+    },
+    {
+      "name": "Native text-field bridge and tests syntax parse",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -frontend -parse App/StudioTextField.swift NativeTests/StudioTextFieldTests.swift",
+      "cwd": "/workspace/scratch/f2fcfcdabdca/APP1",
+      "toolchain": "Swift version 6.2.1 (swift-6.2.1-RELEASE); x86_64-unknown-linux-gnu",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "result": "Repeated successfully after marked-text correction, LightingCore import correction and finite-width fitting guard. Syntax only; not SwiftUI/UIKit typecheck or native execution."
+    },
+    {
+      "name": "New bridge whitespace diff check",
+      "command": "git diff --no-index --check -- /dev/null App/StudioTextField.swift",
+      "exitCode": 1,
+      "output": "",
+      "result": "No whitespace error output. No-index exit 1 denotes new-file content differs from /dev/null, not a claimed zero exit."
+    },
+    {
+      "name": "New native test whitespace diff check",
+      "command": "git diff --no-index --check -- /dev/null NativeTests/StudioTextFieldTests.swift",
+      "exitCode": 1,
+      "output": "",
+      "result": "No whitespace error output. No-index exit 1 denotes new-file content differs from /dev/null."
+    },
+    {
+      "name": "Native text-field regressions authored",
+      "methodCount": 14,
+      "methods": [
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testHostedFormGivesTheActualNativeAndAccessibilityFramesAtLeast44Points",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents"
+      ],
+      "result": "Sources include hosted UIWindow/UIHostingController Form actual native and accessibility frame checks at default and largest accessibility text; expanded width and body-font fit; disabled-environment propagation; accepted/rejected and incomplete raw drafts; caret; unchanged-render preservation; stale external reset; marked-text publication and explicit Clear; focus; submit; updated binding; reentrant identity; invalidation. Authored, not run: UIKit/Xcode unavailable to this worker."
     }
   ],
-  "outcome": "Bounded palette consistency patch completed and syntax-checked. Exact source-to-background mappings and adjacent concerns recorded for root integration. No commit created. Authorized followup completed: room-notes prominent label foreground and three non-warning secondary status colors now use the tested production palette; syntax parse and diff check repeated successfully for ManualRoomPlacementView.swift. Original findings, tests and background mappings are retained; no native pass or commit claimed.",
+  "outcome": "Bounded palette consistency patch completed and syntax-checked. Exact source-to-background mappings and adjacent concerns recorded for root integration. No commit created. Authorized followup completed: room-notes prominent label foreground and three non-warning secondary status colors now use the tested production palette; syntax parse and diff check repeated successfully for ManualRoomPlacementView.swift. Original findings, tests and background mappings are retained; no native pass or commit claimed. Root-authorized native text-field repair followup is implemented in two new files only, with 14 focused native test methods and successful Linux syntax parsing. Root IME and coordinator import findings were addressed before READY handoff to root and independent worker094. Native execution remains unrun; no commit created by this worker.",
   "canonicalAgent": "/root/w007_review_coordinator/w038_inspector_palette"
 }
