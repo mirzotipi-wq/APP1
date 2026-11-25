@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed required/diagnostic XCTest partition and execution accounting."""
+import argparse
 import json
 import re
 import sys
@@ -16,6 +17,11 @@ SHARDS = {
 # Owner-approved m02-m03-code-v2 keeps Apple's full audits intact as explicit
 # diagnostics. Every class must still belong to exactly one declared suite.
 DIAGNOSTIC_SHARDS = {"platform-audit": ("AccessibilityAuditUITests",)}
+TEST_CASE_MARKER = re.compile(r"\bTest Case\b")
+TEST_CASE_EVENT = re.compile(
+    r"Test Case '-\[(?P<target>[^.\s\[\]]+)\.(?P<class>\w+) (?P<method>\w+)\]' "
+    r"(?P<event>\w+)(?: \(\d+(?:\.\d+)? seconds\))?\.?\s*"
+)
 
 
 def discover_ui_classes():
@@ -86,51 +92,115 @@ def discover_methods(directory):
     return result
 
 
-def verify_log(shard, path):
+def execution_report(shard, path):
+    """Start failed so interrupted discovery or log reads cannot imply a pass."""
+    return {
+        "schema": 1, "shard": shard, "log": str(path), "target": None,
+        "status": "failed", "expected": [], "started": [], "passed": [],
+        "failed": [], "skipped": [], "unstarted": [], "invalid": [],
+    }
+
+
+def write_report(report, path):
+    if path is not None:
+        destination = Path(path)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def verify_log(shard, path, report_path=None):
     """Require every selected method to start and pass exactly once.
 
     A successful xcodebuild exit alone cannot prove a complete selected suite.
     Missing, skipped, failed, duplicate and unexpected events all fail closed.
+    Report lists describe selected methods; foreign or unrecognized events are
+    retained in ``invalid``. ``passed`` requires the complete ordered sequence,
+    and only ``status`` indicates whether the entire execution is verified.
     """
-    suites = {**SHARDS, **DIAGNOSTIC_SHARDS}
-    if shard == "unit":
-        target = "KeyAndFillTests"
-        inventory = discover_methods("NativeTests")
-        selected = tuple(inventory)
-    elif shard in suites:
-        target = "KeyAndFillUITests"
-        inventory = discover_methods("UITests")
-        selected = suites[shard]
-    else:
-        raise ValueError(f"Unknown native test shard: {shard}")
-    expected = {f"{name}.{method}" for name in selected for method in inventory.get(name, ())}
-    if not expected or any(not inventory.get(name) for name in selected):
-        raise ValueError(f"Selected XCTest suite has no methods: {shard}")
-    events = re.findall(r"Test Case '-\[" + re.escape(target) +
-                        r"\.(\w+) (test\w+)\]' (started|passed|failed|skipped)\b",
-                        Path(path).read_text(encoding="utf-8", errors="replace"))
-    starts, terminals = {}, {}
-    for name, method, event in events:
-        key = f"{name}.{method}"
-        destination = starts if event == "started" else terminals
-        destination.setdefault(key, []).append(event)
-    observed = set(starts) | set(terminals)
-    invalid = {key: {"starts": starts.get(key, []), "terminals": terminals.get(key, [])}
-               for key in sorted(expected | observed)
-               if key not in expected or starts.get(key) != ["started"] or terminals.get(key) != ["passed"]}
-    if invalid:
-        raise ValueError("Incomplete XCTest execution: " + json.dumps(invalid, sort_keys=True))
+    report = execution_report(shard, path)
+    try:
+        suites = {**SHARDS, **DIAGNOSTIC_SHARDS}
+        if shard == "unit":
+            target = "KeyAndFillTests"
+            inventory = discover_methods("NativeTests")
+            selected = tuple(inventory)
+        elif shard in suites:
+            target = "KeyAndFillUITests"
+            inventory = discover_methods("UITests")
+            selected = suites[shard]
+        else:
+            raise ValueError(f"Unknown native test shard: {shard}")
+        expected = {f"{name}.{method}" for name in selected for method in inventory.get(name, ())}
+        report.update(target=target, expected=sorted(expected), unstarted=sorted(expected))
+        if not expected or any(not inventory.get(name) for name in selected):
+            raise ValueError(f"Selected XCTest suite has no methods: {shard}")
+
+        events = {key: [] for key in expected}
+        content = Path(path).read_text(encoding="utf-8", errors="replace")
+        for number, line in enumerate(content.splitlines(), 1):
+            marker = TEST_CASE_MARKER.search(line)
+            if marker is None:
+                continue
+            match = TEST_CASE_EVENT.fullmatch(line[marker.start():])
+            if match is None:
+                report["invalid"].append({
+                    "line": number, "text": line, "reason": "Unrecognized Test Case line",
+                })
+                continue
+            name = f"{match['class']}.{match['method']}"
+            observed = {"line": number, "target": match["target"],
+                        "method": name, "event": match["event"]}
+            if match["target"] != target:
+                report["invalid"].append({**observed, "reason": "Unexpected XCTest target"})
+            elif name not in expected:
+                report["invalid"].append({**observed, "reason": "Unexpected XCTest method"})
+            else:
+                events[name].append({"line": number, "event": match["event"]})
+
+        for name in sorted(expected):
+            sequence = [item["event"] for item in events[name]]
+            for event in ("started", "failed", "skipped"):
+                if event in sequence:
+                    report[event].append(name)
+            if sequence == ["started", "passed"]:
+                report["passed"].append(name)
+            else:
+                report["invalid"].append({
+                    "target": target, "method": name, "events": events[name],
+                    "reason": "Expected exactly one ordered started -> passed sequence",
+                })
+        report["unstarted"] = sorted(expected - set(report["started"]))
+        if report["invalid"]:
+            raise ValueError("Incomplete XCTest execution: " + json.dumps(report["invalid"], sort_keys=True))
+        report["status"] = "passed"
+    except (OSError, ValueError) as exc:
+        if not report["invalid"]:
+            report["invalid"].append({"reason": str(exc)})
+        raise
+    finally:
+        write_report(report, report_path)
     print(f"Verified {len(expected)} {shard} methods: one start and one pass each; no failures, skips, duplicates or omissions.")
     return expected
 
 
 def main():
-    if len(sys.argv) == 4 and sys.argv[1] == "verify-log":
-        check()
-        verify_log(sys.argv[2], sys.argv[3])
+    if len(sys.argv) > 1 and sys.argv[1] == "verify-log":
+        parser = argparse.ArgumentParser(prog=f"{sys.argv[0]} verify-log")
+        parser.add_argument("shard")
+        parser.add_argument("log")
+        parser.add_argument("--report", metavar="JSON", help="write execution accounting even when verification fails")
+        args = parser.parse_args(sys.argv[2:])
+        try:
+            check()
+        except (OSError, ValueError) as exc:
+            report = execution_report(args.shard, args.log)
+            report["invalid"].append({"reason": str(exc)})
+            write_report(report, args.report)
+            raise
+        verify_log(args.shard, args.log, args.report)
         return
     if len(sys.argv) != 2:
-        raise ValueError("Usage: native_test_shards.py check|unit|<shard>|verify-log <shard> <log>")
+        raise ValueError("Usage: native_test_shards.py check|unit|<shard>|verify-log <shard> <log> [--report <json>]")
     command = sys.argv[1]
     expected = check()
     if command == "check":

@@ -44,21 +44,21 @@ struct RecoveryCapacityView: View {
                         ProgressView("Saving recovery project")
                             .accessibilityIdentifier("recoverySaveProgress")
                         Text("The confirmed replacement finishes before closing. If saving fails, your setup remains in the studio.")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     }
                 } else if candidates.isEmpty && !loadFailed {
                     Section {
                         Text("No archived projects are available")
                             .font(.headline).accessibilityIdentifier("recoveryCapacityEmpty")
                         Text("Your edits remain open in this window. Return to the studio and choose Export, then Editable project copy, to preserve them in a file. No saved project has been removed.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                         if message == nil {
                             Button("Refresh archived projects") { reload() }
                                 .frame(minHeight: 44)
                         }
                     }
                 } else if !candidates.isEmpty {
-                    Section("Choose an archived project") {
+                    Section {
                         ForEach(candidates) { presentation in
                             Button {
                                 // Freeze the displayed identity with the complete
@@ -71,11 +71,11 @@ struct RecoveryCapacityView: View {
                                         .fixedSize(horizontal: false, vertical: true)
                                     if let identifier = presentation.identifier {
                                         Text("Project ID: \(identifier)")
-                                            .font(.caption.monospaced()).foregroundStyle(.secondary)
+                                            .font(.caption.monospaced()).foregroundStyle(StudioPalette.secondaryText)
                                             .fixedSize(horizontal: false, vertical: true)
                                     }
                                     Text("\(presentation.project.scene.lights.count) lights · Archived")
-                                        .font(.caption).foregroundStyle(.secondary)
+                                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                                 .contentShape(Rectangle())
@@ -85,6 +85,8 @@ struct RecoveryCapacityView: View {
                             .accessibilityLabel("Replace archived \(presentation.name)")
                             .accessibilityValue(presentation.identityValue())
                         }
+                    } header: {
+                        Text("Choose an archived project").foregroundStyle(StudioPalette.secondaryText)
                     }
                 }
             }
@@ -110,6 +112,7 @@ struct RecoveryCapacityView: View {
             .onDisappear { cancelLoad() }
             .interactiveDismissDisabled(isReplacing)
         }
+        .tint(StudioPalette.action)
     }
 
     private func reload(preservingMessage: String? = nil) {

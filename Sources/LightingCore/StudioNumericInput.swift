@@ -3,6 +3,18 @@ import Foundation
 /// Strict decimal input for scene parameters. Values are never silently
 /// clamped, rounded to a slider step, or interpreted as grouped numbers.
 public enum StudioNumericInput {
+    /// A raw editing draft can include padding and temporarily incomplete
+    /// input. Keep the parser's existing byte allowance without walking an
+    /// unbounded pasted string or its potentially enormous grapheme clusters.
+    public static let maximumDraftUTF8Bytes = 256
+
+    /// Check before storing a TextField replacement. This checks size only;
+    /// empty drafts, signs, local decimal digits, and intermediate edits remain
+    /// editable. A rejected replacement must leave the previous draft intact.
+    public static func isWithinDraftLimit(_ text: String) -> Bool {
+        text.utf8.prefix(maximumDraftUTF8Bytes + 1).count <= maximumDraftUTF8Bytes
+    }
+
     /// The shared current-value readout for numeric controls. Slider steps
     /// describe adjustment increments, not the precision of an imported or
     /// directly entered value. Round-trip digits preserve the stored Double;
@@ -71,7 +83,7 @@ public enum StudioNumericInput {
                              in range: ClosedRange<Double>) -> Double? {
         // Bound pasted input before trimming or traversing grapheme clusters.
         // The small whitespace allowance preserves ordinary padded decimals.
-        guard text.utf8.prefix(257).count <= 256,
+        guard isWithinDraftLimit(text),
               decimalSeparator.utf8.prefix(5).count <= 4,
               range.lowerBound.isFinite, range.upperBound.isFinite else { return nil }
         let input = text.trimmingCharacters(in: .whitespacesAndNewlines)

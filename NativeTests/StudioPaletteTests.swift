@@ -7,7 +7,8 @@ import XCTest
 final class StudioPaletteTests: XCTestCase {
     func testActionAndSecondaryTextContrastOnResolvedSystemSurfaces() throws {
         // Studio root/recipes, cards/Save bar, unselected light rows, and the
-        // precision Form use these real UIKit backgrounds. Elevated traits
+        // precision, project-library, name and recovery sheets use these real
+        // UIKit backgrounds. Elevated traits
         // cover their presentation in sheets rather than assuming white/black.
         let surfaces: [(String, UIColor)] = [
             ("systemBackground", .systemBackground),
@@ -19,11 +20,30 @@ final class StudioPaletteTests: XCTestCase {
             for (surfaceName, surface) in surfaces {
                 let background = try components(surface, traits: traits)
                 for (name, color) in [("action", StudioPalette.actionUIColor),
-                                      ("secondaryText", StudioPalette.secondaryTextUIColor)] {
+                                      ("secondaryText", StudioPalette.secondaryTextUIColor),
+                                      ("projectNameError", StudioPalette.destructiveUIColor)] {
                     try assertContrast(color, on: background, minimum: 4.5, traits: traits,
                                        pair: "\(appearance) \(name) / \(surfaceName)")
                 }
             }
+        }
+    }
+
+    func testProjectSheetControlsContrastOnTheirProductionSurfaces() throws {
+        for (appearance, traits) in appearances {
+            let row = try components(.secondarySystemGroupedBackground, traits: traits)
+            try assertContrast(StudioPalette.selectionUIColor, on: row, minimum: 3, traits: traits,
+                               pair: "\(appearance) current-project checkmark / library row")
+            try assertContrast(StudioPalette.destructiveUIColor, on: row, minimum: 3, traits: traits,
+                               pair: "\(appearance) archived-project trash icon / library row")
+            try assertContrast(StudioPalette.prominentActionTextUIColor,
+                               on: components(StudioPalette.actionUIColor, traits: traits),
+                               minimum: 4.5, traits: traits,
+                               pair: "\(appearance) Save project name / explicit action fill")
+            try assertContrast(StudioPalette.secondaryTextUIColor,
+                               on: components(.tertiarySystemGroupedBackground, traits: traits),
+                               minimum: 4.5, traits: traits,
+                               pair: "\(appearance) disabled Save project name / explicit disabled fill")
         }
     }
 

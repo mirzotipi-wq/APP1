@@ -31,7 +31,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                                      launchValue: "UICTContentSizeCategoryL", name: "Default")
         let largest = try exerciseEssentialWorkflow(category: .accessibilityExtraExtraExtraLarge,
                                                     launchValue: "UICTContentSizeCategoryAccessibilityXXXL", name: "AXXXL")
-        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning"] {
+        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning", "projectNameHeading"] {
             let before = try XCTUnwrap(standard[key], key)
             let after = try XCTUnwrap(largest[key], key)
             observations.append("Growth \(key): default=\(before), AXXXL=\(after)")
@@ -179,6 +179,38 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         assertContained(activeState.frame, inside: contentViewport(for: activeState, in: app))
         try control(app.buttons["Options for Portrait setup"], label: "Options for Portrait setup", in: app)
         capture(name + "-Library-saved", in: app)
+
+        try control(create, label: "New project", in: app)
+        create.tap()
+        let nameField = app.textFields["projectNameInput"]
+        let nameCancel = app.buttons["projectNameCancel"]
+        let nameSave = app.buttons["confirmProjectName"]
+        XCTAssertTrue(nameField.waitForExistence(timeout: 10))
+        dismissKeyboardTypingIntroduction(in: app)
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10),
+                      "Name-entry controls must remain reachable with the keyboard visible")
+        measured["projectNameHeading"] = try text(app.staticTexts["Project name"], equals: "Project name",
+                                                  style: .headline, category: category, in: app,
+                                                  towardBottom: false)
+        let nameDraft = try control(nameField, label: "Name", in: app)
+        XCTAssertEqual(nameDraft.value as? String, "Portrait setup")
+        XCTAssertTrue(app.keyboards.firstMatch.exists)
+        capture(name + "-Project-name-field-keyboard", in: app)
+        try control(nameSave, label: "Save project name", in: app)
+        try text(nameSave.staticTexts["Save project name"], equals: "Save project name", style: .body,
+                 category: category, in: app, weight: .semibold)
+        XCTAssertTrue(app.keyboards.firstMatch.exists,
+                      "Reaching Save must not depend on dismissing the keyboard")
+        capture(name + "-Project-name-save-keyboard", in: app)
+        try control(nameCancel, label: "Cancel", in: app, towardBottom: false)
+        try text(nameCancel.staticTexts["Cancel"], equals: "Cancel", style: .body,
+                 category: category, in: app, towardBottom: false)
+        XCTAssertTrue(app.keyboards.firstMatch.exists,
+                      "Reaching Cancel must not depend on dismissing the keyboard")
+        capture(name + "-Project-name-cancel-keyboard", in: app)
+        nameCancel.tap()
+        expectGone(nameField)
+
         let done = app.navigationBars["Projects"].buttons["Done"]
         try control(done, label: "Done", in: app, scrolling: false)
         done.tap()
@@ -223,11 +255,21 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         else if let weight { font = .systemFont(ofSize: font.pointSize, weight: weight) }
         let required = (expected as NSString).boundingRect(
             with: CGSize(width: max(1, state.frame.width), height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [.font: font], context: nil)
-        // One point accommodates text-bound rounding, not a smaller tap target.
-        // This catches constrained text frames; retained screenshots still need
-        // rendered-glyph inspection and are not replaced by an AX label check.
-        XCTAssertGreaterThanOrEqual(state.frame.height + 1, required.height,
+            options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
+        // SwiftUI's text frame contains the line's ascent/descent, not optional
+        // font leading. In the retained baseline, caption text has a complete
+        // 14.333pt frame; requesting font leading incorrectly requires 16pt.
+        // Compare physical pixel counts so fractional AX coordinates do not
+        // introduce a whole-point allowance. Required text is rounded upward;
+        // the observed frame is normalized to its nearest physical pixel.
+        // Screenshots still require inspection of the actual rendered glyphs.
+        let scale = UIScreen.main.scale
+        let requiredPixels = ceil(required.height * scale)
+        let observedPixels = (state.frame.height * scale).rounded()
+        observations.append("Text metrics \(expected): ascent=\(font.ascender), descent=\(font.descender), " +
+                            "leading=\(font.leading), requiredHeightWithoutLeading=\(required.height), " +
+                            "scale=\(scale), requiredPixels=\(requiredPixels), observedPixels=\(observedPixels)")
+        XCTAssertGreaterThanOrEqual(observedPixels, requiredPixels,
                                    "The complete \(expected) text must fit its observed frame")
         return state.frame
     }

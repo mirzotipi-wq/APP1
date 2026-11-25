@@ -2,6 +2,7 @@
 import contextlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -150,7 +151,9 @@ class NativeTestShardTests(unittest.TestCase):
     def test_incomplete_failed_skipped_duplicate_and_unexpected_events_fail(self):
         for events in ([], ["started"], ["passed"], ["started", "failed"],
                        ["started", "skipped"], ["started", "started", "passed"],
-                       ["started", "passed", "passed"]):
+                       ["started", "passed", "passed"], ["passed", "started"],
+                       ["failed", "started", "passed"], ["skipped", "started", "passed"],
+                       ["started", "passed", "cancelled"]):
             with self.subTest(events=events), self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
                 native_test_shards.verify_log("first", self.execution_log(
                     [("FirstUITests", "testExample", event) for event in events]))
@@ -158,6 +161,193 @@ class NativeTestShardTests(unittest.TestCase):
                   for event in ("started", "passed")]
         with self.assertRaisesRegex(ValueError, "SecondUITests"):
             native_test_shards.verify_log("first", self.execution_log(events))
+
+    def test_interleaved_methods_keep_their_individual_order(self):
+        source = self.root / "UITests/First.swift"
+        source.write_text("class FirstUITests: XCTestCase { func testExample() {} func testOther() {} }")
+        path = self.execution_log([
+            ("FirstUITests", "testExample", "started"),
+            ("FirstUITests", "testOther", "started"),
+            ("FirstUITests", "testOther", "passed"),
+            ("FirstUITests", "testExample", "passed"),
+        ])
+        # XCTest can include timestamps and elapsed durations around events.
+        content = path.read_text().replace("passed.", "passed (0.123 seconds).")
+        path.write_text("Test Suite 'Selected tests' started.\n" +
+                        "\n".join("2026-11-25 12:00:00 " + line for line in content.splitlines()))
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(native_test_shards.verify_log("first", path),
+                             {"FirstUITests.testExample", "FirstUITests.testOther"})
+
+    def test_foreign_target_cannot_hide_alongside_a_complete_selected_suite(self):
+        for target in ("KeyAndFillTests", "OtherTests", "KeyAndFillUITestsExtra"):
+            for event in ("started", "passed", "failed", "skipped", "cancelled"):
+                with self.subTest(target=target, event=event):
+                    path = self.execution_log([
+                        ("FirstUITests", "testExample", status) for status in ("started", "passed")
+                    ])
+                    path.write_text(path.read_text() +
+                                    f"\nTest Case '-[{target}.FirstUITests testExample]' {event}.")
+                    with self.assertRaisesRegex(ValueError, "Unexpected XCTest target"):
+                        native_test_shards.verify_log("first", path)
+
+    def test_foreign_target_cannot_supply_a_missing_selected_event(self):
+        path = self.execution_log([("FirstUITests", "testExample", "started")])
+        path.write_text(path.read_text() +
+                        "\nTest Case '-[OtherTests.FirstUITests testExample]' passed.")
+        report_path = self.root / "accounting.json"
+        with self.assertRaisesRegex(ValueError, "Unexpected XCTest target"):
+            native_test_shards.verify_log("first", path, report_path)
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["passed"], [])
+        self.assertEqual(report["started"], ["FirstUITests.testExample"])
+
+    def test_unrecognized_case_lines_fail_even_after_all_selected_methods_pass(self):
+        malformed = (
+            "Test Case 'FirstUITests.testExample()' passed (0.000 seconds).",
+            "Test Case '-[KeyAndFillUITests.FirstUITests testExample]' passed unexpectedly.",
+            "Test Case '-[KeyAndFillUITests.FirstUITests testExample]'",
+            "Test Case without a recognizable identity",
+        )
+        for line in malformed:
+            with self.subTest(line=line):
+                path = self.execution_log([
+                    ("FirstUITests", "testExample", event) for event in ("started", "passed")
+                ])
+                path.write_text(path.read_text() + "\n" + line)
+                report_path = self.root / "accounting.json"
+                with self.assertRaisesRegex(ValueError, "Unrecognized Test Case line"):
+                    native_test_shards.verify_log("first", path, report_path)
+                report = json.loads(report_path.read_text())
+                self.assertEqual(report["status"], "failed")
+                self.assertEqual(report["invalid"], [{
+                    "line": 3, "text": line, "reason": "Unrecognized Test Case line",
+                }])
+
+    def test_unrecognized_event_and_non_test_method_are_not_ignored(self):
+        for method, event in (("testExample", "cancelled"), ("helper", "passed")):
+            with self.subTest(method=method, event=event):
+                path = self.execution_log([
+                    ("FirstUITests", "testExample", "started"),
+                    ("FirstUITests", "testExample", "passed"),
+                    ("FirstUITests", method, event),
+                ])
+                with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                    native_test_shards.verify_log("first", path)
+
+    def test_report_preserves_expected_passed_failed_skipped_and_missing_methods(self):
+        source = self.root / "UITests/First.swift"
+        source.write_text("class FirstUITests: XCTestCase { " + " ".join(
+            f"func {name}() {{}}" for name in ("testExample", "testFailed", "testSkipped", "testMissing")
+        ) + " }")
+        path = self.execution_log([
+            ("FirstUITests", method, event)
+            for method, terminal in (("testExample", "passed"), ("testFailed", "failed"), ("testSkipped", "skipped"))
+            for event in ("started", terminal)
+        ])
+        report_path = self.root / "accounting.json"
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output), self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+            native_test_shards.verify_log("first", path, report_path)
+        self.assertEqual(output.getvalue(), "")
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["schema"], 1)
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["target"], "KeyAndFillUITests")
+        self.assertEqual(report["expected"], [f"FirstUITests.{name}" for name in
+                                             ("testExample", "testFailed", "testMissing", "testSkipped")])
+        self.assertEqual(report["started"], [f"FirstUITests.{name}" for name in
+                                            ("testExample", "testFailed", "testSkipped")])
+        self.assertEqual(report["passed"], ["FirstUITests.testExample"])
+        self.assertEqual(report["failed"], ["FirstUITests.testFailed"])
+        self.assertEqual(report["skipped"], ["FirstUITests.testSkipped"])
+        self.assertEqual(report["unstarted"], ["FirstUITests.testMissing"])
+        self.assertEqual([item["method"] for item in report["invalid"]],
+                         ["FirstUITests.testFailed", "FirstUITests.testMissing", "FirstUITests.testSkipped"])
+        self.assertEqual(report["invalid"][0]["events"],
+                         [{"line": 3, "event": "started"}, {"line": 4, "event": "failed"}])
+        self.assertEqual(report["invalid"][1]["events"], [])
+
+    def test_failed_ordering_replaces_a_previous_passing_report(self):
+        report_path = self.root / "reports/accounting.json"
+        path = self.execution_log([("FirstUITests", "testExample", event) for event in ("started", "passed")])
+        with contextlib.redirect_stdout(io.StringIO()):
+            native_test_shards.verify_log("first", path, report_path)
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "passed")
+        self.assertEqual(report["passed"], ["FirstUITests.testExample"])
+        for category in ("failed", "skipped", "unstarted", "invalid"):
+            self.assertEqual(report[category], [])
+        path = self.execution_log([("FirstUITests", "testExample", event) for event in ("passed", "started")])
+        with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+            native_test_shards.verify_log("first", path, report_path)
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["passed"], [])
+        self.assertEqual(report["expected"], ["FirstUITests.testExample"])
+        self.assertEqual(report["invalid"][0]["events"],
+                         [{"line": 1, "event": "passed"}, {"line": 2, "event": "started"}])
+
+    def test_missing_log_writes_failed_report_with_expected_unstarted_inventory(self):
+        report_path = self.root / "accounting.json"
+        with self.assertRaises(OSError):
+            native_test_shards.verify_log("first", self.root / "missing.log", report_path)
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["expected"], ["FirstUITests.testExample"])
+        self.assertEqual(report["unstarted"], report["expected"])
+        self.assertEqual(report["started"], [])
+        self.assertEqual(report["passed"], [])
+        self.assertTrue(report["invalid"])
+
+    def test_inventory_and_unknown_shard_failures_still_write_failed_reports(self):
+        report_path = self.root / "accounting.json"
+        source = self.root / "UITests/First.swift"
+        source.write_text("class A: XCTestCase { func testA() {} }\nclass B: XCTestCase { func testB() {} }")
+        for shard, error in (("first", "Ambiguous XCTest method inventory"), ("unknown", "Unknown native test shard")):
+            with self.subTest(shard=shard), self.assertRaisesRegex(ValueError, error):
+                native_test_shards.verify_log(shard, self.root / "missing.log", report_path)
+            report = json.loads(report_path.read_text())
+            self.assertEqual(report["status"], "failed")
+            self.assertEqual(report["passed"], [])
+            self.assertIn(error, report["invalid"][0]["reason"])
+
+    def test_cli_verification_supports_legacy_usage_and_optional_report(self):
+        path = self.execution_log([("FirstUITests", "testExample", event) for event in ("started", "passed")])
+        report_path = self.root / "accounting.json"
+        for extra in ([], ["--report", str(report_path)]):
+            output = io.StringIO()
+            with self.subTest(extra=extra), patch("sys.argv", [str(SCRIPT), "verify-log", "first", str(path), *extra]), \
+                    contextlib.redirect_stdout(output):
+                native_test_shards.main()
+            self.assertIn("Verified 1 first methods", output.getvalue())
+        self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
+
+    def test_cli_reports_execution_failure_without_emitting_success(self):
+        path = self.execution_log([("FirstUITests", "testExample", "skipped")])
+        report_path = self.root / "accounting.json"
+        output = io.StringIO()
+        with patch("sys.argv", [str(SCRIPT), "verify-log", "first", str(path), "--report", str(report_path)]), \
+                contextlib.redirect_stdout(output), self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+            native_test_shards.main()
+        self.assertEqual(output.getvalue(), "")
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["passed"], [])
+        self.assertEqual(report["skipped"], ["FirstUITests.testExample"])
+        self.assertEqual(report["unstarted"], ["FirstUITests.testExample"])
+
+    def test_cli_preflight_failure_writes_a_failed_report(self):
+        self.workflow.write_text("jobs: {}\n")
+        report_path = self.root / "accounting.json"
+        with patch("sys.argv", [str(SCRIPT), "verify-log", "first", "missing.log", "--report", str(report_path)]), \
+                self.assertRaisesRegex(ValueError, "Native UI matrix missing"):
+            native_test_shards.main()
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["passed"], [])
+        self.assertEqual(report["invalid"], [{"reason": "Native UI matrix missing"}])
 
     def test_native_inventory_is_separate_and_empty_selection_cannot_pass(self):
         directory = self.root / "NativeTests"

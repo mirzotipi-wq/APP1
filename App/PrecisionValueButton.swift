@@ -60,12 +60,26 @@ private struct PrecisionValueEditor: View {
     @State private var draft = ""
     @State private var initialDraft = ""
     @State private var requiresReplacementDraft = false
-    @State private var invalid = false
+    @State private var inputError: InputError?
     @State private var active = false
     @State private var originalValueBits: UInt64?
     @State private var originalUnderlyingValueBits: UInt64?
     @State private var originalLocale = Locale.current
     @State private var originalRange: ClosedRange<Double>?
+
+    private enum InputError: Equatable {
+        case invalidDecimal
+        case oversizedDraft
+
+        var message: String {
+            switch self {
+            case .invalidDecimal:
+                return "Enter a valid decimal within the allowed range."
+            case .oversizedDraft:
+                return "That entry is too long. Your previous entry was kept. Edit the value before applying."
+            }
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -80,7 +94,7 @@ private struct PrecisionValueEditor: View {
                             .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     }
                     HStack {
-                        TextField("Value", text: $draft)
+                        TextField("Value", text: boundedDraft)
                             .font(.body.monospacedDigit())
                             .frame(minHeight: 44)
                             .keyboardType(.numbersAndPunctuation)
@@ -88,14 +102,16 @@ private struct PrecisionValueEditor: View {
                             .textInputAutocapitalization(.never)
                             .focused($focused)
                             .accessibilityLabel(title + " in " + unit)
+                            .accessibilityHint(inputError?.message ?? "Enter a decimal value within the allowed range.")
                             .accessibilityIdentifier("precisionValue")
                             .onSubmit { apply() }
                         Text(unit).font(.body).foregroundStyle(StudioPalette.secondaryText)
                     }
-                    if invalid {
-                        Label("Enter a valid decimal within the allowed range.",
+                    if let inputError {
+                        Label(inputError.message,
                               systemImage: "exclamationmark.triangle")
                             .foregroundStyle(.primary)
+                            .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("precisionError")
                     }
                     Button { apply() } label: {
@@ -106,6 +122,7 @@ private struct PrecisionValueEditor: View {
                             .contentShape(Rectangle())
                     }
                         .foregroundStyle(StudioPalette.action)
+                        .disabled(inputError == .oversizedDraft)
                         .accessibilityIdentifier("precisionApply")
                 } footer: {
                     Text("Allowed: \(format(range.lowerBound)) to \(format(range.upperBound)) \(unit). No grouping or scientific notation. The value is not snapped to slider increments.")
@@ -128,7 +145,6 @@ private struct PrecisionValueEditor: View {
                 draft = initialDraft
                 active = true
             }
-            .onChange(of: draft) { _, _ in invalid = false }
             .onChange(of: value.bitPattern) { _, _ in if active { cancel() } }
             .onChange(of: underlyingValue?.wrappedValue.bitPattern) { _, _ in if active { cancel() } }
             .onChange(of: locale) { _, _ in if active { cancel() } }
@@ -136,6 +152,19 @@ private struct PrecisionValueEditor: View {
             .onDisappear { active = false }
         }
         .tint(StudioPalette.action)
+    }
+
+    private var boundedDraft: Binding<String> {
+        Binding(get: { draft }, set: { replacement in
+            // Reject before assigning SwiftUI state. Truncation could turn a
+            // pasted number into a different, apparently valid scene value.
+            guard StudioNumericInput.isWithinDraftLimit(replacement) else {
+                inputError = .oversizedDraft
+                return
+            }
+            draft = replacement
+            inputError = nil
+        })
     }
 
     /// Ordinary Form content can grow with its text, including while the
@@ -181,13 +210,16 @@ private struct PrecisionValueEditor: View {
         guard value.bitPattern == originalValueBits, locale == originalLocale,
               underlyingValue?.wrappedValue.bitPattern == originalUnderlyingValueBits,
               range == originalRange else { cancel(); return }
+        // A rejected paste is not permission to apply the preceding draft.
+        // The next bounded edit clears this error, including delete/retype.
+        if case .oversizedDraft? = inputError { return }
         // Applying untouched formatted text must not round an imported value.
         if draft == initialDraft {
             cancel(); return
         }
         guard let next = StudioNumericInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
                                                   in: range) else {
-            invalid = true
+            inputError = .invalidDecimal
             return
         }
         active = false

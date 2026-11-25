@@ -188,12 +188,15 @@ class SimulatorStartup:
             raise failure(f"{record['name']} did not complete successfully before its deadline "
                           f"(status={record['status']}, exit={record.get('returnCode')})")
 
-    def inventory(self, name, deadline, maximum_seconds=None):
+    def inventory(self, name, deadline, maximum_seconds=None, *, startup_timeout=False):
         if maximum_seconds is None:
             maximum_seconds = INVENTORY_TIMEOUT_SECONDS
         record = self.command(name, ["list", "devices", "available", "-j"], deadline,
                               maximum_seconds)
-        self.require_success(record)
+        # Only a post-boot command timeout is a startup recovery trigger.
+        # Tool, signal and cleanup failures still go through the terminal
+        # checks in require_success; inventory/identity validation stays below.
+        self.require_success(record, startup=startup_timeout and record["status"] == "timed_out")
         try:
             data = json.loads((self.output / record["stdoutPath"]).read_text(encoding="utf-8"))
             groups = data["devices"]
@@ -237,7 +240,7 @@ class SimulatorStartup:
             # inventory service is still busy. Allow a bounded readiness query
             # within this same attempt deadline; identity validation is intact.
             ready = self.inventory(f"attempt-{number}-postflight", deadline,
-                                   POST_BOOT_INVENTORY_TIMEOUT_SECONDS)
+                                   POST_BOOT_INVENTORY_TIMEOUT_SECONDS, startup_timeout=True)
             if ready["state"] != "Booted" or time.monotonic() >= deadline:
                 raise StartupFailure("Simulator was not verified Booted before the attempt deadline")
             attempt["status"] = "ready"

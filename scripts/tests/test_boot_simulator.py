@@ -174,7 +174,8 @@ class BootSimulatorTests(unittest.TestCase):
                             "list": [{}, {"sleep": delay}]}
                 (root / "scenario.json").write_text(json.dumps(scenario))
                 environment = {"KEYFILL_STARTUP_TEST_DIRECTORY": str(root),
-                               "PATH": str(root) + os.pathsep + os.environ["PATH"]}
+                               "PATH": str(root) + os.pathsep + os.environ["PATH"],
+                               "GITHUB_ACTIONS": "false", "RUNNER_ENVIRONMENT": "self-hosted"}
                 args = argparse.Namespace(output=root / "evidence", timeout_seconds=budget,
                                           udid=UDID, runtime=RUNTIME, device_type=DEVICE_TYPE)
                 with mock.patch.dict(os.environ, environment), \
@@ -188,6 +189,7 @@ class BootSimulatorTests(unittest.TestCase):
                         with self.assertRaises(BOOT.VerificationFailure):
                             startup.run()
                         self.assertNotEqual(startup.report["attempts"][-1]["status"], "ready")
+                        self.assertEqual(startup.report["attempts"][-1]["failure"]["type"], "StartupFailure")
                 command = startup.report["commands"][-1]
                 self.assertEqual(command["name"], "attempt-1-postflight")
                 self.assertEqual(command["status"], "exited" if ready else "timed_out")
@@ -204,6 +206,47 @@ class BootSimulatorTests(unittest.TestCase):
         result, report, calls, _, _ = self.run_case({"initial_state": "Booted"})
         self.assert_ready(result, report)
         self.assertEqual(self.operations(calls), ["list", "bootstatus", "list"])
+
+    def test_postflight_timeout_recovers_once_within_shared_budget(self):
+        result, report, calls, artifacts, elapsed = self.run_case(
+            {"list": [{}, {"sleep": 60, "spawn_child": True}]}, budget=3,
+            before_cleanup=self.assert_child_stopped)
+        self.assert_ready(result, report)
+        self.assertEqual(report["status"], "ready_after_recovery")
+        self.assertEqual([attempt["status"] for attempt in report["attempts"]], ["failed", "ready"])
+        self.assertEqual(report["attempts"][0]["failure"]["type"], "StartupFailure")
+        bootstatus = next(command for command in report["commands"]
+                          if command["name"] == "attempt-1-bootstatus")
+        self.assertEqual(bootstatus["returnCode"], 0)
+        postflight = next(command for command in report["commands"]
+                         if command["name"] == "attempt-1-postflight")
+        self.assertEqual(postflight["status"], "timed_out")
+        self.assertTrue(postflight["cleanup"]["directChildReaped"])
+        self.assertIn(UDID, artifacts[postflight["stdoutPath"]])
+        self.assertEqual(self.operations(calls),
+                         ["list", "boot", "bootstatus", "list", "list", "shutdown", "list",
+                          "boot", "bootstatus", "list"])
+        self.assertLess(elapsed, 3.5)
+        work_budget = report["budgetSeconds"] - report["cleanupReserveSeconds"]
+        self.assertTrue(all(command["deadlineElapsedSeconds"] <= work_budget + 0.01
+                            for command in report["commands"]))
+
+    def test_two_postflight_timeouts_exhaust_same_budget_after_one_recovery(self):
+        result, report, calls, _, elapsed = self.run_case(
+            {"list": [{}, {"sleep": 60}, {}, {}, {"sleep": 60}]}, budget=3)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual([attempt["status"] for attempt in report["attempts"]], ["failed", "failed"])
+        self.assertTrue(all(attempt["failure"]["type"] == "StartupFailure"
+                            for attempt in report["attempts"]))
+        postflights = [command for command in report["commands"]
+                       if command["name"].startswith("attempt-") and command["name"].endswith("-postflight")]
+        self.assertEqual([command["status"] for command in postflights], ["timed_out", "timed_out"])
+        self.assertTrue(all(command["cleanup"]["directChildReaped"] for command in postflights))
+        self.assertEqual(self.operations(calls).count("boot"), 2)
+        self.assertEqual(self.operations(calls).count("shutdown"), 1)
+        self.assertLess(elapsed, 3.5)
+        self.assertLess(report["elapsedSeconds"], 3.15)
 
     def test_recovery_retains_initial_stderr_and_exit_status(self):
         result, report, calls, artifacts, _ = self.run_case({"bootstatus": [
@@ -253,11 +296,37 @@ class BootSimulatorTests(unittest.TestCase):
                 self.assertNotIn("shutdown", self.operations(calls))
                 self.assertEqual(report["recovery"]["status"], "failed")
 
-    def test_final_identity_mismatch_is_terminal_even_after_bootstatus_success(self):
-        result, report, calls, _, _ = self.run_case({"list": [{}, {"device_type": "different-type"}]})
-        self.assertNotEqual(result.returncode, 0)
-        self.assertNotIn("shutdown", self.operations(calls))
-        self.assertEqual(len(report["attempts"]), 1)
+    def test_invalid_postflight_is_terminal_even_after_bootstatus_success(self):
+        for defect in ({"runtime": "another-runtime"}, {"device_type": "another-type"},
+                       {"missing": True}, {"duplicate": True}, {"available": False},
+                       {"malformed": True}, {"state": "unknown"}, {"exit": 9},
+                       {"signal": signal.SIGTERM}):
+            with self.subTest(defect=defect):
+                result, report, calls, _, _ = self.run_case({"list": [{}, defect]})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(self.operations(calls), ["list", "boot", "bootstatus", "list"])
+                self.assertEqual(len(report["attempts"]), 1)
+                self.assertEqual(report["attempts"][0]["failure"]["type"], "VerificationFailure")
+                self.assertNotIn("recovery", report)
+
+    def test_postflight_execution_or_timeout_cleanup_failure_is_terminal(self):
+        for defect in ({"status": "execution_error", "error": {"message": "cannot execute xcrun"}},
+                       {"status": "timed_out", "returnCode": -signal.SIGKILL,
+                        "cleanup": {"directChildReaped": False}},
+                       {"status": "timed_out", "returnCode": -signal.SIGKILL,
+                        "cleanup": {"directChildReaped": True, "error": {"message": "cannot kill group"}}}):
+            with self.subTest(defect=defect), \
+                    tempfile.TemporaryDirectory(prefix="keyfill-postflight-terminal-") as temporary:
+                args = argparse.Namespace(output=Path(temporary) / "evidence", timeout_seconds=8,
+                                          udid=UDID, runtime=RUNTIME, device_type=DEVICE_TYPE)
+                startup = BOOT.SimulatorStartup(args, time.monotonic())
+                bootstatus = {"name": "attempt-1-bootstatus", "status": "exited", "returnCode": 0}
+                postflight = dict(defect, name="attempt-1-postflight")
+                with mock.patch.object(startup, "command", side_effect=[bootstatus, postflight]), \
+                        self.assertRaises(BOOT.VerificationFailure):
+                    startup.attempt(1, {"state": "Booted"}, startup.first_deadline)
+                self.assertEqual(startup.report["attempts"][0]["failure"]["type"], "VerificationFailure")
+                self.assertNotIn("recovery", startup.report)
 
     def test_bootstatus_success_without_booted_postflight_is_not_ready(self):
         result, report, _, _, _ = self.run_case({"bootstatus": [{"next_state": "Shutdown"}, {"next_state": "Shutdown"}]})

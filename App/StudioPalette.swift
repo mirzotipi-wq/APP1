@@ -19,6 +19,22 @@ enum StudioPalette {
     }
     static let secondaryText = Color(uiColor: secondaryTextUIColor)
 
+    /// Explicit text on the action fill; system prominent-button foregrounds
+    /// otherwise choose white even when the dark-appearance fill is pale blue.
+    static let prominentActionTextUIColor = UIColor { traits in
+        traits.userInterfaceStyle == .dark ? .black : .white
+    }
+    static let prominentActionText = Color(uiColor: prominentActionTextUIColor)
+
+    /// Error text and custom destructive icons share a text-safe opaque red.
+    /// Native alert actions retain their system destructive role and styling.
+    static let destructiveUIColor = UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 1, green: 159 / 255, blue: 153 / 255, alpha: 1)
+            : UIColor(red: 180 / 255, green: 35 / 255, blue: 24 / 255, alpha: 1)
+    }
+    static let destructive = Color(uiColor: destructiveUIColor)
+
     /// Dark amber keeps the selected checkmark and equipment icon visible on
     /// light grouped rows, including their translucent amber backgrounds.
     static let selectionUIColor = UIColor { traits in

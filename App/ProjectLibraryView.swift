@@ -61,7 +61,7 @@ struct ProjectLibraryView: View {
                         Label("Unsaved lighting setup", systemImage: "exclamationmark.circle")
                             .font(.headline)
                         Text("Save your current edits before creating, opening or organizing projects. Nothing is discarded automatically.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                         Button("Save current setup") { perform { try onSave() } }
                             .disabled(isImporting || isCommittingImport || isWorking || isPerformingOperation)
                             .accessibilityIdentifier("librarySaveCurrent")
@@ -86,7 +86,7 @@ struct ProjectLibraryView: View {
                         ProgressView("Saving project changes")
                             .accessibilityIdentifier("projectLibraryProgress")
                         Text("You can close Projects while the save finishes.")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     }
                 } else if let importMessage {
                     Section {
@@ -101,11 +101,11 @@ struct ProjectLibraryView: View {
                         }
                         if savedProjects.isEmpty {
                             Text("No project names match in this section.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(StudioPalette.secondaryText)
                                 .accessibilityIdentifier("projectSearchEmpty")
                         }
                     } else {
-                        Text("No saved projects yet.").foregroundStyle(.secondary)
+                        Text("No saved projects yet.").foregroundStyle(StudioPalette.secondaryText)
                     }
                     Button {
                         naming = Naming(kind: .create, title: "New project", initial: "Portrait setup")
@@ -124,30 +124,33 @@ struct ProjectLibraryView: View {
                     .disabled(!canImport)
                     .accessibilityIdentifier("importEditableProject")
                     Text("Import a Key & Fill editable copy as a new project. Existing saved projects are kept.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     if let library, library.projects.count >= ProjectLibrary.maximumProjects {
                         Text("64-project limit reached, including archived projects. Remove an archived project to free a slot.")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     }
                 } header: {
-                    Text("On this device")
+                    Text("On this device").foregroundStyle(StudioPalette.secondaryText)
                 } footer: {
                     if !projects.isEmpty {
                         Text("Saved top views: circles mark subjects, triangles mark cameras and squares mark lights.")
+                            .foregroundStyle(StudioPalette.secondaryText)
                     }
                 }
                 if projects.contains(where: { $0.project.isArchived }) {
-                    Section("Archived") {
+                    Section {
                         ForEach(archivedProjects) { project in
                             archivedProjectRow(project)
                         }
                         if archivedProjects.isEmpty {
                             Text("No archived project names match your search.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(StudioPalette.secondaryText)
                                 .accessibilityIdentifier("archivedProjectSearchEmpty")
                         }
                         Text("Archived projects can be restored or permanently removed from this library.")
-                            .font(.caption).foregroundStyle(.secondary)
+                            .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+                    } header: {
+                        Text("Archived").foregroundStyle(StudioPalette.secondaryText)
                     }
                 }
             }
@@ -197,6 +200,7 @@ struct ProjectLibraryView: View {
                 }
             }
         }
+        .tint(StudioPalette.action)
     }
 
     private func projectRow(_ presentation: ProjectLibraryRowPresentation, active: Bool) -> some View {
@@ -266,7 +270,7 @@ struct ProjectLibraryView: View {
             HStack(spacing: 4) {
                 if active {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(StudioPalette.selection)
                 }
                 Text("\(presentation.project.scene.lights.count) lights" + (active ? " · Open" : ""))
                     .foregroundStyle(Color.primary)
@@ -295,6 +299,7 @@ struct ProjectLibraryView: View {
                     confirmDeletion = true
                 } label: {
                     Image(systemName: "trash")
+                        .foregroundStyle(StudioPalette.destructive)
                         .frame(width: 44, height: 44).contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless).disabled(!canMutate)
@@ -479,6 +484,7 @@ private struct ProjectNameEditor: View {
     @State private var errorMessage: String?
     @State private var isSubmitting = false
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @FocusState private var focused: Bool
 
     init(title: String, initial: String, onSubmit: @escaping (String) throws -> Task<Void, Error>) {
@@ -493,9 +499,11 @@ private struct ProjectNameEditor: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Project name") {
+                Section {
+                    editorHeading
                     HStack {
                         TextField("Name", text: boundedDraft).focused($focused)
+                            .frame(minHeight: 44)
                             .disabled(isSubmitting)
                             .textInputAutocapitalization(.never).autocorrectionDisabled().submitLabel(.done)
                             .accessibilityIdentifier("projectNameInput")
@@ -504,7 +512,7 @@ private struct ProjectNameEditor: View {
                             Button {
                                 name = ""; focused = true
                             } label: {
-                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                Image(systemName: "xmark.circle.fill").foregroundStyle(StudioPalette.secondaryText)
                                     .frame(width: 44, height: 44)
                             }
                             .buttonStyle(.borderless).accessibilityLabel("Clear project name")
@@ -514,37 +522,73 @@ private struct ProjectNameEditor: View {
                     }
                     if requiresNewName {
                         Text("A shortened version of the name is shown. Enter a new name to save it. Cancelling keeps the complete original saved name.")
-                            .font(.footnote).foregroundStyle(.secondary)
+                            .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                             .accessibilityIdentifier("shortenedProjectNameNotice")
                     }
                     if let errorMessage {
-                        Text(errorMessage).font(.footnote).foregroundStyle(.red)
+                        Text(errorMessage).font(.footnote).foregroundStyle(StudioPalette.destructive)
                             .accessibilityIdentifier("projectNameError")
                     }
                     if isSubmitting {
                         ProgressView("Saving project name")
                         Text("This save finishes before closing. Your entered name stays here if saving fails.")
-                            .font(.footnote).foregroundStyle(.secondary)
+                            .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     }
                 }
                 Section {
                     Button { submit() } label: {
                         Text("Save project name").fontWeight(.semibold)
+                            .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, minHeight: 44)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .foregroundStyle(canSubmit ? StudioPalette.prominentActionText : StudioPalette.secondaryText)
+                            .background(canSubmit ? StudioPalette.action : Color(uiColor: .tertiarySystemGroupedBackground),
+                                        in: RoundedRectangle(cornerRadius: 10))
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(isSubmitting || (try? StudioDisplayName.newInput(name)) == nil ||
-                              (requiresNewName && name == initialDisplay))
+                    .buttonStyle(.plain)
+                    .disabled(!canSubmit)
                     .accessibilityIdentifier("confirmProjectName")
                 }
             }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(isSubmitting) }
-             }
+            .scrollDismissesKeyboard(.never)
             .interactiveDismissDisabled(isSubmitting)
             .onAppear { focused = true }
+        }
+        .tint(StudioPalette.action)
+    }
+
+    private var canSubmit: Bool {
+        !isSubmitting && (try? StudioDisplayName.newInput(name)) != nil &&
+            (!requiresNewName || name != initialDisplay)
+    }
+
+    /// Form content grows and scrolls at accessibility text sizes, including
+    /// while the keyboard is visible; navigation-bar controls cannot grow.
+    private var editorHeading: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+        return layout {
+            Text("Project name")
+                .font(.headline)
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
+            Button { dismiss() } label: {
+                Text("Cancel")
+                    .font(.body)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(StudioPalette.action)
+            .disabled(isSubmitting)
+            .accessibilityIdentifier("projectNameCancel")
         }
     }
 
