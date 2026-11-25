@@ -1,0 +1,55 @@
+{
+  "id": "053",
+  "canonicalAgent": "/root/w007_review_coordinator/w053_scroll_reachability",
+  "task": "Read-only StudioContentReachability review: direction, containing viewport, keyboard/navigation exclusions, bounded swipe behavior versus required accessibility assertions.",
+  "files": [
+    "UITests/StudioContentReachability.swift",
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "App/PrecisionValueButton.swift",
+    "App/ProjectLibraryView.swift",
+    "App/StudioView.swift",
+    "project.yml",
+    ".github/workflows/ios-prototype.yml",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "check": "git rev-parse HEAD",
+      "result": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419"
+    },
+    {
+      "check": "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- UITests/StudioContentReachability.swift UITests/StudioAppAccessibilityUITests.swift",
+      "result": "Empty; reviewed helpers unchanged from frozen source candidate."
+    },
+    {
+      "check": "git diff --name-only 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD",
+      "result": "Only documentation/evidence/state paths; no source changes."
+    },
+    {
+      "check": "Focused source inspection with rg, cat, sed and numbered excerpts",
+      "result": "Direction uses target position when available: below viewport drags upward, above viewport drags downward. All required scrolling control/text checks opt into full-frame reveal and independently assert a containing ScrollView/CollectionView/Table viewport. Nested sheet navigation bars are all considered, keyboard top clips vertical space, and the fixed undo row is excluded only while hittable. Name-entry workflow explicitly asserts keyboard persistence after reaching Save and Cancel."
+    },
+    {
+      "check": "Source inspection of presented surfaces and selected CI destination",
+      "result": "Precision and name sheets use NavigationStack/Form; library uses NavigationStack/List; studio uses ScrollView. Required CI selects iPhone 17 Pro. No actual native execution performed."
+    },
+    {
+      "check": "Native UIKit/XCTest and full suite",
+      "result": "Not run; read-only Linux review cannot establish native UI reachability or an executed acceptance pass."
+    }
+  ],
+  "outcome": {
+    "status": "No confirmed material defect in the assigned scope.",
+    "reviewed_source_revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "inspected_head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "false_pass_assessment": "An early return based on screen bounds alone does not create a required layout pass: control/text callers also check the real containing surface and finite full-frame containment; failed assertions terminate this test.",
+    "conditional_limits": [
+      "Reveal operates against app bounds rather than the exact containing surface. It could stop early then fail the independent containment assertion if a future surface is smaller; not reproduced in the current iPhone workflow.",
+      "Drag x=0.97 of app width is not guaranteed to fall within a centered iPad sheet. App targets iPhone/iPad, but required CI destination is iPhone; no iPad runtime result or confirmed product defect claimed.",
+      "The loop has 12 observations and up to 12 drags, with no final observation after the twelfth drag. A target first becoming visible on that last drag could produce a false failure; no current required control was shown to need that boundary."
+    ],
+    "changes": "No repository edits, commits, full-suite runs, or font/naming audit repeated."
+  }
+}

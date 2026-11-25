@@ -1,0 +1,64 @@
+{
+  "id": "092",
+  "canonicalAgent": "/root/w007_review_coordinator/w092_m02_receipt_integrity",
+  "task": "Independently review accepted M02 receipt against m02-m03-code-v2; required fixtures/parity/precision, benchmark/cancellation/cache, native evidence, carry-forward and preserved limitations.",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-count-boundary.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-final-benchmark.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-ci-core.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-ci-native.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-native-method-events.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-native-excerpts.log",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/ci-room-startup-failure.json",
+    "docs/evidence/m02-m03-code-2026-11-25/a021.md",
+    "docs/evidence/m02-m03-code-2026-11-25/renders/manifest.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core",
+    "scripts/benchmark-study.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "check": "Read-only revision/status inspection",
+      "result": "HEAD 9257b6d differs from 4d0c67d only in documentation/evidence; concurrent uncommitted App/ProjectBackupView.swift, App/StudioView.swift, NativeTests/StudioPaletteTests.swift and agents/LEARNINGS.md observed and left untouched. Current artifacts are not claimed to validate those pending edits."
+    },
+    {
+      "check": "Fresh core log inspection",
+      "result": "4d0c67d environment log identifies Ubuntu24.04.5 x86_64, Swift6.4.2. Existing Debug and Release logs finish 357 tests each, zero failures; cancellation and cache methods are present and passed. No tests rerun by worker."
+    },
+    {
+      "check": "Fixture artifact validation",
+      "result": "Twelve manifest names, actual scene JSON and PPM files exist; all unsupported counts zero. All twelve current PPM files are byte-identical to retained M02 PPMs; retained PNGs also exist. Historical independent a021 review records twelve individual visual observations and limitations. Worker did not independently view images."
+    },
+    {
+      "check": "Shared-kernel and strict-precision log inspection",
+      "result": "Six parity cases pass with maximum channel error1, zero invalid-mask mismatches; near-field has84/84 invalid pixels as expected. Eight precision cases pass max0 with matching invalid masks; strict maximum1 retained. These are host kernel checks, not Metal."
+    },
+    {
+      "check": "Historical and current benchmark structure/statistics",
+      "result": "Both JSONs retain eight frame workloads, twelve observed cancellations and four visibility workloads, seven raw measured samples each frame/visibility workload, one warm-up, optimized build and exact revisions. Recomputed nearest-rank p50/p95 agree for all workload entries; frame unsupported counts zero. Source requires full repeated StudyImage equality. Historical compiler/commands are in count-boundary receipt; current compiler in core-environment.log."
+    },
+    {
+      "check": "Historical native accounting",
+      "result": "Parsed m02-native-method-events.json:110 unique started events and110 matching passed events, no duplicates/other outcomes. Native excerpts record successful cache/cancellation/clamping methods, all three required Metal methods and six actual Metal parity outputs with max1 and invalid-mask agreement. CI receipt records terminal-success native command/result-export/build steps at a6ba92b; not current UI evidence."
+    },
+    {
+      "check": "Carry-forward consistency",
+      "result": "Historical receipt explicitly scopes native a6ba92b carry to90d36f9, explaining unchanged App/NativeTests and count-first validation delta. Independent historical git diff unavailable because a6ba92b object is absent locally. Comparing recorded final-core hashes with current files finds only LightOutputAdjustment.swift, SceneTransform.swift and StudioNumericInput.swift changed; renderer/cache/photometry source hashes match. Fresh current portable artifacts supply rerun evidence rather than broad unsupported carry-forward."
+    },
+    {
+      "check": "Failure/physical limits",
+      "result": "Historical room-startup failure receipt preserves zero UI methods and no finalized result bundle; current room UI failure remains M03 and is not credited as historical M02 success. Receipt explicitly excludes photographic/calibration, physical-device performance/thermal/memory and manual accessibility claims."
+    }
+  ],
+  "outcome": "No confirmed material M02 receipt defect. Required artifact cardinalities, numeric results, benchmark provenance and historical native method evidence are consistent with accepted M02 scope. Evidence-only review; no new execution, native runtime, screenshot review, current UI pass, physical validation or current working-tree acceptance is asserted.",
+  "limitations": [
+    "Historical a6ba92b git object unavailable, so recorded native carry-forward cannot be independently re-diffed locally.",
+    "Historical native review used retained receipt, method-event extraction and raw excerpts; complete xcresult was not downloaded or reopened.",
+    "No suites, fixture generation, benchmark runs, native execution or image re-review performed."
+  ]
+}

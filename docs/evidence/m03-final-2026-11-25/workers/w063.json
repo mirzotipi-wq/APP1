@@ -1,0 +1,43 @@
+{
+  "id": "063",
+  "task": "Review SurfacePhotometry point inverse-square/cosine and invalid/range boundaries vs <=1% contract; inspect actual tests and units.",
+  "canonicalAgent": "/root/w007_review_coordinator/w063_point_photometry",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "Sources/LightingCore/SurfacePhotometry.swift",
+    "Tests/LightingCoreTests/SurfacePhotometryTests.swift",
+    "Tests/LightingCoreTests/PhotometryInvariantTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Tests/LightingCoreTests/SceneTests.swift",
+    "Tests/LightingCoreTests/StudioOpticsTests.swift",
+    "docs/ARCHITECTURE.md",
+    "docs/acceptance/m02-m03-code.md",
+    "AGENTS.md"
+  ],
+  "findings": [],
+  "checks": [
+    "Inspected pointIlluminance: validates both positions, computes Euclidean distance in meters, delegates I/r^2 to normalIlluminance, then applies normalized receiver incidence clamped to [0,1].",
+    "Inspected UnitDirection scale-first normalization: finite nonzero vectors normalize without overflow, including greatest-finite components; zero and nonfinite vectors reject.",
+    "Inspected input bounds: coordinates finite within [-100,100] meters, intensity finite within [0,100000] cd, supported point distance >=0.05 m; bounded coordinate deltas keep point distance arithmetic finite. Coincident source and receiver reject before division.",
+    "Inspected actual assertions: point cosine angles 0/30/60/90/120/180 degrees, 1m/2m inverse-square checks, coincident and invalid intensity rejection, invalid normal rejection, rigid-transform invariance, camera-facing cosine/backface and coincident camera handling. These are substantially tighter than 1% for their tested nonzero fixtures.",
+    "Inspected units documentation: scene meters, candela luminous intensity, output lux; no watts-to-lux substitution.",
+    "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests produced no output: inspected source/tests unchanged at newer documentation checkpoint."
+  ],
+  "tests": {
+    "executed": [],
+    "sourceReviewed": [
+      "SurfacePhotometryTests.testDirectionNormalizesAndRejectsInvalid",
+      "SurfacePhotometryTests.testPointCosineAndInverseSquare",
+      "PhotometryInvariantTests.testPointAndClippedRectangleAreInvariantUnderRigidCoordinateChanges",
+      "PhotometryInvariantTests.testMixedStudioRigKeepsMeterAndStudyValuesAfterYawAndTranslation",
+      "SceneTests.testInverseSquare",
+      "SceneTests.testInvalidPhotometry",
+      "StudioOpticsTests.testPointReceiverTracksCameraAndBackface",
+      "StudioOpticsTests.testDirectionalCosineAndAimAway"
+    ],
+    "limitations": "Source/assertion review only. No compiler, runtime probe, full suite, native iOS or physical execution performed by worker063. Coordinator reports root Debug/Release green; this review does not independently claim those runs."
+  },
+  "outcome": "No confirmed material defect found in assigned point photometry scope. Formula, guards, units and inspected assertions align with declared ideal point model and <=1% contract. No code change proposed."
+}

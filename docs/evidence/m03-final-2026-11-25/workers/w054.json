@@ -1,0 +1,35 @@
+{
+  "id": "054",
+  "task": "Review SceneFileStore atomic/malformed/oversized handling and legacy decode path; preserve identities and previous bytes.",
+  "files": [
+    "Sources/LightingCore/SceneFileStore.swift",
+    "Tests/LightingCoreTests/SceneFileStoreTests.swift",
+    "Sources/LightingCore/SceneCodec.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/ProjectLibrary.swift",
+    "Tests/LightingCoreTests/SceneTests.swift",
+    "Tests/LightingCoreTests/ProjectLibraryTests.swift"
+  ],
+  "findings": [],
+  "tests": {
+    "revision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "unchangedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "executed": [
+      "git rev-parse HEAD returned 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419.",
+      "git status --short produced no entries.",
+      "git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources/LightingCore/SceneFileStore.swift Tests/LightingCoreTests/SceneFileStoreTests.swift produced no differences.",
+      "Read assigned implementation and all five SceneFileStoreTests; traced codec validation, schema migration, and legacy-library load call site; inspected existing SceneTests and legacy migration/malformed tests in ProjectLibraryTests."
+    ],
+    "notRun": [
+      "No Swift tests, fault-injection probes, native Apple execution, or full suite were run."
+    ],
+    "sourceReview": [
+      "load distinguishes true absence from other errors, rejects nonregular files, checks pre-read size, and limits actual reads to maximumBytes+1 before bounded decoding.",
+      "save validates existing bytes through load before encoding/replacing; malformed or oversized files prevent replacement, and atomic Foundation write is used. Atomicity under actual write failure/interruption was not independently exercised.",
+      "validated migration changes only schemaVersion; decoded light UUIDs and other scene values are retained. ProjectLibraryFileStore reads legacy through SceneFileStore, writes a separate projects.json, and leaves portrait.json bytes intact.",
+      "Existing tests specify missing-parent creation, oversize byte preservation, directory/symlink rejection, exact-limit load, idempotent legacy migration with identity preservation, and malformed legacy preservation. These were inspected, not executed."
+    ]
+  },
+  "outcome": "No confirmed material defect in the assigned source review. Runtime atomic-failure behavior and native filesystem outcomes remain outside this worker evidence.",
+  "canonicalAgent": "/root/w007_review_coordinator/w054_legacy_scene_store"
+}

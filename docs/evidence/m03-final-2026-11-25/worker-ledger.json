@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "campaign": "M03 final continuation 2026-11-25",
+  "campaign": "M03 final continuation2026-11-25",
   "baseRevision": "fd73004ddcb1b01e53e29d03bed093fb24b8a75a",
-  "candidateRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "candidateRevision": "c86fadd867322b816f400b003de461e0e418dc52",
   "requestedDistinctAgents": 100,
-  "actualCreatedContexts": 52,
-  "completedDistinctAgents": 49,
+  "actualCreatedContexts": 96,
+  "completedDistinctAgents": 93,
   "concurrentSlotsIncludingRoot": 4,
-  "asOfUTC": "2026-11-25T21:10:07.767383+00:00",
+  "asOfUTC": "2026-11-25T22:02:53.216883+00:00",
   "agents": [
     {
       "id": "001",
@@ -55,7 +55,7 @@
       "id": "007",
       "canonicalAgent": "/root/w007_review_coordinator",
       "status": "running",
-      "task": "Coordinate 93 distinct scoped agents and retain their outcomes"
+      "task": "Coordinate 93 distinct scoped agents and retain their actual outcomes"
     },
     {
       "id": "008",
@@ -361,14 +361,322 @@
     {
       "id": "051",
       "canonicalAgent": "/root/w007_review_coordinator/w051_room_ui_tests",
-      "status": "running",
-      "task": "Review required ManualRoomPlacementUITests assertions for exact yaw, room dimensions, conflicts and relaunch/undo behavior."
+      "status": "completed",
+      "task": "Review required ManualRoomPlacementUITests assertions for exact yaw, room dimensions, conflicts and relaunch/undo behavior.",
+      "report": "workers/w051.json"
     },
     {
       "id": "052",
       "canonicalAgent": "/root/w007_review_coordinator/w052_accessibility_control_checks",
+      "status": "completed",
+      "task": "Review essential Plan/inspector accessibility workflow label/value/selected/disabled/target checks against source, excluding prior font oracle and naming review.",
+      "report": "workers/w052.json"
+    },
+    {
+      "id": "053",
+      "canonicalAgent": "/root/w007_review_coordinator/w053_scroll_reachability",
+      "status": "completed",
+      "task": "Review StudioContentReachability helper for direction, keyboard/navbar viewport, nested sheet controls and bounded scrolls; identify concrete false passes/false failures.",
+      "report": "workers/w053.json"
+    },
+    {
+      "id": "054",
+      "canonicalAgent": "/root/w007_review_coordinator/w054_legacy_scene_store",
+      "status": "completed",
+      "task": "Review SceneFileStore atomic/malformed/oversized handling and legacy decode path; preserve identities and previous bytes.",
+      "report": "workers/w054.json"
+    },
+    {
+      "id": "055",
+      "canonicalAgent": "/root/w007_review_coordinator/w055_document_envelope",
+      "status": "completed",
+      "task": "Review project document envelope integrity validation (version, counts, IDs, metadata) and adversarial tests for rejects before mutation.",
+      "report": "workers/w055.json"
+    },
+    {
+      "id": "056",
+      "canonicalAgent": "/root/w007_review_coordinator/w056_document_nested",
+      "status": "completed",
+      "task": "Review nested scene/project validation on imported documents with malformed numeric/shape data; focus integrity and bounded resource use.",
+      "report": "workers/w056.json"
+    },
+    {
+      "id": "057",
+      "canonicalAgent": "/root/w007_review_coordinator/w057_document_adversarial",
+      "status": "completed",
+      "task": "Review malformed/oversized/truncated document decoding tests and parser bounds; identify realistic unhandled data-loss/crash risk.",
+      "report": "workers/w057.json"
+    },
+    {
+      "id": "058",
+      "canonicalAgent": "/root/w007_review_coordinator/w058_scene_codec",
+      "status": "completed",
+      "task": "Review SceneCodec version migration and invalid-value handling across v1\u2013v5; ensure unsupported future versions fail without partial acceptance.",
+      "report": "workers/w058.json"
+    },
+    {
+      "id": "059",
+      "canonicalAgent": "/root/w007_review_coordinator/w059_light_creation",
+      "status": "completed",
+      "task": "Review SceneLightCreation ID stability/count limits/default valid placement and duplicate behavior; compare test coverage.",
+      "report": "workers/w059.json"
+    },
+    {
+      "id": "060",
+      "canonicalAgent": "/root/w007_review_coordinator/w060_display_names",
+      "status": "completed",
+      "task": "Review StudioDisplayName sanitization/truncation and accessible text consistency; seek layout or identity confusion at edge lengths.",
+      "report": "workers/w060.json"
+    },
+    {
+      "id": "061",
+      "canonicalAgent": "/root/w007_review_coordinator/w061_room_modifier_footprint",
+      "status": "completed",
+      "task": "Review room modifier footprint validation at yaw/cardinal boundaries and candidate transforms; supported geometry remains consistent.",
+      "report": "workers/w061.json"
+    },
+    {
+      "id": "062",
+      "canonicalAgent": "/root/w007_review_coordinator/w062_library_menu_state",
+      "status": "completed",
+      "task": "Focused read-only UI gap review: ProjectLibraryView active/archive context menus, pending confirmation state, unsaved/busy guards, stale row identity, import sheet ownership; operation-domain tests reviewed elsewhere",
+      "report": "workers/w062.json"
+    },
+    {
+      "id": "063",
+      "canonicalAgent": "/root/w007_review_coordinator/w063_point_photometry",
+      "status": "completed",
+      "task": "Review SurfacePhotometry point inverse-square/cosine and invalid/range boundaries vs <=1% contract; inspect actual tests and units.",
+      "report": "workers/w063.json"
+    },
+    {
+      "id": "064",
+      "canonicalAgent": "/root/w007_review_coordinator/w064_area_photometry",
+      "status": "completed",
+      "task": "Review finite-area quadrature/sample limits, grazing clipping and declared support against numerical-reference tests <=5%; seek unsupported result accepted as supported.",
+      "report": "workers/w064.json"
+    },
+    {
+      "id": "065",
+      "canonicalAgent": "/root/w007_review_coordinator/w065_colorimetry",
+      "status": "completed",
+      "task": "Review ideal color pipeline exposure monotonicity, Kelvin/Bradford range handling, gamut/tone map and nonfinite inputs against tests.",
+      "report": "workers/w065.json"
+    },
+    {
+      "id": "066",
+      "canonicalAgent": "/root/w007_review_coordinator/w066_float32_eligibility",
+      "status": "completed",
+      "task": "Review Float32 backend eligibility precision guards, translated camera frames and refusal boundaries; map tests to source.",
+      "report": "workers/w066.json"
+    },
+    {
+      "id": "067",
+      "canonicalAgent": "/root/w007_review_coordinator/w067_parity_metrics",
+      "status": "completed",
+      "task": "Review StudyParityMetrics actual mask comparison and threshold calculations, zero/invalid dimensions and six fixture expected unsupported case.",
+      "report": "workers/w067.json"
+    },
+    {
+      "id": "068",
+      "canonicalAgent": "/root/w007_review_coordinator/w068_cache_keys",
+      "status": "completed",
+      "task": "Review StudyFrameCache key completeness and omission only of display names; changes to exposure/camera/material/room cannot return stale image.",
+      "report": "workers/w068.json"
+    },
+    {
+      "id": "069",
+      "canonicalAgent": "/root/w007_review_coordinator/w069_cache_eviction",
+      "status": "completed",
+      "task": "Review four-entry/256KiB RGBA+64KiB masks enforcement, oversized/replacement/eviction cases and completed-only insertion contract.",
+      "report": "workers/w069.json"
+    },
+    {
+      "id": "070",
+      "canonicalAgent": "/root/w007_review_coordinator/w070_renderer_cancellation",
+      "status": "completed",
+      "task": "Review ReferenceStudyRenderer cancellation poll ordering <=8 further pixels, fail/cancel publish behavior and bounded width inputs.",
+      "report": "workers/w070.json"
+    },
+    {
+      "id": "071",
+      "canonicalAgent": "/root/w007_review_coordinator/w071_emitter_culling",
+      "status": "completed",
+      "task": "Review conservative emitter-facing culling correctness at boundaries and zero contribution versus unsupported-mask classification.",
+      "report": "workers/w071.json"
+    },
+    {
+      "id": "072",
+      "canonicalAgent": "/root/w007_review_coordinator/w072_renderer_masks",
+      "status": "completed",
+      "task": "Review StudyImage compute data conversion and invalid-mask location preservation, malformed packed outputs and tests.",
+      "report": "workers/w072.json"
+    },
+    {
+      "id": "073",
+      "canonicalAgent": "/root/w007_review_coordinator/w073_renderer_precision",
+      "status": "completed",
+      "task": "Review ReferenceStudy camera-relative compute packing and far-world precision assumptions against strict eight-fixture harness.",
+      "report": "workers/w073.json"
+    },
+    {
+      "id": "074",
+      "canonicalAgent": "/root/w007_review_coordinator/w074_portrait_normals",
+      "status": "completed",
+      "task": "Review PortraitStudy grazing normal fallback, front hemisphere and geometric shadow offsets; identify plausible geometry defect from source/tests.",
+      "report": "workers/w074.json"
+    },
+    {
+      "id": "075",
+      "canonicalAgent": "/root/w007_review_coordinator/w075_portrait_mesh",
+      "status": "completed",
+      "task": "Review PortraitHeadMesh bounds/BVH hit handling and finite geometry tests; focus bounded work, malformed input and culling validity.",
+      "report": "workers/w075.json"
+    },
+    {
+      "id": "076",
+      "canonicalAgent": "/root/w007_review_coordinator/w076_metal_fallback",
+      "status": "completed",
+      "task": "Review MetalStudyRenderer runtime parity selection and backend downgrade/cache invalidation. Actual Metal execution must remain required evidence.",
+      "report": "workers/w076.json"
+    },
+    {
+      "id": "077",
+      "canonicalAgent": "/root/w007_review_coordinator/w077_recovery_palette_review",
+      "status": "completed",
+      "task": "ROOT REQUESTED READ-ONLY: narrow recovery Retry/Save-as-new prominent foreground and ProjectBackupView secondary/root tint pair mapping; preserve behavior",
+      "report": "workers/w077.json"
+    },
+    {
+      "id": "078",
+      "canonicalAgent": "/root/w007_review_coordinator/w078_spatial_preview",
+      "status": "completed",
+      "task": "Review SceneKit SpatialPreview transformed emitter geometry and Plan/camera selection mapping with native tests.",
+      "report": "workers/w078.json"
+    },
+    {
+      "id": "079",
+      "canonicalAgent": "/root/w007_review_coordinator/w079_entity_graph",
+      "status": "completed",
+      "task": "Review StudioEntityGraph stable entity IDs/selection updates across light delete/duplicate and scene rebuild; real geometry mapping only.",
+      "report": "workers/w079.json"
+    },
+    {
+      "id": "080",
+      "canonicalAgent": "/root/w007_review_coordinator/w080_reality_gestures",
+      "status": "completed",
+      "task": "Review RealityStudioPreview orbit/pan/zoom gesture bounds, reduced motion and Intel simulator fallback before RealityKit resource creation.",
+      "report": "workers/w080.json"
+    },
+    {
+      "id": "081",
+      "canonicalAgent": "/root/w007_review_coordinator/w081_native_cache_tests",
+      "status": "completed",
+      "task": "Review native cache tests plus render actor lifecycle task cancellation/latest-result publication: failed/cancelled work cannot cache or publish stale images; source/test coverage, no reruns",
+      "report": "workers/w081.json"
+    },
+    {
+      "id": "082",
+      "canonicalAgent": "/root/w007_review_coordinator/w082_native_renderer_tests",
+      "status": "completed",
+      "task": "Review actual native renderer tests distinguish CPU/shared-host from real Metal backend and fail if unavailable when required; inspect source without claiming execution.",
+      "report": "workers/w082.json"
+    },
+    {
+      "id": "083",
+      "canonicalAgent": "/root/w007_review_coordinator/w083_fixture_matrix",
+      "status": "completed",
+      "task": "Review render-study-fixtures twelve deterministic names/configurations, original six preserved and actual renderer zero-unsupported assertions/output capture.",
+      "report": "workers/w083.json"
+    },
+    {
+      "id": "084",
+      "canonicalAgent": "/root/w007_review_coordinator/w084_benchmark_contract",
+      "status": "completed",
+      "task": "Review benchmark script eight frame workloads/twelve cancellation/four visibility cases, warmup/sample raw accounting and image-byte consistency; no portable timing gate.",
+      "report": "workers/w084.json"
+    },
+    {
+      "id": "085",
+      "canonicalAgent": "/root/w007_review_coordinator/w085_kernel_fixture_contract",
+      "status": "completed",
+      "task": "Review CPU/shared-Float32 six fixture generation and harness exact masks/channel metrics; ensure near-field unsupported expected behavior preserved.",
+      "report": "workers/w085.json"
+    },
+    {
+      "id": "086",
+      "canonicalAgent": "/root/w007_review_coordinator/w086_precision_harness",
+      "status": "completed",
+      "task": "Review strict eight far-camera/world-translation harness channel<=1 assertions and unsupported-mask handling; no loosened source assumptions.",
+      "report": "workers/w086.json"
+    },
+    {
+      "id": "087",
+      "canonicalAgent": "/root/w007_review_coordinator/w087_ci_required_accounting",
+      "status": "completed",
+      "task": "Review CI wiring actual selected required native/UI test commands, always-run evidence accounting and explicit opt-in audit separation; identify false pass path.",
+      "report": "workers/w087.json"
+    },
+    {
+      "id": "088",
+      "canonicalAgent": "/root/w007_review_coordinator/w088_shard_parser",
+      "status": "completed",
+      "task": "Review native_test_shards exact method parsing/accounting for duplicate outcomes, parameterized paths and unstarted/interrupted tests; inspect regression tests.",
+      "report": "workers/w088.json"
+    },
+    {
+      "id": "089",
+      "canonicalAgent": "/root/w007_review_coordinator/w089_simulator_warmup",
+      "status": "completed",
+      "task": "Review simulator warmup cleanup/status preservation and timeout behavior; diagnostic failures must never become actual test passes.",
+      "report": "workers/w089.json"
+    },
+    {
+      "id": "090",
+      "canonicalAgent": "/root/w007_review_coordinator/w090_persistence_probes",
+      "status": "completed",
+      "task": "Review atomic write/interruption probes faithfully verify prior bytes, identities/unrelated records and mechanism labels; no physical power-loss claims.",
+      "report": "workers/w090.json"
+    },
+    {
+      "id": "091",
+      "canonicalAgent": "/root/w007_review_coordinator/w091_evidence_source_mapping",
+      "status": "completed",
+      "task": "Review M02/M03 evidence source revisions/commands and unchanged-source carryforward logic against current diff; identify concrete evidence mismatch only.",
+      "report": "workers/w091.json"
+    },
+    {
+      "id": "092",
+      "canonicalAgent": "/root/w007_review_coordinator/w092_m02_receipt_integrity",
+      "status": "completed",
+      "task": "Review M02 acceptance receipt required fixture/parity/benchmark/native evidence completeness and historical failures truthfulness; code-only scope only.",
+      "report": "workers/w092.json"
+    },
+    {
+      "id": "093",
+      "canonicalAgent": "/root/w007_review_coordinator/w093_m03_gate_inventory",
+      "status": "completed",
+      "task": "Review current M03 required workflow inventory vs contract including10optics/defaultAXXXL/library/probes and diagnostic audits distinction; inspect final candidate manifest if available.",
+      "report": "workers/w093.json"
+    },
+    {
+      "id": "094",
+      "canonicalAgent": "/root/w007_review_coordinator/w094_candidate_integration",
+      "status": "completed",
+      "task": "ROOT REQUESTED READ-ONLY: independent pending no-op binding guard and real room44pt target/regression-assertion repair review, preserve validation and no relaxed deadlines",
+      "report": "workers/w094.json"
+    },
+    {
+      "id": "099",
+      "canonicalAgent": "/root/w007_review_coordinator/w099_final_code_review",
       "status": "running",
-      "task": "Review essential Plan/inspector accessibility workflow label/value/selected/disabled/target checks against source, excluding prior font oracle and naming review."
+      "task": "RESERVED: independent final exact-candidate code review of revised precision/library/naming paths for lost edits, accessibility, and stale state bugs."
+    },
+    {
+      "id": "100",
+      "canonicalAgent": "/root/w007_review_coordinator/w100_final_acceptance_review",
+      "status": "running",
+      "task": "RESERVED: independently reconcile final M02-before-M03 acceptance, required gates and honest external-factor limits with root-supplied final evidence."
     }
   ]
 }

@@ -1,0 +1,36 @@
+{
+  "id": "075",
+  "task": "Review PortraitHeadMesh bounds/BVH hit handling and finite geometry tests; focus bounded work, malformed input and culling validity.",
+  "files": [
+    "Sources/LightingCore/PortraitHeadMesh.swift",
+    "Tests/LightingCoreTests/PortraitHeadMeshTests.swift",
+    "Sources/LightingCore/PortraitStudy.swift",
+    "Tests/LightingCoreTests/PortraitStudyTests.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Sources/LightingCore/ReferenceStudy.swift"
+  ],
+  "findings": [],
+  "tests": {
+    "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "sourceUnchanged": "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests returned no differences; targeted diff for the mesh/portrait source and tests was also empty.",
+    "actualChecks": [
+      "Read-only source and test inspection; no Swift compilation or test execution.",
+      "Reviewed private fixed 42x64 mesh construction, degeneracy rejection, centroid-sorted median BVH partitioning, inclusive padded slab bounds and finite half-open triangle segments.",
+      "Reviewed distance-preserving silhouette tie handling, nearest-hit search limits and early-out occlusion traversal.",
+      "Mapped actual independent unaccelerated oracle tests: 210 exterior rays, 63 seam/pole/edge/grazing rays, 12 interior rays, 15 finite-segment rays, exact silhouette render and tie endpoint regressions. Counts describe test source, not executed results.",
+      "Traced production entry points: renderer bounds image width, constructs normalized rays, validates scene through StudyLighting before pixel traversal, and shadow rays target validated emitter samples."
+    ],
+    "notRun": [
+      "Core/full test suites",
+      "Targeted runtime probes",
+      "Apple/UIKit/Metal/native execution"
+    ]
+  },
+  "outcome": {
+    "status": "No confirmed material defect in assigned mesh scope.",
+    "basis": "Geometry and BVH are immutable and privately constructed from fixed finite constants, with no external vertex/node input. Median subdivision strictly reduces ranges to at most eight triangles per leaf. The prescribed topology produces 5248 nondegenerate triangles, so traversal work is bounded even without culling. Node bounds derive from all descendant triangle vertices; positive padding is conservative. Triangles enforce minimum <= distance < maximum; tie handling retains the true smallest distance and never extends the caller maximum.",
+    "limits": "Source review only. The mesh tests validate finite generated rays and finite returned normals; they do not directly exercise malformed NaN/infinity mesh API inputs. No production route accepting arbitrary mesh data or unvalidated pixel/shadow rays was identified, so that coverage limitation is not classified as a product defect. Shading-normal behavior belongs to worker074."
+  },
+  "canonicalAgent": "/root/w007_review_coordinator/w075_portrait_mesh"
+}

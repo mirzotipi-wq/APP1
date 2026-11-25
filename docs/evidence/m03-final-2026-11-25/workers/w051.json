@@ -1,0 +1,110 @@
+{
+  "id": "051",
+  "task": "Review required ManualRoomPlacementUITests assertions for exact yaw, room dimensions, conflicts and relaunch/undo behavior.",
+  "canonicalAgent": "/root/w007_review_coordinator/w051_room_ui_tests",
+  "revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "UITests/ManualRoomPlacementUITests.swift",
+    "App/ManualRoomPlacementView.swift",
+    "App/StudioView.swift",
+    "Sources/LightingCore/RoomPlacement.swift",
+    "NativeTests/RoomRotationReadoutTests.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "docs/acceptance/m02-m03-code.md",
+    "AGENTS.md"
+  ],
+  "findings": [
+    {
+      "classification": "coverage-only limit",
+      "location": "UITests/ManualRoomPlacementUITests.swift:4-38; NativeTests/RoomRotationReadoutTests.swift:7-52",
+      "detail": "The half-turn UI workflow checks inside/outside status and undo enabledness, not the exact yaw or slider accessibility value. Native readout tests independently cover exact fractional, negative, localized and endpoint strings with bit-exact numeric round trips, but their presence is not executed evidence. No concrete yaw/readout production defect found."
+    },
+    {
+      "classification": "coverage-only limit",
+      "location": "UITests/ManualRoomPlacementUITests.swift:41-137",
+      "detail": "The resize workflow verifies rejected width 2 preserves subject X 3 and committed notes width 6; reset; accepted subject X 1.4999 and width 2; signed -0.0001 coordinate; snapshot notes; save and relaunch values. It does not exercise depth, subject Z, ceiling height, units changes, or stale-context rejection. Range validation and callback rejection are implemented in the reviewed production source; unexercised cases are not demonstrated failures."
+    },
+    {
+      "classification": "coverage-only limit",
+      "location": "UITests/ManualRoomPlacementUITests.swift:35-38,121-137; UITests/PrecisionEditingUITests.swift:145-161; App/StudioView.swift:1208-1246",
+      "detail": "The manual-room class only asserts undo enabledness. The adjacent precision workflow actually invokes room undo/redo and checks saved/unsaved state plus unchanged modifier width, but does not reopen room to inspect restored dimensions. Manual-room relaunch does explicitly check committed width and X. Production commits start an owned history transaction and end it on dismissal; callbacks validate generation, presentation owner and unchanged non-room scene. No reachable conflict or lost-edit defect established."
+    }
+  ],
+  "tests": [
+    {
+      "check": "git rev-parse HEAD",
+      "result": "4d0c67d258be802f048e74616cabcdf903e2b59d"
+    },
+    {
+      "check": "git status --short",
+      "result": "No output; worktree clean at inspection."
+    },
+    {
+      "check": "Read-only sed/cat/rg source inspection of assigned UI tests and relevant implementation/native readout/adjacent precision assertions",
+      "result": "Two required ManualRoomPlacementUITests methods identified. All assertions described above are present in current source. Some exploratory candidate file paths did not exist; follow-up searches used existing directories. No source or repository mutation."
+    },
+    {
+      "check": "Native UI tests, native unit tests, Linux Swift probes and full suites",
+      "result": "Not run; source review only."
+    }
+  ],
+  "outcome": "No confirmed material production or acceptance defect within assigned scope. Coverage boundaries recorded without treating absent assertions or unrun tests as failures or passes; required native execution remains root-owned.",
+  "followups": [
+    {
+      "scope": "READ-ONLY source/log/artifact diagnosis following actual native room-precision failure; original report retained unchanged above.",
+      "actual_head_at_followup": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+      "reviewed_source_revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "source_hashes": {
+        "UITests/ManualRoomPlacementUITests.swift": {
+          "reviewed_source_sha256": "de90ef17506b17b9da232fd0ed4d287fbc5539b4d7fddd153e6d5c6f1ace05b0",
+          "worktree_matches_reviewed_source": true
+        },
+        "UITests/StudioContentReachability.swift": {
+          "reviewed_source_sha256": "0511561f4b6ef5f56a44abc60d20f38cb44d263e739ca7e1fb908b32810ec77f",
+          "worktree_matches_reviewed_source": true
+        },
+        "App/ManualRoomPlacementView.swift": {
+          "reviewed_source_sha256": "9fa5496e9cf3ba72ffe13816a8ce11d9d592cc74fcbb1dac7eeae6a3bfeea26b",
+          "worktree_matches_reviewed_source": true
+        },
+        "Sources/LightingCore/RoomPlacement.swift": {
+          "reviewed_source_sha256": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+          "worktree_matches_reviewed_source": true
+        }
+      },
+      "worktree_note": "Unrelated root-owned tracked/untracked changes are present; none edited by this worker. Assigned source files byte-match source4d0c67d.",
+      "actual_native_result": {
+        "execution_owner": "Existing CI run, not executed by this worker",
+        "shard": "room-precision",
+        "device": "iPhone 17 Pro simulator",
+        "toolchain": "Xcode 26.6, iPhoneSimulator26.5 SDK per log",
+        "terminal_result": "5 methods executed; 4 passed; 1 failed; xcodebuild exit65",
+        "failed_method": "ManualRoomPlacementUITests.testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates",
+        "failed_assertion": "UITests/ManualRoomPlacementUITests.swift:81 XCTAssertTrue(error.waitForExistence(timeout:5))",
+        "duration_seconds": 50.525
+      },
+      "artifacts": {
+        "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-room-job.log": "01b41d8836bbb58094443f14ecd8567e46dcf1cb76ee96c7cc6470ab4a58e6e1",
+        "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-room-compact/native-attachments/BC5ADF66-6FC1-4AB8-91EA-C954563ECE94.txt": "74a00a608244a17cf28bb8acd6115efbed0033905dc9eac2a0bf9d6b24d0d7bc"
+      },
+      "observations": [
+        "Log lines1950-1987 show clear button, field tap, typing2, exact-draft assertion completion, roomWidthSet hit check/tap, and successful keyboard-absent predicate before line81 failure. No preceding helper assertion failed.",
+        "Captured hierarchy at21:28:40 retains roomWidth draft2, roomSubjectX3, all5 center positions inside, and original center coordinates. Both roomWidthError and roomWidthReset are absent. Width Set is in visible area atx322.3 y532.0,49.7x34.3. Keyboard is absent.",
+        "At default ManualRoom(width6,subjectX3), widthEditRange is3...30. With unchanged input context, apply() must reject2 and leave committed width6. Context-guard restoreDraft would change visible draft to6, contrary to capture.",
+        "Error Label identifier is applied directly to its conditional Label, but the independent Reset button shares the same condition and is also absent. This is not explained by a Label-only identifier mismatch.",
+        "Production rejectDraft() sets focused=false and invalid=true. boundedDraft setter atlines589-599 clears invalid on every in-limit replacement, including a repeated same-string value. A duplicate text update during keyboard resignation would remove both error and Reset while preserving draft2 and committed6, matching observed final state.",
+        "Unlike room rejectDraft(), the passing precision invalid-input path sets its error without dismissing field focus. This supports but does not prove the focus-loss mechanism."
+      ],
+      "diagnosis": {
+        "confirmed": "Required native acceptance method failed; no pass may be carried for its downstream notes/save/relaunch assertions in this run. Actual validation/error recovery state was absent from final hierarchy.",
+        "leading_mechanism": "Repeated same-value TextField binding update on focus loss clears validation state. Source supports exact state transition, but callback sequence is not logged.",
+        "unresolved": "No callback trace exists. Source plus final hierarchy strongly support a repeated same-value binding update clearing invalid, but the exact callback ordering is not runtime-proven. A video alone cannot establish that ordering.",
+        "minimal_candidate_if_confirmed": "Clear validation only for a genuinely changed draft; preserve error for redundant same-string binding writes. No implementation authorized or performed."
+      },
+      "tests_by_this_worker": "Read-only source, log and existing AX artifact inspection only; no test rerun, no native execution, no repository edits.",
+      "status": "Finalized read-only diagnosis. Root confirms there is no callback trace; exact binding-echo mechanism remains an inference. Existing native failing workflow is the required regression.",
+      "root_disposition": "Coordinator reports root is adding no-op replacement guards and repairing observed room-control target sizes with runtime target assertions. This worker neither edited nor verified those pending changes; original failing workflow and assertions/deadlines remain required.",
+      "acceptance_conclusion": "Source4d0c67d room-precision has an actual required failure, not merely a coverage gap. Four methods passed; failed resize method did not reach its remaining notes, save or relaunch assertions. A successful rerun at the integrated fix revision is required and must not be inferred from this diagnosis."
+    }
+  ]
+}

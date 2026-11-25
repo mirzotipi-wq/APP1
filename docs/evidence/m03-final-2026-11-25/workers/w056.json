@@ -1,0 +1,38 @@
+{
+  "id": "056",
+  "task": "Review nested imported scene validation, malformed numeric/shape data, and bounded resource use.",
+  "files": [
+    "Sources/LightingCore/LightingProjectDocument.swift",
+    "Tests/LightingCoreTests/ProjectDocumentNestedIntegrityTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/Colorimetry.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Sources/LightingCore/RoomPlacement.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source review",
+      "check": "Read assigned document codec and all six nested integrity test methods; traced LightingScene.validated and nested Position, StudioLight, LightOptics, CameraLens, PreviewSettings, ManualRoom validity predicates.",
+      "result": "No concrete material defect identified. Decoding requires typed nested shapes and known enum values; scene validation rejects unsupported versions, incompatible versioned fields, duplicate light identities, >12 lights, nonfinite/out-of-range nested numeric values. Unknown nested metadata remains intentionally supported."
+    },
+    {
+      "kind": "source review",
+      "check": "Inspect duplicate-key scanner, Unicode conversion, and bounded input guard.",
+      "result": "8 MiB guard executes before JSONDecoder. Scanner is iterative, distinguishes object/array scopes, handles escaped string boundaries, compares decoded UTF-8 key sequences, mutates key sets in place, releases scopes on close. Nested integrity tests cover duplicates including ignored metadata, escaped equivalents, sibling objects, Unicode encodings, depth 64, width 5000; these test bodies were reviewed, not executed."
+    },
+    {
+      "kind": "revision check",
+      "check": "git rev-parse HEAD; git status --short; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- assigned files; git diff --stat ... -- Sources Tests",
+      "result": "HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419; clean working tree when checked; source/tests unchanged from candidate 4d0c67d258be802f048e74616cabcdf903e2b59d."
+    },
+    {
+      "kind": "execution limits",
+      "check": "Runtime tests, Foundation depth/resource probes, Apple/UIKit native execution and full suites",
+      "result": "Not run. Source review does not establish native decoding behavior, measured peak memory or runtime timing."
+    }
+  ],
+  "outcome": "No confirmed material defect in narrow read-only review. No repository edits, test executions or performance claims.",
+  "canonicalAgent": "/root/w007_review_coordinator/w056_document_nested"
+}

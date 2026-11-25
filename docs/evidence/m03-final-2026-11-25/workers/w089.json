@@ -1,0 +1,46 @@
+{
+  "id": "089",
+  "task": "Review simulator warmup cleanup/status preservation and timeout behavior; diagnostic failures must never become actual test passes.",
+  "canonicalAgent": "/root/w007_review_coordinator/w089_simulator_warmup",
+  "files": [
+    "scripts/boot_simulator.py",
+    "scripts/tests/test_boot_simulator.py",
+    ".github/workflows/ios-prototype.yml",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "inspectedRevision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "source": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchangedSource": "git diff 4d0c67d258be802f048e74616cabcdf903e2b59d -- scripts/boot_simulator.py scripts/tests/test_boot_simulator.py .github/workflows/ios-prototype.yml produced no output. HEAD advances only documentation/evidence relative to source. Unrelated existing worktree edits were observed and left untouched."
+  },
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source_review",
+      "check": "SimulatorStartup.command/stop_child/require_success, attempt/recover/run, and main finalization",
+      "result": "Commands run in owned process sessions; timeout, nonzero exit, normal exit and interruption paths attempt owned-group SIGKILL and direct-child reap. Return codes remain the child wait result; timeout and interruption status are retained. Cleanup failures terminate verification. Raw stdout/stderr, per-command receipts and incremental report remain separate; output directory must be new."
+    },
+    {
+      "kind": "source_review",
+      "check": "Shared deadline and bounded recovery policy",
+      "result": "Default 580-second budget reserves five seconds for cleanup within the ten-minute CI step. Both attempts, inventory and target-only shutdown use the shared work deadline. Recovery is at most once and requires github-hosted CI. Device UDID/runtime/type/availability and post-boot state are revalidated. Cancellation, tool-signal, malformed-identity, and cleanup failures are terminal."
+    },
+    {
+      "kind": "source_review",
+      "check": "test_boot_simulator.py regression assertions",
+      "result": "Inspected synthetic coverage for partial logs and original nonzero statuses, two timeouts sharing budget, postflight timeouts and identity errors, cleanup failures, owned descendants on success/failure/timeout, cancellation and finalization interruption, invalid budgets, existing evidence, and late exit zero. These tests were read, not executed."
+    },
+    {
+      "kind": "source_review",
+      "check": "ios-prototype.yml native and UI warmup/test/accounting/artifact steps",
+      "result": "Only warmup is continue-on-error; steps.simulator_warmup.outcome is logged explicitly as diagnostic. Actual xcodebuild uses set -euo pipefail, exact selected UDID and independently selected required methods. Required native/UI accounting runs with always(); native Metal methods require one pass each; finalized xcresult is required. Warmup reports/raw logs upload with always(). No source path converts preparatory readiness into a test pass."
+    },
+    {
+      "kind": "not_run",
+      "check": "Python regression suites, simulator startup, native/XCTest runs",
+      "result": "No tests or runtime probes executed, as directed. No Apple runtime behavior or current CI pass inferred from source."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned warmup implementation or CI separation. Source-only review. Parent-reported genuine room-test failure after five methods executed remains a distinct required-test failure; it is not recategorized as a historical runner/warmup failure and was not independently investigated in this assignment."
+}

@@ -1,0 +1,37 @@
+{
+  "id": "069",
+  "task": "Review StudyFrameCache entry/payload budgets, malformed and oversized costs, replacement/LRU eviction, and completed-only production admission.",
+  "canonicalAgent": "/root/w007_review_coordinator/w069_cache_eviction",
+  "files": [
+    "Sources/LightingCore/StudyFrameCache.swift",
+    "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+    "App/MetalStudyRenderer.swift"
+  ],
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source-review",
+      "check": "Read cache implementation and all 12 existing cache test methods; traced production actor constants, all retain calls, cancellation checks and backend removal.",
+      "result": "No material defect found. No tests executed."
+    },
+    {
+      "kind": "read-only-command",
+      "check": "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources/LightingCore/StudyFrameCache.swift Tests/LightingCoreTests/StudyFrameCacheTests.swift App/MetalStudyRenderer.swift",
+      "result": "Exit 0; no differences. Reviewed source is unchanged from frozen source candidate despite documentation checkpoint HEAD."
+    },
+    {
+      "kind": "read-only-command",
+      "check": "git status --short",
+      "result": "Only existing untracked evidence paths; worker changed no repository files."
+    }
+  ],
+  "outcome": {
+    "status": "no-material-findings-source-review",
+    "budget": "Production configuration is at most four entries, 262144 RGBA bytes and 65536 mask bytes. Cost arguments use actual payload counts. Eviction precedes append and subtraction-based checks avoid addition overflow.",
+    "malformedAndReplacement": "Negative/oversized costs reject before mutation; positive constructor limits are enforced by precondition and production uses fixed valid constants. Accepted replacement removes its old charge before LRU eviction; hit promotion and selective invalidation preserve expected ordering.",
+    "completedOnly": "Generic cache deliberately delegates completion/cancellation to its owner. Production retain is called only after successful render and final cancellation check, without suspension; thrown render errors do not reach admission. Metal backend failure removes old Metal frames.",
+    "limits": "Source review only. Existing tests were inspected, not rerun; no runtime, native/UIKit/Metal, memory-allocation or full-suite claims. Cache-key completeness belongs to worker 068. No speculative concurrency blocker asserted beyond cooperative cancellation semantics."
+  }
+}

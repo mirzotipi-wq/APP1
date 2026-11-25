@@ -1,0 +1,54 @@
+{
+  "id": "077",
+  "task": "Independent read-only review of final pending recovery and editable-backup palette mapping",
+  "files": [
+    "App/StudioView.swift",
+    "App/ProjectBackupView.swift",
+    "App/StudioPalette.swift",
+    "NativeTests/StudioPaletteTests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "check": "Source diff against 4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "result": "Reviewed StudioView, ProjectBackupView and StudioPaletteTests; StudioPalette unchanged. Recovery Retry and Save setup as new project inherit StudioView action tint; editable-backup prominent foreground and new NavigationStack action tint match. Both backup secondary texts use the secondaryText palette on Form grouped-row surfaces."
+    },
+    {
+      "check": "Existing native contrast test source",
+      "result": "testProjectSheetControlsContrastOnTheirProductionSurfaces checks prominentActionTextUIColor against actionUIColor at >=4.5 in light/dark and base/elevated traits. The final diff changes only its descriptive pair label to project name, recovery, editable backup and room sharing / action fill; oracle, thresholds, traits and production colors are unchanged. testActionAndSecondaryTextContrastOnResolvedSystemSurfaces includes action and secondaryText on system, grouped, secondary grouped and tertiary grouped backgrounds."
+    },
+    {
+      "check": "Behavior, layout, role and accessibility source comparison",
+      "result": "No changes to action callbacks, generation capture, disabled predicates, accessibility identifiers, visible button text, roles, preparation/export state transitions or cancellation behavior. Retry intentionally gains fixedSize(horizontal:false,vertical:true) and minimum 44x44 label frame. Save-as-new and backup retain their existing minimum-height frames. This is source review, not runtime layout verification."
+    },
+    {
+      "check": "Existing affected UI-test source inspected",
+      "result": "ProjectLibraryUITests stale-save/full-library recovery workflows still address unchanged saveConflictCopy/reloadConflict identifiers and confirmation labels. StudioSmokeTests corrupt-project workflow still asserts saved-data protection. No test execution claimed."
+    },
+    {
+      "check": "git diff --check -- App/StudioView.swift App/ProjectBackupView.swift App/StudioPalette.swift NativeTests/StudioPaletteTests.swift",
+      "result": "Exit 0; no whitespace errors."
+    },
+    {
+      "check": "Final source hash comparison",
+      "result": "All four hashes matched the reviewed versions after root confirmed final diff readiness."
+    },
+    {
+      "check": "Native/UI/host suites",
+      "result": "Not run by this read-only worker. Existing native color tests resolve declared UIColor pairs, not rendered SwiftUI button pixels; enabled/disabled rendering and runtime layout remain native/UI evidence owned by root."
+    }
+  ],
+  "outcome": "No material defect found in final pending patch. Source palette/background mapping is consistent with existing native test pairs. No unintended behavior or semantic change identified; intentional Retry target/wrapping adjustment noted.",
+  "canonicalAgent": "/root/w007_review_coordinator/w077_recovery_palette_review",
+  "inspectedRevision": {
+    "HEAD": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "baseSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "pendingPatch": true,
+    "gitBlobHashes": {
+      "App/StudioView.swift": "23bb279729e23441bb4a4a5a9e295d7389f851ec",
+      "App/ProjectBackupView.swift": "fbb8ea667bfdc43d81ff831929fa1f437d5ded89",
+      "App/StudioPalette.swift": "4a1c6382db8cde45d672f23ec85439d4ade1523d",
+      "NativeTests/StudioPaletteTests.swift": "3e9b05371e4855f36aa9c4ec634b422dcf578450"
+    }
+  }
+}

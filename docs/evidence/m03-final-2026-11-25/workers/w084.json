@@ -1,0 +1,49 @@
+{
+  "id": "084",
+  "task": "benchmark_contract: review fresh benchmark artifact accounting, cancellation, image consistency, percentile calculation and provenance without rerunning workloads",
+  "files": [
+    "/workspace/scratch/f2fcfcdabdca/APP1/AGENTS.md",
+    "/workspace/scratch/f2fcfcdabdca/APP1/docs/acceptance/m02-m03-code.md",
+    "/workspace/scratch/f2fcfcdabdca/APP1/scripts/benchmark-study.swift",
+    "/workspace/scratch/f2fcfcdabdca/APP1/Sources/LightingCore/ReferenceStudy.swift",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-benchmark.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/core-environment.log"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "type": "revision/source review",
+      "result": "Inspected HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419. git diff --name-status from benchmark revision 4d0c67d258be802f048e74616cabcdf903e2b59d contains only agents/docs evidence changes. Reviewed benchmark and StudyImage source unchanged; git working-tree diff for both files empty."
+    },
+    {
+      "type": "artifact assertions; Python only, no rendering",
+      "result": "PASS: exact eight sphere/bust x point3/area3 x 72/144 frame workloads, valid 3:2 dimensions, three point samples or 192 area samples, zero unsupported pixels, positive recorded warmup duration and 16-digit hexadecimal RGBA checksum per frame."
+    },
+    {
+      "type": "artifact assertions; sample accounting",
+      "result": "PASS: measuredSamplesPerWorkload=7; 56 raw frame samples and 28 raw visibility samples, all positive and finite. Independently recomputed all 24 p50/p95 fields by nearest rank, exactly matching saved numeric values (seven samples gives fourth-ranked p50 and maximum p95)."
+    },
+    {
+      "type": "artifact assertions; cancellation",
+      "result": "PASS: exactly twelve probes, three repeats for each bust-area3-144/bust-area12-144 x 5/25 ms combination; all cancelled=true with checks>0, preceding poll < requested deadline <= observed cancellation <= return. Every deadlineToReturn equals finish minus request within 1e-12. Observed deadline-to-return range 0.015518 to 1.634306 ms, diagnostic only."
+    },
+    {
+      "type": "artifact assertions; visibility",
+      "result": "PASS: exact four point3/area3 x visibility false/true cases, 34 receivers each, 1000 evaluations per sample, finite positive consumed signal sums."
+    },
+    {
+      "type": "source review; warmup and image equality",
+      "result": "One unmeasured render warmup per frame workload and one unmeasured operation per visibility workload precede measured loops. Each measured frame must equal its warmup and have zero unsupported pixels or the script throws before writing the final report. StudyImage synthesized Equatable includes full RGBA Data, dimensions, unsupported count and validity-mask Data. The final report is consistent with those guards; repeated buffers are not separately retained in JSON and were not independently rerendered."
+    },
+    {
+      "type": "provenance consistency",
+      "result": "PASS: JSON sourceRevision and core-environment.log both record 4d0c67d258be802f048e74616cabcdf903e2b59d; JSON reports optimizedBuild=true and source rejects debug assertion configuration. Host evidence records Ubuntu 24.04.5 LTS, x86_64, Intel Xeon 6975P-C, four reported processors; environment log records Swift 6.4.2 (swift-6.4.2-RELEASE), target x86_64-unknown-linux-gnu. Exact compilation invocation is not contained in these two artifacts; no independent build was run."
+    },
+    {
+      "type": "limits",
+      "result": "No benchmark rerun, Swift compile, full suite, native app, Metal, device, UI, memory, thermal or sustained frame-rate execution. Timing has no portable acceptance threshold. Review covers benchmark artifact contract only; separate deterministic cancellation/cache gates are outside this assigned check."
+    }
+  ],
+  "outcome": "No confirmed material defect. Actual fresh benchmark report satisfies assigned workload, seven-sample, unsupported-pixel, cancellation and percentile requirements; provenance is consistent with unchanged reviewed source. Optimized mode is reported and source-enforced, while literal -O command provenance requires the root run command record.",
+  "canonicalAgent": "/root/w007_review_coordinator/w084_benchmark_contract"
+}

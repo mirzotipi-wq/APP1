@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Source `4d0c67d258be802f048e74616cabcdf903e2b59d` is committed on `main`. M02 remains accepted under `m02-m03-code-v2`; M03 is in native validation. This packet records the new completion campaign, distinct from the previous worker campaigns. The requested 100 real agent contexts are being executed in bounded batches; the [live ledger](worker-ledger.json) lists only actual created contexts and completed reports at this checkpoint.
+Source `c86fadd867322b816f400b003de461e0e418dc52` is committed on `main`; the previous source produced concrete room and accessibility failures, preserved below. M02 remains accepted under `m02-m03-code-v2`; M03 is in native validation. This packet records the new completion campaign, distinct from the previous worker campaigns. The requested 100 real agent contexts are being executed in bounded batches; the [live ledger](worker-ledger.json) lists only actual created contexts and completed reports at this checkpoint.
 
 ## Baseline findings and implementation
 
@@ -20,8 +20,14 @@ Source `4d0c67d258be802f048e74616cabcdf903e2b59d` is committed on `main`. M02 re
 
 ## Verification
 
-The [local receipt](local-validation.json) records source hashes, unchanged-source carry-forward and retained logs: **357 Debug, 357 Release and 80 tooling tests passed**, together with native Swift syntax, shard inventory, state structure, source icon/privacy validation and whitespace checks. Linux syntax parsing is not an Apple SDK build.
+The [local receipt](local-validation.json) records source hashes, unchanged-source carry-forward and retained logs: **357 Debug, 357 Release and 92 tooling tests passed**, together with native Swift syntax, shard inventory, state structure, source icon/privacy validation and whitespace checks. Linux syntax parsing is not an Apple SDK build.
 
-The [full native workflow](https://github.com/mirzotipi-wq/APP1/actions/runs/45701270986) must finish before M03 can be accepted: unsigned Debug/Release application builds, 118 native methods including required Metal execution, and 35 required UI methods. Current source changes do not yet have passing native/UI evidence in this checkpoint.
+The [full native workflow](https://github.com/mirzotipi-wq/APP1/actions/runs/45709267885) must finish before M03 can be accepted: unsigned Debug/Release application builds, 118 native methods including required Metal execution, and 35 required UI methods. Current source changes do not yet have passing native/UI evidence in this checkpoint. The earlier 4d0c67d source passed 118 native, nine library and ten export methods; it failed one of five room methods and its one app-accessibility method. See the [executed receipt](validation/source-4d0c67d/native-ui/executed-summary.json).
 
 Historical failed and unavailable results remain unchanged. No physical device, calibration, platform accessibility audit or release-readiness result is claimed by this packet.
+
+## Repair and provenance checkpoint
+
+The rejected room resize now preserves its error across identical text echoes. Measurement fields, Set/Rotate labels and the native rotation slider have larger control layouts, with runtime 44-point assertions awaiting execution. Frame comparison retains 44 points and admits only one endpoint ULP, with a strict sub-nanopoint precision guard; the failed Plan marker and raw frame remain retained. Actual library action pixels are now #0056B3 on white at 7.04:1, above 4.5:1, in the [observed screenshot receipt](validation/source-4d0c67d/native-ui/library/action-contrast.json).
+
+The persistence wrapper observes the actual target filesystem/device with bounded commands and fails missing/inconsistent identity. A local compiler expression-limit failure is retained alongside the semantics-preserving typed fixture repair and successful complete EFBIG/interruption execution. All nine observed local targets were tmpfs; macOS filesystem execution remains part of the new CI requirement. See the [local atomic receipt](validation/source-c86fadd/local/atomic-receipt.json).

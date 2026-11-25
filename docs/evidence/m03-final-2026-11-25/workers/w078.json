@@ -1,0 +1,32 @@
+{
+  "id": "078",
+  "task": "Review SceneKit SpatialPreview transformed emitter geometry and Plan/camera selection mapping with native tests.",
+  "files": [
+    "App/SpatialPreview.swift",
+    "NativeTests/SpatialEmitterGeometryTests.swift",
+    "NativeTests/SpatialPreviewTests.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Sources/LightingCore/StudioSceneBounds.swift",
+    "App/StudioView.swift (call sites)",
+    "App/RealityStudioPreview.swift (SceneKit fallback call site)"
+  ],
+  "findings": [],
+  "tests": {
+    "inspection_head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewed_source_revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "source_identity": "git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- App Sources NativeTests Tests returned no differences. Working-tree palette/recovery changes were present in unrelated files; assigned SpatialPreview implementation/tests unchanged.",
+    "actual_checks": [
+      "Read worker brief, only plan entry 078, AGENTS.md and m02-m03-code-v2 acceptance contract.",
+      "Read SpatialPreview and both assigned native test files; five emitter geometry and three camera/fit test methods inspected, none executed.",
+      "Traced shared EmitterFrame right/up/normal basis, roll and vertical aim into quaternion columns. Flipping right and normal for SceneKit negative-Z lights preserves handedness and maps local -Z to the authored normal.",
+      "Traced local housing half-depth translation: the +Z front face returns to the authored position; point and stand anchors remain unchanged. Tests cover translated rectangles, vertical aim, roll, directional powered-off fixtures, point sources, and degenerate aim.",
+      "Traced selected outline ancestry, fixture/stand UUID mappings, current-scene membership guard, callback refresh before early return, camera-mode selection disablement, and geometry preservation for selection-only updates.",
+      "Traced orbit preservation versus explicit Fit, layout-dependent projection axis, and physical CameraFraming vertical FOV/up/target. Camera production call site constrains aspect to 3:2 and substitutes unavailable UI when framing is nil.",
+      "Confirmed SceneKit editing preview is the Intel simulator fallback; the production 3D selection call site guards project generation and current UUID membership."
+    ],
+    "execution": "Source-only review. No native tests, Linux tests, full suites, runtime probes or UI gestures executed. One initial rg looked for nonexistent StudioPhotometry.swift; corrected to StudioOptics.swift without affecting conclusions."
+  },
+  "outcome": "No confirmed material defect in the assigned geometry transforms, emitter orientation, selection mapping or camera/Fit behavior. Existing tests express the inspected invariants; this review does not assert that they passed or establish native rendering/gesture behavior.",
+  "canonicalAgent": "/root/w007_review_coordinator/w078_spatial_preview"
+}

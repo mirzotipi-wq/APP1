@@ -1,0 +1,45 @@
+{
+  "id": "055",
+  "task": "Review project document envelope integrity validation (version, counts, IDs, metadata) and adversarial tests for rejects before mutation.",
+  "canonicalAgent": "/root/w007_review_coordinator/w055_document_envelope",
+  "files": [
+    "Sources/LightingCore/LightingProjectDocument.swift",
+    "Tests/LightingCoreTests/ProjectDocumentEnvelopeIntegrityTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Tests/LightingCoreTests/LightingProjectDocumentTests.swift",
+    "Tests/LightingCoreTests/ProjectDocumentAdversarialTests.swift",
+    "App/ProjectLibraryView.swift"
+  ],
+  "findings": [],
+  "outcome": {
+    "status": "No confirmed material defect found in assigned scope",
+    "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchangedSourceEvidence": "git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD --stat -- Sources Tests App NativeTests returned no differences.",
+    "sourceConclusions": [
+      "decode checks 8 MiB input ceiling before JSONDecoder; Envelope checks schema version before scene value interpretation and requires exactly schemaVersion/name/scene.",
+      "Recursive duplicate-key validation compares decoded UTF-8 bytes, handles escaped-equivalent names and scopes nested object keys separately; unsupported root identity/photo/selection metadata cannot pass closed-envelope check.",
+      "LightingScene.validated rejects more than 12 lights, duplicate UUIDs, unsupported schemas and invalid values before returning a project document.",
+      "ProjectLibraryView awaits successful document decoding and checks cancellation/stale state/capacity before onApply(.create); imports carry no existing project identity.",
+      "Read adjacent regression assertions for duplicate IDs, unsupported versions, full-library/stale-save/byte-limit rejection preserving saved bytes. These adjacent tests were reviewed, not executed."
+    ],
+    "limits": [
+      "Executed prebuilt Linux Debug XCTest binary without rebuilding or independently establishing that binary source provenance; runtime pass is scoped to that artifact.",
+      "No native Apple/UIKit execution, Release run, full suite, new probe or resource benchmark. Byte bound and iterative scanner reviewed; peak parser/allocation memory not measured.",
+      "Light count/identity checks occur after bounded decoding, not via streaming array-count preflight. No concrete resource-exhaustion failure reproduced."
+    ]
+  },
+  "tests": [
+    {
+      "kind": "source review",
+      "command": "git rev-parse HEAD; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD --stat -- Sources Tests App NativeTests",
+      "result": "HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419; relevant source/test/app trees unchanged versus 4d0c67d."
+    },
+    {
+      "kind": "targeted runtime",
+      "command": "/tmp/app1-f2fcfcdabdca/build/x86_64-unknown-linux-gnu/debug/LightingCorePackageTests.xctest LightingCoreTests.ProjectDocumentEnvelopeIntegrityTests",
+      "platform": "Linux x86_64, existing Debug artifact",
+      "result": "Executed 5 tests, 0 failures (0 unexpected), 0.249 seconds, exit 0 at 2026-11-25 13:12:56 UTC. Covered duplicate root values/equivalent escaped keys, structural characters, Unicode encodings, large valid name and exact 8 MiB boundary."
+    }
+  ]
+}

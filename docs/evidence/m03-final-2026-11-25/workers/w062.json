@@ -1,0 +1,46 @@
+{
+  "id": "062",
+  "task": "Focused read-only UI review of project-library menus, delete confirmation, mutation guards, row identity and import sheet ownership",
+  "canonicalAgent": "/root/w007_review_coordinator/w062_library_menu_state",
+  "revision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "sourceUnchanged": true,
+  "files": [
+    "App/ProjectLibraryView.swift",
+    "App/StudioView.swift",
+    "App/ProjectLibraryOperation.swift",
+    "NativeTests/ProjectLibraryPresentationTests.swift",
+    "UITests/ProjectLibraryUITests.swift"
+  ],
+  "findings": [],
+  "observations": [
+    "Active project is a selected status row; Open and project menus are guarded by canMutate; Archive is additionally disabled for active identity. Capacity disables create/duplicate/import but permits archive/delete recovery.",
+    "Delete confirmation retains the complete row presentation, including disambiguating ID, and compares the current full record before invoking change. apply rechecks unsaved/busy guards, and the parent synchronously reserves commands before asynchronous work.",
+    "Identity presentation is built from the whole library before search or active/archive partitioning, keeping colliding names and UUID prefixes distinguishable when rows are filtered.",
+    "Import read tasks carry request identity, check cancellation, visibility, current dirty state and capacity after the read. Closing Projects cancels the read; after commit reservation, the Studio-owned task is allowed to finish and reconcile. No reachable stale-row or import-ownership material failure identified in this source review.",
+    "Naming submission reserves synchronously and blocks editing/dismissal while awaiting the task; errors retain the draft."
+  ],
+  "tests": [
+    {
+      "check": "Read worker brief, updated plan entry 062, AGENTS.md and M02/M03 code acceptance contract",
+      "result": "completed"
+    },
+    {
+      "check": "git rev-parse HEAD; git diff --name-only 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD",
+      "result": "HEAD 9257b6d; changes since source candidate limited to documentation/evidence/state; inspected app and test source unchanged"
+    },
+    {
+      "check": "Focused numbered source reads and rg callsite tracing",
+      "result": "completed; one exploratory rg for absent standalone presentation/display-name files returned exit 2; definitions then inspected in ProjectLibraryView.swift"
+    },
+    {
+      "check": "NativeTests/ProjectLibraryPresentationTests.swift source review",
+      "result": "reviewed identity/search cases only; not executed"
+    },
+    {
+      "check": "Native/UI execution and full suites",
+      "result": "not run; source review does not establish picker lifecycle, native SwiftUI rendering, or runtime acceptance"
+    }
+  ],
+  "outcome": "No confirmed material defect within assigned UI-state scope. No repository edits or test execution."
+}

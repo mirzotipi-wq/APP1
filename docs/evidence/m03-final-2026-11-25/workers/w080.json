@@ -1,0 +1,36 @@
+{
+  "id": "080",
+  "task": "Review RealityStudioPreview orbit/pan/zoom bounds, cancelled gestures, reduced-motion behavior and Intel simulator fallback before RealityKit resource creation.",
+  "files": [
+    "App/RealityStudioPreview.swift",
+    "App/StudioView.swift",
+    "App/SpatialPreview.swift",
+    "UITests/StudioSmokeTests.swift",
+    "NativeTests/SpatialPreviewTests.swift"
+  ],
+  "findings": [],
+  "tests": {
+    "kind": "Source review only; no tests or runtime probes executed.",
+    "revision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "source_candidate": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "checks": [
+      "Read worker brief, matching coordinator plan entry 080, repository AGENTS.md and docs/acceptance/m02-m03-code.md.",
+      "Inspected actual HEAD, recent log, git status, candidate-to-HEAD diff for RealityStudioPreview.swift and StudioView.swift (empty), and current StudioView.swift diff (two recovery-action styling changes unrelated to reviewed behavior).",
+      "Reviewed RealityStudioPreview.swift lines 243-275: orbit accepts began/changed, resets incremental translation, rejects nonfinite translations, wraps yaw and clamps pitch to -1.35...1.35; pan clamps each target axis to -300...300; zoom rejects nonfinite/nonpositive Float scale and clamps distance to 0.45...1500.",
+      "Reviewed cancellation and lifecycle handling: cancelled/failed/ended camera callbacks do not mutate camera; no deferred drag transaction or inertia is implemented in the RealityKit coordinator; leaving active window toggles recognizer enabled state and removes anchors; detach removes recognizers, callbacks and anchors.",
+      "Reviewed direct camera placement and reduced-motion source: RealityKit applyCamera and fit assign camera state immediately, without scheduled/tweened animation; motion blur is disabled. StudioView meter navigation skips withAnimation when accessibilityReduceMotion is enabled.",
+      "Reviewed compile-time Intel simulator branch: targetEnvironment(simulator) && arch(x86_64) selects SpatialPreview before RealityStudioSurface.makeCoordinator can initialize graph, AnchorEntity or PerspectiveCamera; previewNote also excludes StudioEntityGraph reference in this branch.",
+      "Reviewed SceneKit fallback creation and camera updates: uses SCNView/SCNScene/SCNNode; update/layout transactions set duration zero and disable actions; explicit fit/deactivation/detach stop camera inertia. Native camera gesture and inertia behavior under Reduce Motion was not executed or established by this source review.",
+      "Inspected existing StudioSmokeTests 3D mode/fit workflow source. This does not provide executed orbit/pan/pinch/cancellation evidence."
+    ],
+    "unrun": [
+      "Apple native build",
+      "Native RealityKit gestures",
+      "Native SceneKit fallback gestures and Reduce Motion",
+      "UI suites",
+      "Full test suite"
+    ]
+  },
+  "outcome": "No confirmed material defect in the assigned RealityKit bounds/cancellation/fallback path. Source inspection supports bounded direct camera manipulation and early Intel fallback; native framework gesture/reduced-motion behavior remains unverified. No repository changes made.",
+  "canonicalAgent": "/root/w007_review_coordinator/w080_reality_gestures"
+}

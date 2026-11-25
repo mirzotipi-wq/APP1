@@ -1,0 +1,50 @@
+{
+  "id": "086",
+  "canonicalAgent": "/root/w007_review_coordinator/w086_precision_harness",
+  "task": "Read-only review of strict eight far-camera/world-translation precision fixtures, maximum-channel-error <= 1 enforcement, unsupported-mask handling, and actual CI receipt.",
+  "files": [
+    "scripts/precision-boundary.swift",
+    "scripts/verify-kernel-host.cpp",
+    ".github/workflows/ios-prototype.yml",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-precision.log",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/core-environment.log",
+    "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/ci-core/job.log",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "inspectedRevision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchangedSourceJustification": "git diff from reviewed source to working tree is empty for scripts/precision-boundary.swift, scripts/verify-kernel-host.cpp, .github/workflows/ios-prototype.yml, Sources/LightingCore, and App/StudyKernel.h. HEAD changes since reviewed revision are documentation/evidence only; unrelated current working changes were observed and not touched."
+  },
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source-review",
+      "check": "Fixture completeness",
+      "result": "Six far-camera fixtures cover distances 19.0, 19.999999 and 20.0 m crossed with 85 and 200 mm lenses. Two world translations of the 20 m/200 mm case use (77,70,75) and (-77,-70,-75), moving subject/camera/lights and explicit aim targets consistently. The eight required fixtures remain present; generator also prepares 25 other diagnostic fixtures outside the strict-eight receipt."
+    },
+    {
+      "kind": "source-review",
+      "check": "Maximum channel error and exit status enforcement",
+      "result": "compare() includes maximum<=maximumAllowedError in PASS conjunction; main parses strict integer 0...255, compares every supplied fixture and returns 1 on failed comparison or 2 on invalid input. CI explicitly passes --maximum-channel-error 1 and enables set -euo pipefail, so tee cannot mask a harness failure. Actual job output contains the same command and shell setting."
+    },
+    {
+      "kind": "source-review",
+      "check": "Unsupported mask enforcement",
+      "result": "Generator requires exactly width*height mask entries with flags in 0...1 and encodes unsupported as reference alpha 0. Harness validates both output/reference alpha as 0 or 255; requires magenta RGB for unsupported; verifies header vs reference unsupported count, output count vs header, and zero per-pixel mask mismatches, independently of RGB metrics."
+    },
+    {
+      "kind": "existing-CI-receipt-inspection",
+      "check": "study-precision.log eight-fixture results",
+      "result": "Parsed exactly eight distinct fixture names matching the expected set. All report mean=0, max=0, >4 fraction=0, invalid-mask-mismatches=0, max-limit=1, PASS. In receipt order matching invalid counts are 49/49, 9/9, 19/19, 13/13, 19/19, 13/13, 19/19, 19/19. These diagnostics allow matching unsupported pixels; zero unsupported pixels is the separate twelve-image requirement.",
+      "receiptSHA256": "9fdb907a236cb81e1ee37cf3bc218428571c4a20b6665ba4c937b9257eb3245f",
+      "provenance": "core-environment.log records Ubuntu 24.04.5 LTS x86_64, Swift 6.4.2, source 4d0c67d258be802f048e74616cabcdf903e2b59d. job.log records clang++ -std=c++17 -O2 -Wall -Wextra -Werror for host harness, swiftc -O preparation, Prepared 33 fixtures, exact strict command and all eight PASS rows. Copied repository receipt is byte-identical."
+    },
+    {
+      "kind": "not-run",
+      "check": "Fresh harness, tests, native or Metal execution",
+      "result": "Not run as instructed; this report reviews source and pre-existing CI evidence. It does not establish native Metal execution or device behavior. No repository edits performed."
+    }
+  ],
+  "outcome": "No material defect found in assigned strict-eight harness or execution receipt. Required fixture coverage, max-channel <= 1 and exact unsupported-mask enforcement are supported by source review and the actual recorded CI results."
+}

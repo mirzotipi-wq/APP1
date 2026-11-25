@@ -1,0 +1,46 @@
+{
+  "id": "085",
+  "task": "Review CPU/shared-Float32 six fixture generation and harness exact masks/channel metrics; preserve deliberately unsupported near-field behavior.",
+  "canonicalAgent": "/root/w007_review_coordinator/w085_kernel_fixture_contract",
+  "files": [
+    "scripts/prepare-kernel-fixtures.swift",
+    "scripts/verify-kernel-host.cpp",
+    "Sources/LightingCore/StudyValidationFixtures.swift",
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "App/StudyKernel.h",
+    "App/MetalStudyRenderer.swift",
+    "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+    ".github/workflows/ios-prototype.yml",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-kernel.log",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/core-environment.log"
+  ],
+  "revision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "justification": "HEAD advances documentation/state only. git diff --exit-code against source candidate returned 0 for all reviewed source/harness/workflow files. Existing unrelated working-tree changes were not modified."
+  },
+  "findings": [],
+  "tests": [
+    {
+      "check": "Read-only fixture generation and consumer inspection",
+      "result": "All six named scenes are generated at 96x64 using shared StudyComputeInput and CPU ReferenceStudyRenderer. Header writes little-endian width/height/row counts/unsupported count; Float32 bit patterns precede the exact reference RGBA. Explicit binary validity mask is encoded into fixture alpha, leaving the original opaque StudyImage untouched."
+    },
+    {
+      "check": "Harness acceptance inspection",
+      "result": "Header and row counts, finite inputs, exact reference byte length, alpha values, magenta unsupported sentinels and reference count consistency are checked. Every invalid-mask position must match. RGB metrics cover exactly width*height*3 channels with mean <= 1 and fraction(error > 4) <= 0.005; optional maximum channel error is independent. CI uses pipefail."
+    },
+    {
+      "check": "Read existing fresh study-kernel.log and core-environment.log",
+      "result": "Six PASS lines: dark/hard/warm-rotated mean 0 max 0; soft/translated mean 5.42535e-05 max 1; near-field mean 0 max 0 and invalid 84/84. All six have fraction >4 = 0 and invalid-mask-mismatches = 0. Other five invalid counts are 0/0. Environment records Ubuntu 24.04.5 x86_64 Linux, Swift 6.4.2, source revision 4d0c67d258be802f048e74616cabcdf903e2b59d."
+    },
+    {
+      "check": "Near-field semantics and backend boundary source inspection",
+      "result": "Near-field remains among all six and exercises unsupported pixels; the twelve image-fixture zero-unsupported requirement does not apply to this deliberate parity case. Production Metal eligibility routes this scene to CPU. The parity-only renderValidationFixture entry point retains this scene and is used by native validation."
+    },
+    {
+      "check": "Execution limits",
+      "result": "No test, compiler, generator, renderer, harness, or native suite rerun. Existing Linux C++ shared-Float32 log is host evidence, not actual Metal execution, iPhone performance, or physical calibration. No new native or image-review claim."
+    }
+  ],
+  "outcome": "No material defect found. Generator/consumer framing, six-fixture membership, exact invalid masks, channel metrics and fresh host evidence are consistent with the m02-m03-code-v2 parity contract. Native Metal evidence remains separate."
+}

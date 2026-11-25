@@ -1,0 +1,41 @@
+{
+  "id": "057",
+  "task": "Review malformed/oversized/truncated document decoding tests and parser bounds; identify realistic unhandled data-loss/crash risk.",
+  "files": [
+    "Sources/LightingCore/LightingProjectDocument.swift",
+    "Tests/LightingCoreTests/ProjectDocumentAdversarialTests.swift",
+    "Tests/LightingCoreTests/LightingProjectDocumentTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "App/ProjectDocumentIO.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "type": "source_review",
+      "result": "Reviewed decode ordering: the 8 MiB guard precedes JSONDecoder, parser failures map to invalidDocument, duplicate-key scanning runs only after Foundation accepts complete JSON, and the validated initializer is the only returned-document path. No mutation occurs in document decoding."
+    },
+    {
+      "type": "source_review",
+      "result": "Reviewed iterative duplicate-key scanner: bounded byte iteration, guarded quoted-token end, object/array scope matching, in-place key-set insertion, and scope release at object close. Unicode conversion has bounded input; no concrete out-of-bounds or unbounded recursion path identified in application code."
+    },
+    {
+      "type": "source_review",
+      "result": "Reviewed adversarial tests for nonfinite/overflow wire numbers, invalid UTF-8 and surrogate sequences, extra JSON roots, stale-copy saving, capacity rejection, and individually valid documents exceeding the separate library byte limit. Inspected existing maximumBytes and exact-boundary assertions without executing them."
+    },
+    {
+      "type": "production_path_review",
+      "result": "ProjectDocumentIO uses BoundedFileReader with the document maximum and checks cancellation before and after decode; scene validation limits successful documents to 12 lights."
+    },
+    {
+      "type": "revision_check",
+      "command": "git rev-parse HEAD; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources/LightingCore/LightingProjectDocument.swift Tests/LightingCoreTests/ProjectDocumentAdversarialTests.swift; git status --short",
+      "result": "HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419; assigned source/tests unchanged from candidate 4d0c67d258be802f048e74616cabcdf903e2b59d; worktree clean at inspection."
+    },
+    {
+      "type": "execution_limits",
+      "result": "No tests or runtime probes run: no concrete suspected defect justified a targeted probe. No native/Apple runtime, crash-memory measurement, or full-suite pass claimed."
+    }
+  ],
+  "outcome": "No confirmed material defect found in the assigned malformed/oversized/truncated document and resource-bounds review. Byte bounds do not establish measured native peak-memory or decode-latency limits; those were not measured and are not asserted as acceptance failures.",
+  "canonicalAgent": "/root/w007_review_coordinator/w057_document_adversarial"
+}

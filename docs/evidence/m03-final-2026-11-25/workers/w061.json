@@ -1,0 +1,52 @@
+{
+  "id": "061",
+  "task": "Review finite modifier room footprints at pitch/roll/yaw/cardinal support boundaries and actual RoomModifierFootprintTests; exclude earlier sub-ULP room/mirror observations.",
+  "canonicalAgent": "/root/w007_review_coordinator/w061_room_modifier_footprint",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "unchangedSourceEvidence": {
+    "command": "git diff --exit-code 4d0c67d258be802f048e74616cabcdf903e2b59d 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419 -- Sources Tests Package.swift",
+    "exitCode": 0,
+    "result": "Empty diff; intervening revision changes are documentation/evidence only."
+  },
+  "files": [
+    "Sources/LightingCore/RoomPlacement.swift",
+    "Tests/LightingCoreTests/RoomModifierFootprintTests.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Tests/LightingCoreTests/RoomCardinalRollContactTests.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "reviewConclusions": [
+    "Validated scene coordinates are finite and bounded to -100...100; modifier dimensions are bounded to 0.05...4; room dimensions and yaw are finite and bounded. Supported nondegenerate frames and derived corners cannot overflow in this path.",
+    "Exact cardinal yaw and roll coefficients preserve supported cardinal contact geometry without applying physical distance tolerances. Pitch is represented by the aim vector; vertical aim has a deterministic basis. The convex projected rectangle uses all four corner extrema for containment.",
+    "Degenerate aim remains unavailable, nonrectangular lights have no claimed modifier footprint, and world translation / rotated-room checks retain existing semantics.",
+    "No material product or acceptance defect identified. No recommendation to modify tolerances or perform optional tiny-geometry churn."
+  ],
+  "tests": [
+    {
+      "kind": "executed targeted existing XCTest methods",
+      "toolchain": "Swift version 6.2.1 (swift-6.2.1-RELEASE)\nTarget: x86_64-unknown-linux-gnu",
+      "platform": "Linux; not an Apple/UIKit runtime",
+      "configuration": "Direct swiftc default unoptimized build; not SwiftPM Debug/Release or native app validation",
+      "compileCommand": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc -enable-testing -module-name LightingCore Sources/LightingCore/*.swift Tests/LightingCoreTests/RoomModifierFootprintTests.swift /tmp/app1-f2fcfcdabdca/workers/w061-probe/main.swift -o /tmp/app1-f2fcfcdabdca/workers/w061-probe/room-footprint-tests",
+      "compileExitCode": 0,
+      "compileDiagnostic": "One expected warning: same-module @testable import ignored by direct compilation. Test source remained unchanged.",
+      "runCommand": "/tmp/app1-f2fcfcdabdca/workers/w061-probe/room-footprint-tests",
+      "exitCode": 0,
+      "result": "All 8 original RoomModifierFootprintTests passed; 0 failures in 0.184 seconds.",
+      "log": "/tmp/app1-f2fcfcdabdca/workers/w061-probe/tests.log"
+    },
+    {
+      "kind": "source review only",
+      "result": "Reviewed RoomCardinalRollContactTests cardinal wall/floor/ceiling contact, adjacent angles and noncardinal geometry assertions. These additional methods were not executed by this worker."
+    },
+    {
+      "kind": "unrun",
+      "result": "No full suite, Release, native iOS, UIKit, Metal or UI tests run."
+    }
+  ],
+  "outcome": "No material findings. Read-only review completed; no repository edits."
+}

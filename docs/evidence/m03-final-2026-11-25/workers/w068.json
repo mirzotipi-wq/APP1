@@ -1,0 +1,35 @@
+{
+  "id": "068",
+  "canonicalAgent": "/root/w007_review_coordinator/w068_cache_keys",
+  "task": "Read-only StudyFrameCache key completeness and intentional display-name omissions; trace production key and actual tests.",
+  "files": [
+    "Sources/LightingCore/StudyFrameCache.swift",
+    "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+    "App/MetalStudyRenderer.swift",
+    "NativeTests/StudyRenderCacheTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/Colorimetry.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/RoomPlacement.swift",
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "Sources/LightingCore/PortraitStudy.swift"
+  ],
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "sourceUnchanged": "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- *.swift returned no differences; newer HEAD is a documentation checkpoint.",
+  "findings": [],
+  "tests": {
+    "executed": [],
+    "checks": [
+      "Read AGENTS.md, m02-m03-code-v2 acceptance contract, worker brief and only plan entry 068.",
+      "Inspected git HEAD/status/log and Swift diff from source candidate; no Swift differences.",
+      "Traced StudyRenderEngine.CacheKey and render/cache admission: validated complete LightingScene snapshot, only each light name cleared; exact synthesized Equatable includes positions, camera/lens, all optics, light identity/order/count/output/temperature, preview exposure/white balance, schema and room; effective width and StudySubject also in key.",
+      "Reviewed StudyFrameCache equality lookup/replacement implementation and all its unit test source.",
+      "Reviewed native tests for every rendering control, exposure/reopen reuse, subject/resolution distinction, width clamping, invalid metadata/name bypass and valid Unicode rename reuse.",
+      "Traced materials: ReferenceStudyRenderer sphere/panel and PortraitGeometry region materials are fixed constants; StudyRenderEngine exposes no variable material input, and subject selection is keyed."
+    ],
+    "limits": "Source review only. No runtime, native, compiler or full-suite test was executed; no pass inferred from test definitions. Valid room mutations are not explicitly enumerated in native cache-key tests inspected, but full room equality is retained by production key. No material input exists to invalidate separately."
+  },
+  "outcome": "No concrete stale-image aliasing defect found. Full validated scene plus effective resolution and subject provides complete production input identity; display-name omission is intentionally pixel-neutral and cannot bypass validation. No changes or optional cleanup proposed."
+}

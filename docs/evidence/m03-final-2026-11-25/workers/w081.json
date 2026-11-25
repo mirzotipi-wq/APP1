@@ -1,0 +1,43 @@
+{
+  "id": "081",
+  "task": "UPDATED081: Review render actor lifecycle, cancellation/latest-result publication, and native cache tests; read-only source review.",
+  "canonicalAgent": "/root/w007_review_coordinator/w081_native_cache_tests",
+  "files": [
+    "App/MetalStudyRenderer.swift",
+    "App/ReferenceStudyPreview.swift",
+    "NativeTests/StudyRenderCacheTests.swift"
+  ],
+  "inspectedRevision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "sourceCandidate": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchangedReviewedSource": true,
+    "explanation": "git diff --stat from source candidate to HEAD is empty for all three assigned files; current uncommitted changes affect other files only."
+  },
+  "findings": [],
+  "observations": [
+    "StudyRenderEngine.render checks actual Task.isCancelled OR the additional cancellation source at entry, immediately before cache promotion, after CPU/Metal work, and after backend validation. Retain is reached only after successful rendering and the final cooperative cancellation check, with no suspension before admission/return. Throwing render paths do not retain a result.",
+    "The actor serializes render requests. Cancellation during Metal validation propagates without selecting a failed backend; GPU work already submitted completes before its result is discarded. No concrete stale cache/publication defect was found.",
+    "ReferenceStudyPreview derives .task(id:) from the scene/subject request only while scenePhase is active. An inactive phase changes the identity to nil; scene/subject changes replace the task. Disappearance cancellation is delegated to SwiftUI .task lifetime rather than an explicit onDisappear callback. Post-await and post-image-conversion checks guard success publication, and cancellation errors are suppressed on the failure path.",
+    "Displayed frames carry their request identity. A prior same-subject successful image is explicitly marked Previous render/Updating; another subject and old errors are hidden. This intentional prior-frame presentation is distinct from publishing a cancelled result.",
+    "Native source includes deterministic entry/pre-cache cancellation, actual already-cancelled Task rejection, interrupted CPU rendering, final post-render cancellation followed by a cold-cache proof, invalid metadata rejection, and restoration of the original completed frame. These are reviewed test definitions, not executed outcomes."
+  ],
+  "tests": [
+    {
+      "check": "Read worker brief, matching coordinator-plan entry, AGENTS.md, and docs/acceptance/m02-m03-code.md",
+      "result": "Completed"
+    },
+    {
+      "check": "git rev-parse HEAD; git log -1; git status --short; git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- assigned files; git diff --name-only sourceCandidate HEAD",
+      "result": "HEAD is a documentation/evidence checkpoint; assigned source unchanged. Unrelated worktree edits were preserved."
+    },
+    {
+      "check": "Read all assigned source/tests; rg lifecycle/publication markers in NativeTests, UITests, Tests and ReferenceStudyPreview",
+      "result": "No material defect found by source inspection; no direct ReferenceStudyPreview scenePhase/disappearance test was located in those test directories."
+    },
+    {
+      "check": "Native tests, UI lifecycle tests, Metal execution, Linux probes, full suites",
+      "result": "Not run, as assigned. Native cache test execution and real SwiftUI lifecycle scheduling remain outside this review."
+    }
+  ],
+  "outcome": "No confirmed material defect. Source supports cooperative cancellation and request-scoped publication; runtime lifecycle behavior and native test success are not established by this source-only review."
+}

@@ -1,0 +1,34 @@
+{
+  "id": "060",
+  "task": "Review StudioDisplayName sanitization/truncation and accessible text consistency; seek layout or identity confusion at edge lengths.",
+  "files": [
+    "Sources/LightingCore/StudioDisplayName.swift",
+    "Tests/LightingCoreTests/StudioDisplayNameTests.swift",
+    "App/StudioView.swift",
+    "App/StudioPlanMarkers.swift",
+    "Sources/LightingCore/ProjectLibrary.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "revision inspection",
+      "command": "git rev-parse HEAD; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD --stat -- Sources App Tests; git status --short; git log -3 --oneline",
+      "result": "HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419; Sources/App/Tests unchanged from reviewed source 4d0c67d258be802f048e74616cabcdf903e2b59d. Existing untracked root-owned evidence left untouched."
+    },
+    {
+      "kind": "source review",
+      "result": "Reviewed scalar/UTF8/grapheme limits, unsafe Unicode replacement, invisible-name fallback, immutable legacy source handling, rename/duplicate bounds, and StudioView callers. Plan accessibility labels and rack/inspector text use the same lightDisplayName helper. UUID identity drives selection; altered legacy display exposes selected light ID in Plan. No confirmed material defect."
+    },
+    {
+      "kind": "isolated Linux Swift runtime probe",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc -module-cache-path /tmp/app1-f2fcfcdabdca/w060/module-cache Sources/LightingCore/StudioDisplayName.swift /tmp/app1-f2fcfcdabdca/w060/main.swift -o /tmp/app1-f2fcfcdabdca/w060/probe; /tmp/app1-f2fcfcdabdca/w060/probe",
+      "result": "PASS 234 assertions, exit 0: ordinary international/emoji preservation, trimming, invisible fallback and rejection, unsafe controls, character/scalar/UTF8 bounds across requested limits -1/0/1/2/65/80/Int.max, retained source, exact ASCII/grapheme truncation."
+    },
+    {
+      "kind": "not run",
+      "result": "No repository tests, full suite, Apple/UIKit runtime, native layout checks, or VoiceOver execution. Source review and standalone sanitizer execution do not establish native layout/accessibility acceptance."
+    }
+  ],
+  "outcome": "No confirmed material finding in assigned scope. Prior w037 UI/core invisible-character validator mismatch deliberately not repeated.",
+  "canonicalAgent": "/root/w007_review_coordinator/w060_display_names"
+}

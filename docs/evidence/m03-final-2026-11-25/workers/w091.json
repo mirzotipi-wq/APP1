@@ -1,0 +1,66 @@
+{
+  "id": "091",
+  "task": "Review M02/M03 evidence source revisions/commands and unchanged-source carryforward logic against current diff; identify concrete evidence mismatch only.",
+  "files": [
+    "docs/evidence/m02-m03-code-2026-11-25/README.md",
+    "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+    "agents/state.json",
+    "docs/evidence/m03-final-2026-11-25/README.md",
+    "docs/evidence/m03-final-2026-11-25/local-validation.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-202d41d.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-count-boundary.json",
+    "docs/evidence/m02-m03-code-2026-11-25/validation/m02-ci-native.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-room-job.log"
+  ],
+  "inspectedRevision": {
+    "HEAD": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "sourceTree": "16392db243c8842e4baecef687f82b02e249c1ff",
+    "unchangedCommittedSource": "git diff --name-only 4d0c67d HEAD -- App NativeTests Sources Tests UITests scripts .github Package.swift returned no files. HEAD is documentation/evidence only relative to source.",
+    "worktree": "Root has ongoing modifications to App/ProjectBackupView.swift, App/StudioView.swift and NativeTests/StudioPaletteTests.swift; no 4d0c67d pass is attributed to those changes."
+  },
+  "findings": [],
+  "observations": [
+    "No new material source mapping discrepancy confirmed. State points to 4d0c67d and the current m03-final packet; M03 remains active and no native/UI acceptance is claimed.",
+    "The older m02-m03-code README describes 40eb1de/45688029379, 343 Debug/Release and 117 native methods as its then-current checkpoint. These are historical receipts; current state routes to m03-final/4d0c67d, 357 portable and 118 expected native methods. They must not be substituted for current validation.",
+    "M02 acceptance explicitly distinguishes final portable source 90d36f9 from native a6ba92b; receipts contain final portable commands and the unchanged App/NativeTests justification. a6ba92b is unavailable in this checkout, so its historical identity assertion was read, not independently verified.",
+    "Confirmed current raw room log checks out 4d0c67d, starts all five methods, records four passes and one genuine assertion failure in ManualRoomPlacementUITests.swift:81. This is known to root and is not a new finding. M03 must remain unaccepted until affected checks succeed on the repair.",
+    "Known090 filesystem-attribution gap is already pending repair and is not duplicated."
+  ],
+  "tests": [
+    {
+      "type": "read-only source diff",
+      "command": "git diff --name-only 202d41d 4d0c67d -- Sources Tests Package.swift",
+      "result": "Empty; portable 357/357 carry-forward rationale confirmed."
+    },
+    {
+      "type": "read-only source diff",
+      "command": "git diff --name-only 6fd8001 4d0c67d -- scripts .github",
+      "result": "Empty; tooling 80/80 carry-forward rationale confirmed."
+    },
+    {
+      "type": "read-only source hash comparison",
+      "command": "SHA256 each local-validation.json sourceSHA256 entry against git show 4d0c67d:<path>",
+      "result": {
+        "checked": 184,
+        "mismatches": []
+      }
+    },
+    {
+      "type": "raw receipt inspection",
+      "command": "rg matching checkout SHA, individual XCTest outcomes, line81 and Executed 5 in /tmp/app1-f2fcfcdabdca/evidence/4d0c67d-room-job.log",
+      "result": "5 started; 4 passed; 1 failed at line81; explicit fail-closed method accounting retained."
+    },
+    {
+      "type": "historical diff unavailable",
+      "command": "git diff --name-only a6ba92b 90d36f9 -- App NativeTests Sources Tests scripts .github",
+      "result": "fatal: bad revision a6ba92b; no historical executable/source equality independently inferred."
+    },
+    {
+      "type": "execution limitation",
+      "result": "No tests, native builds, runtime probes, CI reruns or repo mutations performed. Actual 4d0c67d core success supplied by coordinator; not independently rerun."
+    }
+  ],
+  "outcome": "No new finding. Committed current source hashes and local carry-forward mappings agree. Historical source proof is receipt-limited; known current room failure prevents M03 acceptance.",
+  "canonicalAgent": "/root/w007_review_coordinator/w091_evidence_source_mapping"
+}

@@ -1,0 +1,75 @@
+{
+  "id": "083",
+  "task": "Review render-study-fixtures twelve deterministic names/configurations, original six preserved and actual renderer zero-unsupported assertions/output capture; independently inspect retained 4d0c67d artifacts.",
+  "canonicalAgent": "/root/w007_review_coordinator/w083_fixture_matrix",
+  "inspectedRevision": {
+    "HEAD": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchangedSource": "git diff 4d0c67d258be802f048e74616cabcdf903e2b59d -- scripts/render-study-fixtures.swift Sources/LightingCore/ReferenceStudy.swift Sources/LightingCore/PortraitStudy.swift App/MetalStudyRenderer.swift .github/workflows/ios-prototype.yml docs/acceptance/m02-m03-code.md returned no changes. Committed HEAD advances are documentation/evidence only. Concurrent working changes exist in unrelated app/palette/documentation files and were not modified."
+  },
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "scripts/render-study-fixtures.swift",
+    "App/MetalStudyRenderer.swift",
+    ".github/workflows/ios-prototype.yml",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-artifacts/manifest.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-render.log",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-artifacts/*.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-artifacts/*.ppm",
+    "docs/evidence/m02-m03-code-2026-11-25/renders/{soft,hard,warm,bust-soft,bust-hard,bust-side}.{json,ppm}"
+  ],
+  "findings": [],
+  "review": {
+    "fixtures": [
+      "soft",
+      "hard",
+      "warm",
+      "bust-soft",
+      "bust-hard",
+      "bust-side",
+      "key-only-hard",
+      "fill-only-soft",
+      "bust-rim-only",
+      "bust-roll-90",
+      "exposure-minus-two",
+      "white-balance-3200"
+    ],
+    "configurations": "Seven sphere scenes at 120x80 and five neutral-mannequin scenes at 144x96. Original soft uses rectangular key/fill/rim emitters, 85 mm lens and camera (0,1.66,2.3); hard removes optics; warm changes white balance to 3200 K and exposure to +1. Bust soft uses camera (0,1.60,1.7), 5600 K and +1.25 stops; bust hard removes optics; bust side uses camera (0.84,1.63,1.45), 4300 K and +1.25 stops. Added scenes isolate key, fill, rim, 90-degree rectangular-key roll, -2 stops, and 3200 K white balance. Fixed light UUIDs prevent random JSON identities.",
+    "actualRenderer": "Script directly calls ReferenceStudyRenderer.render for sphere and PortraitStudyRenderer.render for bust. App/MetalStudyRenderer.swift invokes the same functions for shipped CPU sphere fallback and mannequin path. CI compiles actual Sources/LightingCore/*.swift with this script; no alternate synthesis path was found.",
+    "validation": "Script requires 12 unique names; validates scenes; checks exact dimensions, RGBA byte counts, opaque alpha, binary unsupported mask length/content, count-mask agreement, zero unsupported pixels, and visible differences where declared. It writes scene JSON and actual RGB P6 payloads atomically, retains diagnosable pixels on unsupported-surface failures, writes manifest, and exits unsuccessfully for failed fixtures."
+  },
+  "tests": [
+    {
+      "kind": "source review",
+      "command": "cat scripts/render-study-fixtures.swift; inspected App/MetalStudyRenderer.swift lines 170-235 and .github/workflows/ios-prototype.yml lines 61-78 using separate read-only commands",
+      "result": "PASS scoped source review: twelve named deterministic fixtures and shipped CPU renderer calls; output/error capture and zero-unsupported assertions present."
+    },
+    {
+      "kind": "existing artifact inspection",
+      "command": "Read manifest.json and study-render.log; Python json/re assertions against all scene files and P6 payloads",
+      "result": "PASS: expected fixture order/count exactly 12; 12 valid scene JSONs plus manifest; 12 P6 images with exact width/height and 3-byte RGB payload sizes (sphere 28,814 bytes including header; mannequin 41,486 bytes); manifest reports all passed, zero unsupported, correct RGBA/mask counts, no validation errors. Log contains exactly corresponding 12 zero-unsupported lines."
+    },
+    {
+      "kind": "independent pixel comparison",
+      "command": "Python compared each RGB triplet against its declared comparison PPM, counting unequal triplets",
+      "result": "PASS: actual image bytes reproduce every one of the ten manifest comparison counts: hard 5678; warm 5896; bust-hard 4451; bust-side 5630; key-only-hard 5423; fill-only-soft 5687; bust-rim-only 4526; bust-roll-90 911; exposure-minus-two 5896; white-balance-3200 5896."
+    },
+    {
+      "kind": "retained original fixtures comparison",
+      "command": "Python bytes comparisons for soft, hard, warm, bust-soft, bust-hard, bust-side JSON and PPM against docs/evidence/m02-m03-code-2026-11-25/renders",
+      "result": "PASS: all six JSON files and all six PPM files are byte-for-byte unchanged from retained original fixtures."
+    },
+    {
+      "kind": "exact added configuration comparison",
+      "command": "Python deepcopy and full-dictionary equality assertions for key-only-hard, fill-only-soft, bust-rim-only, bust-roll-90, exposure-minus-two and white-balance-3200",
+      "result": "PASS: added scene JSONs differ from their declared baseline in exactly the intended lights, emitter roll, exposure, or white-balance fields."
+    },
+    {
+      "kind": "history availability",
+      "command": "git log --oneline -5 -- scripts/render-study-fixtures.swift; git show 40eb1de^:scripts/render-study-fixtures.swift",
+      "result": "Only 40eb1de script history is locally visible; its parent object is unavailable. Original preservation was checked against retained original JSON/PPM artifacts rather than an unavailable pre-expansion git parent."
+    }
+  ],
+  "outcome": "No material finding in assigned scope. Source review and independent read-only artifact checks pass. Fresh renderer execution/full suites, native/Metal execution, and subjective visual review were not performed by this worker. Zero-unsupported status is corroborated by the retained manifest/log and inspected runtime assertions, not independently recomputed from unavailable validity-mask payloads. This is software fixture evidence only, not physical calibration, photographic fidelity, or device performance."
+}

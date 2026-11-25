@@ -1,0 +1,61 @@
+{
+  "id": "079",
+  "canonicalAgent": "/root/w007_review_coordinator/w079_entity_graph",
+  "task": "Read-only review of StudioEntityGraph stable UUID/entity mappings and RealityStudioPreview selection/geometry linkage through deletion, duplication, and scene rebuild.",
+  "revision": {
+    "inspectedHEAD": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "sourceContinuity": "git diff from reviewed source to HEAD is documentation/evidence only; no diff in assigned graph/preview files. Existing unrelated pending recovery/palette edits were not changed."
+  },
+  "files": [
+    "App/StudioEntityGraph.swift",
+    "App/RealityStudioPreview.swift",
+    "App/StudioView.swift (selection, remove, duplicate, replacement call sites only)",
+    "Sources/LightingCore/StudioSceneBounds.swift",
+    "Sources/LightingCore/StudioOptics.swift (EmitterFrame and frame only)",
+    "Sources/LightingCore/Scene.swift (validation only)",
+    "NativeTests/SpatialPreviewTests.swift (scope of native geometry tests only)"
+  ],
+  "findings": [],
+  "observations": [
+    {
+      "kind": "source-review",
+      "location": "App/StudioEntityGraph.swift:69-130",
+      "detail": "Graph reconciles by UUID, retains existing lamp instances, removes both root-object lookup and parent attachment for deleted UUIDs, and inserts new root lookup for fresh IDs. Selection-only changes pass the scene/selection guard and update lamp outlines. Child collision hits resolve through ancestor traversal."
+    },
+    {
+      "kind": "source-review",
+      "location": "App/StudioEntityGraph.swift:242-299",
+      "detail": "Actual geometry uses authored position, emitter right/up/normal quaternion including roll, optics dimensions and aim targets. Collision-bearing point/housing/stand/feet remain descendants of the mapped root; selection follows fixture orientation and geometry. No identity coupling to array index or display name was found."
+    },
+    {
+      "kind": "source-review",
+      "location": "App/RealityStudioPreview.swift:172-203,277-293; App/StudioView.swift:535-541,1271-1290,1331-1352",
+      "detail": "Coordinator refreshes callback on every update and rejects hits absent from current validated scene; invalid scenes disable graph and suppress gesture start. StudioView generation identity recreates preview for project boundaries, deletion repairs selected UUID, duplicate assigns new UUID and selects it, and undo/redo repair removed selection."
+    },
+    {
+      "kind": "evidence-limit",
+      "location": "NativeTests/SpatialPreviewTests.swift; App/RealityStudioPreview.swift:29-40",
+      "detail": "Inspected native geometry tests target SceneKit SpatialPreview; x86_64 simulator also uses that fallback. This worker did not execute RealityKit collision, rendering, or lifecycle behavior, and does not treat source review or fallback tests as native RealityKit execution."
+    }
+  ],
+  "tests": [
+    {
+      "check": "Read worker brief, matching 079 plan entry, AGENTS.md and M02/M03 acceptance contract",
+      "result": "Completed."
+    },
+    {
+      "check": "git rev-parse HEAD; git status --short; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- App/StudioEntityGraph.swift App/RealityStudioPreview.swift; full revision diff --stat",
+      "result": "HEAD recorded; assigned files unchanged; revision delta documentation/evidence only; unrelated dirty files preserved."
+    },
+    {
+      "check": "Numbered full reads of assigned files; targeted rg/sed traversal of validation, frame construction, StudioView selection/duplicate/remove/rebuild paths and native test scope",
+      "result": "Completed. One initial rg referenced nonexistent App/StudioViewModel.swift (exit 2); resolved actual implementation in App/StudioView.swift."
+    },
+    {
+      "check": "Runtime probes, compilation, native/UI execution, full suites",
+      "result": "Not run. No concrete suspected material defect justified a probe; Linux toolchain cannot execute UIKit/RealityKit."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned entity/UUID, geometry-transform, or selection lifecycle scope. Source review only; native RealityKit execution remains outside this worker evidence."
+}

@@ -1,0 +1,59 @@
+{
+  "id": "093",
+  "task": "Read-only M03 required workflow inventory and evidence-manifest mapping against m02-m03-code-v2",
+  "canonicalAgent": "/root/w007_review_coordinator/w093_m03_gate_inventory",
+  "inspectedRevision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "headDifference": "Documentation/evidence only; App, NativeTests and UITests have additional uncommitted root repairs. Frozen source inventory was extracted with git show, so this report does not validate those repairs."
+  },
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "scripts/native_test_shards.py",
+    ".github/workflows/ios-prototype.yml",
+    "UITests/StudioOpticsUITests.swift",
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "UITests/ProjectLibraryUITests.swift",
+    "UITests/ManualRoomPlacementUITests.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "UITests/StudioSmokeTests.swift",
+    "UITests/AccessibilityAuditUITests.swift",
+    "NativeTests/StudioPaletteTests.swift",
+    "NativeTests/StudioSliderEditingTests.swift",
+    "NativeTests/StudioTrackingSliderTests.swift",
+    "Tests/LightingCoreTests/StudioAccessibleValueTests.swift",
+    "App/StudioView.swift",
+    "docs/evidence/m03-final-2026-11-25/validation/expected-methods.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/ci-core/atomic-write-result.json",
+    "docs/evidence/m03-final-2026-11-25/validation/source-4d0c67d/ci-core/commit-interruption-result.json",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-room-job.log"
+  ],
+  "findings": [],
+  "observations": [
+    "No new material inventory/selector or manifest defect found. Manifest exactly matches frozen 4d0c67d source: 118 native methods; 35 required UI methods (room-precision 5, library-reference 9, studio-export 10, studio-optics 10, app-accessibility 1); 2 opt-in platform audit methods.",
+    "All ten optics workflows remain individually required, including repeatability02 through10 and the primary undo/redo/relaunch workflow. Library inventory retains create/duplicate/rename/switch/relaunch, archived delete confirmation, stale-save recovery/confirmation, full-library recovery, unsaved-edit protection and large-library reopen.",
+    "App accessibility method executes default large and AXXXL variants and asserts actual text growth, label/value/selection semantics, enabled/disabled actions, target dimensions >=44, contained/reachable controls, keyboard-visible precision/name actions, and saved/unsaved library controls. Core localized accessible-value round-trip retains <=1e-9. Native action/bounds/undo tests and palette >=4.5 text/>=3 cues remain in required native inventory. Reduced motion has an explicit production branch; this review does not assert a runtime reduced-motion observation.",
+    "Platform audit class is excluded by named diagnostic partition, not marked skipped or passed. Methods retain performAccessibilityAudit(for: .all). Source accounting fails closed on missing, failed, skipped, duplicate, unexpected or out-of-order method events.",
+    "CI retains Linux bounded atomic-write/commit-interruption probes and separate macOS bounded-write probe. Existing 4d0c67d Linux receipts report actual EFBIG with 11 preservation/control checks and three before/after-rename/EIO scenarios passing. Linux host is identified; filesystem provenance is absent from those inspected receipt objects and is already assigned to root090. No device power-loss/provider claim follows.",
+    "Actual 4d0c67d room log records four passed methods and failed ManualRoomPlacementUITests.testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates. This is a known unresolved required-run failure; current root fixes are pending. Inventory validity cannot establish M03 completion."
+  ],
+  "tests": [
+    {
+      "kind": "read-only static inventory comparison",
+      "result": "passed",
+      "details": "Python extracted XCTest class/method declarations from git show 4d0c67d and compared sets against expected-methods.json. required_match=true; diagnostic_match=true; native_match=true."
+    },
+    {
+      "kind": "existing evidence inspection",
+      "result": "room 4 passed / 1 failed; Linux probe receipts report passed",
+      "details": "Read existing logs/JSON only. Did not rerun tests, probes, native/UI or full suites."
+    },
+    {
+      "kind": "git provenance inspection",
+      "result": "HEAD 9257b6d documentation-only versus 4d0c67d; uncommitted root implementation changes observed",
+      "details": "git rev-parse HEAD, git status --short, git diff --name-only 4d0c67d HEAD."
+    }
+  ],
+  "outcome": "Inventory and frozen-source manifest mapping are consistent with the contract. No new defect; completion remains unverified because the known required room failure and pending implementation revalidation remain. Root090 owns outstanding filesystem provenance. No repository edits or executions."
+}

@@ -1,0 +1,48 @@
+{
+  "id": "058",
+  "task": "Review SceneCodec version migration and invalid-value handling across v1\u2013v5; ensure unsupported future versions fail without partial acceptance.",
+  "canonicalAgent": "/root/w007_review_coordinator/w058_scene_codec",
+  "revision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewed_source": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchanged_source_evidence": "git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests Package.swift returned empty; git status --short returned empty."
+  },
+  "files": [
+    "Sources/LightingCore/SceneCodec.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Sources/LightingCore/Colorimetry.swift",
+    "Sources/LightingCore/RoomPlacement.swift",
+    "Tests/LightingCoreTests/SceneTests.swift",
+    "Tests/LightingCoreTests/StudioOpticsTests.swift",
+    "Tests/LightingCoreTests/CameraFramingTests.swift",
+    "Tests/LightingCoreTests/ColorimetryTests.swift",
+    "Tests/LightingCoreTests/DevelopmentGeometryTests.swift"
+  ],
+  "findings": [],
+  "observations": [
+    "SceneCodec.encode validates before JSON encoding; decode enforces the 1,048,576-byte bound, fully decodes, and validates before returning. There is no partial scene return path.",
+    "LightingScene.validated rejects schema versions outside 1...5 before count or content checks, preserves the 12-light ceiling, and rejects optics in v1, cameraLens before v3, previewSettings before v4, and placementRoom or rollDegrees before v5.",
+    "Validation checks finite/range validity of positions, lights, lens, preview settings and room, plus duplicate light identities. Migration copies the value and changes only schemaVersion to 5, preserving IDs and settings.",
+    "Related test source covers literal v1 identity/settings migration, v2 optics/default lens, v3 lens/default preview, v4 legacy room/roll defaults, v5 room/roll round-trip, light-count boundary across all versions, future-version precedence, malformed/oversized bytes and invalid nested settings."
+  ],
+  "tests": [
+    {
+      "kind": "source_review",
+      "result": "completed",
+      "checks": "Read assigned SceneCodec.swift and SceneTests.swift, traced LightingScene.validated and relevant nested validators, inspected migration-specific tests in StudioOpticsTests, CameraFramingTests, ColorimetryTests and DevelopmentGeometryTests."
+    },
+    {
+      "kind": "revision_check",
+      "command": "git rev-parse HEAD; git status --short; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests Package.swift",
+      "result": "HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419; clean working tree; source/test/package diff empty."
+    },
+    {
+      "kind": "runtime",
+      "result": "not run",
+      "reason": "Read-only focused source review; no full suite, compiler probe, native execution or Apple/UIKit execution performed. A check for an existing .build test binary found no .build directory."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned migration/rejection/preservation path. Source/test review only; existing test assertions were inspected, not executed."
+}

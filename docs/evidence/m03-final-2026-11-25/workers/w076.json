@@ -1,0 +1,42 @@
+{
+  "id": "076",
+  "canonicalAgent": "/root/w007_review_coordinator/w076_metal_fallback",
+  "task": "Review MetalStudyRenderer runtime parity selection, failure fallback and backend-downgrade cache invalidation against actual StudyRendererTests.",
+  "files": [
+    "App/MetalStudyRenderer.swift",
+    "NativeTests/StudyRendererTests.swift",
+    "Sources/LightingCore/StudyFrameCache.swift",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift",
+    "Tests/LightingCoreTests/StudyFrameCacheTests.swift"
+  ],
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "sourceUnchanged": "git diff between source candidate and inspected HEAD has no changes in reviewed code/tests; intervening checkpoint is documentation/state only.",
+  "findings": [],
+  "observations": [
+    "Runtime validation executes every StudyValidationFixtures entry through Double CPU and actual Metal at width 48, accepts only StudyParityMetrics.passes, and does not select Metal until validation and cancellation checks complete.",
+    "Interrupted validation rethrows cancellation without changing unchecked state; ordinary initialization/parity/backend failures select CPU. Invalid scene/resolution and cancellation StudyErrors propagate without a backend downgrade; malformed GPU output downgrades.",
+    "Near-field/far-domain routing and bust rendering use CPU without modifying the validated Metal state. Backend failure selectCPU removes every cached Metal frame while retaining valid CPU frames, with cache byte accounting and LRU order preserved by reverse-index removal.",
+    "Native tests use actual Metal renderer for six-fixture parity at width 96 and require Metal for routing and cancellation-retry methods when a device exists. No-device skips are explicitly not GPU verification; generic either-backend engine test alone does not establish Metal execution.",
+    "Assigned native tests do not inject an allocation/command failure after a cached Metal frame. Downgrade invalidation is supported here by source tracing plus inspection of generic selective-removal regression, not by an executed native failure-injection test."
+  ],
+  "tests": [
+    {
+      "check": "Read worker brief, task 076, AGENTS.md and m02-m03-code-v2 contract",
+      "result": "Completed"
+    },
+    {
+      "check": "git rev-parse HEAD; git status --short; git log -3 --oneline; git diff --name-only and reviewed-file diff from source4d0c67d",
+      "result": "HEAD 9257b6d documentation checkpoint; reviewed source unchanged. Existing unrelated uncommitted evidence/docs were not modified."
+    },
+    {
+      "check": "Read complete MetalStudyRenderer.swift and StudyRendererTests.swift; trace eligibility and selective cache invalidation into their core implementations and cache test source",
+      "result": "No material source defect found"
+    },
+    {
+      "check": "Native Metal/UI tests, host/shared harnesses and full suite",
+      "result": "Not run by this worker; native CI ongoing under root ownership. No runtime Metal pass claimed."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned source review. Native Metal execution remains separate required evidence; this report is read-only source/test review only."
+}

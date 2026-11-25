@@ -1,0 +1,38 @@
+{
+  "id": "071",
+  "task": "Review conservative emitter-facing culling correctness at directional/rectangle boundaries and zero contribution versus unsupported-mask classification.",
+  "files": [
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "Tests/LightingCoreTests/StudyEmitterFacingTests.swift"
+  ],
+  "findings": [],
+  "tests": {
+    "executed": [],
+    "source_review": [
+      "Directional sources remain individual samples (ReferenceStudy.swift:245-246,333-336); accumulate checks squared distance >= 0.0025 before receiver/geometric/emitter-facing rejection (307-315), so a near source is unsupported even when its eventual illumination would be zero.",
+      "All active rectangle near-field guards are checked before any light-loop culling (301). Rectangle shortcut requires signed depth < -(0.05 + 1e-9) (339-347), leaves coplanar and shallow-depth receivers on the original path, and advances exactly grid*grid samples without returning from the overall evaluation.",
+      "A zero contribution returns a valid zero signal (369); invalidSurface reaches the unsupported count, per-pixel mask, and magenta output (524-527). Receiver cancellation remains outside emitter evaluation (498).",
+      "Read all six StudyEmitterFacingTests methods: translated/rotated back faces and visibility calls; coplanar/small-depth midpoint agreement; front/narrow grazing positive contributions; near-field errors and mixed rigs; following point/area contribution preservation; and back-facing pixel cancellation."
+    ],
+    "commands_and_results": [
+      {
+        "command": "git rev-parse HEAD",
+        "result": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419"
+      },
+      {
+        "command": "git diff --name-only 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD",
+        "result": "Only agents/documentation/evidence paths differed; reviewed Swift source and tests were unchanged."
+      },
+      {
+        "command": "git status --short",
+        "result": "Only three untracked validation paths under docs/evidence/m03-final-2026-11-25/validation; no tracked source modifications."
+      }
+    ],
+    "limits": "Source/test inspection only. No tests, probe, full suite, compiler invocation, native UIKit/Metal execution, or image rendering was run. Existing test assertions were inspected, not counted as executed passes."
+  },
+  "outcome": "No confirmed material defect found in assigned emitter-facing culling and unsupported-mask paths. No changes proposed or made; no concrete concern justified a runtime probe.",
+  "canonicalAgent": "/root/w007_review_coordinator/w071_emitter_culling",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "unchangedSourceJustification": "Actual HEAD advanced through documentation/evidence checkpoints only; git diff names contain neither assigned Swift file nor other application source changes."
+}

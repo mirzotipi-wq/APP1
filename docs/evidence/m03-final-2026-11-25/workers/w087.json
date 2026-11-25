@@ -1,0 +1,55 @@
+{
+  "id": "087",
+  "task": "Review CI required native/UI selection, always-run method accounting, finalized results and opt-in audit separation for concrete false-pass paths.",
+  "canonicalAgent": "/root/w007_review_coordinator/w087_ci_required_accounting",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    ".github/workflows/ios-prototype.yml",
+    "scripts/native_test_shards.py",
+    ".github/workflows/platform-accessibility-diagnostics.yml",
+    "scripts/tests/test_native_test_shards.py",
+    "NativeTests/StudyRendererTests.swift",
+    "UITests/AccessibilityAuditUITests.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "static_source_review",
+      "check": "Required xcodebuild command selection and exit handling",
+      "result": "Unit target and all five required UI shards are selected through native_test_shards.py; required test commands use set -euo pipefail with tee, no continue-on-error; studio trace EXIT trap returns original status."
+    },
+    {
+      "kind": "static_source_review",
+      "check": "Required method accounting and finalization",
+      "result": "Unit and UI accounting steps use if: always() and --report. Parser requires exactly one ordered started/passed pair for every discovered method, rejecting missing/skipped/failed/duplicate/foreign/unrecognized events. Failed reports are written on read/inventory/preflight errors. Required finalization checks Info.plist and requires xcresulttool attachment export success."
+    },
+    {
+      "kind": "static_source_review",
+      "check": "Warm-up, Metal and diagnostic partition",
+      "result": "Warm-up is explicitly diagnostic; required execution remains gated independently. Native Metal methods are checked for one pass and generic accounting rejects skips. Matrix equals required SHARDS; platform audit is separately dispatched and excluded explicitly from required shards."
+    },
+    {
+      "kind": "source_revision_check",
+      "command": "git rev-parse HEAD",
+      "result": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419"
+    },
+    {
+      "kind": "source_revision_check",
+      "command": "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- .github/workflows/ios-prototype.yml scripts/native_test_shards.py .github/workflows/platform-accessibility-diagnostics.yml NativeTests UITests",
+      "result": "Empty; reviewed source paths unchanged between frozen source candidate and actual HEAD."
+    },
+    {
+      "kind": "worktree_check",
+      "command": "git diff -- .github/workflows/ios-prototype.yml scripts/native_test_shards.py .github/workflows/platform-accessibility-diagnostics.yml",
+      "result": "Empty; assigned workflow/parser files have no uncommitted edits. Other collaborators have unrelated worktree changes, left untouched."
+    },
+    {
+      "kind": "execution_limit",
+      "result": "No test suite, xcodebuild command, native/UI execution, parser regression execution or runtime probe was run. Existing regression test source was inspected only; no CI pass is inferred."
+    }
+  ],
+  "outcome": "No concrete material false-pass path identified in the reviewed CI wiring/accounting source. This conclusion is static only; current native/UI execution and actual result-bundle finalization remain unverified by this worker."
+}

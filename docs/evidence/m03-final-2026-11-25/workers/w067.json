@@ -1,0 +1,43 @@
+{
+  "id": "067",
+  "canonicalAgent": "/root/w007_review_coordinator/w067_parity_metrics",
+  "task": "Read-only review of StudyParityMetrics mask locations, channel thresholds/denominators, malformed dimensions, and six fixtures including deliberate unsupported near-field.",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "Sources/LightingCore/StudyValidationFixtures.swift",
+    "Tests/LightingCoreTests/StudyParityMetricsTests.swift",
+    "scripts/prepare-kernel-fixtures.swift",
+    "scripts/verify-kernel-host.cpp",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source-review",
+      "check": "StudyParityMetrics validity and pass calculation",
+      "result": "Positive identical dimensions, checked pixel/byte products, exact RGBA lengths, binary full-size masks matching declared unsupported counts, and opaque display alpha are required. RGB mean and >4 fraction both use three channels per pixel; maximum is diagnostic. passes requires equal counts and exact mask bytes, mean <=1, fraction <=0.005."
+    },
+    {
+      "kind": "test-source-review",
+      "check": "StudyParityMetricsTests",
+      "result": "Existing tests explicitly cover swapped invalid positions with equal counts, indistinguishable magenta RGB with swapped flags, sparse high maximum, buffer length, nonpositive/overflowing/different dimensions, missing/nonbinary/inconsistent masks, nonopaque alpha, and CPU renderer masks. These tests were read, not executed by this worker."
+    },
+    {
+      "kind": "source-review",
+      "check": "Fixture generation and host comparator",
+      "result": "Exactly hard, soft, warm-rotated, dark, near-field and translated. Generator serializes each mask position into fixture alpha; host comparator checks every mask position, both invalid counts, exact alpha and RGB mean/outlier denominators. Near-field unsupported pixels are deliberate under the contract."
+    },
+    {
+      "kind": "existing-evidence-inspection",
+      "path": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-kernel.log",
+      "result": "Six recorded PASS lines. Near-field records invalid 84/84 with zero mask mismatches; other five record 0/0. Soft/translated mean 5.42535e-05, max 1; others mean/max 0. All >4 fractions zero. This is inspected host evidence, not worker rerun or native Metal evidence."
+    },
+    {
+      "kind": "revision-check",
+      "check": "git rev-parse HEAD; git diff 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- assigned source/test files; git diff --stat baseline HEAD",
+      "result": "HEAD 9257b6d is documentation/evidence checkpoint. Assigned source/test diff empty, and complete intervening diff contains documentation/state/evidence only. Reviewed source unchanged from 4d0c67d."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned scope. Source review and inspection of existing evidence only; no test/compiler/native runtime execution and no repository edits."
+}

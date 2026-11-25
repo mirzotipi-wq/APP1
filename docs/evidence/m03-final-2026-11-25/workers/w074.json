@@ -1,0 +1,50 @@
+{
+  "id": "074",
+  "task": "Review PortraitStudy grazing normal fallback, front hemisphere and geometric shadow offsets; identify plausible geometry defect from source/tests.",
+  "canonicalAgent": "/root/w007_review_coordinator/w074_portrait_normals",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "Sources/LightingCore/PortraitStudy.swift",
+    "Sources/LightingCore/PortraitHeadMesh.swift",
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "Tests/LightingCoreTests/GrazingStudyContinuityTests.swift",
+    "Tests/LightingCoreTests/PortraitStudyTests.swift",
+    "Tests/LightingCoreTests/PortraitHeadMeshTests.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source-review",
+      "check": "PortraitHeadMesh.Triangle.hit fallback and mesh nearest-hit tie handling",
+      "result": "Interpolated normal is used only when camera-facing and in the geometric front hemisphere; otherwise outward triangle normal is retained. Numerical silhouette ties may borrow a front-facing face normal while preserving minimum distance and strict maximum segment boundary. No concrete geometry defect found."
+    },
+    {
+      "kind": "source-review",
+      "check": "PortraitStudyRenderer.render -> StudyLighting.evaluate -> PortraitGeometry.occludes",
+      "result": "Hit carries distinct geometric and shading normals; renderer validates view-facing shading normal. Direct evaluator rejects geometric back-hemisphere samples, clips partial rectangles against both normals, offsets the shadow origin by geometricNormal * 1e-5 and recomputes direction/length to the actual source. Occlusion uses bounded segments. No concrete visibility defect found."
+    },
+    {
+      "kind": "test-source-review",
+      "check": "GrazingStudyContinuityTests and PortraitStudyTests; focused PortraitHeadMeshTests silhouette regressions",
+      "result": "Read assertions for clipping topology continuity, independent Simpson reference, dual-plane weights, remapped visibility callback endpoints/offset, outward normals, finite shadow segments, oblique 144px unsupported pixels, exact silhouette vertex rendering, and coincident silhouette segment endpoints. These are reviewed assertions, not executed passes."
+    },
+    {
+      "kind": "repository-check",
+      "command": "git diff --exit-code 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests",
+      "result": "Exit 0; no source/test changes between frozen candidate and inspected documentation checkpoint."
+    },
+    {
+      "kind": "repository-check",
+      "command": "git diff --exit-code -- Sources/LightingCore/PortraitStudy.swift Sources/LightingCore/PortraitHeadMesh.swift Sources/LightingCore/ReferenceStudy.swift Tests/LightingCoreTests/GrazingStudyContinuityTests.swift Tests/LightingCoreTests/PortraitStudyTests.swift Tests/LightingCoreTests/PortraitHeadMeshTests.swift",
+      "result": "Exit 0; reviewed files have no working-tree edits."
+    },
+    {
+      "kind": "execution-limit",
+      "result": "No runtime probe, XCTest, full suite, native/Metal run, or image render performed. Source-only review; no claim of runtime acceptance or physical skin fidelity."
+    }
+  ],
+  "outcome": "No confirmed material geometry or visibility defect in assigned scope. Reviewed source is unchanged from 4d0c67d; HEAD is a documentation-only checkpoint relative to Sources/Tests. Repository not edited; pre-existing root documentation/evidence work left untouched."
+}

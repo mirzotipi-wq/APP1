@@ -1,0 +1,60 @@
+{
+  "id": "066",
+  "task": "Review Float32 backend eligibility precision guards, translated camera frames and refusal boundaries; map tests to source.",
+  "canonicalAgent": "/root/w007_review_coordinator/w066_float32_eligibility",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "sourceCarryForward": "git diff --quiet 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests App NativeTests scripts exited 0; HEAD advancement changed documentation/evidence only. Existing untracked validation artifacts were left untouched.",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift",
+    "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+    "App/MetalStudyRenderer.swift",
+    "App/StudyKernel.h",
+    "NativeTests/StudyRendererTests.swift",
+    "scripts/precision-boundary.swift",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-precision.log"
+  ],
+  "findings": [],
+  "observations": [
+    "supports validates the scene and camera frame before requiring camera and every source to be within 20 m of the subject. Tests assert exactly 20 m accepted, 20.000001 m rejected independently for camera/source, and translated scenes accepted.",
+    "Active point/directional sources require sphere-surface and visible-panel clearance exceeding 0.05 + 0.001 m. Rectangle clearance uses the actual oriented finite emitting face and max(0.05, longestSide/4) + 0.001 m. Invalid active directional/rectangular frames refuse routing; disabled sources skip near-field/frame guards.",
+    "Visible-panel bounds clip the finite panel to five camera half-spaces in Double, with metric padding scaled by normal magnitude. AABB separation conservatively underestimates actual rectangle/panel clearance; narrow/wide lens, yaw, translated panel, tilted rectangle extent, and both sides of the area cutoff have source tests.",
+    "StudyComputeInput subtracts the subject center in Double before Float32 packing for camera origin, source samples and area centers. Camera basis comes from the Double CameraFraming. The kernel consumes the packed basis and origin directly; translation test checks exact packed parameter/sample equality.",
+    "Production Metal rendering calls eligibility before compute; engine routes ineligible scenes through the CPU reference without permanently changing a validated backend. The raw validation-only entry point deliberately bypasses near-field eligibility but retains relative limits and StudySetup validation; it is not the production publish path.",
+    "supports is a routing-domain predicate rather than all render-input validation: StudySetup separately rejects camera positions too close to the sphere or below the panel. This produces an input error rather than publishing invalid GPU output.",
+    "Near-field guard is explicitly documented as an engineering margin rather than a proved universal GPU error bound. No material reachable failure found in this focused review."
+  ],
+  "tests": [
+    {
+      "kind": "source inspection; not executed",
+      "path": "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+      "result": "Read all six methods: startup/disabled routing; measured micrometer and cutoff cases; inclusive relative 20 m/translations; camera-frustum panel; finite rectangle size/extent; tilted area and invalid aim."
+    },
+    {
+      "kind": "source inspection; not executed",
+      "path": "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+      "result": "Read all four methods; translation and finite aligned packing assertions map to Double-relative packing in ReferenceStudy.swift."
+    },
+    {
+      "kind": "source inspection; not executed",
+      "path": "NativeTests/StudyRendererTests.swift",
+      "result": "Read actual Metal parity, far-camera CPU fallback, and near-field fallback/reuse methods. No native or Metal execution performed by worker."
+    },
+    {
+      "kind": "existing root evidence inspected; not rerun",
+      "path": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-core/study-precision.log",
+      "result": "Eight mandatory far-camera/world-translation lines report PASS, mean 0, maximum channel error 0, invalid-mask mismatches 0, max-limit 1. Six area fixtures cover 19/19.999999/20 m at 85/200 mm; two translations cover +/-77 m offsets. This is host/shared-Float32 evidence and does not establish native Metal execution."
+    },
+    {
+      "kind": "read-only command executed",
+      "command": "git rev-parse HEAD; git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD; git status --short; git diff --quiet 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources Tests App NativeTests scripts",
+      "result": "Confirmed inspected HEAD and unchanged source. No tests or runtime probes executed; no repository edits."
+    }
+  ],
+  "outcome": "No confirmed material defect. Source/test mapping and existing mandatory precision log support the reviewed guard/translation behavior within the stated evidence limits; native execution remains outside this worker review."
+}

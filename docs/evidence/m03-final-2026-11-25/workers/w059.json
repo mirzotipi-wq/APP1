@@ -1,0 +1,42 @@
+{
+  "id": "059",
+  "canonicalAgent": "/root/w007_review_coordinator/w059_light_creation",
+  "task": "Read-only review of SceneLightCreation: fresh/stable IDs, 12-light limit, valid placement, duplicate behavior, atomic failure, and targeted test coverage.",
+  "files": [
+    "Sources/LightingCore/SceneLightCreation.swift",
+    "Tests/LightingCoreTests/SceneLightCreationTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/SceneEditHistory.swift",
+    "Sources/LightingCore/StudioDisplayName.swift",
+    "App/StudioView.swift"
+  ],
+  "revision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "unchangedSourceBasis": "git diff --name-only 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD listed only documentation/agent evidence files; no source/test changes."
+  },
+  "findings": [],
+  "tests": [
+    {
+      "check": "Source review of creation and validation",
+      "result": "New default UUID is generated per call; supplied UUID retained; duplicate IDs rejected by final scene validation. Existing array elements and scene fields are retained. Capacity rejects a valid 12-light scene before append. New default position follows normalized camera azimuth, falls back for vertical/coincident camera, and rejects unsupported coordinates."
+    },
+    {
+      "check": "Source review of atomic failure and history",
+      "result": "Input and local scene are value types; only validated local result is returned. Boundary, invalid input, full capacity, and duplicate-ID throws cannot mutate input. History snapshots preserve exact created IDs across undo/redo."
+    },
+    {
+      "check": "Inspection of six SceneLightCreationTests methods",
+      "result": "Tests cover default and translated placement, name collision, two camera azimuths, vertical/coincident fallback, boundary/capacity/duplicate-ID/invalid-input rejection, and undo/redo identity. No tests executed in this worker."
+    },
+    {
+      "check": "Inspection of StudioView addLight, duplicateLight, and sceneAction",
+      "result": "Add selects the returned new identity after validated replacement. Duplicate creates a fresh UUID, preserves equipment/position, chooses unique bounded copy name, and enforces capacity. Both UI commands route through generation/busy protection."
+    },
+    {
+      "check": "Repository status",
+      "result": "Observed untracked docs/evidence/m03-final-2026-11-25/validation/baseline-40eb1de/; made no repository changes."
+    }
+  ],
+  "outcome": "No concrete material defect found in assigned scope. Source/test inspection only; no runtime, native UI, or full-suite execution. Placement near supported scene boundaries intentionally fails with actionable error; no claim of automatic alternative placement or room containment."
+}

@@ -1,0 +1,36 @@
+{
+  "id": "052",
+  "task": "Read-only essential Plan/inspector accessibility assertions against source: label, value, selected, disabled, action and 44-point targets; excluded font oracle, naming/preset changes and precision-keyboard coverage already assigned elsewhere.",
+  "files": [
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "App/StudioView.swift",
+    "App/StudioSlider.swift",
+    "App/StudioPlanMarkers.swift",
+    "App/PrecisionValueButton.swift",
+    "App/StudioSliderEditing.swift",
+    "UITests/StudioContentReachability.swift",
+    "NativeTests/StudioSliderEditingTests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "check": "git rev-parse HEAD; git status --short --branch; git log -3 --oneline",
+      "result": "Inspected HEAD 4d0c67d258be802f048e74616cabcdf903e2b59d on main tracking origin/main. Existing changes were coordinator documentation/evidence files; no source changes observed or made."
+    },
+    {
+      "check": "Source correspondence: required essential workflow and control helper",
+      "result": "The workflow asserts exact Save/Undo/Redo/mode/Fill marker/intensity labels, initial disabled Undo/Redo and subsequent history transitions, selected mode/rack traits plus rack checkmark, exact intensity value on both button and native slider before/after edit/undo/redo. control() checks enabled state, nonempty label, hitability when enabled, frame width and height >=44, and visible containment."
+    },
+    {
+      "check": "Source correspondence: StudioView choiceButton, planMarkers, rack, inspector/control; StudioPlanMarkerControl; PrecisionValueButton",
+      "result": "Inspected labels and stable identifiers match queried elements. Choice/rack/marker selected traits follow the same selected state used by visual cues. Mode choices, Plan markers, exact-value buttons and history buttons declare >=44-point targets; rack rows declare >=52-point height. Marker activation and precise-position alternative are present; selection callbacks target existing light IDs."
+    },
+    {
+      "check": "Source correspondence: StudioSliderControl.updateUIView/configure, intrinsicContentSize, accessibilityValue, adjustAccessibly and StudioSliderEditing.adjust",
+      "result": "SwiftUI enabled environment reaches native isEnabled, invalid mapping/nonfinite value also disables, accessible adjustment guards isEnabled, native label/identifier match inspector input, and accessibilityValue reads the exact Double binding with the same localized formatter as the exact button. Slider declares >=44-point height. Bounds/no-op/history behavior is implemented and has source-level unit-test assertions; those tests were read, not executed."
+    }
+  ],
+  "outcome": "No new concrete material defect found in the assigned Plan/inspector semantics and control-target source review. Native/UIKit/XCTest execution and runtime 44-point frames, hit-testing, disabled AX traits, scrolling and spoken output were not verified. No suite, native test, compiler probe or platform audit was run; no pass inferred from source.",
+  "inspectedRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "canonicalAgent": "/root/w007_review_coordinator/w052_accessibility_control_checks"
+}

@@ -1,0 +1,50 @@
+{
+  "id": "082",
+  "task": "Review native renderer tests and CI for actual Metal execution, unavailable-device handling, and required method inventory accounting.",
+  "canonicalAgent": "/root/w007_review_coordinator/w082_native_renderer_tests",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "NativeTests/StudyRendererTests.swift",
+    ".github/workflows/ios-prototype.yml",
+    "scripts/native_test_shards.py",
+    "App/MetalStudyRenderer.swift",
+    "Sources/LightingCore/StudyValidationFixtures.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "observations": [
+    "No material enforcement defect found in the assigned scope.",
+    "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice constructs MetalStudyRenderer and sends every StudyValidationFixtures fixture directly through renderValidationFixture at width 96; that path calls compute without engine CPU fallback.",
+    "App/MetalStudyRenderer.swift:59-87 allocates MTLBuffers, encodes the keyfillStudy compute pipeline, dispatches threadgroups, commits the command buffer, waits for completion, requires completed status, and reads GPU output. Shared buffer storage is not the C++ shared-host numerical harness.",
+    "StudyParityMetrics.passes explicitly requires matching unsupported counts and invalid-mask positions plus mean RGB channel error <= 1 and fractionAboveFour <= 0.005.",
+    "Three Metal-specific XCTest methods throw XCTSkip when MTLCreateSystemDefaultDevice is unavailable. The general engine-frame test permits either backend, but does not replace these required Metal methods.",
+    ".github/workflows/ios-prototype.yml:268-285 rejects every skipped native test and requires exactly one passed terminal outcome for each of the three Metal-specific methods. With set -euo pipefail, failed xcodebuild also fails the step; skipped-device results therefore cannot make the required CI run successful.",
+    ".github/workflows/ios-prototype.yml:287-303 runs complete native method accounting with if: always() and separately requires a finalized xcresult bundle. scripts/native_test_shards.py discovers NativeTests recursively and accepts only one ordered started -> passed event sequence per expected method, rejecting omissions, duplicates, failures, skips and unknown events.",
+    "Portable Float32/C++ checks and Metal compiler preflight are separate workflow steps and are not substituted for actual native backend testing."
+  ],
+  "tests": [
+    {
+      "kind": "source_review",
+      "checks": "Read assigned test/workflow sources and directly supporting renderer, parity and inventory implementation.",
+      "result": "Source-level enforcement found; no native execution or passing runtime result asserted."
+    },
+    {
+      "kind": "revision_comparison",
+      "command": "git diff --exit-code 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- NativeTests/StudyRendererTests.swift .github/workflows/ios-prototype.yml scripts/native_test_shards.py App/MetalStudyRenderer.swift",
+      "result": "Exit 0; reviewed implementation and workflow unchanged at documentation/evidence HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419."
+    },
+    {
+      "kind": "static_inventory",
+      "checks": "Read-only Python regex scan of NativeTests/*.swift descendants using the same func-test pattern as inventory discovery.",
+      "result": "118 native test methods across 15 Swift files; all seven StudyRendererTests methods are included. This is source accounting, not executed method accounting."
+    },
+    {
+      "kind": "not_run",
+      "checks": "No native tests, full suite, synthetic log probes or CI rerun performed.",
+      "result": "Ongoing native CI is unverified; no Apple runtime execution was available or claimed in this review."
+    }
+  ],
+  "outcome": "no_finding_source_review_only"
+}

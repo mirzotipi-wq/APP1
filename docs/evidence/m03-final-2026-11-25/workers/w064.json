@@ -1,0 +1,27 @@
+{
+  "id": "064",
+  "task": "Review finite-area quadrature/sample limits, grazing clipping and declared support against numerical-reference tests <=5%; seek unsupported result accepted as supported.",
+  "files": [
+    "Sources/LightingCore/SurfacePhotometry.swift",
+    "Tests/LightingCoreTests/SurfacePhotometryTests.swift",
+    "docs/ARCHITECTURE.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": {
+    "reviewed_head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewed_source": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "source_unchanged": "git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- Sources/LightingCore/SurfacePhotometry.swift Tests/LightingCoreTests/SurfacePhotometryTests.swift produced no differences; HEAD is a documentation checkpoint.",
+    "checks": [
+      "Read worker brief, matching coordinator task 064, AGENTS.md and dated code acceptance contract.",
+      "Read entire SurfacePhotometry.swift and SurfacePhotometryTests.swift; inspected declared finite-area support in docs/ARCHITECTURE.md.",
+      "Verified by source inspection: sides 0.05...4 m, finite 0...100000 cd, normalized approximately orthogonal axes, bounded valid positions; abs plane depth must reach max(0.05 m,longestSide/4) before backface/zero-output returns.",
+      "Verified by source inspection: fully positive domain uses 32x32=1024 evaluations; clipped rectangle has at most five vertices, at most three nondegenerate triangles, 12x12 quadrature each, at most 432 evaluations. Duffy-map determinant*(1-u), area-normalized radiance, and nonnegative affine incidence interpolation agree with the declared integral.",
+      "Verified source assertions: six analytic fixtures require <1%; four independent off-axis Simpson fixtures require <5%; grazing strips/corners and partial/full transition retain <0.2%; invalid/near-plane/backface and intensity scaling checks are present."
+    ],
+    "execution": "No tests, numerical probes, compiler invocations, full suites, or native runs executed by this worker. Parent-provided fresh-core evidence was not re-executed or independently certified.",
+    "limits": "Focused source review only; existing finite fixtures are not a proof of a universal relative-error bound for every admitted pose. No concrete unsupported result or material numerical defect found. An exploratory rg named nonexistent docs/PHOTOMETRY.md and returned exit 2; actual support declarations were found in docs/ARCHITECTURE.md."
+  },
+  "outcome": "No material finding in assigned finite-area photometry scope; support guards, bounded work and clipping match declared contract by source inspection.",
+  "canonicalAgent": "/root/w007_review_coordinator/w064_area_photometry"
+}

@@ -1,0 +1,78 @@
+{
+  "id": "088",
+  "task": "Review native_test_shards exact method parsing/accounting for duplicate outcomes, parameterized paths and unstarted/interrupted tests; inspect regression tests.",
+  "files": [
+    "scripts/native_test_shards.py",
+    "scripts/tests/test_native_test_shards.py",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "UITests/*.swift",
+    "NativeTests/*.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source-review",
+      "result": "verify_log keys events by exact target/class/method; only the ordered two-event sequence started, passed contributes to passed. Duplicate starts/passes, reversed order, failures, skips, unknown events, missing starts, missing terminal events and omitted methods all produce invalid entries and failed status."
+    },
+    {
+      "kind": "source-review",
+      "result": "Interleaved methods preserve individual event order. Foreign targets or classes cannot supply selected events. Fullmatch rejects unfamiliar case syntax or trailing event text. Parameterized names, nested/qualified class paths and slash identities are unsupported and fail closed when presented as Test Case lines; current selected XCTest declarations use plain parameterless methods."
+    },
+    {
+      "kind": "source-review",
+      "result": "Report defaults to failed, preserves expected/unstarted inventory on log-read failure, writes failure reports in finally, and does not emit success on verification failure. A started but interrupted method remains started, has no passed entry, and retains its incomplete event sequence in invalid; wholly omitted methods remain unstarted."
+    },
+    {
+      "kind": "regression-assertion-review",
+      "result": "Inspected assertions for valid single/interleaved sequences; 11 invalid event sequences; foreign targets; malformed case lines; missing, failed and skipped inventory categories; preservation of event line numbers; replacement of prior passing report on failure; unreadable log; CLI preflight and unknown inventory failures; nested source directories; duplicate classes and shard assignments. Tests assert report contents and lack of false success output, not merely exception existence."
+    },
+    {
+      "kind": "repository-check",
+      "command": "git rev-parse HEAD; git status --short; git log -3 --oneline; git diff --name-only 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD; git diff --stat 4d0c67d258be802f048e74616cabcdf903e2b59d HEAD -- scripts/native_test_shards.py scripts/tests/test_native_test_shards.py UITests Tests",
+      "result": "Observed HEAD 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419, a documentation checkpoint over source 4d0c67d258be802f048e74616cabcdf903e2b59d. Parser and regression files unchanged. Concurrent application/palette/docs edits observed and left untouched."
+    },
+    {
+      "kind": "not-run",
+      "result": "No Python regression suite, Swift suite, Xcode/native run, simulator test, or synthetic execution probe was run. No passing runtime claim. CI exit/finalized-result wiring belongs to worker087."
+    }
+  ],
+  "outcome": "No confirmed material defect in the assigned parser/accounting source. Review-only conclusion; compatibility with real current Xcode log output and final native-run success remains runtime evidence owned by root. Parameterized and alternate class identities are unsupported; no current selected declaration requires them.",
+  "canonicalAgent": "/root/w007_review_coordinator/w088_shard_parser",
+  "inspectedRevision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "filesystemProvenanceIndependentReview": {
+    "task": "Read-only independent review of worker090 filesystem-provenance implementation authorized by root.",
+    "reviewer": "/root/w007_review_coordinator/w088_shard_parser",
+    "inspectedHEAD": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedWorkingTreeFileSHA256": {
+      "scripts/run_atomic_library_write_probe.py": "e2ab6c8eafef4ec3634aaf1dc0391a554b4a59abce6af1e5843961a1f55c021a",
+      "scripts/tests/test_atomic_library_probe_filesystem.py": "2fa662cb9ebe9a7a10a37de6c548fdb2c379c31b81c6d8e6959b8f733dc77388",
+      "scripts/tests/test_atomic_library_probe_sdk.py": "86c0e384dc87d03d97a930c3ad4057b32ccc50ad5c84292803c08c768addbd9f"
+    },
+    "unchangedProbeMechanismSHA256": {
+      "scripts/probe_atomic_library_write.py": "de458619bfb13f18cefa32517a37276c003a4b4340cd42c10735374a962d02cb",
+      "scripts/probe_library_commit_interruption.py": "a1d5344fded8681209d39c6723a8a20d25b3b31966eedef03ad1ca160feabd1b",
+      "scripts/probe-atomic-library-write.swift": "1a02498fdcfefc4b3805b2e4e4b45cfd726e8ed10a17e4d9e91f2ed7bc8dda40",
+      "scripts/probe-library-commit-interposer.c": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a"
+    },
+    "hashCheck": "All three modified-file hashes independently match worker090 implementationFollowup.changedFileSHA256. git diff --numstat for the four underlying probe mechanism files was empty.",
+    "findings": [],
+    "actualChecks": [
+      "Read the complete working-tree wrapper, filesystem regression file and SDK regression file, reviewed the exact patch versus HEAD, and read worker090 implementation receipts. No source edits.",
+      "Linux: actual resolved existing target is stat-ed, findmnt is queried for that target, exactly one row is required, reported major/minor must match actual target st_dev, required source/type/mount fields must exist, selected mount must be absolute and stat to the same device, and target device/inode must remain unchanged during observation.",
+      "Darwin: df -P -k chooses the actual target volume; parsed source and mount are joined as an exact pair to exactly one mount receipt, whose type is required. No lexical path-prefix mount selection is used, permitting APFS firmlink paths. Mount st_dev must match actual target st_dev. Source inspection and controlled fixtures support this logic; no actual macOS run was performed.",
+      "Fail-closed flow: observation starts failed; missing/ambiguous/malformed metadata, unavailable commands, nonzero return, timeout, invalid UTF-8, oversized parsed stdout, changed target identity or device mismatch cannot produce observed status. Each observation is persisted before require checks; initial failure blocks compiler lookup, and final-target failure prevents wrapper pass.",
+      "Receipts: requested/resolved command arguments, C locale override, ten-second command timeout, return or timeout cleanup status, raw stdout/stderr paths and failure message are retained on normal command completion/failure. Command startup exceptions retain requested/resolved arguments and observation failure; no fabricated child status is synthesized.",
+      "Integration: output directory is observed before compilation; final library/control projects.json files are independently observed for EFBIG and each enabled before-rename/after-rename/rename-eio family. Existing 140-second shared probe budget and inner/outer cleanup reserves are unchanged. Metadata is outside that budget. Source and diagnostic hashes remain checked before/after compilation and after probes; wrapper code itself remains in diagnostic hashes.",
+      "Regression assertion review: tests cover Linux target major/minor mismatch, absent/ambiguous metadata and missing type; macOS firmlink-style non-parent mount paths, inode columns/path spaces, wrong device/mount pair and duplicate matches; unavailable/nonzero/timed-out commands; invalid UTF-8/oversized output; initial provenance failure blocking compilation. SDK fixture explicitly mocks provenance while preserving its existing SDK assertions."
+    ],
+    "limits": [
+      "No tests, compilation, persistence failure/interruption probe, live metadata command, macOS/native/UI run or full suite was executed by this reviewer. Worker090 reported 19 passing targeted mocked tests; this review did not independently execute them.",
+      "The 256 KiB ceiling bounds accepted/parsed stdout after completion; run_logged still retains and echoes raw logs. It is not a capture-time disk-byte cap. Commands are trusted local metadata tools with ten-second timeouts; no material workflow defect established from this distinction.",
+      "Mount-device mismatch and changing-target checks were inspected directly; no independent runtime race/device reproduction was performed. Controlled Darwin fixtures do not establish actual macOS compatibility.",
+      "Historical 4d0c67d probe artifacts remain without contemporaneous filesystem provenance; new code and local observations do not retroactively fill that original evidence gap."
+    ],
+    "outcome": "No confirmed material defect in this focused independent source/assertion review. Patch preserves original failure mechanisms, shared probe timeouts and source-hash checks while adding target-specific fail-closed filesystem receipts. Fresh actual host probe evidence remains root-owned."
+  }
+}

@@ -1,0 +1,228 @@
+{
+  "id": "094",
+  "canonicalAgent": "/root/w007_review_coordinator/w094_candidate_integration",
+  "task": "Independent read-only review of pending no-op binding rejection guards, actual room 44-point control repairs and additive UI assertions; no edits or test reruns.",
+  "inspected_revision": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+  "reviewed_base_source_revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "revision_note": "HEAD is a documentation checkpoint; all nine inspected source files at HEAD exactly match 4d0c67d. Review covers the recorded uncommitted worktree hashes, not an executed native fix revision.",
+  "files": [
+    "App/ManualRoomPlacementView.swift",
+    "App/PrecisionValueButton.swift",
+    "App/LightTargetLuxView.swift",
+    "App/StudioView.swift",
+    "UITests/ManualRoomPlacementUITests.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "UITests/StudioContentReachability.swift",
+    "App/StudioSlider.swift",
+    "App/StudioSliderTracking.swift"
+  ],
+  "source_hashes": {
+    "App/ManualRoomPlacementView.swift": {
+      "worktree_sha256": "9ead5359c497384d864c0880daa07d4db55c00423451594165e512e82f6d3412",
+      "HEAD_sha256": "9fa5496e9cf3ba72ffe13816a8ce11d9d592cc74fcbb1dac7eeae6a3bfeea26b",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": false
+    },
+    "App/PrecisionValueButton.swift": {
+      "worktree_sha256": "40b53cf3e00fbe73c4b1429a3700266970f7f1bd958422adb4a7e3d8d1f026c1",
+      "HEAD_sha256": "6142022160b798f35169dfaa7d6b8b1c1c806e2e0a93f2d61f64728791ed9bab",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": false
+    },
+    "App/LightTargetLuxView.swift": {
+      "worktree_sha256": "a9f02c6821bc6315db587d43328d9ea5a2ce603aa18de3ddc55d342024d0a7fc",
+      "HEAD_sha256": "30d6b1c1c4a482c206ba0303d7707be11562dfaa716e7c9b7b6307e9720a6eb0",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": false
+    },
+    "App/StudioView.swift": {
+      "worktree_sha256": "6da3c0e3051dd0aa248a06a908d7a58180590a85e3195c32dc07eb471f8087e8",
+      "HEAD_sha256": "4340be040dcf1268912d30e923e7865e973446ac6996fb2fd01a3b140e6efc8f",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": false
+    },
+    "UITests/ManualRoomPlacementUITests.swift": {
+      "worktree_sha256": "dbdd47081c9cc09f6379372f768b036c567a2a598e40d9694915a96f3920372b",
+      "HEAD_sha256": "de90ef17506b17b9da232fd0ed4d287fbc5539b4d7fddd153e6d5c6f1ace05b0",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": false
+    },
+    "UITests/PrecisionEditingUITests.swift": {
+      "worktree_sha256": "31479ea14d714d6642a967febe61b1369a5d48b557649f0020e773ce37c75c0b",
+      "HEAD_sha256": "31479ea14d714d6642a967febe61b1369a5d48b557649f0020e773ce37c75c0b",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": true
+    },
+    "UITests/StudioContentReachability.swift": {
+      "worktree_sha256": "49e9f5308d283509e6d6f932d3f67998e171dfbb9d3fcdb59c139bdb1f8102a7",
+      "HEAD_sha256": "0511561f4b6ef5f56a44abc60d20f38cb44d263e739ca7e1fb908b32810ec77f",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": false
+    },
+    "App/StudioSlider.swift": {
+      "worktree_sha256": "0273352366209760e04067c4a17514d071293226403ff549e870f44668a149ba",
+      "HEAD_sha256": "0273352366209760e04067c4a17514d071293226403ff549e870f44668a149ba",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": true
+    },
+    "App/StudioSliderTracking.swift": {
+      "worktree_sha256": "de3056ead092a7143735635516ff86a1cf6c27a4180a1bad67a4ba014aee6d65",
+      "HEAD_sha256": "de3056ead092a7143735635516ff86a1cf6c27a4180a1bad67a4ba014aee6d65",
+      "HEAD_matches_4d0c67d": true,
+      "worktree_matches_HEAD": true
+    }
+  },
+  "scoped_diff_sha256": "5ba858157f69c4ba8d8be61174d70a4cd2cb75493a85f61828dc07463df7db3d",
+  "findings": [],
+  "checks": [
+    {
+      "area": "No-op binding guards",
+      "result": "All four bounded setters enforce the existing oversized-input bound first, then return for replacement equal to current draft before clearing rejection/error state. A genuinely changed in-limit draft is assigned and clears its existing rejection state. Repeated equal text therefore preserves room invalid/oversize state, precision inputError, target-lux error/oversize state and light-name too-long state. No parser/range/size tolerance was changed."
+    },
+    {
+      "area": "Explicit recovery",
+      "result": "Room Clear directly empties draft, clears invalid and oversize flags, and focuses the field. Restore directly formats the committed value, records units/locale/value bits, clears flags and dismisses focus. Neither recovery action is routed through the guarded setter. Optional-empty and successful applies still restore the committed draft."
+    },
+    {
+      "area": "Units and stale context",
+      "result": "Room apply still checks captured units, locale and committed value bit pattern before reading digits; context mismatch restores instead of committing. Units/locale/value onChange restorations remain. Precision active/presentation/underlying-value/locale/range guards are unchanged. Studio room generation/presentation-owner/unchanged-non-room-scene guards, lux scene/generation/light checks, and light rename generation check remain unchanged."
+    },
+    {
+      "area": "44-point controls",
+      "result": "Set and Rotate now size the actual Button label to minimum width/height 44 with a rectangular content shape. Measurement TextField changes from roundedBorder to plain styling with horizontal padding, minimum width/height 44, its visible rounded background and a non-hit-testing border. Rotation uses existing StudioSlider/StudioTrackingSlider; the native UISlider intrinsicContentSize is at least 44 high and wrapper also has minHeight44. No accessibilityFrame override, fabricated test value, assertion bypass or noninteractive replacement appears. SwiftUI field/native hit geometry and largest-type reachability still require Apple runtime verification; source inspection alone does not prove actual delivered hit regions."
+    },
+    {
+      "area": "Rotation semantics",
+      "result": "StudioSlider retains -180...180 bounds, 5-degree gesture steps, exact readout via RoomRotationReadout and roomRotation identifier. Existing native slider reads its model for accessibility and configuration does not write Float display precision back. Its no-op edit callback leaves the existing sheet-owned room history/commit mechanism intact."
+    },
+    {
+      "area": "Required assertions preserved",
+      "result": "UI diff has 12 added lines and 0 removed lines. Existing width2 rejection wait remains 5 seconds; keyboard dismissal remains 10 seconds. Original committed width6/subject3, Restore, subsequent valid edit, notes, save/relaunch and undo checks remain. New assertions read actual XCUIElement frames for field, Set, Rotate and rotation slider and require each dimension >=44. PrecisionEditingUITests is byte-unchanged; its room workflow inherits the stricter shared helper."
+    }
+  ],
+  "tests": [
+    {
+      "check": "Read worker-brief.md, updated coordinator-plan entry094, repository AGENTS.md, acceptance contract, and w051.json including follow-up",
+      "result": "Completed; prior native result remains 5 executed, 4 passed, 1 failed, with failed room resize waiting for roomWidthError. Its binding-echo diagnosis is source-supported inference without callback trace."
+    },
+    {
+      "check": "git status --short; git rev-parse HEAD; git branch --show-current; git log -3 --oneline; scoped git diff; git diff 4d0c67d HEAD",
+      "result": "Read-only inspection completed on main at 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419. Root-owned worktree edits present. No committed source differences across assigned files relative to 4d0c67d."
+    },
+    {
+      "check": "Read-only full diff/source and relevant StudioSlider, room/precision/lux/name context inspection; SHA-256 computation and UI diff added/removed-line inventory",
+      "result": "Completed; hashes recorded above. All existing UI lines retained, 12 lines added, 0 removed."
+    },
+    {
+      "check": "Native UI execution, native unit tests, Linux Swift/compiler probes, full suites, parser reruns and git diff --check",
+      "result": "Not run by this worker, as requested. Root-reported parse/inventory/diff passes are not counted as worker execution."
+    }
+  ],
+  "outcome": "No confirmed material defect found in the scoped repair. Source-level guard and actual-control layout changes are coherent and required assertions/deadlines are preserved. Native regression remains required at the integrated fix revision: the prior failed room-resize method and complete room-precision shard must execute successfully, including target-size checks and downstream notes/save/relaunch. This review neither proves the exact prior callback ordering nor declares runtime 44-point targets, native pass, milestone completion or release readiness.",
+  "repository_edits": "None. Only this temporary worker report was written.",
+  "followups": [
+    {
+      "scope": "Read-only independent review of endpoint-ULP correction to 44-point target assertions, requested after actual 4d0c67d app-accessibility failure. Original review above retained.",
+      "actual_head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+      "worktree_sha256": {
+        "UITests/StudioContentReachability.swift": "0469bbc357c9b4efe9ef326a5e72a4eac2724808bbb8fdc9053b391b52524efa",
+        "UITests/StudioAppAccessibilityUITests.swift": "c26d7bbd0e7a962fda36c0266f97404c7923808ab5d0bf7dd52eabe8dc201cd1",
+        "UITests/ManualRoomPlacementUITests.swift": "6bf407b49523a17c8aaf3097dd589978a5e1f63f3e06ccc94ff2c9a7df654280",
+        "UITests/StudioSmokeTests.swift": "0df18cc60f167d8822cc424cf64a4d4336fa9b8bab2db6427af7d2ae354d8bb3",
+        "App/StudioPlanMarkers.swift": "9f4ef10d997b21fb8fd4694c4ac20ca8c83eea443658489cc98277cf38898753"
+      },
+      "prior_reviewed_app_repairs_unchanged": {
+        "App/ManualRoomPlacementView.swift": true,
+        "App/PrecisionValueButton.swift": true,
+        "App/LightTargetLuxView.swift": true,
+        "App/StudioView.swift": true
+      },
+      "ui_scope_diff_sha256": "4e4347065234fa2fa20b97feb3217da718e5b0b99ef33cf8d9a402f23a0d0e2e",
+      "existing_native_evidence": {
+        "source": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+        "actual_result": "StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize started and failed; 0 passed, 1 failed. Raw native-tests.log line187 identifies the sole assertion failure: Fill marker width 43.99999999999997 < 44. The method halted in Default before the largest-size workflow.",
+        "recorded_frame": [
+          244.66666666666666,
+          649.6666666666666,
+          43.99999999999997,
+          44.0
+        ],
+        "text_oracle": "Recorded Default Portrait setup required/observed79pixels and Unsaved changes required/observed43pixels. These observed checks passed before the target-width failure; they do not establish later text checks or AXXXL completion.",
+        "observations_path": "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-ax-compact/native-attachments/FB61FD40-7851-460C-B0AC-8AFB970810E0.txt",
+        "observations_sha256": "206b848623696fee83b9f9da8fbba89e3a8e1a60bef5d6f492031175b7cb163a"
+      },
+      "mathematical_review": [
+        "For this recorded axis, minX=244.66666666666666 and maxX=288.66666666666663. Their subtraction is exactly representable (also within Sterbenz ratio bounds); Fraction arithmetic independently confirms it equals the recorded width. Thus the shortfall comes from coordinate endpoint representation rather than additional subtraction rounding.",
+        "If each true endpoint is rounded once to nearest, its error is at most half the spacing at that stored endpoint. Their error sum is bounded by max(endpoint ULPs). Here the maximum is5.684341886080802e-14; shortfall is2.842170943040401e-14; adjusted width is44.00000000000003. This is adequate for the observed coordinate subtraction.",
+        "This is not a universal bound for arbitrary prior transforms plus another inexact subtraction. A rational counterexample with rounded endpoints-22 and22.000000000000004 yields difference44 with combined endpoint/subtraction error7.034373084024992e-15, greater than max endpoint ULP3.552713678800501e-15. That counterexample does not produce a failing44-threshold decision. The helper should be understood as a tightly bounded UI representation allowance, not a proof of every possible coordinate computation.",
+        "No numeric allowance can distinguish true undersizing smaller than that allowance from representation noise. The implementation preserves the meaningful44-point requirement at actual screen-coordinate precision; it does not prove the exact real-number size before all upstream rounding."
+      ],
+      "implementation_review": [
+        "Final helper asserts exact44 for each width/height after adding its own axis maximum endpoint ULP. There is no screen-scale rounding, pixel/point margin, changed expected size or changed input frame. It fails finite/nonempty checks before arithmetic.",
+        "The separate max(widthRoundoff,heightRoundoff)<1e-9 assertion rejects coarse large-origin representations, including origin2^52/width43 and origin1e18/width0. An assertion records failure even if a caller continues after failure. The1e-9 value is a cap on permitted ULP precision, not an added allowance.",
+        "Negative finite origins work because their ULP magnitude is positive. CGRect standardizes negative raw dimensions: size.width=-44 has geometric width44 and is accepted. The helper checks CGRect geometric extents rather than raw size signs; no invalid or undersized app-controlled frame is established by that behavior. Nonfinite origins, infinite dimensions and finite-origin endpoint overflow are rejected.",
+        "AX control() still records raw snapshot frames and independently checks labels, enabledness, hittability and complete viewport containment. Failure messages include unmodified frames. Shared room callers retain field entry, Set, keyboard dismissal and functional checks. The guide changes from four cross-axis endpoint ULPs to one per-axis endpoint ULP, a stricter bound.",
+        "Application markerIcon still owns a44x44 frame and rectangular contentShape. No marker enlargement, layout workaround or fabricated AX geometry was introduced by this assertion repair."
+      ],
+      "checks": {
+        "source_and_diff_reads": "Read final helper and all four changed callers, existing raw native log/accounting/observations, and marker production layout.",
+        "host_numeric_probes": "Two tiny Swift/Foundation arithmetic probes using the provided Swift6.2.1 Linux executable; CGFloat is8bytes. These mirror arithmetic and CGRect semantics; they do not execute XCTest helper assertions or Apple UIKit/XCUI.",
+        "final_probe_results": [
+          "observed-fill finiteNonempty=true precision=true widthOK=true heightOK=true accepted=true",
+          "exact finiteNonempty=true precision=true widthOK=true heightOK=true accepted=true",
+          "undersized-43.999 finiteNonempty=true precision=true widthOK=false heightOK=true accepted=false",
+          "undersized-43 finiteNonempty=true precision=true widthOK=false heightOK=true accepted=false",
+          "negative-origin finiteNonempty=true precision=true widthOK=true heightOK=true accepted=true",
+          "negative-size finiteNonempty=true precision=true widthOK=true heightOK=true accepted=true",
+          "zero-size-large-origin finiteNonempty=false precision=false widthOK=true heightOK=true accepted=false",
+          "undersized-large-origin finiteNonempty=true precision=false widthOK=true heightOK=true accepted=false",
+          "finite-overflow-endpoint finiteNonempty=false precision=false widthOK=true heightOK=true accepted=false",
+          "nan-origin finiteNonempty=false precision=false widthOK=false heightOK=true accepted=false",
+          "infinite-width finiteNonempty=false precision=true widthOK=true heightOK=true accepted=false",
+          "CGFloat bytes=8"
+        ],
+        "exact_arithmetic_probe": "Python fractions confirmed recorded endpoint subtraction exact and provided the stated global-bound counterexample.",
+        "probe_artifacts": {
+          "/tmp/app1-f2fcfcdabdca/workers/w094-probe/coordinate-ulp-output.txt": "c272d3649750ae8b8874b233ceeee305356763ad913761f7a1032811a5a68b49",
+          "/tmp/app1-f2fcfcdabdca/workers/w094-probe/coordinate-ulp.swift": "9566d50cc3f5233815076b9c20e6d470bf39fd472f1725d5510c3d2804d5336c",
+          "/tmp/app1-f2fcfcdabdca/workers/w094-probe/final-helper-numerics-output.txt": "ce4413130e665a6ff3e99e6e963470484783f1f0e2b9015e7ec82c30d56bfba8",
+          "/tmp/app1-f2fcfcdabdca/workers/w094-probe/final-helper-numerics.swift": "2ce59d18cb7f434fa1b7e7546c19ea754c74f0dea13efe099ef208ebdea4dd20"
+        },
+        "all_timeout_expressions_unchanged_vs_4d0c67d": {
+          "UITests/StudioContentReachability.swift": true,
+          "UITests/StudioAppAccessibilityUITests.swift": true,
+          "UITests/ManualRoomPlacementUITests.swift": true,
+          "UITests/StudioSmokeTests.swift": true
+        },
+        "test_method_names_unchanged_vs_4d0c67d": {
+          "UITests/StudioContentReachability.swift": true,
+          "UITests/StudioAppAccessibilityUITests.swift": true,
+          "UITests/ManualRoomPlacementUITests.swift": true,
+          "UITests/StudioSmokeTests.swift": true
+        },
+        "text_oracle_byte_unchanged_vs_4d0c67d": true
+      },
+      "findings": [],
+      "limits": "No native/app UI test, XCTest helper execution, parser rerun or full suite run by this worker. Mathematical and host/Foundation probes cannot establish actual target hit regions or default/largest native workflow success.",
+      "outcome": "No confirmed material blocker in final helper for its actual visible-screen callers. The cap resolves the initially reported huge-origin false-pass concern. Required native app-accessibility and affected room/guide regression execution remains mandatory at the integrated revision; prior4d0c67d failures are unchanged. Mathematical qualifications and standardized negative-rectangle semantics are retained above.",
+      "repository_edits": "None; only temporary numerical probe artifacts and this report followup were written.",
+      "actual_head_at_completion": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+      "diff_base_revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+      "final_source_hashes_stable": {
+        "UITests/StudioContentReachability.swift": true,
+        "UITests/StudioAppAccessibilityUITests.swift": true,
+        "UITests/ManualRoomPlacementUITests.swift": true,
+        "UITests/StudioSmokeTests.swift": true,
+        "App/StudioPlanMarkers.swift": true
+      },
+      "final_sources_match_committed_HEAD": {
+        "UITests/StudioContentReachability.swift": false,
+        "UITests/StudioAppAccessibilityUITests.swift": false,
+        "UITests/ManualRoomPlacementUITests.swift": false,
+        "UITests/StudioSmokeTests.swift": false,
+        "App/StudioPlanMarkers.swift": true
+      },
+      "revision_note": "The inspected UI changes were staged by root during final report capture, leaving the unstaged diff empty while HEAD remained9257b6d. Hash recheck confirms reviewed final source stayed unchanged. The recorded diff and assertion-preservation comparisons use baseline4d0c67d against the complete current worktree; this is not an executed fix-revision result."
+    }
+  ]
+}

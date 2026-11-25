@@ -1,0 +1,38 @@
+{
+  "id": "072",
+  "task": "Review StudyImage compute RGBA conversion, invalid-mask location preservation, malformed packed outputs, dimensions, and actual StudyComputeInput/ReferenceStudy tests.",
+  "files": [
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+    "Tests/LightingCoreTests/ReferenceStudyTests.swift",
+    "Tests/LightingCoreTests/StudyParityMetricsTests.swift",
+    "App/MetalStudyRenderer.swift",
+    "App/ReferenceStudy.metal",
+    "App/StudyKernel.h"
+  ],
+  "findings": [],
+  "tests": {
+    "kind": "read-only source and test review; no test execution",
+    "inspectedHead": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSourceRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "checks": [
+      "Read worker brief, only plan entry 072, AGENTS.md, and docs/acceptance/m02-m03-code.md.",
+      "git rev-parse HEAD returned 9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419. git diff --name-only 4d0c67d HEAD showed documentation/evidence changes only; focused git diff --exit-code for all reviewed source/test files exited 0.",
+      "Inspected fromComputeRGBA: width 24...192 and multiple-of-three guard precedes arithmetic; exact 3:2 height and byte length are required before allocation/indexing. Invalid alpha-zero pixels must be magenta; partial alpha and nonmagenta alpha-zero output throw invalidComputeOutput.",
+      "Traced native producer to consumer: bounded dispatch writes row-major gid.y*width+gid.x; kfInvalid uses [255,0,255,0]; CPU and conversion masks write corresponding index/4; converter restores opaque alpha while preserving flags separately; opaque magenta remains valid.",
+      "Inspected MetalStudyRenderer.compute waiting for completed command status before copying the exact sized shared buffer into fromComputeRGBA; inspected StudyComputeInput shared validation and six aligned parameter rows / three rows per sample and area.",
+      "Read StudyComputeInputTests cases for aligned finite packing, translation, inactive lights, invalid widths/camera, alpha sentinels, data count and Int.max dimensions; read ReferenceStudyTests deterministic RGBA/bounds/cancellation/near-field cases.",
+      "Read only conversion-relevant StudyParityMetricsTests cases and helper: same opaque RGBA with swapped invalid positions is rejected, mask counts and CPU-generated flagged pixels are explicitly asserted. Did not duplicate worker067 metric audit.",
+      "An initial lookup of nonexistent App/StudyKernelShared.h returned rg exit 2; corrected to actual App/StudyKernel.h and inspected the producer successfully."
+    ],
+    "notRun": [
+      "No Swift tests or compilation",
+      "No targeted probe: source review revealed no concrete suspected defect requiring reproduction",
+      "No full suite",
+      "No native UIKit/Metal execution"
+    ],
+    "repositoryChanges": "None by this worker. Pre-existing modified agents/LEARNINGS.md and untracked validation artifacts observed and left untouched."
+  },
+  "outcome": "No confirmed material defect in assigned conversion/runtime data path. Source review supports preservation of mask positions and rejection of malformed packed output; this is not an executed test or native-backend pass.",
+  "canonicalAgent": "/root/w007_review_coordinator/w072_renderer_masks"
+}

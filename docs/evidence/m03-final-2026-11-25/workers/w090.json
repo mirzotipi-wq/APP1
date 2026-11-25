@@ -1,0 +1,143 @@
+{
+  "id": "090",
+  "canonicalAgent": "/root/w007_review_coordinator/w090_persistence_probes",
+  "task": "Review atomic write/interruption probes and retained 4d0c67d receipts for prior bytes, identities, unrelated records, mechanisms and host/filesystem labels.",
+  "files": [
+    "scripts/probe_atomic_library_write.py",
+    "scripts/probe_library_commit_interruption.py",
+    "scripts/probe-atomic-library-write.swift",
+    "scripts/probe-library-commit-interposer.c",
+    "scripts/run_atomic_library_write_probe.py",
+    "docs/acceptance/m02-m03-code.md",
+    "/tmp/app1-f2fcfcdabdca/evidence/4d0c67d-atomic-linux/atomic-library-write-linux"
+  ],
+  "inspectedRevision": {
+    "head": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "reviewedSource": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+    "sourceUnchangedEvidence": "HEAD delta from reviewed source is documentation/state only. All 32 manifest Swift input hashes and all four diagnostic hashes match current files. Unrelated working-tree changes observed in App/ProjectBackupView.swift, App/StudioView.swift, NativeTests/StudioPaletteTests.swift and agents/LEARNINGS.md were not reviewed or modified."
+  },
+  "findings": [
+    {
+      "severity": "medium",
+      "type": "acceptance_evidence_gap",
+      "title": "Original runner filesystem is not recorded in the retained atomic-probe receipts",
+      "locations": [
+        "scripts/probe_atomic_library_write.py:110",
+        "scripts/probe_library_commit_interruption.py:405",
+        "scripts/run_atomic_library_write_probe.py:162",
+        "docs/acceptance/m02-m03-code.md:31"
+      ],
+      "evidence": "Both probe result.json host objects and wrapper host object identify OS/architecture/toolchain but contain no filesystem or mount metadata. A recursive read-only search for filesystem, file system, ext4, overlay, xfs, btrfs, statfs, findmnt, df - and mount in the complete retained evidence found no match. The persistence contract explicitly requests actual host/filesystem reporting.",
+      "impact": "Bounded Linux-host preservation outcomes remain supported; filesystem-specific attribution is unverified. This is an evidence-labeling omission, not a demonstrated library product defect.",
+      "disposition": "Root should preserve filesystem as unknown for this receipt unless contemporaneous original-run metadata can establish it; any subsequent probe receipt should capture its original output-directory filesystem. No local extracted-artifact filesystem may be substituted and no rerun was performed."
+    }
+  ],
+  "tests": [
+    {
+      "kind": "source review",
+      "result": "Swift helper uses production ProjectLibraryFileStore.save with bounded valid prior/candidate fixtures and unrestricted controls. Verification decodes complete snapshots, compares exact bytes and checks active identity plus both unrelated archived/open records. The rename driver chooses strict prior versus candidate verification based on a witnessed exact-target rename boundary."
+    },
+    {
+      "kind": "receipt review",
+      "result": "Recorded EFBIG run passed with RLIMIT_FSIZE=32768, prior=3900 bytes, candidate=242569 bytes, application limit=8388608. NSCocoaErrorDomain 512 alone is not treated as proof; captured errno immediately after save is 27 (EFBIG), reset before save. All phases exit 0; save threw; fresh process reopened prior."
+    },
+    {
+      "kind": "receipt review",
+      "result": "Before-rename witness is renameat before-call, realRenameCalled=false, child PID 3077 observed SIGSTOP then owned SIGKILL with return -9. Fully staged candidate bytes match; target at hook and after interruption match prior."
+    },
+    {
+      "kind": "receipt review",
+      "result": "After-rename witness is renameat after-success, realRenameCalled=true and realReturnCode=0, child PID 3081 observed SIGSTOP then owned SIGKILL with return -9. Target at hook and fresh-process reopened result match complete candidate. Prior-equality flags correctly remain false."
+    },
+    {
+      "kind": "receipt review",
+      "result": "Rename-eio witness is renameat rejected, realRenameCalled=false, errno 5. Save returned caught error and fresh-process reopened exact prior. Unrestricted controls reopen candidate in all scenarios."
+    },
+    {
+      "kind": "independent read-only artifact verification",
+      "result": "Recomputed all 20 recorded fixture/file SHA256 values and lengths across EFBIG and three rename scenarios; zero mismatches. Compared after/library/control bytes, JSON active IDs and all unrelated records independently: every expected comparison true. Before staged-at-hook equals candidate, before at-hook equals prior, after at-hook equals candidate."
+    },
+    {
+      "kind": "provenance review",
+      "result": "Receipts identify source 4d0c67d258be802f048e74616cabcdf903e2b59d, Linux x86_64 kernel 7.0.0-1014-aws, Python 3.12.3, Swift 6.4.2 x86_64-unknown-linux-gnu, optimized -O compilation. All 32 source and four diagnostic SHA256 inputs match reviewed files; wrapper/probes report passed and unchanged inputs."
+    },
+    {
+      "kind": "not run",
+      "result": "No probe execution, destructive injection, compilation, full suite, native/UIKit/iOS test or power-loss test was run by this worker. Existing receipt executions were inspected, not repeated."
+    }
+  ],
+  "outcome": "One concrete filesystem-labeling evidence gap; no demonstrated product or snapshot-preservation defect. Retained outcomes support only bounded process-local Linux host EFBIG/rename-error/interruption observations, not power-loss durability, ENOSPC, storage-provider behavior, Darwin/iOS, simulator or physical-device results.",
+  "implementationFollowup": {
+    "authorization": "Root authorization delivered through /root/w007_review_coordinator; scripts and worker report only; no child agents.",
+    "status": "code_ready_targeted_checks_passed",
+    "headAtImplementation": "9257b6dc8b0b7bb5fe0a1b3fd076d6d2cde69419",
+    "changedFiles": [
+      "scripts/run_atomic_library_write_probe.py",
+      "scripts/tests/test_atomic_library_probe_sdk.py",
+      "scripts/tests/test_atomic_library_probe_filesystem.py"
+    ],
+    "changedFileSHA256": {
+      "scripts/run_atomic_library_write_probe.py": "e2ab6c8eafef4ec3634aaf1dc0391a554b4a59abce6af1e5843961a1f55c021a",
+      "scripts/tests/test_atomic_library_probe_sdk.py": "86c0e384dc87d03d97a930c3ad4057b32ccc50ad5c84292803c08c768addbd9f",
+      "scripts/tests/test_atomic_library_probe_filesystem.py": "2fa662cb9ebe9a7a10a37de6c548fdb2c379c31b81c6d8e6959b8f733dc77388"
+    },
+    "behavior": [
+      "Wrapper records output-directory filesystem before compilation and every actual EFBIG/rename library and control projects.json target before success.",
+      "Linux findmnt selection must match actual target stat device major/minor; the observed mount stat device must match too.",
+      "macOS uses df -P -k for the actual selected device/mount and joins that exact pair to mount output for type. It does not select by lexical parent paths, so controlled APFS firmlink fixtures preserve the Data-volume observation.",
+      "Command receipts retain requested/resolved arguments, timeout, exit/timeout status, environment override and raw stdout/stderr paths. Metadata commands use ten-second timeouts and parsed stdout is limited to 256 KiB; errors and unavailable identities fail the wrapper.",
+      "Observed target device/inode and mount device are retained; changing target identity during observation fails. No new helper module was introduced; wrapper implementation remains covered by existing diagnostic SHA256 provenance before/after compilation and probes.",
+      "Existing EFBIG/rename/interruption mechanisms, fixture bounds, controls, snapshot checks, child timeout/cleanup paths and shared probe budget are unchanged. Metadata collection is outside the shared probe budget."
+    ],
+    "checks": [
+      {
+        "command": "python -m unittest scripts/tests/test_atomic_library_probe_filesystem.py scripts/tests/test_atomic_library_probe_sdk.py -v",
+        "result": "19 tests passed, 0 failures/errors, 0.042 seconds reported by unittest. Child metadata/probe/compiler execution mocked.",
+        "coverage": "Linux device checks; unknown/ambiguous/missing filesystem metadata; macOS APFS firmlink without mount path-prefix relation; inode columns and path spaces; exact device/mount pair and duplicate rejection; timeout/nonzero/missing command; invalid UTF-8/oversized output; initial provenance failure blocks compiler; existing host-SDK behavior."
+      },
+      {
+        "command": "git diff --check",
+        "result": "exit 0; no whitespace errors"
+      },
+      {
+        "kind": "actual read-only Linux metadata execution",
+        "result": "observe_target_filesystem on a newly created owned diagnostic target returned observed. findmnt exited 0 in 0.004 seconds, selected tmpfs at /tmp, device 0:39; stat and mount identities matched. This is this worker local host only, not original CI provenance.",
+        "receipt": "/tmp/app1-f2fcfcdabdca/workers/w090-filesystem-live/observation.json"
+      },
+      {
+        "kind": "not run",
+        "result": "No compiler, full suite, persistence failure/interruption probe or macOS/native run executed in this followup. Root owns fresh full probe receipts and integration."
+      }
+    ],
+    "originalEvidenceDisposition": "Original 4d0c67d CI receipts remain missing contemporaneous filesystem evidence. Original review and gap are preserved above; the local live metadata observation is not substituted for them.",
+    "limits": "Controlled Darwin parser/device fixtures are not actual macOS execution. New metadata proves the observed host filesystem only and does not establish storage-provider or power-loss behavior. No docs/state edits, commits or pushes performed."
+  },
+  "swift621CompatibilityFollowup": {
+    "authorization": "Root authorized minimal helper-only implementation through coordinator; no other repository files changed in this followup.",
+    "status": "code_ready_for_root_full_wrapper_rerun",
+    "changedFile": "scripts/probe-atomic-library-write.swift",
+    "changedFileSHA256": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18",
+    "reportedFailure": {
+      "status": "failed_compilation_not_probe_pass",
+      "stderrPath": "/tmp/app1-f2fcfcdabdca/evidence/atomic-filesystem-local/compile.stderr.log",
+      "detail": "Actual local Swift 6.2.1 full-wrapper compile failed to type-check the scene map expression in reasonable time; previous CI Swift 6.4.2 compiled the unchanged helper. Failed run and manifest remain retained."
+    },
+    "change": "Decomposed scene(_:, lights:) map into explicitly typed [StudioLight]/Int/StudioLight closure and UUID, Double coordinate, Position and candela locals. Original identifier and arithmetic expressions, literals, map order, fixture count, scene arguments and all failure mechanisms are unchanged.",
+    "checks": [
+      {
+        "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -frontend -parse scripts/probe-atomic-library-write.swift",
+        "result": "exit 0, no diagnostics. Syntax-only check; this is not a type-check, full build or probe pass."
+      },
+      {
+        "command": "git diff --check -- scripts/probe-atomic-library-write.swift",
+        "result": "exit 0, no whitespace errors."
+      },
+      {
+        "kind": "source diff review",
+        "result": "Only the scene construction expression was decomposed; no fixture values, ordering, algorithms, failure mechanism or other helper logic changed."
+      }
+    ],
+    "remainingVerification": "Root owns actual full-wrapper compilation and probe rerun. This worker ran no persistence probes and claims no pass for the earlier failed compilation or its unexecuted probes.",
+    "limits": "No native/macOS/iOS execution, type-check or full build performed by this worker in this followup; no docs/state edits or commits."
+  }
+}
