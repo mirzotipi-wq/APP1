@@ -40,6 +40,32 @@ final class SceneTests: XCTestCase {
         XCTAssertThrowsError(try scene.validated())
     }
 
+    func testLightCountBoundaryAcrossSchemas() throws {
+        let lights = (1...13).map { index in
+            StudioLight(name: "Light \(index)", position: .init(x: 0, y: 2, z: 1), candela: 900, kelvin: 5600)
+        }
+        for version in 1...LightingScene.currentSchemaVersion {
+            var scene = LightingScene.portrait()
+            scene.schemaVersion = version
+            scene.lights = Array(lights.prefix(12))
+            var expected = scene
+            expected.schemaVersion = LightingScene.currentSchemaVersion
+            XCTAssertEqual(try scene.validated(), expected, "Schema \(version) preserves twelve unique valid lights during migration")
+
+            scene.lights.append(lights[12])
+            XCTAssertThrowsError(try scene.validated(), "Schema \(version) rejects thirteen lights") {
+                XCTAssertEqual($0 as? SceneError, .invalidScene)
+            }
+        }
+
+        var futureScene = LightingScene.portrait()
+        futureScene.schemaVersion = LightingScene.currentSchemaVersion + 1
+        futureScene.lights = lights
+        XCTAssertThrowsError(try futureScene.validated()) {
+            XCTAssertEqual($0 as? SceneError, .unsupportedVersion)
+        }
+    }
+
     func testRejectOversizedAndMalformedData() {
         XCTAssertThrowsError(try SceneCodec.decode(Data(repeating: 0, count: SceneCodec.maximumBytes + 1)))
         XCTAssertThrowsError(try SceneCodec.decode(Data("not JSON".utf8)))

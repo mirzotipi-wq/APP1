@@ -61,6 +61,7 @@ public struct LightingScene: Codable, Equatable, Sendable {
 
     public func validated() throws -> Self {
         guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+        guard lights.count <= 12 else { throw SceneError.invalidScene }
         // Version 1 never contained optics; reject ambiguous mislabeled files.
         guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
         // Version 2 adds light optics, version 3 adds a camera lens.
@@ -71,7 +72,7 @@ public struct LightingScene: Codable, Equatable, Sendable {
             throw SceneError.invalidScene
         }
         guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
-              (placementRoom?.isValid ?? true), lights.count <= 12 else { throw SceneError.invalidScene }
+              (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
         var migrated = self
