@@ -74,9 +74,49 @@ final class StudioTrackingSlider: UISlider {
         maximumValue = 1
         isContinuous = true
         addTarget(self, action: #selector(valueChanged), for: .valueChanged)
+        if #available(iOS 26.0, *) {
+            updateTrackImages()
+            registerForTraitChanges(UITraitCollection.systemTraitsAffectingColorAppearance) {
+                (slider: StudioTrackingSlider, _: UITraitCollection) in
+                slider.updateTrackImages()
+            }
+        }
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        updateTrackImages()
+    }
+
+    private func updateTrackImages() {
+        guard #available(iOS 26.0, *) else { return }
+        // The fluid slider can publish settling values after endTracking.
+        // A precision edit must finish when its touch finishes. Apple's public
+        // custom-track API disables those dynamic effects while keeping native
+        // thumb tracking and accessibility, so no late value can reopen history.
+        let minimum = trackImage(color: tintColor)
+        let maximum = trackImage(color: .tertiaryLabel)
+        for state in [UIControl.State.normal, .highlighted, .selected, .focused] {
+            setMinimumTrackImage(minimum, for: state)
+            setMaximumTrackImage(maximum, for: state)
+        }
+        setMinimumTrackImage(trackImage(color: .tertiaryLabel), for: .disabled)
+        setMaximumTrackImage(trackImage(color: .quaternaryLabel), for: .disabled)
+    }
+
+    private func trackImage(color: UIColor) -> UIImage {
+        let size = CGSize(width: 5, height: 4)
+        let format = UIGraphicsImageRendererFormat(for: traitCollection)
+        format.opaque = false
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            color.resolvedColor(with: traitCollection).setFill()
+            UIBezierPath(roundedRect: CGRect(origin: .zero, size: size), cornerRadius: 2).fill()
+        }.withRenderingMode(.alwaysOriginal)
+            .resizableImage(withCapInsets: UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2),
+                            resizingMode: .stretch)
+    }
 
     override var intrinsicContentSize: CGSize {
         let size = super.intrinsicContentSize

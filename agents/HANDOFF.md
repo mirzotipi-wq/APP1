@@ -1,5 +1,11 @@
 # Current handoff
 
+## Active main-integration session — 2026-11-25
+
+The current owner instruction authorizes main integration, 100 distinct worker assignments in batches, and CI repair for M02/M03. Baseline development source is **7dca1b0**, with remote main initially **d816a95**. The first candidate separates CI setup/build/test and removes iOS 26 slider dynamic effects through the documented custom-track API. Native runtime verification is pending; the complete prior failure is retained in the [current evidence report](../docs/evidence/m02-m03-main-2026-11-25.md).
+
+The sections below are historical checkpoints and are superseded by this session. In particular source eleven was published as 7dca1b0, and run45533182488 completed/failure; it is no longer pending. M02 rendering/performance and M03 device/human gates remain open. No quality threshold has been changed.
+
 ## Current source ten and pending source eleven
 
 Published/tested code **`fb643b156acae5831b60d1acaea26cc79adcfb47`**, tree **`978a36a789340bdb3947cd03f1ea7b4d3ee5404a`**, branch `development/completion-final-20261124`. [Run 45527563115](https://github.com/mirzotipi-wq/APP1/actions/runs/45527563115) has successful core/native, studio and room receipts. **All 16 methods with terminal UI receipts passed**; the library terminal result is still pending, with unknown case counts. Exactly **100 assignments** and **six net new test methods** remain recorded.
