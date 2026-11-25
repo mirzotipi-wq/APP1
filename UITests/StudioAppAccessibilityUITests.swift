@@ -262,8 +262,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         XCTAssertFalse(state.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         XCTAssertEqual(state.isEnabled, enabled, state.label)
         if enabled { XCTAssertTrue(element.isHittable, state.label) }
-        XCTAssertGreaterThanOrEqual(state.frame.width, 44, state.label + " target width")
-        XCTAssertGreaterThanOrEqual(state.frame.height, 44, state.label + " target height")
+        assertStudioMinimumHitTarget(state.frame, label: state.label)
         assertContained(state.frame, inside: scrolling ? contentViewport(for: state, in: app) : app.frame)
         return state
     }

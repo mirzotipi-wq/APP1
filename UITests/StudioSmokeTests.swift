@@ -390,11 +390,7 @@ final class StudioSmokeTests: XCTestCase {
         revealStudioContent(guide, in: app, towardBottom: false)
         waitForEnabledStudioControl(guide)
         let guideFrame = guide.frame
-        // CGRect dimensions can inherit rounding from subtracting coordinate endpoints.
-        // Allow only four endpoint ULPs while retaining the 44-point target.
-        let coordinateRoundingTolerance = max(guideFrame.maxX.ulp, guideFrame.maxY.ulp) * 4
-        XCTAssertGreaterThanOrEqual(guideFrame.width + coordinateRoundingTolerance, 44)
-        XCTAssertGreaterThanOrEqual(guideFrame.height + coordinateRoundingTolerance, 44)
+        assertStudioMinimumHitTarget(guideFrame, label: "Studio guide")
         XCTAssertTrue(app.buttons["openProjectLibrary"].isHittable)
         XCTAssertTrue(app.buttons["exportLightingPlan"].isHittable)
         guide.tap()

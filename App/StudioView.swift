@@ -93,7 +93,12 @@ struct StudioView: View {
                                 } description: {
                                     Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
                                 } actions: {
-                                    Button("Retry loading saved project") { load(from: generation) }
+                                    Button { load(from: generation) } label: {
+                                        Text("Retry loading saved project")
+                                            .foregroundStyle(StudioPalette.prominentActionText)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .frame(minWidth: 44, minHeight: 44)
+                                    }
                                         .buttonStyle(.borderedProminent)
                                         .disabled(libraryOperation.isBusy)
                                 }
@@ -430,6 +435,7 @@ struct StudioView: View {
             Text("Your setup is still in this window. Save a separate project to preserve it without replacing the newer saved version, or reload the latest library.").font(.subheadline)
             Button { saveConflictCopy(from: generation) } label: {
                 Label("Save setup as new project", systemImage: "plus.square.on.square")
+                    .foregroundStyle(StudioPalette.prominentActionText)
                     .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
             }
             .buttonStyle(.borderedProminent)
@@ -1306,6 +1312,7 @@ struct StudioView: View {
                 lightNameInputTooLong = true
                 return
             }
+            guard replacement != lightNameDraft else { return }
             lightNameDraft = replacement
             lightNameInputTooLong = false
         })

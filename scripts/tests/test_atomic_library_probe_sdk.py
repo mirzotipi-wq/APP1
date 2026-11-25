@@ -90,6 +90,9 @@ class AtomicLibraryProbeSDKTests(unittest.TestCase):
                     patch.object(wrapper.platform, "system", return_value=host), \
                     patch.object(wrapper.shutil, "which", side_effect=which), \
                     patch.object(wrapper, "run_logged", side_effect=run_logged), \
+                    patch.object(wrapper, "observe_target_filesystem", side_effect=lambda target, *args:
+                                 {"status": "observed", "requestedTargetPath": str(target),
+                                  "fixture": "filesystem commands mocked; covered by dedicated tests"}), \
                     patch.object(wrapper.subprocess, "Popen", side_effect=AssertionError("No actual child allowed")), \
                     patch.dict(os.environ, environment), \
                     patch.object(wrapper.sys, "argv", [str(SCRIPT), "--output", str(output)]), \

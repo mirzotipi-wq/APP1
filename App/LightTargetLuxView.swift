@@ -95,6 +95,7 @@ struct LightTargetLuxView: View {
                 error = "That entry is too long. Your previous entry was kept. Edit the value before applying."
                 return
             }
+            guard replacement != draft else { return }
             draft = replacement
             rejectedOversizedDraft = false
             error = nil

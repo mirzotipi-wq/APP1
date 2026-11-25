@@ -15,8 +15,10 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import tempfile
@@ -26,6 +28,7 @@ import time
 COMPILE_TIMEOUT_SECONDS = 180
 PROBE_TIMEOUT_SECONDS = 140
 METADATA_TIMEOUT_SECONDS = 10
+METADATA_BYTE_CEILING = 256 * 1024
 
 
 def sha256(path):
@@ -62,8 +65,13 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def run_logged(arguments, repository, output, name, timeout, graceful_timeout_seconds=0):
+def run_logged(arguments, repository, output, name, timeout, graceful_timeout_seconds=0,
+               environment_overrides=None):
     observation = {"arguments": arguments, "cwd": str(repository), "timeoutSeconds": timeout}
+    environment = None
+    if environment_overrides:
+        environment = dict(os.environ, **environment_overrides)
+        observation["environmentOverrides"] = environment_overrides
     if graceful_timeout_seconds:
         observation["gracefulTerminationSeconds"] = graceful_timeout_seconds
     print("Running " + json.dumps(arguments), flush=True)
@@ -71,7 +79,7 @@ def run_logged(arguments, repository, output, name, timeout, graceful_timeout_se
     with (output / (name + ".stdout.log")).open("wb") as stdout, \
             (output / (name + ".stderr.log")).open("wb") as stderr:
         process = subprocess.Popen(arguments, cwd=repository, stdout=stdout, stderr=stderr,
-                                   start_new_session=True)
+                                   start_new_session=True, env=environment)
         observation["processGroupID"] = process.pid
 
         def stop_owned_group():
@@ -114,6 +122,108 @@ def run_logged(arguments, repository, output, name, timeout, graceful_timeout_se
             shutil.copyfileobj(stream, destination.buffer)
             destination.flush()
     return observation
+
+
+def observe_target_filesystem(target, repository, output, name):
+    """Observe this existing target, never infer its filesystem from its parents.
+
+    df selects the actual macOS volume, including APFS firmlinks whose selected
+    mount is not a lexical parent. Its exact device/mount pair is joined to the
+    mount receipt; target and mount st_dev must agree on both supported hosts.
+    """
+    observation = {"status": "failed", "requestedTargetPath": str(target), "commands": []}
+
+    def command(executable, arguments, suffix):
+        receipt = {"requestedArguments": [executable] + arguments,
+                   "timeoutSeconds": METADATA_TIMEOUT_SECONDS}
+        observation["commands"].append(receipt)
+        located = shutil.which(executable)
+        require(located is not None, "Filesystem metadata command is unavailable: " + executable)
+        receipt["arguments"] = [os.path.abspath(located)] + arguments
+        receipt.update(run_logged(receipt["arguments"], repository, output, name + "-" + suffix,
+                                  METADATA_TIMEOUT_SECONDS,
+                                  environment_overrides={"LC_ALL": "C", "LANG": "C"}))
+        require(receipt.get("returnCode") == 0 and not receipt.get("timedOut"),
+                "Filesystem metadata command failed or timed out: " + executable)
+        path = output / (name + "-" + suffix + ".stdout.log")
+        require(path.stat().st_size <= METADATA_BYTE_CEILING, "Filesystem metadata exceeds its byte bound")
+        with path.open("rb") as stream:
+            data = stream.read(METADATA_BYTE_CEILING + 1)
+        require(len(data) <= METADATA_BYTE_CEILING, "Filesystem metadata grew beyond its byte bound")
+        return data.decode("utf-8")
+
+    try:
+        target = target.resolve(strict=True)
+        observation["targetPath"] = str(target)
+        before = target.stat()
+        require(stat.S_ISDIR(before.st_mode) or stat.S_ISREG(before.st_mode),
+                "Filesystem provenance requires an existing regular file or directory")
+        observation["targetStat"] = {"device": before.st_dev, "inode": before.st_ino,
+                                     "deviceMajor": os.major(before.st_dev),
+                                     "deviceMinor": os.minor(before.st_dev),
+                                     "kind": "directory" if stat.S_ISDIR(before.st_mode) else "regular-file"}
+        system = platform.system()
+        if system == "Linux":
+            raw = command("findmnt", ["--json", "--target", str(target), "--output",
+                                      "TARGET,SOURCE,FSTYPE,MAJ:MIN", "--first-only"], "findmnt")
+            rows = json.loads(raw).get("filesystems")
+            require(isinstance(rows, list) and len(rows) == 1 and isinstance(rows[0], dict),
+                    "findmnt did not identify exactly one target filesystem")
+            row = rows[0]
+            selected = {"mountPoint": row.get("target"), "source": row.get("source"),
+                        "type": row.get("fstype"), "deviceMajorMinor": row.get("maj:min")}
+            observation["selectedFilesystem"] = selected
+            require(selected["deviceMajorMinor"] == f"{os.major(before.st_dev)}:{os.minor(before.st_dev)}",
+                    "findmnt device identity does not match the actual target")
+        elif system == "Darwin":
+            raw = command("df", ["-P", "-k", str(target)], "df")
+            rows = [line for line in raw.splitlines() if line.strip() and not line.startswith("Filesystem")]
+            require(len(rows) == 1, "df did not identify exactly one target filesystem")
+            # POSIX one-line format, allowing macOS versions that also include
+            # inode columns. Device and mount names may contain spaces.
+            match = re.fullmatch(r"(.+?)\s+\d+\s+\d+\s+-?\d+\s+\d+%\s+"
+                                 r"(?:\d+\s+\d+\s+\d+%\s+)?(/.*)", rows[0])
+            require(match is not None, "Cannot parse the retained df filesystem identity")
+            source, mount_point = match.groups()
+            observation["dfSelection"] = {"source": source, "mountPoint": mount_point}
+            raw_mounts = command("mount", [], "mount")
+            prefix = source + " on " + mount_point + " ("
+            matches = [line[len(prefix):-1] for line in raw_mounts.splitlines()
+                       if line.startswith(prefix) and line.endswith(")")]
+            require(len(matches) == 1, "df device/mount pair does not identify exactly one mount receipt")
+            options = [part.strip() for part in matches[0].split(",")]
+            require(bool(options) and re.fullmatch(r"[A-Za-z0-9_.+-]+", options[0]) is not None,
+                    "Mount receipt did not identify the filesystem type")
+            selected = {"mountPoint": mount_point, "source": source,
+                        "type": options[0], "mountOptions": options[1:]}
+            observation["selectedFilesystem"] = selected
+        else:
+            raise RuntimeError("Filesystem provenance supports Linux and macOS only")
+        require(all(isinstance(selected.get(key), str) and selected[key]
+                    for key in ("mountPoint", "source", "type")),
+                "Filesystem source, mount or type was not observed")
+        mount_point = Path(selected["mountPoint"])
+        require(mount_point.is_absolute(), "Observed mount point is not absolute")
+        mounted = mount_point.stat()
+        observation["mountStat"] = {"device": mounted.st_dev, "inode": mounted.st_ino}
+        require(mounted.st_dev == before.st_dev, "Observed mount device differs from the actual target")
+        after = target.stat()
+        observation["targetIdentityUnchangedDuringObservation"] = (
+            (before.st_dev, before.st_ino) == (after.st_dev, after.st_ino))
+        require(observation["targetIdentityUnchangedDuringObservation"],
+                "Target identity changed during filesystem observation")
+        observation["status"] = "observed"
+    except (OSError, RuntimeError, ValueError, AttributeError, subprocess.SubprocessError) as error:
+        observation["failure"] = {"type": type(error).__name__, "message": str(error)}
+    return observation
+
+
+def require_target_filesystem(target, repository, output, name, report):
+    observation = observe_target_filesystem(target, repository, output, name)
+    report["filesystemProvenance"]["observations"].append(observation)
+    write_json(output / "wrapper-result.json", report)
+    require(observation["status"] == "observed",
+            "Required target filesystem identity was not observed; see filesystem provenance receipts")
 
 
 def host_sdk_arguments(repository, output, manifest, manifest_path):
@@ -159,6 +269,8 @@ def main():
     output = args.output.resolve()
     report = {"schemaVersion": 1, "status": "failed", "output": str(output),
               "commitInterruptionRequested": args.with_commit_interruption,
+              "filesystemProvenance": {"schemaVersion": 1, "observations": [],
+                                       "scope": "Observed host targets only; no provider or power-loss durability claim"},
               "host": {"system": platform.system(), "machine": platform.machine(),
                        "python": platform.python_version()}}
     created_output = False
@@ -169,6 +281,7 @@ def main():
         write_json(output / "wrapper-result.json", report)
         require(not args.with_commit_interruption or platform.system() == "Linux",
                 "Commit interruption injection is supported only by the Linux host diagnostic")
+        require_target_filesystem(output, repository, output, "filesystem-output", report)
         compiler = shutil.which(args.swiftc)
         require(compiler is not None, "Swift compiler not found: " + args.swiftc)
         # Preserve the swiftc invocation name: resolving a driver symlink can
@@ -243,6 +356,18 @@ def main():
                 commit_result = json.loads((output / "commit-interruption" / "result.json").read_text(encoding="utf-8"))
                 require(commit_result.get("status") == "passed",
                         "Commit interruption probe did not produce a passing result")
+            # Query actual final targets as well as the initial output directory.
+            # A nested mount or different device cannot inherit the directory's
+            # filesystem label merely because its path lies underneath it.
+            families = ["probe"]
+            if args.with_commit_interruption:
+                families += ["commit-interruption/" + mode for mode in
+                             ("before-rename", "after-rename", "rename-eio")]
+            for family in families:
+                for store in ("library", "control"):
+                    target = output / family / store / "projects.json"
+                    name = "filesystem-" + family.replace("/", "-") + "-" + store
+                    require_target_filesystem(target, repository, output, name, report)
             report["sourceSHA256AfterProbe"] = source_hashes(repository)
             report["diagnosticSHA256AfterProbe"] = diagnostic_hashes(repository, args.with_commit_interruption)
             report["sourcesUnchangedDuringProbe"] = (

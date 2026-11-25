@@ -162,6 +162,7 @@ private struct PrecisionValueEditor: View {
                 inputError = .oversizedDraft
                 return
             }
+            guard replacement != draft else { return }
             draft = replacement
             inputError = nil
         })

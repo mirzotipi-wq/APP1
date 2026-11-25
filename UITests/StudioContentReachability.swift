@@ -1,6 +1,27 @@
 import XCTest
 
 extension XCTestCase {
+    /// AX frame dimensions can lose one endpoint ULP when coordinates are
+    /// subtracted: the retained 44pt Plan marker measured 43.99999999999997pt.
+    /// Account only for that representation error, never a pixel/point margin.
+    /// The target remains 44pt, with raw frames retained by the caller.
+    func assertStudioMinimumHitTarget(_ frame: CGRect, label: String,
+                                      file: StaticString = #filePath, line: UInt = #line) {
+        guard !frame.isEmpty, frame.minX.isFinite, frame.maxX.isFinite,
+              frame.minY.isFinite, frame.maxY.isFinite else {
+            XCTFail("Expected a finite, nonempty target: \(frame)", file: file, line: line)
+            return
+        }
+        let widthRoundoff = max(frame.minX.ulp, frame.maxX.ulp)
+        let heightRoundoff = max(frame.minY.ulp, frame.maxY.ulp)
+        XCTAssertLessThan(max(widthRoundoff, heightRoundoff), 1e-9,
+                          "UI coordinates must retain sub-nanopoint precision", file: file, line: line)
+        XCTAssertGreaterThanOrEqual(frame.width + widthRoundoff, 44,
+                                   label + " target width: \(frame)", file: file, line: line)
+        XCTAssertGreaterThanOrEqual(frame.height + heightRoundoff, 44,
+                                   label + " target height: \(frame)", file: file, line: line)
+    }
+
     /// Header and toolbar buttons can exist during asynchronous initial load.
     /// Their enabled state is the editor's actual readiness boundary.
     func waitForEnabledStudioControl(_ element: XCUIElement,
@@ -192,6 +213,8 @@ extension XCTestCase {
                             file: StaticString = #filePath, line: UInt = #line) {
         let field = app.textFields[id]
         revealStudioContent(field, in: app, file: file, line: line)
+        let fieldFrame = field.frame
+        assertStudioMinimumHitTarget(fieldFrame, label: "Measurement field", file: file, line: line)
         let clear = app.buttons[id + "Clear"]
         XCTAssertTrue(clear.exists && clear.isEnabled && clear.isHittable, file: file, line: line)
         clear.tap()
@@ -201,6 +224,8 @@ extension XCTestCase {
         XCTAssertEqual(field.value as? String, text, "Exact measurement draft must be entered", file: file, line: line)
         let set = app.buttons[id + "Set"]
         XCTAssertTrue(set.isHittable, file: file, line: line)
+        let setFrame = set.frame
+        assertStudioMinimumHitTarget(setFrame, label: "Set", file: file, line: line)
         set.tap()
         let keyboardGone = NSPredicate(format: "exists == false")
         let expectation = XCTNSPredicateExpectation(predicate: keyboardGone, object: app.keyboards.firstMatch)

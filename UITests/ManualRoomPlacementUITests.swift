@@ -21,6 +21,10 @@ final class ManualRoomPlacementUITests: XCTestCase {
         XCTAssertEqual(insideResult, .completed)
         let rotate = app.buttons["roomHalfTurn"]
         revealStudioContent(rotate, in: app)
+        let rotateFrame = rotate.frame
+        assertStudioMinimumHitTarget(rotateFrame, label: "Rotate 180 degrees")
+        let rotationFrame = app.sliders["roomRotation"].frame
+        assertStudioMinimumHitTarget(rotationFrame, label: "Room rotation")
         rotate.tap()
         let outside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "center positions outside room"), object: status)
         let outsideResult = XCTWaiter.wait(for: [outside], timeout: 10)

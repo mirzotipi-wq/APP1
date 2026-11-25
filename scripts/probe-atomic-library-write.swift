@@ -23,12 +23,15 @@ enum AtomicLibraryWriteProbe {
     }
 
     private static func scene(_ project: Int, lights count: Int) -> LightingScene {
-        let lights = (0..<count).map { index in
-            StudioLight(id: identifier(2, project * 12 + index), name: "Light \(index + 1)",
-                        position: .init(x: Double(index % 4) - 1.5,
-                                        y: 1.4 + Double(index % 3) * 0.3,
-                                        z: 1.2 + Double(index / 4) * 0.2),
-                        candela: Double(300 + project * 10 + index * 17), kelvin: 5600)
+        let lights: [StudioLight] = (0..<count).map { (index: Int) -> StudioLight in
+            let id: UUID = identifier(2, project * 12 + index)
+            let x: Double = Double(index % 4) - 1.5
+            let y: Double = 1.4 + Double(index % 3) * 0.3
+            let z: Double = 1.2 + Double(index / 4) * 0.2
+            let position: Position = Position(x: x, y: y, z: z)
+            let candela: Double = Double(300 + project * 10 + index * 17)
+            return StudioLight(id: id, name: "Light \(index + 1)", position: position,
+                               candela: candela, kelvin: 5600)
         }
         return LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
                              camera: .init(x: 0, y: 1.5, z: 3), lights: lights)

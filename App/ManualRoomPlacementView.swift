@@ -276,14 +276,18 @@ struct ManualRoomPlacementView: View {
             Divider()
             Text("Rig rotation").font(.headline)
             HStack {
-                Slider(value: $room.yawDegrees, in: -180...180, step: 5)
-                    .accessibilityLabel("Rig rotation")
-                    .accessibilityValue(rotation.accessibilityValue)
-                    .accessibilityIdentifier("roomRotation")
+                StudioSlider(value: $room.yawDegrees, in: -180...180, step: 5,
+                             accessibility: .init(label: "Rig rotation",
+                                 value: { [locale] in RoomRotationReadout(degrees: $0, locale: locale).accessibilityValue },
+                                 identifier: "roomRotation")) { _ in }
                 Text(rotation.text).monospacedDigit().frame(minWidth: 54, alignment: .trailing)
             }
-            Button("Rotate 180°") { room.rotate(byDegrees: 180) }
-                .frame(minHeight: 44)
+            Button { room.rotate(byDegrees: 180) } label: {
+                Text("Rotate 180°")
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
                 .accessibilityIdentifier("roomHalfTurn")
             Text("Positive rotation turns the scene's +Z direction toward the room's right wall.")
                 .font(.caption).foregroundStyle(StudioPalette.secondaryText)
@@ -533,7 +537,15 @@ private struct RoomMeasurementField: View {
                     .textInputAutocapitalization(.never)
                     .multilineTextAlignment(.trailing)
                     .font(.body.monospacedDigit())
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 8)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 6))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 6)
+                            .strokeBorder(StudioPalette.secondaryText, lineWidth: 1)
+                            .allowsHitTesting(false)
+                    }
                     .focused($focused)
                     .accessibilityLabel(title + " in " + (units == .metric ? "meters" : "feet"))
                     .accessibilityIdentifier(id)
@@ -554,10 +566,13 @@ private struct RoomMeasurementField: View {
                 .accessibilityLabel("Clear " + title.lowercased())
                 .accessibilityIdentifier(id + "Clear")
                 Text(units.symbol).foregroundStyle(StudioPalette.secondaryText)
-                Button("Set") { apply() }
+                Button { apply() } label: {
+                    Text("Set")
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
                     .disabled(rejectedOversizedDraft)
                     .buttonStyle(.bordered)
-                    .frame(minHeight: 44)
                     .accessibilityLabel("Set " + title.lowercased())
                     .accessibilityIdentifier(id + "Set")
             }
@@ -593,6 +608,9 @@ private struct RoomMeasurementField: View {
                 invalid = false
                 return
             }
+            // Focus changes can echo the same text through the binding. Only
+            // an actual edit may clear a validation or oversize rejection.
+            guard replacement != draft else { return }
             draft = replacement
             rejectedOversizedDraft = false
             invalid = false

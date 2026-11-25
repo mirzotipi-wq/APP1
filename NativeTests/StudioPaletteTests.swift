@@ -40,7 +40,7 @@ final class StudioPaletteTests: XCTestCase {
             try assertContrast(StudioPalette.prominentActionTextUIColor,
                                on: components(StudioPalette.actionUIColor, traits: traits),
                                minimum: 4.5, traits: traits,
-                               pair: "\(appearance) Save project name and Share measurement notes / explicit action fill")
+                               pair: "\(appearance) project name, recovery, editable backup and room sharing / action fill")
             try assertContrast(StudioPalette.secondaryTextUIColor,
                                on: components(.tertiarySystemGroupedBackground, traits: traits),
                                minimum: 4.5, traits: traits,

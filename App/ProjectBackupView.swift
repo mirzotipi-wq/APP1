@@ -25,7 +25,7 @@ struct ProjectBackupView: View {
                     Label("\(scene.lights.count) lights", systemImage: "lightbulb")
                         .accessibilityIdentifier("editableCopyLightCount")
                     Text("Includes the project name, lights, camera, preview settings and any committed room measurements from the studio when you opened this sheet.")
-                        .font(.subheadline).foregroundStyle(.secondary)
+                        .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                 }
                 Section {
                     if prepared != nil {
@@ -35,6 +35,7 @@ struct ProjectBackupView: View {
                             showExporter = true
                         } label: {
                             Label("Save editable copy", systemImage: "square.and.arrow.up")
+                                .foregroundStyle(StudioPalette.prominentActionText)
                                 .frame(maxWidth: .infinity, minHeight: 44)
                         }
                         .buttonStyle(.borderedProminent)
@@ -59,7 +60,7 @@ struct ProjectBackupView: View {
                 Section("Open the copy later") {
                     Text("In Projects, choose Import editable project. Importing creates a separate project and keeps existing projects.")
                     Text("Reference photos and edit history are not included. Your current studio edits stay open after exporting.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                         .accessibilityIdentifier("editableCopyScope")
                 }
             }
@@ -88,6 +89,7 @@ struct ProjectBackupView: View {
                 // completion. No saved status or project mutation is produced.
             }
         }
+        .tint(StudioPalette.action)
     }
 
     @MainActor private func prepare() async {
