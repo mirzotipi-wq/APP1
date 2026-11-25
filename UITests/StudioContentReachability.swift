@@ -118,15 +118,25 @@ extension XCTestCase {
                              fullyVisible: Bool = false,
                              file: StaticString = #filePath, line: UInt = #line) {
         for _ in 0..<12 {
-            var viewport = app.frame.insetBy(dx: 0, dy: 100)
+            // Full-frame callers separately assert the real scroll-container
+            // bounds. Keep a small screen margin here, then exclude observed
+            // bars/keyboard below; a fixed 100pt bottom inset could make the
+            // last Form footer unreachable even when it is fully visible.
+            var viewport = app.frame.insetBy(dx: 0, dy: fullyVisible ? 8 : 100)
             if fullyVisible {
                 // The keyboard and fixed edit bar can cover scroll content.
                 // Full-frame assertions opt in; ordinary functional navigation
                 // retains its established midpoint/hit-point requirement.
-                let navigationBar = app.navigationBars.firstMatch
-                if navigationBar.exists {
+                // A presented sheet can leave the underlying navigation bar
+                // first in the AX tree. Respect every overlapping bar so the
+                // sheet's lower boundary cannot be mistaken for visible text.
+                let navigationBottom = app.navigationBars.allElementsBoundByIndex
+                    .map(\.frame)
+                    .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
+                    .map(\.maxY).max()
+                if let navigationBottom {
                     let bottom = viewport.maxY
-                    viewport.origin.y = max(viewport.minY, navigationBar.frame.maxY + 8)
+                    viewport.origin.y = max(viewport.minY, navigationBottom + 8)
                     viewport.size.height = max(0, bottom - viewport.minY)
                 }
                 let keyboard = app.keyboards.firstMatch

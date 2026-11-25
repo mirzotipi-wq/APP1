@@ -253,10 +253,15 @@ final class StudioAppAccessibilityUITests: XCTestCase {
             if !frame.isEmpty { viewport = frame; break }
         }
         XCTAssertFalse(viewport.isNull, "Expected a real scroll container for \(state.label)")
-        let navigation = app.navigationBars.firstMatch
-        if navigation.exists {
+        // The first AX navigation bar may belong to the covered studio. A
+        // presented sheet can have a lower bar that also obscures this surface.
+        let navigationBottom = app.navigationBars.allElementsBoundByIndex
+            .map(\.frame)
+            .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
+            .map(\.maxY).max()
+        if let navigationBottom {
             let bottom = viewport.maxY
-            viewport.origin.y = max(viewport.minY, navigation.frame.maxY)
+            viewport.origin.y = max(viewport.minY, navigationBottom)
             viewport.size.height = max(0, bottom - viewport.minY)
         }
         let keyboard = app.keyboards.firstMatch
