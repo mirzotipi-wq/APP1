@@ -12,7 +12,7 @@
         "native_build",
         "persistence_smoke"
       ],
-      "status": "complete"
+      "status": "active"
     },
     {
       "id": "M02",
@@ -25,7 +25,7 @@
         "rendering",
         "performance"
       ],
-      "status": "active"
+      "status": "pending"
     },
     {
       "id": "M03",
@@ -97,34 +97,37 @@
     "date": "2026-11-25",
     "baseRevision": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
     "destinationBranch": "main",
-    "status": "follow_up_candidate_preparing_main_push",
+    "status": "published_implementation_awaiting_apple_runners_with_verified_persistence_followup",
     "requestedDistinctWorkers": 100,
     "concurrentWorkerSlots": 3,
     "report": "docs/evidence/m02-m03-main-2026-11-25.md",
     "nativeCandidateResult": "unverified",
     "remainingMandatoryGates": [
+      "current_source_native_build_and_save_reopen",
       "calibrated_rendering_review",
       "physical_performance_thermal",
       "editing_and_automatic_accessibility_current_source",
       "manual_device_accessibility",
-      "persistence_interruption"
+      "persistence_followup_ci"
     ],
-    "sourceRevision": "960268360c67755979619b2f34c0651a193fbf58",
-    "testedRevision": "960268360c67755979619b2f34c0651a193fbf58",
+    "sourceRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
+    "testedRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
     "latestWorkflow": {
-      "id": 45582259076,
-      "sourceRevision": "960268360c67755979619b2f34c0651a193fbf58",
-      "status": "completed",
-      "conclusion": "failure",
-      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45582259076",
-      "nativePassed": 110,
-      "uiPassed": 34,
-      "uiExecuted": 36,
-      "opticsWorkflowRunsPassed": 10,
-      "accessibilityIssueCount": 10
+      "id": 45593950430,
+      "sourceRevision": "d99c9bdfc1b3c1a185d87079efcc62cd34049279",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45593950430",
+      "coreConclusion": "success",
+      "debugPassed": 319,
+      "releasePassed": 319,
+      "pythonPassed": 28,
+      "nativeResult": "unverified",
+      "uiResult": "unverified",
+      "observedAtUTC": "2026-11-25T10:38:40Z"
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "All main checkpoint-two receipts are terminal and source-specific. Follow-up source has local checks; new Apple execution is pending.",
+    "note": "Current app source has green exact-revision Linux CI; all four Apple jobs are queued. M01 is reopened for current-source build/save verification, so dependent milestones remain pending. Earlier passing foundation and failed accessibility receipts are preserved. The follow-up adds reviewed Linux interruption/rename probes with passing local source-hash receipts; no external gate is promoted.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -136,6 +139,27 @@
       "uiInventory": 36,
       "nativeResult": "unverified"
     },
-    "grazingCPUCost": "Open diagnostic risk: 17.56\u201335.10% median area-frame slowdown in a short paired host benchmark; discarded inlining did not establish a gain."
+    "grazingCPUCost": "Open diagnostic risk: 17.56–35.10% median area-frame slowdown in a short paired host benchmark; discarded inlining did not establish a gain.",
+    "previousCompletedWorkflow": {
+      "id": 45582259076,
+      "sourceRevision": "960268360c67755979619b2f34c0651a193fbf58",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45582259076",
+      "nativePassed": 110,
+      "uiPassed": 34,
+      "uiExecuted": 36,
+      "opticsWorkflowRunsPassed": 10,
+      "accessibilityIssueCount": 10
+    },
+    "externalAcceptancePacket": "docs/acceptance/m02-m03-external-evidence.md",
+    "localPersistenceFollowUp": {
+      "result": "passed",
+      "scope": "Linux tmpfs; child process interruption around actual renameat and explicit rename EIO; not power loss or iOS",
+      "efbigChecksPassed": 11,
+      "strictScenariosPassed": 3,
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/commit-interruption-final/wrapper-result.json",
+      "diagnostics": "working follow-up with exact hashes in compile manifest; current production LightingCore sources unchanged from d99c9bd"
+    }
   }
 }

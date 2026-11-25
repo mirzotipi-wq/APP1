@@ -6,7 +6,8 @@ import Darwin
 #endif
 
 /// Compile with Sources/LightingCore/*.swift; run through
-/// probe_atomic_library_write.py. This diagnostic never uses app storage.
+/// probe_atomic_library_write.py or the commit/interruption probe driver.
+/// This diagnostic never uses app storage.
 @main
 enum AtomicLibraryWriteProbe {
     private static let fileLimitBytes = 32 * 1024
@@ -121,13 +122,15 @@ enum AtomicLibraryWriteProbe {
             try require(try control.load() == prior, "Control initial snapshot mismatch")
             try control.save(candidate, replacing: prior)
             return ["phase": phase, "status": "control_saved", "saveReturnedNormally": true]
-        case "inject":
+        case "inject", "save":
             try require(try store.load() == prior && Data(contentsOf: store.url) == before,
                         "Injection preflight snapshot mismatch")
             // Only this call is inside the catch that certifies a write attempt.
-            // The Python owner sets RLIMIT_FSIZE and ignores SIGXFSZ in this
-            // child before exec. A validation/CAS/setup error cannot count as
-            // success: the owner additionally requires direct POSIX evidence.
+            // For inject, the Python owner sets RLIMIT_FSIZE and ignores
+            // SIGXFSZ in this child before exec. The save phase uses the same
+            // production write for a separate, witnessed rename/interruption
+            // driver. A validation/CAS/setup error cannot count as success:
+            // each owner additionally requires direct injection evidence.
             // Some Foundation implementations discard the underlying NSError.
             // Reset errno immediately before save and capture it before any
             // error formatting or other calls can overwrite the observation.
@@ -135,8 +138,15 @@ enum AtomicLibraryWriteProbe {
             do {
                 try store.save(candidate, replacing: prior)
                 let saveErrno = errno
-                return ["phase": phase, "status": "unexpected_save_success", "writeAttempted": true,
-                        "posixErrnoResetBeforeSave": true, "posixErrnoImmediatelyAfterSave": saveErrno]
+                var result: [String: Any] = [
+                    "phase": phase,
+                    "status": phase == "save" ? "save_complete" : "unexpected_save_success",
+                    "writeAttempted": true,
+                    "posixErrnoResetBeforeSave": true,
+                    "posixErrnoImmediatelyAfterSave": saveErrno
+                ]
+                if phase == "save" { result["saveReturnedNormally"] = true }
+                return result
             } catch {
                 let saveErrno = errno
                 return ["phase": phase, "status": "save_threw", "writeAttempted": true,
@@ -160,6 +170,46 @@ enum AtomicLibraryWriteProbe {
                     "activeIdentityPreserved": true, "unrelatedRecordsPreserved": true,
                     "unrelatedProjectIDs": unrelated.map { $0.id.uuidString },
                     "controlCandidateReopened": true, "controlExactCandidateBytes": true]
+        case "verify-candidate", "verify-either":
+            // Run only in a fresh, unrestricted process after the writer has
+            // exited or been killed. A valid partial mixture cannot pass: both
+            // the complete decoded library and every encoded byte must match
+            // the same fixture. The driver selects the strict expected phase
+            // from its witnessed position around the real rename.
+            let reopened = try store.load()
+            let after = try Data(contentsOf: store.url)
+            let priorMatches = reopened == prior && after == before
+            let candidateMatches = reopened == candidate && after == proposed
+            if phase == "verify-candidate" {
+                try require(candidateMatches, "Candidate complete snapshot or bytes were lost")
+            } else {
+                try require(priorMatches || candidateMatches,
+                            "Reopened library is neither complete prior nor complete candidate")
+            }
+            let unrelated = prior.projects.filter { $0.id != prior.activeID }
+            try require(unrelated.count == 2 && unrelated.contains(where: { $0.isArchived }) &&
+                        unrelated.contains(where: { !$0.isArchived }), "Unrelated-record fixture mismatch")
+            try require(candidate.activeID == prior.activeID && reopened?.activeID == prior.activeID,
+                        "Active identity changed")
+            try require(unrelated.allSatisfy { record in
+                reopened?.projects.first(where: { $0.id == record.id }) == record
+            }, "Unrelated records changed")
+            try require(try control.load() == candidate && Data(contentsOf: control.url) == proposed,
+                        "Unrestricted control replacement did not survive a fresh-process reopen")
+            return ["phase": phase,
+                    "status": phase == "verify-candidate"
+                        ? "candidate_verification_complete" : "either_verification_complete",
+                    "reopenedSnapshot": candidateMatches ? "candidate" : "prior",
+                    "completeSnapshotPreserved": true, "exactBytesPreserved": true,
+                    "allSnapshotRecordsPreserved": true,
+                    "priorCompleteSnapshotPreserved": priorMatches,
+                    "priorExactBytesPreserved": priorMatches,
+                    "candidateCompleteSnapshotPreserved": candidateMatches,
+                    "candidateExactBytesPreserved": candidateMatches,
+                    "candidateRecordsPreserved": candidateMatches,
+                    "activeIdentityPreserved": true, "unrelatedRecordsPreserved": true,
+                    "unrelatedProjectIDs": unrelated.map { $0.id.uuidString },
+                    "controlCandidateReopened": true, "controlExactCandidateBytes": true]
         default:
             throw Failure(message: "Unknown diagnostic phase")
         }
@@ -179,7 +229,8 @@ enum AtomicLibraryWriteProbe {
     static func main() {
         let arguments = CommandLine.arguments
         guard arguments.count == 3 else {
-            emit(["status": "invalid_arguments", "usage": "helper setup|control|inject|verify OUTPUT_DIRECTORY"])
+            emit(["status": "invalid_arguments",
+                  "usage": "helper setup|control|inject|verify|save|verify-candidate|verify-either OUTPUT_DIRECTORY"])
             exit(2)
         }
         do {

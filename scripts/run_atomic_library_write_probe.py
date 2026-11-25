@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Compile current LightingCore sources, record provenance, and run the EFBIG probe.
+"""Compile current LightingCore sources and run bounded persistence probes.
 
 --output must name a new directory whose parent exists. Compiler and probe logs,
 the compile manifest, and the raw probe artifacts remain there on success/failure.
 Compilation runs in its own child with no injected resource or signal limits;
 only the existing probe runner applies RLIMIT_FSIZE to its injection child.
+On Linux, --with-commit-interruption also runs witnessed rename-boundary probes
+with the same compiled helper and a shared overall probe time budget.
 """
 
 import argparse
@@ -47,18 +49,23 @@ def source_hashes(repository):
     return {str(path.relative_to(repository)): sha256(path) for path in sources}
 
 
-def diagnostic_hashes(repository):
-    return {"scripts/" + name: sha256(repository / "scripts" / name) for name in (
+def diagnostic_hashes(repository, with_commit_interruption=False):
+    names = [
         "probe_atomic_library_write.py", "run_atomic_library_write_probe.py",
-    )}
+    ]
+    if with_commit_interruption:
+        names += ["probe-library-commit-interposer.c", "probe_library_commit_interruption.py"]
+    return {"scripts/" + name: sha256(repository / "scripts" / name) for name in names}
 
 
 def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def run_logged(arguments, repository, output, name, timeout):
+def run_logged(arguments, repository, output, name, timeout, graceful_timeout_seconds=0):
     observation = {"arguments": arguments, "cwd": str(repository), "timeoutSeconds": timeout}
+    if graceful_timeout_seconds:
+        observation["gracefulTerminationSeconds"] = graceful_timeout_seconds
     print("Running " + json.dumps(arguments), flush=True)
     started = time.monotonic()
     with (output / (name + ".stdout.log")).open("wb") as stdout, \
@@ -70,18 +77,31 @@ def run_logged(arguments, repository, output, name, timeout):
         def stop_owned_group():
             # The new session isolates this compiler/probe and its descendants
             # from the runner, parent, and every unrelated process.
+            if graceful_timeout_seconds:
+                # The commit driver owns additional child sessions. Give its
+                # signal handler time to clean them up before terminating the
+                # driver itself. A forced fallback is not proof of that cleanup.
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                try:
+                    process.wait(timeout=graceful_timeout_seconds)
+                    return "SIGTERM to owned driver group; direct child reaped within grace period"
+                except subprocess.TimeoutExpired:
+                    observation["gracefulTerminationExpired"] = True
             try:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
             process.wait(timeout=10)
+            return "SIGKILL to owned process group; direct child reaped"
 
         try:
             observation["returnCode"] = process.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             observation["timedOut"] = True
-            stop_owned_group()
-            observation["timeoutCleanup"] = "SIGKILL to owned process group; direct child reaped"
+            observation["timeoutCleanup"] = stop_owned_group()
         except BaseException:
             stop_owned_group()
             raise
@@ -100,10 +120,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path, help="New evidence directory")
     parser.add_argument("--swiftc", default="swiftc", help="Swift compiler executable or path")
+    parser.add_argument("--with-commit-interruption", action="store_true",
+                        help="Also verify witnessed pre/post-rename interruption and rename EIO on Linux")
     args = parser.parse_args()
     repository = Path(__file__).resolve().parent.parent
     output = args.output.resolve()
     report = {"schemaVersion": 1, "status": "failed", "output": str(output),
+              "commitInterruptionRequested": args.with_commit_interruption,
               "host": {"system": platform.system(), "machine": platform.machine(),
                        "python": platform.python_version()}}
     created_output = False
@@ -112,6 +135,8 @@ def main():
         output.mkdir(parents=False, exist_ok=False)
         created_output = True
         write_json(output / "wrapper-result.json", report)
+        require(not args.with_commit_interruption or platform.system() == "Linux",
+                "Commit interruption injection is supported only by the Linux host diagnostic")
         compiler = shutil.which(args.swiftc)
         require(compiler is not None, "Swift compiler not found: " + args.swiftc)
         # Preserve the swiftc invocation name: resolving a driver symlink can
@@ -131,7 +156,7 @@ def main():
         manifest["compilerVersion"] = (output / "compiler-version.stdout.log").read_text(encoding="utf-8")
         manifest["sourceSHA256"] = source_hashes(repository)
         manifest["sourceSHA256BeforeCompilation"] = manifest["sourceSHA256"]
-        manifest["diagnosticSHA256BeforeCompilation"] = diagnostic_hashes(repository)
+        manifest["diagnosticSHA256BeforeCompilation"] = diagnostic_hashes(repository, args.with_commit_interruption)
         manifest_path = output / "compile-manifest.json"
         with tempfile.TemporaryDirectory(prefix="atomic-library-write-build-") as build_directory:
             build = Path(build_directory)
@@ -143,7 +168,7 @@ def main():
             write_json(manifest_path, manifest)
             manifest["compile"] = run_logged(command, repository, output, "compile", COMPILE_TIMEOUT_SECONDS)
             manifest["sourceSHA256AfterCompilation"] = source_hashes(repository)
-            manifest["diagnosticSHA256AfterCompilation"] = diagnostic_hashes(repository)
+            manifest["diagnosticSHA256AfterCompilation"] = diagnostic_hashes(repository, args.with_commit_interruption)
             manifest["sourcesUnchangedDuringCompilation"] = (
                 manifest["sourceSHA256BeforeCompilation"] == manifest["sourceSHA256AfterCompilation"]
                 and manifest["diagnosticSHA256BeforeCompilation"] == manifest["diagnosticSHA256AfterCompilation"]
@@ -155,22 +180,43 @@ def main():
             manifest["binarySHA256"] = {helper.name: sha256(helper)}
             write_json(manifest_path, manifest)
             report["compileManifestSHA256"] = sha256(manifest_path)
+            probe_started = time.monotonic()
             report["probe"] = run_logged(
                 [sys.executable, str(repository / "scripts" / "probe_atomic_library_write.py"),
                  "--helper", str(helper), "--output", str(output / "probe"),
                  "--source-revision", revision, "--compile-manifest", str(manifest_path)],
                 repository, output, "probe", PROBE_TIMEOUT_SECONDS,
             )
+            require(report["probe"].get("returnCode") == 0, "EFBIG probe failed or timed out; see raw probe artifacts")
+            probe_result = json.loads((output / "probe" / "result.json").read_text(encoding="utf-8"))
+            require(probe_result.get("status") == "passed", "EFBIG probe did not produce a passing result")
+            if args.with_commit_interruption:
+                # Both families share the old work budget, including a ten-second
+                # driver TERM grace. Its inner deadline leaves another ten
+                # seconds for normal owned-child cleanup before the outer signal.
+                remaining = PROBE_TIMEOUT_SECONDS - (time.monotonic() - probe_started)
+                require(remaining > 21, "Insufficient remaining budget for commit interruption probes")
+                outer_timeout = remaining - 10
+                report["commitInterruption"] = run_logged(
+                    [sys.executable, str(repository / "scripts" / "probe_library_commit_interruption.py"),
+                     "--helper", str(helper), "--output", str(output / "commit-interruption"),
+                     "--source-revision", revision, "--compile-manifest", str(manifest_path),
+                     "--timeout-seconds", str(min(120, outer_timeout - 10))],
+                    repository, output, "commit-interruption", outer_timeout,
+                    graceful_timeout_seconds=10,
+                )
+                require(report["commitInterruption"].get("returnCode") == 0,
+                        "Commit interruption probe failed or timed out; see raw artifacts")
+                commit_result = json.loads((output / "commit-interruption" / "result.json").read_text(encoding="utf-8"))
+                require(commit_result.get("status") == "passed",
+                        "Commit interruption probe did not produce a passing result")
             report["sourceSHA256AfterProbe"] = source_hashes(repository)
-            report["diagnosticSHA256AfterProbe"] = diagnostic_hashes(repository)
+            report["diagnosticSHA256AfterProbe"] = diagnostic_hashes(repository, args.with_commit_interruption)
             report["sourcesUnchangedDuringProbe"] = (
                 manifest["sourceSHA256"] == report["sourceSHA256AfterProbe"]
                 and manifest["diagnosticSHA256BeforeCompilation"] == report["diagnosticSHA256AfterProbe"]
             )
             require(report["sourcesUnchangedDuringProbe"], "Source files changed during the probe")
-            require(report["probe"].get("returnCode") == 0, "EFBIG probe failed or timed out; see raw probe artifacts")
-            probe_result = json.loads((output / "probe" / "result.json").read_text(encoding="utf-8"))
-            require(probe_result.get("status") == "passed", "EFBIG probe did not produce a passing result")
             report["status"] = "passed"
     except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
         report["failure"] = {"type": type(error).__name__, "message": str(error)}

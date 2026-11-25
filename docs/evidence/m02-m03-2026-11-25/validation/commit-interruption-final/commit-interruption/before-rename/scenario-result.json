@@ -1,0 +1,171 @@
+{
+  "checks": {
+    "activeIdentityPreserved": true,
+    "exactExpectedBytesAtHook": true,
+    "exactExpectedBytesPreserved": true,
+    "exactTargetRenameWitnessed": true,
+    "freshProcessReopenSucceeded": true,
+    "fullyWrittenCandidateStagedBeforeRename": true,
+    "ownedGroupCleaned": true,
+    "parentKilledOwnedSave": true,
+    "priorCompleteSnapshotPreserved": true,
+    "stoppedAtWitnessedHook": true,
+    "unrelatedRecordsPreserved": true,
+    "unrestrictedControlCandidateReopened": true,
+    "unrestrictedControlExactCandidateBytes": true,
+    "unrestrictedSetupAndControlSucceeded": true
+  },
+  "directory": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename",
+  "files": {
+    "after.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    },
+    "candidate.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "control/projects.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "library/projects.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    },
+    "prior.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    }
+  },
+  "injection": {
+    "arguments": [
+      "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/temporary-builds/atomic-library-write-build-jcxoyb1y/atomic-library-write-probe",
+      "save",
+      "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename"
+    ],
+    "elapsedSeconds": 0.029,
+    "environmentOverrides": {
+      "KF_COMMIT_MODE": "before-rename",
+      "KF_COMMIT_TARGET": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/library/projects.json",
+      "KF_COMMIT_WITNESS_FD": "4",
+      "LD_PRELOAD": "/proc/self/fd/5"
+    },
+    "events": [
+      {
+        "api": "renameat",
+        "destinationArgument": "projects.json",
+        "destinationDirFD": 3,
+        "hit": 1,
+        "hookState": "before-call",
+        "mode": "before-rename",
+        "pid": 171,
+        "realRenameCalled": false,
+        "realReturnCode": null,
+        "returnedErrno": 0,
+        "schemaVersion": 1,
+        "sourceArgument": ".dat.nosyncAB.cDEXEa",
+        "sourceDirFD": 3,
+        "targetMatched": true,
+        "targetPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/library/projects.json"
+      }
+    ],
+    "exactExpectedBytesAtHook": true,
+    "finalReturnCode": -9,
+    "hookCount": 1,
+    "hookWitnessed": true,
+    "interposerPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/probe-library-commit-interposer.so",
+    "mode": "before-rename",
+    "observedStop": {
+      "code": 5,
+      "processID": 171,
+      "signal": 19
+    },
+    "ownedGroupCleanupComplete": true,
+    "parentIssuedSIGKILL": true,
+    "processGroupID": 171,
+    "returnCode": -9,
+    "stagedExactCandidateBytes": true,
+    "stagedSourcePath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/library/.dat.nosyncAB.cDEXEa",
+    "status": "observed",
+    "targetPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/library/projects.json"
+  },
+  "mode": "before-rename",
+  "phases": [
+    {
+      "arguments": [
+        "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/temporary-builds/atomic-library-write-build-jcxoyb1y/atomic-library-write-probe",
+        "setup",
+        "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename"
+      ],
+      "cwd": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "candidateBytes": 242569,
+        "candidateProjects": 64,
+        "candidateValidated": true,
+        "fileLimitBytes": 32768,
+        "fixtureByteCeiling": 1048576,
+        "initialReopenMatchesPrior": true,
+        "libraryByteLimit": 8388608,
+        "phase": "setup",
+        "priorBytes": 3900,
+        "priorProjects": 3,
+        "status": "setup_complete"
+      },
+      "processGroupID": 169,
+      "returnCode": 0,
+      "stderrPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/setup.stderr.log",
+      "stdoutPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/setup.stdout.log",
+      "timeoutSeconds": 30
+    },
+    {
+      "arguments": [
+        "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/temporary-builds/atomic-library-write-build-jcxoyb1y/atomic-library-write-probe",
+        "control",
+        "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename"
+      ],
+      "cwd": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "phase": "control",
+        "saveReturnedNormally": true,
+        "status": "control_saved"
+      },
+      "processGroupID": 170,
+      "returnCode": 0,
+      "stderrPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/control.stderr.log",
+      "stdoutPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/control.stdout.log",
+      "timeoutSeconds": 30
+    },
+    {
+      "arguments": [
+        "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/temporary-builds/atomic-library-write-build-jcxoyb1y/atomic-library-write-probe",
+        "verify",
+        "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename"
+      ],
+      "cwd": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "activeIdentityPreserved": true,
+        "controlCandidateReopened": true,
+        "controlExactCandidateBytes": true,
+        "phase": "verify",
+        "priorCompleteSnapshotPreserved": true,
+        "priorExactBytesPreserved": true,
+        "status": "verification_complete",
+        "unrelatedProjectIDs": [
+          "00000001-0000-4000-8000-000000000002",
+          "00000001-0000-4000-8000-000000000001"
+        ],
+        "unrelatedRecordsPreserved": true
+      },
+      "processGroupID": 172,
+      "returnCode": 0,
+      "stderrPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/verify.stderr.log",
+      "stdoutPath": "/dev/shm/keyfill-c0abc39c4f18-integrated-persistence-final/evidence/commit-interruption/before-rename/verify.stdout.log",
+      "timeoutSeconds": 30
+    }
+  ],
+  "status": "passed"
+}

@@ -47,11 +47,11 @@ jobs:
         run: |
           set -euo pipefail
           swift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log
-      - name: Verify bounded atomic library write failure on Linux
+      - name: Verify atomic write failure and commit interruption on Linux
         timeout-minutes: 6
         run: |
           set -euo pipefail
-          python3 scripts/run_atomic_library_write_probe.py \
+          python3 scripts/run_atomic_library_write_probe.py --with-commit-interruption \
             --output "$RUNNER_TEMP/atomic-library-write-linux" 2>&1 | tee "$RUNNER_TEMP/atomic-library-write-linux.log"
       - name: Upload Linux atomic library write evidence
         if: always()

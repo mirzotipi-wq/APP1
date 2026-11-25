@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "test": "Actual driver SIGTERM during controlled pause after real helper SIGSTOP and rename witness",
+  "childArguments": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-c",
+    "import importlib.util,json,signal,sys\nfrom pathlib import Path\nspec=importlib.util.spec_from_file_location(\"commit_probe\",sys.argv[1])\nm=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)\noriginal=m.wait_for_stop\nmarker=Path(sys.argv[2])\ndef witnessed_pause(process,deadline):\n state=original(process,deadline)\n marker.write_text(json.dumps({\"helperPID\":process.pid,\"observedStop\":state}))\n signal.pause()\n return state\nm.wait_for_stop=witnessed_pause\nsys.argv=sys.argv[3:]\nraise SystemExit(m.main())\n",
+    "/var/tmp/keyfill-c0abc39c4f18/APP1/scripts/probe_library_commit_interruption.py",
+    "/dev/shm/keyfill-c0abc39c4f18-commit-cancellation-1/stopped-helper.json",
+    "/var/tmp/keyfill-c0abc39c4f18/APP1/scripts/probe_library_commit_interruption.py",
+    "--helper",
+    "/dev/shm/keyfill-c0abc39c4f18-commit-probe-build/atomic-library-write-probe",
+    "--compile-manifest",
+    "/dev/shm/keyfill-c0abc39c4f18-commit-probe-build/compile-manifest.json",
+    "--output",
+    "/dev/shm/keyfill-c0abc39c4f18-commit-cancellation-1/driver-output",
+    "--source-revision",
+    "d99c9bd-plus-commit-probe-helper-cancellation-check"
+  ],
+  "driverSHA256": "f6102479a242254e1572881aac611357193f2492f3ad550b787c7b12c5718be4",
+  "interposerSourceSHA256": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a",
+  "observedStop": {
+    "helperPID": 15,
+    "observedStop": {
+      "signal": 19,
+      "processID": 15,
+      "code": 5
+    }
+  },
+  "driverReturnCode": 1,
+  "driverTerminationSignal": 15,
+  "ownedChildrenReaped": true,
+  "helperProcessGroupAbsent": true,
+  "elapsedAfterSIGTERMSeconds": 0.015440843009855598,
+  "freshPriorVerification": {
+    "activeIdentityPreserved": true,
+    "controlCandidateReopened": true,
+    "controlExactCandidateBytes": true,
+    "phase": "verify",
+    "priorCompleteSnapshotPreserved": true,
+    "priorExactBytesPreserved": true,
+    "status": "verification_complete",
+    "unrelatedProjectIDs": [
+      "00000001-0000-4000-8000-000000000002",
+      "00000001-0000-4000-8000-000000000001"
+    ],
+    "unrelatedRecordsPreserved": true
+  }
+}
