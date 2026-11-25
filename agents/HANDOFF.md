@@ -1,5 +1,18 @@
 # Current handoff
 
+## Fresh studio repeatability and independent audit control
+
+**M01 remains complete; M02 is active; M03 is dependency pending.** Published main at capture is **cbf94cecb113c1f03b0b8c7287e763655c14ec11**. At **13:57:07 UTC**, [run 45623581873](https://github.com/mirzotipi-wq/APP1/actions/runs/45623581873) had core success, native build active, and all three UI bundles built successfully before boot. [Progress receipt](../docs/evidence/m02-m03-2026-11-25/validation/checkpoint9-progress.json). No new audit outcome is inferred.
+
+The preceding 214 run completed with failure at **13:47:26 UTC** solely because its ARM library job acquired no runner. Every executed job passed: core, native **110/110**, room/precision **5/5**, studio/export **20/20 including all ten optics workflows**, zero native/UI failures or skips. All eleven library methods were unrun. The new [control packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control.md) links exact raw method receipts and root verification. These fresh repeatability passes remain separate from the earlier f6 library readiness failures awaiting revalidation.
+
+The reviewed five-file control is a separate minimal SwiftUI app and one full `.all` audit on the current Intel/Xcode 26.6/iOS 26.5 environment. Its own workflow preserves test failures, exact execution/counts, source copies, monotonic audit/error logs, screenshot and result artifacts. Local syntax/structure plus ten synthetic result-flow checks passed; Apple compilation and execution remain unverified. Primary app source, CI workflow, required 36 UI methods, assertions, full audits and existing deadlines are unchanged. Only an actual audit-phase observation can support audit reproduction; boot or launch timeouts cannot.
+
+An executor reset was recovered from published main and retained source/log hashes. Reconstructed intermediate reports and newly selected excerpts are labelled with their actual scope. All 100 initial workers remain complete. M02 rendering/performance and M03 accessibility still need external evidence; editing remains unverified until the outstanding library workflows are revalidated. The focused source review found no decisive state/data defect or demonstrated duplicate accessibility node.
+
+The earlier timestamped account below is retained as history; use this later observation and linked packet for the next action: publish the reviewed control, inspect its actual audit outcome, and finish current full-suite CI before any evidence-based product or toolchain change.
+
+
 ## Verified foundation; editing reopened — 2026-11-25
 
 **M01 remains complete; M02 is active; M03 remains dependency pending.** Newer terminal UI failures reopen the editing gate as **unverified**. Accessibility remains failed/incomplete; persistence retains scoped passing evidence. All **100 distinct workers** completed their initial assignments; follow-ups reuse them. [Ledger](../docs/evidence/m02-m03-2026-11-25/README.md).

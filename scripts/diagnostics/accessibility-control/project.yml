@@ -1,0 +1,41 @@
+name: AccessibilityControl
+options:
+  bundleIdPrefix: com.example.keyandfill
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  AccessibilityControl:
+    type: application
+    platform: iOS
+    sources: [App.swift]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.keyandfill.accessibilitycontrol
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Accessibility Control
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1"
+  AccessibilityControlUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests.swift]
+    dependencies:
+      - target: AccessibilityControl
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.keyandfill.accessibilitycontrol.uitests
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+schemes:
+  AccessibilityControl:
+    build:
+      targets:
+        AccessibilityControl: all
+    test:
+      targets:
+        - AccessibilityControlUITests
+    run:
+      config: Debug
+

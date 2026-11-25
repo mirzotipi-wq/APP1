@@ -106,3 +106,7 @@ All **100 distinct workers** completed their initial assignments, in batches wit
 | a098 | Final test and gate integrity review | completed | [Report](workers/a098.md) |
 | a099 | Worker ledger and evidence integrity audit | completed | [Report](workers/a099.md) |
 | a100 | Final independent readiness audit | completed | [Report](workers/a100.md) |
+
+## Independent accessibility control and fresh studio result
+
+Exact 214 native 110/110, room/precision 5/5 and studio/export 20/20 (all ten optics runs) passed. The run still failed because ARM library acquired no runner; its eleven methods were unrun. At 13:57:07 UTC, the published cbf candidate had core success and Apple jobs executing. The [reviewed independent control packet](followups/followup-accessibility-control.md) retains the terminal receipts and adds a separate minimal full `.all` audit with exact execution/error evidence. Local syntax and ten synthetic result checks passed; actual Apple control execution is pending. Primary application, workflow, assertions and deadlines remain unchanged. Editing awaits library readiness revalidation, and external/manual gates remain open.

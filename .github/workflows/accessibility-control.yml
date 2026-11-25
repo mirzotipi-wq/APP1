@@ -1,0 +1,248 @@
+name: Accessibility Audit Control
+on:
+  push:
+    paths:
+      - scripts/diagnostics/accessibility-control/**
+      - .github/workflows/accessibility-control.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: keyfill-accessibility-control-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: macos-26-intel
+    timeout-minutes: 32
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      CONTROL_ROOT: scripts/diagnostics/accessibility-control
+      CONTROL_EVIDENCE: ${{ runner.temp }}/accessibility-control-evidence
+      CONTROL_BUILD: ${{ runner.temp }}/accessibility-control-build
+      CONTROL_RESULT: ${{ runner.temp }}/accessibility-control-evidence/Control.xcresult
+    steps:
+      - uses: actions/checkout@v4
+        timeout-minutes: 1
+        with:
+          persist-credentials: false
+      - name: Record immutable sources and exact environment
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          mkdir -p "$CONTROL_EVIDENCE"
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            xcrun --find swiftc
+            xcrun --sdk iphonesimulator --show-sdk-path
+            git rev-parse HEAD
+          } 2>&1 | tee "$CONTROL_EVIDENCE/environment.log"
+          [ "$(uname -m)" = x86_64 ]
+          [ "$(xcodebuild -version)" = $'Xcode 26.6\nBuild version 17F113' ]
+          [ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ]
+          xcrun simctl list runtimes -j > "$CONTROL_EVIDENCE/runtimes.json"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+          root = pathlib.Path(os.environ["CONTROL_ROOT"])
+          paths = [root / name for name in ("App.swift", "UITests.swift", "project.yml", "README.md")]
+          paths.append(pathlib.Path(".github/workflows/accessibility-control.yml"))
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["GITHUB_SHA"]:
+              raise SystemExit("Checkout differs from the workflow source revision")
+          manifest = {"head": head, "files": {}, "sourceCopyPaths": {}, "environment": {
+              key: os.environ.get(key) for key in
+              ("DEVELOPER_DIR", "RUNNER_OS", "RUNNER_ARCH", "ImageOS", "ImageVersion", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT")}}
+          for path in paths:
+              content = path.read_bytes()
+              if content != subprocess.check_output(["git", "show", f"HEAD:{path.as_posix()}"]):
+                  raise SystemExit("Source differs from committed bytes: " + str(path))
+              manifest["files"][path.as_posix()] = hashlib.sha256(content).hexdigest()
+              copy_path = pathlib.Path("source") / ("accessibility-control-workflow.yml" if path.parts[0] == ".github" else path)
+              manifest["sourceCopyPaths"][path.as_posix()] = copy_path.as_posix()
+              copy = evidence / copy_path
+              copy.parent.mkdir(parents=True, exist_ok=True)
+              copy.write_bytes(content)
+          (evidence / "source-before.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          print(json.dumps(manifest, indent=2))
+          PY
+      - name: Generate isolated project and select exact simulator
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee "$CONTROL_EVIDENCE/xcodegen-version.log"
+          (cd "$CONTROL_ROOT" && xcodegen generate) 2>&1 | tee "$CONTROL_EVIDENCE/project-generation.log"
+          xcrun simctl list devices available -j > "$CONTROL_EVIDENCE/simulators.json"
+          python3 - <<'PY'
+          import json, os, pathlib
+          evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+          runtime = "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+          runtimes = json.loads((evidence / "runtimes.json").read_text())["runtimes"]
+          selected_runtime = next((r for r in runtimes if r.get("identifier") == runtime and r.get("isAvailable") and r.get("version") == "26.5"), None)
+          devices = json.loads((evidence / "simulators.json").read_text())["devices"].get(runtime, [])
+          device = next((d for d in devices if d.get("isAvailable") and d.get("name") == "iPhone 17 Pro"), None)
+          if selected_runtime is None or device is None:
+              raise SystemExit("Required iPhone 17 Pro / available iOS 26.5 runtime is missing")
+          selected = {"runtime": selected_runtime, "device": device}
+          (evidence / "selected-simulator.json").write_text(json.dumps(selected, indent=2) + "\n")
+          print(json.dumps(selected, indent=2))
+          with open(os.environ["GITHUB_ENV"], "a") as stream:
+              stream.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build the isolated app and single UI test
+        timeout-minutes: 4
+        run: |
+          set -euo pipefail
+          xcodebuild -project "$CONTROL_ROOT/AccessibilityControl.xcodeproj" \
+            -scheme AccessibilityControl -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$CONTROL_BUILD" \
+            -only-testing:AccessibilityControlUITests/AccessibilityControlUITests/testStaticScreenFullAccessibilityAudit \
+            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee "$CONTROL_EVIDENCE/build.log"
+      - name: Boot selected simulator after build
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          xcrun simctl list devices available -j > "$CONTROL_EVIDENCE/preboot-simulators.json"
+          {
+            python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+          data = json.loads((evidence / "preboot-simulators.json").read_text())
+          devices = data["devices"].get("com.apple.CoreSimulator.SimRuntime.iOS-26-5", [])
+          device = next((d for d in devices if d.get("udid") == os.environ["SIMULATOR_ID"] and d.get("isAvailable") and d.get("name") == "iPhone 17 Pro"), None)
+          if device is None:
+              raise SystemExit("Selected simulator is unavailable before boot")
+          print(json.dumps(device), flush=True)
+          if device.get("state") != "Booted":
+              subprocess.run(["xcrun", "simctl", "boot", device["udid"]], check=True)
+          PY
+            xcrun simctl bootstatus "$SIMULATOR_ID" -b
+          } 2>&1 | tee "$CONTROL_EVIDENCE/boot.log"
+      - name: Execute exactly one full accessibility audit
+        id: audit
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          set +e
+          xcodebuild -project "$CONTROL_ROOT/AccessibilityControl.xcodeproj" \
+            -scheme AccessibilityControl -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$CONTROL_BUILD" \
+            -parallel-testing-enabled NO -resultBundlePath "$CONTROL_RESULT" \
+            -only-testing:AccessibilityControlUITests/AccessibilityControlUITests/testStaticScreenFullAccessibilityAudit \
+            CODE_SIGNING_ALLOWED=NO test-without-building 2>&1 | tee "$CONTROL_EVIDENCE/native-tests.log"
+          command_statuses=("${PIPESTATUS[@]}")
+          set -e
+          python3 - "${command_statuses[0]}" "${command_statuses[1]}" <<'PY'
+          import json, os, pathlib, sys
+          statuses = {"xcodebuild": int(sys.argv[1]), "tee": int(sys.argv[2])}
+          path = pathlib.Path(os.environ["CONTROL_EVIDENCE"]) / "command-exit.json"
+          path.write_text(json.dumps(statuses, indent=2) + "\n")
+          print(json.dumps(statuses))
+          sys.exit(statuses["xcodebuild"] or statuses["tee"])
+          PY
+      - name: Verify exact execution and retain audit outcome
+        if: always()
+        timeout-minutes: 1
+        env:
+          AUDIT_STEP_OUTCOME: ${{ steps.audit.outcome }}
+        run: |
+          mkdir -p "$CONTROL_EVIDENCE"
+          python3 - <<'PY'
+          import collections, hashlib, json, os, pathlib, re, sys
+          evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+          errors = []
+          def read_json(name):
+              try:
+                  return json.loads((evidence / name).read_text())
+              except (OSError, ValueError) as error:
+                  errors.append(f"{name}: {error}")
+                  return {}
+          before = read_json("source-before.json")
+          after = {}
+          for name in before.get("files", {}):
+              path = pathlib.Path(name)
+              after[name] = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+          stable = bool(after) and after == before.get("files")
+          (evidence / "source-after.json").write_text(json.dumps({"head": before.get("head"), "files": after, "stable": stable}, indent=2) + "\n")
+          path = evidence / "native-tests.log"
+          log = path.read_text(encoding="utf-8", errors="replace") if path.is_file() else ""
+          events = re.findall(r"Test Case '-\[([^\]]+)\]' (started|passed|failed|skipped)\b", log)
+          expected = "AccessibilityControlUITests.AccessibilityControlUITests testStaticScreenFullAccessibilityAudit"
+          starts = [name for name, state in events if state == "started"]
+          terminal = [(name, state) for name, state in events if state != "started"]
+          markers = []
+          for line in log.splitlines():
+              if "AX_CONTROL " in line:
+                  try:
+                      markers.append(json.loads(line.split("AX_CONTROL ", 1)[1]))
+                  except ValueError:
+                      errors.append("Malformed AX_CONTROL marker")
+          returned = [m for m in markers if m.get("phase") == "audit_returned"]
+          thrown = [m for m in markers if m.get("phase") == "audit_threw"]
+          begins = [m for m in markers if m.get("phase") == "audit_begin"]
+          if returned:
+              audit_outcome = "returned_without_issues" if returned[0].get("issueCount") == "0" else "returned_with_issues"
+          elif thrown:
+              audit_outcome = "threw"
+          else:
+              audit_outcome = "did_not_return" if begins else "not_started"
+          command = read_json("command-exit.json")
+          if not stable:
+              errors.append("Source hashes missing or changed")
+          if starts != [expected] or terminal != [(expected, "passed")]:
+              errors.append("Expected exactly one selected test start and terminal pass")
+          if len(begins) != 1 or len(returned) != 1 or thrown or audit_outcome != "returned_without_issues":
+              errors.append("Full audit did not return exactly once with zero issues")
+          if command != {"xcodebuild": 0, "tee": 0} or os.environ.get("AUDIT_STEP_OUTCOME") != "success":
+              errors.append("Native command or test step did not succeed")
+          summary = {"status": "passed" if not errors else "failed", "expectedTest": expected,
+              "testStepOutcome": os.environ.get("AUDIT_STEP_OUTCOME"), "commandExit": command,
+              "rawLogPresent": path.is_file(), "started": starts, "terminal": terminal,
+              "terminalCounts": dict(collections.Counter(state for _, state in terminal)),
+              "auditOutcome": audit_outcome, "markers": markers, "sourceHashesStable": stable, "errors": errors}
+          (evidence / "execution-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+          print(json.dumps(summary, indent=2))
+          sys.exit(bool(errors))
+          PY
+      - name: Export finalized native summary and genuine attachments
+        if: always()
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          mkdir -p "$CONTROL_EVIDENCE"
+          if [ ! -f "$CONTROL_RESULT/Info.plist" ]; then
+            printf '%s\n' 'No finalized xcresult; raw log and any partial bundle are retained.' > "$CONTROL_EVIDENCE/result-export-status.txt"
+            exit 1
+          fi
+          xcrun xcresulttool help get test-results summary > "$CONTROL_EVIDENCE/xcresult-summary-help.txt" 2>&1
+          xcrun xcresulttool get test-results summary --path "$CONTROL_RESULT" \
+            > "$CONTROL_EVIDENCE/native-summary.json" 2> "$CONTROL_EVIDENCE/native-summary-stderr.log"
+          xcrun xcresulttool export attachments --path "$CONTROL_RESULT" \
+            --output-path "$CONTROL_EVIDENCE/attachments" > "$CONTROL_EVIDENCE/attachment-export.log" 2>&1
+          python3 - <<'PY'
+          import json, os, pathlib
+          evidence = pathlib.Path(os.environ["CONTROL_EVIDENCE"])
+          summary = json.loads((evidence / "native-summary.json").read_text())
+          keys = ("totalTestCount", "passedTests", "failedTests", "skippedTests")
+          counts = {key: summary.get(key) for key in keys}
+          valid = all(type(value) is int and value >= 0 for value in counts.values())
+          result = {"counts": counts, "recognizedCountFields": valid}
+          (evidence / "native-counts.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, indent=2))
+          if not valid or counts != {"totalTestCount": 1, "passedTests": 1, "failedTests": 0, "skippedTests": 0}:
+              raise SystemExit("Native summary does not establish one passed test with zero failures/skips; original audit outcome is retained separately.")
+          PY
+      - name: Upload all available control evidence
+        if: always()
+        timeout-minutes: 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-control-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/accessibility-control-evidence/
+          if-no-files-found: error
+          retention-days: 7
+
