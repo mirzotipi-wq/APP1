@@ -329,10 +329,49 @@ jobs:
             tests+=("$selector")
           done <<< "$selectors"
           [ "${#tests[@]}" -gt 0 ]
+          if [ "$TEST_SHARD" = "studio-export" ]; then
+            printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
+            record_studio_trace_end() {
+              studio_test_exit_code=$?
+              set +e
+              # Include the final fractional second without changing the test exit status.
+              printf 'STUDIO_TRACE_END=%s\nSTUDIO_TRACE_TEST_EXIT_CODE=%s\n' \
+                "$(date -u -v+1S '+%Y-%m-%d %H:%M:%S%z')" "$studio_test_exit_code" >> "$GITHUB_ENV"
+              exit "$studio_test_exit_code"
+            }
+            trap record_studio_trace_end EXIT
+          fi
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+      - name: Export studio slider unified log
+        if: ${{ always() && matrix.shard == 'studio-export' }}
+        continue-on-error: true
+        timeout-minutes: 2
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          printf 'simulator=%s\nstart=%s\nend=%s\ntest_exit_code=%s\n' \
+            "${SIMULATOR_ID:-}" "${STUDIO_TRACE_START:-}" "${STUDIO_TRACE_END:-}" \
+            "${STUDIO_TRACE_TEST_EXIT_CODE:-unavailable}" > artifacts/studio-slider-trace-status.txt
+          if [ -z "${SIMULATOR_ID:-}" ] || [ -z "${STUDIO_TRACE_START:-}" ] || [ -z "${STUDIO_TRACE_END:-}" ]; then
+            printf 'collection=unavailable\n' >> artifacts/studio-slider-trace-status.txt
+            echo "::warning::Studio slider log collection needs a simulator and both test timestamps."
+            exit 1
+          fi
+          if xcrun simctl spawn "$SIMULATOR_ID" log show \
+            --start "$STUDIO_TRACE_START" --end "$STUDIO_TRACE_END" \
+            --predicate 'process = "KeyAndFill" AND subsystem = "com.example.keyandfill" AND category = "StudioSliderTrace" AND message CONTAINS "StudioSliderTrace "' \
+            > artifacts/studio-slider-trace.log 2> artifacts/studio-slider-trace-stderr.log; then
+            printf 'collection=completed\ncollection_exit_code=0\n' >> artifacts/studio-slider-trace-status.txt
+          else
+            studio_collection_exit_code=$?
+            printf 'collection=failed\ncollection_exit_code=%s\n' "$studio_collection_exit_code" >> artifacts/studio-slider-trace-status.txt
+            echo "::warning::Studio slider log collection failed; the test outcome is unchanged."
+            cat artifacts/studio-slider-trace-stderr.log >&2
+            exit "$studio_collection_exit_code"
+          fi
       - name: Export finalized XCTest result bundle and genuine attachments
         if: always()
         run: |
@@ -366,6 +405,7 @@ jobs:
             native-ui-build.log
             simulator-preflight.json
             simulator-boot.log
+            artifacts/studio-slider-trace*
             artifacts/native-results.zip
             artifacts/native-attachments/
           if-no-files-found: warn
@@ -380,4 +420,5 @@ jobs:
             artifacts/native-attachments/*.txt
             artifacts/native-attachments/*.ips
             artifacts/native-attachments/*.pdf
+            artifacts/studio-slider-trace*
           if-no-files-found: warn

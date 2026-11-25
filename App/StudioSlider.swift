@@ -1,5 +1,8 @@
 import SwiftUI
 import UIKit
+#if DEBUG
+import OSLog
+#endif
 
 struct StudioSliderAccessibility {
     let label: String
@@ -101,6 +104,12 @@ final class StudioTrackingSlider: UISlider {
         // supplied by each inspector. The native slider is their sole owner.
         accessibilityLabel = accessibility.label
         accessibilityIdentifier = accessibility.identifier
+        #if DEBUG
+        if !hasTracedConfiguration {
+            hasTracedConfiguration = true
+            trace("configured")
+        }
+        #endif
     }
 
     func invalidate() {
@@ -208,13 +217,16 @@ final class StudioTrackingSlider: UISlider {
     }
 
     #if DEBUG
+    private static let traceLogger = Logger(subsystem: "com.example.keyandfill", category: "StudioSliderTrace")
+    private var hasTracedConfiguration = false
     private var traceCount = 0
     private func trace(_ event: String) {
         guard traceCount < 64,
               ProcessInfo.processInfo.arguments.contains("-ui-testing"),
               ProcessInfo.processInfo.environment["KEYFILL_UI_TEST_SLIDER_TRACE"] == "1" else { return }
         traceCount += 1
-        print("StudioSliderTrace \(traceCount) \(accessibilityIdentifier ?? "unidentified") \(event) display=\(value) model=\(editing?.read() ?? .nan) tracking=\(editTracking.isTracking) enabled=\(isEnabled)")
+        let message = "StudioSliderTrace \(traceCount) \(accessibilityIdentifier ?? "unidentified") \(event) display=\(value) model=\(editing?.read() ?? .nan) tracking=\(editTracking.isTracking) enabled=\(isEnabled)"
+        Self.traceLogger.notice("\(message, privacy: .public)")
     }
     #else
     private func trace(_ event: String) {}

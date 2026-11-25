@@ -1,10 +1,69 @@
 # Development completion checkpoint — 2026-11-24
 
-## Current source seven
+## Current source eight
 
-Published source is **`f1769c9566e9f8ccb4381a213a1cfac40a6ddf48`**, tree **`c20a50931de173d69c40dcbf9958b39b65fbc850`**, on `development/completion-final-20261124`. Root published the reviewed nine-file packet at **22:34:05 UTC** after required structural checks; the local tree synchronized clean at **22:34:36 UTC**. [Run 45502136448](https://github.com/mirzotipi-wq/APP1/actions/runs/45502136448), created **22:34:07 UTC**, is **completed/failure**, attempt **1**, `updated_at` **23:20:09Z**, API confirmed before root's **23:25:49 UTC** clock check; precise retrieval time was not recorded. Exactly **100 assignments** remain recorded. No source-six or source-seven retry was requested.
+Published source **`29c8efe87fafd03a9b9b544bcf783cfbef85bc37`**, tree **`a71bc83fc79fa5985f7cea8e8193a541be3170af`**, branch `development/completion-final-20261124`. [Run 45511267264](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264) is **completed/failure**, attempt **1**, `updated_at` **2026-11-25 00:18:23Z**. All **27 UI methods completed: 23 passed, 4 failed, zero skips**. Exactly **100 assignments** remain recorded.
 
-### Current verification
+Root published the ten-file source-eight packet at **2026-11-24 23:35:28 UTC**; its run was created **23:35:30 UTC**. Publication and method outcomes remain tied to this exact source.
+
+### Terminal verification
+
+| Job | Result and evidence |
+|---|---|
+| Core `138859268049` | **Pass:** 261 Debug (**8.006 s**), 261 Release (**4.639 s**), 28 Python (**0.285 s**), no failures/skips. **204,724-byte** log read Nov 24 **23:39:10 UTC**; syntax, shard, host-kernel and precision steps passed. |
+| Native `138860475686` | Both unsigned builds **pass**; native job **failed before any test started**. Current native methods **unverified**. **758,778-byte** log read Nov 25 **00:05:49 UTC**. |
+| Studio `138860475740` | **10/11 passed**, **866.110 s tests / 866.132 s overall**. **473,831-byte** log read Nov 25 **00:20:02 UTC**. |
+| Room `138860475901` | **5/5 passed**, zero failures/skips, **559.997 s tests / 560.009 s overall**. **478,765-byte** log read Nov 25 **00:01:34 UTC**. |
+| Library `138860475743` | **8/11 passed**, **1130.746 s tests / 1130.776 s overall**. **431,376-byte** log read Nov 25 **00:15:24 UTC**. |
+
+**Scoped photometry passes at 29c8efe:** actual point/cosine, six analytic parallel rectangle cases and four independent off-axis cases executed. Maximum fractions remain **0.00023334691793906986 (0.0233347%)** and **0.00017649163172442342 (0.0176492%)**; the latter uses the independent **160-subdivision Simpson reference**. Separate Study grid convergence **0.0032798081798638967** is not that reference. Declared bounds remain SI meters/candela/lux, ideal uniform one-sided Lambertian rectangle, point distance at least **0.05 m**, and rectangle separation at least **max(0.05 m, longest side / 4)**. Protected thresholds are unchanged. This is a fixture result, not global, photographic/equipment/GPU/device calibration.
+
+### Native attempt one: zero execution
+
+Unsigned Debug `BUILD SUCCEEDED` was **Nov 24 23:43:13.285302Z**; Release **23:45:39.719250Z**. Boot finished **23:49:01.705858Z**, and xcodebuild invocation was logged **23:49:39.507147Z**. Both native and UI test targets compiled. The last actual `Resolve Package Graph` message is **23:52:26.202360Z**; **23:52:26.302602Z** is its following blank line. No later output preceded the **18-minute** timeout at **Nov 25 00:03:56.328588Z**. Specialist 100 independently confirmed zero test/suite markers and successful linking/final Touch. No compiler diagnostic or application assertion failure was observed; the silence has **no established cause**.
+
+There were **zero native Test Case starts/passes**, no finalized xcresult and no compact artifact. Export failed because the finalized bundle was absent. **native_build stays pass; native methods stay unverified.** Historical f1769c9 **84/84** is preserved separately. No native retry was requested; planned source-nine CI supersedes the proposed unchanged-job retry.
+
+### Actual UI outcomes
+
+**Studio:** Exports **77.868 / 148.680 s**, Camera **77.799**, Corrupt **27.082**, Meter **89.532**, Recipe **81.256**, Settings/3D/Fit/AR/Arrangement **128.658**, Guide **97.827**, Sphere **31.571** and Mannequin **57.817 s** passed. Optics failed **48.021 s** at unchanged **line 162**: **0.6 m** remained after normalized **0.5** synthesis. **Undo/Redo/save/relaunch were not reached.** Sampled unobscured frames and synthesized event coordinates do not prove callback delivery or cause. Suite finished **Nov 25 00:16:00.991173Z**; `TEST FAILED` **00:17:18.112044Z**, exit **65** at **00:17:28.968563Z**.
+
+Root viewed actual Arrangement image **76099C05-1253-4E8B-8473-08FADA8C7326.png**, **214,397 bytes**, capture epoch **1795565565.004**. Height is now single-line **4.92126 ft**; Horizontal/Depth read **0.00 ft**. Labels, readouts, rotation and mirror controls are readable; the prior long feet wrapping is absent. This supports the specific visible readout correction. Root also viewed 3D image **FB8F99CA-715A-4DF0-AEC6-9E6CE6648B11.png**, **402,814 bytes**: subject, three light markers, camera and floor are visible; Fit/Feet labels are readable. Low-contrast stands/camera and substantial empty scene space remain. Neither still image establishes physical rendering/calibration or performance.
+
+**Room:** ManualRoom **50.899 s**, Resize/signed coordinates **229.503 s**, PrecisionCamera **64.997 s**, PrecisionIntensity **80.336 s**, PrecisionModifier **134.262 s** all passed. Selected tests finished **Nov 24 23:59:34.414151Z**; `TEST EXECUTE SUCCEEDED` **23:59:36.966632Z**.
+
+**Library/reference:** CreateDuplicateRename **197.257 s**, FullRecovery **129.775 s**, Large **103.803 s**, StalePreserve **116.980 s**, StaleReload **51.886 s**, Unsaved **80.721 s**, ReferenceGuided **152.342 s** and ReferenceComparison **42.079 s** passed. Exact-intensity **95.790 s** and initial-plan **43.764 s** accessibility audits failed with **AX Code=-56**. ArchivedDelete failed **116.348 s** at **line 146**, the exact entered-name expectation. The intro helper found no intro, so the new **q/Q branch was not exercised**; original deletion/relaunch were not reached. Specialist 100 mapped frames **84/88 s** to **t84.025/t88.025** within the exact-name expectation, not the earlier initial wait: both show empty Name, disabled Save and AutoFill. Frame **100 s** also shows empty Name; final frame **115 s** shows Keep. Cause is unproved, including any purely stale AX-cache attribution. Suite finished **Nov 25 00:11:12.424420Z**; `TEST FAILED` **00:13:07.587815Z**, exit **65** at **00:13:21.764579Z**.
+
+### Source-eight artifacts
+
+| Artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Core 14976385500](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14976385500) | 61,483 | `1c9f175c77716cb64a0e4bc0a83dff25db72c46d6e8dddcb4ed6bfdcd5aaab81` |
+| [Debug app 14976985367](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14976985367) | 3,472,262 | `1cce124a320cc67862dfdebbc6d9f660952fed7d1b6567844ad475ad98c70804` |
+| [Release app 14976267181](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14976267181) | 3,980,875 | `75e266d0fa5568b15d5907cd359a6113a2bef8a8e580422aa9442d5dffed8cc0` |
+| [Native build/log 14977705622](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14977705622) | 60,953 | `917f498cd11b8a485dafef2bd598b73f8167e5072a5a7fe5a676e07f3c1d4384` |
+| [Studio full 14977722969](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14977722969) | 120,945,710 | `85e5cb918c854d03bb63fea2fb5172672ab33ef1b5f260966a10f1b455738547` |
+| [Studio compact 14977793053](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14977793053) | 3,194,557 | `2c4ba947b5be9139a4dc38c22610397d6efe726495b96b08df50d37994abdbed` |
+| [Room full 14976024998](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14976024998) | 6,334,267 | `267e64430298672f430a7ea510401c28475df5f07a09f8dee1208f3667d248f1` |
+| [Room compact 14977481562](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14977481562) | 1,788,817 | `e01709bb80f8e0f794c3caea85384d684439b223c0d2bfe8832c54ffb0e4a9ce` |
+| [Library full 14978670567](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14978670567) | 136,388,057 | `a32b74dc308da2e4c074d29198048896fb279b155836bdaf3885614db700eca5` |
+| [Library compact 14978855264](https://github.com/mirzotipi-wq/APP1/actions/runs/45511267264/artifacts/14978855264) | 1,587,457 | `c435e4f06397091f22d3b987a94a9049a03ae8324a2bbaec06e109cbe9f0e830` |
+
+Studio and library compact ZIP bytes/digests were verified by root. All other listed source-eight sizes/digests remain **API metadata**. Debug/Release artifacts were created Nov 24 **23:43:17Z / 23:45:43Z**.
+
+### Acceptance and pending source nine
+
+**M01 remains complete and is revalidated at 29c8efe** by actual current **Recipe 81.256 s + Corrupt 27.082 s**, exact core/build proof and corroborating explicit creation/room passes. This does not promote the native methods or four failed UI scenarios. Initial c74 acceptance and 22e/f176 revalidations remain preserved. **M02 remains active with rendering/performance outstanding; M03–M07 pending.** No calibrated/device/performance or release acceptance follows from the specific Arrangement image.
+
+Two consecutive optics failures prompted **one minimal diagnostic change**, now **implemented and frozen, independently approved by specialist 100 and reviewed by root**, in exactly `App/StudioSlider.swift` and `.github/workflows/ios-prototype.yml`. DEBUG-only `OSLog Logger.notice` emits public controlled trace, one configured message per slider, retaining the original `-ui-testing`/environment gates and **64-event cap**. Studio-only UTC start and EXIT-trap end preserve the original test pipeline status. A separate always-run collection step has a **two-minute diagnostic-only budget**, observable status/stderr and continue-on-error; full/compact artifacts include `trace*`. **Gesture, binding, history, assertions, selectors and deadlines are unchanged; core/native workflow jobs are unchanged.**
+
+Specialist 90 parsed the full YAML, ran `bash -n` on both changed blocks and confirmed the non-DEBUG source projection is identical. Root diff/state/shard checks passed. Source nine remains **unpublished, with no SHA or native/log-capture result**. The eight-file publication will include the two source/workflow files, these five records and root's README. Normal new-source CI supersedes the proposed source-eight native retry; **none was requested**. Earlier results below remain chronological snapshots.
+
+### Verified source-seven baseline
+
+Verified source-seven baseline is **`f1769c9566e9f8ccb4381a213a1cfac40a6ddf48`**, tree **`c20a50931de173d69c40dcbf9958b39b65fbc850`**, on `development/completion-final-20261124`. Root published the reviewed nine-file packet at **22:34:05 UTC** after required structural checks; the local tree synchronized clean at **22:34:36 UTC**. [Run 45502136448](https://github.com/mirzotipi-wq/APP1/actions/runs/45502136448), created **22:34:07 UTC**, is **completed/failure**, attempt **1**, `updated_at` **23:20:09Z**, API confirmed before root's **23:25:49 UTC** clock check; precise retrieval time was not recorded. Exactly **100 assignments** remain recorded. No source-six or source-seven retry was requested.
+
+### Verified source-seven jobs
 
 | Job | Final result |
 |---|---|
@@ -28,7 +87,7 @@ Native Debug `BUILD SUCCEEDED` occurred **22:41:34.712037Z**, Release **22:44:01
 
 **Library/reference:** CreateDuplicateRename **187.580**, FullRecovery **98.109**, Large **90.256**, StalePreserve **96.217**, StaleReload **53.274** and Unsaved **61.198 seconds** passed. Both Reference methods passed: Guided **170.723 s**, Comparison **48.702 s**. Two accessibility audits failed with **AX Code=-56** in **90.420 / 39.231 s**. ArchivedDelete failed **62.691 s** at **line 127**, on the keyboard-intro-closed plus typing-keys expectation; actual AX selected **Padding-Left (0 × 0)** as the first key while **q measured 39.3 × 54**. Root viewed the 60-second recording with the intro closed and normal keyboard/q visible. The reviewed q/Q helper correction awaits source-eight execution. `TEST FAILED` was **23:18:39.768646**, exit **65** at **23:18:58.590838**. These failures remain despite successful room, Reference and Arrangement flows.
 
-### Current artifacts
+### Source-seven artifacts
 
 | Artifact | Bytes | SHA-256 |
 |---|---:|---|
@@ -50,13 +109,13 @@ The studio and library compact ZIP sizes/digests were verified against actual by
 
 **M01 remains complete and is revalidated at f1769c9** by exact current core/build/native evidence and **Recipe 77.016 s + Corrupt 22.426 s**, corroborated by explicit creation/rename/relaunch and all five room passes. Initial c74c3b7 acceptance and 22e51d7 revalidation remain preserved. Arrangement, the room query correction and both Reference methods now have direct execution evidence; the four failures remain separate failed gates.
 
-**M02 is active with scoped photometry pass and rendering/performance outstanding; M03–M07 remain pending.** Full editing, accessibility and regression acceptance remains failed or incomplete. The reviewed source-eight candidate below remains unpublished and unexecuted; no source-six or source-seven retry was requested. Earlier source-six cancellation, its failed Resize assertion and unexecuted library cases, and every older failure remain below as historical snapshots. No physical-device/calibrated/performance or owner release approval follows.
+**M02 is active with scoped photometry pass and rendering/performance outstanding; M03–M07 remain pending.** Full editing, accessibility and regression acceptance remains failed or incomplete. At this earlier snapshot, source eight was awaiting its own runtime receipts; no source-six or source-seven retry was requested. Earlier source-six cancellation, its failed Resize assertion and unexecuted library cases, and every older failure remain below as historical snapshots. No physical-device/calibrated/performance or owner release approval follows.
 
-### Reviewed source-eight candidate — runtime pending
+### Retained source-eight publication review
 
-The candidate changes **four source files**: three app files for an Arrangement-only compact visible distance readout, plus `UITests/StudioContentReachability.swift` for q/Q keyboard readiness. The actual Arrangement image showed **4.921259842519685 ft** wrapping. `visualReadout` defaults to `nil` and `compactReadout` to `false`; only Arrangement opts into the existing localized compact formatter for visible Text. Exact Double binding, range, editor, accessibility value/identifier, SI data and the **44-point** target remain unchanged. The q/Q helper preserves the **10-second** deadline and intro-closed/key-exists/hittable assertions.
+The published packet changes **four source files**: three app files for an Arrangement-only compact visible distance readout, plus `UITests/StudioContentReachability.swift` for q/Q keyboard readiness. The actual Arrangement image showed **4.921259842519685 ft** wrapping. `visualReadout` defaults to `nil` and `compactReadout` to `false`; only Arrangement opts into the existing localized compact formatter for visible Text. Exact Double binding, range, editor, accessibility value/identifier, SI data and the **44-point** target remain unchanged. The q/Q helper preserves the **10-second** deadline and intro-closed/key-exists/hittable assertions.
 
-Specialist 90 completed the app changes; specialist 100 independently reviewed them and root approved them. Specialist 100 completed the keyboard correction, also reviewed by root. Root reports the state check, M02 next-gate selection, **7 classes / 3 shards** accounting and diff check passed. These are source/structural receipts only: **source eight has no published SHA or native/UI result**. Original optics code/test and AX audits remain unchanged, and all four source-seven failures remain recorded. The intended publication includes these four source files, the five formal records and root's README.
+Specialist 90 completed the app changes; specialist 100 independently reviewed them and root approved them. Specialist 100 completed the keyboard correction, also reviewed by root. Root reports the state check, M02 next-gate selection, **7 classes / 3 shards** accounting and diff check passed. These were source/structural receipts at publication; source-eight terminal outcomes are recorded in the current section above. Original optics code/test and AX audits remain unchanged, and all four source-seven failures remain recorded. The published ten-file packet includes these four source files, the five formal records and root's README (675,070 characters).
 
 ## Retained source-six terminal evidence and prepublication review
 
