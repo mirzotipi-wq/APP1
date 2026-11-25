@@ -202,7 +202,7 @@
       "scope": "Actual progress at capture: core success, native build active, all three UI bundles built and booting. No UI/audit/control outcome inferred."
     },
     "historicalState": "agents/history/2026-11-25-before-main-state.json",
-    "note": "M01 retains actual core/build/native and completed create/edit/save/relaunch/corrupt smoke evidence. M02 remains active; M03 is dependency pending, editing unverified and accessibility failed. The terminal214 workflow passed core,110 native,5 room/precision and20 studio/export methods including all ten optics workflows, with no executed native/UI failures or skips. Its ARM library job acquired no runner and executed zero methods, causing overall workflow failure; prior f6 library readiness failures remain unresolved. Current cbf workflow45623581873 had core success, native build active and all three UI bundles built before boot at13:57:07UTC. No full cbf or independent-control result is inferred; physical/calibrated/manual gates remain open.",
+    "note": "M01 retains actual core/build/native and completed create/edit/save/relaunch/corrupt smoke evidence. M02 remains active; M03 is dependency pending, editing unverified and accessibility failed. The terminal214 workflow passed core,110 native,5 room/precision and20 studio/export methods including all ten optics workflows, with no executed native/UI failures or skips. Its ARM library job acquired no runner and executed zero methods, causing overall workflow failure; prior f6 library readiness failures remain unresolved. Current cbf workflow45623581873 had core success, native build active and all three UI bundles built before boot at13:57:07UTC. No full cbf or independent-control result is inferred; physical/calibrated/manual gates remain open. Later actual cbf native execution passed all110 methods and all three required Metal methods, with unsigned Debug/Release success. The new control at b26 was rejected before jobs at14:07:15; a source-context repair is prepared, with no audit execution claimed.",
     "distinctWorkersStarted": 100,
     "completedWorkers": 100,
     "workerLedger": "docs/evidence/m02-m03-2026-11-25/worker-ledger.json",
@@ -1242,13 +1242,13 @@
     },
     "accessibilityControlCandidate": {
       "baseRevision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
-      "status": "prepared_reviewed_not_executed",
+      "status": "context_repair_prepared_not_admitted",
       "report": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control.md",
       "workflow": ".github/workflows/accessibility-control.yml",
       "sourceDirectory": "scripts/diagnostics/accessibility-control",
       "owner": "Reused worker a100 implementation; a097 independent review; root integration",
       "question": "Can the full Apple .all audit complete on a separate standard SwiftUI screen in the current Intel/Xcode26.6/iOS26.5 environment?",
-      "AppleExecution": "unverified",
+      "AppleExecution": "not_run_workflow_rejected_before_jobs",
       "productionGateChanges": false,
       "validation": {
         "head": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
@@ -1275,7 +1275,40 @@
         }
       },
       "review": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control-independent-review.md",
-      "scope": "Independent diagnostic only; all production acceptance and earlier failure evidence retained."
+      "scope": "Independent diagnostic only; all production acceptance and earlier failure evidence retained.",
+      "firstWorkflowFailure": {
+        "sourceRevision": "b26d3caa498d9f5e75758718a4a932cb0c0ac172",
+        "runID": 45630592265,
+        "conclusion": "failure",
+        "updatedAtUTC": "2026-11-25T14:07:15Z",
+        "executedJobs": 0,
+        "executedTests": 0,
+        "artifact": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-context-repair/rejected-run.json",
+        "scope": "Rejected before execution; three disallowed job-env runner references identified from official context rules. No audit result."
+      },
+      "contextRepair": {
+        "baseRevision": "b26d3caa498d9f5e75758718a4a932cb0c0ac172",
+        "workflowSHA256": "10b38c89d404a625d8b44390b4b4ed0d63d4bf01c6b88095a1ef00a04e1e922d",
+        "change": "Move exactly three unchanged temporary paths from unsupported job-level runner expressions into exported RUNNER_TEMP shell variables in the existing first record step and persist through GITHUB_ENV.",
+        "validation": "docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-context-repair/validation.json",
+        "review": "docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control-context-review.md",
+        "GitHubAdmission": "unverified",
+        "auditExecution": "unverified",
+        "primaryWorkflowAndAuditCodeUnchanged": true
+      }
+    },
+    "latestNativeExecution": {
+      "revision": "cbf94cecb113c1f03b0b8c7287e763655c14ec11",
+      "runID": 45623581873,
+      "jobID": 139252380108,
+      "passed": 110,
+      "failed": 0,
+      "skipped": 0,
+      "requiredMetalPassed": 3,
+      "seconds": 20.311,
+      "wallSeconds": 22.13,
+      "artifact": "docs/evidence/m02-m03-2026-11-25/validation/cbf-native-terminal/terminal-summary.json",
+      "scope": "Actual native and unsigned Debug/Release success; UI and separate control results not inferred."
     }
   }
 }

@@ -17,9 +17,6 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
       CONTROL_ROOT: scripts/diagnostics/accessibility-control
-      CONTROL_EVIDENCE: ${{ runner.temp }}/accessibility-control-evidence
-      CONTROL_BUILD: ${{ runner.temp }}/accessibility-control-build
-      CONTROL_RESULT: ${{ runner.temp }}/accessibility-control-evidence/Control.xcresult
     steps:
       - uses: actions/checkout@v4
         timeout-minutes: 1
@@ -29,6 +26,11 @@ jobs:
         timeout-minutes: 2
         run: |
           set -euo pipefail
+          export CONTROL_EVIDENCE="$RUNNER_TEMP/accessibility-control-evidence"
+          export CONTROL_BUILD="$RUNNER_TEMP/accessibility-control-build"
+          export CONTROL_RESULT="$RUNNER_TEMP/accessibility-control-evidence/Control.xcresult"
+          printf 'CONTROL_EVIDENCE=%s\nCONTROL_BUILD=%s\nCONTROL_RESULT=%s\n' \
+            "$CONTROL_EVIDENCE" "$CONTROL_BUILD" "$CONTROL_RESULT" >> "$GITHUB_ENV"
           mkdir -p "$CONTROL_EVIDENCE"
           {
             sw_vers

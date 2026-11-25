@@ -1,5 +1,14 @@
 # Current handoff
 
+## Control startup correction after first publication
+
+The independent control was published as **b26d3caa498d9f5e75758718a4a932cb0c0ac172**, then [run 45630592265](https://github.com/mirzotipi-wq/APP1/actions/runs/45630592265) was rejected at **14:07:15 UTC** with zero jobs/tests. The workflow used three `runner.temp` expressions in job-level environment settings, where the official context table does not permit `runner`. Syntax parsing and the initial review missed that placement rule. The [rejection receipt](../docs/evidence/m02-m03-2026-11-25/validation/accessibility-control-context-repair/rejected-run.json) preserves the nonexecution and limits; the browser did not expose annotation text.
+
+The [narrow repair](../docs/evidence/m02-m03-2026-11-25/followups/followup-accessibility-control-context-repair.md) moves the same three paths into the existing first runner step, exports them for that step and persists them for later steps. Workflow SHA256 **10b38c89d404a625d8b44390b4b4ed0d63d4bf01c6b88095a1ef00a04e1e922d** was independently reviewed; YAML, shell/Python parsing and a real shell path-propagation check passed. All original bounds, steps, source/audit behavior and primary CI remain unchanged. Replacement GitHub admission and actual Apple audit remain pending; a startup configuration failure is not an audit timeout.
+
+Meanwhile, exact **cbf** native CI completed **110/110**, zero failures/skips, all three required Metal methods, and unsigned Debug/Release builds. [Receipt](../docs/evidence/m02-m03-2026-11-25/validation/cbf-native-terminal/terminal-summary.json). Its full UI suite was still executing at the last observation. The earlier sections remain timestamped history.
+
+
 ## Fresh studio repeatability and independent audit control
 
 **M01 remains complete; M02 is active; M03 is dependency pending.** Published main at capture is **cbf94cecb113c1f03b0b8c7287e763655c14ec11**. At **13:57:07 UTC**, [run 45623581873](https://github.com/mirzotipi-wq/APP1/actions/runs/45623581873) had core success, native build active, and all three UI bundles built successfully before boot. [Progress receipt](../docs/evidence/m02-m03-2026-11-25/validation/checkpoint9-progress.json). No new audit outcome is inferred.

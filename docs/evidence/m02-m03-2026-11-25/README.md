@@ -110,3 +110,7 @@ All **100 distinct workers** completed their initial assignments, in batches wit
 ## Independent accessibility control and fresh studio result
 
 Exact 214 native 110/110, room/precision 5/5 and studio/export 20/20 (all ten optics runs) passed. The run still failed because ARM library acquired no runner; its eleven methods were unrun. At 13:57:07 UTC, the published cbf candidate had core success and Apple jobs executing. The [reviewed independent control packet](followups/followup-accessibility-control.md) retains the terminal receipts and adds a separate minimal full `.all` audit with exact execution/error evidence. Local syntax and ten synthetic result checks passed; actual Apple control execution is pending. Primary application, workflow, assertions and deadlines remain unchanged. Editing awaits library readiness revalidation, and external/manual gates remain open.
+
+### Control configuration correction
+
+The first control publication, b26, was rejected before any job or audit. The [reviewed context repair](followups/followup-accessibility-control-context-repair.md) moves three unchanged temporary paths from disallowed job-level runner expressions into the existing runner step; actual admission remains pending. Current cbf native110/110 and all three Metal methods have passed, with full UI still executing. No milestone or audit pass follows from either observation.
