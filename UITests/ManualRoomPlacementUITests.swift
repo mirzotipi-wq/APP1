@@ -96,6 +96,7 @@ final class ManualRoomPlacementUITests: XCTestCase {
         // Restore the committed value using the visible recovery action.
         let reset = app.buttons["roomWidthReset"]
         revealStudioContent(reset, in: app)
+        assertStudioMinimumHitTarget(reset.frame, label: "Restore current value")
         reset.tap()
         XCTAssertEqual(width.value as? String, "6")
         XCTAssertFalse(error.exists)

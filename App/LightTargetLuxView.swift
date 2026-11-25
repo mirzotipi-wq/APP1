@@ -12,7 +12,7 @@ struct LightTargetLuxView: View {
     @State private var error: String?
     @State private var rejectedOversizedDraft = false
     @State private var didApply = false
-    @FocusState private var inputFocused: Bool
+    @State private var inputFocused = false
 
     private var target: Double? {
         // Bound pasted input before the shared parser trims or scans it.
@@ -32,11 +32,9 @@ struct LightTargetLuxView: View {
                                        value: StudioNumericInput.formattedValue(current, unit: "lx", locale: locale))
                     }
                     HStack {
-                        TextField("Desired lux", text: boundedDraft)
-                            .keyboardType(.decimalPad).focused($inputFocused)
-                            .accessibilityLabel("Desired illuminance in lux")
-                            .accessibilityHint("Enter zero to switch this light off.")
-                            .accessibilityIdentifier("targetLuxInput")
+                        StudioTextField("Desired lux", text: boundedDraft, isFocused: $inputFocused,
+                            accessibility: .init(label: "Desired illuminance in lux", identifier: "targetLuxInput",
+                                hint: "Enter zero to switch this light off."), keyboardType: .decimalPad)
                         Text("lx").foregroundStyle(StudioPalette.secondaryText)
                     }
                     if !draft.isEmpty && target == nil {
@@ -61,7 +59,12 @@ struct LightTargetLuxView: View {
                     }
                 }
                 Section {
-                    Button("Apply to light") { apply() }
+                    Button { apply() } label: {
+                        Text("Apply to light")
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
                         .disabled(target == nil || rejectedOversizedDraft || didApply)
                         .accessibilityIdentifier("applyTargetLux")
                 }

@@ -485,7 +485,7 @@ private struct ProjectNameEditor: View {
     @State private var isSubmitting = false
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @FocusState private var focused: Bool
+    @State private var focused = false
 
     init(title: String, initial: String, onSubmit: @escaping (String) throws -> Task<Void, Error>) {
         self.title = title
@@ -502,15 +502,15 @@ private struct ProjectNameEditor: View {
                 Section {
                     editorHeading
                     HStack {
-                        TextField("Name", text: boundedDraft).focused($focused)
-                            .frame(minHeight: 44)
+                        StudioTextField("Name", text: boundedDraft, isFocused: $focused,
+                            accessibility: .init(label: "Name", identifier: "projectNameInput"),
+                            returnKeyType: .done) { submit() }
                             .disabled(isSubmitting)
-                            .textInputAutocapitalization(.never).autocorrectionDisabled().submitLabel(.done)
-                            .accessibilityIdentifier("projectNameInput")
-                            .onSubmit { submit() }
                         if !name.isEmpty {
                             Button {
-                                name = ""; focused = true
+                                name = ""
+                                errorMessage = nil
+                                focused = true
                             } label: {
                                 Image(systemName: "xmark.circle.fill").foregroundStyle(StudioPalette.secondaryText)
                                     .frame(width: 44, height: 44)
@@ -619,6 +619,7 @@ private struct ProjectNameEditor: View {
                 errorMessage = StudioDisplayName.NameError.tooLong.localizedDescription
                 return
             }
+            guard next != name else { return }
             name = next
             errorMessage = nil
         })

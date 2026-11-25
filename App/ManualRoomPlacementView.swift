@@ -499,13 +499,14 @@ private struct RoomMeasurementField: View {
     let units: PlanUnits
     private let allowsUnmeasured: Bool
     @Environment(\.locale) private var locale
+    @Environment(\.layoutDirection) private var layoutDirection
     @State private var draft = ""
     @State private var draftUnits: PlanUnits?
     @State private var draftLocale: Locale?
     @State private var draftValueBits: UInt64?
     @State private var invalid = false
     @State private var rejectedOversizedDraft = false
-    @FocusState private var focused: Bool
+    @State private var focused = false
 
     init(title: String, id: String, value: Binding<Double>, range: ClosedRange<Double>, units: PlanUnits) {
         self.title = title
@@ -531,13 +532,12 @@ private struct RoomMeasurementField: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.subheadline.weight(.medium))
             HStack(spacing: 8) {
-                TextField(allowsUnmeasured ? "Unmeasured" : (units == .metric ? "Meters" : "Feet"), text: boundedDraft)
-                    .keyboardType(.decimalPad)
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .multilineTextAlignment(.trailing)
-                    .font(.body.monospacedDigit())
-                    .textFieldStyle(.plain)
+                StudioTextField(allowsUnmeasured ? "Unmeasured" : (units == .metric ? "Meters" : "Feet"),
+                    text: boundedDraft, isFocused: $focused,
+                    accessibility: .init(label: title + " in " + (units == .metric ? "meters" : "feet"),
+                                         identifier: id), keyboardType: .decimalPad,
+                    textAlignment: layoutDirection == .rightToLeft ? .left : .right,
+                    monospacedDigits: true) { apply() }
                     .padding(.horizontal, 8)
                     .frame(minWidth: 44, minHeight: 44)
                     .background(Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 6))
@@ -546,10 +546,6 @@ private struct RoomMeasurementField: View {
                             .strokeBorder(StudioPalette.secondaryText, lineWidth: 1)
                             .allowsHitTesting(false)
                     }
-                    .focused($focused)
-                    .accessibilityLabel(title + " in " + (units == .metric ? "meters" : "feet"))
-                    .accessibilityIdentifier(id)
-                    .onSubmit { apply() }
                 Button {
                     draft = ""
                     invalid = false
@@ -583,11 +579,13 @@ private struct RoomMeasurementField: View {
                       systemImage: "exclamationmark.circle")
                     .font(.caption).foregroundStyle(.primary)
                     .accessibilityIdentifier(id + "Error")
-                Button("Restore current value") {
-                    restoreDraft()
+                Button { restoreDraft() } label: {
+                    Text("Restore current value")
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .font(.subheadline)
-                .frame(minHeight: 44)
                 .accessibilityIdentifier(id + "Reset")
             }
         }

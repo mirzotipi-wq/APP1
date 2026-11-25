@@ -56,7 +56,7 @@ private struct PrecisionValueEditor: View {
     @Environment(\.locale) private var locale
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @FocusState private var focused: Bool
+    @State private var focused = false
     @State private var draft = ""
     @State private var initialDraft = ""
     @State private var requiresReplacementDraft = false
@@ -94,17 +94,11 @@ private struct PrecisionValueEditor: View {
                             .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     }
                     HStack {
-                        TextField("Value", text: boundedDraft)
-                            .font(.body.monospacedDigit())
-                            .frame(minHeight: 44)
-                            .keyboardType(.numbersAndPunctuation)
-                            .autocorrectionDisabled()
-                            .textInputAutocapitalization(.never)
-                            .focused($focused)
-                            .accessibilityLabel(title + " in " + unit)
-                            .accessibilityHint(inputError?.message ?? "Enter a decimal value within the allowed range.")
-                            .accessibilityIdentifier("precisionValue")
-                            .onSubmit { apply() }
+                        StudioTextField("Value", text: boundedDraft, isFocused: $focused,
+                            accessibility: .init(label: title + " in " + unit, identifier: "precisionValue",
+                                hint: inputError?.message ?? "Enter a decimal value within the allowed range."),
+                            keyboardType: .numbersAndPunctuation, returnKeyType: .done,
+                            monospacedDigits: true) { apply() }
                         Text(unit).font(.body).foregroundStyle(StudioPalette.secondaryText)
                     }
                     if let inputError {
