@@ -1,0 +1,29 @@
+{
+  "id": "027",
+  "task": "Read-only review of Plan marker transforms, clamping, tap selection, 44-point targets, stale callbacks, and gesture completion ownership",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/StudioPlanMarkers.swift",
+    "App/StudioView.swift",
+    "Sources/LightingCore/StudioSceneBounds.swift",
+    "Sources/LightingCore/StudioPlanLabelLayout.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "name": "Scoped source review",
+      "status": "completed",
+      "details": "Projection and drag agree on +X/right and +Z/down. Drag captures original scene and points-per-meter; moved X/Z clamp to Position.coordinateRange and preserve initial Y. Light taps capture editor generation and verify light existence. Drag writes check generation, selected light, finite input, and current light existence. Completion checks light and generation and clears local ownership before invoking parent. Marker content shape is 44x44; selected marker is above coincident markers, with explicit light-list fallback."
+    },
+    {
+      "name": "Runtime/UI tests",
+      "status": "not_run",
+      "details": "Read-only 30\u201390 second review; no simulator or full suite run."
+    }
+  ],
+  "outcome": "No material M03 defect found in this narrow source review. Runtime gesture cancellation and accessibility hit testing remain unverified by this worker.",
+  "canonicalAgent": "/root/w007_review_coordinator/w027_plan_markers",
+  "revision": "202d41d"
+}

@@ -1,0 +1,41 @@
+{
+  "id": "008",
+  "task": "Project and recovery sheet contrast plus accessible project naming controls",
+  "files": [
+    "App/ProjectLibraryView.swift",
+    "App/RecoveryCapacityView.swift",
+    "App/StudioPalette.swift",
+    "NativeTests/StudioPaletteTests.swift"
+  ],
+  "findings": [
+    "Root supplied baseline library action color #0088FF on white at 3.52:1; sheet roots previously lacked explicit tint.",
+    "Naming Cancel was in a fixed-height toolbar; moved to an adaptive scrollable Form heading and identified projectNameCancel.",
+    "Applied production palette to library/recovery/naming roots, secondary text and metadata, active checkmark, custom destructive icon, and naming errors.",
+    "Save uses explicit enabled and disabled foreground/background pairs; existing submission and dismissal guards preserved.",
+    "Native contrast matrix now covers naming error text, current-project checkmark, custom trash icon, and enabled/disabled Save pairs in light/dark base/elevated traits. Native alert roles unchanged."
+  ],
+  "tests": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "passed structural validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M03 editing/accessibility outstanding"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "swiftc -frontend -parse App/ProjectLibraryView.swift App/RecoveryCapacityView.swift App/StudioPalette.swift NativeTests/StudioPaletteTests.swift",
+      "result": "unavailable: swiftc not found on Linux; no syntax pass claimed"
+    },
+    {
+      "command": "targeted diff and source review",
+      "result": "completed; no full suites run; root owns native/UI CI"
+    }
+  ],
+  "outcome": "implemented; native compilation, runtime contrast and largest-text layout verification pending root CI",
+  "canonicalAgent": "/root/w007_review_coordinator/w008_sheet_accessibility"
+}

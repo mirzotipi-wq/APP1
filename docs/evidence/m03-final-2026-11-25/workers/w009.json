@@ -1,0 +1,41 @@
+{
+  "id": "009",
+  "task": "Extend default/AXXXL app accessibility workflow through project naming; repair font-leading false positive",
+  "files": [
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [
+    "Confirmed actual naming identifiers: projectNameInput, projectNameCancel, confirmProjectName; Save label is Save project name.",
+    "Added exact field/name/button labels, initial draft, 44pt targets, viewport containment, keyboard-presence assertions, heading growth, and retained screenshots for field/Save/Cancel at both text sizes; Cancel closes without creating a record.",
+    "Baseline projectStatus frame is 14.333333333333343pt; old NSString options included optional font leading and required 16pt. Excluded .usesFontLeading, removed blanket +1pt allowance, compare ceil(required height * screen scale) to rounded observed physical pixels, and record font metrics.",
+    "Existing labels, frames, selection, values, undo/redo, growth checks, strict 44pt minimums, and screenshot attachments preserved."
+  ],
+  "tests": [
+    {
+      "command": "git diff --check",
+      "outcome": "passed"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "outcome": "passed; ledger structure only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "outcome": "M03 editing/accessibility remain outstanding"
+    },
+    {
+      "command": "Python source-consistency checks for naming identifiers, leading-free options, removed +1, and unchanged 44pt assertions",
+      "outcome": "passed; static source checks only"
+    },
+    {
+      "command": "Native StudioAppAccessibilityUITests",
+      "outcome": "not run by worker; root owns native execution"
+    },
+    {
+      "command": "command -v swift",
+      "outcome": "unavailable in local worker shell; no Swift compile claimed"
+    }
+  ],
+  "outcome": "Implementation ready for root native validation; no runtime/UI pass claimed.",
+  "canonicalAgent": "/root/w007_review_coordinator/w009_accessibility_workflow"
+}

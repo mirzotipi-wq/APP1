@@ -1,0 +1,19 @@
+{
+  "id": "003",
+  "canonicalAgent": "/root/w003_ci_audit",
+  "task": "Audit simulator startup and required native/UI execution accounting",
+  "files": [
+    "scripts/boot_simulator.py",
+    "scripts/native_test_shards.py",
+    ".github/workflows/ios-prototype.yml"
+  ],
+  "findings": [
+    "Postflight timeout bypassed existing bounded recovery.",
+    "Nonzero xcodebuild skipped accounting.",
+    "Verifier ignored foreign targets and allowed pass before start."
+  ],
+  "tests": [
+    "Read existing workflow, script and historical failure evidence only."
+  ],
+  "outcome": "review complete; fixes delegated to workers004,005 and root"
+}

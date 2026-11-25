@@ -1,0 +1,30 @@
+{
+  "id": "014",
+  "task": "Read-only exact numeric formatter, locale, units, and test-path review",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Tests/LightingCoreTests/ExactNumericReadoutTests.swift",
+    "Tests/LightingCoreTests/StudioAccessibleValueTests.swift",
+    "App/DistanceValueButton.swift",
+    "App/PrecisionValueButton.swift",
+    "Sources/LightingCore/LightingPlan.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "isolated-source-probe",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift /tmp/app1-f2fcfcdabdca/workers/w014-probe.swift",
+      "result": "PASS: 8008 formatter round trips across all 1001 host Foundation locale identifiers, using eight representative finite values including signed zero, small decimals, signed minimum subnormals, and signed greatest finite values. Each parsed result matched the original Double bit pattern. Exit 0.",
+      "revision": "fd73004ddcb1b01e53e29d03bed093fb24b8a75a with pre-existing staged worktree changes; probe read current source."
+    },
+    {
+      "kind": "source-review",
+      "result": "Existing tests call the shipped formattedValue implementation directly and require bit-exact results for extreme values and 512 deterministic bit patterns. Accessible-value tests constrain <=1e-9 for four locales and unit suffixes. PrecisionValueButton accessibilityValue uses the same formatter; DistanceValueButton passes converted display units and protects unchanged SI values."
+    }
+  ],
+  "outcome": "No concrete formatter precision or locale defect found. This was a bounded host source review/probe, not execution of XCTest, native UI, or VoiceOver. Reviewed UI assertions cover English readouts only; localized spoken behavior and distance UI conversion were not executed. No repository edits.",
+  "canonicalAgent": "/root/w007_review_coordinator/w014_exact_roundtrip"
+}

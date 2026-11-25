@@ -1,0 +1,26 @@
+{
+  "id": "021",
+  "task": "Read-only review of selection across undo/redo/delete and delayed Plan/equipment actions",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/StudioView.swift",
+    "App/StudioPlanMarkers.swift",
+    "Sources/LightingCore/SceneEditHistory.swift",
+    "App/ProjectLibraryOperation.swift",
+    "Tests/LightingCoreTests/SceneEditHistoryTests.swift"
+  ],
+  "findings": [],
+  "tests": {
+    "executed": [],
+    "reviewed": [
+      "Static tracing of repairSelection, replace, undo, redo, deletion confirmation, rack/Plan selection, duplicateLight, sceneAction, dragLight and finishPlanDrag",
+      "Static tracing of generation capture/adoption and retained Plan drag callback pairs",
+      "Existing SceneEditHistoryTests owner-qualified late-end, reset, undo/redo, and history branch cases inspected; not executed"
+    ],
+    "limitations": "No native app execution or runtime delayed-callback simulation; no suite run in this read-only review."
+  },
+  "outcome": "No concrete defects found within assigned scope. Valid selected UUID survives undo/redo; missing UUID falls back to first live light. Restoring a deleted light does not replace another still-valid selection. Plan/rack selection verifies a live UUID. Scene-changing equipment actions capture project generation; drag value/end callbacks stay paired with the generation at gesture start. Project switch/reload/recovery invalidates old generations. Owner-qualified history completion ignores another control's late end.",
+  "revision": "6fd8001",
+  "canonicalAgent": "/root/w007_review_coordinator/w021_selection_undo_ui"
+}

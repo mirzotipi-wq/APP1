@@ -1,0 +1,40 @@
+{
+  "id": "006",
+  "task": "Bound exact numeric editing drafts before SwiftUI state accepts an oversized paste.",
+  "files": [
+    "App/PrecisionValueButton.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Tests/LightingCoreTests/PrecisionDraftBoundTests.swift"
+  ],
+  "tests": [
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift test --package-path /tmp/app1-f2fcfcdabdca/w006-build --filter PrecisionDraftBoundTests",
+      "result": "passed",
+      "scope": "Isolated temporary Swift package linking the actual StudioNumericInput.swift and PrecisionDraftBoundTests.swift source files; Linux Swift 6.2.1.",
+      "testCount": 6,
+      "failures": 0
+    },
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc -frontend -parse App/PrecisionValueButton.swift",
+      "result": "passed",
+      "scope": "Syntax parsing only; no Apple SDK or SwiftUI runtime validation."
+    },
+    {
+      "command": "git diff --check -- App/PrecisionValueButton.swift Sources/LightingCore/StudioNumericInput.swift Tests/LightingCoreTests/PrecisionDraftBoundTests.swift",
+      "result": "passed"
+    }
+  ],
+  "outcome": {
+    "status": "implemented; targeted verification passed",
+    "details": [
+      "A shared helper checks at most 257 UTF-8 bytes against the existing 256-byte raw-draft allowance, without traversing grapheme clusters.",
+      "The custom TextField binding rejects oversize replacements before assigning draft state; the preceding draft remains intact and no prefix is substituted.",
+      "A visible error and field accessibility hint explain the preserved entry. Apply remains blocked until an accepted bounded edit clears this error.",
+      "Empty, incomplete and localized drafts remain editable; exact initial formats, signed zero and all previous parser grammar/range tolerances are preserved.",
+      "Tests cover exact byte boundaries, multibyte decimal digits, a 100,000-combining-scalar paste, partial edits, exact initial formats and unchanged parser limits."
+    ],
+    "remainingValidation": "Root to run the integrated full Swift suite; native iOS TextField and VoiceOver behavior were not exercised on this Linux host.",
+    "commitsCreated": false
+  },
+  "canonicalAgent": "/root/w006_precision_bound"
+}

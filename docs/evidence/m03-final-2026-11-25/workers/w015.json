@@ -1,0 +1,31 @@
+{
+  "id": "015",
+  "task": "Read-only precision editor state and accessibility review",
+  "canonicalAgent": "/root/w007_review_coordinator/w015_precision_editor_state",
+  "revision": "6fd80017e4ddd9bd844b2d0f8966ebc0178458e8",
+  "files": [
+    "App/PrecisionValueButton.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "App/DistanceValueButton.swift",
+    "App/StudioView.swift",
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": {
+    "executed": [],
+    "sourceReview": [
+      "Confirmed oversizedDraft disables Apply at line 125 and apply() independently rejects stale keyboard submission while that error remains set.",
+      "Confirmed Cancel and onDisappear never write scene bindings; apply validates active presentation, source and underlying bits, locale and range before parsing.",
+      "Confirmed successful application sets active false before one binding assignment, preventing duplicate apply and duplicate undo entries; equivalent spellings and unchanged drafts are no-ops.",
+      "Confirmed boundedDraft rejects overlong replacement before assignment and requires a subsequent bounded edit before applying.",
+      "Confirmed field, Apply and Cancel identifiers and 44-point explicit targets; accessibility suite checks their labels, values and reachability at default and largest text sizes.",
+      "Confirmed inspected Studio light bindings capture UUID and generation, with owner identity on exact control; distance conversion captures underlying source bits and resets presentation when units change."
+    ],
+    "notRun": [
+      "iOS XCTest/UI execution unavailable within this read-only Linux review; source assertions were inspected but not executed."
+    ]
+  },
+  "outcome": "No additional concrete lost-edit, invalid-apply, or duplicate-undo defect found in the bounded review. Existing oversizedDraft repair verified in source; no duplicate finding. No repository modifications."
+}

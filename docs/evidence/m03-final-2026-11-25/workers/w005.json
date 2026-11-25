@@ -1,0 +1,35 @@
+{
+  "id": "005",
+  "task": "Fail-closed ordered XCTest log accounting and failure-safe optional JSON reporting",
+  "base_revision": "fd73004ddcb1b01e53e29d03bed093fb24b8a75a",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "files": [
+    "scripts/native_test_shards.py",
+    "scripts/tests/test_native_test_shards.py"
+  ],
+  "tests": [
+    {
+      "command": "python3 -m unittest discover -s scripts/tests -p test_native_test_shards.py -v",
+      "result": "PASS: 29 tests (baseline was 17)"
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "result": "PASS: 9 UI classes, 5 required shards, 1 diagnostic shard"
+    },
+    {
+      "command": "git diff --check -- scripts/native_test_shards.py scripts/tests/test_native_test_shards.py",
+      "result": "PASS"
+    },
+    {
+      "command": "CLI subprocess verify-log unit <missing.log> --report <report.json>",
+      "result": "PASS: exit 1, status failed, 117 expected/unstarted methods, no success stdout"
+    },
+    {
+      "command": "Historical source10-studio-final/artifact/native-tests.log format compatibility probe",
+      "result": "PASS: all 17 observed Test Case lines recognized; parser compatibility only, not current native execution"
+    }
+  ],
+  "outcome": "Implemented and verified. Every selected method requires exactly ordered started -> passed events. Foreign targets/methods, malformed lines, unknown events, missing, failed, skipped and duplicate executions fail closed. Optional --report JSON retains expected/started/passed/failed/skipped/unstarted/invalid plus explicit overall status and writes on accounting, discovery, preflight or missing-log failures. Legacy invocations and verify_log return value remain compatible. No workflows edited; no commits or native builds performed.",
+  "integration": "Root can add --report <json> to existing verify-log invocations; per-method passed lists only exact ordered sequences, while status determines whole-run success.",
+  "canonicalAgent": "/root/w005_test_accounting"
+}

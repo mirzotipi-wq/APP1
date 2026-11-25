@@ -1,0 +1,63 @@
+{
+  "id": "018",
+  "task": "Read-only review of target-lux draft/apply flow, inverse bounds, stale light identity, and rejection without scene/history mutation",
+  "files": [
+    "App/LightTargetLuxView.swift",
+    "Sources/LightingCore/LightOutputAdjustment.swift",
+    "Tests/LightingCoreTests/StudioOpticsTests.swift",
+    "App/StudioView.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/SurfacePhotometry.swift",
+    "Sources/LightingCore/Scene.swift"
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "file": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "lines": "55-64",
+      "title": "Exactly reachable maximum output is rejected when adjusting from a lower intensity",
+      "description": "The inverse quotient can round slightly above 100000 cd even when the requested lux is the exact forward-model output of a valid 100000 cd light. The fallback only accepts an unchanged source setting, so a 400 cd source cannot reach this valid boundary through Set ideal lux.",
+      "reproduction": {
+        "subject": [
+          0,
+          0,
+          0
+        ],
+        "camera": [
+          0,
+          0,
+          4
+        ],
+        "sourcePosition": [
+          0,
+          0,
+          3
+        ],
+        "sourceCandela": 400,
+        "kelvin": 5600,
+        "kind": "rectangle",
+        "widthMeters": 0.1,
+        "heightMeters": 0.1,
+        "targetLux": 11107.001498803242,
+        "unitLux": 0.11107001498803187,
+        "computedCandela": 100000.0000000005,
+        "observed": "outputOutOfRange",
+        "expected": "100000 cd because its valid forward-model illuminance equals the target exactly"
+      },
+      "recommendation": "On an out-of-range quotient, separately test the 100000 cd boundary and accept it only when its forward-model lux exactly matches the target; add a lower-source-to-maximum regression while preserving rejection of genuinely unattainable targets."
+    }
+  ],
+  "tests": [
+    {
+      "kind": "Exact-source standalone Swift reproduction",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc -o /tmp/app1-f2fcfcdabdca/workers/w018-probe/probe Sources/LightingCore/*.swift /tmp/app1-f2fcfcdabdca/workers/w018-probe/main.swift && /tmp/app1-f2fcfcdabdca/workers/w018-probe/probe",
+      "exitCode": 0,
+      "sourceRevision": "6fd80017e4ddd9bd844b2d0f8966ebc0178458e8",
+      "output": "sceneValid true maximumValid true target 11107.001498803242 unitLux 0.11107001498803187 quotient 100000.0000000005\nERROR outputOutOfRange",
+      "artifact": "/tmp/app1-f2fcfcdabdca/workers/w018-probe/main.swift"
+    }
+  ],
+  "outcome": "One reproduced P2 defect. Read-only inspection found stale callbacks guarded by project generation, whole-scene snapshot, light UUID and value; errors occur before replace/history. No SwiftUI execution, XCTest/full-suite run, edits, commits, or repository state/documentation changes. Existing StudioOpticsTests contains no target-lux adjustment test.",
+  "canonicalAgent": "/root/w007_review_coordinator/w018_target_lux"
+}

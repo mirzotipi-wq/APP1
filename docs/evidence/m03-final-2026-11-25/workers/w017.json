@@ -1,0 +1,28 @@
+{
+  "id": "017",
+  "canonicalAgent": "/root/w007_review_coordinator/w017_distance_units",
+  "task": "Read-only distance editing unit conversion, exact numeric formatting, locale/range/stale binding review",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/DistanceValueButton.swift",
+    "App/PrecisionValueButton.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Sources/LightingCore/LightingPlan.swift",
+    "Tests/LightingCoreTests/StudioNumericInputTests.swift",
+    "Tests/LightingCoreTests/ExactNumericReadoutTests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "type": "source review",
+      "revision": "6fd80017e4ddd9bd844b2d0f8966ebc0178458e8",
+      "result": "No concrete defect identified. Unit reads never write SI; unchanged parsed displayed values return before conversion; equivalent signed-zero edits preserve model bits; converted endpoints map to exact original SI bounds; other entries validate display and model ranges. Unit identity rejects late applies; editor separately checks original display, underlying SI bits, locale and range. Exact readouts and editable drafts share round-trip numeric generation with explicit scientific-notation fallback."
+    },
+    {
+      "type": "execution",
+      "result": "No test suite, compiler invocation, or UI execution performed; review only. Existing exact/readout tests inspected, not counted as executed passes."
+    }
+  ],
+  "outcome": "No finding within narrow source-review scope; no repository edits."
+}

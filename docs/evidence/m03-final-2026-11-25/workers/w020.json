@@ -1,0 +1,50 @@
+{
+  "id": "020",
+  "task": "Read-only review of slider tracking state machine and native wrapper: cancellation, end/reentrancy, ownership, configuration disable, late callbacks, accessibility bounds",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/StudioSliderTracking.swift",
+    "App/StudioSlider.swift",
+    "App/StudioSliderEditing.swift",
+    "NativeTests/StudioSliderTrackingTests.swift",
+    "NativeTests/StudioTrackingSliderTests.swift",
+    "App/StudioView.swift",
+    "App/OpticsInspector.swift",
+    "App/CameraInspector.swift",
+    "App/SubjectInspector.swift",
+    "App/NeutralCardInspector.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Sources/LightingCore/Colorimetry.swift"
+  ],
+  "findings": [
+    {
+      "severity": "P3",
+      "title": "Reentrant binding read can reopen a retired edit without a tracking owner",
+      "file": "App/StudioSliderTracking.swift",
+      "lines": "85-90",
+      "detail": "change stores the session and then invokes current.editing.read(). If that read synchronously calls finish(token), finish clears the session and sends onEditingChanged(false). The outer change nevertheless calls onEditingChanged(true) before checking session ownership. The later guard rejects the write but leaves editing open with no token able to close it. begin already explicitly permits reentrant binding reads, so change should apply the same ownership discipline.",
+      "reproduction": "Begin at 0.2; arm the adapter read closure to finish the current token; call change(0.8, for: token). Observed isTracking=false, editingActive=true, begins=2, ends=1, writes=0.",
+      "suggested_fix": "Read the current model value into a local, then revalidate session token ownership before sending onEditingChanged(true); retain the existing ownership check after that callback. Add a regression where read finishes or replaces the active token.",
+      "evidence": "Executed shipped StudioSliderEditing.swift and StudioSliderTracking.swift concatenated with a small stdin-only callback harness using the supplied Swift interpreter. No repository mutation.",
+      "classification": "Non-blocking defensive state-machine inconsistency; current production reachability not established",
+      "production_reachability": "No current app path found. StudioSlider.swift:33 supplies read={ value.wrappedValue }. StudioView.swift:972,1016,1028,1037,1047,1056 read scene fields only; OpticsInspector.swift:90,96,102 add pure projections. effectiveOptics/effectiveRollDegrees/effectivePreviewSettings/effectiveCameraLens are pure nil-coalescing getters. Probe deliberately supplies a reentrant read closure and does not establish a user-visible product failure.",
+      "exact_call_sequence": "change(token) -> editing.read() -> injected read closure calls finish(token) -> session=nil -> onEditingChanged(false) -> read returns old model value -> outer change calls onEditingChanged(true) -> ownership guard fails -> return with no tracking session but editing active."
+    }
+  ],
+  "tests": [
+    {
+      "name": "Reentrant read cancellation probe",
+      "command": "python3 stdin harness loads App/StudioSliderEditing.swift and App/StudioSliderTracking.swift; subprocess.run([/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift, -], input=combined_source)",
+      "result": "Exit 0; isTracking=false editingActive=true begins=2 ends=1 writes=0",
+      "revision": "6fd80017e4ddd9bd844b2d0f8966ebc0178458e8"
+    },
+    {
+      "name": "Existing native suites",
+      "result": "Source-reviewed only; not executed. UIKit touch/end/cancel behavior cannot be established by this Linux Swift probe."
+    }
+  ],
+  "outcome": "No proven production blocker. One defensive state-machine inconsistency reproduced with deliberately reentrant read callback; inspected production binding getters are side-effect-free, so no current app path was established. Existing tests cover end/cancel stale tokens, exact imported values, frozen mapping, ownership reassertion, and begin/write callbacks; no read-triggered cancellation regression exists. Wrapper disabled configuration cancels active tracking and accessibility bounds flow through the reviewed exact-Double adapter. No repository edits, commits, state/docs changes, or full suite runs.",
+  "canonicalAgent": "/root/w007_review_coordinator/w020_slider_touch_cancel"
+}

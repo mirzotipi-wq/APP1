@@ -1,0 +1,42 @@
+{
+  "id": "004",
+  "task": "Make only transient postflight inventory command timeouts eligible for the existing bounded CI startup recovery",
+  "base_revision": "fd73004ddcb1b01e53e29d03bed093fb24b8a75a",
+  "files": [
+    "scripts/boot_simulator.py",
+    "scripts/tests/test_boot_simulator.py"
+  ],
+  "host": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14"
+  },
+  "tests": [
+    {
+      "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "result": "pass; M03 editing/accessibility outstanding"
+    },
+    {
+      "command": "python3 -m unittest scripts.tests.test_boot_simulator.BootSimulatorTests.test_postflight_timeout_recovers_once_within_shared_budget -v",
+      "result": "expected failure before production change; timed_out postflight terminated with VerificationFailure"
+    },
+    {
+      "command": "python3 -m unittest scripts.tests.test_boot_simulator -v",
+      "result": "26 tests run in 20.586s; 25 passed, existing short-budget slow-postflight subcase failed because boot itself timed out before postflight; all newly added regressions passed"
+    },
+    {
+      "command": "python3 -m unittest scripts.tests.test_boot_simulator.BootSimulatorTests.test_slow_postflight_has_readiness_budget_within_attempt_deadline -v",
+      "result": "pass; all three subcases, 5.284s; retained original timing policy"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "outcome": "Implemented. Only timed_out attempt postflight records opt in to StartupFailure. Shared deadline, maximum two attempts, hosted-runner authorization, identity validation, nonzero exits, execution errors, signals, and cleanup-failure handling remain intact. New synthetic subprocess regressions cover successful bounded recovery with owned descendant cleanup, two terminal postflight timeouts under one budget, and terminal identity/tool/cleanup failures. Existing slow-postflight test explicitly disables hosted recovery so its policy expectation is stable in CI.",
+  "limitations": [
+    "Synthetic host control-flow tests do not verify Apple simulator readiness or Accessibility initialization.",
+    "One existing 1.5-second short-budget subcase failed under full-suite scheduling load and passed in isolation; the full suite was not repeatedly rerun."
+  ],
+  "integration": "No commits. Root owns workflow and integration changes. No files outside assigned source/test paths and this requested worker report were modified.",
+  "canonicalAgent": "/root/w004_boot_recovery"
+}

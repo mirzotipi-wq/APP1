@@ -1,0 +1,65 @@
+{
+  "id": "013",
+  "task": "Read-only localized numeric parser review; excludes draft length and formatter roundtrip.",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Tests/LightingCoreTests/StudioNumericInputTests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "targeted Swift interpreter probe against the unchanged complete StudioNumericInput.swift source",
+      "executable": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift",
+      "invocation": [
+        "-e",
+        "<contents of Sources/LightingCore/StudioNumericInput.swift plus inline probe>"
+      ],
+      "cwd": "/workspace/scratch/f2fcfcdabdca/APP1",
+      "checks": 29,
+      "passing_value_inputs": [
+        "1.",
+        ".5",
+        "-.5",
+        "+\u0660\u066b\u0665",
+        "\u2212\uff11\uff12.\uff15",
+        "\ud835\udfd9\ud835\udfda.\ud835\udfdd",
+        "0.0001",
+        "\u22120"
+      ],
+      "rejected_value_inputs": [
+        "1,000 (dot locale)",
+        "1.000,0 (comma locale)",
+        "1\u066c000\u066b5 (Arabic decimal locale)",
+        "1\u202f000",
+        "1e2",
+        "\u0661e\u0662",
+        "+",
+        "\u2212",
+        ".",
+        "\u2212.",
+        "NaN",
+        "\u221e"
+      ],
+      "rejected_separators": [
+        "",
+        "..",
+        "e",
+        "1",
+        "+",
+        "\u2212",
+        " "
+      ],
+      "rejected_ranges": [
+        "-infinity...100",
+        "-100...infinity"
+      ],
+      "exit_code": 0,
+      "stdout": "PROBE cases=29 failures=0",
+      "scope_limit": "No full test suite executed; probe does not claim formatter or draft-length verification."
+    }
+  ],
+  "outcome": "No concrete implementation inconsistency found in the assigned parser scope. Source guards and targeted probe support strict grouping/exponent rejection, ASCII/Unicode minus and plus handling, Unicode decimal-digit conversion, valid completed decimal forms, incomplete-draft rejection at commit parsing, finite ranges and domain containment.",
+  "canonicalAgent": "/root/w007_review_coordinator/w013_localized_parse"
+}

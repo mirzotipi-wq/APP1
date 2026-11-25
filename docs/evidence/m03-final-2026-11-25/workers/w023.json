@@ -1,0 +1,49 @@
+{
+  "id": "023",
+  "task": "Implement bounded numeric editing drafts in LightTargetLuxView and RoomMeasurementField; initial mirror boundary review was replaced by coordinator authorization.",
+  "files": [
+    "App/LightTargetLuxView.swift",
+    "App/ManualRoomPlacementView.swift"
+  ],
+  "findings": [
+    {
+      "severity": "fixed",
+      "description": "Both numeric TextFields previously accepted unbounded replacement text into SwiftUI state. Added StudioNumericInput.isWithinDraftLimit bindings that reject the entire oversized replacement, retain the prior draft, expose accessible error labels, and gate both controls and commit handlers until an accepted edit."
+    },
+    {
+      "severity": "fixed",
+      "description": "Room Clear and Restore reset the rejection; Clear remains enabled after an oversized paste into an initially empty draft. Existing parser limits, zero/unmeasured handling, locale/unit reset and stale-value checks remain intact."
+    },
+    {
+      "severity": "open",
+      "scope": "superseded read-only mirror review",
+      "file": "Sources/LightingCore/SceneTransform.swift",
+      "lines": "197-245",
+      "description": "Confirmed generic reflection involution failure for source subject (1,1.5,3), camera (6,1.5,4), light (100,2,-10.863111257839677): first mirror returns (87.05264951621551,2,53.87364116108278); second mirror throws outsideSupportedScene. Isolated Swift probe reproduced against repository core sources. No mirror changes authorized or made."
+    }
+  ],
+  "tests": [
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc -frontend -parse App/LightTargetLuxView.swift App/ManualRoomPlacementView.swift",
+      "result": "pass, exit 0; syntax parse only, not SwiftUI typecheck or native execution"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass, exit 0"
+    },
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc Sources/LightingCore/*.swift /tmp/app1-f2fcfcdabdca/w023-probe/main.swift -o /tmp/app1-f2fcfcdabdca/w023-probe/probe && /tmp/app1-f2fcfcdabdca/w023-probe/probe",
+      "result": "exit 0; mirror probe confirms first valid reflection then second outsideSupportedScene error"
+    },
+    {
+      "command": "Manual source review of reset and commit paths",
+      "result": "Both oversized guards precede mutation. Room stale environment/source guards retained; accepted bounded edits clear errors synchronously; rejected text never assigned."
+    },
+    {
+      "command": "Native SwiftUI build and UI interaction tests",
+      "result": "not run by this worker; Linux toolchain lacks native SwiftUI execution"
+    }
+  ],
+  "outcome": "Authorized two-file implementation complete, no commits or repository docs/state edits. Native UI verification remains for integration. Separate confirmed mirror issue reported to coordinator.",
+  "canonicalAgent": "/root/w007_review_coordinator/w023_mirror_boundaries"
+}

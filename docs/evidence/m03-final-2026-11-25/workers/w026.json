@@ -1,0 +1,37 @@
+{
+  "id": "026",
+  "task": "Read-only M03 arrangement user-flow review: parsing, atomic apply/undo, stale guards, bounds and accessibility",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/SceneArrangementView.swift",
+    "App/PrecisionValueButton.swift",
+    "App/DistanceValueButton.swift",
+    "App/StudioView.swift",
+    "Sources/LightingCore/SceneTransform.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Tests/LightingCoreTests/SceneArrangementTests.swift",
+    "UITests/StudioSmokeTests.swift",
+    "UITests/StudioOpticsUITests.swift",
+    "docs/DESIGN.md"
+  ],
+  "findings": [],
+  "tests": {
+    "executed": [],
+    "reviewed": [
+      "Draft byte limit and strict localized decimal/range parsing; untouched values preserve model bits; stale precision submissions cancel.",
+      "SceneArrangementView closes didFinish before onApply and disables the form; transform errors preserve the draft for correction.",
+      "StudioView acceptsSceneResult checks project generation and source-scene equality; replace validates, skips no-ops and records one prior scene.",
+      "Relevant core tests cover invalid source/final geometry, nonfinite inputs, mirror prerequisites, identity and manual aims.",
+      "Arrangement UI smoke coverage opens coordinate control and cancels; it does not exercise Apply/Reset/rotation/mirror/undo."
+    ],
+    "limits": [
+      "Static review only; no Swift build, test suite, simulator, native layout measurement or VoiceOver run.",
+      "Native Form/Slider/Toggle/toolbar 44-point targets and largest-Dynamic-Type appearance not proven. Explicit exact-value button targets are at least 44x44.",
+      "Sub-ULP math intentionally excluded.",
+      "Reviewed main HEAD 6fd80017e4ddd9bd844b2d0f8966ebc0178458e8 plus existing working-tree edits; other contributor changes left untouched."
+    ]
+  },
+  "outcome": "No verified material M03 defect found in the scoped arrangement flow. Native interaction/accessibility behavior remains unverified; arrangement application lacks direct UI coverage in the inspected tests.",
+  "canonicalAgent": "/root/w007_review_coordinator/w026_arrangement_actions"
+}

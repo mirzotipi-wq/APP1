@@ -1,0 +1,34 @@
+{
+  "id": "016",
+  "task": "Read-only M03 review of exact room-yaw visible/spoken values and angle boundaries at candidate 6fd80017e4ddd9bd844b2d0f8966ebc0178458e8",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "App/ManualRoomPlacementView.swift",
+    "NativeTests/RoomRotationReadoutTests.swift",
+    "Sources/LightingCore/RoomPlacementText.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Sources/LightingCore/RoomPlacement.swift",
+    "Tests/LightingCoreTests/ExactNumericReadoutTests.swift",
+    "Tests/LightingCoreTests/RoomPlacementTextTests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source review",
+      "result": "Visible room rotation and slider accessibility value share RoomRotationReadout; exported yaw shares StudioNumericInput.formattedValue. Native readout test uses real production RoomRotationReadout and bit-pattern equality, without rounding tolerances."
+    },
+    {
+      "kind": "Linux Swift focused probe",
+      "result": "PASS: 48 values across en_US_POSIX/fr_FR/ar_EG/fa_IR; twelve signed/fractional/endpoint yaws each. Compiled the exact RoomRotationReadout struct extracted from App source with the original StudioNumericInput.swift. Compared original bit patterns after digit/separator/sign-control canonicalization; no numeric rounding. Spoken and visible numeric strings agree.",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc Sources/LightingCore/StudioNumericInput.swift /tmp/app1-f2fcfcdabdca/workers/w016-probe/main.swift -o /tmp/app1-f2fcfcdabdca/workers/w016-probe/probe; /tmp/app1-f2fcfcdabdca/workers/w016-probe/probe",
+      "artifact": "/tmp/app1-f2fcfcdabdca/workers/w016-probe/main.swift"
+    },
+    {
+      "kind": "limits",
+      "result": "No native XCTest, SwiftUI slider, VoiceOver, layout, full suite or Apple runtime execution. Room input stores yaw directly in degrees; inspected geometry conversion only, not unrelated precision editors. Slider span is -180...180 while persisted validity permits -360...360; actual out-of-range SwiftUI behavior was not established and is not reported as a confirmed product defect."
+    }
+  ],
+  "outcome": "No confirmed M03 defect in scoped exact yaw readouts or reviewed boundary conversion; source review and focused host formatter probe only.",
+  "canonicalAgent": "/root/w007_review_coordinator/w016_room_yaw_readout"
+}

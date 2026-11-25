@@ -1,0 +1,49 @@
+{
+  "id": "029",
+  "task": "Review subject inspector exact distance edits, units, accessible values/actions and undo binding semantics.",
+  "files": [
+    "App/SubjectInspector.swift",
+    "App/DistanceValueButton.swift",
+    "App/PrecisionValueButton.swift",
+    "App/StudioSlider.swift",
+    "App/StudioSliderEditing.swift",
+    "App/StudioSliderTracking.swift",
+    "App/StudioView.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Sources/LightingCore/LightingPlan.swift",
+    "Sources/LightingCore/Scene.swift",
+    "NativeTests/StudioSliderEditingTests.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "revision check",
+      "command": "git rev-parse HEAD",
+      "result": "202d41daeb58c3c38acb94ac970890a8e30187da"
+    },
+    {
+      "kind": "source review",
+      "result": "Subject coordinates retain SI bindings; imperial exact input converts to meters once; unchanged numerical edits preserve SI bits; converted endpoints map back to exact domain endpoints; invalid/nonfinite/out-of-domain inputs are rejected. Unit identity changes invalidate the open editor, with a late-write unit guard."
+    },
+    {
+      "kind": "source review",
+      "result": "Exact fields expose localized full-precision values and action labels; sliders use localized distance values and native increment/decrement; presets expose height values, selected trait and visible checkmark. Source supplies 44-point targets and stacked accessibility-size field layout."
+    },
+    {
+      "kind": "source review",
+      "result": "Traced subjectPositionBinding validation and generation guard, discrete remember(scene), owner-qualified edit callbacks, preset begin/write/end, and slider accessibility complete-command behavior. No concrete history-loss or stale-write defect identified."
+    },
+    {
+      "kind": "test source inspection only",
+      "result": "Read existing generic slider/history/accessibility bounds assertions and precision/accessibility workflow source. Searches found no subjectX/subjectY/subjectZ/preset-identifier assertions in NativeTests or UITests; this is a coverage limitation, not proof of a product failure."
+    },
+    {
+      "kind": "execution limits",
+      "result": "No Swift compilation, native execution, simulator UI/layout measurement, VoiceOver session or test suite was run. Source review does not establish required M03 runtime acceptance."
+    }
+  ],
+  "outcome": "No confirmed material defect in the assigned subject/distance path at inspected revision. Read-only focused review; no repository edits.",
+  "canonicalAgent": "/root/w007_review_coordinator/w029_subject_inspector"
+}

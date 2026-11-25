@@ -1,0 +1,49 @@
+{
+  "id": "022",
+  "task": "Implement the reproduced target-lux maximum-output boundary defect in LightOutputAdjustment and add focused regression coverage; replaces the initial read-only history review task.",
+  "files": [
+    "Sources/LightingCore/LightOutputAdjustment.swift",
+    "Tests/LightingCoreTests/LightOutputBoundaryTests.swift"
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "status": "fixed",
+      "title": "An exactly achievable 100000 cd forward-model target was rejected from a lower source setting",
+      "reproduction": "For a 0.1 x 0.1 m rectangle at (0,0,3), subject (0,0,0), camera (0,0,4), source 400 cd, the 100000 cd forward target is 11107.001498803242 lux while inverse division gives 100000.0000000005 cd.",
+      "change": "Validate and forward-evaluate an explicit 100000 cd candidate. Strictly reject targets above that actual maximum, including nextUp. When only the inverse quotient overshoots, evaluate the maximum candidate through the existing 1e-9 accuracy gate. Keep the exact-source fallback and existing zero/underflow behavior.",
+      "regressionCoverage": "Eight tests cover outward inverse rounding, maximumLux.nextDown, maximumLux.nextUp and 1 percent above maximum across point/directional/rectangle kinds and three dimensions, exact current maximum, currently off source, zero target with unsupported geometry, subnormal integration underflow, interior accuracy, source identity, and unchanged input scene."
+    }
+  ],
+  "tests": [
+    {
+      "kind": "Targeted XCTest, Debug, isolated temporary package",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift test --package-path /tmp/app1-f2fcfcdabdca/workers/w022-boundary-tests --filter LightOutputBoundaryTests --jobs 2 > /tmp/app1-f2fcfcdabdca/workers/w022-boundary-tests/debug.log 2>&1",
+      "exitCode": 0,
+      "tests": 8,
+      "failures": 0,
+      "artifact": "/tmp/app1-f2fcfcdabdca/workers/w022-boundary-tests/debug.log"
+    },
+    {
+      "kind": "Targeted XCTest, Release, isolated temporary package",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift test -c release --package-path /tmp/app1-f2fcfcdabdca/workers/w022-boundary-tests --filter LightOutputBoundaryTests --jobs 2 > /tmp/app1-f2fcfcdabdca/workers/w022-boundary-tests/release.log 2>&1",
+      "exitCode": 0,
+      "tests": 8,
+      "failures": 0,
+      "artifact": "/tmp/app1-f2fcfcdabdca/workers/w022-boundary-tests/release.log"
+    },
+    {
+      "kind": "Whitespace validation",
+      "command": "git diff --check -- Sources/LightingCore/LightOutputAdjustment.swift Tests/LightingCoreTests/LightOutputBoundaryTests.swift",
+      "exitCode": 0
+    }
+  ],
+  "toolchain": "Swift 6.2.1 (swift-6.2.1-RELEASE), x86_64-unknown-linux-gnu",
+  "testedBaselineRevision": "6fd80017e4ddd9bd844b2d0f8966ebc0178458e8",
+  "testedWorkingTreeSHA256": {
+    "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+    "Tests/LightingCoreTests/LightOutputBoundaryTests.swift": "6ecc8a23bb85c076c21f73d581547fb6bc51d9e4f284dc2094aabcceafc5a6f5"
+  },
+  "outcome": "Implemented only the two authorized repository files. All eight targeted tests passed in Debug and Release. No arbitrary epsilon or domain/1e-9 tolerance change. No full-suite run, native/UI run, documentation/state edits, or commits by this worker.",
+  "canonicalAgent": "/root/w007_review_coordinator/w022_history_domain"
+}

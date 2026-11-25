@@ -1,0 +1,31 @@
+{
+  "id": "011",
+  "task": "Independent read-only review of w009 naming accessibility controls and no-font-leading physical-pixel text metric",
+  "files": [
+    "App/ProjectLibraryView.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "status": "native-unconfirmed",
+      "file": "App/ProjectLibraryView.swift",
+      "location": "ProjectNameEditor Form (around line 501)",
+      "finding": "The naming Form does not explicitly preserve the keyboard on scroll. Apple documents automatic dismissal for non-TextEditor scrollable content. The presenting library sets interactively before its sheet modifier; propagation into this editor cannot be assumed. At AXXXL a scroll to Save or Cancel can dismiss the keyboard and fail the new explicit keyboard-presence assertions.",
+      "recommendation": "Explicitly set scrollDismissesKeyboard(.never) on this Form if live-keyboard reachability is the intended contract, or establish inherited behavior with native evidence.",
+      "source": "https://developer.apple.com/documentation/swiftui/view/scrolldismisseskeyboard(_:)"
+    }
+  ],
+  "tests": [
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -frontend -parse App/ProjectLibraryView.swift UITests/StudioAppAccessibilityUITests.swift",
+      "result": "PASS; Linux syntax parse only; no Apple SDK typecheck or native execution"
+    },
+    {
+      "check": "Source review of naming test queries, control sizes, glyph frames, scrolling helper, and metric",
+      "result": "Strict >=44-point target assertions retained. Heading/Save/Cancel query actual staticText nodes and expected labels; field label/value checked. Keyboard exclusion and containment preserved; keyboard presence checked after each navigation. Cancel actually dismisses editor. No inherited assertions removed. Removing optional leading fits supplied complete-glyph caption baseline. ceil(required*scale) versus round(observed*scale) is coherent for pixel-aligned AX bounds; native multiline/width parity remains necessary."
+    }
+  ],
+  "outcome": "One actionable keyboard-dismissal risk; no confirmed compile blocker or metric false-fail. No full suite or repository edits performed.",
+  "canonicalAgent": "/root/w007_review_coordinator/w011_naming_test_review"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "028",
+  "task": "Read-only review of Plan label layout: dense markers, viewport edges, invalid geometry and deterministic placement",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "Sources/LightingCore/StudioPlanLabelLayout.swift",
+    "Tests/LightingCoreTests/StudioPlanLabelLayoutTests.swift",
+    "App/StudioPlanMarkers.swift"
+  ],
+  "findings": [],
+  "tests": {
+    "source_review": "Inspected all six existing label-layout tests and native caller. Omitted captions and overlapping fixed markers are intentional; selected-caption priority and list notice are present. Placement examines a bounded 71 candidates per marker for at most 14 markers. Bounds/clearance checks reject unsuitable candidates.",
+    "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift /tmp/app1-f2fcfcdabdca/workers/w028-probe.swift",
+    "result": "PASS: 180 deterministic layout probes; 6 invalid-input cases; empty-layout case",
+    "coverage": "Coincident, viewport-edge and offscreen anchors; widths 1/160/240/342/700; heights 1/80/280/1024; caption scales 1/2.5/3.2. Asserted unchanged anchors, finite in-viewport caption bounds, marker/caption clearance and repeatability.",
+    "limits": "Existing XCTest suite and native UI were not executed; this is a scoped source review and standalone Linux Swift probe, not a rendered accessibility audit."
+  },
+  "outcome": "No actionable crash, unbounded-work or layout-contract defect found. No repository modifications.",
+  "canonicalAgent": "/root/w007_review_coordinator/w028_plan_label_layout"
+}

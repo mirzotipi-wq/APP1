@@ -1,0 +1,89 @@
+{
+  "id": "025",
+  "canonicalAgent": "/root/w007_review_coordinator/w025_mirror_oracle",
+  "task": "Read-only exact classification of w023 double-mirror boundary repro and snapshot Undo verification; no transform/tolerance changes.",
+  "files": {
+    "modified": [],
+    "reviewed": [
+      "Sources/LightingCore/SceneTransform.swift",
+      "Sources/LightingCore/SceneEditHistory.swift",
+      "Tests/LightingCoreTests/SceneTransformTests.swift",
+      "Tests/LightingCoreTests/SceneEditHistoryTests.swift",
+      "App/SceneArrangementView.swift",
+      "App/StudioView.swift",
+      "AGENTS.md",
+      "docs/acceptance/m02-m03-code.md"
+    ],
+    "artifacts": [
+      "/tmp/app1-f2fcfcdabdca/w025-probe/main.swift",
+      "/tmp/app1-f2fcfcdabdca/w025-probe/probe.log",
+      "/tmp/app1-f2fcfcdabdca/w025-probe/oracle.py",
+      "/tmp/app1-f2fcfcdabdca/w025-probe/oracle.json"
+    ]
+  },
+  "findings": [
+    {
+      "severity": "informational",
+      "description": "The already-rounded first point is mathematically outside after ideal second reflection: x = 100 + 3/1829587348619264 = 100 + 1.63971400560023119816413292518028846153846153846e-15. This is strictly greater than 100, although nearest binary64 rounds to 100. Thus the repro is not a mathematically in-bounds reflection wrongly rejected."
+    },
+    {
+      "severity": "informational",
+      "description": "Using the implementation-computed binary64 diagonal and cross coefficients, exact second x = 100 + 18090180233981007/2535301200456458802993406410752 = 100 + 7.13531797749475616428352182311582655592060368648e-15. Correct nearest binary64 is 100.00000000000001 (100.nextUp), so outsideSupportedScene matches the present strict bound and coefficient semantics. No clamping or tolerance change warranted by this case."
+    },
+    {
+      "severity": "pass",
+      "description": "Compiled Swift probe confirms first mirror matches w023 bit patterns; second standalone and arranged mirrors reject atomically. SceneEditHistory Undo restores the exact original scene immediately after first mirror and after rejected second; rejected second leaves current scene/history unchanged; Redo restores first mirror. App arrangement only calls onApply after successful transform, and StudioView replace records previous before assignment."
+    },
+    {
+      "severity": "low",
+      "description": "User-visible boundary-only inability to use repeated Mirror as Undo is a finite-precision non-involution limitation. Actual Undo is lossless. This case establishes no data loss and no acceptance-blocking transform correctness defect."
+    }
+  ],
+  "oracle": {
+    "firstX": "6125785623794415/70368744177664",
+    "firstZ": "7582040945567007/140737488355328",
+    "idealCoefficients": {
+      "diagonal": "12/13",
+      "cross": "5/13",
+      "exactX": "182958734861926403/1829587348619264",
+      "exactDeltaFrom100": "3/1829587348619264",
+      "decimalDeltaFrom100": "1.639714005600231198164132925180288461538461538461538461538461538461538461538461538461538461538461538E-15",
+      "mathematicallyOutside": true,
+      "nearestDouble": "100.0",
+      "excessAboveHalfULP": "-5.465713352000770660547109750600961538461538461538461538461538461538461538461538461538461538461538462E-15"
+    },
+    "computedDoubleCoefficients": {
+      "diagonal": "4157168886803535/4503599627370496",
+      "cross": "6928614811339225/18014398509481984",
+      "exactX": "253530120045645898389520875056207/2535301200456458802993406410752",
+      "exactDeltaFrom100": "18090180233981007/2535301200456458802993406410752",
+      "decimalDeltaFrom100": "7.13531797749475616428352182311582655592060368647533419306228097411803901195526123046875E-15",
+      "mathematicallyOutside": true,
+      "nearestDouble": "100.00000000000001",
+      "excessAboveHalfULP": "2.989061989375430557227914733457655592060368647533419306228097411803901195526123046875E-17"
+    }
+  },
+  "sourceRevision": "6fd80017e4ddd9bd844b2d0f8966ebc0178458e8",
+  "sourceHashes": {
+    "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+    "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a"
+  },
+  "workingTree": "Pre-existing unrelated dirty files observed; production source unchanged by this worker.",
+  "tests": [
+    {
+      "command": "python3 /tmp/app1-f2fcfcdabdca/w025-probe/oracle.py",
+      "result": "PASS: exact Fraction oracle for already-rounded coordinates; Decimal precision 100 only formats rational results. Both ideal and computed-coefficient exact expressions are >100.",
+      "artifact": "/tmp/app1-f2fcfcdabdca/w025-probe/oracle.json"
+    },
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc Sources/LightingCore/*.swift /tmp/app1-f2fcfcdabdca/w025-probe/main.swift -o /tmp/app1-f2fcfcdabdca/w025-probe/probe && /tmp/app1-f2fcfcdabdca/w025-probe/probe",
+      "result": "PASS, exit 0, Linux Swift default unoptimized host core probe; first output bit checks, rejection atomicity, two Undo scenarios, Redo and arranged-path parity assertions passed.",
+      "artifact": "/tmp/app1-f2fcfcdabdca/w025-probe/probe.log"
+    },
+    {
+      "command": "Source review of SceneTransformTests and SceneEditHistoryTests plus actual app apply/replace/undo call chain",
+      "result": "Relevant existing tests reviewed but not rerun here; native SwiftUI behavior not executed."
+    }
+  ],
+  "outcome": "Exact oracle classifies ideal and implementation-coefficient second reflection as mathematically outside; production rejection is consistent with declared binary64 coefficient semantics. Snapshot Undo is lossless. Read-only review complete with no production edits."
+}

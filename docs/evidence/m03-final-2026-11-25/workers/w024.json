@@ -1,0 +1,58 @@
+{
+  "id": "024",
+  "task": "Read-only review of rotation normalization, exact cardinal transforms, room contact and operation boundaries",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "Sources/LightingCore/SceneTransform.swift",
+    "Sources/LightingCore/RoomPlacement.swift",
+    "Tests/LightingCoreTests/RoomRotationTests.swift",
+    "Tests/LightingCoreTests/RoomCardinalRollContactTests.swift"
+  ],
+  "findings": [
+    {
+      "severity": "informational",
+      "file": "Sources/LightingCore/RoomPlacement.swift",
+      "lines": "298-310",
+      "title": "Intermediate displacement rounding can erase a sub-ULP room overhang",
+      "description": "With subject.x=2e-16, camera.x=-3, room.subjectX=3 and yaw=0, the exact final camera coordinate is -2e-16 m. The intermediate subtraction rounds to -3, giving displayed/model xFromLeft=0, insideRoom=true, outsideCount=0. The exact final coordinate is representable, but the intermediate displacement is not.",
+      "reproduction": {
+        "subject": [
+          2e-16,
+          1.5,
+          0
+        ],
+        "camera": [
+          -3,
+          1.5,
+          1
+        ],
+        "room": {
+          "widthMeters": 6,
+          "depthMeters": 7,
+          "subjectX": 3,
+          "subjectZ": 2,
+          "yawDegrees": 0
+        },
+        "lights": []
+      },
+      "acceptanceAssessment": "Observed numerical limitation only; no material workflow failure established. The displacement is 5,000,000 times smaller than the contract 1e-9 numeric-readout round-trip tolerance and 5,000,000,000 times smaller than the 1e-6 m bounded display threshold. Those are readout constraints, not permission to relax containment; no separate general room-coordinate error budget was found in the scoped contract. Existing one-ULP cardinal-roll fixture uses a different geometry and was inspected, not executed. Preserve this evidence; do not change geometry or tolerances for this batch."
+    }
+  ],
+  "tests": [
+    {
+      "kind": "Standalone exact-source Swift probe",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc Sources/LightingCore/*.swift /tmp/app1-f2fcfcdabdca/workers/w024-probe/main.swift -o /tmp/app1-f2fcfcdabdca/workers/w024-probe/probe && /tmp/app1-f2fcfcdabdca/workers/w024-probe/probe",
+      "sourceRevision": "6fd8001",
+      "exitCode": 0,
+      "artifact": "/tmp/app1-f2fcfcdabdca/workers/w024-probe/main.swift",
+      "result": "NaN/+infinity/-infinity room rotations returned false without mutation; SceneTransform rotations rejected each with invalidTransform. Room deltas greatestFiniteMagnitude, negative greatestFiniteMagnitude, 180 and 720 normalized from yaw 45 to valid 173, -83, -135 and 45 degrees. Scene boundary light (100,2,-100) rotated successfully at 90,-90,180,-180,360,450,-450 degrees with exact signed boundary coordinates. Room sub-ULP case reproduced x=0/inside rather than exact -2e-16."
+    },
+    {
+      "kind": "Source and test review",
+      "result": "Standalone and arranged scene rotations check nonfinite inputs before copying/transforming, reduce finite angles modulo 360, use exact cardinal coefficients, retain original coordinate terms and validate completed scenes. Room rotation checks complete validity before mutation; cardinal room-yaw coefficients are exact. Existing RoomRotationTests covers invalid/huge deltas and two-half-turn geometry; RoomCardinalRollContactTests covers wall/floor/ceiling contact, a one-representable-step wall overhang, and adjacent noncardinal components. No test suite, native runtime or physical placement execution performed."
+    }
+  ],
+  "outcome": "No confirmed material rotation or room-contact workflow defect in this narrow review. One reproducible informational IEEE rounding limitation retained. No repository edits, commits, documentation/state updates or full-suite run; generic mirror issue excluded as requested.",
+  "canonicalAgent": "/root/w007_review_coordinator/w024_rotation_boundaries"
+}

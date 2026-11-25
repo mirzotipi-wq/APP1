@@ -1,0 +1,39 @@
+{
+  "id": "012",
+  "task": "Read-only review of bounded precision draft replacement",
+  "files": [
+    "App/PrecisionValueButton.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "Tests/LightingCoreTests/PrecisionDraftBoundTests.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "file": "App/PrecisionValueButton.swift",
+      "lines": "117-125",
+      "title": "Apply remains enabled after an oversized replacement is rejected",
+      "detail": "The bounded setter stores .oversizedDraft and preserves the previous draft. apply() returns for that error at line 214, but the Apply button has no .disabled modifier. Consequently it remains visually and accessibly enabled while its action cannot apply a value. This fails the requested rejected-replacement disabled-state behavior and gives an enabled no-op control.",
+      "recommendation": "Disable Apply while inputError is .oversizedDraft, retain the apply() guard for keyboard submissions, and check that a subsequent bounded edit clears the error and re-enables Apply.",
+      "evidenceScope": "Source inspection; native rendered state was not executed."
+    }
+  ],
+  "tests": [
+    {
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc -frontend -parse Sources/LightingCore/StudioNumericInput.swift Tests/LightingCoreTests/PrecisionDraftBoundTests.swift App/PrecisionValueButton.swift",
+      "result": "PASS: exit 0, syntax parsing only; no typecheck, XCTest, native UI, or full-suite execution."
+    },
+    {
+      "check": "Reviewed all six PrecisionDraftBoundTests methods and precision UI call sites",
+      "result": "Tests cover exact 256/257 UTF8 boundary, localized digits, combining scalars, intermediate edits, exact initial formats, and unchanged parser limits. They do not execute SwiftUI rejection/preservation/error-clear/button-state transitions."
+    },
+    {
+      "check": "Inspected boundedDraft and apply() source",
+      "result": "UTF8 allowance is checked before draft assignment; rejection preserves prior draft; accepted bounded edits clear either error; rejected replacements cannot commit through Apply or keyboard submission; localized/intermediate admission remains size-only."
+    }
+  ],
+  "outcome": "One concrete enabled-state semantics finding; no additional parser, state-preservation, or localization defect identified. Repo remained unmodified by this worker.",
+  "canonicalAgent": "/root/w007_review_coordinator/w012_precision_bound_review",
+  "revision": "fd73004ddcb1b01e53e29d03bed093fb24b8a75a plus inspected working-tree changes"
+}
