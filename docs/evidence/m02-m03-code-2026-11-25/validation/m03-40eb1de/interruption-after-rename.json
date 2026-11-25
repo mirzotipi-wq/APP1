@@ -1,0 +1,177 @@
+{
+  "checks": {
+    "activeIdentityPreserved": true,
+    "candidateCompleteSnapshotPreserved": true,
+    "candidateExactBytesPreserved": true,
+    "candidateRecordsPreserved": true,
+    "exactExpectedBytesAtHook": true,
+    "exactExpectedBytesPreserved": true,
+    "exactTargetRenameWitnessed": true,
+    "freshProcessReopenSucceeded": true,
+    "ownedGroupCleaned": true,
+    "parentKilledOwnedSave": true,
+    "stoppedAtWitnessedHook": true,
+    "unrelatedRecordsPreserved": true,
+    "unrestrictedControlCandidateReopened": true,
+    "unrestrictedControlExactCandidateBytes": true,
+    "unrestrictedSetupAndControlSucceeded": true
+  },
+  "directory": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+  "files": {
+    "after.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "candidate.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "control/projects.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "library/projects.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "prior.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    }
+  },
+  "injection": {
+    "arguments": [
+      "/tmp/atomic-library-write-build-zvguc4i1/atomic-library-write-probe",
+      "save",
+      "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+    ],
+    "elapsedSeconds": 0.028,
+    "environmentOverrides": {
+      "KF_COMMIT_MODE": "after-rename",
+      "KF_COMMIT_TARGET": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+      "KF_COMMIT_WITNESS_FD": "4",
+      "LD_PRELOAD": "/proc/self/fd/5"
+    },
+    "events": [
+      {
+        "api": "renameat",
+        "destinationArgument": "projects.json",
+        "destinationDirFD": 3,
+        "hit": 1,
+        "hookState": "after-success",
+        "mode": "after-rename",
+        "pid": 3033,
+        "realRenameCalled": true,
+        "realReturnCode": 0,
+        "returnedErrno": 0,
+        "schemaVersion": 1,
+        "sourceArgument": ".dat.nosyncBD9.D2Ijn4",
+        "sourceDirFD": 3,
+        "targetMatched": true,
+        "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json"
+      }
+    ],
+    "exactExpectedBytesAtHook": true,
+    "finalReturnCode": -9,
+    "hookCount": 1,
+    "hookWitnessed": true,
+    "interposerPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/probe-library-commit-interposer.so",
+    "mode": "after-rename",
+    "observedStop": {
+      "code": 5,
+      "processID": 3033,
+      "signal": 19
+    },
+    "ownedGroupCleanupComplete": true,
+    "parentIssuedSIGKILL": true,
+    "processGroupID": 3033,
+    "returnCode": -9,
+    "status": "observed",
+    "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json"
+  },
+  "mode": "after-rename",
+  "phases": [
+    {
+      "arguments": [
+        "/tmp/atomic-library-write-build-zvguc4i1/atomic-library-write-probe",
+        "setup",
+        "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+      ],
+      "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "candidateBytes": 242569,
+        "candidateProjects": 64,
+        "candidateValidated": true,
+        "fileLimitBytes": 32768,
+        "fixtureByteCeiling": 1048576,
+        "initialReopenMatchesPrior": true,
+        "libraryByteLimit": 8388608,
+        "phase": "setup",
+        "priorBytes": 3900,
+        "priorProjects": 3,
+        "status": "setup_complete"
+      },
+      "processGroupID": 3031,
+      "returnCode": 0,
+      "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/setup.stderr.log",
+      "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/setup.stdout.log",
+      "timeoutSeconds": 30
+    },
+    {
+      "arguments": [
+        "/tmp/atomic-library-write-build-zvguc4i1/atomic-library-write-probe",
+        "control",
+        "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+      ],
+      "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "phase": "control",
+        "saveReturnedNormally": true,
+        "status": "control_saved"
+      },
+      "processGroupID": 3032,
+      "returnCode": 0,
+      "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control.stderr.log",
+      "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control.stdout.log",
+      "timeoutSeconds": 30
+    },
+    {
+      "arguments": [
+        "/tmp/atomic-library-write-build-zvguc4i1/atomic-library-write-probe",
+        "verify-candidate",
+        "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+      ],
+      "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "activeIdentityPreserved": true,
+        "allSnapshotRecordsPreserved": true,
+        "candidateCompleteSnapshotPreserved": true,
+        "candidateExactBytesPreserved": true,
+        "candidateRecordsPreserved": true,
+        "completeSnapshotPreserved": true,
+        "controlCandidateReopened": true,
+        "controlExactCandidateBytes": true,
+        "exactBytesPreserved": true,
+        "phase": "verify-candidate",
+        "priorCompleteSnapshotPreserved": false,
+        "priorExactBytesPreserved": false,
+        "reopenedSnapshot": "candidate",
+        "status": "candidate_verification_complete",
+        "unrelatedProjectIDs": [
+          "00000001-0000-4000-8000-000000000002",
+          "00000001-0000-4000-8000-000000000001"
+        ],
+        "unrelatedRecordsPreserved": true
+      },
+      "processGroupID": 3034,
+      "returnCode": 0,
+      "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/verify-candidate.stderr.log",
+      "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/verify-candidate.stdout.log",
+      "timeoutSeconds": 30
+    }
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,43 @@
+{
+  "capturedAtUTC": "2026-11-25T19:59:55.637098+00:00",
+  "baseRevision": "40eb1de5ce8f055d52335328bfaca0a8bedb7ace",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "filesystemObservations": [
+    {
+      "command": [
+        "findmnt",
+        "-T",
+        "/workspace/scratch/13a77d3f98df/validation",
+        "-n",
+        "-o",
+        "TARGET,SOURCE,FSTYPE,OPTIONS"
+      ],
+      "stdout": "/workspace /dev/vdb ext4 rw,nosuid,nodev,relatime\n",
+      "stderr": "",
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "stat",
+        "-f",
+        "-c",
+        "filesystem=%T magic=%t blockSize=%s",
+        "/workspace/scratch/13a77d3f98df/validation"
+      ],
+      "stdout": "filesystem=ext2/ext3 magic=ef53 blockSize=4096\n",
+      "stderr": "",
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "uname",
+        "-a"
+      ],
+      "stdout": "Linux 6e77ed83c607 6.18.57 #1 SMP Tue Oct 20 21:56:04 UTC 2026 x86_64 GNU/Linux\n",
+      "stderr": "",
+      "exitCode": 0
+    }
+  ],
+  "probeOutput": "/workspace/scratch/13a77d3f98df/validation/40eb1de-local-atomic-ext4",
+  "purpose": "Fresh current-source persistence run with explicit observed ext4 mount metadata; independent of CI filesystem which remains unrecorded."
+}

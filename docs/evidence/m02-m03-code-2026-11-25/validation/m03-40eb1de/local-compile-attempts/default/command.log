@@ -1,0 +1,44 @@
+Running ["git", "rev-parse", "HEAD"]
+40eb1de5ce8f055d52335328bfaca0a8bedb7ace
+Running ["/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc", "--version"]
+Swift version 6.2.1 (swift-6.2.1-RELEASE)
+Target: x86_64-unknown-linux-gnu
+Running ["/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc", "-O", "-module-cache-path", "/dev/shm/atomic-library-write-build-qmt45anf/module-cache", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/ARPlacementLayout.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/CameraFraming.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/Colorimetry.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/GuidedLighting.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/LightOutputAdjustment.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/LightingPlan.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/LightingProjectDocument.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/LightingRecipe.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/PortraitHeadMesh.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/PortraitStudy.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/ProjectLibrary.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/ReferencePNG.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/ReferenceStudy.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/ReferenceTonalSummary.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/RoomPlacement.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/RoomPlacementText.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/Scene.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/SceneCodec.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/SceneEditHistory.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/SceneFileStore.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/SceneLightCreation.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/SceneTransform.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudioDisplayName.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudioNumericInput.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudioOptics.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudioPlanLabelLayout.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudioSceneBounds.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudyFloat32Eligibility.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudyFrameCache.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/StudyValidationFixtures.swift", "/workspace/scratch/13a77d3f98df/APP1/Sources/LightingCore/SurfacePhotometry.swift", "/workspace/scratch/13a77d3f98df/APP1/scripts/probe-atomic-library-write.swift", "-o", "/dev/shm/atomic-library-write-build-qmt45anf/atomic-library-write-probe"]
+/workspace/scratch/13a77d3f98df/APP1/scripts/probe-atomic-library-write.swift:26:13: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 24 | 
+ 25 |     private static func scene(_ project: Int, lights count: Int) -> LightingScene {
+ 26 |         let lights = (0..<count).map { index in
+    |             `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+ 27 |             StudioLight(id: identifier(2, project * 12 + index), name: "Light \(index + 1)",
+ 28 |                         position: .init(x: Double(index % 4) - 1.5,
+Compile/probe wrapper result:
+{
+  "baseRevision": "40eb1de5ce8f055d52335328bfaca0a8bedb7ace",
+  "commitInterruptionRequested": true,
+  "failure": {
+    "message": "Swift helper compilation failed or timed out",
+    "type": "RuntimeError"
+  },
+  "host": {
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "system": "Linux"
+  },
+  "output": "/workspace/scratch/13a77d3f98df/validation/40eb1de-local-atomic-ext4",
+  "revision": {
+    "arguments": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "/workspace/scratch/13a77d3f98df/APP1",
+    "elapsedSeconds": 0.004,
+    "processGroupID": 12,
+    "returnCode": 0,
+    "stderrPath": "/workspace/scratch/13a77d3f98df/validation/40eb1de-local-atomic-ext4/source-revision.stderr.log",
+    "stdoutPath": "/workspace/scratch/13a77d3f98df/validation/40eb1de-local-atomic-ext4/source-revision.stdout.log",
+    "timeoutSeconds": 10
+  },
+  "schemaVersion": 1,
+  "status": "failed"
+}
