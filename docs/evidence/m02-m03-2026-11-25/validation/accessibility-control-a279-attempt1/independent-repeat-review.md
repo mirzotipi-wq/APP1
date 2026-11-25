@@ -1,0 +1,11 @@
+# Independent review: one bounded repeat after a279 control launch failure
+
+I reviewed the original attempt-1 receipt, selected launch lines, complete decoded job-log hash, native log, execution summary, native summary and exact test source for commit `a27916a1d0f9466a74079e1037d84c26c6621b8a`, run 45652784901, job 139341390410. I rehashed four raw/structured files against the preserved receipt and checked its five source hashes against the exact Git revision.
+
+The single selected method started and failed in 86.883 seconds at `XCUIApplication.launch()` (UITests.swift:16). Only `test_body_started` and `launch_begin` markers exist. No launch-return, readiness, audit-begin, audit-return or audit-error marker exists. This attempt does not execute or evaluate the repaired contrast. Its launch assertion precedes the ten-minute command deadline, and xcodebuild exits 65 before that boundary. The original failure remains an actual failed test; it must not be relabeled as a pass or discarded.
+
+The generic FBS RequestDenied / SBMainWorkspace → FBProcessExit 64 → RBSRequestError 5 chain does not identify a concrete source or configuration correction. The adjacent debugger-version warning is not evidence of causation. A prior 8fa control invocation launched this same test configuration and completed its full audit, although that earlier App version had the real contrast issue. That history supports trying to obtain the missing repaired-App audit; it does not prove the launch problem is transient.
+
+**Scoped approval:** one explicitly authorized job-only repeat, on the same source with unchanged assertions, runtime, full `.all` audit, issue handling and bounds, is a reasonable bounded reproducibility check. Retain both attempts separately and require a genuinely started/completed audit with the existing zero-issue/native-pass checks. The repeat cannot erase attempt 1, certify primary iOS 26.5, or justify a third automatic attempt. No app/configuration repair is presently supported by the retained failure.
+
+Root has already requested the single repeat; I made no execution or source changes. A100 reports attempt 2 as job 139355398057 on a separate hosted runner. Its outcome remains pending at this review.

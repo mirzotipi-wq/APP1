@@ -193,3 +193,12 @@ The6f3 keyboard helper still failed. Its complete snapshot contains a normal ena
 ## 2026-11-25 — a completed audit can correctly fail its control
 
 The8fa isolated control reached and returned from full.all with one real contrast issue on its native Confirm button. Preserve the one failed method and unsuppressed finding; a normal audit return is not a clean test. The command completed within the earlier6-minute limit too, so the new outer budget cannot be credited causally for faster startup. Genuine exported screenshots identify the repair target. Adjust only that control's adaptive colors, retain every audit/verifier requirement and distinguish this26.4.1 observation from APP1's26.5 screen-specific timeout. A failed export step can be a correctly enforced test-count failure even when summary and attachments were produced.
+
+
+## Final terminal evidence reconciliation — 2026-11-25
+
+The current library command timed out before its xcresult finalized. Its terminal console and uploaded native log differ: the artifact contains a later guided-rig pass and final-method start beyond the console cutoff. Preserve both byte-bound views and distinguish recorded method outcomes from a successful shard; attachment-creation log messages are not recovered screenshots. The revised negative-element existence guard removed prior hitpoint retry traces but still failed its original readiness wait, so it is not a confirmed runtime fix.
+
+The repaired isolated control failed in two different pre-audit phases: application launch, then environment/runtime inventory on one bounded repeat. Keep attempt identity, source-manifest completeness and phase markers separate. Neither generic launch denial nor an empty runtime inventory establishes a product defect or platform-wide outage. Stop that repeat after its predeclared single additional attempt and retain the blocker instead of inventing a code correction.
+
+Report review corrected an atomicity wording error: before-rename interruption and write/rename failure preserve the prior snapshot; after-rename interruption preserves the complete committed candidate. Both are required valid outcomes. Scope host persistence support separately from incomplete UI workflows and later physical release acceptance.

@@ -1,5 +1,15 @@
 # Current handoff
 
+## Completed CI and remaining blockers — final evidence checkpoint
+
+**M02 remains active; M03 remains dependency pending. Neither milestone is complete.** All100 initial worker assignments and reports are complete. The [current completion report](../docs/evidence/m02-m03-2026-11-25/completion-status.md) supersedes earlier progress snapshots below while retaining their historical evidence.
+
+Published source at preparation is a27916a1d0f9466a74079e1037d84c26c6621b8a. The exact8fa application run completed failure: core319Debug/319Release/35Python; unsigned Debug/Release and110native/3Metal; room5,studio-export10,optics10 passed. Library failed with both full audits Code=-56, keyboard-introduction readiness and active-project status waits. Uploaded raw log has6passes4failures1unfinished; earlier console has5passes4failures1unfinished1unstarted before its cutoff. Full UI artifact accounting is31passes4failures1unfinished, with no finalized library result. The working application/test/primary-workflow inputs are byte-identical to8fa.
+
+The repaired a279 control built but failed launch before audit in attempt1. One bounded repeat failed setup before any test in attempt2. Both failures and incomplete attempt2 manifests are preserved; no third attempt or successful contrast audit is claimed. The source-equivalent a279 primary duplicate was cancelled during core, before any native/UI step. Actual native/UI success remains attributed to8fa, whose library failure is not hidden by that cancellation.
+
+**Next work:** reproduce the retained readiness/audit failures in a stable Apple environment with actual state/timing evidence, then repair the specific observed cause without removing required tests. Collect twelve rights-cleared calibrated scenes and independent photographer review, physical baseline performance/thermal evidence, and manual real-device accessibility. Current ideal/illustrative views may need further implementation after those comparisons. Host persistence probes retain their scoped pass; M07's broader physical device matrix is not invented as an extra M03 gate. No autonomous continuation is promised after this session.
+
 ## Actual control audit result and contrast repair — candidate after 8fa
 
 Published source **8fa4399f50554836ce70ec2929a28534f70ba4b0** contains the reviewed keyboard guard and diagnostic budget. The [new integration packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-control-contrast-integration.md) records the control's actual result: **one test started/failed; full .all returned in5.121seconds with one contrast issue** on the white-text/default-blue Confirm control button. No Code18, Code=-56 or outer timeout occurred in this invocation. Summary/attachment export succeeded; its zero-failure check correctly failed. The4m21s command finished inside both old and new bounds, so budget causation is not inferred.

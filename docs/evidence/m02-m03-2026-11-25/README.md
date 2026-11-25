@@ -2,7 +2,7 @@
 
 All **100 distinct workers** completed their initial assignments, in batches with at most three simultaneous workers plus root. Follow-up reviews and later CI repair do not increase the distinct-worker count. Each report distinguishes source review, actual execution, and unverified device or human work.
 
-[Machine-readable ledger](worker-ledger.json) · [Integration and acceptance report](../m02-m03-main-2026-11-25.md)
+[Current completion status](completion-status.md) · [Machine-readable ledger](worker-ledger.json) · [Chronological integration report](../m02-m03-main-2026-11-25.md)
 
 | Worker | Assignment | Status | Evidence |
 |---|---|---|---|
