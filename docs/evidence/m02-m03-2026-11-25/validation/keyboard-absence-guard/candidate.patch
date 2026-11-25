@@ -1,0 +1,17 @@
+diff --git a/UITests/StudioContentReachability.swift b/UITests/StudioContentReachability.swift
+index 8ee6dee..85d52b7 100644
+--- a/UITests/StudioContentReachability.swift
++++ b/UITests/StudioContentReachability.swift
+@@ -43,9 +43,9 @@ extension XCTestCase {
+             let typingKey = app.keyboards.firstMatch.keys
+                 .matching(NSPredicate(format: "label == %@ OR label == %@", "q", "Q")).firstMatch
+             let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+-                // isHittable is false for absent elements, so existence reads
+-                // add no requirement to either side of this readiness check.
+-                !proceed.isHittable && typingKey.isHittable
++                // Avoid resolving a removed Continue button for a hit point.
++                // A retained button must still be non-hittable before typing.
++                (!proceed.exists || !proceed.isHittable) && typingKey.isHittable
+             }, object: typingKey)
+             let result = XCTWaiter.wait(for: [ready], timeout: 10)
+             if result != .completed {

@@ -1,5 +1,15 @@
 # Current handoff
 
+## Keyboard readiness and control startup — candidate after 6f3
+
+**M01 remains complete; M02 active; M03 dependency pending.** Published/tested base is **6f3da3341f350084eac4a05b35a5bfd408d50193**. The [current packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-keyboard-and-control-startup.md) records exact core319/319/35 and native110/0fail/0skip/3Metal success. The application workflow is still in progress; use each terminal receipt for its own shard. Library completed9passes/2failures: the numeric full audit passed, initial full audit returned Code=-56, and archived-delete failed at keyboard readiness before typing/deletion.
+
+The full snapshot contains q enabled with normal frame and no Continue node. Its isHittable is not recorded. The trace shows repeated resolution of the removed Continue button before the first key lookup. A narrow working helper candidate restores the absence short-circuit while retaining the positive key hit requirement, original conditions/order,10-second wait, diagnostic and all exact text/persistence assertions. a097 approved the exact source delta; fresh Apple execution is required.
+
+The separate6f3 control built and booted26.4.1 but recorded zero method/audit starts. Code18 AX initialization error falls between the nominal outer deadline and timeout annotation, without a retained first signal. The independently reviewed control-only test6→10/job32→36 candidate separates those observations; every other bound/runtime/app/test/audit and primary workflow remains unchanged. This is a diagnostic budget change, not a protected product threshold change.
+
+**Next action:** integrate the reviewed combined candidate, preserve productive6f3 execution, verify new-source UI and isolated control outcomes, then reconcile exact terminal counts. All100original workers are complete; follow-ups reuse them. Calibrated real scenes/independent photographer, physical performance/thermal and manual device accessibility remain unrun. Earlier sections below are historical packets with their original scopes.
+
 ## UI shard repair and runtime comparison — source candidate after 9ed
 
 **M01 remains complete; M02 is active; M03 is dependency pending.** Current published base is **9eddd97c5e638edf1768332d9d83d7dc2cccb72a**. The [integration packet](../docs/evidence/m02-m03-2026-11-25/followups/followup-ci-shards-and-runtime-control.md) records the reviewed source changes and exact completed CI evidence.

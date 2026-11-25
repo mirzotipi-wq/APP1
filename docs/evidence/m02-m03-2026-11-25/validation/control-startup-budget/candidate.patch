@@ -1,0 +1,69 @@
+diff --git a/.github/workflows/accessibility-control.yml b/.github/workflows/accessibility-control.yml
+index d28c4e8..12a2bf7 100644
+--- a/.github/workflows/accessibility-control.yml
++++ b/.github/workflows/accessibility-control.yml
+@@ -13,7 +13,7 @@ concurrency:
+ jobs:
+   audit:
+     runs-on: macos-26-intel
+-    timeout-minutes: 32
++    timeout-minutes: 36
+     env:
+       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+       CONTROL_ROOT: scripts/diagnostics/accessibility-control
+@@ -126,7 +126,7 @@ jobs:
+           } 2>&1 | tee "$CONTROL_EVIDENCE/boot.log"
+       - name: Execute exactly one full accessibility audit
+         id: audit
+-        timeout-minutes: 6
++        timeout-minutes: 10
+         run: |
+           set -euo pipefail
+           set +e
+diff --git a/scripts/diagnostics/accessibility-control/README.md b/scripts/diagnostics/accessibility-control/README.md
+index f2da077..93f8e9e 100644
+--- a/scripts/diagnostics/accessibility-control/README.md
++++ b/scripts/diagnostics/accessibility-control/README.md
+@@ -41,19 +41,37 @@ runtime identifier is `com.apple.CoreSimulator.SimRuntime.iOS-26-4`; selection
+ also requires the recorded runtime version to equal `26.4.1`. Build precedes
+ explicit boot. Its 10-minute boot limit matches the primary workflow and covers
+ previously observed multi-minute hosted-simulator startup. The workflow has a
+-32-minute job limit; individual step bounds total 30 minutes, leaving setup/cleanup
++36-minute job limit; individual step bounds total 34 minutes, leaving setup/cleanup
+ margin. There is no alternate-version matrix.
+ 
+-This runtime-only experiment follows [run 45632330705](https://github.com/mirzotipi-wq/APP1/actions/runs/45632330705),
++The original runtime-only experiment followed [run 45632330705](https://github.com/mirzotipi-wq/APP1/actions/runs/45632330705),
+ whose iOS 26.5 simulator exceeded the boot-step limit before any test started.
+ Its retained boot log later reached Finished at elapsed 11:35. That run's own
+ runtime inventory reports iOS 26.4.1 (build 23E254a) and an iPhone 17 Pro as
+-available. The experiment keeps the host label, Xcode, build SDK, app, test,
+-assertions, and all time bounds unchanged. It adds no runtime preparation or
+-download. Hosted-machine variation remains uncontrolled, so a different outcome
++available. That runtime-only comparison kept the host label, Xcode, build SDK,
++app, test, assertions, and all time bounds unchanged. It added no runtime
++preparation or download. Hosted-machine variation remains uncontrolled, so a different outcome
+ would be evidence for that invocation, not proof of a runtime-specific cause.
+ The primary APP1 workflow continues to require iOS 26.5.
+ 
++In the subsequent [run 45641484079](https://github.com/mirzotipi-wq/APP1/actions/runs/45641484079)
++at source `6f3da3341f350084eac4a05b35a5bfd408d50193`, the control built and its
++26.4.1 simulator booted, but no test method or audit marker was recorded. XCTest began
++loading Accessibility at 15:19:20.602 UTC with a logged 70-second wait budget,
++then reported `XCTDaemonErrorDomain Code=18`, "Timed out waiting for AX loaded
++notification", at 15:20:27.826. The test step began at 15:14:24; GitHub reported
++its six-minute timeout at 15:20:38.096. The first termination signal was not
++recorded. The error falls after the nominal 15:20:24 deadline and before that
++annotation, so an intrinsic initialization failure cannot be distinguished from
++interference by the outer deadline. This is not an audit Code=-56 result.
++
++This follow-up changes only the diagnostic test-step budget from six to ten
++minutes and the diagnostic job budget from 32 to 36 minutes, retaining two
++minutes beyond the sum of individual step bounds for setup/finalization. It
++preserves the runtime, app/test source, readiness assertions, full audit and all
++other step bounds. The extra observation time does not promise completion or
++establish a cause; the preceding six-minute failure remains part of the evidence.
++
+ A timeout after `audit_begin` records an independent unfinished control audit;
+ a captured `audit_threw` with Code=-56 additionally establishes that exact error.
+ A build, boot, launch, or readiness timeout does not establish an audit timeout.
