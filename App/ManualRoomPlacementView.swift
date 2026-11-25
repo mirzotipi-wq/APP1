@@ -497,6 +497,7 @@ private struct RoomMeasurementField: View {
     @State private var draftLocale: Locale?
     @State private var draftValueBits: UInt64?
     @State private var invalid = false
+    @State private var rejectedOversizedDraft = false
     @FocusState private var focused: Bool
 
     init(title: String, id: String, value: Binding<Double>, range: ClosedRange<Double>, units: PlanUnits) {
@@ -523,7 +524,7 @@ private struct RoomMeasurementField: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.subheadline.weight(.medium))
             HStack(spacing: 8) {
-                TextField(allowsUnmeasured ? "Unmeasured" : (units == .metric ? "Meters" : "Feet"), text: $draft)
+                TextField(allowsUnmeasured ? "Unmeasured" : (units == .metric ? "Meters" : "Feet"), text: boundedDraft)
                     .keyboardType(.decimalPad)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -537,6 +538,7 @@ private struct RoomMeasurementField: View {
                 Button {
                     draft = ""
                     invalid = false
+                    rejectedOversizedDraft = false
                     focused = true
                 } label: {
                     Image(systemName: "xmark.circle.fill")
@@ -545,18 +547,21 @@ private struct RoomMeasurementField: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .disabled(draft.isEmpty)
+                .disabled(draft.isEmpty && !rejectedOversizedDraft)
                 .accessibilityLabel("Clear " + title.lowercased())
                 .accessibilityIdentifier(id + "Clear")
                 Text(units.symbol).foregroundStyle(.secondary)
                 Button("Set") { apply() }
+                    .disabled(rejectedOversizedDraft)
                     .buttonStyle(.bordered)
                     .frame(minHeight: 44)
                     .accessibilityLabel("Set " + title.lowercased())
                     .accessibilityIdentifier(id + "Set")
             }
-            if invalid {
-                Label("Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) \(units.symbol). Current value is \(value.map { format($0) + " " + units.symbol } ?? "unmeasured").",
+            if invalid || rejectedOversizedDraft {
+                Label(rejectedOversizedDraft
+                      ? "That entry is too long. Your previous entry was kept. Edit the value, clear it or restore the current value before setting."
+                      : "Enter a number from \(format(range.lowerBound)) to \(format(range.upperBound)) \(units.symbol). Current value is \(value.map { format($0) + " " + units.symbol } ?? "unmeasured").",
                       systemImage: "exclamationmark.circle")
                     .font(.caption).foregroundStyle(.primary)
                     .accessibilityIdentifier(id + "Error")
@@ -575,7 +580,19 @@ private struct RoomMeasurementField: View {
             restoreDraft()
         }
         .onChange(of: locale) { _, _ in restoreDraft() }
-        .onChange(of: draft) { _, _ in invalid = false }
+    }
+
+    private var boundedDraft: Binding<String> {
+        Binding(get: { draft }, set: { replacement in
+            guard StudioNumericInput.isWithinDraftLimit(replacement) else {
+                rejectedOversizedDraft = true
+                invalid = false
+                return
+            }
+            draft = replacement
+            rejectedOversizedDraft = false
+            invalid = false
+        })
     }
 
     private func format(_ number: Double?) -> String {
@@ -608,6 +625,7 @@ private struct RoomMeasurementField: View {
         draftLocale = locale
         draftValueBits = value?.bitPattern
         invalid = false
+        rejectedOversizedDraft = false
         focused = false
     }
 
@@ -625,6 +643,9 @@ private struct RoomMeasurementField: View {
             restoreDraft()
             return
         }
+        // A rejected paste must not commit the preceding draft, including an
+        // empty draft that would otherwise clear an optional measurement.
+        guard !rejectedOversizedDraft else { return }
         if allowsUnmeasured, draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             if value != nil { value = nil }
             restoreDraft()

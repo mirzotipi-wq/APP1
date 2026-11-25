@@ -10,6 +10,7 @@ struct LightTargetLuxView: View {
     @Environment(\.locale) private var locale
     @State private var draft = ""
     @State private var error: String?
+    @State private var rejectedOversizedDraft = false
     @State private var didApply = false
     @FocusState private var inputFocused: Bool
 
@@ -31,7 +32,7 @@ struct LightTargetLuxView: View {
                                        value: StudioNumericInput.formattedValue(current, unit: "lx", locale: locale))
                     }
                     HStack {
-                        TextField("Desired lux", text: $draft)
+                        TextField("Desired lux", text: boundedDraft)
                             .keyboardType(.decimalPad).focused($inputFocused)
                             .accessibilityLabel("Desired illuminance in lux")
                             .accessibilityHint("Enter zero to switch this light off.")
@@ -54,11 +55,14 @@ struct LightTargetLuxView: View {
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 if let error {
-                    Section { Label(error, systemImage: "exclamationmark.triangle") }
+                    Section {
+                        Label(error, systemImage: "exclamationmark.triangle")
+                            .accessibilityIdentifier("targetLuxError")
+                    }
                 }
                 Section {
                     Button("Apply to light") { apply() }
-                        .disabled(target == nil || didApply)
+                        .disabled(target == nil || rejectedOversizedDraft || didApply)
                         .accessibilityIdentifier("applyTargetLux")
                 }
             }
@@ -78,12 +82,26 @@ struct LightTargetLuxView: View {
                     draft = StudioNumericInput.editableText(current, decimalSeparator: locale.decimalSeparator ?? ".") ?? ""
                 }
             }
-            .onChange(of: draft) { _, _ in error = nil }
         }
     }
 
+    private var boundedDraft: Binding<String> {
+        Binding(get: { draft }, set: { replacement in
+            // Reject the entire replacement before storing it. Truncating a
+            // pasted number could silently select a different light output.
+            guard StudioNumericInput.isWithinDraftLimit(replacement) else {
+                rejectedOversizedDraft = true
+                error = "That entry is too long. Your previous entry was kept. Edit the value before applying."
+                return
+            }
+            draft = replacement
+            rejectedOversizedDraft = false
+            error = nil
+        })
+    }
+
     private func apply() {
-        guard !didApply, let target else { return }
+        guard !didApply, !rejectedOversizedDraft, let target else { return }
         do {
             let adjusted = try LightOutputAdjustment.light(light, targetingLux: target, in: scene)
             // Set before the callback so reentrant or queued taps cannot

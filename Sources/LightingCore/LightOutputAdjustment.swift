@@ -52,8 +52,20 @@ public enum LightOutputAdjustment {
               unitLux.isFinite, unitLux > 0 else {
             throw LightOutputAdjustmentError.unsupportedGeometry
         }
+
+        // Bound the request by the forward model, not the independently
+        // rounded inverse quotient. Even the next representable lux above
+        // this output is outside the supported physical range.
+        var maximum = source
+        maximum.candela = 100_000
+        guard maximum.isValid,
+              let maximumLux = StudioPhotometry.illuminance(for: maximum, in: scene),
+              maximumLux.isFinite, maximumLux > 0, targetLux <= maximumLux else {
+            throw LightOutputAdjustmentError.outputOutOfRange
+        }
+
         adjusted.candela = targetLux / unitLux
-        guard adjusted.candela > 0, adjusted.isValid else {
+        if adjusted.candela <= 0 || !adjusted.isValid {
             // At the 100,000 cd boundary, independent integration rounding can
             // put the quotient just above the limit. Retain an already exact
             // setting rather than rejecting the editor's unchanged value.
@@ -61,7 +73,12 @@ public enum LightOutputAdjustment {
                StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
                 return source
             }
-            throw LightOutputAdjustmentError.outputOutOfRange
+            guard adjusted.candela > maximum.candela else {
+                throw LightOutputAdjustmentError.outputOutOfRange
+            }
+            // The validated maximum is a separate forward-model candidate.
+            // It must still achieve the request within the accuracy gate below.
+            adjusted = maximum
         }
 
         // Extremely small positive outputs can underflow or lose substantial

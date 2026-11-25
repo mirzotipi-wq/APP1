@@ -17,6 +17,7 @@ struct StudioView: View {
     @State private var showSubject = false
     @State private var renamingLightID: UUID?
     @State private var lightNameDraft = ""
+    @State private var lightNameInputTooLong = false
     @State private var showRenameLight = false
     @State private var renameGeneration: UUID?
     @State private var planDrag: PlanDrag?
@@ -219,13 +220,15 @@ struct StudioView: View {
                 }
             }
             .alert("Rename light", isPresented: $showRenameLight) {
-                TextField("Light name", text: $lightNameDraft)
+                TextField("Light name", text: boundedLightNameDraft)
                     .textInputAutocapitalization(.words)
                 Button("Cancel", role: .cancel) { renamingLightID = nil }
                 Button("Rename", action: sceneAction { renameSelectedLight() })
-                    .disabled(!isValidLightName(lightNameDraft))
+                    .disabled(lightNameInputTooLong || !isValidLightName(lightNameDraft))
             } message: {
-                Text("Use a descriptive name of up to 80 characters.")
+                Text(lightNameInputTooLong
+                     ? "That name is too long. Your previous entry was kept. Edit the name before renaming."
+                     : "Use a descriptive name of up to 80 characters.")
             }
             .sheet(isPresented: $showProjects) {
                 ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
@@ -911,6 +914,7 @@ struct StudioView: View {
                         renamingLightID = light.id
                         renameGeneration = libraryOperation.generation
                         lightNameDraft = lightDisplayName(light)
+                        lightNameInputTooLong = false
                         showRenameLight = true
                     })
                     Button("Duplicate light", systemImage: "plus.square.on.square",
@@ -1295,8 +1299,20 @@ struct StudioView: View {
         (try? StudioDisplayName.newInput(value)) != nil
     }
 
+    private var boundedLightNameDraft: Binding<String> {
+        Binding(get: { lightNameDraft }, set: { replacement in
+            guard replacement.unicodeScalars.prefix(StudioDisplayName.maximumScalars + 1).count
+                    <= StudioDisplayName.maximumScalars else {
+                lightNameInputTooLong = true
+                return
+            }
+            lightNameDraft = replacement
+            lightNameInputTooLong = false
+        })
+    }
+
     private func renameSelectedLight() {
-        guard let id = renamingLightID,
+        guard !lightNameInputTooLong, let id = renamingLightID,
               let name = try? StudioDisplayName.newInput(lightNameDraft),
               renameGeneration == libraryOperation.generation,
               let index = scene.lights.firstIndex(where: { $0.id == id }) else { return }
