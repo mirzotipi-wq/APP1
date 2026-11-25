@@ -1,0 +1,37 @@
+{
+  "id": "043",
+  "task": "Review full-library recovery domain replacement rules, concurrent/stale snapshot handling, unchanged unrelated records and IDs.",
+  "files": [
+    "Sources/LightingCore/ProjectLibrary.swift",
+    "Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "revision_and_scope",
+      "commands": [
+        "git rev-parse HEAD",
+        "git status --short --branch",
+        "git log -3 --format='%h %s'",
+        "git diff --exit-code HEAD -- Sources/LightingCore/ProjectLibrary.swift Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
+      ],
+      "result": "HEAD cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61 on main. Assigned files match HEAD (diff exit 0). Existing unrelated App edits were not touched."
+    },
+    {
+      "kind": "source_review",
+      "commands": [
+        "nl -ba Sources/LightingCore/ProjectLibrary.swift",
+        "nl -ba Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
+      ],
+      "result": "Inspected both files in full. Replacement validates recovery input before acquiring the shared transaction lock; reads and validates the current library without legacy migration; appends without deletion when capacity is available; otherwise compares the complete candidate record, requires an archived inactive candidate, then deletes/inserts in a local snapshot before one size-checked atomic write. All noncandidate records originate from the current snapshot. Ordinary save and both recovery paths use the same process-wide lock, so an ordinary stale save cannot overwrite a completed recovery within the documented process contract."
+    },
+    {
+      "kind": "test_source_review_only",
+      "result": "Reviewed all nine ProjectRecoveryCapacityTests methods: full replacement with newer unrelated edits/new identity; changed, restored and removed stale candidates; active/unarchived rejection; capacity freed after selection; append preserving an active candidate; oversize encoding unchanged bytes; invalid input unchanged bytes; missing/corrupt library with no legacy migration; eight concurrent replacements requiring exactly one winner and seven stale failures. Assertions compare all surviving records, preserving their identities and values. These methods were not executed by this worker."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned scope. Source-review conclusion only; no runtime probe, Swift test, full suite, native/UIKit execution, filesystem interruption probe or cross-process concurrency test was run. External direct writers are explicitly outside the implementation contract.",
+  "canonicalAgent": "/root/w007_review_coordinator/w043_recovery_capacity",
+  "inspectedRevision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "repositoryEdits": false
+}

@@ -1,0 +1,39 @@
+{
+  "id": "044",
+  "task": "Review RecoveryCapacityView destructive selection confirmation, button disabled states, stale candidates/task cancellation and accessibility.",
+  "files": [
+    "App/RecoveryCapacityView.swift",
+    "App/ProjectLibraryOperation.swift",
+    "App/StudioView.swift (recovery presentation and beginLibraryOperation)",
+    "App/ProjectStore.swift (recovery transaction dispatch)",
+    "App/ProjectLibraryView.swift (ProjectLibraryRowPresentation)",
+    "Sources/LightingCore/ProjectLibrary.swift (saveRecoveryCopy replacingArchived)",
+    "UITests/ProjectLibraryUITests.swift (testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup)"
+  ],
+  "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "findings": [],
+  "tests": [
+    {
+      "check": "Read-only source trace of row selection through confirmation, synchronous reservation, asynchronous store completion and dismissal.",
+      "result": "Selection freezes a complete LightingProject; confirmation identifies the archived record and irreversible removal; parent reserves before observer; isReplacing disables exit and candidate actions, and interactive dismissal is blocked."
+    },
+    {
+      "check": "Read-only source trace of refresh cancellation and stale replacement.",
+      "result": "Load UUID plus cancellation checks prevent stale load results or errors from publishing. Failed asynchronous replacement refreshes the choices while preserving unsaved scene. Transaction rechecks complete candidate and only deletes it at full capacity; opened capacity preserves the archived record."
+    },
+    {
+      "check": "Accessibility source inspection.",
+      "result": "Candidate labels identify replacement action and archived name; optional ID values disambiguate duplicate/truncated names; displayed names and IDs wrap vertically; row/refresh controls declare 44-point minimums; native destructive confirmation uses one action without a custom duplicate identifier."
+    },
+    {
+      "check": "UI regression source inspection.",
+      "result": "Existing full-library workflow asserts cancel preservation, exactly one destructive alert button, successful recovery and relaunch persistence. This worker did not execute that test."
+    },
+    {
+      "check": "git rev-parse HEAD; git status --short; git log -1 --oneline",
+      "result": "Revision recorded above; concurrent palette/UI modifications exist outside this assigned review and were not edited."
+    }
+  ],
+  "outcome": "No confirmed material workflow defect in the reviewed source. No native UI execution, VoiceOver interaction, Dynamic Type visual inspection, compiler run or test suite run performed; runtime behavior and visual accessibility remain unverified by this worker.",
+  "canonicalAgent": "/root/w007_review_coordinator/w044_recovery_sheet_flow"
+}

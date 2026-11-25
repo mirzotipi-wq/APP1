@@ -1,0 +1,57 @@
+{
+  "id": "041",
+  "task": "Review bounded project import/export file IO, cancellation/error cleanup and provider scope handling; exclude reference photos.",
+  "files": [
+    "App/ProjectDocumentIO.swift",
+    "NativeTests/ProjectDocumentIOTests.swift",
+    "App/BoundedFileReader.swift",
+    "Sources/LightingCore/LightingProjectDocument.swift (encode/decode bounds only)",
+    "App/ProjectLibraryView.swift (import caller guards only)",
+    "App/ProjectBackupView.swift (export preparation/completion only)"
+  ],
+  "findings": [],
+  "tests": {
+    "inspectedRevision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+    "checks": [
+      {
+        "command": "git rev-parse HEAD",
+        "result": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61"
+      },
+      {
+        "command": "git diff -- App/ProjectDocumentIO.swift NativeTests/ProjectDocumentIOTests.swift App/BoundedFileReader.swift Sources/LightingCore/LightingProjectDocument.swift",
+        "result": "Empty; assigned IO/test sources and supporting bound implementation match inspected HEAD."
+      },
+      {
+        "command": "git status --short",
+        "result": "Nine unrelated App inspector/view files modified; no changes made by worker."
+      },
+      {
+        "command": "cat/sed/rg scoped source inspection",
+        "result": "Source paths and nine native test methods inspected; no native tests executed."
+      }
+    ],
+    "nativeTestMethodsReviewed": [
+      "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+      "testOversizedFileIsRejectedBeforeReadingItsContents",
+      "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+      "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+      "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+      "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+      "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+      "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+      "testCancelledReaderDoesNotPublishOrModifyASelectedProject"
+    ],
+    "sourceReview": [
+      "Import rejects non-file URLs and known nonregular final paths before coordination; descriptor checks remain authoritative after coordination.",
+      "BoundedFileReader opens with O_NOFOLLOW/O_NONBLOCK/O_CLOEXEC, requires an opened regular file, rejects metadata size over 8 MiB, reads at most maximumBytes + 1 using chunks no larger than 64 KiB, and closes the handle through defer.",
+      "Successful security-scope acquisition is balanced by a defer encompassing preflight, file coordination, bounded read, decoding and thrown errors; false acquisition is permitted for sandbox paths.",
+      "Cancellation handles pre-cancel, install/cancel ordering, coordinator cancellation, read checkpoints, decoder return and asynchronous result publication. The production caller also checks cancellation/request identity before starting the library commit.",
+      "Coordinated accessor uses the URL supplied by Foundation, propagates coordination errors, and does not mutate source bytes. Export holds immutable validated encoded bytes capped at 8 MiB.",
+      "Native test source covers round trip/source preservation, oversize, symbolic link/directory/FIFO rejection with timeout, malformed/non-file inputs, presenter error, cancellation while presenter holds coordination, and pre-cancelled synchronous/asynchronous readers."
+    ],
+    "platform": "Linux",
+    "executionLimits": "Read-only source review. No compiler, full suite, XCTest, SwiftUI exporter UI, Apple file-provider runtime, security-scoped bookmark/provider grant or device execution was performed. Native temporary-file tests are not evidence of real provider scope behavior."
+  },
+  "outcome": "No confirmed material defect within the assigned scope. Correctness conclusions are source-review findings only; native/provider behavior remains dependent on actual Apple execution.",
+  "canonicalAgent": "/root/w007_review_coordinator/w041_document_io"
+}

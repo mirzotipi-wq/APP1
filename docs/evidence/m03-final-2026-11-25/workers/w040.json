@@ -1,0 +1,51 @@
+{
+  "id": "040",
+  "task": "Review ProjectLibraryOperationState reserve/finish/adopt identity, overlap prevention, stale completion rejection, scene mutation gating, and initial/load receipt branches.",
+  "files": [
+    "App/ProjectLibraryOperation.swift",
+    "NativeTests/ProjectStoreOperationTests.swift",
+    "App/StudioView.swift",
+    "App/ProjectStore.swift",
+    "App/ProjectLibraryView.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source review",
+      "result": "No material defect found. reserve checks captured generation and an empty pending slot before allocating a fresh request UUID; finish accepts only the pending UUID, preventing delayed finish from clearing a newer reservation."
+    },
+    {
+      "kind": "source review",
+      "result": "adopt requires pending request UUID, current editor generation and captured project identity. Missing/mismatched completion returns nil without changing state. Studio handles matching stale completion by releasing only that reservation and retaining editor state."
+    },
+    {
+      "kind": "source review",
+      "result": "Initial load with nil receipt preserves captured draft scene, leaves saved nil, resets history and rotates generation. Valid load adopts active scene; nonnil result without active project throws. Save/change/reload/recovery require an active project. Failed adoption is released by the Studio catch path."
+    },
+    {
+      "kind": "source review",
+      "result": "First save rotates generation on draft-to-project identity while preserving history and presentation; metadata changes retain generation; project switches and reload/recovery rotate generation and reset history. Save adopts currentScene and the actually persisted scene separately."
+    },
+    {
+      "kind": "source review",
+      "result": "Studio reserves synchronously on MainActor before starting the store task, with no suspension between adoption and editor assignment. Numeric/optics/camera/subject/preview bindings, sceneAction callbacks, room/scene results, and plan drags check busy state plus generation. Undo/redo/replace additionally refuse while busy."
+    },
+    {
+      "kind": "test source inspection only",
+      "result": "Reviewed reservation overlap, late finish, first-save identity, newer-scene dirty state, metadata/switch/reload, corrupt load/save, and load fixture/relaunch assertions in ProjectStoreOperationTests. These methods were not executed by this worker."
+    },
+    {
+      "kind": "repository inspection",
+      "command": "git rev-parse HEAD; git status --short",
+      "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+      "status": "M App/CameraInspector.swift\n M App/LightTargetLuxView.swift\n M App/ManualRoomPlacementView.swift\n M App/NeutralCardInspector.swift\n M App/OpticsInspector.swift\n M App/SceneArrangementView.swift\n M App/StudioGuideView.swift\n M App/StudioSettingsView.swift\n M App/SubjectInspector.swift"
+    },
+    {
+      "kind": "execution limits",
+      "result": "No compiler invocation, targeted runtime probe, native tests, UI tests, or full suite run. No repository files modified. No source-review conclusion is claimed as an executed pass."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned state-machine invariants or initial/load receipt branches; source-review-only conclusion.",
+  "canonicalAgent": "/root/w007_review_coordinator/w040_operation_reservation",
+  "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61"
+}

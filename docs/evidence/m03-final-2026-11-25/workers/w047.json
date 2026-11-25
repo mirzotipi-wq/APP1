@@ -1,0 +1,49 @@
+{
+  "id": "047",
+  "task": "Read-only review of create/duplicate/rename/switch/relaunch UI assertions and test-store isolation.",
+  "canonicalAgent": "/root/w007_review_coordinator/w047_library_relaunch_tests",
+  "revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "initialRevision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "files": [
+    "UITests/ProjectLibraryUITests.swift",
+    "App/KeyAndFillApp.swift",
+    "App/ProjectStore.swift",
+    "App/StudioPreferences.swift",
+    "App/StudioView.swift (HEAD read of store ownership only)",
+    "NativeTests/ProjectStoreOperationTests.swift",
+    "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+    "project.yml"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source-review",
+      "result": "Create/duplicate/rename/switch UI test uses a fresh UUID once (lines 40-41), asserts exact submitted names, current-project semantics and title (lines 63-119), then relaunches same app object/environment and requires both Editorial and renamed Campaign (119-123)."
+    },
+    {
+      "kind": "source-review",
+      "result": "Deletion workflow checks Cancel retention, confirmed disappearance, and absence after relaunch while Keep remains (134-201). Stale-save recovery asserts distinct Backlight/Key scenes after relaunch and switching (224-261). Full/large-library workflows retain fixture flags and require newly added light and four-light count after relaunch (282-350, 384-419)."
+    },
+    {
+      "kind": "source-review",
+      "result": "KeyAndFillApp delegates to StudioView (line 15), whose HEAD owns ProjectStore (line 49). Debug ProjectStore isolates valid UUIDs under Application Support/KeyAndFill-UITests/<UUID> (26-34,81-90), creates full/large fixtures only if existing store load is nil (102-123), and never resets on relaunch. StudioPreferences uses a matching UUID suite (9-20)."
+    },
+    {
+      "kind": "source-review",
+      "result": "NativeTests/ProjectStoreOperationTests.swift:387-458 contains isolation and reopening assertions including unchanged normal-store bytes, retained recovery scene, and retained large-library edits. Core ProjectLibraryTests.swift:12-32 checks distinct edited scene round-trip;96-114 checks duplicate scene/identity and archived state after reopening."
+    },
+    {
+      "kind": "revision-check",
+      "result": "Final git rev-parse HEAD returned 4d0c67d258be802f048e74616cabcdf903e2b59d; git status --short returned no output. Diff from initial revision to final HEAD for seven review/test/configuration files returned no output, so conclusions carry forward on unchanged source. StudioView was read only for ProjectStore ownership, not broadly reviewed."
+    },
+    {
+      "kind": "execution",
+      "result": "No UI tests, native tests, core tests, full suites, or runtime probes executed; source assertions are not executed passes."
+    }
+  ],
+  "limits": [
+    "The named create/duplicate/rename/switch UI workflow checks names and active selection but does not distinguish duplicated scene contents or assert restore persistence after another termination (67-129). This bounds what that individual test proves; related core and distinct-scene recovery tests provide additional coverage. No actual durability failure or material acceptance defect demonstrated.",
+    "Isolation is conditional on DEBUG; conclusions apply to intended debug UI automation, not arbitrary Release test launches."
+  ],
+  "outcome": "No confirmed material defect in the assigned workflow or Debug test-store isolation. Existing relaunch checks use durable scoped stores rather than fixtures that overwrite prior saves."
+}

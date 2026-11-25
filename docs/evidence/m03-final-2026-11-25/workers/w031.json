@@ -1,0 +1,39 @@
+{
+  "id": "031",
+  "task": "Review optic type changes/roll/modifier bounds and accessibility increment/decrement; identify stale or invalid geometry commits.",
+  "files": [
+    "App/OpticsInspector.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "App/StudioView.swift",
+    "App/StudioSlider.swift",
+    "App/StudioSliderEditing.swift",
+    "App/DistanceValueButton.swift",
+    "Tests/LightingCoreTests/StudioOpticsTests.swift",
+    "NativeTests/StudioSliderEditingTests.swift",
+    "NativeTests/StudioTrackingSliderTests.swift",
+    "UITests/StudioOpticsUITests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "revision",
+      "command": "git rev-parse HEAD",
+      "result": "202d41daeb58c3c38acb94ac970890a8e30187da"
+    },
+    {
+      "kind": "source review",
+      "result": "Emitter menu and aim toggle create complete edit transactions; dimensions use 0.05...4 m and roll uses -180...180 degrees, with direct-input domains matching LightOptics validity. opticsBinding(for:) requires live UUID, current operation generation, finite/domain-valid optics, and changed data before committing. Field setters fetch current optics, preserving other live properties. UIKit slider exposes localized model readout and delegates VoiceOver actions to bounded Double arithmetic. A coincident source/target intentionally yields unavailable photometry and is covered by StudioOpticsTests; it is not misclassified here as an invalid scene commit."
+    },
+    {
+      "kind": "focused Linux runtime probe",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -module-cache-path /tmp/app1-f2fcfcdabdca/workers/w031-probe/module-cache /tmp/app1-f2fcfcdabdca/workers/w031-probe/probe.swift",
+      "result": "Exit 0; PASS: 12 focused accessibility adapter boundary/transaction checks. Probe includes unmodified App/StudioSliderEditing.swift and checks dimension/roll lower and upper bounds, clamped endpoint steps, no history callbacks for endpoint no-ops, paired begin/end for actual changes, and non-reversing adjustments for imported coordinates outside usual bounds."
+    },
+    {
+      "kind": "limits",
+      "result": "No full suite, native UIKit/SwiftUI execution, VoiceOver session, rendered layout checks, or native/UI test execution. Existing tests inspected as source only. One rg command included nonexistent Sources/LightingCore/StudioSliderMapping.swift and returned exit 2; all intended OpticsInspector/StudioOptics and adapter files were read successfully."
+    }
+  ],
+  "outcome": "No confirmed material defect found within focused optics type/roll/dimension/binding/accessibility review. Runtime probe validates pure Swift adapter arithmetic only; native acceptance remains root-owned.",
+  "canonicalAgent": "/root/w007_review_coordinator/w031_optics_inspector"
+}

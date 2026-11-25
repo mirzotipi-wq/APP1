@@ -1,0 +1,43 @@
+{
+  "id": "033",
+  "task": "Review StudioPreferences and Settings unit persistence/reduced-motion/dynamic-type consequences; code-only M03 relevant behavior.",
+  "files": [
+    "App/StudioPreferences.swift",
+    "App/StudioSettingsView.swift",
+    "App/StudioView.swift",
+    "App/DistanceValueButton.swift",
+    "App/KeyAndFillApp.swift",
+    "App/SubjectInspector.swift",
+    "App/LightingPlanExportView.swift",
+    "UITests/StudioSmokeTests.swift",
+    "UITests/StudioAppAccessibilityUITests.swift",
+    "Tests/LightingCoreTests/ExactNumericReadoutTests.swift",
+    "Sources/LightingCore/LightingPlan.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "type": "source-review",
+      "check": "Read AGENTS.md, docs/acceptance/m02-m03-code.md and task 033; inspected preferences, settings bindings, distance conversion and editing identities, reduced-motion branch, and adaptive layout paths.",
+      "result": "No confirmed material defect. Units and appearance use shared AppStorage/UserDefaults; malformed raw units fall back to metric; changing units does not write scene coordinates. Distance editor cancels stale-unit draft and guards late applies. Reduced-motion branch bypasses the only explicit SwiftUI withAnimation found in App."
+    },
+    {
+      "type": "source-review",
+      "check": "Read StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback and StudioAppAccessibilityUITests.testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize; searched scripts, NativeTests and UITests for reduceMotion/accessibilityReduceMotion/reduced-motion/withAnimation.",
+      "result": "Existing settings workflow asserts feet on reopen and manual-room fallback; it does not relaunch specifically to validate preferences. Existing accessibility workflow covers default/largest text sizes and controls. No direct reduced-motion runtime assertion found in the searched test sources. These are coverage observations, not reproduced product defects."
+    },
+    {
+      "type": "revision-check",
+      "check": "git rev-parse --short HEAD; git rev-parse HEAD; git status --short; git diff --name-only 202d41d HEAD -- [all reviewed source/test paths]",
+      "result": "Initial HEAD 202d41d; final HEAD cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61. Reviewed paths unchanged between revisions; working tree clean."
+    },
+    {
+      "type": "execution-limit",
+      "check": "No Swift builds, targeted runtime probes, full suite, native UI tests or simulator tests run.",
+      "result": "Source review only. Cannot certify native persistence, dynamic-text clipping/reachability or reduced-motion runtime behavior from this worker."
+    }
+  ],
+  "outcome": "No confirmed material defect in assigned scope. Shared preference wiring, SI-preserving display conversion and explicit reduced-motion path are coherent by source inspection. Dynamic Type layout code uses adaptive stacks/scrolling; actual visual acceptance remains dependent on root native/UI evidence.",
+  "canonicalAgent": "/root/w007_review_coordinator/w033_settings_units",
+  "inspectedRevision": "202d41d; source-equivalent reviewed paths at cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61"
+}

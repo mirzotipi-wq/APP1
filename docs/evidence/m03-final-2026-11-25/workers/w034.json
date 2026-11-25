@@ -1,0 +1,42 @@
+{
+  "id": "034",
+  "canonicalAgent": "/root/w007_review_coordinator/w034_library_migration",
+  "task": "Review ProjectLibraryFileStore initial migration and idempotence, existing/corrupt library precedence, active identities and legacy-byte preservation.",
+  "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "files": [
+    "Sources/LightingCore/ProjectLibrary.swift",
+    "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+    "Sources/LightingCore/SceneFileStore.swift",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "repository check",
+      "command": "git rev-parse HEAD; git status --short (executed separately)",
+      "result": "HEAD cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61; status output empty."
+    },
+    {
+      "kind": "source review",
+      "result": "loadWhileLocked checks projects.json first; decode/validation/read failures propagate and do not fall back to portrait.json. Only a missing library attempts legacy migration. Migration and snapshot compare/write use the same process-wide lock. Migrated IDs are persisted before load returns; subsequent calls read that persisted identity. Existing load does not write either file; migration writes only projects.json."
+    },
+    {
+      "kind": "test-source inspection only",
+      "tests": [
+        "testLegacyMigrationIsIdempotentAndPreservesOriginalBytes",
+        "testMalformedLegacyNeverCreatesLibrary",
+        "testCorruptLibraryNeverFallsBackToLegacyOrOverwrites",
+        "testConcurrentLegacyMigrationReturnsOneStableIdentity",
+        "testInvalidMetadataAndFutureSchemaAreRejected",
+        "testOversizedLibraryAndNonregularPathRemainProtected"
+      ],
+      "result": "Assertions cover repeated migration identity, preserved legacy bytes, corrupt precedence, concurrent migration and invalid active metadata. Inspected, not executed."
+    },
+    {
+      "kind": "limits",
+      "result": "No tests, compiler invocation, native runtime, interruption or write-failure probe executed. No full suite run. No repository edits. .build directory absent; no prebuilt test executable used. External processes are explicitly outside this store transaction contract."
+    }
+  ],
+  "outcome": "No concrete material defect found in the assigned migration and precedence paths during focused source/test review."
+}

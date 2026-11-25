@@ -1,0 +1,60 @@
+{
+  "id": "050",
+  "task": "Review all ten StudioOpticsUITests workflow method accounting and meaningful assertions for transform/undo/selection, plus required shard mapping; read-only source review.",
+  "canonicalAgent": "/root/w007_review_coordinator/w050_optics_ten_workflows",
+  "inspectedRevision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md",
+    "UITests/StudioOpticsUITests.swift",
+    "scripts/native_test_shards.py",
+    "UITests/StudioContentReachability.swift",
+    ".github/workflows/ios-prototype.yml"
+  ],
+  "findings": [],
+  "observations": [
+    {
+      "location": "UITests/StudioOpticsUITests.swift:56-94",
+      "detail": "Exactly ten unique XCTest entrypoints exist: testOpticsEditingUndoRedoAndRelaunch and testOpticsRepeatability02 through testOpticsRepeatability10. Each calls the same runOpticsEditingUndoRedoAndRelaunch helper. These are ten repetitions of one workflow, as the repeatability names indicate."
+    },
+    {
+      "location": "UITests/StudioOpticsUITests.swift:96-152",
+      "detail": "Meaningful assertions require one native width slider, its Width in meters label and 0.6 m initial readout, an actual changed width and enabled Undo, restoration of the prior width while preserving Rectangular softbox kind, enabled Redo and restoration of edited width, a completed save before termination, and persisted kind/width after relaunch. Fresh test IDs isolate runs; the same app launch environment is retained for relaunch."
+    },
+    {
+      "location": "UITests/StudioOpticsUITests.swift:96-152",
+      "detail": "Coverage boundary: these ten workflows do not manipulate spatial transforms or explicitly assert selected-light identity. Their selection assertion concerns emitter kind. This is not by itself a demonstrated acceptance defect because the contract separately requires room/precision/studio workflows; no claim that these ten establish all transform/selection coverage is warranted."
+    },
+    {
+      "location": "scripts/native_test_shards.py:10-19,74-91,111-183; .github/workflows/ios-prototype.yml:357,375,489-521",
+      "detail": "StudioOpticsUITests belongs exactly once to the required studio-optics shard and to no diagnostic shard. The CI matrix includes that shard; source inventory produces ten expected methods, with log verification requiring exactly one ordered started then passed sequence for every method."
+    }
+  ],
+  "tests": [
+    {
+      "command": "git rev-parse HEAD",
+      "result": "4d0c67d258be802f048e74616cabcdf903e2b59d"
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "result": "Exit 0: all 9 UI classes assigned once across 5 required and 1 opt-in diagnostic shards."
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py studio-optics",
+      "result": "Exit 0: -only-testing:KeyAndFillUITests/StudioOpticsUITests"
+    },
+    {
+      "command": "Python -B import of native_test_shards.discover_methods(\"UITests\") plus required/diagnostic membership inspection",
+      "result": "Exit 0: exactly 10 StudioOpticsUITests methods; required membership [studio-optics]; diagnostic membership empty."
+    },
+    {
+      "command": "Read-only line-numbered source review of optics assertions, save helper, inventory/accounting and CI selector wiring",
+      "result": "Completed; no material inventory or assertion defect found in assigned scope."
+    },
+    {
+      "command": "Native XCTest/UI execution and complete suites",
+      "result": "Not run. Source assertions and Python inventory checks are not executed iOS workflow passes."
+    }
+  ],
+  "outcome": "No confirmed material defect. Ten-method required inventory and substantive width/kind undo-redo-save-relaunch assertions are present. Spatial-transform and selected-light coverage must not be attributed to this class alone."
+}

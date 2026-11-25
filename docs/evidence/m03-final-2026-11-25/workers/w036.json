@@ -1,0 +1,47 @@
+{
+  "id": "036",
+  "canonicalAgent": "/root/w007_review_coordinator/w036_archive_delete",
+  "task": "Read-only review of ProjectLibrary archive/restore/delete invariants, active selection/fallback, last-project protection and archived-only deletion.",
+  "files": [
+    "Sources/LightingCore/ProjectLibrary.swift",
+    "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+    "App/ProjectLibraryOperation.swift",
+    "App/ProjectLibraryView.swift",
+    "Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
+  ],
+  "findings": [],
+  "outcome": {
+    "status": "no_material_finding",
+    "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+    "conclusions": [
+      "For a valid library, archive rejects the active ID before mutation; deleteArchived requires both archived and inactive. Consequently the final live project cannot be archived or deleted, and no automatic active-project fallback is needed.",
+      "Restore changes only the archive flag and preserves active identity. Archived selection, rename and duplication are rejected; archive/restore/delete of missing IDs throw before any mutation.",
+      "validated rejects empty libraries, missing/archived active identities and duplicate IDs; file loading and saving call validation. Arbitrary invalid decoded values are not accepted into persisted product state.",
+      "Deletion removes one indexed record and leaves activeID and unrelated records untouched. The store compares the complete expected snapshot under its transaction lock before atomic replacement, preventing a stale deletion from overwriting a concurrent restore.",
+      "Full-capacity recovery rechecks the complete confirmed archived record and preserves newer unrelated records; capacity that became available causes append without deletion. No concrete reachable defect was found in the reviewed source."
+    ],
+    "limits": "Source review only. Existing assertions were inspected, not executed. No Linux, Apple/native, UI, or full-suite test run was performed. No repository files changed."
+  },
+  "tests": [
+    {
+      "check": "git rev-parse HEAD",
+      "result": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61"
+    },
+    {
+      "check": "git status --short",
+      "result": "Empty output; clean working tree at inspection."
+    },
+    {
+      "check": "Manual source trace of ProjectLibrary validated/select/archive/restore/deleteArchived and ProjectLibraryFileStore save/saveRecoveryCopy",
+      "result": "No material invariant violation found."
+    },
+    {
+      "check": "Source inspection of ProjectLibraryTests testDuplicateArchiveRestorePreserveSceneAndActiveIdentity, testOnlyArchivedProjectsCanBeDeletedAndOtherRecordsSurviveReopen, and testArchivedDeletionFreesCapacityAndStaleDeletionCannotOverwrite",
+      "result": "Assertions cover archive/restore identity, nonarchived and active deletion rejection, missing ID handling, preservation/reopen, capacity reclamation, and concurrent restore protection. Tests not run."
+    },
+    {
+      "check": "Production caller trace through ProjectLibraryCommand and ProjectLibraryOperationState.adopt; targeted view/recovery test searches",
+      "result": "Commands delegate to guarded domain methods; adoption rejects a nonnil library without a valid active project. No alternative destructive fallback observed."
+    }
+  ]
+}

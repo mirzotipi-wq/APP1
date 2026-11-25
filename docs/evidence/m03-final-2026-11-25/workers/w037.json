@@ -1,0 +1,51 @@
+{
+  "id": "037",
+  "canonicalAgent": "/root/w007_review_coordinator/w037_project_names",
+  "task": "Review normalized project names, Unicode whitespace/lengths, duplicates and create/rename draft validation.",
+  "inspectedRevision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "files": [
+    "Sources/LightingCore/ProjectLibrary.swift",
+    "Sources/LightingCore/StudioDisplayName.swift",
+    "App/ProjectLibraryView.swift",
+    "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+    "Tests/LightingCoreTests/StudioDisplayNameTests.swift",
+    "NativeTests/ProjectLibraryPresentationTests.swift"
+  ],
+  "findings": [
+    {
+      "severity": "low; nonblocking",
+      "kind": "entry-validation mismatch",
+      "summary": "An interior soft hyphen, zero-width space, word joiner or BOM is accepted by the UI draft validator but rejected at the domain save boundary.",
+      "locations": [
+        "Sources/LightingCore/StudioDisplayName.swift:newInput/isUnsafe",
+        "Sources/LightingCore/ProjectLibrary.swift:normalizedName",
+        "App/ProjectLibraryView.swift:ProjectNameEditor.canSubmit/submit"
+      ],
+      "reproduction": "Paste Self\\u{00AD}portrait as a create or rename draft. StudioDisplayName.newInput returns the name; ProjectLibrary.normalizedName throws invalidName. U+200B, U+2060, U+FEFF between visible words behave the same.",
+      "evidence": "Executed isolated Swift probe uses unchanged StudioDisplayName.swift and verbatim normalizedName method extracted from inspected source. UI=true/core=false for all four format-character cases.",
+      "impact": "Save is enabled for a draft that the command will reject, retaining the sheet and displaying an error. No saved/visible identity corruption or data loss was demonstrated; this is not classified as an M03 blocker.",
+      "limits": "Native SwiftUI interaction and Darwin Foundation were not executed; the UI consequence follows the reviewed canSubmit/submit path."
+    }
+  ],
+  "tests": [
+    {
+      "kind": "executed targeted host probe",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -module-cache-path /tmp/app1-f2fcfcdabdca/workers/w037-module-cache /tmp/app1-f2fcfcdabdca/workers/w037-name-probe.swift",
+      "result": "Exit 0. NBSP/em-space/ideographic-space trimming agreed; 80 ASCII characters accepted, 81 rejected; Persian ZWNJ and joined-family emoji accepted identically; bidi override rejected identically; 320-scalar combining name accepted by both; 321 rejected only by intentionally stricter UI. Four interior format-character mismatches confirmed.",
+      "platform": "Swift 6.2.1 Linux; extracted normalization method, not compiled app"
+    },
+    {
+      "kind": "source review",
+      "result": "Create, rename and duplicate all use normalizedName before mutation; IDs identify records independently of duplicate names. Row presentation retains original names, folds case/diacritics/width/default-ignorables for collisions, and adds distinguishing UUID prefixes across the full library. Rename requires a new draft when its legacy display is shortened. No material identity mismatch found in these paths."
+    },
+    {
+      "kind": "test source review only",
+      "result": "Reviewed project-library invalid-name/round-trip tests and StudioDisplayName/ProjectLibraryPresentation Unicode, limit, duplicate/fallback/UUID-prefix tests; not executed."
+    },
+    {
+      "kind": "not run",
+      "result": "No full suites, native/UI tests, project builds or source mutations."
+    }
+  ],
+  "outcome": "No material saved/visible identity defect established. One confirmed limited UI/core validation mismatch reported to coordinator."
+}

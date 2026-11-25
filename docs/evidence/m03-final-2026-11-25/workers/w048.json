@@ -1,0 +1,70 @@
+{
+  "id": "048",
+  "task": "Read-only review of archive/delete/stale-save/full-library recovery/unsaved-edit UI assertions and M03 contract mapping",
+  "canonicalAgent": "/root/w007_review_coordinator/w048_library_unsaved_tests",
+  "revision": "4d0c67d258be802f048e74616cabcdf903e2b59d",
+  "files": [
+    "UITests/ProjectLibraryUITests.swift",
+    "docs/acceptance/m02-m03-code.md",
+    "App/ProjectLibraryView.swift",
+    "App/ProjectStore.swift",
+    "NativeTests/ProjectStoreOperationTests.swift",
+    "scripts/native_test_shards.py"
+  ],
+  "findings": [],
+  "contract_mapping": [
+    {
+      "contract": "M03 editing/persistence: archive/delete confirmation and relaunch",
+      "method": "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+      "assertions": "Archives the inactive original; requires deletion alert; Cancel leaves Restore enabled; confirmed deletion removes Restore; relaunch preserves Keep and lacks all original active/archive actions (lines 134-201). Archive/restore also appears at lines 122-129 in ordinary workflow reviewed by worker047."
+    },
+    {
+      "contract": "M03 editing/persistence: stale-save recovery and no lost edits",
+      "method": "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+      "assertions": "Keep editing cancellation preserves recovery control; recovery saves and relaunches with Backlight and no Key; opening competing Other window retains Key and no Backlight (lines 224-261)."
+    },
+    {
+      "contract": "M03 editing: stale-save explicit discard confirmation",
+      "method": "testStaleSaveReloadRequiresConfirmation",
+      "assertions": "Requires reload alert and destructive selection, then verifies competing saved title/status and lighting plus absence of recovery control (lines 264-279)."
+    },
+    {
+      "contract": "M03 editing/persistence: full-library recovery and unsaved-edit protection",
+      "method": "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+      "assertions": "Creates a real fourth light; requires archived candidate and replacement alert; cancelling alert and recovery sheet preserves unsaved light; reopened candidate survives; exactly one destructive confirmation action; replacement persists four lights after relaunch while full-library fixture flag remains enabled (lines 282-350)."
+    },
+    {
+      "contract": "M03 editing: unsaved-edit protection / first-save identity refresh",
+      "method": "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+      "assertions": "Initial draft exposes Save current and disables New; successful save enables New while sheet remains open; next creation succeeds and shows Saved locally/title (lines 353-381)."
+    }
+  ],
+  "coverage_limits": [
+    "Dedicated unsaved-library UI method uses an initial draft, not a modified previously saved scene with other records. It directly asserts only New is disabled; it does not runtime-check every row/menu/archive action while dirty. Source review found shared canMutate protection on open/menu/restore/delete and guarded import, so this observation is not a demonstrated product defect or independent acceptance failure.",
+    "Full-library UI method proves edited scene persistence and cancellation behavior, but does not itself compare every unrelated record byte-for-byte. Native/core persistence requirements remain separate and require their own executed evidence.",
+    "Source assertions and method inclusion are not executed UI evidence. No required method may be marked passed from this review."
+  ],
+  "tests": [
+    {
+      "check": "Read AGENTS.md, worker brief, matching coordinator-plan entry048, and m02-m03-code-v2",
+      "result": "Read-only scope and M03 editing/persistence requirements established."
+    },
+    {
+      "check": "nl -ba UITests/ProjectLibraryUITests.swift plus targeted rg/nl reads of listed companion files",
+      "result": "Five assigned methods inspect meaningful outcomes, confirmation/cancel branches, and persisted lighting state; no weakening, skipped branch or synthetic asserted pass found."
+    },
+    {
+      "check": "Source inspection scripts/native_test_shards.py lines9-19,74-89,111-130",
+      "result": "ProjectLibraryUITests is included in required library-reference shard; methods are source-discovered for fail-closed execution accounting."
+    },
+    {
+      "check": "git rev-parse HEAD; git status --short; git diff cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61 HEAD -- UITests/ProjectLibraryUITests.swift App/ProjectLibraryView.swift App/ProjectStore.swift NativeTests/ProjectStoreOperationTests.swift scripts/native_test_shards.py docs/acceptance/m02-m03-code.md",
+      "result": "Final HEAD4d0c67d258be802f048e74616cabcdf903e2b59d; clean tree; empty diff for all reviewed paths. Initial review captured cb92aac; exact unchanged-path check justifies carrying source-review conclusions forward."
+    },
+    {
+      "check": "Native XCTest/UI execution, Swift compilation, probes, full suites",
+      "result": "NOT RUN. Static source/contract review only; Linux host cannot establish Apple runtime behavior."
+    }
+  ],
+  "outcome": "No confirmed material defect in the assigned assertions or contract mapping. No repository edits. Actual required native/UI execution and complete method accounting remain necessary."
+}

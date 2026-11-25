@@ -1,0 +1,204 @@
+{
+  "id": "038",
+  "task": "Align assigned inspector and auxiliary view secondary foregrounds and root action tints with the production-tested StudioPalette, without layout, editing, alert-role, or neutral-card selected-state logic changes.",
+  "files": [
+    "App/CameraInspector.swift",
+    "App/SubjectInspector.swift",
+    "App/OpticsInspector.swift",
+    "App/NeutralCardInspector.swift",
+    "App/SceneArrangementView.swift",
+    "App/StudioSettingsView.swift",
+    "App/StudioGuideView.swift",
+    "App/LightTargetLuxView.swift",
+    "App/ManualRoomPlacementView.swift"
+  ],
+  "findings": [
+    {
+      "kind": "implemented",
+      "detail": "Replaced all 48 literal .foregroundStyle(.secondary) uses in the assigned files with .foregroundStyle(StudioPalette.secondaryText).",
+      "replacementCounts": {
+        "CameraInspector": 5,
+        "SubjectInspector": 3,
+        "OpticsInspector": 4,
+        "NeutralCardInspector": 4,
+        "SceneArrangementView": 2,
+        "StudioSettingsView": 1,
+        "StudioGuideView": 3,
+        "LightTargetLuxView": 4,
+        "ManualRoomPlacementView": 22
+      }
+    },
+    {
+      "kind": "implemented",
+      "detail": "Added .tint(StudioPalette.action) to all nine main view roots and the RoomPlacementNotesView and RoomMeasurementField roots (11 additions). StudioGuide pushed pages inherit their NavigationStack root tint."
+    },
+    {
+      "kind": "backgroundMapping",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "secondarySystemGroupedBackground",
+      "views": [
+        "CameraInspector",
+        "OpticsInspector"
+      ],
+      "evidence": "StudioView explicitly wraps the camera preview controls and light inspector in secondary grouped rounded cards."
+    },
+    {
+      "kind": "backgroundMapping",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "systemBackground",
+      "views": [
+        "SubjectInspector",
+        "RoomPlacementNotesView"
+      ],
+      "evidence": "Both are NavigationStack/ScrollView sheet content with the default system surface; neither adds a custom content fill."
+    },
+    {
+      "kind": "backgroundMapping",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "secondarySystemGroupedBackground",
+      "views": [
+        "SceneArrangementView",
+        "StudioSettingsView",
+        "LightTargetLuxView",
+        "StudioGuideView"
+      ],
+      "evidence": "The changed text is inside default grouped Form rows or explicitly insetGrouped List rows. Their surrounding grouped canvas is systemGroupedBackground; navigation chrome uses system surfaces."
+    },
+    {
+      "kind": "backgroundMapping",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "secondarySystemGroupedBackground and tertiarySystemGroupedBackground",
+      "views": [
+        "NeutralCardInspector"
+      ],
+      "evidence": "Unavailable-meter help and scope caption inherit StudioView meter-card secondarySystemGroupedBackground. COMBINED DIRECT LIGHT and Relative 18% card captions sit on cardView explicitly filled with tertiarySystemGroupedBackground."
+    },
+    {
+      "kind": "backgroundMapping",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "systemGroupedBackground",
+      "views": [
+        "ManualRoomPlacementView"
+      ],
+      "evidence": "The main ScrollView explicitly uses systemGroupedBackground. Intro, map caption, keep/remove helper text, per-point measurements and final scope text are on that surface."
+    },
+    {
+      "kind": "backgroundMapping",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "secondarySystemGroupedBackground",
+      "views": [
+        "ManualRoomPlacementView.placementSummary",
+        "ManualRoomPlacementView.inputs",
+        "RoomMeasurementField"
+      ],
+      "evidence": "placementSummary and inputs each explicitly fill a secondary grouped rounded card. Height-summary unavailable text inherits placementSummary. Field clear icons and unit suffixes inherit inputs."
+    },
+    {
+      "kind": "productionTestCoverage",
+      "detail": "NativeTests/StudioPaletteTests.swift testActionAndSecondaryTextContrastOnResolvedSystemSurfaces resolves the actual production actionUIColor/secondaryTextUIColor on systemBackground, systemGroupedBackground, secondarySystemGroupedBackground and tertiarySystemGroupedBackground; minimum ratio 4.5; light/dark times base/elevated traits with normal accessibility contrast. Source coverage was inspected; this worker did not execute UIKit/native tests."
+    },
+    {
+      "kind": "preservedScope",
+      "detail": "No layout or editing logic changed. Alert destructive/cancel roles and NeutralCardInspector white-balance selection logic remain untouched. No documents, state, README or commits changed."
+    },
+    {
+      "kind": "remainingAdjacentConcern",
+      "file": "App/ManualRoomPlacementView.swift",
+      "location": "RoomPlacementNotesView ShareLink label / .buttonStyle(.borderedProminent), approximately lines 456-460 after this patch",
+      "detail": "Share measurement notes uses the action tint but no explicit StudioPalette.prominentActionText. StudioPalette documents that system prominent foregrounds can choose white even on the pale dark-appearance action fill. Existing testProjectSheetControlsContrastOnTheirProductionSurfaces covers prominentActionText/action, but this ShareLink is not yet wired to that foreground. Coordinator forwarded this for root disposition; not changed in the bounded patch."
+    },
+    {
+      "kind": "remainingAdjacentConcern",
+      "file": "App/ManualRoomPlacementView.swift",
+      "location": "heightSummary two conditional foregrounds and verticalCheck conditional foreground, approximately lines 393, 398 and 423",
+      "detail": "Three existing Color.orange : Color.secondary status branches are outside the requested literal .foregroundStyle(.secondary) replacement and remain unchanged. Neutral-card decorative Color.secondary border is also unchanged."
+    },
+    {
+      "kind": "authorizedFollowup",
+      "file": "App/ManualRoomPlacementView.swift",
+      "detail": "Per root explicit followup authorization, added .foregroundStyle(StudioPalette.prominentActionText) directly to the RoomPlacementNotesView Share measurement notes label inside the borderedProminent ShareLink. Replaced all three conditional Color.secondary else branches in heightSummary and verticalCheck with StudioPalette.secondaryText; retained each Color.orange warning branch and its condition verbatim. No behavior, layout, alert-role or neutral-card selected-state code was changed."
+    },
+    {
+      "kind": "backgroundMapping",
+      "phase": "authorizedFollowup",
+      "foreground": "StudioPalette.prominentActionText",
+      "background": "StudioPalette.action",
+      "view": "RoomPlacementNotesView ShareLink",
+      "evidence": "The label now uses the exact foreground paired with the inherited root .tint(StudioPalette.action) borderedProminent fill. NativeTests/StudioPaletteTests.testProjectSheetControlsContrastOnTheirProductionSurfaces asserts this production UIColor foreground/fill pair at >=4.5 in light/dark and base/elevated traits. This is test-source coverage, not an executed native result."
+    },
+    {
+      "kind": "backgroundMapping",
+      "phase": "authorizedFollowup",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "secondarySystemGroupedBackground",
+      "view": "ManualRoomPlacementView.heightSummary",
+      "evidence": "The two non-warning conditional height-status labels inherit the explicitly secondary grouped placementSummary card."
+    },
+    {
+      "kind": "backgroundMapping",
+      "phase": "authorizedFollowup",
+      "foreground": "StudioPalette.secondaryText",
+      "background": "systemGroupedBackground",
+      "view": "ManualRoomPlacementView.verticalCheck",
+      "evidence": "Per-point center and emitting-face vertical checks appear in measurements on the explicitly system-grouped main ScrollView canvas."
+    },
+    {
+      "kind": "followupResolution",
+      "detail": "The two original remainingAdjacentConcern findings are preserved above as historical observations. Their room-note prominent-foreground and three conditional-secondary issues are now resolved in source by this followup. The explicitly excluded neutral-card decorative Color.secondary border remains unchanged."
+    }
+  ],
+  "tests": [
+    {
+      "name": "Swift syntax parse",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -frontend -parse App/CameraInspector.swift App/SubjectInspector.swift App/OpticsInspector.swift App/NeutralCardInspector.swift App/SceneArrangementView.swift App/StudioSettingsView.swift App/StudioGuideView.swift App/LightTargetLuxView.swift App/ManualRoomPlacementView.swift",
+      "cwd": "/workspace/scratch/f2fcfcdabdca/APP1",
+      "toolchain": "Swift version 6.2.1 (swift-6.2.1-RELEASE); Target x86_64-unknown-linux-gnu",
+      "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61 plus this uncommitted focused patch",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "result": "All nine files parsed. Syntax-only; no SwiftUI typecheck, native build, runtime, or contrast pass is claimed."
+    },
+    {
+      "name": "Whitespace validation",
+      "command": "git diff --check -- App/CameraInspector.swift App/SubjectInspector.swift App/OpticsInspector.swift App/NeutralCardInspector.swift App/SceneArrangementView.swift App/StudioSettingsView.swift App/StudioGuideView.swift App/LightTargetLuxView.swift App/ManualRoomPlacementView.swift",
+      "exitCode": 0,
+      "output": "",
+      "result": "No diff whitespace errors."
+    },
+    {
+      "name": "Focused source review",
+      "result": "Reviewed all nine diffs: 59 insertions and 48 deletions, comprising 48 direct foreground replacements and 11 tint additions. Confirmed no literal .foregroundStyle(.secondary) remains in the assigned files."
+    },
+    {
+      "name": "Native UI/palette suite",
+      "result": "Not run by this worker, as assigned; no native pass claim."
+    },
+    {
+      "name": "Authorized followup Swift syntax parse",
+      "command": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift -frontend -parse App/ManualRoomPlacementView.swift",
+      "cwd": "/workspace/scratch/f2fcfcdabdca/APP1",
+      "toolchain": "Swift 6.2.1; x86_64-unknown-linux-gnu",
+      "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61 plus original focused patch and this followup",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "",
+      "result": "Syntax parse passed; no native build, runtime or contrast pass claimed."
+    },
+    {
+      "name": "Authorized followup whitespace validation",
+      "command": "git diff --check -- App/ManualRoomPlacementView.swift",
+      "exitCode": 0,
+      "output": "",
+      "result": "No diff whitespace errors."
+    },
+    {
+      "name": "Authorized followup focused source review",
+      "command": "rg -n 'foregroundStyle\\(.*Color.orange|prominentActionText|Color.secondary' App/ManualRoomPlacementView.swift",
+      "exitCode": 0,
+      "result": "Observed the three original orange conditional branches with StudioPalette.secondaryText else colors at lines 393, 398 and 423, and explicit prominentActionText at line 458. No Color.secondary remains in this file."
+    }
+  ],
+  "outcome": "Bounded palette consistency patch completed and syntax-checked. Exact source-to-background mappings and adjacent concerns recorded for root integration. No commit created. Authorized followup completed: room-notes prominent label foreground and three non-warning secondary status colors now use the tested production palette; syntax parse and diff check repeated successfully for ManualRoomPlacementView.swift. Original findings, tests and background mappings are retained; no native pass or commit claimed.",
+  "canonicalAgent": "/root/w007_review_coordinator/w038_inspector_palette"
+}

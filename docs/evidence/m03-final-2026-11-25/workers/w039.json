@@ -1,0 +1,33 @@
+{
+  "id": "039",
+  "task": "Review stale snapshot save failure and save-recovery-copy adoption for current generation/scene; seek lost edits.",
+  "files": [
+    "App/ProjectStore.swift",
+    "App/ProjectLibraryOperation.swift",
+    "NativeTests/ProjectStoreOperationTests.swift",
+    "App/StudioView.swift (targeted caller/mutation gates)",
+    "App/ProjectLibraryView.swift (targeted dirty-state gates)",
+    "Sources/LightingCore/ProjectLibrary.swift (targeted transaction functions)"
+  ],
+  "findings": [],
+  "tests": {
+    "inspectedRevision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+    "checksExecuted": [
+      "git rev-parse HEAD: cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61; git status --short: empty at inspection.",
+      "Read worker brief, matching 039 coordinator-plan entry, repository AGENTS.md and docs/acceptance/m02-m03-code.md.",
+      "Read full App/ProjectStore.swift and App/ProjectLibraryOperation.swift; reviewed NativeTests/ProjectStoreOperationTests.swift lines 1-390 with stale-save, receipt, cancellation, recovery and candidate-change tests.",
+      "Traced StudioView.beginLibraryOperation error/adoption paths, recovery callbacks, generation checks, scene mutation guards, room callbacks, drag callbacks and dirty-project library gate.",
+      "Traced ProjectLibraryFileStore.save and both saveRecoveryCopy implementations: locked snapshot CAS before write; locked latest-library recovery append; full-record candidate comparison before archived replacement."
+    ],
+    "actualResult": "Source review found no reachable stale-save/recovery data-loss path. Failed save does not adopt or reset scene/history; matching reservation alone is finished. Recovery captures current scene on the main actor when reserved, blocks scene mutation while pending, and rejects mismatched completion identity/generation. Core recovery preserves unrelated latest records and rechecks full replacement candidate.",
+    "unrun": [
+      "Native XCTest execution",
+      "UIKit/SwiftUI runtime execution",
+      "Full suites",
+      "Compiled targeted probes"
+    ],
+    "limits": "Source review only. Existing test assertions were inspected, not executed. A manually supplied newer currentScene during recover adoption would be replaced by the saved request scene, but the production reservation and mutation guards prevent that transition; no confirmed material defect is claimed."
+  },
+  "outcome": "No material finding in assigned stale-save/recovery scope; no repository edits.",
+  "canonicalAgent": "/root/w007_review_coordinator/w039_stale_save_recovery"
+}

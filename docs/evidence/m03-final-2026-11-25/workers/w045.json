@@ -1,0 +1,67 @@
+{
+  "id": "045",
+  "task": "Independent pre-publication palette, preset semantics and warning/error source review",
+  "files": [
+    "App/CameraInspector.swift",
+    "App/SubjectInspector.swift",
+    "App/OpticsInspector.swift",
+    "App/NeutralCardInspector.swift",
+    "App/SceneArrangementView.swift",
+    "App/StudioSettingsView.swift",
+    "App/StudioGuideView.swift",
+    "App/LightTargetLuxView.swift",
+    "App/ManualRoomPlacementView.swift",
+    "App/StudioPalette.swift",
+    "App/StudioView.swift",
+    "NativeTests/StudioPaletteTests.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "check": "Read pending git diff and production foreground/background contexts",
+      "result": "No material defect found. Nine-view changes preserve binding/action logic and alert roles. Only intended neutral-card adaptive preset layout and visible selected-state cue alter layout."
+    },
+    {
+      "check": "Map production foreground/background pairs to StudioPaletteTests",
+      "result": "Room warning text uses warningUIColor alias of opaque selectionUIColor on tested grouped surfaces; recipe error uses tested destructiveUIColor; ShareLink uses explicit prominentActionText on action tint; neutral-card checkmark is selection on 12% selection composited over secondarySystemGroupedBackground; room light glyph uses fixed planLight on black65% over fixed planBackground, white camera/subject glyphs use same background. UIKit resolved contrast assertions reviewed but not executed."
+    },
+    {
+      "check": "Trace neutral-card workflow assertions at default and AXXXL",
+      "result": "Source matches actual Balance labels/IDs, caption1/medium/monospaced font, selected trait, checkmark.circle.fill, 44pt minimum frame, white-balance change and undo. Accessibility layout switches presets to VStack. No native frame/snapshot success inferred."
+    },
+    {
+      "check": "git diff --check",
+      "result": "Pass (exit 0, no output)"
+    },
+    {
+      "check": "Native tests / UI workflows / full suites",
+      "result": "Not run; read-only source review only."
+    }
+  ],
+  "outcome": "No material blocker in inspected final pending diff; native contrast and UI execution remain separate required evidence.",
+  "canonicalAgent": "/root/w007_review_coordinator/w045_palette_consistency_review",
+  "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "inspected_at_utc": "2026-11-25T21:05:55.501565+00:00",
+  "inspection_scope": "Uncommitted candidate on recorded HEAD; final warning/error/map changes included",
+  "sha256": {
+    "App/CameraInspector.swift": "ecb04e21e5d2c8bef32db988e9487c348b1ed84f55e59b0eb612c4060dcb8063",
+    "App/SubjectInspector.swift": "6bde83b494915bf3870d9ec90b9eb6bf470396eb4322806f8a6c7e736fa49a55",
+    "App/OpticsInspector.swift": "da322be2ac20cae1ab1c87aaf296b612c4071c2e1bbb940481cd7987f7249f0a",
+    "App/NeutralCardInspector.swift": "aafb03edc902c138ba789f9f8c7b1a339feeed45d7ea8496c3863cd103b0b22e",
+    "App/SceneArrangementView.swift": "40b0018689e309368e37d2defac0271f6e96d8913a688bf757a0540ebf852bb8",
+    "App/StudioSettingsView.swift": "ddcfa02b0e49c8bf81d776a698aa03e20a040596a08cf170d1dd078c57a4e32e",
+    "App/StudioGuideView.swift": "5158e7ecef6edb1f798893ec3d4ff7ea6a11654689aa07be56c0676163c351e4",
+    "App/LightTargetLuxView.swift": "30d6b1c1c4a482c206ba0303d7707be11562dfaa716e7c9b7b6307e9720a6eb0",
+    "App/ManualRoomPlacementView.swift": "9fa5496e9cf3ba72ffe13816a8ce11d9d592cc74fcbb1dac7eeae6a3bfeea26b",
+    "App/StudioPalette.swift": "195b5d73f42caec5a4cfd0b5f2bc56b5e25d556cf673fc6d79351ae616efd244",
+    "App/StudioView.swift": "4340be040dcf1268912d30e923e7865e973446ac6996fb2fd01a3b140e6efc8f",
+    "NativeTests/StudioPaletteTests.swift": "c3ba97a176ddc827e3a9ec6ed68929495ba4efadc1c2b2ed67ffa8b6db9f21ed",
+    "UITests/StudioAppAccessibilityUITests.swift": "7486d1a7630ca8fdc3d7931f2e4659dca844b6d58715251c7b6ff32f2de11217"
+  },
+  "limitations": [
+    "No Apple/UIKit runtime execution or native pass claim.",
+    "No device visual inspection or platform accessibility audit.",
+    "Source mappings do not prove actual runtime contrast, hierarchy, clipping, or hit-target behavior."
+  ]
+}

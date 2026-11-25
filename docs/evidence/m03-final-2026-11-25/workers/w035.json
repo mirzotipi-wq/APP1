@@ -1,0 +1,41 @@
+{
+  "id": "035",
+  "task": "Review ProjectLibraryFileStore optimistic expected-snapshot checking, atomic-save ordering, invalid writes and prior-byte preservation; migration excluded.",
+  "files": [
+    "Sources/LightingCore/ProjectLibrary.swift",
+    "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+    "docs/acceptance/m02-m03-code.md",
+    "AGENTS.md"
+  ],
+  "findings": [],
+  "tests": {
+    "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+    "workingTree": "git status --short returned no entries",
+    "actualChecks": [
+      "Read worker brief and matching coordinator-plan entry 035 only.",
+      "Read repository AGENTS.md and M02/M03 acceptance contract.",
+      "Read ProjectLibrary.swift: save validates candidate before lock acquisition; comparison/load and write execute under one process-wide NSLock; defer releases lock on failures.",
+      "Reviewed existing-library path: readLibrary rejects nonregular or over-limit files and bounds actual reads; loadWhileLocked decodes and validates prior snapshot before expected-value comparison; malformed prior data cannot reach candidate write.",
+      "Reviewed write ordering: JSON encoding and maximumBytes check precede directory creation and Data.write(options: .atomic). No explicit deletion or truncation of projects.json occurs before replacement.",
+      "Read targeted test source for stale-save refusal, corrupt-library byte preservation, concurrent first saves and updates, stale deletion, invalid metadata, future schemas, oversized/nonregular prior paths, and recovery invalid-input/capacity byte preservation.",
+      "Located existing EFBIG and before/after-rename interruption probe scripts with rg; did not execute or assess their previously recorded outcomes."
+    ],
+    "commands": [
+      "git rev-parse HEAD",
+      "git status --short",
+      "nl -ba Sources/LightingCore/ProjectLibrary.swift",
+      "nl -ba Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "sed -n 68,100p Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "rg -n EFBIG|RLIMIT_FSIZE|before.rename|after.rename|interruption|write.failure scripts Tests/LightingCoreTests/ProjectLibraryTests.swift Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
+    ],
+    "executedRuntimeTests": [],
+    "limits": [
+      "Source review only; no Swift test, compiler invocation, fault injection, interruption probe, native Apple execution or full suite executed.",
+      "No .build directory was present at the inspected repository path; exploratory rg of that path returned missing-directory status.",
+      "Atomic replacement and byte preservation on actual I/O failure require execution evidence; Data.write(.atomic) source usage is not itself such evidence.",
+      "External-process file writers are expressly excluded by the store contract. Legacy migration was assigned to worker 034 and was not audited here."
+    ]
+  },
+  "outcome": "No concrete material defect found in the assigned existing-library save path. Source order protects malformed/stale snapshots and rejects invalid or oversized candidates before replacing prior file bytes; runtime failure semantics remain unverified by this worker.",
+  "canonicalAgent": "/root/w007_review_coordinator/w035_library_atomic_save"
+}

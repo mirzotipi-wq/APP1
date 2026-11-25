@@ -1,0 +1,69 @@
+{
+  "id": "032",
+  "task": "Review neutral-card inspector reflectance/exposure controls semantics, undo, bounds, text/palette and exact input paths.",
+  "canonicalAgent": "/root/w007_review_coordinator/w032_neutral_card",
+  "revision": "202d41daeb58c3c38acb94ac970890a8e30187da",
+  "files": [
+    "App/NeutralCardInspector.swift",
+    "App/StudioMeterReadout.swift",
+    "App/StudioView.swift",
+    "App/PrecisionValueButton.swift",
+    "App/StudioSlider.swift",
+    "App/StudioSliderEditing.swift",
+    "App/StudioPalette.swift",
+    "Sources/LightingCore/Colorimetry.swift",
+    "NativeTests/StudioPaletteTests.swift",
+    "Tests/LightingCoreTests/StudioNumericInputTests.swift"
+  ],
+  "findings": [
+    {
+      "severity": "P2",
+      "kind": "acceptance-evidence-coverage-gap",
+      "title": "Neutral-card secondary text uses a different foreground from the contrast oracle",
+      "locations": [
+        "App/NeutralCardInspector.swift:35",
+        "App/NeutralCardInspector.swift:83",
+        "App/NeutralCardInspector.swift:115",
+        "App/NeutralCardInspector.swift:122",
+        "App/NeutralCardInspector.swift:130",
+        "App/StudioView.swift:859-861",
+        "NativeTests/StudioPaletteTests.swift:21-25"
+      ],
+      "evidence": "The inspector assigns SwiftUI .secondary to explanatory/secondary text. Its containing card uses secondarySystemGroupedBackground; the combined-light subcard uses tertiarySystemGroupedBackground. The native palette oracle checks StudioPalette.secondaryTextUIColor on these surfaces, which is an explicitly authored opaque color and is not the .secondary foreground used at these call sites.",
+      "impact": "A passing StudioPaletteTests result does not establish the required >=4.5:1 actual secondary-text/background pairs for these inspector labels. This is a concrete coverage mismatch under m02-m03-code-v2, not an observed native contrast-ratio failure.",
+      "minimalReproduction": "Compare NeutralCardInspector foregroundStyle(.secondary) sites and enclosing backgrounds against the foreground list in testActionAndSecondaryTextContrastOnResolvedSystemSurfaces. No actual .secondary resolver/pair is tested there.",
+      "executionLimit": "No UIKit runtime, rendered color sampling, or native test execution performed. Actual resolved contrast remains unmeasured by this worker."
+    }
+  ],
+  "tests": [
+    {
+      "check": "git rev-parse HEAD",
+      "result": "202d41daeb58c3c38acb94ac970890a8e30187da"
+    },
+    {
+      "check": "Read-only inspection with cat, nl, sed and rg",
+      "result": "Reviewed assigned source and direct binding, history, exact-input, accessibility and palette dependencies."
+    },
+    {
+      "check": "Reflectance/exposure/model validation source trace",
+      "result": "Card reflectance fixed at 0.18, matching explanatory copy. White balance uses 2000...10000 K; exposure uses -6...6 stops. Both exact and slider paths use model ranges. PreviewSettings validation rejects nonfinite/out-of-domain writes."
+    },
+    {
+      "check": "Undo/exact-input source trace",
+      "result": "Presets/reset pair begin/end callbacks; slider adapter begins before writes and accessibility actions finish commands. Exact Apply parses within range and writes through previewSettingsBinding, which remembers a discrete edit when no transaction is active. Reset disabled for defaults; no material defect identified."
+    },
+    {
+      "check": "Meter/readout source trace",
+      "result": "Compact lux display distinguishes nonzero sub-0.1 lux with a less-than readout; accessibilityValue uses shared localized exact formatter. Negative zero normalized; invalid/nonfinite compact values return Unavailable. Source only."
+    },
+    {
+      "check": "Native/UI/portable suites",
+      "result": "Not run, as directed. No runtime bounds, undo, Dynamic Type, VoiceOver, or contrast pass claimed."
+    },
+    {
+      "check": "Workspace status",
+      "result": "Existing root-owned staged documentation/evidence changes observed and left untouched. No repository edits made."
+    }
+  ],
+  "outcome": "One source-confirmed contrast-evidence coverage gap; no confirmed functional bounds, exact-entry, reflectance, meter formatting, or undo defect. Native appearance and layout remain untested by this worker."
+}

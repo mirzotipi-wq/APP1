@@ -1,0 +1,56 @@
+{
+  "id": "030",
+  "task": "Review camera inspector lens/position controls, exact value bounds and accessible labels; confirm geometry accepted values.",
+  "files": [
+    "App/CameraInspector.swift",
+    "Sources/LightingCore/CameraFraming.swift",
+    "Tests/LightingCoreTests/CameraFramingTests.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/StudioNumericInput.swift",
+    "App/DistanceValueButton.swift",
+    "App/PrecisionValueButton.swift",
+    "App/StudioSlider.swift",
+    "App/StudioSliderEditing.swift",
+    "App/StudioSliderTracking.swift",
+    "App/StudioView.swift",
+    "Tests/LightingCoreTests/StudioNumericInputTests.swift",
+    "UITests/PrecisionEditingUITests.swift",
+    "UITests/StudioSmokeTests.swift",
+    "UITests/StudioAppAccessibilityUITests.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "repository inspection",
+      "command": "git status --short; git branch --show-current; git rev-parse HEAD; git log -3 --oneline",
+      "result": "main at 202d41daeb58c3c38acb94ac970890a8e30187da. Untracked docs/evidence/m03-final-2026-11-25/ was present and untouched."
+    },
+    {
+      "kind": "source review",
+      "result": "Camera exact focal editor and slider share CameraLens.focalLengthRange (14...200 mm). All presets lie within it. Exact XYZ controls use Position.coordinateRange (-100...100 meters), while quick sliders use -4...4, 0...4, -6...6 and expand to include finite imported coordinates. Scene bindings reject invalid model values and capture library generations; exact changes and preset/slider edit callbacks preserve history structure."
+    },
+    {
+      "kind": "geometry source review",
+      "result": "CameraFraming validates lens, requires subject distance >=0.05 m, and uses EmitterFrame which checks source/target Position.isValid. Projected points must also be valid and at least 0.05 m in front. Near/coincident cameras yield a visible move-away warning rather than invalid coverage."
+    },
+    {
+      "kind": "accessibility source review",
+      "result": "Focal and XYZ sliders supply meaningful labels, localized exact accessible values, and stable identifiers. Exact buttons expose action labels, values, and numeric-editor hints. Presets expose millimeter labels and selected traits, with the numerical focal readout independently conveying current value. Accessibility text sizes switch label/value layout to vertical and preset grid to two columns; controls declare 44-point minimum height. Actual clipping, hit testing, and VoiceOver behavior remain unverified."
+    },
+    {
+      "kind": "test-source inspection only",
+      "result": "Read seven CameraFramingTests methods covering FOV/coverage, projections, focal/distance scaling, rotated/vertical orientation, invalid lenses/near cameras, migration, and persistence; reviewed relevant numeric bounds/imported precision tests and focal undo/relaunch UI workflows. No test pass inferred from source."
+    },
+    {
+      "kind": "execution limit",
+      "result": "No Swift tests, native iOS/UI tests, accessibility audits, or full suites executed. No repository files changed."
+    }
+  ],
+  "outcome": {
+    "status": "no_confirmed_material_defect",
+    "revision": "202d41daeb58c3c38acb94ac970890a8e30187da",
+    "summary": "Focused read-only review found bounds and geometry acceptance aligned and no confirmed material camera-inspector defect. Native layout/accessibility execution remains outside this review."
+  },
+  "canonicalAgent": "/root/w007_review_coordinator/w030_camera_inspector"
+}

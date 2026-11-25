@@ -1,0 +1,44 @@
+{
+  "id": "042",
+  "task": "Review BoundedFileReader for oversized/symlink/nonregular/mutation cases and limit enforcement without unbounded allocation.",
+  "canonicalAgent": "/root/w007_review_coordinator/w042_bounded_file_reader",
+  "revision": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61",
+  "files": [
+    "App/BoundedFileReader.swift",
+    "NativeTests/BoundedFileReaderTests.swift",
+    "App/ProjectDocumentIO.swift (caller context only)",
+    "App/ReferencePhoto.swift (caller context only)",
+    "Sources/LightingCore/LightingProjectDocument.swift (maximumBytes declaration only)",
+    "AGENTS.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "source_review",
+      "result": "Inspected descriptor opening and final-component rejection: O_NOFOLLOW rejects symlinks; O_NONBLOCK prevents FIFO open from waiting; fstat checks the opened regular-file descriptor before reserveCapacity/read; descriptor is closed by defer."
+    },
+    {
+      "kind": "source_review",
+      "result": "Initial st_size above maximumBytes fails before allocation. Limits reject negatives and Int.max, so maximumBytes + 1 cannot overflow. Reads request at most min(65536, maximumBytes + 1 - contents.count); contents above the limit throws immediately. Growing files therefore cannot yield unbounded logical bytes. Data capacity/allocator overhead was not measured."
+    },
+    {
+      "kind": "source_review",
+      "result": "Confirmed production limits: document import 8 MiB; reference-photo import 32 MiB. ProjectDocumentIO supplies NSFileCoordinator around the read; ReferencePhoto reads a provider-owned temporary file during transfer callback."
+    },
+    {
+      "kind": "test_source_review",
+      "result": "Read all 13 BoundedFileReaderTests methods covering metadata checks, nonexistent metadata, preflight/open replacement, actual task cancellation, empty/exact-limit reads, oversized inputs, symlinks/directories/FIFOs, replacement after open, growth after fstat, callback cancellation, invalid limits and missing/nonfile URLs. No test methods executed."
+    },
+    {
+      "kind": "execution",
+      "command": "git rev-parse HEAD",
+      "result": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61"
+    },
+    {
+      "kind": "unrun",
+      "result": "No compiler probe, native XCTest, full suite, Apple runtime, or allocator measurement performed. Review was read-only; only this temporary report was written."
+    }
+  ],
+  "outcome": "No concrete material defect found within the bounded-reader review. Open-descriptor identity and byte-limit logic address the assigned pathname/growth cases. The reader does not independently guarantee a snapshot against uncoordinated in-place writes, consistent with its explicit caller-coordination responsibility; no production workflow failure established."
+}

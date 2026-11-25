@@ -1,0 +1,45 @@
+{
+  "id": "046",
+  "task": "Review project thumbnail validity, output determinism, stale project rendering and bounded dimensions for library scroll responsiveness.",
+  "files": [
+    "App/ProjectLibraryThumbnail.swift",
+    "NativeTests/ProjectLibraryPresentationTests.swift",
+    "App/ProjectLibraryView.swift",
+    "Sources/LightingCore/Scene.swift",
+    "Sources/LightingCore/StudioSceneBounds.swift",
+    "Sources/LightingCore/StudioOptics.swift",
+    "Sources/LightingCore/ProjectLibrary.swift"
+  ],
+  "findings": [],
+  "tests": [
+    {
+      "kind": "revision",
+      "command": "git rev-parse HEAD",
+      "result": "cb92aac5199e9c2a4bdeb540ad42ddd4e2d07c61"
+    },
+    {
+      "kind": "source freshness",
+      "command": "git diff --quiet HEAD -- App/ProjectLibraryThumbnail.swift NativeTests/ProjectLibraryPresentationTests.swift Sources/LightingCore/Scene.swift Sources/LightingCore/StudioSceneBounds.swift Sources/LightingCore/StudioOptics.swift App/ProjectLibraryView.swift",
+      "result": "Exit 0; reviewed implementation equals HEAD. Unrelated pending palette changes were not reviewed."
+    },
+    {
+      "kind": "source review",
+      "result": "Snapshot rejects more than 12 lights before mapping; canonical drawing names and omission of room/lens/preview metadata avoid text-dependent validation work. StudioSceneBounds validates finite authoring coordinates, optics dimensions, intensity/color, and unique IDs. The thumbnail fixes its frame at 64 x 56 points, caps the grid at five lines per axis, and draws at most 12 light markers and 48 rectangular face corners. No renderer, texture, image cache, async publication or retained bitmap exists in this path."
+    },
+    {
+      "kind": "source review",
+      "result": "ProjectLibraryView rebuilds row presentations from the library binding and passes presentation.project.scene into a fresh immutable Snapshot. No thumbnail State or UUID-keyed scene cache can retain a previous project scene. Ordered loops and deterministic EmitterFrame/projection calculations preserve geometry for the same scene and environment. Bounds include aimed targets and rectangle corners with 10-point padding; missing orientation falls back to its center marker."
+    },
+    {
+      "kind": "test source inspection",
+      "command": "nl -ba NativeTests/ProjectLibraryPresentationTests.swift; rg -n \"Thumbnail|thumbnail\" NativeTests Tests",
+      "result": "Presentation tests assert source-project retention and deterministic identity across reorder/filter cases; no direct thumbnail rendering test was found. These tests were read, not executed."
+    },
+    {
+      "kind": "limits",
+      "result": "No Swift/UIKit/Canvas execution, pixel comparison, native layout check, scroll measurement, targeted runtime probe or full suite run. Source review does not establish physical-device responsiveness or rendered pixel determinism."
+    }
+  ],
+  "outcome": "No concrete material defect found in assigned thumbnail path. Native rendering/performance remain unverified by this review.",
+  "canonicalAgent": "/root/w007_review_coordinator/w046_library_thumbnail"
+}
