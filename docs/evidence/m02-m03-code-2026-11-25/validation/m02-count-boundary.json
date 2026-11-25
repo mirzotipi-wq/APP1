@@ -1,10 +1,20 @@
 {
   "baseRevision": "a6ba92b07d82da173c22a004657713be0db72a33",
-  "testedSource": "Count-first validation working tree; exact input hashes below",
+  "testedSource": "90d36f9120289a33ff8af37d626ea959830ddd38",
   "host": "Debian13 x86_64; Swift6.2.1",
   "commands": [
     "swift test --jobs 2",
-    "swift test --configuration release --jobs 2"
+    "swift test --configuration release --jobs 2",
+    "swiftc -O Sources/LightingCore/*.swift scripts/render-study-fixtures.swift -o ../validation/m02-final-render",
+    "../validation/m02-final-render ../validation/m02-final-renders",
+    "swiftc -O Sources/LightingCore/*.swift scripts/benchmark-study.swift -o ../validation/m02-final-benchmark",
+    "../validation/m02-final-benchmark --samples 7 --revision 90d36f9120289a33ff8af37d626ea959830ddd38",
+    "swiftc -O Sources/LightingCore/*.swift scripts/prepare-kernel-fixtures.swift -o ../validation/m02-final-kernel-fixtures",
+    "../validation/m02-final-kernel-fixtures ../validation/m02-final-kernel-fixtures-data",
+    "../validation/verify-kernel ../validation/m02-final-kernel-fixtures-data/*.bin",
+    "swiftc -O Sources/LightingCore/*.swift scripts/precision-boundary.swift -o ../validation/m02-final-precision",
+    "../validation/m02-final-precision ../validation/m02-final-precision-data",
+    "../validation/verify-kernel --maximum-channel-error 1 ../validation/m02-final-precision-data/area-camera-*.bin ../validation/m02-final-precision-data/world-translation-*.bin"
   ],
   "debug": {
     "passed": 338,
@@ -54,6 +64,31 @@
     "m02-final-debug.log": "90c6b3ca8b88ed60e78fac25ba5401d904bed0fde56bebeb06c00683e82a19d0",
     "m02-final-release.log": "83573cf370c3e8a1c5e252f4ff41533b09ad2979dc392ee33e76cc54f21f0b56"
   },
-  "carryForward": "The only core production delta from a6ba92b is count-first rejection of over-twelve-light scenes. Supported <=12 scenes have identical numerical inputs and computation; no renderer math, shader, adapter, cache or lifecycle source changed. The eight precision and twelve image artifacts remain scoped to a6ba92b until exact-source rerun.",
-  "native": "a6ba92b CI running; not yet accepted."
+  "carryForward": "All portable M02 gates rerun against exact90d36f9 core source. The shared C++ harness is byte-identical to the previously compiled verifier. Existing twelve actual images remain byte-identical to final90d36f9 rerun and a6ba92b CI; retained PNGs are lossless views. Native App/NativeTests source is unchanged from a6ba92b; the only core delta rejects oversized scenes before legacy scans with identical errors and preserves all supported <=12-light behavior.",
+  "native": "a6ba92b CI running; not yet accepted.",
+  "tree": "6304b9846f4cfd05ec72fd61bc48bbd931f19dc3",
+  "finalRender": {
+    "scenes": 12,
+    "unsupportedPixels": 0,
+    "byteIdenticalToRetainedAndCI": true
+  },
+  "finalKernel": {
+    "cases": 6,
+    "passed": 6,
+    "maxChannelError": 1,
+    "invalidMaskMismatches": 0
+  },
+  "finalPrecision": {
+    "cases": 8,
+    "passed": 8,
+    "maxChannelError": 0,
+    "invalidMaskMismatches": 0
+  },
+  "finalBenchmark": {
+    "frames": 8,
+    "cancellationsObserved": 12,
+    "visibilityWorkloads": 4,
+    "samplesPerWorkload": 7,
+    "artifact": "m02-final-benchmark.json"
+  }
 }
