@@ -242,4 +242,52 @@ final class SceneMirrorBoundaryTests: XCTestCase {
             }
         }
     }
+
+    func testGenericReflectionAcceptsValidBoundaryPositionsAndStoredAims() throws {
+        for sign in [-1.0, 1.0] {
+            for storedAim in [false, true] {
+                let subject = Position(x: sign, y: 1.5, z: 0)
+                let point = Position(x: sign * -100, y: 2, z: sign * 48)
+                let original = scene(subject: subject,
+                                     camera: .init(x: sign * 2, y: 1.5, z: sign * 2),
+                                     position: storedAim ? subject : point,
+                                     optics: storedAim ? .init(kind: .point, aimTarget: point) : nil)
+                XCTAssertNoThrow(try original.validated())
+                // With the computed -0.6/0.8 coefficients, exact x is
+                // sign * (100 - 2^-53). Forming (diagonal - 1) first instead
+                // produces sign * 100.00000000000003 and rejects a valid point.
+                let reflected = Position(x: sign * 100, y: point.y,
+                                         z: sign * Double(-52).nextDown)
+                var expected = original
+                if storedAim { expected.lights[0].optics?.aimTarget = reflected }
+                else { expected.lights[0].position = reflected }
+                XCTAssertEqual(try SceneTransform.mirroringLights(original), expected)
+                XCTAssertEqual(try SceneTransform.arranged(original, subjectAt: subject,
+                                                          mirroringLights: true), expected)
+            }
+        }
+    }
+
+    func testGenericReflectionRejectsOutsidePositionsAndStoredAimsAtomically() throws {
+        for sign in [-1.0, 1.0] {
+            for storedAim in [false, true] {
+                var original = scene(camera: .init(x: sign, y: 1.5, z: sign * 2),
+                                     position: .init(x: 0, y: 2, z: 0))
+                let point = Position(x: sign * -81, y: 3,
+                                     z: sign * Double(64.25).nextUp)
+                original.lights.append(.init(name: "Outside after reflection",
+                    position: storedAim ? original.lights[0].position : point,
+                    candela: 300, kelvin: 3200,
+                    optics: storedAim ? .init(kind: .point, aimTarget: point) : nil))
+                let snapshot = original
+                XCTAssertNoThrow(try original.validated())
+                // The exact computed-coefficient x rounds to sign * 100.nextUp.
+                // Intermediate rounding used to lose that excess and accept 100.
+                XCTAssertThrowsError(try SceneTransform.mirroringLights(original)) {
+                    XCTAssertEqual($0 as? SceneTransformError, .outsideSupportedScene)
+                }
+                XCTAssertEqual(original, snapshot)
+            }
+        }
+    }
 }

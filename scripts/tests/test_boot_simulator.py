@@ -159,6 +159,41 @@ class BootSimulatorTests(unittest.TestCase):
         self.assertEqual(report["attempts"][-1]["status"], "ready")
         self.assertEqual(report["inventories"][-1]["device"]["state"], "Booted")
 
+    def test_slow_postflight_has_readiness_budget_within_attempt_deadline(self):
+        # Scale the production 20/60-second policy to 1/3 seconds. The real
+        # synthetic child must finish after the ordinary inventory limit while
+        # still respecting both the post-boot limit and shared attempt deadline.
+        for delay, budget, ready in [(1.25, 12, True), (3.25, 12, False), (1.25, 1.5, False)]:
+            with self.subTest(delay=delay, budget=budget), \
+                    tempfile.TemporaryDirectory(prefix="keyfill-slow-postflight-") as temporary:
+                root = Path(temporary)
+                tool = root / "xcrun"
+                tool.write_text(SYNTHETIC_XCRUN)
+                tool.chmod(0o755)
+                scenario = {"udid": UDID, "runtime": RUNTIME, "device_type": DEVICE_TYPE,
+                            "list": [{}, {"sleep": delay}]}
+                (root / "scenario.json").write_text(json.dumps(scenario))
+                environment = {"KEYFILL_STARTUP_TEST_DIRECTORY": str(root),
+                               "PATH": str(root) + os.pathsep + os.environ["PATH"]}
+                args = argparse.Namespace(output=root / "evidence", timeout_seconds=budget,
+                                          udid=UDID, runtime=RUNTIME, device_type=DEVICE_TYPE)
+                with mock.patch.dict(os.environ, environment), \
+                        mock.patch.object(BOOT, "INVENTORY_TIMEOUT_SECONDS", 1.0), \
+                        mock.patch.object(BOOT, "POST_BOOT_INVENTORY_TIMEOUT_SECONDS", 3.0, create=True):
+                    startup = BOOT.SimulatorStartup(args, time.monotonic())
+                    if ready:
+                        startup.run()
+                        self.assertEqual(startup.report["attempts"][-1]["status"], "ready")
+                    else:
+                        with self.assertRaises(BOOT.VerificationFailure):
+                            startup.run()
+                        self.assertNotEqual(startup.report["attempts"][-1]["status"], "ready")
+                command = startup.report["commands"][-1]
+                self.assertEqual(command["name"], "attempt-1-postflight")
+                self.assertEqual(command["status"], "exited" if ready else "timed_out")
+                self.assertLessEqual(command["deadlineElapsedSeconds"], startup.first_deadline - startup.started)
+                self.assertNotIn("recovery", startup.report)
+
     def test_normal_startup_requires_bootstatus_and_postflight(self):
         result, report, calls, _, _ = self.run_case()
         self.assert_ready(result, report)

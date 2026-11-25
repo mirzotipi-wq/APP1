@@ -115,6 +115,8 @@ struct NeutralCardInspector: View {
                 Text("COMBINED DIRECT LIGHT").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
                 Text(StudioMeterReadout.lux(card.totalLux, locale: locale))
                     .font(.system(.title2, design: .monospaced).weight(.semibold))
+                    .accessibilityLabel("Combined ideal illuminance")
+                    .accessibilityValue(StudioNumericInput.formattedValue(card.totalLux, unit: "lx", locale: locale))
                     .accessibilityIdentifier("combinedLux")
                 Text("Relative 18% card · sRGB")
                     .font(.caption).foregroundStyle(.secondary)

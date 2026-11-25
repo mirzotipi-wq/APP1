@@ -235,7 +235,11 @@ jobs:
           name: KeyAndFill-iOS-Simulator-Release
           path: artifacts/KeyAndFill-simulator-release.zip
           if-no-files-found: error
-      - name: Boot selected iPhone simulator
+      # Preparatory host warm-up is diagnostic. The required xcodebuild run
+      # still targets this exact UDID and must execute every selected test.
+      - name: Warm selected iPhone simulator (diagnostic)
+        id: simulator_warmup
+        continue-on-error: true
         timeout-minutes: 10
         run: |
           set -euo pipefail
@@ -247,8 +251,10 @@ jobs:
         timeout-minutes: 18
         env:
           TEST_SHARD: unit
+          SIMULATOR_WARMUP_OUTCOME: ${{ steps.simulator_warmup.outcome }}
         run: |
           set -euo pipefail
+          echo "Simulator warm-up outcome: $SIMULATOR_WARMUP_OUTCOME (diagnostic only)"
           selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
           tests=()
           while IFS= read -r selector; do
@@ -339,7 +345,6 @@ jobs:
     strategy:
       fail-fast: false
       # Each required shard has its own simulator and bounded budget.
-      # Keep at most three active while all five required shards complete independently.
       # Separate hosted runners and per-test stores make all five shards
       # independent. Start app accessibility alongside the longer workflows.
       max-parallel: 5
@@ -423,7 +428,11 @@ jobs:
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
-      - name: Boot selected iPhone simulator
+      # Preparatory host warm-up is diagnostic. The required xcodebuild run
+      # still targets this exact UDID and must execute every selected test.
+      - name: Warm selected iPhone simulator (diagnostic)
+        id: simulator_warmup
+        continue-on-error: true
         timeout-minutes: 10
         run: |
           set -euo pipefail
@@ -473,8 +482,10 @@ jobs:
         timeout-minutes: ${{ matrix.ui_test_minutes }}
         env:
           TEST_SHARD: ${{ matrix.shard }}
+          SIMULATOR_WARMUP_OUTCOME: ${{ steps.simulator_warmup.outcome }}
         run: |
           set -euo pipefail
+          echo "Simulator warm-up outcome: $SIMULATOR_WARMUP_OUTCOME (diagnostic only)"
           selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
           tests=()
           while IFS= read -r selector; do

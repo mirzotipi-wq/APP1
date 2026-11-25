@@ -1,0 +1,58 @@
+{
+  "recordedAtUTC": "2026-11-25T19:41:05.362908+00:00",
+  "failedSource": "ff1ecc9b084e49ddb148d17b0e102bcb89b960ed",
+  "workflow": 45683873798,
+  "observations": [
+    {
+      "role": "app-accessibility",
+      "job": 139453688732,
+      "artifact": 15056431844,
+      "report": "app-accessibility/report.json",
+      "status": "failed",
+      "failure": {
+        "message": "attempt-1-postflight did not complete successfully before its deadline (status=timed_out, exit=-9)",
+        "type": "VerificationFailure"
+      },
+      "elapsedSeconds": 242.33204194400014,
+      "requiredMethodsStarted": 0
+    },
+    {
+      "role": "native",
+      "job": 139453688759,
+      "artifact": 15056322799,
+      "report": "native/report.json",
+      "status": "failed",
+      "failure": {
+        "message": "attempt-1-postflight did not complete successfully before its deadline (status=timed_out, exit=-9)",
+        "type": "VerificationFailure"
+      },
+      "elapsedSeconds": 206.41803341899993,
+      "requiredMethodsStarted": 0
+    },
+    {
+      "role": "room-precision",
+      "job": 139453688770,
+      "artifact": 15057261293,
+      "report": "room-precision/report.json",
+      "status": "failed",
+      "failure": {
+        "message": "Owned command cleanup failed: attempt-1-bootstatus",
+        "type": "VerificationFailure"
+      },
+      "elapsedSeconds": 326.1733567439999,
+      "requiredMethodsStarted": 0
+    }
+  ],
+  "codeRepair": "Post-boot inventory cap20\u219260seconds within unchanged580second overall/287.5second first-attempt limits. Exact identity/state/exit/deadline checks remain.",
+  "regression": {
+    "before": "1 focused test with3subcases: slow valid postflight errors before repair",
+    "after": "All65 tooling tests passed, including delayed-success/per-query-timeout/shared-deadline subcases"
+  },
+  "workflowDisposition": "Explicit simulator warm-up is diagnostic, with original failures preserved. Required xcodebuild runs use the same selected UDID; every native/UI method and required Metal check must execute and pass. No actual test failure is waived.",
+  "sourceSHA256": {
+    "scripts/boot_simulator.py": "9a06b1db129c41af521a4fc4f2ab289e10a6abc3e0e51afe7117e1e6645b6747",
+    "scripts/tests/test_boot_simulator.py": "aa456783994833dbb28e7c83325508a1bdcc260ea7425458713c7a0b10f81f43",
+    ".github/workflows/ios-prototype.yml": "949731b0816990b84953b873902bf4898c378820cad9a44059d6a2b2d6460061",
+    ".github/workflows/platform-accessibility-diagnostics.yml": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9"
+  }
+}

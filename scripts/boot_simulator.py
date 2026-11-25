@@ -28,6 +28,7 @@ DEFAULT_TIMEOUT_SECONDS = 580.0
 MAX_TIMEOUT_SECONDS = 600.0
 MAX_ATTEMPTS = 2
 INVENTORY_TIMEOUT_SECONDS = 20.0
+POST_BOOT_INVENTORY_TIMEOUT_SECONDS = 60.0
 SHUTDOWN_TIMEOUT_SECONDS = 30.0
 
 
@@ -187,9 +188,11 @@ class SimulatorStartup:
             raise failure(f"{record['name']} did not complete successfully before its deadline "
                           f"(status={record['status']}, exit={record.get('returnCode')})")
 
-    def inventory(self, name, deadline):
+    def inventory(self, name, deadline, maximum_seconds=None):
+        if maximum_seconds is None:
+            maximum_seconds = INVENTORY_TIMEOUT_SECONDS
         record = self.command(name, ["list", "devices", "available", "-j"], deadline,
-                              INVENTORY_TIMEOUT_SECONDS)
+                              maximum_seconds)
         self.require_success(record)
         try:
             data = json.loads((self.output / record["stdoutPath"]).read_text(encoding="utf-8"))
@@ -230,7 +233,11 @@ class SimulatorStartup:
             # an independent postflight must still verify this exact device.
             record = self.command(f"attempt-{number}-bootstatus", ["bootstatus", self.udid, "-b"], deadline)
             self.require_success(record, startup=True)
-            ready = self.inventory(f"attempt-{number}-postflight", deadline)
+            # Hosted CoreSimulator can report bootstatus success while its
+            # inventory service is still busy. Allow a bounded readiness query
+            # within this same attempt deadline; identity validation is intact.
+            ready = self.inventory(f"attempt-{number}-postflight", deadline,
+                                   POST_BOOT_INVENTORY_TIMEOUT_SECONDS)
             if ready["state"] != "Booted" or time.monotonic() >= deadline:
                 raise StartupFailure("Simulator was not verified Booted before the attempt deadline")
             attempt["status"] = "ready"

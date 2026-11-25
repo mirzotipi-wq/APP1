@@ -1,0 +1,47 @@
+Simulator startup: preflight; evidence /tmp/keyfill-slow-postflight-dxg3cln4/evidence/01-preflight
+Simulator startup: preflight: exited, exit=0
+Simulator startup: attempt-1-boot; evidence /tmp/keyfill-slow-postflight-dxg3cln4/evidence/02-attempt-1-boot
+Simulator startup: attempt-1-boot: exited, exit=0
+Simulator startup: attempt-1-bootstatus; evidence /tmp/keyfill-slow-postflight-dxg3cln4/evidence/03-attempt-1-bootstatus
+Simulator startup: attempt-1-bootstatus: exited, exit=0
+Simulator startup: attempt-1-postflight; evidence /tmp/keyfill-slow-postflight-dxg3cln4/evidence/04-attempt-1-postflight
+Simulator startup: attempt-1-postflight: timed_out, exit=-9
+ESimulator startup: preflight; evidence /tmp/keyfill-slow-postflight-_l67eec0/evidence/01-preflight
+Simulator startup: preflight: exited, exit=0
+Simulator startup: attempt-1-boot; evidence /tmp/keyfill-slow-postflight-_l67eec0/evidence/02-attempt-1-boot
+Simulator startup: attempt-1-boot: exited, exit=0
+Simulator startup: attempt-1-bootstatus; evidence /tmp/keyfill-slow-postflight-_l67eec0/evidence/03-attempt-1-bootstatus
+Simulator startup: attempt-1-bootstatus: exited, exit=0
+Simulator startup: attempt-1-postflight; evidence /tmp/keyfill-slow-postflight-_l67eec0/evidence/04-attempt-1-postflight
+Simulator startup: attempt-1-postflight: timed_out, exit=-9
+Simulator startup: preflight; evidence /tmp/keyfill-slow-postflight-fgsyxt3z/evidence/01-preflight
+Simulator startup: preflight: exited, exit=0
+Simulator startup: attempt-1-boot; evidence /tmp/keyfill-slow-postflight-fgsyxt3z/evidence/02-attempt-1-boot
+Simulator startup: attempt-1-boot: exited, exit=0
+Simulator startup: attempt-1-bootstatus; evidence /tmp/keyfill-slow-postflight-fgsyxt3z/evidence/03-attempt-1-bootstatus
+Simulator startup: attempt-1-bootstatus: exited, exit=0
+Simulator startup: attempt-1-postflight; evidence /tmp/keyfill-slow-postflight-fgsyxt3z/evidence/04-attempt-1-postflight
+Simulator startup: attempt-1-postflight: timed_out, exit=-9
+
+======================================================================
+ERROR: test_slow_postflight_has_readiness_budget_within_attempt_deadline (scripts.tests.test_boot_simulator.BootSimulatorTests.test_slow_postflight_has_readiness_budget_within_attempt_deadline) (delay=1.25, budget=12)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/13a77d3f98df/APP1/scripts/tests/test_boot_simulator.py", line 185, in test_slow_postflight_has_readiness_budget_within_attempt_deadline
+    startup.run()
+  File "/workspace/scratch/13a77d3f98df/APP1/scripts/boot_simulator.py", line 280, in run
+    if self.attempt(1, device, self.first_deadline):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/13a77d3f98df/APP1/scripts/boot_simulator.py", line 233, in attempt
+    ready = self.inventory(f"attempt-{number}-postflight", deadline)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/13a77d3f98df/APP1/scripts/boot_simulator.py", line 193, in inventory
+    self.require_success(record)
+  File "/workspace/scratch/13a77d3f98df/APP1/scripts/boot_simulator.py", line 187, in require_success
+    raise failure(f"{record['name']} did not complete successfully before its deadline "
+boot_simulator.VerificationFailure: attempt-1-postflight did not complete successfully before its deadline (status=timed_out, exit=-9)
+
+----------------------------------------------------------------------
+Ran 1 test in 2.913s
+
+FAILED (errors=1)

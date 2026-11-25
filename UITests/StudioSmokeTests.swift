@@ -251,10 +251,11 @@ final class StudioSmokeTests: XCTestCase {
         disclosure.tap()
         assertMeterState("Expanded", disclosure: disclosure, in: app)
         let lux = app.staticTexts["combinedLux"]
-        let meterReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label ENDSWITH %@", " lx"), object: lux)
+        let meterReady = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value ENDSWITH %@", " lx"), object: lux)
         XCTAssertEqual(XCTWaiter.wait(for: [meterReady], timeout: 15), .completed)
         reveal(lux, in: app)
-        let originalLux = lux.label
+        XCTAssertEqual(lux.label, "Combined ideal illuminance")
+        let originalLux = try XCTUnwrap(lux.value as? String)
         let balance = app.sliders["previewWhiteBalance"]
         reveal(balance, in: app)
         XCTAssertEqual(balance.value as? String, "5600 K")
@@ -262,10 +263,11 @@ final class StudioSmokeTests: XCTestCase {
         reveal(tungsten, in: app)
         tungsten.tap()
         XCTAssertEqual(balance.value as? String, "3200 K")
-        let stableLux = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", originalLux), object: lux)
+        let stableLux = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND value == %@", originalLux), object: lux)
         XCTAssertEqual(XCTWaiter.wait(for: [stableLux], timeout: 15), .completed, "Balance changes color, not incident lux")
         reveal(lux, in: app, direction: false)
-        XCTAssertEqual(lux.label, originalLux)
+        XCTAssertEqual(lux.label, "Combined ideal illuminance")
+        XCTAssertEqual(lux.value as? String, originalLux)
         let undo = app.buttons["undo"]
         XCTAssertTrue(undo.exists && undo.isHittable)
         undo.tap()

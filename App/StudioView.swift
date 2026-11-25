@@ -937,6 +937,8 @@ struct StudioView: View {
                 if let lux = StudioPhotometry.illuminance(for: light, in: scene) {
                     Text(StudioMeterReadout.lux(lux, locale: locale))
                         .font(.system(.title2, design: .monospaced).weight(.semibold))
+                        .accessibilityLabel("Ideal illuminance")
+                        .accessibilityValue(StudioNumericInput.formattedValue(lux, unit: "lx", locale: locale))
                         .accessibilityIdentifier("idealLux")
                     Text("Direct incident light at the subject center. Rim lights may read zero on this plane.")
                         .font(.caption).foregroundStyle(StudioPalette.secondaryText)

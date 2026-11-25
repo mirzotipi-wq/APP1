@@ -145,9 +145,21 @@ public enum SceneTransform {
         let (c, s) = rotationComponents(degrees: degrees)
         let center = scene.subject
         func rotated(_ p: Position) -> Position {
-            let x = p.x - center.x, z = p.z - center.z
-            return .init(x: center.x + c * x + s * z, y: p.y,
-                         z: center.z - s * x + c * z)
+            // Retain the original coordinate terms until the completed sum;
+            // rounding a displacement first can reject a valid boundary point.
+            let x = [p.x, -center.x], z = [p.z, -center.z]
+            func coordinate(_ origin: Double, _ first: Double, _ second: Double) -> Double {
+                var needsExact = false
+                let terms = scaledTerms(x, by: first, needsExact: &needsExact)
+                    + scaledTerms(z, by: second, needsExact: &needsExact)
+                if needsExact {
+                    return exactProductSum([[origin]] + x.map { [$0, first] }
+                        + z.map { [$0, second] })
+                }
+                return affineSum([origin] + terms)
+            }
+            return .init(x: coordinate(center.x, c, s), y: p.y,
+                         z: coordinate(center.z, -s, c))
         }
         scene.lights = scene.lights.map { light in
             var next = light
@@ -215,9 +227,22 @@ public enum SceneTransform {
                 return .init(x: affineSum([-p.z, center.x, center.z]), y: p.y,
                              z: affineSum([-p.x, center.z, center.x]))
             }
-            let x = p.x - center.x, z = p.z - center.z
-            return .init(x: p.x + ((diagonal - 1) * x + cross * z), y: p.y,
-                         z: p.z + (cross * x - (diagonal + 1) * z))
+            // Retain the original terms and product residuals until the final
+            // coordinate. Rounded offsets or coefficient differences can move
+            // a valid boundary point outside, or hide a true outside result.
+            let x = [p.x, -center.x], z = [p.z, -center.z]
+            func coordinate(_ origin: Double, _ first: Double, _ second: Double) -> Double {
+                var needsExact = false
+                let terms = scaledTerms(x, by: first, needsExact: &needsExact)
+                    + scaledTerms(z, by: second, needsExact: &needsExact)
+                if needsExact {
+                    return exactProductSum([[origin]] + x.map { [$0, first] }
+                        + z.map { [$0, second] })
+                }
+                return affineSum([origin] + terms)
+            }
+            return .init(x: coordinate(center.x, diagonal, cross), y: p.y,
+                         z: coordinate(center.z, cross, -diagonal))
         }
         scene.lights = scene.lights.map { light in
             var next = light
