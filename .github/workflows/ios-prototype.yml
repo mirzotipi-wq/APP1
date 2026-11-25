@@ -1,7 +1,9 @@
 name: iOS Prototype
 on:
   push:
+    paths-ignore: ['**/*.md', 'docs/**', 'agents/**']
   pull_request:
+    paths-ignore: ['**/*.md', 'docs/**', 'agents/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -67,6 +69,27 @@ jobs:
           set -euo pipefail
           swiftc -O Sources/LightingCore/*.swift scripts/render-study-fixtures.swift -o "$RUNNER_TEMP/render-study"
           "$RUNNER_TEMP/render-study" study-artifacts | tee study-render.log
+      - name: Verify bounded Study performance workloads
+        run: |
+          set -euo pipefail
+          swiftc -O Sources/LightingCore/*.swift scripts/benchmark-study.swift -o "$RUNNER_TEMP/benchmark-study"
+          "$RUNNER_TEMP/benchmark-study" --samples 7 --revision "$GITHUB_SHA" > study-benchmark.json
+          python3 - <<'PY'
+          import json, math
+          report = json.load(open("study-benchmark.json"))
+          assert report["optimizedBuild"] is True
+          assert report["measuredSamplesPerWorkload"] >= 7
+          assert len(report["frames"]) == 8
+          assert len(report["cancellation"]) == 12
+          assert len(report["visibility"]) == 4
+          assert all(f["unsupportedPixels"] == 0 for f in report["frames"])
+          assert all(c["cancelled"] is True for c in report["cancellation"])
+          for workload in report["frames"] + report["visibility"]:
+              samples = workload["timing"]["samplesMilliseconds"]
+              assert len(samples) >= 7 and all(math.isfinite(x) and x >= 0 for x in samples)
+          print("Eight deterministic frames, twelve observed cancellations and four visibility workloads passed.")
+          print("Host timings are diagnostics; no physical-device frame-rate, memory or thermal claim.")
+          PY
       - name: Compare shared Float32 kernel math against Swift CPU oracle
         run: |
           set -euo pipefail
@@ -96,6 +119,7 @@ jobs:
             study-render.log
             study-kernel.log
             study-precision.log
+            study-benchmark.json
             study-artifacts/
   simulator:
     # Standard Intel pool avoids the observed ARM hosted-runner acquisition failure.

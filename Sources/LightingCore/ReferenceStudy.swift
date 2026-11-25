@@ -336,6 +336,16 @@ public struct StudyLighting: Sendable {
                 continue
             }
             let area = areaGuards[areaIndex]
+            // A rectangle is one-sided, so every sample on its back side has
+            // zero emission. Keep all area guards above this shortcut. The
+            // additional 5 cm depth and 1 nm roundoff allowance also keep the
+            // per-sample distance rejection unchanged at its exact boundary;
+            // coplanar and nearly coplanar receivers use the original path.
+            if let axis = sample.emittingNormal,
+               dot3(receiver - area.center, axis) < -(0.05 + 1e-9) {
+                index += grid * grid
+                continue
+            }
             func plane(_ n: SIMD3<Double>) -> StudyAreaSamplingPlane {
                 .init(center: dot3(n, area.center - receiver),
                       x: dot3(n, area.right) * area.halfWidth,

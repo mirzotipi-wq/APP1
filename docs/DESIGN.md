@@ -1,5 +1,7 @@
 # Design and visual standard
 
+For M02/M03 development acceptance, the owner's 25 November 2026 code-only scope in [the current contract](acceptance/m02-m03-code.md) supersedes external capture and human-review prerequisites below. The original physical comparison plan remains an unexecuted validation protocol, not a condition for those code milestones or an achieved result.
+
 Design like a professional camera instrument, not a generic AI dashboard. Near-black charcoal studio canvas, restrained warm amber selection accent, neutral inspector surfaces, readable type, real spatial geometry; support light mode and system accessibility. Do not rely on hue alone. Avoid excessive gradients, glass effects and decorative animation. Respect platform navigation, safe areas, minimum 44pt interactive targets, accessible labels and Dynamic Type.
 
 Information architecture: Projects -> Studio -> Reference / Compare / AR / Export. Studio canvas is primary; compact toolbar (select, add, orbit/top/camera view, undo), collapsible inspector, obvious selection and units. On small screens keep canvas usable; on larger screens side panels. Onboarding guides a single three-light portrait with a quick successful result. Empty, loading, interrupted, permission denied and error states are designed, not placeholders.

@@ -126,8 +126,9 @@ actor StudyRenderEngine {
     // Four small frames fit; at 192 × 128 the byte limit retains at most two.
     static let maximumCachedFrames = 4
     static let maximumCachedPixelBytes = 256 * 1024
+    static let maximumCachedMaskBytes = 64 * 1024
 
-    private struct CacheKey: Equatable {
+    private struct CacheKey: Equatable, Sendable {
         let scene: LightingScene
         let width: Int
         let subject: StudySubject
@@ -154,17 +155,14 @@ actor StudyRenderEngine {
         }
     }
 
-    private struct CachedFrame {
-        let key: CacheKey
-        let frame: StudyRenderedFrame
-    }
-
     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
     private var state = State.unchecked
     // Least recently used first. Validated keys contain at most twelve lights
     // and only bounded, fixed-size values after display names are removed.
-    private var cachedFrames: [CachedFrame] = []
-    private var cachedPixelBytes = 0
+    private var frameCache = StudyFrameCache<CacheKey, StudyRenderedFrame>(
+        maximumCount: StudyRenderEngine.maximumCachedFrames,
+        maximumPixelBytes: StudyRenderEngine.maximumCachedPixelBytes,
+        maximumMaskBytes: StudyRenderEngine.maximumCachedMaskBytes)
     private let additionalCancellation: @Sendable () -> Bool
 
     /// An additional cooperative cancellation source is useful to callers that
@@ -180,12 +178,11 @@ actor StudyRenderEngine {
         guard !isCancelled() else { throw StudyError.cancelled }
         let renderWidth = subject == .bust ? min(width, PortraitStudyRenderer.maximumWidth) : width
         let key = CacheKey(scene: scene, width: renderWidth, subject: subject)
-        if let key, let index = cachedFrames.firstIndex(where: { $0.key == key }) {
-            let cached = cachedFrames[index]
+        if let key {
+            // Check before the cache promotes a hit. A cancelled request must
+            // neither publish pixels nor change the eviction order.
             guard !isCancelled() else { throw StudyError.cancelled }
-            cachedFrames.remove(at: index)
-            cachedFrames.append(cached)
-            return cached.frame
+            if let cached = frameCache.value(for: key) { return cached }
         }
         if subject == .bust {
             // The mannequin has additional geometry. Do not send it
@@ -236,25 +233,15 @@ actor StudyRenderEngine {
         state = .cpu
         // A runtime backend failure invalidates its old frames as well. A later
         // hit must not resurrect Metal after the engine has failed closed.
-        for index in cachedFrames.indices.reversed() where cachedFrames[index].frame.backend == .metal {
-            cachedPixelBytes -= cachedFrames.remove(at: index).frame.image.rgba.count
-        }
+        frameCache.removeAll { $0.backend == .metal }
     }
 
     /// Only called after the final cooperative cancellation check. There is no
     /// suspension between that check, cache admission and returning the frame.
     private func retain(_ frame: StudyRenderedFrame, for key: CacheKey?) -> StudyRenderedFrame {
-        let byteCount = frame.image.rgba.count
-        guard let key, byteCount <= Self.maximumCachedPixelBytes else { return frame }
-        // Evict before appending, so storage never temporarily exceeds either
-        // limit. Subtraction avoids overflow even if image bounds later grow.
-        while !cachedFrames.isEmpty &&
-                (cachedFrames.count >= Self.maximumCachedFrames ||
-                 cachedPixelBytes > Self.maximumCachedPixelBytes - byteCount) {
-            cachedPixelBytes -= cachedFrames.removeFirst().frame.image.rgba.count
-        }
-        cachedFrames.append(CachedFrame(key: key, frame: frame))
-        cachedPixelBytes += byteCount
+        guard let key else { return frame }
+        frameCache.insert(frame, for: key, pixelBytes: frame.image.rgba.count,
+                          maskBytes: frame.image.unsupportedPixelMask.count)
         return frame
     }
 }

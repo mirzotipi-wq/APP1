@@ -1,5 +1,7 @@
 # Technical architecture
 
+M02/M03 development acceptance follows the owner-authorized [m02-m03-code-v2 contract](acceptance/m02-m03-code.md). Physical calibration, device measurements, and manual human audits mentioned below remain unperformed validation limits; they are not prerequisites for those two development milestones under the revised scope.
+
 ## Platform
 Native SwiftUI iOS 17+ baseline; verify deployment and toolchain requirements before release. Portable LightingCore Swift package for domain logic. App/ is the composition/UI layer. XcodeGen produces a reproducible Xcode project. Prefer Apple frameworks, limited dependencies with documented licenses, no embedded keys.
 

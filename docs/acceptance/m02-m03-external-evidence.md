@@ -1,5 +1,7 @@
 # M02/M03 external acceptance packet
 
+> Historical, unexecuted external validation protocol. The owner removed these outside prerequisites from M02/M03 development acceptance on 25 November 2026. Use [m02-m03-code-v2](m02-m03-code.md) for current phase gates. This packet is preserved and has not been executed.
+
 **Status: prepared, not executed.** This packet collects evidence for the existing
 [quality contract](../QUALITY.md). It does not change that contract, grant an
 exception, or count as a device test or photographer review. The accompanying

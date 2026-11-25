@@ -1,0 +1,40 @@
+# M02/M03 code acceptance
+
+**Contract:** `m02-m03-code-v2`
+**Authority/date:** the owner's 2026-11-25 instruction to remove unavailable outside factors and proceed through the phases one by one, working on the code.
+**Scope:** M02, then M03. Gate IDs and dependency order are unchanged. This contract defines required work; it records no execution or completion.
+
+## Removed external requirements
+
+M02 no longer requires twelve real controlled scenes, calibration captures, independent photographer review, a physical iPhone 13 performance run, five-minute frame-time sampling, fifteen-minute thermal sampling or physical resident-memory measurements. M03 no longer requires a manual real-device accessibility audit. These requirements are removed from these phases, not deferred as hidden completion conditions. Software fixture results do not establish photographic fidelity, calibrated skin/material response, 60 fps, device memory/thermal behavior or real-device accessibility.
+
+Apple-provided `performAccessibilityAudit(for: .all)` methods and the independent control remain intact as opt-in diagnostics. Preserve errors, issue reports, interruptions and unrun outcomes exactly; `Code=-56` and missing issue enumeration are never passes. Required app semantics/layout checks below replace their milestone role. Concrete product defects found by any diagnostic still require correction and suitable regression evidence.
+
+M01 and M04–M07 are outside this revision. Completing M02/M03 neither satisfies their gates nor authorizes publication.
+
+## Required M02 gates
+
+| Gate | Acceptance and evidence |
+|---|---|
+| `photometry` | Preserve point-model inverse-square/cosine error <= 1% and declared area-model numerical-reference error <= 5%. Existing analytic, invalid-input, range, transform, color and photometric invariant tests must pass in Debug and Release. Document supported geometry, units and approximation limits. |
+| `rendering` | Run the twelve deterministic synthetic scenes declared in `scripts/render-study-fixtures.swift` using the shipped renderer, preserving the original `soft`, `hard`, `warm`, `bust-soft`, `bust-hard` and `bust-side` fixtures. Record all twelve names/configurations; each must produce its scene JSON and actual image with zero unsupported pixels. Review all twelve images for geometry, shadow, color and exposure defects and retain the outputs. Run all six `StudyValidationFixtures` through the CPU/shared-Float32 harness: unsupported counts and every invalid-mask position must match; mean RGB channel error <= 1 and fraction of channels with error > 4 <= 0.005. Run the eight existing far-camera/world-translation precision fixtures with maximum channel error <= 1. Preserve the existing renderer, geometry, visibility, cancellation and backend-routing regressions. A host kernel check is not an actual Metal execution; report native backend checks separately and exactly. |
+| `performance` | Pass deterministic cancellation and cache tests: at most eight further pixel evaluations after an external cancellation immediately following a false poll; cancelled/failed work never publishes or enters the cache; at most four completed frames and 256 KiB RGBA payload plus 64 KiB validity masks; mannequin width at most 144 pixels; existing bounded sample budgets and validated-input limits remain enforced. Cache keys, eviction and backend fallback must preserve correct images. Run `scripts/benchmark-study.swift` with `-O`, one warm-up and at least seven measured samples per workload; retain all eight frame workloads, twelve cancellation probes and four visibility workloads. Repeated frame bytes must agree and supported images must have zero unsupported pixels; cancellation probes must observe cancellation. Report raw samples and p50/p95 with host/compiler/revision. Timing is diagnostic, with no portable timing threshold or inferred physical-device result. |
+
+Numerical thresholds come from the existing photometry contract, `StudyParityMetrics.passes`, the strict precision harness and cancellation/cache contracts. Do not change existing fixtures, tolerances or tests to manufacture acceptance. The image matrix contains twelve software scenes; it is distinct from the six backend parity cases, whose near-field case deliberately tests unsupported pixels. The expanded synthetic matrix does not stand in for twelve physical photographs.
+
+## Required M03 gates
+
+| Gate | Acceptance and evidence |
+|---|---|
+| `editing` | Preserve exact units, valid gestures, stable selection, undo/redo and no lost edits. All ten `StudioOpticsUITests` repeatable workflows must pass. Required precision, room, studio and project-library workflows must also finish successfully, including create/duplicate/rename/switch, archive/delete confirmation, stale-save recovery, full-library recovery, unsaved-edit protection and relaunch. No interrupted, unstarted or failed required method can be counted as a pass. |
+| `accessibility` | Required app-level checks must cover meaningful labels/values/actions; localized exact numeric readouts with the existing <= 1e-9 round-trip tolerance; increment/decrement bounds and undo behavior; enabled/disabled controls; non-color-only selection/status cues; and reduced-motion handling. Check essential Plan/inspector/precision-editor/library controls at default and largest accessibility text sizes: no clipped essential text, lost action or unreachable control after scrolling. Retain the 44-point interactive-target minimum in `DESIGN.md`. Assert app-controlled action/secondary text contrast >= 4.5:1 on declared light/dark backgrounds, and essential non-text state/control cues >= 3:1. Record the palette/background pairs and observed layout/semantic results. The earlier concrete Dynamic Type, clipping and contrast findings must have a documented implementation disposition and corresponding checks. Passing these checks is app code acceptance, not a completed platform audit or manual VoiceOver session. |
+| `persistence` | Keep migration, atomic-write, malformed/oversized data, interruption, project round-trip, deletion/recovery and no-data-loss requirements. Run the existing core/native persistence and operation tests plus required library/relaunch workflows. Retain actual bounded write-failure and before/after-rename interruption probes, including unchanged prior bytes/identities/unrelated records where required. Report the actual host/filesystem and failure mechanism; EFBIG or process interruption does not establish device power-loss or provider behavior. |
+
+The contrast thresholds above make the revised app-level requirement explicit; they are acceptance targets, not a claim that a test or audit has already passed. Automated assertions, recorded application output and source review must address the actual controls; checking only that an accessibility identifier exists is insufficient.
+
+## Evidence and integration
+
+- Record exact commands, tested commit, host/toolchain, configuration, workload, terminal outcomes and raw artifact paths. Re-run affected checks after implementation changes. Existing passes may be carried forward only with an explicit unchanged-source justification.
+- Keep required functional and app-level accessibility checks in the development suite. List opt-in platform audits separately, preserving their methods and fail-on-issue behavior; exclusion from milestone acceptance must not be reported as an executed pass or hidden as a skipped required test.
+- Retain all earlier failed and unavailable evidence. Append observations scoped to `m02-m03-code-v2`; never relabel a historical physical gate as tested. Keep the gate IDs `photometry`, `rendering`, `performance`, `editing`, `accessibility` and `persistence` so the existing ledger remains valid.
+- `scripts/agent_cycle.py check` validates ledger structure only. It does not prove artifact truth, freshness or this contract's acceptance. Promote M02 only when its required evidence passes, then M03 only when its own required evidence passes. Leave missing required code evidence unverified.

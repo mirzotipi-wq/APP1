@@ -8,6 +8,7 @@ import LightingCore
 struct ReferenceStudyPreview: View {
     let scene: LightingScene
     var subject: StudySubject = .sphere
+    @Environment(\.scenePhase) private var scenePhase
     @State private var frame: Frame?
 
     private struct Request: Equatable {
@@ -25,6 +26,9 @@ struct ReferenceStudyPreview: View {
         }
     }
     private var request: Request { .init(scene: scene, subject: subject) }
+    // Changing to nil cancels in-flight work while inactive; foregrounding
+    // starts the latest scene/subject request without discarding a valid frame.
+    private var activeRequest: Request? { scenePhase == .active ? request : nil }
     private var imageLabel: String {
         subject == .sphere ? "Rendered neutral sphere and panel" : "Rendered neutral mannequin bust"
     }
@@ -102,8 +106,8 @@ struct ReferenceStudyPreview: View {
                 }
             }
         }
-        .task(id: request) {
-            let snapshot = request
+        .task(id: activeRequest) {
+            guard let snapshot = activeRequest else { return }
             // A quick switch back to a completed request can reuse its pixels.
             // Failed frames remain retryable when this view appears again.
             if let frame, frame.request == snapshot, frame.image != nil { return }

@@ -1,0 +1,24 @@
+name: Project state
+on:
+  push:
+    paths: ['AGENTS.md', 'README.md', 'docs/**', 'agents/**', 'scripts/agent_cycle.py', 'scripts/tests/test_agent_cycle.py', '.github/workflows/project-state.yml']
+  pull_request:
+    paths: ['AGENTS.md', 'README.md', 'docs/**', 'agents/**', 'scripts/agent_cycle.py', 'scripts/tests/test_agent_cycle.py', '.github/workflows/project-state.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: project-state-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  state:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate phase state and evidence structure
+        run: |
+          set -euo pipefail
+          python3 scripts/agent_cycle.py check
+          python3 scripts/agent_cycle.py next
+          python3 -m unittest discover -s scripts/tests -p 'test_agent_cycle.py'

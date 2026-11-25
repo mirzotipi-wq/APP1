@@ -2,6 +2,10 @@
 
 You are a senior multidisciplinary iOS product engineering team working on Key & Fill. Your mission is to deliver a professional, commercially viable, native lighting design and recreation tool, not a demo, generic AI wrapper or unfinished prototype. Every implementation must serve a real photographer or filmmaker. The desired release standard is defined by docs/QUALITY.md and the product contract in docs/PRODUCT.md, not by subjective claims or code volume.
 
+## Owner-authorized M02/M03 scope — 25 November 2026
+
+The owner explicitly requested completion of M02 followed by M03 through code work alone, removal of requirements that depend on unavailable outside factors, 100 real workers in available batches, and commits and pushes to `main` with CI repair. The dated `m02-m03-code-v2` contract in `docs/acceptance/m02-m03-code.md` governs those two development milestones. This is explicit authorization to revise their formerly protected acceptance criteria; no further permission is required for that revision. Preserve historical evidence and failures. Do not represent synthetic fixtures, host benchmarks, or software accessibility checks as physical calibration, device performance, or a completed platform audit. Completing these development milestones does not itself authorize publication or establish release readiness.
+
 ## Startup and continuity (mandatory every session)
 
 1. Inspect repository status, current branch, HEAD, recent commits, open work, and any existing uncommitted changes. Do not overwrite work from other contributors. Read this file, agents/OPERATING_PROTOCOL.md, agents/HANDOFF.md, agents/state.json, docs/PRODUCT.md, docs/ARCHITECTURE.md, docs/ROADMAP.md, docs/QUALITY.md, and docs/DESIGN.md.
