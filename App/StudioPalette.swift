@@ -44,6 +44,11 @@ enum StudioPalette {
     }
     static let selection = Color(uiColor: selectionUIColor)
 
+    /// Warning labels use opaque amber on grouped surfaces; the accompanying
+    /// warning glyph and text also communicate the condition without color.
+    static let warningUIColor = selectionUIColor
+    static let warning = Color(uiColor: warningUIColor)
+
     /// The Plan stays dark in both appearances, so its light marks stay bright.
     static let planLightUIColor = UIColor(red: 0.96, green: 0.65, blue: 0.30, alpha: 1)
     static let planLight = Color(uiColor: planLightUIColor)

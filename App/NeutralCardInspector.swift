@@ -16,6 +16,12 @@ struct NeutralCardInspector: View {
             : AnyLayout(HStackLayout())
     }
 
+    private var presetLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
+            : AnyLayout(HStackLayout(spacing: 6))
+    }
+
     private struct Sample {
         let scene: LightingScene
         let card: NeutralCardPreview?
@@ -32,7 +38,7 @@ struct NeutralCardInspector: View {
                             Label("Meter unavailable", systemImage: "exclamationmark.triangle")
                                 .font(.subheadline.weight(.semibold))
                             Text("Check the camera position and active emitters. An unsupported light invalidates the combined estimate.")
-                                .font(.caption).foregroundStyle(.secondary)
+                                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                         }.frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
                     }
                 } else {
@@ -43,7 +49,7 @@ struct NeutralCardInspector: View {
             slider("White balance", value: $settings.whiteBalanceKelvin,
                    range: PreviewSettings.whiteBalanceRange, step: 100, unit: "K",
                    id: "previewWhiteBalance")
-            HStack(spacing: 0) {
+            presetLayout {
                 ForEach([3200.0, 5600.0, 6500.0], id: \.self) { k in
                     Button {
                         guard settings.whiteBalanceKelvin != k else { return }
@@ -52,11 +58,20 @@ struct NeutralCardInspector: View {
                         settings.whiteBalanceKelvin = k
                         onEditingChanged(false, id)
                     } label: {
-                        Text("\(Int(k)) K")
-                            .font(.caption.monospacedDigit().weight(.medium))
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                            .background(settings.whiteBalanceKelvin == k ? Color.accentColor.opacity(0.16) : Color.clear,
-                                        in: RoundedRectangle(cornerRadius: 8))
+                        HStack(spacing: 6) {
+                            Text("\(Int(k)) K")
+                                .fixedSize(horizontal: false, vertical: true)
+                            Image(systemName: settings.whiteBalanceKelvin == k ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(settings.whiteBalanceKelvin == k
+                                                 ? StudioPalette.selection : StudioPalette.secondaryText)
+                        }
+                        .font(.caption.monospacedDigit().weight(.medium))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .background(settings.whiteBalanceKelvin == k ? StudioPalette.selection.opacity(0.12) : Color.clear,
+                                    in: RoundedRectangle(cornerRadius: 8))
+                        .contentShape(Rectangle())
                     }.buttonStyle(.plain)
                         .accessibilityLabel("Balance \(Int(k)) kelvin")
                         .accessibilityIdentifier("balance-\(Int(k))")
@@ -80,8 +95,9 @@ struct NeutralCardInspector: View {
                 .disabled(settings == PreviewSettings())
                 .accessibilityIdentifier("resetCardSettings")
             Text("18% neutral card at subject center, with a relative 1000 lx reference. These controls affect the card and Study viewport, not the illustrative 3D shading. No measured fixture spectra, indirect light, actual camera response or exposure calibration.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
         }
+        .tint(StudioPalette.action)
         .task(id: scene) {
             // Debounce rapid slider changes, compute on a background executor and
             // publish only the result of the current non-cancelled snapshot.
@@ -112,14 +128,14 @@ struct NeutralCardInspector: View {
                 .frame(width: 80, height: 80)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 5) {
-                Text("COMBINED DIRECT LIGHT").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                Text("COMBINED DIRECT LIGHT").font(.caption2.weight(.semibold)).foregroundStyle(StudioPalette.secondaryText)
                 Text(StudioMeterReadout.lux(card.totalLux, locale: locale))
                     .font(.system(.title2, design: .monospaced).weight(.semibold))
                     .accessibilityLabel("Combined ideal illuminance")
                     .accessibilityValue(StudioNumericInput.formattedValue(card.totalLux, unit: "lx", locale: locale))
                     .accessibilityIdentifier("combinedLux")
                 Text("Relative 18% card · sRGB")
-                    .font(.caption).foregroundStyle(.secondary)
+                    .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                 Text("R \(Int((rgb.red * 255).rounded())) · G \(Int((rgb.green * 255).rounded())) · B \(Int((rgb.blue * 255).rounded()))")
                     .font(.caption2.monospacedDigit())
                     .accessibilityLabel("Red \(Int((rgb.red * 255).rounded())), green \(Int((rgb.green * 255).rounded())), blue \(Int((rgb.blue * 255).rounded()))")

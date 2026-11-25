@@ -1100,7 +1100,7 @@ struct StudioView: View {
                          : "Start from the recipe's subject, camera and lights. This also resets measured room and preview settings. Undo restores your previous setup.")
                         .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                     if let recipeMessage {
-                        Text(recipeMessage).font(.subheadline).foregroundStyle(.red)
+                        Text(recipeMessage).font(.subheadline).foregroundStyle(StudioPalette.destructive)
                             .accessibilityIdentifier("recipeMessage")
                     }
                     ForEach(LightingRecipe.allCases, id: \.self) { recipe in

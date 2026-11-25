@@ -27,20 +27,20 @@ struct CameraInspector: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("CAMERA FRAMING").font(.caption2.weight(.semibold)).tracking(1.4)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(StudioPalette.secondaryText)
             Text("Full frame · 36 × 24 mm").font(.subheadline.weight(.medium))
             if let framing {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("\(coverageNumber(framing.subjectPlaneWidthMeters)) × \(coverageNumber(framing.subjectPlaneHeightMeters)) \(units.symbol)")
                         .font(.title3.monospacedDigit().weight(.semibold))
                     Text("Coverage at subject · \(coverageNumber(framing.subjectDistanceMeters)) \(units.symbol) distance")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                     Text("Field of view: \(framing.horizontalFieldOfViewDegrees, specifier: "%.1f")° H / \(framing.verticalFieldOfViewDegrees, specifier: "%.1f")° V")
-                        .font(.caption.monospacedDigit()).foregroundStyle(.secondary)
+                        .font(.caption.monospacedDigit()).foregroundStyle(StudioPalette.secondaryText)
                 }.accessibilityElement(children: .combine).accessibilityIdentifier("cameraCoverage")
             } else {
                 Label("Move camera away from subject", systemImage: "exclamationmark.triangle")
-                    .font(.subheadline).foregroundStyle(.secondary)
+                    .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
             }
             slider("Focal length", value: $lens.focalLengthMillimeters,
                    range: CameraLens.focalLengthRange, domain: CameraLens.focalLengthRange,
@@ -68,8 +68,9 @@ struct CameraInspector: View {
             distanceSlider("Camera height", value: $position.y, range: 0...4, step: 0.05, id: "cameraY")
             distanceSlider("Camera depth", value: $position.z, range: -6...6, step: 0.05, id: "cameraZ")
             Text("Ideal perspective aimed at the subject center. No optical distortion, depth of field or calibrated image exposure.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
         }
+        .tint(StudioPalette.action)
     }
 
     private func coverageNumber(_ meters: Double) -> String {

@@ -21,7 +21,7 @@ struct OpticsInspector: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("EMITTER & AIM").font(.caption2.weight(.semibold)).tracking(1.4).foregroundStyle(.secondary)
+            Text("EMITTER & AIM").font(.caption2.weight(.semibold)).tracking(1.4).foregroundStyle(StudioPalette.secondaryText)
             Menu {
                 ForEach(EmitterKind.allCases, id: \.self) { kind in
                     Button {
@@ -47,7 +47,7 @@ struct OpticsInspector: View {
             .accessibilityLabel("Emitter type")
             .accessibilityValue(Text(optics.kind.title))
             .accessibilityIdentifier("emitterKind")
-            Text(explanation).font(.caption).foregroundStyle(.secondary)
+            Text(explanation).font(.caption).foregroundStyle(StudioPalette.secondaryText)
 
             if optics.kind.isAimed {
                 Toggle("Aim at subject", isOn: Binding(
@@ -61,7 +61,7 @@ struct OpticsInspector: View {
                 )).accessibilityIdentifier("aimAtSubject")
                 if optics.aimTarget != nil {
                     Text("Target position · world \(units == .metric ? "meters" : "feet")")
-                        .font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                        .font(.caption.weight(.medium)).foregroundStyle(StudioPalette.secondaryText)
                     slider("Aim X", value: aimCoordinate(\.x), range: -4...4, domain: Position.coordinateRange, step: 0.05, id: "aimX")
                     slider("Aim Y", value: aimCoordinate(\.y), range: 0...4, domain: Position.coordinateRange, step: 0.05, id: "aimY")
                     slider("Aim Z", value: aimCoordinate(\.z), range: -4...4, domain: Position.coordinateRange, step: 0.05, id: "aimZ")
@@ -69,13 +69,14 @@ struct OpticsInspector: View {
             }
             if optics.kind == .rectangle {
                 Divider()
-                Text("Diffusion surface").font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                Text("Diffusion surface").font(.caption.weight(.medium)).foregroundStyle(StudioPalette.secondaryText)
                 slider("Width", value: dimension(\.widthMeters), range: 0.05...4, domain: LightOptics.dimensionRange, step: 0.05, id: "emitterWidth")
                 slider("Height", value: dimension(\.heightMeters), range: 0.05...4, domain: LightOptics.dimensionRange, step: 0.05, id: "emitterHeight")
                 slider("Roll", value: roll, range: LightOptics.rollRange, domain: LightOptics.rollRange,
                        step: 1, measurement: .angle, id: "emitterRoll")
             }
         }
+        .tint(StudioPalette.action)
     }
 
     private var explanation: String {

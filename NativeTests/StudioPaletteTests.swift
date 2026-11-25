@@ -21,6 +21,7 @@ final class StudioPaletteTests: XCTestCase {
                 let background = try components(surface, traits: traits)
                 for (name, color) in [("action", StudioPalette.actionUIColor),
                                       ("secondaryText", StudioPalette.secondaryTextUIColor),
+                                      ("roomWarning", StudioPalette.warningUIColor),
                                       ("projectNameError", StudioPalette.destructiveUIColor)] {
                     try assertContrast(color, on: background, minimum: 4.5, traits: traits,
                                        pair: "\(appearance) \(name) / \(surfaceName)")
@@ -39,7 +40,7 @@ final class StudioPaletteTests: XCTestCase {
             try assertContrast(StudioPalette.prominentActionTextUIColor,
                                on: components(StudioPalette.actionUIColor, traits: traits),
                                minimum: 4.5, traits: traits,
-                               pair: "\(appearance) Save project name / explicit action fill")
+                               pair: "\(appearance) Save project name and Share measurement notes / explicit action fill")
             try assertContrast(StudioPalette.secondaryTextUIColor,
                                on: components(.tertiarySystemGroupedBackground, traits: traits),
                                minimum: 4.5, traits: traits,
@@ -52,15 +53,16 @@ final class StudioPaletteTests: XCTestCase {
             let selection = try components(StudioPalette.selectionUIColor, traits: traits)
             let card = try components(.secondarySystemGroupedBackground, traits: traits)
             let unselectedRow = try components(.tertiarySystemGroupedBackground, traits: traits)
-            // StudioView.lightList and the ideal-lux panel apply this 12% tint
-            // over their enclosing secondary grouped card, not a flat swatch.
+            // StudioView.lightList, the ideal-lux panel and the neutral-card
+            // selected preset apply this 12% tint over their enclosing
+            // secondary grouped card, not a flat swatch.
             let selectedRow = composite(selection, opacity: 0.12, over: card)
             try assertContrast(StudioPalette.secondaryTextUIColor, on: selectedRow,
                                minimum: 4.5, traits: traits,
                                pair: "\(appearance) secondaryText / selected row and ideal-lux panel")
             try assertContrast(StudioPalette.selectionUIColor, on: selectedRow,
                                minimum: 3, traits: traits,
-                               pair: "\(appearance) selected checkmark / selected row")
+                               pair: "\(appearance) selected checkmark / light row and white-balance preset")
             // The equipment icon has a second 13% tint inside either row.
             for (rowName, row) in [("selected", selectedRow), ("unselected", unselectedRow)] {
                 let iconBackground = composite(selection, opacity: 0.13, over: row)
@@ -90,7 +92,10 @@ final class StudioPaletteTests: XCTestCase {
                                            opacity: 0.65, over: background)
             try assertContrast(StudioPalette.planLightUIColor, on: unselectedFill,
                                minimum: 3, traits: traits,
-                               pair: "\(appearance) unselected Plan light icon / unselected marker fill")
+                               pair: "\(appearance) unselected Plan and room light icon / dark marker fill")
+            try assertContrast(.white, on: unselectedFill,
+                               minimum: 3, traits: traits,
+                               pair: "\(appearance) room subject and camera icons / dark marker fill")
         }
     }
 

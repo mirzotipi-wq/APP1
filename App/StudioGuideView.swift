@@ -14,7 +14,7 @@ struct StudioGuideView: View {
                             .font(.title3.weight(.semibold))
                             .accessibilityIdentifier("studioGuideOverview")
                         Text("Follow the workflow or open the topic you need. Your current studio stays open while you read.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                     }
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.vertical, 4)
@@ -27,13 +27,13 @@ struct StudioGuideView: View {
                             HStack(alignment: .firstTextBaseline, spacing: 12) {
                                 Text("\(topic.rawValue)")
                                     .font(.headline.monospacedDigit())
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(StudioPalette.secondaryText)
                                     .accessibilityHidden(true)
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(topic.title).font(.headline)
                                         .foregroundStyle(.primary)
                                     Text(topic.summary).font(.subheadline)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(StudioPalette.secondaryText)
                                 }
                                 .fixedSize(horizontal: false, vertical: true)
                             }
@@ -52,6 +52,7 @@ struct StudioGuideView: View {
                 ToolbarItem(placement: .confirmationAction) { closeButton }
             }
         }
+        .tint(StudioPalette.action)
     }
 
     private var closeButton: some View {

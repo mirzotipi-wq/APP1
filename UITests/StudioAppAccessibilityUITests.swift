@@ -148,6 +148,36 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         expectGone(field)
         expectValue(exact, "4321.5 cd")
 
+        let openMeter = app.buttons["openMeter"]
+        try control(openMeter, label: "Open light meter and test card", in: app, towardBottom: false)
+        openMeter.tap()
+        let balance = app.sliders["previewWhiteBalance"]
+        expectValue(balance, "5600 K")
+        for kelvin in [3200, 5600, 6500] {
+            let preset = app.buttons["balance-\(kelvin)"]
+            let state = try control(preset, label: "Balance \(kelvin) kelvin", in: app)
+            XCTAssertEqual(state.isSelected, kelvin == 5600)
+            try text(preset.staticTexts["\(kelvin) K"], equals: "\(kelvin) K", style: .caption1,
+                     category: category, in: app, weight: .medium, monospacedDigits: true)
+            if kelvin == 5600 { try selectedCheckmark(in: preset) }
+        }
+        let tungsten = app.buttons["balance-3200"]
+        try control(tungsten, in: app, towardBottom: false)
+        tungsten.tap()
+        expectValue(balance, "3200 K")
+        XCTAssertTrue(tungsten.isSelected)
+        XCTAssertFalse(app.buttons["balance-5600"].isSelected)
+        try selectedCheckmark(in: tungsten)
+        capture(name + "-Meter-preset-selection", in: app)
+        try control(undo, label: "Undo", in: app, scrolling: false)
+        undo.tap()
+        expectValue(balance, "5600 K")
+        let daylight = app.buttons["balance-5600"]
+        try control(daylight, in: app)
+        XCTAssertTrue(daylight.isSelected)
+        XCTAssertFalse(tungsten.isSelected)
+        try selectedCheckmark(in: daylight)
+
         let projects = app.buttons["openProjectLibrary"]
         try control(projects, label: "Projects", in: app, towardBottom: false)
         projects.tap()

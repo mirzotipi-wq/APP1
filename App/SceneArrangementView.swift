@@ -30,7 +30,7 @@ struct SceneArrangementView: View {
             Form {
                 Section("Move the whole setup") {
                     Text("Choose a new subject center. The camera, lights and manual aiming points move by the same distance.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     coordinate("Horizontal", id: "setupX", value: $destination.x)
                     coordinate("Height", id: "setupY", value: $destination.y)
                     coordinate("Depth", id: "setupZ", value: $destination.z)
@@ -47,7 +47,7 @@ struct SceneArrangementView: View {
                         .accessibilityValue(StudioNumericInput.formattedValue(yaw, unit: "degrees", locale: locale))
                     Toggle("Mirror lights across camera center", isOn: $mirror)
                     Text("Rotation and mirroring change lights and manual aims. The camera keeps its current angle. All changes apply together as one undoable edit.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                 }
                 if let error {
                     Section {
@@ -82,6 +82,7 @@ struct SceneArrangementView: View {
                 }
             }
         }
+        .tint(StudioPalette.action)
     }
 
     private func coordinate(_ label: String, id: String, value: Binding<Double>) -> some View {

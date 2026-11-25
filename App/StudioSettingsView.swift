@@ -21,7 +21,7 @@ struct StudioSettingsView: View {
                     .accessibilityIdentifier("distanceUnits")
                     .accessibilityValue(Text(StudioPreferences.units(from: unitsRaw) == .metric ? "Meters" : "Feet"))
                     Text("The setup keeps its exact metric coordinates. Display units change how distances are read and entered.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     Picker("Appearance", selection: appearanceSelection) {
                         Text("System").tag("system")
                         Text("Light").tag("light")
@@ -58,6 +58,7 @@ struct StudioSettingsView: View {
             }
             .sheet(isPresented: $showPurchase) { ProFeaturesView(store: store) }
         }
+        .tint(StudioPalette.action)
     }
 
     private var unitsSelection: Binding<String> {

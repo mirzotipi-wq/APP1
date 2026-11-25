@@ -21,10 +21,10 @@ struct SubjectInspector: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("SUBJECT POSITION").font(.caption2.weight(.semibold)).tracking(1.4)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(StudioPalette.secondaryText)
             Text("Place the subject center").font(.subheadline.weight(.medium))
             Text("The camera and lights using Aim at subject follow this point. Coordinates are in \(units == .metric ? "meters" : "feet") from the scene origin.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
             slider("Subject horizontal", value: $position.x, range: -4...4,
                    step: 0.05, id: "subjectX")
             slider("Subject height", value: $position.y, range: 0...4,
@@ -34,10 +34,11 @@ struct SubjectInspector: View {
                 heightPreset("Seated", height: 1.1, id: "subjectSeatedHeight")
             }
             Text("Starting heights for the subject center above the ground plane. Adjust to your measured setup.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
             slider("Subject depth", value: $position.z, range: -6...6,
                    step: 0.05, id: "subjectZ")
         }
+        .tint(StudioPalette.action)
     }
 
     private func heightPreset(_ title: String, height: Double, id: String) -> some View {

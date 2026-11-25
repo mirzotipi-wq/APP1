@@ -37,11 +37,11 @@ struct LightTargetLuxView: View {
                             .accessibilityLabel("Desired illuminance in lux")
                             .accessibilityHint("Enter zero to switch this light off.")
                             .accessibilityIdentifier("targetLuxInput")
-                        Text("lx").foregroundStyle(.secondary)
+                        Text("lx").foregroundStyle(StudioPalette.secondaryText)
                     }
                     if !draft.isEmpty && target == nil {
                         Text("Enter zero or a positive decimal number using up to 32 characters.")
-                            .font(.footnote).foregroundStyle(.secondary)
+                            .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     }
                     if let value = target, let adjusted = try? LightOutputAdjustment.light(light, targetingLux: value, in: scene) {
                         LabeledContent("Required intensity",
@@ -50,9 +50,9 @@ struct LightTargetLuxView: View {
                 }
                 Section {
                     Text("The calculation uses this light alone on the ideal camera-facing plane at the subject center. It does not measure skin exposure, camera settings or a real fixture. Other lights are unchanged.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     Text("A target of zero switches this source off. If the requested output exceeds the model's limits or the light cannot illuminate the plane, change the target or geometry.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                 }
                 if let error {
                     Section {
@@ -83,6 +83,7 @@ struct LightTargetLuxView: View {
                 }
             }
         }
+        .tint(StudioPalette.action)
     }
 
     private var boundedDraft: Binding<String> {

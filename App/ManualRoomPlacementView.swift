@@ -74,7 +74,7 @@ struct ManualRoomPlacementView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Measure the room").font(.title2.bold())
                         Text("Enter real wall distances and the subject's floor position. Add a ceiling height to check centers and ideal rectangular emitting faces against the floor and ceiling.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                     }
                     if let plan { placementSummary(plan) }
                     inputs
@@ -90,7 +90,7 @@ struct ManualRoomPlacementView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             map(plan)
                             Text("Near wall at bottom · left wall at left. Rectangular emitting faces are projected to the floor and clipped to the room outline; dashed orange outlines cross a wall.")
-                                .font(.caption).foregroundStyle(.secondary)
+                                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                         }
                         ForEach(plan.points) { point in
                             measurements(point, footprint: plan.modifierFootprints.first { $0.id.uuidString == point.id })
@@ -102,7 +102,7 @@ struct ManualRoomPlacementView: View {
                     Label("Manual measurements only", systemImage: "ruler")
                         .font(.headline)
                     Text("Center coordinates and ideal rectangular emitting faces are calculated at 1:1 scale from your entries. Height checks assume a flat floor and, when measured, a flat horizontal ceiling. Touching means zero distance. These checks do not measure the actual room, detect equipment collisions or guarantee complete fixture clearance. Check housing, stands, booms, cables and working clearance physically. Displayed precision does not guarantee measurement accuracy. Room measurements kept with the setup are included when you save the lighting project.")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                 }
                 .padding(16).frame(maxWidth: 720).frame(maxWidth: .infinity)
             }
@@ -131,6 +131,7 @@ struct ManualRoomPlacementView: View {
                 keepRoom(next)
             }
         }
+        .tint(StudioPalette.action)
     }
 
     private var roomCommitControls: some View {
@@ -149,7 +150,7 @@ struct ManualRoomPlacementView: View {
             .accessibilityIdentifier("keepRoomWithSetup")
             .accessibilityHint("Keeps the current valid room measurements in this setup. Save the lighting project to keep them for future sessions.")
             Text("If the displayed values already match your room, use Keep room with setup. Press Set to include each changed entry; unfinished or invalid field text is excluded. Save the lighting project to keep the applied measurements for future sessions.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                 .accessibilityIdentifier("keepRoomWithSetupHelp")
         }
     }
@@ -176,7 +177,7 @@ struct ManualRoomPlacementView: View {
             .accessibilityIdentifier("removeRoomFromSetup")
             .accessibilityHint("Asks for confirmation before removing the room measurements from this setup. The displayed measurements remain available for planning.")
             Text("Save the lighting project to keep a removal for future sessions. Undo in the studio steps back through the applied room changes.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
                 .accessibilityIdentifier("removeRoomFromSetupHelp")
         }
     }
@@ -200,9 +201,9 @@ struct ManualRoomPlacementView: View {
             ? "All \(plan.points.count) center positions inside room"
             : "\(plan.outsideCount) of \(plan.points.count) center positions outside room"
         return VStack(alignment: .leading, spacing: 8) {
-            Text("Current measured layout").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Text("Current measured layout").font(.caption.weight(.semibold)).foregroundStyle(StudioPalette.secondaryText)
             Text("Wall checks · floor projection")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
             Label(centerStatus,
                   systemImage: plan.outsideCount == 0 ? "checkmark.circle" : "exclamationmark.triangle")
                 .font(.headline)
@@ -215,23 +216,23 @@ struct ManualRoomPlacementView: View {
                     Label(plan.crossingModifierCount == 1 ? "1 rectangular modifier crosses a wall" :
                           "\(plan.crossingModifierCount) rectangular modifiers cross a wall",
                           systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(StudioPalette.warning)
                         .accessibilityIdentifier("modifierCrossingStatus")
                 } else if plan.unavailableModifierCount == 0 {
                     Label("Rectangular emitting faces within room outline",
                           systemImage: "checkmark.circle")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(StudioPalette.secondaryText)
                         .accessibilityIdentifier("modifierCrossingStatus")
                 }
                 if plan.unavailableModifierCount > 0 {
                     Label("\(plan.unavailableModifierCount) modifier projections unavailable; check aim",
                           systemImage: "questionmark.circle")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(StudioPalette.secondaryText)
                         .accessibilityIdentifier("modifierUnavailableStatus")
                 }
             }
             Text(plan.room.ceilingHeightMeters.map { "Ceiling height: \(distance($0))" } ?? "Ceiling height: Unmeasured")
-                .font(.subheadline).foregroundStyle(.secondary)
+                .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                 .accessibilityIdentifier("roomCeilingStatus")
             heightSummary(plan)
             Button {
@@ -245,7 +246,7 @@ struct ManualRoomPlacementView: View {
             .buttonStyle(.bordered)
             .accessibilityIdentifier("reviewRoomNotes")
             Text("Notes use the current measured layout in meters. Press Set to include a changed entry. Save the lighting project to keep room measurements with the setup.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(14)
@@ -261,11 +262,11 @@ struct ManualRoomPlacementView: View {
             RoomMeasurementField(title: "Depth", id: "roomDepth", value: $room.depthMeters,
                                  range: room.depthEditRange, units: units)
             Text("Room size changes keep the subject's wall offsets. To enter a smaller room, first move the subject closer to the corresponding wall.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
             RoomMeasurementField(title: "Ceiling height (optional)", id: "roomCeilingHeight",
                                  value: $room.ceilingHeightMeters, range: ManualRoom.dimensionRange, units: units)
             Text("Leave blank and press Set for unmeasured. A measured height enables ceiling checks for centers and ideal emitting faces; floor checks remain available without it.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
             Divider()
             Text("Subject floor position").font(.headline)
             RoomMeasurementField(title: "From left wall", id: "roomSubjectX", value: $room.subjectX,
@@ -285,7 +286,7 @@ struct ManualRoomPlacementView: View {
                 .frame(minHeight: 44)
                 .accessibilityIdentifier("roomHalfTurn")
             Text("Positive rotation turns the scene's +Z direction toward the room's right wall.")
-                .font(.caption).foregroundStyle(.secondary)
+                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
         }
         .padding(14)
         .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14))
@@ -300,7 +301,7 @@ struct ManualRoomPlacementView: View {
             let left = (proxy.size.width - w) / 2
             let top = (proxy.size.height - h) / 2
             ZStack(alignment: .topLeading) {
-                Color(red: 0.075, green: 0.085, blue: 0.10)
+                StudioPalette.planBackground
                 Rectangle().stroke(Color.white.opacity(0.55), lineWidth: 1)
                     .frame(width: w, height: h)
                     .position(x: left + w / 2, y: top + h / 2)
@@ -314,7 +315,7 @@ struct ManualRoomPlacementView: View {
                         }
                         outline.closeSubpath()
                         let crosses = !footprint.crossedWalls.isEmpty
-                        context.stroke(outline, with: .color(crosses ? .orange : .white.opacity(0.75)),
+                        context.stroke(outline, with: .color(crosses ? StudioPalette.planLight : .white.opacity(0.75)),
                                        style: StrokeStyle(lineWidth: 2, dash: crosses ? [4, 3] : []))
                     }
                 }
@@ -325,9 +326,9 @@ struct ManualRoomPlacementView: View {
                 ForEach(plan.points.filter(\.insideRoom)) { point in
                     Image(systemName: symbol(point.kind))
                         .font(.caption.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(point.kind == .light ? StudioPalette.planLight : .white)
                         .frame(width: 24, height: 24)
-                        .background(point.kind == .light ? Color.orange.opacity(0.8) : Color.gray, in: Circle())
+                        .background(Color.black.opacity(0.65), in: Circle())
                         .position(x: left + CGFloat(point.xFromLeft) * scale,
                                   y: top + h - CGFloat(point.zFromNear) * scale)
                 }
@@ -351,27 +352,27 @@ struct ManualRoomPlacementView: View {
             Label(pointDisplayName(point), systemImage: symbol(point.kind)).font(.headline)
             if !point.insideRoom {
                 Label("Outside room", systemImage: "exclamationmark.triangle")
-                    .font(.subheadline).foregroundStyle(.orange)
+                    .font(.subheadline).foregroundStyle(StudioPalette.warning)
             }
             Text("X from left wall: \(distance(point.xFromLeft))")
             Text("Z from near wall: \(distance(point.zFromNear))")
             Text("Height: \(distance(point.heightMeters)) · Floor distance to subject: \(distance(point.horizontalDistanceFromSubject))")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(StudioPalette.secondaryText)
             verticalCheck(point.verticalClearance, title: "Center height check",
                           id: "roomCenterHeightCheck_" + point.id)
             if let footprint {
                 if !footprint.isAvailable {
                     Label("Modifier projection unavailable", systemImage: "questionmark.circle")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(StudioPalette.secondaryText)
                 } else if !footprint.crossedWalls.isEmpty {
                     Label("Emitting face crosses " + footprint.crossedWalls.map(\.rawValue).joined(separator: ", ") + " wall boundary",
                           systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(StudioPalette.warning)
                 }
                 if let clearance = footprint.minimumWallClearanceMeters {
                     Text(clearance < 0 ? "Projected wall overhang: \(distance(-clearance))" :
                          "Minimum projected wall distance: \(distance(clearance))")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(StudioPalette.secondaryText)
                 }
                 verticalCheck(footprint.verticalClearance, title: "Ideal emitting-face height check",
                               id: "roomFaceHeightCheck_" + point.id)
@@ -389,22 +390,22 @@ struct ManualRoomPlacementView: View {
             Text("Height checks").font(.subheadline.weight(.semibold))
             Label("Centers \(extent): \(plan.verticalOutsideCount); touching \(boundaries): \(plan.verticalTouchingPointCount)",
                   systemImage: plan.verticalOutsideCount > 0 ? "exclamationmark.triangle" : "arrow.up.and.down")
-                .foregroundStyle(plan.verticalOutsideCount > 0 ? Color.orange : Color.secondary)
+                .foregroundStyle(plan.verticalOutsideCount > 0 ? StudioPalette.warning : StudioPalette.secondaryText)
                 .accessibilityIdentifier("roomCenterHeightStatus")
             if !plan.modifierFootprints.isEmpty {
                 Label("Ideal emitting faces \(extent): \(plan.verticalCrossingModifierCount); touching \(boundaries): \(plan.verticalTouchingModifierCount)",
                       systemImage: plan.verticalCrossingModifierCount > 0 ? "exclamationmark.triangle" : "arrow.up.and.down")
-                    .foregroundStyle(plan.verticalCrossingModifierCount > 0 ? Color.orange : Color.secondary)
+                    .foregroundStyle(plan.verticalCrossingModifierCount > 0 ? StudioPalette.warning : StudioPalette.secondaryText)
                     .accessibilityIdentifier("roomFaceHeightStatus")
             }
             if plan.room.ceilingHeightMeters == nil {
                 Text("Ceiling checks unavailable until a height is measured.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(StudioPalette.secondaryText)
                     .accessibilityIdentifier("roomCeilingUnmeasured")
             }
             if unavailableFaces > 0 {
                 Text("\(unavailableFaces) ideal emitting-face height checks unavailable; check aim.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(StudioPalette.secondaryText)
                     .accessibilityIdentifier("roomFaceHeightUnavailable")
             }
         }
@@ -419,7 +420,7 @@ struct ManualRoomPlacementView: View {
         return VStack(alignment: .leading, spacing: 3) {
             Text(title).font(.caption.weight(.semibold))
             Label(report.statusSummary(distance: distance), systemImage: symbol)
-                .foregroundStyle(hasCrossing ? Color.orange : Color.secondary)
+                .foregroundStyle(hasCrossing ? StudioPalette.warning : StudioPalette.secondaryText)
         }
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: .combine)
@@ -450,10 +451,11 @@ private struct RoomPlacementNotesView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     Text("These notes contain the committed room measurements and calculated placement coordinates in meters. Save the lighting project to keep the editable room measurements with the setup.")
-                        .font(.subheadline).foregroundStyle(.secondary)
+                        .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                         .accessibilityIdentifier("roomNotesScope")
                     ShareLink(item: text, subject: Text("Key & Fill room measurements")) {
                         Label("Share measurement notes", systemImage: "square.and.arrow.up")
+                            .foregroundStyle(StudioPalette.prominentActionText)
                             .frame(maxWidth: .infinity, minHeight: 44)
                     }
                     .buttonStyle(.borderedProminent)
@@ -479,6 +481,7 @@ private struct RoomPlacementNotesView: View {
                 }
             }
         }
+        .tint(StudioPalette.action)
     }
 }
 
@@ -542,7 +545,7 @@ private struct RoomMeasurementField: View {
                     focused = true
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(StudioPalette.secondaryText)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
@@ -550,7 +553,7 @@ private struct RoomMeasurementField: View {
                 .disabled(draft.isEmpty && !rejectedOversizedDraft)
                 .accessibilityLabel("Clear " + title.lowercased())
                 .accessibilityIdentifier(id + "Clear")
-                Text(units.symbol).foregroundStyle(.secondary)
+                Text(units.symbol).foregroundStyle(StudioPalette.secondaryText)
                 Button("Set") { apply() }
                     .disabled(rejectedOversizedDraft)
                     .buttonStyle(.bordered)
@@ -573,6 +576,7 @@ private struct RoomMeasurementField: View {
                 .accessibilityIdentifier(id + "Reset")
             }
         }
+        .tint(StudioPalette.action)
         .onAppear { restoreDraft() }
         .onChange(of: value) { _, _ in restoreDraft() }
         .onChange(of: units) { _, _ in
