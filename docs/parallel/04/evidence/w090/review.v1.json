@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "actualID": "/root/w081/w090",
+  "parent": "/root/w081",
+  "fresh": true,
+  "lane": "04",
+  "wave": 9,
+  "role": "last-independent-review",
+  "input": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+  "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "productionFrozen": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "conclusion": "No new concrete engine, kernel, eligibility or cache defect established by independent immutable source review. Final contract and owner-status updates are consistent with the inspected source and retained evidence; no runtime acceptance added.",
+  "contract": {
+    "path": "docs/parallel/04/FALLBACK_CONTRACT.md",
+    "blob": "8c7f1a558093edf92e421c820a1e51b2e990f1be",
+    "review": "State/error table, per-request CPU routing, cancellation limits, cache bounds, caller obligation, current owner03 remedy and unperformed work match source."
+  },
+  "challenges": [
+    {
+      "sequence": "CPU cached -> eligible A/Metal cached -> distinct B confirms command/allocation/invalidComputeOutput failure plus cancellation -> revisit CPU -> fresh B -> old A",
+      "result": "selectCPU runs before subsequent cancellation checks, removes Metal only; tests assert CPU preservation, failed key remains cold, old A becomes CPU and factory/validation do not repeat.",
+      "status": "source supports invariant; existing scripted execution is limited to source6 methods"
+    },
+    {
+      "sequence": "A/Metal -> B ordinary StudyError.cancelled or backend returns while cancellation becomes true -> revisit A -> fresh B",
+      "result": "StudyError catch rethrows without downgrade; A remains Metal and B requires another render. No admission from the thrown call.",
+      "status": "source supports invariant"
+    },
+    {
+      "sequence": "Unchecked with CPU entry -> factory/validation confirmed failure plus cancellation",
+      "result": "CPU entry survives; failed request remains cold and subsequent eligible request uses CPU permanently. Appended source7 test covers factory and validation stages with parity and invalidComputeOutput.",
+      "status": "source reviewed; new method runtime unperformed"
+    },
+    {
+      "sequence": "Unchecked with CPU entry -> validation throws cancellation or returns with final cancellation -> new eligible key -> original interrupted key",
+      "result": "Unchecked state retries factory/validation exactly once later; both successful distinct keys require their own render; CPU entry preserved.",
+      "status": "source reviewed; new method runtime unperformed"
+    },
+    {
+      "sequence": "Full LRU A,B,C,D -> cancelled A at entry or prelookup -> insert E",
+      "result": "A must be evicted; cold probe precedes surviving hits. Check-before-value-for prevents cancelled promotion.",
+      "status": "source supports invariant"
+    },
+    {
+      "sequence": "Task flag true, extra predicate false",
+      "result": "OR short-circuit preserves real task cancellation; cancelled-hit task test exercises this case.",
+      "status": "source supports invariant"
+    },
+    {
+      "sequence": "Additional cancellation changes after last false check",
+      "result": "Successful admission/return remains possible. No suspension reduces actor reentrancy, but does not make external cancellation atomic. Contract expressly preserves caller adoption responsibility.",
+      "status": "documented boundary, not new defect"
+    },
+    {
+      "sequence": "Generic Swift CancellationError injected",
+      "result": "Catch-all downgrades. Contract requires StudyError.cancelled at backend seam; production cancellation sites emit that type.",
+      "status": "documented seam limitation; no production emitter identified"
+    },
+    {
+      "sequence": "Near-field fallback -> normal key; width24 silhouette fallback -> eligible normal key",
+      "result": "First real test revisits cached Metal; second starts unchecked and performs fresh startup. Neither is falsely described as fresh post-near-field GPU dispatch.",
+      "status": "bounded evidence descriptions verified"
+    },
+    {
+      "sequence": "Actor downgrade with external UI-held A frame",
+      "result": "Frozen04 successful-frame shortcut and request-only currentness bypass engine on A reactivation after B downgrade/cancel. Owner03 request+ticket check and no shortcut address it in source; neither cache purge nor actor isolation revokes externally retained frames.",
+      "status": "known03/20 dependency remains unmerged/unexecuted in04"
+    },
+    {
+      "sequence": "Malformed packed metadata and tiny-output owner03 integration",
+      "result": "Guarded header rejects dimensions/counts/grid and noninteger/nonfinite area indices before corresponding conversion/indexing. Packed source remains six parameter rows and three float4 rows per sample/area. Tiny arithmetic construction differs but intensity meaning remains; no concrete eligible RGB/mask mismatch established without execution.",
+      "status": "preserve04 guarded header and route combined parity to20"
+    }
+  ],
+  "ownerStatusOnlyChecks": {
+    "markdown": [
+      {
+        "path": "docs/parallel/04/PARITY_TABLES.md",
+        "originalPrefixUnchanged": true,
+        "addedHeading": "Later owner refresh — wave 9"
+      },
+      {
+        "path": "docs/parallel/04/PRECISION_REPRODUCIBILITY.md",
+        "originalPrefixUnchanged": true,
+        "addedHeading": "Later owner refresh — wave 9"
+      },
+      {
+        "path": "docs/parallel/04/OWNER_INTEGRATION.md",
+        "originalPrefixUnchanged": true,
+        "addedHeading": "Later owner refresh — wave 9"
+      }
+    ],
+    "jsonChangedPaths": [
+      "openDependency.status",
+      "openDependency.snapshotAtCatalogFreeze",
+      "openDependency.currentOwnerRefresh"
+    ],
+    "constructorsMetricsAndOtherTopLevelFieldsUnchanged": true,
+    "owner03Head": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+    "owner02Head": "b5c1f008446f8b33f3ee97f8fefe6675058ef347",
+    "remedy": "Owner03 source-present; frozen04 still has earlier shortcut. Each active request surviving debounce consults renderStudy, defaulting to shared engine; request and ticket govern currentness. Single Frame adoption pairs image, backend, unsupported count and message.",
+    "hosted": "One mounted host, synthetic controlled producer, 2 A/1 B invocations, held reactivation previous/updating and previous unsupported cue, then CPU adoption. Does not drive real engine failure/GPU or independently inspect displayed CGImage bytes.",
+    "runtime": "Owner receipts explicitly unrun Apple typecheck/hosted/before-fail. 165 discovered methods is inventory, not pass count; earlier164/ten pipeline evidence predates hosted addition.",
+    "displayedImageCoverage": "Independent displayed-image-byte inspection is a recommendation, not a demonstrated defect or additional mandatory gate.",
+    "packing": "Owner03 outputScale multiplication restores original per-sample candela before Float conversion; tiny quantities can round to Float32 zero. No layout or intensity-meaning change claimed."
+  },
+  "retainedEvidence": {
+    "source6": {
+      "source": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "run": 45848953002,
+      "nativeJob": 140012314020,
+      "uniqueDebugMethods": 174,
+      "cacheMethods": 25,
+      "failures": 0,
+      "skips": 0,
+      "builds": "Debug and Release success",
+      "accountingAndFinalizedExport": "success",
+      "canonical6": "maximum <=1, fraction>4 =0, exact-mask assertions",
+      "strict8": "all RGB metrics0, exact-mask assertions",
+      "cpuResourceRows": 19,
+      "resourceLimit": "Payload accounting, not RSS or GPU driver reclamation"
+    },
+    "source7": {
+      "source": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "run": 45854806270,
+      "coreJob": 140031989526,
+      "debug": 379,
+      "release": 379,
+      "hostMatrices": "six canonical/eight strict pass",
+      "nativeJob": 140034909086,
+      "queueReceipt": "1fa8f92abbe04d6c5f1bf4d1ea6c548cf3652d33",
+      "snapshot": "2026-11-26 16:47:38 UTC: queued, runner0, macos-26-intel, pendingDeployments empty; cause/ETA unknown",
+      "cacheMethodCount": 29,
+      "original25PrefixUnchanged": true,
+      "appended4": "No Apple runtime pass in retained input"
+    },
+    "inspectionBoundary": "Worker090 reviewed retained metadata and worker089 raw excerpts; did not independently download/fetch raw CI logs or poll/rerun CI.",
+    "historicalPrecision": "33 generated probes differs from 8 selected strict executions. Historical O2 C++ Double transcription reproducer retains candidate-only invalid count, no measured exact mask comparison; no O0 claim."
+  },
+  "remaining": [
+    "Root monitors and reconciles exact source7 native execution of the four appended methods; queue is not a test pass.",
+    "Owner03 Apple typecheck and hosted adoption execution, retaining hook-only original before/fail comparison and actual outcomes.",
+    "Owner20 combines03 oracle/consumer/test with04 engine, width-aware eligibility and guarded header; reruns relevant CPU/host/actual-Metal parity and adoption gates on the combined revision.",
+    "Release native runtime remains unperformed; distinguish successful Release application build.",
+    "Physical-device behavior, GPU cancellation latency, process RSS and driver-memory release are unmeasured limits, not new requirements introduced into M02/M03."
+  ],
+  "unchangedGates": {
+    "cpuAuthoritative": true,
+    "canonicalExactMasks": true,
+    "canonicalMeanMaximum": 1,
+    "canonicalFractionAboveFourMaximum": 0.005,
+    "strictEightMaximumChannelError": 1,
+    "maxFrames": 4,
+    "maxRGBABytes": 262144,
+    "maxMaskBytes": 65536,
+    "maxBustWidth": 144
+  },
+  "workerExecution": {
+    "tools": [
+      "ALL_TOOLS metadata discovery",
+      "github_fetch_file",
+      "github_fetch_blob",
+      "in-memory JavaScript string/JSON comparisons",
+      "github_create_blob utf-8"
+    ],
+    "commandsRun": [],
+    "testsRun": [],
+    "buildsRun": [],
+    "ciPolls": 0,
+    "sourceRefGlobalStateMutations": 0,
+    "spawnedChildren": 0,
+    "plannedUncreated": [
+      "/tmp/keyfill04-2987b1ee980d/workers/w090",
+      "/tmp/keyfill04-2987b1ee980d/results/w090"
+    ],
+    "executor": "Unavailable by task context; not probed. No physical worktree, cleanup or SDK claim."
+  }
+}

@@ -1,0 +1,350 @@
+{
+  "schema": 1,
+  "actualID": "/root/w081/w088",
+  "parent": "/root/w081",
+  "role": "lane04 wave09 narrow privacy/accessibility source reviewer",
+  "input": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+  "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "frozenProduction": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "owner03Snapshot": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+  "scope": {
+    "onlySourceReview": true,
+    "sourceDefectDemonstrated": false,
+    "privacyRuntimeAudit": false,
+    "manualVoiceOver": false,
+    "dynamicTypeRuntime": false,
+    "builds": 0,
+    "tests": 0,
+    "ciPolls": 0,
+    "fixturesCreated": 0,
+    "spawns": 0,
+    "sourceMutations": 0,
+    "refMutations": 0,
+    "globalStateMutations": 0,
+    "localExecutorProbed": false,
+    "uncreatedPaths": [
+      "/tmp/keyfill04-2987b1ee980d/workers/w088",
+      "/tmp/keyfill04-2987b1ee980d/results/w088"
+    ]
+  },
+  "findings": [
+    {
+      "id": "name-retention-scope",
+      "kind": "documentation clarification",
+      "disposition": "sent to contract author /root/w081/w084 and parent; no new source change or gate requested",
+      "correction": "Name omission is limited to retained engine cache keys; original, in-flight and UI-held scene snapshots can still contain names, and the 80-character validation limit is not a UTF-8 byte bound or constant-time validation guarantee.",
+      "evidence": [
+        {
+          "path": "App/MetalStudyRenderer.swift",
+          "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+          "lines": [
+            167,
+            184
+          ],
+          "observation": "scene.validated() precedes snapshot creation and copy.name clearing; original scene is neither overwritten nor zeroized."
+        },
+        {
+          "path": "Sources/LightingCore/Scene.swift",
+          "blob": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+          "lines": [
+            33,
+            37,
+            63,
+            81
+          ],
+          "observation": "Name validation trims whitespace, requires nonempty text, and checks String.count <=80. It does not impose a UTF-8 byte cap."
+        },
+        {
+          "path": "App/ReferenceStudyPreview.swift",
+          "blob": "999b590b7eaad2bed75d417690856004300568b2",
+          "lines": [
+            83,
+            95,
+            110,
+            117,
+            220,
+            232
+          ],
+          "observation": "Request retains LightingScene after omitting placementRoom only; Frame retains Request and async work captures snapshot. Names remain in these caller-owned values."
+        }
+      ],
+      "boundary": "Transient ownership is not a demonstrated disclosure; cache accounting does not establish total process memory or validation latency."
+    },
+    {
+      "id": "validation-before-omission",
+      "kind": "bounded source confirmation",
+      "evidence": [
+        {
+          "path": "NativeTests/StudyRenderCacheTests.swift",
+          "blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+          "lines": [
+            208,
+            239
+          ],
+          "method": "testInvalidMetadataCannotReuseAValidatedFrame",
+          "observation": "Existing synthetic regression rejects invalid names and other invalid metadata before reuse, and asserts reuse for a valid combining-character rename."
+        }
+      ],
+      "boundary": "Inspected assertions only; this worker did not execute the method or invent new fixtures."
+    },
+    {
+      "id": "diagnostic-data-minimization",
+      "kind": "bounded source confirmation",
+      "evidence": [
+        {
+          "path": "App/MetalStudyRenderer.swift",
+          "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+          "lines": [
+            91
+          ],
+          "observation": "Metal command label is a fixed literal; no dynamic log, network, or file-write call found in complete file."
+        },
+        {
+          "path": "App/ReferenceStudyPreview.swift",
+          "blob": "999b590b7eaad2bed75d417690856004300568b2",
+          "lines": [
+            47,
+            60
+          ],
+          "observation": "Error messages are fixed. Complete file contains no dynamic logging, network, or file-write calls."
+        },
+        {
+          "path": "NativeTests/StudyRenderCacheTests.swift",
+          "blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+          "lines": [
+            748,
+            759,
+            770,
+            786,
+            816,
+            919
+          ],
+          "observation": "Diagnostic Encodable row is fixture identifier, dimensions, count, pixelBytes, maskBytes only; all inspected call sites pass authored synthetic identifiers. No scene names, scene geometry, image bytes, user photos or arbitrary error descriptions are serialized."
+        }
+      ],
+      "method": "Manual read of complete engine/preview and relevant logger/call sites, plus in-memory string search for logging/network/file-write APIs.",
+      "boundary": "Source scope only; dependency paths, whole-application telemetry and runtime network behavior were not audited."
+    },
+    {
+      "id": "previous-frame-accessibility",
+      "kind": "bounded source confirmation",
+      "evidence": [
+        {
+          "path": "App/ReferenceStudyPreview.swift",
+          "blob": "999b590b7eaad2bed75d417690856004300568b2",
+          "lines": [
+            124,
+            177,
+            212,
+            232
+          ],
+          "observation": "Source distinguishes previous/updating/paused images, exposes prior unsupported count as text and image accessibility label, gates current backend/warning on matching request plus ticket, and assigns completion image/backend/warning/error together."
+        },
+        {
+          "path": "NativeTests/StudyPreviewAdoptionTests.swift",
+          "blob": "c514f15cf000538f56d7653b7b30d85d451442ad",
+          "lines": [
+            170,
+            228
+          ],
+          "method": "testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade",
+          "observation": "Hosted synthetic-producer source covers a second A call, previous/updating identifiers and unsupported text, absent current backend/warning while held, then CPU labels."
+        }
+      ],
+      "boundary": "Current owner03 remedy is source-present, unmerged into frozen04, and not runtime-verified here. Hosted code does not inspect displayed CGImage bytes; that remains a coverage recommendation, not a new defect/mandatory gate. No VoiceOver, Dynamic Type layout or platform audit acceptance claimed."
+    }
+  ],
+  "mandatoryReads": [
+    {
+      "path": "AGENTS.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "agents/state.json",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read": "full UTF-8 content"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read": "full UTF-8 content"
+    }
+  ],
+  "additionalInputs": [
+    {
+      "role": "task packet",
+      "blob": "25bb71b558fa0ea579ca895c918e2e87e3ab87a5",
+      "retainedPath": "docs/parallel/04/evidence/w088/originals/task-packet.json"
+    },
+    {
+      "role": "draft contract reviewed",
+      "path": "docs/parallel/04/FALLBACK_CONTRACT.md",
+      "blob": "11cbd4278db167fa50e5c93ba5cc99f03687074f",
+      "retainedPath": "docs/parallel/04/evidence/w088/originals/contract.md",
+      "status": "draft, not asserted as committed at input"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "scope": "complete file or explicitly scoped sections inspected"
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "blob": "999b590b7eaad2bed75d417690856004300568b2",
+      "ref": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+      "scope": "complete file or explicitly scoped sections inspected"
+    },
+    {
+      "path": "NativeTests/StudyPreviewAdoptionTests.swift",
+      "blob": "c514f15cf000538f56d7653b7b30d85d451442ad",
+      "ref": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+      "scope": "complete file or explicitly scoped sections inspected"
+    },
+    {
+      "path": "w083-source-review",
+      "blob": "55bb057aecbca8210673c3f2ae85b8323bff86fb",
+      "ref": null,
+      "scope": "prior immutable evidence; only relevant consumer/receipt fields inspected"
+    },
+    {
+      "path": "w083-retained-evidence",
+      "blob": "405b9246dfc00cee189229424ed9d9fbb7bf4e7b",
+      "ref": null,
+      "scope": "prior immutable evidence; only relevant consumer/receipt fields inspected"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "scope": "complete file or explicitly scoped sections inspected"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "blob": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "read": "full"
+    },
+    {
+      "path": "docs/parallel/03/evidence/preview-adoption-inputs.json",
+      "ref": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+      "blob": "4fa66c7f7580350d584ace3c4cdad67754b57018",
+      "readVia": "embedded original within blob405b9246dfc00cee189229424ed9d9fbb7bf4e7b; no new CI poll"
+    },
+    {
+      "path": "docs/parallel/03/workers/wave09-evidence/W84-preview-adoption.json",
+      "ref": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+      "blob": "72cd8ef2fba115f0b5a3ed3ae6e69e3678ddbb85",
+      "readVia": "embedded original within blob405b9246dfc00cee189229424ed9d9fbb7bf4e7b; no new CI poll"
+    },
+    {
+      "path": "docs/parallel/03/workers/wave09-evidence/W84-followup-commands.md",
+      "ref": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+      "blob": "94541058a41f1e063f9b6ad4befe78293ffe5663",
+      "readVia": "embedded original within blob405b9246dfc00cee189229424ed9d9fbb7bf4e7b; no new CI poll"
+    }
+  ],
+  "failedReads": [
+    {
+      "tool": "mcp__codex_apps__github_fetch_file",
+      "path": "Sources/LightingCore/LightingScene.swift",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "isError": true,
+      "errorCode": "NOT_FOUND",
+      "httpStatus": 404,
+      "disposition": "Retained; actual declaration then read from Sources/LightingCore/Scene.swift."
+    }
+  ],
+  "performedTools": [
+    "functions.exec (in-memory orchestration, string inspection and word counts)",
+    "mcp__codex_apps__github_fetch_file",
+    "mcp__codex_apps__github_fetch_blob",
+    "mcp__codex_apps__github_create_blob (UTF-8 only)",
+    "collaboration.send_message"
+  ],
+  "unavailableCommands": [
+    "python3 scripts/agent_cycle.py check",
+    "python3 scripts/agent_cycle.py next",
+    "git status/worktree/fetch/cleanup",
+    "swift test",
+    "swiftc",
+    "xcodebuild",
+    "SDK installation/probes"
+  ],
+  "prohibitedActionsNotPerformed": [
+    "shell/executor probe",
+    "CI poll/rerun",
+    "source/UI/oracle/ABI/build/harness changes",
+    "branch/ref/global-state updates"
+  ],
+  "reportVersions": [
+    {
+      "path": "docs/parallel/04/evidence/w088/report.v1.md",
+      "blob": "08bea3063565fc3a54a92c6e8cba919b63d8fcdd",
+      "words": 386,
+      "status": "original intermediate retained"
+    },
+    {
+      "path": "docs/parallel/04/workers/w088.md",
+      "alsoRetainedAt": "docs/parallel/04/evidence/w088/report.v2.md",
+      "blob": "5920d3d85a407bbab808386b43a9f113c2b55832",
+      "words": 351,
+      "status": "final report"
+    }
+  ],
+  "budget": {
+    "workingTargetTokens": 12000,
+    "hardTokenCountersAvailable": false,
+    "reportWordCountMethod": "in-memory whitespace split",
+    "reportHardTokenCount": null,
+    "checkpoint": "Parent received completion checkpoint; no measured token-use compliance claimed."
+  },
+  "dataPolicy": "No private values/photos or new fixtures included. Source snippets and synthetic-test semantics only.",
+  "evidenceBoundary": "Existing required privacy/accessibility gates remain unchanged. No new CI, Apple runtime, Release native, physical-device, RSS or GPU behavior result is claimed."
+}

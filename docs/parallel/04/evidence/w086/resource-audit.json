@@ -1,0 +1,557 @@
+{
+  "schema": 1,
+  "worker": "086",
+  "actualAgentId": "/root/w081/w086",
+  "fresh": true,
+  "parent": "/root/w081",
+  "inputSHA": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+  "baselineSHA": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "productionSourceSHA": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "verdict": "No additional engine resource-lifetime defect found in inspected source and retained evidence.",
+  "sourcePins": [
+    {
+      "key": "pin-engine",
+      "path": "App/MetalStudyRenderer.swift",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "sha": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "expected": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "matchesExpected": true,
+      "isError": false,
+      "status": "fulfilled"
+    },
+    {
+      "key": "pin-cache",
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "expected": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "matchesExpected": true,
+      "isError": false,
+      "status": "fulfilled"
+    },
+    {
+      "key": "pin-native",
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "sha": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "expected": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "matchesExpected": true,
+      "isError": false,
+      "status": "fulfilled"
+    },
+    {
+      "key": "pin-core",
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "ref": "53d7302931ccaadd7a2ad29c55fd94a695c5997e",
+      "sha": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "expected": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "matchesExpected": true,
+      "isError": false,
+      "status": "fulfilled"
+    },
+    {
+      "key": "source6-native",
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sha": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "expected": null,
+      "matchesExpected": null,
+      "isError": false,
+      "status": "fulfilled"
+    },
+    {
+      "key": "source6-engine",
+      "path": "App/MetalStudyRenderer.swift",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sha": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "expected": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "matchesExpected": true,
+      "isError": false,
+      "status": "fulfilled"
+    }
+  ],
+  "source6NativeComparison": {
+    "source6nativeSHA": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "source6methodCount": 25,
+    "currentMethodCount": 29,
+    "existingSourceUnchanged": true
+  },
+  "weakReferenceReview": {
+    "core": {
+      "sourceBlob": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "lines": [
+        205,
+        325
+      ],
+      "methods": 4,
+      "observation": "Insertion helper creates the strong value locally and returns only WeakValue; assertions occur after return, without capturing the value or copying its cache. Replacement rejection, admitted replacement, both byte-budget evictions and selective invalidation distinguish release from survivor retention.",
+      "runtimeClaim": "Source inspection only in this worker."
+    },
+    "native": {
+      "sourceBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "lines": [
+        935,
+        1026
+      ],
+      "method": "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+      "control": "controlBackend = nil before weak false assertion and one release count",
+      "factory": "Captures only script and weak observer. The fresh backend local ends on return; observer getter exposes Bool only.",
+      "cases": "command, allocation, invalidComputeOutput; each cancel=false and cancel=true",
+      "assertionBoundary": "After awaited engine render completes/unwinds; same engine later used for CPU cache hit and uncached CPU request.",
+      "scope": "Scripted object/actor ownership, not actual Metal resource release."
+    },
+    "cpuPreservation": {
+      "coreLines": [
+        268,
+        294
+      ],
+      "nativeLines": [
+        [
+          454,
+          491
+        ],
+        [
+          984,
+          1023
+        ]
+      ],
+      "observation": "Selective invalidation keeps CPU weak values and relative order; engine downgrade preserves CPU image/backend and budget-limited hit probe, then performs a live uncached CPU request."
+    }
+  },
+  "resourceAudit": {
+    "rawRows": 19,
+    "stepRows": 15,
+    "summaryRows": 4,
+    "metadataExactMatch": true,
+    "arithmeticAndBoundsDiscrepancies": [],
+    "rows": [
+      {
+        "count": 1,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "maximum-bust-step-1",
+        "maskBytes": 13824,
+        "pixelBytes": 55296
+      },
+      {
+        "count": 2,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "maximum-bust-step-2",
+        "maskBytes": 27648,
+        "pixelBytes": 110592
+      },
+      {
+        "count": 3,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "maximum-bust-step-3",
+        "maskBytes": 41472,
+        "pixelBytes": 165888
+      },
+      {
+        "count": 4,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "maximum-bust-step-4",
+        "maskBytes": 55296,
+        "pixelBytes": 221184
+      },
+      {
+        "count": 4,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "maximum-bust",
+        "maskBytes": 55296,
+        "pixelBytes": 221184
+      },
+      {
+        "count": 1,
+        "dimensions": [
+          {
+            "height": 16,
+            "width": 24
+          }
+        ],
+        "fixture": "small-bust-step-1",
+        "maskBytes": 384,
+        "pixelBytes": 1536
+      },
+      {
+        "count": 2,
+        "dimensions": [
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          }
+        ],
+        "fixture": "small-bust-step-2",
+        "maskBytes": 768,
+        "pixelBytes": 3072
+      },
+      {
+        "count": 3,
+        "dimensions": [
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          }
+        ],
+        "fixture": "small-bust-step-3",
+        "maskBytes": 1152,
+        "pixelBytes": 4608
+      },
+      {
+        "count": 4,
+        "dimensions": [
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          }
+        ],
+        "fixture": "small-bust-step-4",
+        "maskBytes": 1536,
+        "pixelBytes": 6144
+      },
+      {
+        "count": 4,
+        "dimensions": [
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          },
+          {
+            "height": 16,
+            "width": 24
+          }
+        ],
+        "fixture": "small-bust",
+        "maskBytes": 1536,
+        "pixelBytes": 6144
+      },
+      {
+        "count": 1,
+        "dimensions": [
+          {
+            "height": 128,
+            "width": 192
+          }
+        ],
+        "fixture": "maximum-sphere-step-1",
+        "maskBytes": 24576,
+        "pixelBytes": 98304
+      },
+      {
+        "count": 2,
+        "dimensions": [
+          {
+            "height": 128,
+            "width": 192
+          },
+          {
+            "height": 128,
+            "width": 192
+          }
+        ],
+        "fixture": "maximum-sphere-step-2",
+        "maskBytes": 49152,
+        "pixelBytes": 196608
+      },
+      {
+        "count": 2,
+        "dimensions": [
+          {
+            "height": 128,
+            "width": 192
+          },
+          {
+            "height": 128,
+            "width": 192
+          }
+        ],
+        "fixture": "maximum-sphere-step-3",
+        "maskBytes": 49152,
+        "pixelBytes": 196608
+      },
+      {
+        "count": 2,
+        "dimensions": [
+          {
+            "height": 128,
+            "width": 192
+          },
+          {
+            "height": 128,
+            "width": 192
+          }
+        ],
+        "fixture": "maximum-sphere",
+        "maskBytes": 49152,
+        "pixelBytes": 196608
+      },
+      {
+        "count": 1,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "mixed-bust-sphere-step-1",
+        "maskBytes": 13824,
+        "pixelBytes": 55296
+      },
+      {
+        "count": 2,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "mixed-bust-sphere-step-2",
+        "maskBytes": 27648,
+        "pixelBytes": 110592
+      },
+      {
+        "count": 3,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          }
+        ],
+        "fixture": "mixed-bust-sphere-step-3",
+        "maskBytes": 41472,
+        "pixelBytes": 165888
+      },
+      {
+        "count": 3,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 128,
+            "width": 192
+          }
+        ],
+        "fixture": "mixed-bust-sphere-step-4",
+        "maskBytes": 52224,
+        "pixelBytes": 208896
+      },
+      {
+        "count": 3,
+        "dimensions": [
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 96,
+            "width": 144
+          },
+          {
+            "height": 128,
+            "width": 192
+          }
+        ],
+        "fixture": "mixed-bust-sphere",
+        "maskBytes": 52224,
+        "pixelBytes": 208896
+      }
+    ]
+  },
+  "source6Observed": {
+    "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "runId": 45848953002,
+    "jobId": 140012314020,
+    "metadataBlob": "006f0a8f6546adb58e09b9a3942f3d624a842ac3",
+    "rawLogBlob": "48500c2b0d1ef8ed6ac2bae8e0a12e4f7e07614d",
+    "scope": "Retained native Debug result; not executed by this worker.",
+    "relevantPassedMethods": [
+      {
+        "method": "StudyRenderCacheTests/testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "status": "passed",
+        "seconds": 0.238
+      },
+      {
+        "method": "StudyRenderCacheTests/testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+        "status": "passed",
+        "seconds": 0.17
+      },
+      {
+        "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "status": "passed",
+        "seconds": 2.92
+      },
+      {
+        "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+        "status": "passed",
+        "seconds": 0.044
+      },
+      {
+        "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "status": "passed",
+        "seconds": 0.1
+      },
+      {
+        "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "status": "passed",
+        "seconds": 1.819
+      }
+    ],
+    "rawExcerptLineNumbers": [
+      5523,
+      5524,
+      5535,
+      5536,
+      5547,
+      5550,
+      5553,
+      5554,
+      5555,
+      5556,
+      5557,
+      5558,
+      5559,
+      5560,
+      5562,
+      5563,
+      5564,
+      5565,
+      5566,
+      5568,
+      5569,
+      5570,
+      5571,
+      5572,
+      5573,
+      5574,
+      5577,
+      5578,
+      5579,
+      5580,
+      5581
+    ]
+  },
+  "limits": [
+    "Resource tests retain caller frame arrays; accounting excludes these references, allocator overhead, process RSS and driver resources.",
+    "Physical device, native Release runtime and GPU cancellation latency are not established.",
+    "Source7 four appended methods have no Apple execution claim in supplied input; no polling performed.",
+    "Engine cache purge does not revoke caller-held frames."
+  ],
+  "contractReview": {
+    "originalBlob": "11cbd4278db167fa50e5c93ba5cc99f03687074f",
+    "needed": "Replace unconditional pre-submission cancellation wording with: Cancellation observed at the precommit checkpoint prevents submission; cancellation arriving after that check may still allow submission.",
+    "knownCorrection": "Synchronous protocol alone cannot ensure exclusive actor ownership; the factory must supply a fresh backend with no external concurrent-use path.",
+    "retain": "Bounded weak references prove actor object ownership; resource rows are CPU payload counters; CPU survivors remain cached; wait/status/copy-before-pool-exit code facts are separate from ARC/command/driver physical lifetimes.",
+    "sourceLines": "App/MetalStudyRenderer.swift:83-116,215-221,290-294",
+    "noSourceEditRequested": true
+  }
+}

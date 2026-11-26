@@ -1,5 +1,8 @@
 # Owner routes — lane04
 
+> **Wave 9 owner refresh:** Owner03 head `92dc7a69c0032141ee49de0b96940fccab83a33e` now contains the preview remedy and hosted regression source. They remain unmerged into this lane; owner receipts mark Apple compilation/hosted execution/before-fail unrun. The earlier requests below describe their recorded snapshot. See [the current integration note](OWNER_INTEGRATION.md#later-owner-refresh--wave-9) and [fallback contract](FALLBACK_CONTRACT.md) for the updated merge and verification requirements. Final owner routes will be sealed in wave10.
+
+
 ## Lane 03/20: confirm engine policy before reusing a reinstated preview
 
 Worker 057 confirmed a source-level A→B→A sequence in the current owner preview at `finish/03-cpu-study-mannequin` head `8ce5e464253144deccb39d838faef70f05e0c38c` (preview blob `c96d5cb7a41143867efca160b309d71bfa993c96`). After A displays a Metal frame, B can confirm a backend failure and be cancelled. The engine correctly evicts Metal entries, but returning to A can take the view-local successful-frame shortcut without consulting the now-CPU engine. The old pixels may remain valid; this is a subsequent-request adoption and status-policy gap, not evidence of corrupt pixels or engine-cache leakage.
