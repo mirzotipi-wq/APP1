@@ -67,7 +67,7 @@ final class LightingPlanExportUITests: XCTestCase {
         }
 
         openCopy(expectedLights: 4)
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = "Full-library-editable-copy"
         attachment.lifetime = .keepAlways
         self.add(attachment)
@@ -148,7 +148,9 @@ final class LightingPlanExportUITests: XCTestCase {
         XCTAssertTrue(pages.waitForExistence(timeout: 15))
         XCTAssertTrue(pages.label.contains("2 pages"))
         XCTAssertTrue(app.buttons["shareLightingPlanPDF"].exists)
-        let attachment = XCTAttachment(screenshot: app.screenshot())
+        // Capture the actual screen without an additional application-frame
+        // accessibility query; document and share readiness remain asserted.
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = "Lighting-plan-preview"; attachment.lifetime = .keepAlways; add(attachment)
         closePDF(in: app)
         XCTAssertTrue(export.waitForExistence(timeout: 5))

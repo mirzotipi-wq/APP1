@@ -1,0 +1,1887 @@
+{
+  "schema_version": 1,
+  "worker": "APP1 worker100",
+  "context_path": "/root/w007_review_coordinator/w100_current_native_ui_evidence",
+  "phase": "cd5 native failure repair candidate independent source review",
+  "repository": "mirzotipi-wq/APP1",
+  "base_ref": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "status": "COMPLETE_SOURCE_REVIEW_NO_CONCRETE_BLOCKER_RUNTIME_UNVERIFIED",
+  "review_kind": "Remote GitHub connector source-only; no compiler, scripts, builds, tests, source/tree/ref mutations or new contexts",
+  "preserved_reports": {
+    "original_75e_native": "655318fa58dfa18ca7b08dbedce4b60ee759929c",
+    "original_75e_ui_images": "2607c032fd481fcccce028abb4be6a000e7d2fae",
+    "original_text_layout_source_review": "d16e13d29036e1d0402c294d06aa72ecb98b8682",
+    "current_cd5_native_runtime": "0e1e8e9008f32a3985a0ff829cc380f35248943c"
+  },
+  "candidates": [
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "sha": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+      "base_sha": "ed138c6197160ae614580d53ebdf85444551ea35",
+      "all_content_inspected": true,
+      "characters": 13835,
+      "lines": 262
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "sha": "618c70bb4677c1d391c54bd3d6b4584e641b21d4",
+      "base_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "superseded_reviewed_candidate": "97c2db93fdf2d047324344cd89960ee8fd6a8370",
+      "complete_diff_inspected": true,
+      "characters": 24414,
+      "lines": 469
+    }
+  ],
+  "exact_checks": {
+    "currentNativeMethods": 137,
+    "requiredUI": 35,
+    "optionalUIDiagnostics": 2,
+    "onlyNilEmptyRevision": true,
+    "nativeMethods": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesUninstrumentedLayout"
+    ],
+    "exactGateMethodUnchanged": true,
+    "pixelsAndFitsBodyExact": true,
+    "requiredUICountedFromFetchedSource": true
+  },
+  "source_scope": {
+    "changes_exactly_two_requested_test_files": true,
+    "baseline_workflow_or_source_tree_modified_by_worker": false,
+    "integration_tree_not_provided": "Candidate blob review cannot independently guarantee a future integrated tree. Root must retain only approved changes.",
+    "protected_unchanged_by_candidate_scope": [
+      {
+        "path": "App/StudioTextLayoutDiagnostics.swift",
+        "base_sha": "699a0bf7a441d28d8d2f16d9332a481165f09313"
+      },
+      {
+        "path": "App/ProjectLibraryView.swift",
+        "base_sha": "2d540991327e5db1569e9b0f6839c732e33d843f"
+      },
+      {
+        "path": "UITests/StudioAppAccessibilityUITests.swift",
+        "base_sha": "5c5f6360f63267f6dc50473d88a7261bb0387e3b"
+      },
+      {
+        "path": "UITests/StudioContentReachability.swift",
+        "base_sha": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5"
+      }
+    ],
+    "candidate_ui_diff": [
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 46,
+        "text": "    /// Check the real external AX owner while layout diagnostics are disabled."
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 47,
+        "text": "    /// These three actions are single Button leaves in the preserved hierarchy."
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 48,
+        "text": "    private func assertNormalAction(_ action: XCUIElement, identifier: String, label: String,"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 49,
+        "text": "                                    file: StaticString = #filePath, line: UInt = #line) throws {"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 50,
+        "text": "        waitUntilEnabled(action, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 51,
+        "text": "        let snapshot = try action.snapshot()"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 52,
+        "text": "        let children = snapshot.children.map {"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 53,
+        "text": "            \"type=\\($0.elementType.rawValue), identifier=\\($0.identifier), label=\\($0.label)\""
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 54,
+        "text": "        }.joined(separator: \"\\n\")"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 55,
+        "text": "        let description = \"identifier=\\(snapshot.identifier), type=\\(snapshot.elementType.rawValue), \" +"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 56,
+        "text": "            \"label=\\(snapshot.label), value=\\(String(describing: snapshot.value)), \" +"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 57,
+        "text": "            \"frame=\\(snapshot.frame), children=\\(snapshot.children.count)\\n\\(children)\""
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 58,
+        "text": "        print(\"Normal-project-action-AX: \\(description)\")"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 59,
+        "text": "        let attachment = XCTAttachment(string: description)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 60,
+        "text": "        attachment.name = \"Normal-project-action-AX-\\(identifier)\""
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 61,
+        "text": "        attachment.lifetime = .keepAlways"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 62,
+        "text": "        add(attachment)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 63,
+        "text": "        XCTAssertEqual(snapshot.identifier, identifier, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 64,
+        "text": "        XCTAssertEqual(snapshot.elementType, .button, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 65,
+        "text": "        XCTAssertEqual(snapshot.label, label, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 66,
+        "text": "        let normalValue = snapshot.value"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 67,
+        "text": "        XCTAssertTrue(normalValue == nil || (normalValue as? String) == \"\","
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 68,
+        "text": "                      \"Normal actions must retain an absent or empty String AX value\","
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 69,
+        "text": "                      file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 70,
+        "text": "        XCTAssertTrue(snapshot.children.isEmpty, \"The action must remain one grouped AX leaf\","
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 71,
+        "text": "                      file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 72,
+        "text": "        XCTAssertTrue(snapshot.isEnabled, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 73,
+        "text": "        XCTAssertTrue(action.isHittable, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 74,
+        "text": "    }"
+      },
+      {
+        "kind": "+",
+        "old": 46,
+        "new": 75,
+        "text": ""
+      },
+      {
+        "kind": "+",
+        "old": 51,
+        "new": 81,
+        "text": "        XCTAssertNil(app.launchEnvironment[\"KEYFILL_UI_TEXT_LAYOUT_PROBES\"],"
+      },
+      {
+        "kind": "+",
+        "old": 51,
+        "new": 82,
+        "text": "                     \"This workflow verifies normal, uninstrumented accessibility\")"
+      },
+      {
+        "kind": "+",
+        "old": 58,
+        "new": 90,
+        "text": "        try assertNormalAction(app.buttons[\"projectLibraryDone\"],"
+      },
+      {
+        "kind": "+",
+        "old": 58,
+        "new": 91,
+        "text": "                               identifier: \"projectLibraryDone\", label: \"Done\")"
+      },
+      {
+        "kind": "+",
+        "old": 74,
+        "new": 108,
+        "text": "        try assertNormalAction(app.buttons[\"projectNameCancel\"],"
+      },
+      {
+        "kind": "+",
+        "old": 74,
+        "new": 109,
+        "text": "                               identifier: \"projectNameCancel\", label: \"Cancel\")"
+      },
+      {
+        "kind": "+",
+        "old": 74,
+        "new": 110,
+        "text": "        try assertNormalAction(app.buttons[\"confirmProjectName\"],"
+      },
+      {
+        "kind": "+",
+        "old": 74,
+        "new": 111,
+        "text": "                               identifier: \"confirmProjectName\", label: \"Save project name\")"
+      }
+    ],
+    "candidate_native_diff": [
+      {
+        "kind": "+",
+        "old": 52,
+        "new": 52,
+        "text": "            let measured = try checkedRecordedText(in: observed)"
+      },
+      {
+        "kind": "-",
+        "old": 52,
+        "new": 53,
+        "text": "            let measured = try XCTUnwrap(observed.frames[probe])"
+      },
+      {
+        "kind": "-",
+        "old": 53,
+        "new": 53,
+        "text": "            let nativeText = try XCTUnwrap(observed.nativeTextFrame)"
+      },
+      {
+        "kind": "-",
+        "old": 54,
+        "new": 53,
+        "text": "            let nativeControl = try XCTUnwrap(observed.nativeControlFrame)"
+      },
+      {
+        "kind": "-",
+        "old": 55,
+        "new": 53,
+        "text": "            XCTAssertTrue(nativeControl.contains(measured))"
+      },
+      {
+        "kind": "-",
+        "old": 56,
+        "new": 53,
+        "text": "            // Independent UIKit view conversion checks the actual hosted Text's"
+      },
+      {
+        "kind": "-",
+        "old": 57,
+        "new": 53,
+        "text": "            // global geometry. Compare physical-pixel coordinates, not an inset."
+      },
+      {
+        "kind": "-",
+        "old": 58,
+        "new": 53,
+        "text": "            XCTAssertEqual(pixels(measured, scale: observed.scale),"
+      },
+      {
+        "kind": "-",
+        "old": 59,
+        "new": 53,
+        "text": "                           pixels(nativeText, scale: observed.scale))"
+      },
+      {
+        "kind": "-",
+        "old": 60,
+        "new": 53,
+        "text": "            XCTAssertGreaterThanOrEqual(nativeControl.height, 44)"
+      },
+      {
+        "kind": "-",
+        "old": 61,
+        "new": 53,
+        "text": "            XCTAssertLessThan(measured.height, nativeControl.height,"
+      },
+      {
+        "kind": "-",
+        "old": 62,
+        "new": 53,
+        "text": "                              \"A padded action must not masquerade as its Text\")"
+      },
+      {
+        "kind": "-",
+        "old": 64,
+        "new": 54,
+        "text": "            let value = try XCTUnwrap(observed.elements.first?.value)"
+      },
+      {
+        "kind": "-",
+        "old": 65,
+        "new": 54,
+        "text": "            XCTAssertEqual(StudioTextLayoutDiagnostics.frame(from: value, probe: probe), measured)"
+      },
+      {
+        "kind": "-",
+        "old": 66,
+        "new": 54,
+        "text": "            XCTAssertEqual(observed.elements.count, 1, \"The probe must not add accessible children\")"
+      },
+      {
+        "kind": "-",
+        "old": 67,
+        "new": 54,
+        "text": "            XCTAssertEqual(observed.elements.first?.label, \"Done\")"
+      },
+      {
+        "kind": "+",
+        "old": 74,
+        "new": 60,
+        "text": "        let smallText = try checkedRecordedText(in: undersized)"
+      },
+      {
+        "kind": "+",
+        "old": 74,
+        "new": 61,
+        "text": "        let largeControl = undersized.nativeControlFrame"
+      },
+      {
+        "kind": "-",
+        "old": 74,
+        "new": 62,
+        "text": "        let smallText = try XCTUnwrap(undersized.frames[probe])"
+      },
+      {
+        "kind": "-",
+        "old": 75,
+        "new": 62,
+        "text": "        let largeControl = try XCTUnwrap(undersized.nativeControlFrame)"
+      },
+      {
+        "kind": "-",
+        "old": 76,
+        "new": 62,
+        "text": "        XCTAssertGreaterThanOrEqual(largeControl.height, 44)"
+      },
+      {
+        "kind": "+",
+        "old": 86,
+        "new": 71,
+        "text": "    func testDisabledHostedProbePreservesUninstrumentedLayout() async throws {"
+      },
+      {
+        "kind": "-",
+        "old": 86,
+        "new": 72,
+        "text": "    func testDisabledHostedProbePreservesNormalValueAndElementGrouping() async throws {"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 76,
+        "text": "        XCTAssertTrue(baseline.frames.isEmpty)"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 77,
+        "text": "        XCTAssertTrue(disabled.frames.isEmpty, \"Disabled probes must emit no layout preferences\")"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 78,
+        "text": "        XCTAssertEqual(disabled.scale, baseline.scale)"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 79,
+        "text": "        for observed in [baseline, disabled] {"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 80,
+        "text": "            XCTAssertTrue(observed.nativeControlFrame.contains(observed.nativeTextFrame))"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 81,
+        "text": "            XCTAssertEqual(observed.nativeControlFrame.size, CGSize(width: 300, height: 100))"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 82,
+        "text": "            XCTAssertLessThan(observed.nativeTextFrame.height, observed.nativeControlFrame.height)"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 83,
+        "text": "            XCTAssertTrue(fitsBodyText(observed.nativeTextFrame, category: .large, scale: observed.scale))"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 84,
+        "text": "        }"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 85,
+        "text": "        XCTAssertEqual(pixels(disabled.nativeTextFrame, scale: disabled.scale),"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 86,
+        "text": "                       pixels(baseline.nativeTextFrame, scale: baseline.scale))"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 87,
+        "text": "        XCTAssertEqual(pixels(disabled.nativeControlFrame, scale: disabled.scale),"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 88,
+        "text": "                       pixels(baseline.nativeControlFrame, scale: baseline.scale))"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 89,
+        "text": "        // The native public AX traversal returned no SwiftUI leaves in the"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 90,
+        "text": "        // original CI failure. Normal labels/values/grouping are verified from"
+      },
+      {
+        "kind": "+",
+        "old": 91,
+        "new": 91,
+        "text": "        // external snapshots in ProjectLibraryUITests' existing workflow."
+      },
+      {
+        "kind": "-",
+        "old": 91,
+        "new": 92,
+        "text": "        XCTAssertTrue(disabled.frames.isEmpty)"
+      },
+      {
+        "kind": "-",
+        "old": 92,
+        "new": 92,
+        "text": "        XCTAssertEqual(baseline.elements.count, 1,"
+      },
+      {
+        "kind": "-",
+        "old": 93,
+        "new": 92,
+        "text": "                       \"Read the real foreground-hosted action; an empty AX tree is not a pass\")"
+      },
+      {
+        "kind": "-",
+        "old": 94,
+        "new": 92,
+        "text": "        XCTAssertEqual(disabled.elements, baseline.elements)"
+      },
+      {
+        "kind": "-",
+        "old": 95,
+        "new": 92,
+        "text": "        XCTAssertEqual(disabled.elements.first?.label, \"Done\")"
+      },
+      {
+        "kind": "-",
+        "old": 96,
+        "new": 92,
+        "text": "        XCTAssertEqual(disabled.elements.first?.value, \"Original action value\")"
+      },
+      {
+        "kind": "-",
+        "old": 97,
+        "new": 92,
+        "text": "        XCTAssertEqual(disabled.elements.first?.isButton, true)"
+      },
+      {
+        "kind": "-",
+        "old": 98,
+        "new": 92,
+        "text": "        XCTAssertEqual(pixels(try XCTUnwrap(disabled.nativeTextFrame), scale: disabled.scale),"
+      },
+      {
+        "kind": "-",
+        "old": 99,
+        "new": 92,
+        "text": "                       pixels(try XCTUnwrap(baseline.nativeTextFrame), scale: baseline.scale))"
+      },
+      {
+        "kind": "-",
+        "old": 102,
+        "new": 94,
+        "text": "    private struct Element: Equatable {"
+      },
+      {
+        "kind": "-",
+        "old": 103,
+        "new": 94,
+        "text": "        let label: String?"
+      },
+      {
+        "kind": "-",
+        "old": 104,
+        "new": 94,
+        "text": "        let value: String?"
+      },
+      {
+        "kind": "-",
+        "old": 105,
+        "new": 94,
+        "text": "        let traits: UInt64"
+      },
+      {
+        "kind": "-",
+        "old": 106,
+        "new": 94,
+        "text": "        let isButton: Bool"
+      },
+      {
+        "kind": "-",
+        "old": 107,
+        "new": 94,
+        "text": "    }"
+      },
+      {
+        "kind": "-",
+        "old": 108,
+        "new": 94,
+        "text": ""
+      },
+      {
+        "kind": "+",
+        "old": 111,
+        "new": 96,
+        "text": "        let nativeTextFrame: CGRect"
+      },
+      {
+        "kind": "+",
+        "old": 111,
+        "new": 97,
+        "text": "        let nativeControlFrame: CGRect"
+      },
+      {
+        "kind": "-",
+        "old": 111,
+        "new": 98,
+        "text": "        let nativeTextFrame: CGRect?"
+      },
+      {
+        "kind": "-",
+        "old": 112,
+        "new": 98,
+        "text": "        let nativeControlFrame: CGRect?"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 99,
+        "text": "    }"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 100,
+        "text": ""
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 101,
+        "text": "    private func checkedRecordedText(in observed: Observation,"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 102,
+        "text": "                                     file: StaticString = #filePath, line: UInt = #line) throws -> CGRect {"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 103,
+        "text": "        let measured = try XCTUnwrap(observed.frames[probe], file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 104,
+        "text": "        XCTAssertEqual(Set(observed.frames.keys), Set([probe]), file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 105,
+        "text": "        XCTAssertTrue(observed.nativeControlFrame.contains(measured), file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 106,
+        "text": "        XCTAssertTrue(observed.nativeControlFrame.contains(observed.nativeTextFrame), file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 107,
+        "text": "        // Read the attached UIKit views after layout has settled. Keep exact"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 108,
+        "text": "        // physical-pixel equality; no coordinate or size allowance is added."
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 109,
+        "text": "        XCTAssertEqual(pixels(measured, scale: observed.scale),"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 110,
+        "text": "                       pixels(observed.nativeTextFrame, scale: observed.scale), file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 111,
+        "text": "        XCTAssertGreaterThanOrEqual(observed.nativeControlFrame.height, 44, file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 112,
+        "text": "        XCTAssertLessThan(measured.height, observed.nativeControlFrame.height,"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 113,
+        "text": "                          \"A padded action must not masquerade as its Text\", file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 114,
+        "text": "        let encoded = StudioTextLayoutDiagnostics.value(probe: probe, frame: measured)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 115,
+        "text": "        XCTAssertEqual(StudioTextLayoutDiagnostics.frame(from: encoded, probe: probe), measured,"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 116,
+        "text": "                       \"The actual recorded frame must survive an exact transport round trip\","
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 117,
+        "text": "                       file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 114,
+        "new": 118,
+        "text": "        return measured"
+      },
+      {
+        "kind": "-",
+        "old": 114,
+        "new": 119,
+        "text": "        let elements: [Element]"
+      },
+      {
+        "kind": "+",
+        "old": 126,
+        "new": 130,
+        "text": "        var nativeTextView: UIView?"
+      },
+      {
+        "kind": "+",
+        "old": 126,
+        "new": 131,
+        "text": "        var nativeControlView: UIView?"
+      },
+      {
+        "kind": "-",
+        "old": 126,
+        "new": 132,
+        "text": "        var nativeText: CGRect?"
+      },
+      {
+        "kind": "-",
+        "old": 127,
+        "new": 132,
+        "text": "        var nativeControl: CGRect?"
+      },
+      {
+        "kind": "+",
+        "old": 130,
+        "new": 134,
+        "text": "                              onTextView: { nativeTextView = $0 },"
+      },
+      {
+        "kind": "+",
+        "old": 130,
+        "new": 135,
+        "text": "                              onControlView: { nativeControlView = $0 })"
+      },
+      {
+        "kind": "-",
+        "old": 130,
+        "new": 136,
+        "text": "                              onTextFrame: { nativeText = $0 },"
+      },
+      {
+        "kind": "-",
+        "old": 131,
+        "new": 136,
+        "text": "                              onControlFrame: { nativeControl = $0 })"
+      },
+      {
+        "kind": "+",
+        "old": 136,
+        "new": 140,
+        "text": "        // Retain views, not callback-time frames: a later ancestor layout can"
+      },
+      {
+        "kind": "+",
+        "old": 136,
+        "new": 141,
+        "text": "        // move an observer without invoking its own layoutSubviews again."
+      },
+      {
+        "kind": "-",
+        "old": 136,
+        "new": 142,
+        "text": "        // As in StudioTextFieldTests, attach to a foreground scene and let the"
+      },
+      {
+        "kind": "-",
+        "old": 137,
+        "new": 142,
+        "text": "        // actual view/preferences settle; no unattached accessibilityFrame read."
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 150,
+        "text": "        let textView = try XCTUnwrap(nativeTextView)"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 151,
+        "text": "        let controlView = try XCTUnwrap(nativeControlView)"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 152,
+        "text": "        XCTAssertFalse(textView === controlView)"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 153,
+        "text": "        let nativeText = liveScreenFrame(of: textView, in: host.view, window: window)"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 154,
+        "text": "        let nativeControl = liveScreenFrame(of: controlView, in: host.view, window: window)"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 155,
+        "text": "        print(\"Hosted Text probe LIVE: enabled=\\(enabled), category=\\(category), \" +"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 156,
+        "text": "              \"frames=\\(frames), textBounds=\\(textView.bounds), nativeText=\\(nativeText), \" +"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 157,
+        "text": "              \"controlBounds=\\(controlView.bounds), nativeControl=\\(nativeControl), \" +"
+      },
+      {
+        "kind": "+",
+        "old": 146,
+        "new": 158,
+        "text": "              \"textAttached=\\(textView.window === window), controlAttached=\\(controlView.window === window)\")"
+      },
+      {
+        "kind": "-",
+        "old": 146,
+        "new": 159,
+        "text": "        let elements = try accessibleLeaves(in: host.view).map {"
+      },
+      {
+        "kind": "-",
+        "old": 147,
+        "new": 159,
+        "text": "            Element(label: $0.accessibilityLabel, value: $0.accessibilityValue,"
+      },
+      {
+        "kind": "-",
+        "old": 148,
+        "new": 159,
+        "text": "                    traits: $0.accessibilityTraits.rawValue,"
+      },
+      {
+        "kind": "-",
+        "old": 149,
+        "new": 159,
+        "text": "                    isButton: $0.accessibilityTraits.contains(.button))"
+      },
+      {
+        "kind": "-",
+        "old": 150,
+        "new": 159,
+        "text": "        }"
+      },
+      {
+        "kind": "-",
+        "old": 151,
+        "new": 159,
+        "text": "        print(\"Hosted Text probe: enabled=\\(enabled), category=\\(category), \" +"
+      },
+      {
+        "kind": "-",
+        "old": 152,
+        "new": 159,
+        "text": "              \"frames=\\(frames), nativeText=\\(String(describing: nativeText)), \" +"
+      },
+      {
+        "kind": "-",
+        "old": 153,
+        "new": 159,
+        "text": "              \"nativeControl=\\(String(describing: nativeControl)), elements=\\(elements)\")"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 160,
+        "text": "                           nativeControlFrame: nativeControl, scale: scene.screen.scale)"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 161,
+        "text": "    }"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 162,
+        "text": ""
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 163,
+        "text": "    private func liveScreenFrame(of view: UIView, in host: UIView, window: UIWindow,"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 164,
+        "text": "                                 file: StaticString = #filePath, line: UInt = #line) -> CGRect {"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 165,
+        "text": "        XCTAssertTrue(view.window === window, \"Sample the expected attached window\", file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 166,
+        "text": "        XCTAssertTrue(view.isDescendant(of: host), \"Sample the actual hosted fixture\", file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 167,
+        "text": "        XCTAssertTrue(StudioTextLayoutDiagnostics.valid(view.bounds), file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 168,
+        "text": "        let frame = UIAccessibility.convertToScreenCoordinates(view.bounds, in: view)"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 169,
+        "text": "        XCTAssertTrue(StudioTextLayoutDiagnostics.valid(frame), file: file, line: line)"
+      },
+      {
+        "kind": "+",
+        "old": 155,
+        "new": 170,
+        "text": "        return frame"
+      },
+      {
+        "kind": "-",
+        "old": 155,
+        "new": 171,
+        "text": "                           nativeControlFrame: nativeControl, scale: scene.screen.scale,"
+      },
+      {
+        "kind": "-",
+        "old": 156,
+        "new": 171,
+        "text": "                           elements: elements)"
+      },
+      {
+        "kind": "-",
+        "old": 181,
+        "new": 195,
+        "text": "    private enum InspectionError: Error { case hierarchyExceededBound }"
+      },
+      {
+        "kind": "-",
+        "old": 182,
+        "new": 195,
+        "text": ""
+      },
+      {
+        "kind": "-",
+        "old": 183,
+        "new": 195,
+        "text": "    /// Inspect the real public accessibility containers. No test AX elements are"
+      },
+      {
+        "kind": "-",
+        "old": 184,
+        "new": 195,
+        "text": "    /// fabricated, and an accessible Button remains one leaf."
+      },
+      {
+        "kind": "-",
+        "old": 185,
+        "new": 195,
+        "text": "    private func accessibleLeaves(in root: NSObject) throws -> [NSObject] {"
+      },
+      {
+        "kind": "-",
+        "old": 186,
+        "new": 195,
+        "text": "        var pending: [NSObject] = [root]"
+      },
+      {
+        "kind": "-",
+        "old": 187,
+        "new": 195,
+        "text": "        var visited = Set<ObjectIdentifier>()"
+      },
+      {
+        "kind": "-",
+        "old": 188,
+        "new": 195,
+        "text": "        var leaves: [NSObject] = []"
+      },
+      {
+        "kind": "-",
+        "old": 189,
+        "new": 195,
+        "text": "        while let object = pending.popLast() {"
+      },
+      {
+        "kind": "-",
+        "old": 190,
+        "new": 195,
+        "text": "            guard visited.insert(ObjectIdentifier(object)).inserted else { continue }"
+      },
+      {
+        "kind": "-",
+        "old": 191,
+        "new": 195,
+        "text": "            guard visited.count <= 512 else { throw InspectionError.hierarchyExceededBound }"
+      },
+      {
+        "kind": "-",
+        "old": 192,
+        "new": 195,
+        "text": "            if object.accessibilityElementsHidden { continue }"
+      },
+      {
+        "kind": "-",
+        "old": 193,
+        "new": 195,
+        "text": "            if let view = object as? UIView, view.isHidden { continue }"
+      },
+      {
+        "kind": "-",
+        "old": 194,
+        "new": 195,
+        "text": "            if object.isAccessibilityElement {"
+      },
+      {
+        "kind": "-",
+        "old": 195,
+        "new": 195,
+        "text": "                leaves.append(object)"
+      },
+      {
+        "kind": "-",
+        "old": 196,
+        "new": 195,
+        "text": "                continue"
+      },
+      {
+        "kind": "-",
+        "old": 197,
+        "new": 195,
+        "text": "            }"
+      },
+      {
+        "kind": "-",
+        "old": 198,
+        "new": 195,
+        "text": "            var children = (object.accessibilityElements ?? []).compactMap { $0 as? NSObject }"
+      },
+      {
+        "kind": "-",
+        "old": 199,
+        "new": 195,
+        "text": "            if children.isEmpty {"
+      },
+      {
+        "kind": "-",
+        "old": 200,
+        "new": 195,
+        "text": "                let count = object.accessibilityElementCount()"
+      },
+      {
+        "kind": "-",
+        "old": 201,
+        "new": 195,
+        "text": "                if count != NSNotFound && count > 0 {"
+      },
+      {
+        "kind": "-",
+        "old": 202,
+        "new": 195,
+        "text": "                    guard count <= 128 else { throw InspectionError.hierarchyExceededBound }"
+      },
+      {
+        "kind": "-",
+        "old": 203,
+        "new": 195,
+        "text": "                    children = (0..<count).compactMap { object.accessibilityElement(at: $0) as? NSObject }"
+      },
+      {
+        "kind": "-",
+        "old": 204,
+        "new": 195,
+        "text": "                }"
+      },
+      {
+        "kind": "-",
+        "old": 205,
+        "new": 195,
+        "text": "            }"
+      },
+      {
+        "kind": "-",
+        "old": 206,
+        "new": 195,
+        "text": "            if let view = object as? UIView { children.append(contentsOf: view.subviews) }"
+      },
+      {
+        "kind": "-",
+        "old": 207,
+        "new": 195,
+        "text": "            pending.append(contentsOf: children.reversed())"
+      },
+      {
+        "kind": "-",
+        "old": 208,
+        "new": 195,
+        "text": "        }"
+      },
+      {
+        "kind": "-",
+        "old": 209,
+        "new": 195,
+        "text": "        return leaves"
+      },
+      {
+        "kind": "-",
+        "old": 210,
+        "new": 195,
+        "text": "    }"
+      },
+      {
+        "kind": "-",
+        "old": 211,
+        "new": 195,
+        "text": ""
+      },
+      {
+        "kind": "+",
+        "old": 218,
+        "new": 201,
+        "text": "        let onTextView: (UIView) -> Void"
+      },
+      {
+        "kind": "+",
+        "old": 218,
+        "new": 202,
+        "text": "        let onControlView: (UIView) -> Void"
+      },
+      {
+        "kind": "-",
+        "old": 218,
+        "new": 203,
+        "text": "        let onTextFrame: (CGRect) -> Void"
+      },
+      {
+        "kind": "-",
+        "old": 219,
+        "new": 203,
+        "text": "        let onControlFrame: (CGRect) -> Void"
+      },
+      {
+        "kind": "+",
+        "old": 224,
+        "new": 207,
+        "text": "                .background(NativeViewObserver(onView: onTextView)"
+      },
+      {
+        "kind": "-",
+        "old": 224,
+        "new": 208,
+        "text": "                .background(NativeFrameObserver(onFrame: onTextFrame)"
+      },
+      {
+        "kind": "+",
+        "old": 239,
+        "new": 222,
+        "text": "                    .background(NativeViewObserver(onView: onControlView)"
+      },
+      {
+        "kind": "-",
+        "old": 239,
+        "new": 223,
+        "text": "                    .background(NativeFrameObserver(onFrame: onControlFrame)"
+      },
+      {
+        "kind": "+",
+        "old": 262,
+        "new": 245,
+        "text": "    private struct NativeViewObserver: UIViewRepresentable {"
+      },
+      {
+        "kind": "+",
+        "old": 262,
+        "new": 246,
+        "text": "        let onView: (UIView) -> Void"
+      },
+      {
+        "kind": "-",
+        "old": 262,
+        "new": 247,
+        "text": "    private struct NativeFrameObserver: UIViewRepresentable {"
+      },
+      {
+        "kind": "-",
+        "old": 263,
+        "new": 247,
+        "text": "        let onFrame: (CGRect) -> Void"
+      },
+      {
+        "kind": "+",
+        "old": 265,
+        "new": 248,
+        "text": "        func makeUIView(context: Context) -> UIView {"
+      },
+      {
+        "kind": "+",
+        "old": 265,
+        "new": 249,
+        "text": "            let view = UIView()"
+      },
+      {
+        "kind": "-",
+        "old": 265,
+        "new": 250,
+        "text": "        func makeUIView(context: Context) -> FrameView {"
+      },
+      {
+        "kind": "-",
+        "old": 266,
+        "new": 250,
+        "text": "            let view = FrameView()"
+      },
+      {
+        "kind": "-",
+        "old": 267,
+        "new": 250,
+        "text": "            view.onFrame = onFrame"
+      },
+      {
+        "kind": "+",
+        "old": 271,
+        "new": 253,
+        "text": "            onView(view)"
+      },
+      {
+        "kind": "+",
+        "old": 274,
+        "new": 257,
+        "text": "        func updateUIView(_ uiView: UIView, context: Context) {"
+      },
+      {
+        "kind": "+",
+        "old": 274,
+        "new": 258,
+        "text": "            onView(uiView)"
+      },
+      {
+        "kind": "-",
+        "old": 274,
+        "new": 259,
+        "text": "        func updateUIView(_ uiView: FrameView, context: Context) {"
+      },
+      {
+        "kind": "-",
+        "old": 275,
+        "new": 259,
+        "text": "            uiView.onFrame = onFrame"
+      },
+      {
+        "kind": "-",
+        "old": 276,
+        "new": 259,
+        "text": "            uiView.report()"
+      },
+      {
+        "kind": "-",
+        "old": 278,
+        "new": 260,
+        "text": ""
+      },
+      {
+        "kind": "-",
+        "old": 279,
+        "new": 260,
+        "text": "        final class FrameView: UIView {"
+      },
+      {
+        "kind": "-",
+        "old": 280,
+        "new": 260,
+        "text": "            var onFrame: ((CGRect) -> Void)?"
+      },
+      {
+        "kind": "-",
+        "old": 281,
+        "new": 260,
+        "text": "            override func layoutSubviews() { super.layoutSubviews(); report() }"
+      },
+      {
+        "kind": "-",
+        "old": 282,
+        "new": 260,
+        "text": "            override func didMoveToWindow() { super.didMoveToWindow(); report() }"
+      },
+      {
+        "kind": "-",
+        "old": 283,
+        "new": 260,
+        "text": "            func report() {"
+      },
+      {
+        "kind": "-",
+        "old": 284,
+        "new": 260,
+        "text": "                guard window != nil, !bounds.isEmpty else { return }"
+      },
+      {
+        "kind": "-",
+        "old": 285,
+        "new": 260,
+        "text": "                onFrame?(UIAccessibility.convertToScreenCoordinates(bounds, in: self))"
+      },
+      {
+        "kind": "-",
+        "old": 286,
+        "new": 260,
+        "text": "            }"
+      },
+      {
+        "kind": "-",
+        "old": 287,
+        "new": 260,
+        "text": "        }"
+      }
+    ],
+    "required_ui_source_inventory": [
+      {
+        "path": "UITests/AccessibilityAuditUITests.swift",
+        "sha": "fa2b0844a92719bf9efa84b24a04b82ec7a6e402",
+        "methods": [
+          "testInitialLoadedPlanStudioAccessibilityAudit",
+          "testExactLightIntensityEditorAccessibilityAudit"
+        ]
+      },
+      {
+        "path": "UITests/LightingPlanExportUITests.swift",
+        "sha": "015eda966fc11edaa2f5828631e04a4ce9320e5c",
+        "methods": [
+          "testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory",
+          "testExportPreviewOpensWithoutSavingOrChangingScene"
+        ]
+      },
+      {
+        "path": "UITests/ManualRoomPlacementUITests.swift",
+        "sha": "c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa",
+        "methods": [
+          "testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+          "testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates"
+        ]
+      },
+      {
+        "path": "UITests/PrecisionEditingUITests.swift",
+        "sha": "d0478631b8569dbf9636607312e812cb7dbbb7a7",
+        "methods": [
+          "testExactLightIntensityValidationUndoRedoAndReopen",
+          "testExactCameraFocalLengthUndoRedoAndReopen",
+          "testExactModifierWidthAndRoomCrossingWithInsideCenters"
+        ]
+      },
+      {
+        "path": "UITests/ReferenceComparisonUITests.swift",
+        "sha": "908a41c5b143c47e4dbccd119cb30e3d6441c994",
+        "methods": [
+          "testReferenceComparisonOpensWithRealStudyAndNoPhoto",
+          "testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving"
+        ]
+      },
+      {
+        "path": "UITests/StudioAppAccessibilityUITests.swift",
+        "sha": "5c5f6360f63267f6dc50473d88a7261bb0387e3b",
+        "methods": [
+          "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+        ]
+      },
+      {
+        "path": "UITests/StudioContentReachability.swift",
+        "sha": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5",
+        "methods": []
+      },
+      {
+        "path": "UITests/StudioOpticsUITests.swift",
+        "sha": "096f1c7b863fa6256f785c5aec077a1f610a115c",
+        "methods": [
+          "testOpticsEditingUndoRedoAndRelaunch",
+          "testOpticsRepeatability02",
+          "testOpticsRepeatability03",
+          "testOpticsRepeatability04",
+          "testOpticsRepeatability05",
+          "testOpticsRepeatability06",
+          "testOpticsRepeatability07",
+          "testOpticsRepeatability08",
+          "testOpticsRepeatability09",
+          "testOpticsRepeatability10"
+        ]
+      },
+      {
+        "path": "UITests/StudioSmokeTests.swift",
+        "sha": "d96f26584971d1a785146ea41d4790d8e73b03af",
+        "methods": [
+          "testSettingsFeet3DFitAndSimulatorARManualFallback",
+          "testRecipeEditSaveAndReopen",
+          "testCameraFocalLengthUndoAndRelaunch",
+          "testMeterBalanceSaveUndoAndRelaunch",
+          "testStudyRendersActualReferenceFrame",
+          "testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene",
+          "testCorruptProjectBlocksSavingAcrossRelaunch",
+          "testStudioGuideKeepsUnsavedSetupSelectionAndHistory"
+        ]
+      },
+      {
+        "path": "UITests/ProjectLibraryUITests.swift",
+        "baseSha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+        "sha": "618c70bb4677c1d391c54bd3d6b4584e641b21d4",
+        "methods": [
+          "testCreateDuplicateRenameSwitchAndRelaunch",
+          "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+          "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+          "testStaleSaveReloadRequiresConfirmation",
+          "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+          "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+          "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch"
+        ],
+        "oldMethods": [
+          "testCreateDuplicateRenameSwitchAndRelaunch",
+          "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+          "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+          "testStaleSaveReloadRequiresConfirmation",
+          "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+          "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+          "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch"
+        ]
+      }
+    ],
+    "candidate_native_source_inventory": [
+      {
+        "path": "NativeTests/BoundedFileReaderTests.swift",
+        "base_sha": "7afb4c0edc67c310fe1da87e2e79ca7ea9b4e1cb",
+        "candidate_sha": "7afb4c0edc67c310fe1da87e2e79ca7ea9b4e1cb",
+        "methods": [
+          "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+          "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+          "testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+          "testMetadataPreflightHonorsActualTaskCancellation",
+          "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+          "testRejectsOversizeBeforeAnyReadCheckpoint",
+          "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+          "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+          "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+          "testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+          "testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+          "testCheckpointCannotSuppressActualTaskCancellation",
+          "testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading"
+        ]
+      },
+      {
+        "path": "NativeTests/LightingPlanPDFTests.swift",
+        "base_sha": "57e6619a02d55a14972ffde0368e1f2927f491f9",
+        "candidate_sha": "57e6619a02d55a14972ffde0368e1f2927f491f9",
+        "methods": [
+          "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+          "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+          "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+          "testEmptySceneStillProducesReadableDiagramAndSchedule"
+        ]
+      },
+      {
+        "path": "NativeTests/ProjectDocumentIOTests.swift",
+        "base_sha": "96f33253c58ace19d83d02d33791e05351b3b7e7",
+        "candidate_sha": "96f33253c58ace19d83d02d33791e05351b3b7e7",
+        "methods": [
+          "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+          "testOversizedFileIsRejectedBeforeReadingItsContents",
+          "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+          "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+          "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+          "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+          "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+          "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+          "testCancelledReaderDoesNotPublishOrModifyASelectedProject"
+        ]
+      },
+      {
+        "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+        "base_sha": "1c108acca53243472810eef5cb8570fee99fe674",
+        "candidate_sha": "1c108acca53243472810eef5cb8570fee99fe674",
+        "methods": [
+          "testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+          "testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+          "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+          "testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+          "testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars",
+          "testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+          "testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+          "testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity"
+        ]
+      },
+      {
+        "path": "NativeTests/ProjectStoreOperationTests.swift",
+        "base_sha": "7005e2583b347c46e2fb3fd92e0c60e1f7c506c4",
+        "candidate_sha": "7005e2583b347c46e2fb3fd92e0c60e1f7c506c4",
+        "methods": [
+          "testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+          "testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+          "testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+          "testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+          "testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+          "testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+          "testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+          "testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+          "testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+          "testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+          "testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+          "testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+          "testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+          "testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects",
+          "testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+          "testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult"
+        ]
+      },
+      {
+        "path": "NativeTests/ReferencePhotoTests.swift",
+        "base_sha": "91a4f5956579df8d248a82cc881b1baf67ab367a",
+        "candidate_sha": "91a4f5956579df8d248a82cc881b1baf67ab367a",
+        "methods": [
+          "testRotatesReducesAndRemovesSourceMetadata",
+          "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+          "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones",
+          "testRejectsMalformedAndOversizedInputs",
+          "testFileRepresentationConsumesOnlyItsTemporaryFile",
+          "testFileSizeBoundBeforeDecode",
+          "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes"
+        ]
+      },
+      {
+        "path": "NativeTests/RoomRotationReadoutTests.swift",
+        "base_sha": "fccf67bb8302904007ae902a46d186fbf493c0be",
+        "candidate_sha": "fccf67bb8302904007ae902a46d186fbf493c0be",
+        "methods": [
+          "testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+          "testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+          "testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+        ]
+      },
+      {
+        "path": "NativeTests/SpatialEmitterGeometryTests.swift",
+        "base_sha": "7fecaa44cbed76f421a0d91d6553754ece2908c4",
+        "candidate_sha": "7fecaa44cbed76f421a0d91d6553754ece2908c4",
+        "methods": [
+          "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+          "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+          "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+          "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+          "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection"
+        ]
+      },
+      {
+        "path": "NativeTests/SpatialPreviewTests.swift",
+        "base_sha": "4475b46c379e08e4bc8509f75031d1636ce50d83",
+        "candidate_sha": "4475b46c379e08e4bc8509f75031d1636ce50d83",
+        "methods": [
+          "testTranslatedRigAndModifierFitActualSceneKitProjection",
+          "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+          "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical"
+        ]
+      },
+      {
+        "path": "NativeTests/StudioPaletteTests.swift",
+        "base_sha": "3e9b05371e4855f36aa9c4ec634b422dcf578450",
+        "candidate_sha": "3e9b05371e4855f36aa9c4ec634b422dcf578450",
+        "methods": [
+          "testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+          "testProjectSheetControlsContrastOnTheirProductionSurfaces",
+          "testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows",
+          "testFixedPlanTextAndLightControlsContrastInBothAppearances",
+          "testPlanColorsStayFixedWhenInterfaceAppearanceChanges"
+        ]
+      },
+      {
+        "path": "NativeTests/StudioSliderEditingTests.swift",
+        "base_sha": "8fef54c202db6c48f4767a40c2dc00bb45581e8e",
+        "candidate_sha": "8fef54c202db6c48f4767a40c2dc00bb45581e8e",
+        "methods": [
+          "testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+          "testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+          "testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+          "testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+          "testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+          "testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+          "testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue",
+          "testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo"
+        ]
+      },
+      {
+        "path": "NativeTests/StudioSliderTrackingTests.swift",
+        "base_sha": "c3e435726f8192a2228740b5dfb759af2ed67599",
+        "candidate_sha": "c3e435726f8192a2228740b5dfb759af2ed67599",
+        "methods": [
+          "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+          "testValueAfterEndCannotReopenHistoryOrDisableUndo",
+          "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+          "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+          "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+          "testSessionRetainsOriginalWriterAndRange",
+          "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+          "testReadThatFinishesSessionCannotReopenHistory",
+          "testReadThatReplacesSessionCannotReopenRetiredOwner",
+          "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+          "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+          "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+          "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+          "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+          "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+          "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+          "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+          "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps"
+        ]
+      },
+      {
+        "path": "NativeTests/StudioTextFieldTests.swift",
+        "base_sha": "2b7e89a2f02b22b981278bb72ef6a49801dc0833",
+        "candidate_sha": "2b7e89a2f02b22b981278bb72ef6a49801dc0833",
+        "methods": [
+          "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+          "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+          "testDisabledEnvironmentReachesNativeControl",
+          "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+          "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+          "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+          "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+          "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+          "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+          "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+          "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+          "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+          "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+          "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents"
+        ]
+      },
+      {
+        "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+        "base_sha": "ed138c6197160ae614580d53ebdf85444551ea35",
+        "candidate_sha": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+        "methods": [
+          "testExplicitGatingAndExactFrameRoundTrip",
+          "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+          "testDisabledHostedProbePreservesUninstrumentedLayout"
+        ]
+      },
+      {
+        "path": "NativeTests/StudioTrackingSliderTests.swift",
+        "base_sha": "df0f559fbacd691f893aefef3ff24ebd8332d382",
+        "candidate_sha": "df0f559fbacd691f893aefef3ff24ebd8332d382",
+        "methods": [
+          "testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble",
+          "testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+          "testInvalidRangeDisablesNativeControlWithoutWritingTheModel"
+        ]
+      },
+      {
+        "path": "NativeTests/StudyRenderCacheTests.swift",
+        "base_sha": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+        "candidate_sha": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+        "methods": [
+          "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+          "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+          "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+          "testEveryRenderingControlKeepsDistinctCacheIdentity",
+          "testSubjectAndResolutionDoNotShareFrames",
+          "testBustCachePreservesExistingMaximumWidthClamping",
+          "testInvalidMetadataCannotReuseAValidatedFrame",
+          "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+          "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+          "testCancelledTaskCannotReturnCachedFrame",
+          "testCancelledCPUWorkAndFinalCancellationAreNeverCached"
+        ]
+      },
+      {
+        "path": "NativeTests/StudyRendererTests.swift",
+        "base_sha": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+        "candidate_sha": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+        "methods": [
+          "testMetalMatchesCPUOnAvailableDevice",
+          "testEnginePublishesRealFrameWithEitherBackend",
+          "testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+          "testEngineUsesCPUForFarGeometry",
+          "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+          "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+          "testAdditionalCancellationPredicateCannotSuppressTaskCancellation"
+        ]
+      }
+    ],
+    "counts": {
+      "native": 137,
+      "required_ui": 35,
+      "opt_in_accessibility_audit_diagnostics": 2,
+      "native_method_added": 0,
+      "native_method_renamed": {
+        "from": "testDisabledHostedProbePreservesNormalValueAndElementGrouping",
+        "to": "testDisabledHostedProbePreservesUninstrumentedLayout"
+      },
+      "ui_methods_added": 0,
+      "ui_methods_removed": 0
+    },
+    "unchanged_ui_checks": "All original baseline ProjectLibraryUITests lines remain in order; the diff consists only of the helper, explicit no-probe launch assertion, and three calls in the existing create/duplicate method. The other nine UITests Swift files were fetched by their exact current Git tree blob SHAs; their required methods were counted independently."
+  },
+  "native_review": {
+    "positive_and_negative": "The real foreground UIHostingController fixture still renders Text(\"Done\") with font then fixedSize, with an independent UIView background on that intrinsic Text before its 300x100 parent expansion. A second distinct UIView background belongs to the expanded parent. No synthesized expected Text rectangle replaces either observation.",
+    "live_views": "makeUIView/updateUIView retain the actual UIView references. observe drains the main queue/layout, unwraps both references, rejects reference identity, then samples current bounds through UIAccessibility.convertToScreenCoordinates. liveScreenFrame asserts each view belongs to the exact expected UIWindow and isDescendant(of: actual host.view), and both bounds and converted frames are finite/nonempty through production valid().",
+    "actor_hosting": "The XCTestCase remains @MainActor. It requires a foregroundActive UIWindowScene, creates and shows a real UIWindow/UIHostingController, performs layout and main queue turns, asserts window scene and visibility, and hides/detaches in defer. No detached native accessibility frame is treated as evidence.",
+    "strict_geometry": "Both measured Text and independently sampled native Text must be contained in the actual control. Native and recorded Text x/y/width/height use the unchanged rounded physical-pixel equality; no tolerance or expected-offset allowance is added. Parent height must be >=44 and actual measured Text must be smaller than parent. Exactly the named probe key must be present.",
+    "scenarios_retained": "Default and AXXXL execute checkedRecordedText and unchanged UIFont/body line-box minimum; AXXXL height must grow >=1.25x. The actual 8-point font fixture now also executes strict geometry/transport checks, while requiring the large parent to pass body minimum and actual tiny Text to fail it.",
+    "codec": "Original explicit gating/exact frame roundtrip test is byte-identical. checkedRecordedText separately roundtrips the actual measured rectangle through production tagged JSON. This is a codec check; it is explicitly not external AX propagation proof.",
+    "disabled": "Renamed native method compares actual no-modifier baseline with installed-but-disabled modifiers: both preference maps empty, scales equal, actual 300x100 parent exact, both Text frames inside own parents, body minimum and Text<parent, exact physical-pixel equality for both text and parent across baseline/disabled.",
+    "removed_direct_ax": "Unavailable native public AX traversal is removed, together with native owner label/value/group assertions. It is not replaced with fabricated leaves or treating an empty traversal as success. Normal app owner semantics now require the external UI assertions described below; native pass alone cannot establish them.",
+    "exact_source_lines": {
+      "positive": 43,
+      "negative": 58,
+      "disabled": 71,
+      "checked_recorded_text": 101,
+      "observe": 121,
+      "live_screen_frame": 163,
+      "unchanged_pixel_helper": 179,
+      "unchanged_body_helper": 185,
+      "intrinsic_text": 204,
+      "parent_frame": 221,
+      "view_reference_observer": 245
+    }
+  },
+  "external_ui_review": {
+    "existing_method": "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch",
+    "no_new_method": true,
+    "instrumentation": "The existing launch uses -ui-testing and a fresh scoped test ID but does not set KEYFILL_UI_TEXT_LAYOUT_PROBES. New assertion requires that launchEnvironment entry to be absent. Actual diagnostic-tagged values, if nevertheless exposed, fail the value assertion.",
+    "actual_snapshots": "assertNormalAction waits for the real queried action to exist and be enabled, then try action.snapshot(). The enclosing workflow has continueAfterFailure=false. Missing/unavailable snapshot is a failure, not a fake empty leaf or a skip.",
+    "owners": [
+      {
+        "identifier": "projectLibraryDone",
+        "label": "Done",
+        "call_line": 90
+      },
+      {
+        "identifier": "projectNameCancel",
+        "label": "Cancel",
+        "call_line": 108
+      },
+      {
+        "identifier": "confirmProjectName",
+        "label": "Save project name",
+        "call_line": 110
+      }
+    ],
+    "predicates": "Snapshot identifier and label must match the expected owner, elementType must be .button, snapshot.children must be empty, snapshot.isEnabled must be true, and actual XCUIElement must be hittable. Each real snapshot prints and saves a keepAlways attachment containing owner/value/frame/child details.",
+    "absent_value_expression": "normalValue == nil || (normalValue as? String) == \"\"",
+    "absent_value_assessment": "Accepts exactly nil or an empty String; rejects present non-String values, all nonempty Strings, whitespace-only Strings, and DEBUG_UI_TEXT_LAYOUT_V1-tagged values. The revision is exactly the replacement of the previous XCTAssertNil(snapshot.value) block; no other source change is present between 97c2... and 618c70....",
+    "prior_evidence_limit": "Original 75e Save snapshot actually printed value=nil, but the failed workflow did not establish the same literal representation for every later owner. Nil-or-empty checks meaningful absence without guessing XCUIElementSnapshot representation.",
+    "coverage_boundary": "These assertions verify normal semantics of the actual three app actions. They do not test preservation of arbitrary custom nonempty accessibility values from the synthetic hosted fixture, nor prove VoiceOver speech on a physical device.",
+    "prior_workflow_preserved": "Create/duplicate/rename/switch/relaunch assertions and all other library test methods remain unchanged. This strengthens the already required external workflow without adding a method or skipping an outcome."
+  },
+  "protected_oracle_review": {
+    "production_gate_unchanged": "Production helper remains DEBUG plus -ui-testing plus separate KEYFILL_UI_TEXT_LAYOUT_PROBES=1; optional enabled seam is internal to native hosting and ignored by release modifier branches.",
+    "instrumented_ax_unchanged": "StudioAppAccessibilityUITests blob remains 5c5f6360f63267f6dc50473d88a7261bb0387e3b. Its real button value decoder, probe identity/finite-frame rules, owner/true viewport/keyboard/hittability/44pt checks, original StaticText helper, exact UIFont physical-pixel text minima and Default/AXXXL growth gates are unchanged by this repair.",
+    "original_24_capture_contract_preserved": true,
+    "capture_names_per_category": [
+      "Plan-choices",
+      "Plan-selection",
+      "Inspector",
+      "Precision-instructions",
+      "Precision-keyboard",
+      "Meter-preset-selection",
+      "Library-unsaved",
+      "Library-saved",
+      "Project-name-field-keyboard",
+      "Project-name-save-keyboard",
+      "Project-name-cancel-keyboard",
+      "Library-done"
+    ],
+    "categories": [
+      "Default",
+      "AXXXL"
+    ],
+    "no_actual_screenshot_pass_inferred": true
+  },
+  "findings": [],
+  "runtime_limitations": [
+    "These two unreferenced candidate blobs have not been compiled or executed by this worker; no claim that the repair works at runtime.",
+    "Original current cd5 job139715217001 remains failed: 137 methods started,135 passed,2 failed with7 assertions; all prior134 passed. That actual evidence is retained in report0e1e8e9008f32a3985a0ff829cc380f35248943c.",
+    "Original Default positive fixture had both zero-origin stale native callback frames and a native/SwiftUI physical-pixel size mismatch (native126x60 versus recorded125x61). Live sampling must demonstrate that strict equality now holds; the source change itself cannot prove it.",
+    "Original positive test threw on the first Default external-value lookup, so its AXXXL/growth/8pt negative portions were unrun. New candidate assertions are not accepted as executed merely because they exist.",
+    "The external normal owner snapshot checks must actually execute successfully before normal label/value/grouping coverage can be claimed. Native geometry success alone is insufficient.",
+    "App helper state/preference propagation, actual external instrumented AX text transport, full35 UI accounting and all24 required original screenshot captures remain runtime acceptance work.",
+    "No full M03 pass, no passed full-native status, no changed historical warm-up/command failure, and no candidate-focused workflow result is claimed."
+  ],
+  "verdict": "No concrete source/API/compile blocker identified in the reviewed pair under the existing Swift5 project mode. Suitable for root integration and focused validation with strict assertions retained. Acceptance still requires fresh actual runtime evidence.",
+  "mutation": "Only this unreferenced JSON report blob is created."
+}

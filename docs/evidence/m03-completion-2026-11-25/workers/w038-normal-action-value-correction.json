@@ -1,0 +1,50 @@
+{
+  "status": "complete",
+  "completion_scope": "Narrow source-only amendment; no compilation or runtime claim.",
+  "context_path": "/root/w007_review_coordinator/w038_project_name_ax_failure",
+  "repository": "mirzotipi-wq/APP1",
+  "base_ref": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "original_report_blob": "bc8b196a0e3818a94818722841b045a70bf2c200",
+  "original_report_preserved": true,
+  "superseded_candidate": {
+    "path": "UITests/ProjectLibraryUITests.swift",
+    "blob": "97c2db93fdf2d047324344cd89960ee8fd6a8370"
+  },
+  "replacement_candidate": {
+    "path": "UITests/ProjectLibraryUITests.swift",
+    "blob": "618c70bb4677c1d391c54bd3d6b4584e641b21d4"
+  },
+  "unchanged_native_candidate": {
+    "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+    "blob": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae"
+  },
+  "rationale": "The preserved external hierarchy omits a declared value, but it does not distinguish a nil snapshot value from an empty String. Accept those exact two representations without admitting other values.",
+  "new_predicate": "normalValue == nil || (normalValue as? String) == \"\"",
+  "accepted": [
+    "nil",
+    "String with exactly zero characters"
+  ],
+  "rejected": [
+    "Every nonempty String, including diagnostic-prefix values and whitespace",
+    "Every present non-String value, including booleans, numbers, NSNull and collections"
+  ],
+  "preserved": [
+    "Exact identifiers and labels",
+    "Button element type",
+    "Zero snapshot children",
+    "Enabled and hittable checks",
+    "Actual snapshot log/attachment values",
+    "All existing library workflow actions",
+    "All App and instrumented accessibility test sources",
+    "Native geometry source and exact thresholds"
+  ],
+  "source_review": {
+    "only_value_assertion_replaced": true,
+    "library_ui_method_count_before": 7,
+    "library_ui_method_count_after": 7,
+    "required_ui_method_count_expected": 35,
+    "native_method_count_expected": 137,
+    "inventory_delta": 0
+  },
+  "validation": "Source reviewed only. Neither candidate compilation nor execution is available in this context. Original cd5 failures and prior report/history are preserved. No commit, tree, ref, branch or running job was changed."
+}
