@@ -59,6 +59,7 @@ struct RealityStudioPreview: View {
 @MainActor
 private struct RealityStudioSurface: UIViewRepresentable {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isEnabled) private var isEnabled
     let scene: LightingScene
     let selected: UUID?
     let fitRequest: Int
@@ -82,9 +83,10 @@ private struct RealityStudioSurface: UIViewRepresentable {
     }
 
     func updateUIView(_ view: StudioOrbitARView, context: Context) {
+        context.coordinator.setInteractionEnabled(isEnabled)
+        context.coordinator.setSceneActive(scenePhase == .active)
         context.coordinator.update(scene: scene, selected: selected,
                                    fitRequest: fitRequest, onSelect: onSelect)
-        context.coordinator.setSceneActive(scenePhase == .active)
     }
 
     static func dismantleUIView(_ view: StudioOrbitARView, coordinator: Coordinator) {
@@ -104,14 +106,10 @@ private struct RealityStudioSurface: UIViewRepresentable {
         private var currentScene: LightingScene?
         private var lastFitRequest: Int?
         private var isSceneActive = true
+        private var isInteractionEnabled = true
         private var isRendering = false
         private var needsFit = true
-        private var target = SIMD3<Float>(0, 1, 0)
-        private var yaw: Float = 0.56
-        private var pitch: Float = 0.36
-        private var distance: Float = 7
-        private var verticalFieldOfView: Float = 48
-        private let distanceRange: ClosedRange<Float> = 0.45...1_500
+        private var orbitState = SpatialOrbitState()
 
         func attach(to view: StudioOrbitARView) {
             self.view = view
@@ -148,10 +146,32 @@ private struct RealityStudioSurface: UIViewRepresentable {
             updateRenderingState()
         }
 
+        func setInteractionEnabled(_ enabled: Bool) {
+            isInteractionEnabled = enabled
+            updateInteractionState()
+        }
+
+        private var canInteract: Bool {
+            isRendering && isInteractionEnabled && currentScene != nil &&
+                view?.window != nil && !UIAccessibility.isVoiceOverRunning
+        }
+
+        private func updateInteractionState() {
+            let enabled = isRendering && isInteractionEnabled && currentScene != nil
+            view?.isUserInteractionEnabled = enabled
+            for gesture in gestures { gesture.isEnabled = enabled }
+        }
+
+        private func cancelGestures() {
+            for gesture in gestures { gesture.isEnabled = false }
+            updateInteractionState()
+        }
+
         private func updateRenderingState() {
             guard let view else { return }
             let shouldRender = isSceneActive && view.window != nil
             view.isHidden = !shouldRender
+            defer { updateInteractionState() }
             guard shouldRender != isRendering else { return }
             isRendering = shouldRender
             // Keep orbit state while detaching geometry outside the active
@@ -162,10 +182,7 @@ private struct RealityStudioSurface: UIViewRepresentable {
             } else {
                 view.scene.removeAnchor(graph.anchor)
                 view.scene.removeAnchor(cameraAnchor)
-                for gesture in gestures {
-                    gesture.isEnabled = false
-                    gesture.isEnabled = true
-                }
+                cancelGestures()
             }
         }
 
@@ -174,12 +191,17 @@ private struct RealityStudioSurface: UIViewRepresentable {
             // Refresh callbacks even when geometry is unchanged. A gesture must
             // never select into a previous project or a captured light array.
             self.onSelect = onSelect
-            currentScene = (try? scene.validated()) == nil ? nil : scene
+            let validated = (try? scene.validated()) == nil ? nil : scene
+            let previousIDs = currentScene.map { Set($0.lights.map(\.id)) }
+            let currentIDs = validated.map { Set($0.lights.map(\.id)) }
+            currentScene = validated
+            if previousIDs != currentIDs { cancelGestures() }
             graph.update(scene: scene, selected: selected)
             if lastFitRequest != fitRequest {
                 lastFitRequest = fitRequest
                 needsFit = true
             }
+            updateInteractionState()
             if let view { layout(size: view.bounds.size) }
         }
 
@@ -204,78 +226,52 @@ private struct RealityStudioSurface: UIViewRepresentable {
         }
 
         private func layout(size: CGSize) {
-            guard size.width.isFinite, size.height.isFinite,
-                  size.width > 0, size.height > 0 else { return }
+            guard let fieldOfView = SpatialOrbitState.verticalFieldOfView(
+                width: Double(size.width), height: Double(size.height)) else { return }
             // The iOS 13-compatible projection API uses a vertical FOV. Keep
             // 48 degrees on the smaller viewport axis without changing orbit.
-            let aspect = max(0.01, Float(size.width / size.height))
-            verticalFieldOfView = aspect < 1
-                ? 2 * atan(tan(24 * Float.pi / 180) / aspect) * 180 / Float.pi
-                : 48
-            camera.camera.fieldOfViewInDegrees = verticalFieldOfView
-            if needsFit, let scene = currentScene, let bounds = try? StudioSceneBounds(scene: scene) {
-                var low = SIMD3<Float>(Float(bounds.minimum.x), Float(bounds.minimum.y), Float(bounds.minimum.z))
-                var high = SIMD3<Float>(Float(bounds.maximum.x), Float(bounds.maximum.y), Float(bounds.maximum.z))
-                // Include the bust, housing and stand bases. The floor itself
-                // must not dominate the fit or change it with world translation.
-                low.y = min(low.y, Float(scene.subject.y) - 0.95)
-                if scene.lights.contains(where: { $0.position.y > 0 }) { low.y = min(low.y, 0) }
-                low -= SIMD3<Float>(repeating: 0.3)
-                high += SIMD3<Float>(repeating: 0.3)
-                target = (low + high) / 2
-                let radius = max(0.8, simd_length(high - low) / 2)
-                distance = clamp(radius / sin(24 * Float.pi / 180) * 1.12, to: distanceRange)
-                yaw = 0.56
-                pitch = 0.36
+            camera.camera.fieldOfViewInDegrees = Float(fieldOfView)
+            if needsFit, let scene = currentScene, let bounds = try? SpatialViewportBounds(scene: scene) {
+                orbitState.fit(bounds)
                 needsFit = false
             }
             applyCamera()
         }
 
         private func applyCamera() {
-            let offset = SIMD3<Float>(sin(yaw) * cos(pitch), sin(pitch), cos(yaw) * cos(pitch)) * distance
-            // Authored coordinates lie in a 200 m cube. Include its diagonal
-            // and equipment margins even after panning at maximum zoom-out.
-            camera.camera.far = max(100, distance + simd_length(target) + 200)
-            camera.look(at: target, from: target + offset, relativeTo: nil)
+            func vector(_ p: Position) -> SIMD3<Float> { [Float(p.x), Float(p.y), Float(p.z)] }
+            camera.camera.far = Float(orbitState.farDistance)
+            camera.look(at: vector(orbitState.target), from: vector(orbitState.position), relativeTo: nil)
         }
 
         @objc private func orbit(_ gesture: UIPanGestureRecognizer) {
-            guard let view, gesture.state == .began || gesture.state == .changed else { return }
+            guard canInteract, let view, gesture.state == .began || gesture.state == .changed else { return }
             let movement = gesture.translation(in: view)
             gesture.setTranslation(.zero, in: view)
-            guard movement.x.isFinite, movement.y.isFinite else { return }
-            yaw = (yaw - Float(movement.x) * 0.008).remainder(dividingBy: 2 * .pi)
-            pitch = clamp(pitch + Float(movement.y) * 0.008, to: -1.35...1.35)
+            orbitState.orbit(horizontal: Double(movement.x), vertical: Double(movement.y))
             applyCamera()
         }
 
         @objc private func pan(_ gesture: UIPanGestureRecognizer) {
-            guard let view, view.bounds.height > 0,
+            guard canInteract, let view,
                   gesture.state == .began || gesture.state == .changed else { return }
             let movement = gesture.translation(in: view)
             gesture.setTranslation(.zero, in: view)
-            guard movement.x.isFinite, movement.y.isFinite else { return }
-            let metersPerPoint = 2 * distance * tan(verticalFieldOfView * .pi / 360) / Float(view.bounds.height)
-            let right = camera.orientation.act(SIMD3<Float>(1, 0, 0))
-            let up = camera.orientation.act(SIMD3<Float>(0, 1, 0))
-            target += (-right * Float(movement.x) + up * Float(movement.y)) * metersPerPoint
-            target = SIMD3<Float>(clamp(target.x, to: -300...300),
-                                  clamp(target.y, to: -300...300), clamp(target.z, to: -300...300))
+            orbitState.pan(horizontal: Double(movement.x), vertical: Double(movement.y),
+                           width: Double(view.bounds.width), height: Double(view.bounds.height))
             applyCamera()
         }
 
         @objc private func zoom(_ gesture: UIPinchGestureRecognizer) {
-            guard gesture.state == .began || gesture.state == .changed else { return }
-            let scale = Float(gesture.scale)
+            guard canInteract, gesture.state == .began || gesture.state == .changed else { return }
+            let scale = Double(gesture.scale)
             gesture.scale = 1
-            guard scale.isFinite, scale > 0 else { return }
-            distance = clamp(distance / scale, to: distanceRange)
+            orbitState.zoom(scale: scale)
             applyCamera()
         }
 
         @objc private func selectLight(_ gesture: UITapGestureRecognizer) {
-            guard gesture.state == .ended, let view,
+            guard canInteract, gesture.state == .ended, let view,
                   let hit = view.entity(at: gesture.location(in: view)),
                   let id = graph.lightID(for: hit),
                   currentScene?.lights.contains(where: { $0.id == id }) == true else { return }
@@ -289,7 +285,7 @@ private struct RealityStudioSurface: UIViewRepresentable {
         }
 
         func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-            isRendering && currentScene != nil && !UIAccessibility.isVoiceOverRunning
+            canInteract
         }
 
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
@@ -303,9 +299,6 @@ private struct RealityStudioSurface: UIViewRepresentable {
             return true
         }
 
-        private func clamp(_ value: Float, to range: ClosedRange<Float>) -> Float {
-            min(range.upperBound, max(range.lowerBound, value))
-        }
     }
 }
 

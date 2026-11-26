@@ -23,7 +23,7 @@ final class SpatialPreviewTests: XCTestCase {
         var base = LightingScene.portrait()
         base.lights[0].optics = .init(kind: .rectangle, widthMeters: 4, heightMeters: 3)
         let scene = translated(base, x: 80, z: 75)
-        let bounds = try StudioSceneBounds(scene: scene)
+        let bounds = try SpatialViewportBounds(scene: scene)
         let preview = SpatialPreview(scene: scene)
         let coordinator = preview.makeCoordinator()
         let view = preview.makeView(coordinator: coordinator)
@@ -84,7 +84,7 @@ final class SpatialPreviewTests: XCTestCase {
 
         SpatialPreview(scene: edited, fitRequest: 1).updateView(view, coordinator: coordinator)
         XCTAssertTrue(view.pointOfView === coordinator.camera)
-        let bounds = try StudioSceneBounds(scene: edited)
+        let bounds = try SpatialViewportBounds(scene: edited)
         XCTAssertEqual(Double(view.defaultCameraController.target.x), bounds.center.x, accuracy: 1e-5)
         XCTAssertEqual(Double(view.defaultCameraController.target.z), bounds.center.z, accuracy: 1e-5)
         XCTAssertGreaterThan(coordinator.camera.camera?.zFar ?? 0, 0)

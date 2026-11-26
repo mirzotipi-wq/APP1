@@ -69,7 +69,11 @@ final class StudioEntityGraph {
     func update(scene: LightingScene, selected: UUID?) {
         guard let bounds = try? StudioSceneBounds(scene: scene) else {
             anchor.isEnabled = false
+            for lamp in lights.values { lamp.root.removeFromParent() }
+            lights.removeAll()
+            lightRoots.removeAll()
             lastScene = nil
+            lastSelection = nil
             return
         }
         anchor.isEnabled = true
@@ -121,9 +125,12 @@ final class StudioEntityGraph {
     }
 
     func lightID(for entity: Entity) -> UUID? {
+        guard lastScene != nil, anchor.isEnabled else { return nil }
         var current: Entity? = entity
         while let item = current {
-            if let id = lightRoots[ObjectIdentifier(item)] { return id }
+            guard item.isEnabled else { return nil }
+            if let id = lightRoots[ObjectIdentifier(item)],
+               lights[id]?.root === item, item.parent === anchor { return id }
             current = item.parent
         }
         return nil
@@ -244,7 +251,9 @@ private final class StudioLampEntity {
         let optics = light.effectiveOptics
         let frame = StudioPhotometry.frame(for: light, subject: subject)
         let geometryChanged = light.position != lastLight?.position || optics != lastLight?.effectiveOptics || subject != lastSubject
-        let sourceChanged = light != lastLight || subject != lastSubject || shades != lastShades
+        // Display names do not change meshes, materials or light components.
+        let sourceChanged = geometryChanged || light.candela != lastLight?.candela ||
+            light.kelvin != lastLight?.kelvin || shades != lastShades
         if geometryChanged {
             let position = vector(light.position)
             root.position = position
