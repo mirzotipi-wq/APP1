@@ -5,11 +5,11 @@
   "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
   "code_revision": "58b3ca43943e18d0fc7800189b08365f424d9c9e",
   "requested_contexts": 100,
-  "actual_created_contexts": 31,
+  "actual_created_contexts": 35,
   "completed_role_assignments": 30,
-  "not_created_contexts": 69,
+  "not_created_contexts": 65,
   "status": "active_resumed",
-  "reason": "Execution restored; previous outage evidence retained in prior commits.",
+  "reason": "Execution restored; reset evidence retained.",
   "waves": [
     {
       "wave": 1,
@@ -35,7 +35,7 @@
     {
       "wave": 4,
       "requested": 10,
-      "created": 1,
+      "created": 5,
       "completed": 0,
       "status": "active"
     },
@@ -82,11 +82,11 @@
       "status": "not_started"
     }
   ],
-  "fresh_contexts": "All 31 initial role contexts were fork_turns:none; reused followups do not increase counts.",
-  "concurrency": "Four contexts including root; resumed waves scheduled directly with at most3concurrent workers.",
+  "fresh_contexts": "All 35 initial role contexts use fork_turns:none; followups do not increase counts.",
+  "concurrency": "Four slots: root plus at most three workers, or root/coordinator plus two children.",
   "budgets": "Briefs targeted<=2000tokens, working budgets12000per worker/24000root, reports<=800tokens; exact working-token consumption was not instrumented. These targets did not alter platform limits.",
   "storage": "Every created context received a detached sparse worktree and private-output directory. Wave01 reports/hashes were verified in remote5579b4f before its10owned worktrees were removed. Remaining local artifacts could not be inspected after outage.",
-  "next": "Continue exact next uncompleted wave/role; no planned identity counted.",
+  "next": "Continue next incomplete wave/role; no planned identity counted.",
   "workers": [
     {
       "wave": 1,
@@ -852,6 +852,46 @@
       "input_sha": "47de6afe6afe24a7822f4276950f70bd3db9f57d",
       "worktree": "/tmp/keyfill02-r2-workers/w04r01",
       "artifact": "w04r01/report.md"
+    },
+    {
+      "wave": 4,
+      "worker": "W04R02",
+      "agent_id": "/root/w04r01/r02",
+      "task": "W04R02 invariants: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "47de6afe6afe24a7822f4276950f70bd3db9f57d",
+      "worktree": "/tmp/keyfill02-r2-workers/w04r02",
+      "artifact": "w04r02/report.md"
+    },
+    {
+      "wave": 4,
+      "worker": "W04R03",
+      "agent_id": "/root/w04r01/r03",
+      "task": "W04R03 interfaces: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "47de6afe6afe24a7822f4276950f70bd3db9f57d",
+      "worktree": "/tmp/keyfill02-r2-workers/w04r03",
+      "artifact": "w04r03/report.md"
+    },
+    {
+      "wave": 4,
+      "worker": "W04R04",
+      "agent_id": "/root/w04r01/r04",
+      "task": "W04R04 implementation: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "47de6afe6afe24a7822f4276950f70bd3db9f57d",
+      "worktree": "/tmp/keyfill02-r2-workers/w04r04",
+      "artifact": "w04r04/report.md"
+    },
+    {
+      "wave": 4,
+      "worker": "W04R05",
+      "agent_id": "/root/w04r01/r05",
+      "task": "W04R05 concurrency: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "47de6afe6afe24a7822f4276950f70bd3db9f57d",
+      "worktree": "/tmp/keyfill02-r2-workers/w04r05",
+      "artifact": "w04r05/report.md"
     }
   ]
 }
