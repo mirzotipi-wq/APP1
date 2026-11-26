@@ -1,0 +1,99 @@
+{
+  "worker": "W05-07",
+  "source_inspected": "721186e93d4f4a511823d4f3013414929e54a56d",
+  "sparse_tree_base": "ea83fa165916aaa2f55ddb88f6430b8a59ce5565",
+  "commits_created": [],
+  "remote_observation": {
+    "command": "git --no-optional-locks ls-remote --heads origin",
+    "observed_by_utc": "2026-11-26T14:25:48Z",
+    "timestamp_qualification": "The UTC timestamp was read immediately afterward; this is an upper bound, not an exact remote response timestamp.",
+    "heads": {
+      "development/completion-20261124": "394e28e163be345b9db135d8a10a3a1dfafe6617",
+      "development/completion-final-20261124": "7dca1b00331efae86090f70c78ebc7d2a2196e64",
+      "finish/01-architecture-composition": "ea83fa165916aaa2f55ddb88f6430b8a59ce5565",
+      "finish/02-photometry-color": "b5c1f008446f8b33f3ee97f8fefe6675058ef347",
+      "finish/03-cpu-study-mannequin": "74f7584b4e474c752ec0939add6b7522ba98094f",
+      "finish/04-metal-cache": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "finish/05-spatial-viewports": "63d4676b5080ee45476e7f8a9cf8ffd2aa854c6a",
+      "m03-evidence-inspection": "6e8179b1795e5e4ba2c01ca50086cd41d1a71ef3",
+      "main": "9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318"
+    }
+  },
+  "producer_comparison": {
+    "command": "git --no-optional-locks ls-tree COMMIT App/ReferenceComparisonView.swift App/SceneArrangementView.swift App/LightTargetLuxView.swift App/ManualRoomPlacementView.swift App/ARPlacementView.swift",
+    "compared_heads": [
+      "main",
+      "finish/01-architecture-composition",
+      "finish/02-photometry-color",
+      "finish/03-cpu-study-mannequin",
+      "finish/04-metal-cache",
+      "finish/05-spatial-viewports"
+    ],
+    "all_five_blobs_equal_inspected_source_at_every_compared_head": true,
+    "exit_codes_all_zero": true,
+    "blobs": {
+      "App/ARPlacementView.swift": "ec10f43d57234af9245bddc2fd90785d6ef21b22",
+      "App/LightTargetLuxView.swift": "a77521a39b68c1320f6aa5bff86b0224f987e468",
+      "App/ManualRoomPlacementView.swift": "37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6",
+      "App/ReferenceComparisonView.swift": "fad8232524c74c4cf06e0f2ff132e7f678f2c430",
+      "App/SceneArrangementView.swift": "242c237525abee61e4ef5cc0cb2c885611f26785"
+    }
+  },
+  "base_search": {
+    "command": "git --no-optional-locks ls-tree -r --name-only COMMIT docs/parallel/20 docs/parallel/BASE_SHA BASE_SHA",
+    "scope": "Inspected source plus observed main and finish/01 through finish/05 commits",
+    "returned_paths": [],
+    "exit_codes_all_zero": true,
+    "limitation": "No lane20 head advertised and no checked base paths found; this does not establish global absence in other paths, repositories, pull requests, or unpublished work.",
+    "campaign_baseline_retained": "f150f98e35dd735927075aac4d2f8b02295c6a67"
+  },
+  "peer_owner_request": {
+    "commit": "63d4676b5080ee45476e7f8a9cf8ffd2aa854c6a",
+    "path": "docs/parallel/05/OWNER_REQUESTS.md",
+    "exact_text": "Requested owner change: key the 3D wrapper with session.workspaceResetID, retain the separately captured generation/live-UUID callback guard, and cover first-save retention plus intentional project-switch reset.",
+    "independently_confirmed_current_source": {
+      "App/StudioView.swift:510": "ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation)",
+      "App/StudioView.swift:517": ".id(generation)",
+      "App/StudioView.swift:513-514": "Selection closure checks captured storage generation and live light UUID membership."
+    }
+  },
+  "later_root_commit": {
+    "sha": "363a7149e4eb6f195f478b3ce0210e33e8ac7ed0",
+    "checked_with": "git --no-optional-locks diff --name-only INSPECTED LATER",
+    "changed_paths": [
+      "NativeTests/StudioFeatureSessionTests.swift"
+    ],
+    "production_unchanged": true,
+    "additional_test_run_by_worker": false
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "cwd_base": "ea83fa165916aaa2f55ddb88f6430b8a59ce5565",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; no test-truth or release-readiness assertion"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "cwd_base": "ea83fa165916aaa2f55ddb88f6430b8a59ce5565",
+      "exit_code": 0,
+      "result": "M03; editing, accessibility, persistence outstanding"
+    },
+    {
+      "command": "git --no-optional-locks status --short",
+      "exit_code": 0,
+      "result": "No changes in worker sparse tree"
+    }
+  ],
+  "not_run": [
+    "Builds",
+    "Tests",
+    "Swift syntax parsing",
+    "Apple SDK compilation",
+    "Native UI",
+    "Observation runtime",
+    "Physical AR",
+    "First-save focus or draft retention"
+  ],
+  "mutations": "Created assigned detached sparse worktree and report/checkpoint files only; no repository file edits, commits, or pushes."
+}
