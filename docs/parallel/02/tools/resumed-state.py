@@ -6,13 +6,13 @@ if action=='start':
  role=int(sys.argv[3]);aid=sys.argv[4];sha=sys.argv[5];name=f'w{wave:02d}r{role:02d}'
  assert not any(w['worker']==name.upper() or w['agent_id']==aid for w in d['workers'])
  d['workers'].append(dict(worker=name.upper(),agent_id=aid,task=f'W{wave:02d}R{role:02d} {roles[role-1]}: bounded assignment in WAVE-TASKS.md',status='running',input_sha=sha,worktree=f'/tmp/keyfill02-r2-workers/{name}',artifact=f'{name}/report.md'))
-elif action=='finish':
+elif action in ['finish','preserve']:
  role=int(sys.argv[3]);name=f'w{wave:02d}r{role:02d}';w=next(w for w in d['workers'] if w['worker']==name.upper());source=pathlib.Path(w['worktree'])/'private-output';dest=folder/name;dest.mkdir(exist_ok=True);assert (source/'report.md').exists();files=[];hashes={}
  for f in sorted(source.rglob('*')):
   if not f.is_file() or f.suffix not in ['.md','.json','.py','.swift','.log','.txt','.csv','.tsv','.patch']:continue
   if f.name=='CIE_xyz_1931_2deg.csv':continue
   out=dest/f.relative_to(source);out.parent.mkdir(exist_ok=True,parents=True);shutil.copyfile(f,out);rel=str(out.relative_to(folder));files.append(rel);hashes[rel]=hashlib.sha256(out.read_bytes()).hexdigest()
- w.update(status='completed',artifacts=files,artifact_sha256=hashes,outcome=(dest/'report.md').read_text().splitlines()[0])
+ w.update(status=('completed' if action=='finish' else w['status']),artifacts=files,artifact_sha256=hashes,outcome=(dest/'report.md').read_text().splitlines()[0])
 for key in ['actual_spawned_children','actual_returned_children','active_children','not_created','closure_note']:d.pop(key,None)
 d.update(coordinator='/root',completed_count=sum(w['status']=='completed' for w in d['workers']),actual_created_count=len(d['workers']))
 d['status']='complete' if d['completed_count']==10 else 'active';d['wave_complete']=d['completed_count']==10;path.write_text(json.dumps(d,indent=2)+'\n')

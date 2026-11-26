@@ -1,0 +1,301 @@
+Fresh source trace executed after executor reset; not recovered original logs.
+command: python3 private-output/trace_source.py > private-output/source-trace.log
+worktree: /tmp/keyfill02-r2-workers/w04r07
+source HEAD: 47de6afe6afe24a7822f4276950f70bd3db9f57d
+comparison baseline: f150f98e35dd735927075aac4d2f8b02295c6a67
+No Swift module, compiler, native GPU, or device execution used.
+
+FILE Sources/LightingCore/SurfacePhotometry.swift
+sha256=8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f
+whole_file_unchanged_since_baseline: False
+fullRectangleMidpoint_tail_exactly_unchanged: True
+exact_surface_diff:
+diff --git a/Sources/LightingCore/SurfacePhotometry.swift b/Sources/LightingCore/SurfacePhotometry.swift
+index 8f61d86..d100c4d 100644
+--- a/Sources/LightingCore/SurfacePhotometry.swift
++++ b/Sources/LightingCore/SurfacePhotometry.swift
+@@ -46,7 +46,14 @@ public struct LambertianRectangle: Sendable {
+         self.widthMeters = widthMeters; self.heightMeters = heightMeters
+         self.onAxisCandela = onAxisCandela
+         let r = right.vector, u = up.vector
+-        normal = .init(r.y * u.z - r.z * u.y, r.z * u.x - r.x * u.z, r.x * u.y - r.y * u.x)
++        // The cross product of two represented unit axes can be slightly
++        // shorter than one after rounding. Depth is a distance, so its normal
++        // must itself be normalized; otherwise rolling a rectangle can reject
++        // an exact minimum-separation receiver. No separation epsilon is used.
++        guard let direction = UnitDirection(x: r.y * u.z - r.z * u.y,
++                                            y: r.z * u.x - r.x * u.z,
++                                            z: r.x * u.y - r.y * u.x) else { return nil }
++        normal = direction.vector
+     }
+ }
+ 
+@@ -111,6 +118,20 @@ extension Photometry {
+         guard abs(depth) >= minimumDepth else { return nil }
+         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
+ 
++        // Keep the geometric integration at unit intensity when dividing an
++        // extremely small output among cells would lose its significant bits.
++        // Apply intensity once, after summation. The ordinary-output path keeps
++        // its established sample ordering and rounding for renderer parity.
++        if emitter.onAxisCandela < Double.leastNormalMagnitude * 1024 {
++            guard let unit = LambertianRectangle(
++                center: emitter.center, right: emitter.right, up: emitter.up,
++                widthMeters: emitter.widthMeters, heightMeters: emitter.heightMeters,
++                onAxisCandela: 1),
++                let unitLux = rectangularIlluminance(emitter: unit, receiver: receiver,
++                                                     receiverNormal: receiverNormal) else { return nil }
++            return unitLux * emitter.onAxisCandela
++        }
++
+         let right = emitter.right.vector, up = emitter.up.vector
+         let normal = receiverNormal.vector
+         let nx = dot(right, normal), ny = dot(up, normal)
+
+121:         // Keep the geometric integration at unit intensity when dividing an
+122:         // extremely small output among cells would lose its significant bits.
+123:         // Apply intensity once, after summation. The ordinary-output path keeps
+124:         // its established sample ordering and rounding for renderer parity.
+125:         if emitter.onAxisCandela < Double.leastNormalMagnitude * 1024 {
+126:             guard let unit = LambertianRectangle(
+127:                 center: emitter.center, right: emitter.right, up: emitter.up,
+128:                 widthMeters: emitter.widthMeters, heightMeters: emitter.heightMeters,
+129:                 onAxisCandela: 1),
+130:                 let unitLux = rectangularIlluminance(emitter: unit, receiver: receiver,
+131:                                                      receiverNormal: receiverNormal) else { return nil }
+132:             return unitLux * emitter.onAxisCandela
+133:         }
+199:     /// Existing reference-grid integration for fully front-facing receivers.
+200:     private static func fullRectangleMidpoint(emitter: LambertianRectangle,
+201:                                               toReceiver: SIMD3<Double>,
+202:                                               receiverNormal: UnitDirection) -> Double {
+203:         let samples = 32
+204:         let candelaPerCell = emitter.onAxisCandela / Double(samples * samples)
+205:         var lux = 0.0
+206:         for j in 0..<samples {
+207:             let y = ((Double(j) + 0.5) / Double(samples) - 0.5) * emitter.heightMeters
+208:             for i in 0..<samples {
+209:                 let x = ((Double(i) + 0.5) / Double(samples) - 0.5) * emitter.widthMeters
+210:                 let delta = toReceiver - emitter.right.vector * x - emitter.up.vector * y
+211:                 let r2 = dot(delta, delta)
+212:                 let direction = delta / r2.squareRoot()
+213:                 let emission = min(1, max(0, dot(direction, emitter.normal)))
+214:                 let incidence = min(1, max(0, -dot(direction, receiverNormal.vector)))
+215:                 lux += candelaPerCell * emission * incidence / r2
+216:             }
+217:         }
+218:         return lux
+219:     }
+
+FILE Sources/LightingCore/ReferenceStudy.swift
+sha256=89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441
+whole_file_unchanged_since_baseline: True
+4:     /// 8×8 samples per rectangle. Full faces retain their midpoint grid; grazing
+5:     /// faces redistribute the same number of samples over the positive region.
+6:     case interactive
+7:     /// 32×32 midpoint samples per rectangle, matching the diagnostic meter for fully
+8:     /// front-facing receivers. Partial faces use bounded, continuous clipped-area
+9:     /// sampling, including per-sample visibility and material evaluation.
+10:     case reference
+11:     fileprivate var grid: Int { self == .interactive ? 8 : 32 }
+248:                     let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
+249:                     let perCell = light.candela / Double(grid * grid)
+250:                     let areaIndex = guards.count
+251:                     guards.append(.init(center: center, right: right, up: up,
+252:                                         halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
+253:                                         minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))
+254:                     for row in 0..<grid {
+255:                         let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters
+256:                         for col in 0..<grid {
+257:                             let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
+258:                             result.append(.init(position: center + right * x + up * y, emittingNormal: axis,
+259:                                                 candela: perCell, xyz: xyz, areaIndex: areaIndex))
+260:                         }
+270:     // Structure-of-vectors contract: three aligned float4 rows per sample and area.
+271:     // Translate positions to the subject center to reduce Float32 roundoff.
+272:     fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+273:         samples.flatMap { s in
+274:             [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),
+275:              pack(s.xyz, s.areaIndex.map { Double($0 + 1) } ?? 0)]
+276:         }
+304:         func accumulate(position: SIMD3<Double>, candela: Double, sample: Sample) throws {
+305:             let delta = position - receiver
+306:             let r2 = dot3(delta, delta)
+307:             guard r2 >= 0.0025 else { throw StudyError.invalidSurface }
+308:             let distance = sqrt(r2), wi = delta / distance
+309:             // Mesh shading normals must not admit light from below the actual face.
+310:             // Analytic sphere and planar receivers retain their original path.
+311:             if let geometricNormal, dot3(geometricNormal, wi) <= 0 { return }
+312:             let nl = min(1, max(0, dot3(normal, wi)))
+313:             if nl == 0 { return }
+314:             let emitted = sample.emittingNormal.map { min(1, max(0, -dot3($0, wi))) } ?? 1
+315:             if emitted == 0 { return }
+316:             let lux = candela * emitted * nl / r2
+317:             total += lux
+326:             visible += lux
+327:             let scale = lux * material.response(normal: normal, light: wi, view: view, nl: nl) / 1000
+328:             xyz += sample.xyz * scale
+354:             let shading = plane(normal), geometric = geometricNormal.map(plane)
+355:             if shading.isFull && (geometric?.isFull ?? true) {
+356:                 // Keep both positions and accumulation order on ordinary full faces.
+357:                 for offset in 0..<(grid * grid) {
+358:                     let full = samples[index + offset]
+359:                     try accumulate(position: full.position, candela: full.candela, sample: full)
+360:                 }
+361:             } else {
+362:                 try StudyAreaSliceSampling.forEach(grid: grid, normal: shading, geometric: geometric) { p, weight in
+363:                     let position = area.center + area.right * (p.x * area.halfWidth) + area.up * (p.y * area.halfHeight)
+364:                     try accumulate(position: position, candela: sample.candela * weight, sample: sample)
+365:                 }
+366:             }
+367:             index += grid * grid
+423:     public init(scene: LightingScene, width: Int = 192) throws {
+424:         let setup = try StudySetup(scene: scene, width: width, quality: .interactive)
+425:         let c = vec(setup.geometry.center), camera = setup.camera
+426:         let origin = vec(camera.position) - c
+427:         let samples = setup.lighting.computeSamples(relativeTo: c)
+428:         let areas = setup.lighting.computeAreas(relativeTo: c)
+429:         self.width = width; self.height = setup.height
+430:         self.samples = samples; self.areas = areas
+431:         parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),
+432:                       pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),
+433:                       setup.transform.computeParameters,
+434:                       .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 8)]
+548: private func pack(_ v: SIMD3<Double>, _ w: Double) -> SIMD4<Float> {
+549:     .init(Float(v.x), Float(v.y), Float(v.z), Float(w))
+550: }
+
+FILE Sources/LightingCore/StudyFloat32Eligibility.swift
+sha256=2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28
+whole_file_unchanged_since_baseline: True
+12:     public static func supports(_ scene: LightingScene) -> Bool {
+13:         guard (try? scene.validated()) != nil,
+14:               let geometry = StudyGeometry(center: scene.subject),
+15:               let camera = CameraFraming(scene: scene),
+16:               camera.subjectDistanceMeters <= maximumRelativeDistanceMeters,
+17:               scene.lights.allSatisfy({ $0.position.distance(to: scene.subject) <= maximumRelativeDistanceMeters })
+18:         else { return false }
+19: 
+20:         let panel = visiblePanelBounds(geometry: geometry, camera: camera)
+21:         let subject = vector(scene.subject)
+22:         for light in scene.lights where light.candela > 0 {
+23:             let source = vector(light.position) - subject
+24:             let optics = light.effectiveOptics
+25:             if optics.kind == .rectangle {
+26:                 guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { return false }
+27:                 let right = vector(frame.right), up = vector(frame.up)
+28:                 let halfWidth = optics.widthMeters / 2, halfHeight = optics.heightMeters / 2
+29:                 let guardDistance = max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)
+
+FILE App/MetalStudyRenderer.swift
+sha256=a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f
+whole_file_unchanged_since_baseline: True
+36:     /// Far-away geometry and potentially ambiguous near-field masks stay on
+37:     /// the Double-precision oracle. Routing does not invalidate this backend.
+38:     static func supports(_ scene: LightingScene) -> Bool {
+39:         StudyFloat32Eligibility.supports(scene)
+40:     }
+41: 
+42:     func render(scene: LightingScene, width: Int) throws -> StudyImage {
+43:         guard Self.supports(scene) else { throw MetalStudyError.precisionDomain }
+44:         return try compute(StudyComputeInput(scene: scene, width: width))
+212:         if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
+213:             do {
+214:                 let image = try renderer.render(scene: scene, width: width)
+215:                 guard !isCancelled() else { throw StudyError.cancelled }
+216:                 return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)
+217:             } catch let error as StudyError {
+218:                 // Validation/cancellation is a scene error, not a backend failure.
+219:                 if error != .invalidComputeOutput { throw error }
+220:                 guard !isCancelled() else { throw StudyError.cancelled }
+221:                 selectCPU()
+222:             } catch {
+223:                 guard !isCancelled() else { throw StudyError.cancelled }
+224:                 selectCPU()
+225:             }
+226:         }
+227:         let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
+228:         guard !isCancelled() else { throw StudyError.cancelled }
+229:         return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+
+FILE App/ReferenceStudy.metal
+sha256=39a474e15c28f00f81cbda1a02dc25763d5bada763d12ac269b69bca08af08f8
+whole_file_unchanged_since_baseline: True
+1: #include "StudyKernel.h"
+2: 
+3: kernel void keyfillStudy(device const float4 *parameters [[buffer(0)]],
+4:                          device const float4 *samples [[buffer(1)]],
+5:                          device const float4 *areas [[buffer(2)]],
+6:                          device uchar4 *rgba [[buffer(3)]],
+7:                          constant uint2 &dimensions [[buffer(4)]],
+8:                          uint2 gid [[thread_position_in_grid]]) {
+9:     if (gid.x >= dimensions.x || gid.y >= dimensions.y) return;
+10:     rgba[gid.y * dimensions.x + gid.x] = kfStudyPixel(parameters,samples,areas,
+11:                                                      dimensions.x,dimensions.y,gid.x,gid.y);
+12: }
+
+FILE App/StudyKernel.h
+sha256=1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e
+whole_file_unchanged_since_baseline: True
+125: struct KFStudyIncident { float3 direction; float nl; float lux; bool valid; };
+126: inline KFStudyIncident kfStudyIncident(float3 source, float candela, float4 axis, float3 p, float3 n) {
+127:     const float3 delta = source-p;
+128:     const float r2 = dot(delta,delta);
+129:     if (r2 < 0.0025f) return {float3(0.0f,0.0f,0.0f),0.0f,0.0f,false};
+130:     const float3 wi = delta/sqrt(r2);
+131:     const float nl = kfSaturate(dot(n,wi));
+132:     const float emitted = axis.w == 0.0f ? 1.0f : kfSaturate(-dot(kfXYZ(axis),wi));
+133:     return {wi,nl,candela*emitted*nl/r2,true};
+134: }
+135: 
+136: struct KFStudyContribution { float3 xyz; bool valid; };
+137: inline KFStudyContribution kfStudyContribution(float3 source, float candela, float4 axis, float3 color,
+138:                                                float3 p, float3 n, float3 view, float3 shadowOrigin,
+139:                                                float radius, float extent, bool sphere) {
+140:     const KFStudyIncident incident = kfStudyIncident(source,candela,axis,p,n);
+141:     if (!incident.valid) return {float3(0.0f,0.0f,0.0f),false};
+142:     if (incident.lux == 0.0f) return {float3(0.0f,0.0f,0.0f),true};
+143:     const float3 segment = source-shadowOrigin;
+144:     const float distance = sqrt(dot(segment,segment));
+145:     if (kfOccluded(shadowOrigin,segment/distance,distance,radius,extent))
+146:         return {float3(0.0f,0.0f,0.0f),true};
+147:     return {color*(incident.lux*kfResponse(n,incident.direction,view,incident.nl,sphere)/1000.0f),true};
+220:     for (uint i=0; i<sampleCount;) {
+221:         const float4 source = samples[3*i], axis = samples[3*i+1], color = samples[3*i+2];
+222:         if (color.w == 0.0f) {
+223:             const KFStudyContribution c = kfStudyContribution(kfXYZ(source),source.w,axis,kfXYZ(color),
+224:                                                             p,n,-ray,shadowOrigin,radius,extent,sphere);
+225:             if (!c.valid) return kfInvalid();
+226:             xyz += c.xyz;
+227:             ++i;
+228:             continue;
+229:         }
+230:         const uint areaIndex = (uint)color.w-1;
+231:         if (areaIndex >= areaCount || i+grid*grid > sampleCount) return kfInvalid();
+232:         const float4 center = areas[3*areaIndex], ar = areas[3*areaIndex+1], au = areas[3*areaIndex+2];
+233:         const float3 plane = float3(dot(n,kfXYZ(center)-p),dot(n,kfXYZ(ar))*ar.w,dot(n,kfXYZ(au))*au.w);
+234:         const float span = abs(plane.y)+abs(plane.z);
+235:         if (plane.x >= span) {
+236:             for (uint offset=0; offset<grid*grid; ++offset) {
+237:                 const float4 full = samples[3*(i+offset)];
+238:                 const KFStudyContribution c = kfStudyContribution(kfXYZ(full),full.w,axis,kfXYZ(color),
+239:                                                                 p,n,-ray,shadowOrigin,radius,extent,sphere);
+240:                 if (!c.valid) return kfInvalid();
+241:                 xyz += c.xyz;
+252:                 for (uint col=0; col<grid; ++col) {
+253:                     const KFStudySlice slice = kfStudyAreaSlice(polygon,count,plane,col,grid,minimum,maximum);
+254:                     if (slice.weight == 0.0f) continue;
+255:                     for (uint row=0; row<grid; ++row) {
+256:                         const float sy = slice.lower+(slice.upper-slice.lower)*((float)row+0.5f)/(float)grid;
+257:                         const float3 position = kfXYZ(center)+kfXYZ(ar)*(slice.x*ar.w)+kfXYZ(au)*(sy*au.w);
+258:                         const KFStudyContribution c = kfStudyContribution(position,source.w*slice.weight,axis,kfXYZ(color),
+259:                                                                         p,n,-ray,shadowOrigin,radius,extent,sphere);
+260:                         if (!c.valid) return kfInvalid();
+261:                         xyz += c.xyz;
+262:                     }
+263:                 }
+264:             }
+265:         }
+266:         i += grid*grid;
+
+No production writes; source inspection only. Existing independent rendering and 1%/5% photometry gates remain required.

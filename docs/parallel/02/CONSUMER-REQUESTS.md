@@ -62,3 +62,19 @@ inherited ambiguous `.greatestFiniteMagnitude` test compilation; original excerp
 are retained under evidence/ci-current-139909706814-failure-excerpts.log and
 ci-current-139909706998-failure-excerpts.log. Core remains successful. Later-main
 CGFloat correction remains an integration dependency, not a lane02 code fix.
+
+## Wave04 renderer and presentation details
+
+W04R07 identifies ReferenceStudy.swift per-cell division (line249 at47de6af):
+for tiny area output, accumulate each light's geometry/material response at unit
+intensity then apply its requested intensity once to lux and XYZ. Do not scale
+the entire mixed rig. Float packing must reject or route positive per-cell
+values that become subnormal/zero unless a validated scaled representation is
+provided. Preserve masks and existing rendering/parity gates. Renderer/packing/
+routing/kernel sources are unchanged from f150; the diagnostic meter midpoint
+function is unchanged, but normal normalization intentionally changes rounding.
+
+W04R08 confirms unsupported rectangles yield a textual unavailable card while
+valid darkness retains numeric lux and RGB accessibility labels. Geometry help
+is generic; UI owners should explain the5cm/quarter-longest-side separation
+when that specific cause is known. No platform accessibility execution claimed.

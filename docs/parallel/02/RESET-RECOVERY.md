@@ -21,3 +21,7 @@ are copied into tools/resumed-* for future reconstruction; their/tmp prefixes
 are session locations, not installed product code. R01–05 IDs are restored in
 the global ledger; R02/R03 status waits for regenerated evidence, without extra
 context credit. The earlier32-completion event is preserved above.
+
+R04 tiny clipped-face candidate was reviewed and integrated, and its targeted package XCTest passed1/1. R05 regenerated256 concurrent outputs with zero exact mismatches. To bound the R01 context after recovery overhead, root resumes direct scheduling forR06–R10 after R01 hands off the first five roles. All100 initial contexts remain planned with no double count for retries.
+
+R01–R05 all completed with genuine second-executor reports. Their coordinator handoff describes the test as unintegrated from its own scope; root separately integrated and package-ran it, with the actual successful log retained. Root schedulesR06–R10; no coordinator report is treated as a whole-wave completion.

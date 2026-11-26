@@ -1,0 +1,465 @@
+W04R08: fresh static execution evidence; not recovered original logs.
+worker HEAD: 47de6afe6afe24a7822f4276950f70bd3db9f57d
+frozen probe module SHA (not executed): 1b286885cb803ba17e159713651515ab119e17f1
+production code snapshot SHA: 58b3ca43943e18d0fc7800189b08365f424d9c9e
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:Sources/LightingCore/SurfacePhotometry.swift
+exit: 0
+SELECTED SOURCE: Sources/LightingCore/SurfacePhotometry.swift:101-149
+101:     /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2,
+102:     /// with L = on-axis cd / emitter area. Fully front-facing emitters use
+103:     /// the same 32x32 midpoint grid as the unoccluded reference renderer.
+104:     /// Partially front-facing emitters are clipped to the receiver hemisphere,
+105:     /// preventing a narrow contributing strip from disappearing between samples.
+106:     /// A clipped rectangle has at most five vertices; 12x12 Gaussian quadrature
+107:     /// per triangle bounds this partial-face calculation to 432 evaluations.
+108:     /// The sampled renderer remains approximate at grazing incidence.
+109:     /// The receiver must still be separated from the emitter plane by at least
+110:     /// 5 cm and one quarter of the longest side; nearer configurations abstain.
+111:     /// No occlusion, reflection, spectral effects or modifier transmission.
+112:     public static func rectangularIlluminance(emitter: LambertianRectangle, receiver: Position,
+113:                                               receiverNormal: UnitDirection) -> Double? {
+114:         guard receiver.isValid else { return nil }
+115:         let toReceiver = vector(receiver) - vector(emitter.center)
+116:         let depth = dot(toReceiver, emitter.normal)
+117:         let minimumDepth = max(0.05, max(emitter.widthMeters, emitter.heightMeters) / 4)
+118:         guard abs(depth) >= minimumDepth else { return nil }
+119:         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
+120: 
+121:         // Keep the geometric integration at unit intensity when dividing an
+122:         // extremely small output among cells would lose its significant bits.
+123:         // Apply intensity once, after summation. The ordinary-output path keeps
+124:         // its established sample ordering and rounding for renderer parity.
+125:         if emitter.onAxisCandela < Double.leastNormalMagnitude * 1024 {
+126:             guard let unit = LambertianRectangle(
+127:                 center: emitter.center, right: emitter.right, up: emitter.up,
+128:                 widthMeters: emitter.widthMeters, heightMeters: emitter.heightMeters,
+129:                 onAxisCandela: 1),
+130:                 let unitLux = rectangularIlluminance(emitter: unit, receiver: receiver,
+131:                                                      receiverNormal: receiverNormal) else { return nil }
+132:             return unitLux * emitter.onAxisCandela
+133:         }
+134: 
+135:         let right = emitter.right.vector, up = emitter.up.vector
+136:         let normal = receiverNormal.vector
+137:         let nx = dot(right, normal), ny = dot(up, normal)
+138:         let offset = dot(toReceiver, normal)
+139:         let halfWidth = emitter.widthMeters / 2
+140:         let halfHeight = emitter.heightMeters / 2
+141:         let corners: [SIMD2<Double>] = [
+142:             .init(-halfWidth, -halfHeight), .init(halfWidth, -halfHeight),
+143:             .init(halfWidth, halfHeight), .init(-halfWidth, halfHeight)
+144:         ]
+145:         let vertices = corners.map { p in
+146:             IncidenceVertex(point: p, incidence: nx * p.x + ny * p.y - offset)
+147:         }
+148:         if vertices.allSatisfy({ $0.incidence <= 0 }) { return 0 }
+149:         if vertices.allSatisfy({ $0.incidence >= 0 }) {
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:Sources/LightingCore/StudioOptics.swift
+exit: 0
+SELECTED SOURCE: Sources/LightingCore/StudioOptics.swift:97-138
+97: /// Estimates illuminance at the subject's center on a plane facing the scene camera.
+98: /// This is a diagnostic sample, not exposure or the brightness of a rendered face.
+99: public enum StudioPhotometry {
+100:     public static func receiverNormal(in scene: LightingScene) -> UnitDirection? {
+101:         guard scene.subject.isValid, scene.camera.isValid else { return nil }
+102:         return UnitDirection(x: scene.camera.x - scene.subject.x,
+103:                              y: scene.camera.y - scene.subject.y,
+104:                              z: scene.camera.z - scene.subject.z)
+105:     }
+106: 
+107:     public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
+108:         guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
+109:         return EmitterFrame(source: light.position, target: light.target(subject: subject),
+110:                             rollDegrees: light.effectiveOptics.effectiveRollDegrees)
+111:     }
+112: 
+113:     public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {
+114:         guard light.isValid, let normal = receiverNormal(in: scene) else { return nil }
+115:         let optics = light.effectiveOptics
+116:         switch optics.kind {
+117:         case .point:
+118:             return Photometry.pointIlluminance(candela: light.candela, source: light.position,
+119:                                               receiver: scene.subject, receiverNormal: normal)
+120:         case .directional:
+121:             // Ideal one-sided cosine emitter. Not a hard-edged spotlight or a measured beam.
+122:             guard let frame = frame(for: light, subject: scene.subject),
+123:                   let ray = UnitDirection(x: scene.subject.x - light.position.x,
+124:                                           y: scene.subject.y - light.position.y,
+125:                                           z: scene.subject.z - light.position.z),
+126:                   let lux = Photometry.pointIlluminance(candela: light.candela, source: light.position,
+127:                                                         receiver: scene.subject, receiverNormal: normal) else { return nil }
+128:             let n = frame.normal
+129:             let emission = min(1, max(0, n.x * ray.x + n.y * ray.y + n.z * ray.z))
+130:             return lux * emission
+131:         case .rectangle:
+132:             guard let frame = frame(for: light, subject: scene.subject),
+133:                   let emitter = LambertianRectangle(center: light.position, right: frame.right, up: frame.up,
+134:                                                       widthMeters: optics.widthMeters, heightMeters: optics.heightMeters,
+135:                                                       onAxisCandela: light.candela) else { return nil }
+136:             return Photometry.rectangularIlluminance(emitter: emitter, receiver: scene.subject, receiverNormal: normal)
+137:         }
+138:     }
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:Sources/LightingCore/Colorimetry.swift
+exit: 0
+SELECTED SOURCE: Sources/LightingCore/Colorimetry.swift:90-101
+90: 
+91:     fileprivate static func bradford(_ v: SIMD3<Double>) -> SIMD3<Double> {
+92:         .init(0.8951 * v.x + 0.2664 * v.y - 0.1614 * v.z,
+93:               -0.7502 * v.x + 1.7135 * v.y + 0.0367 * v.z,
+94:               0.0389 * v.x - 0.0685 * v.y + 1.0296 * v.z)
+95:     }
+96:     fileprivate static func inverseBradford(_ v: SIMD3<Double>) -> SIMD3<Double> {
+97:         .init(0.9869929 * v.x - 0.1470543 * v.y + 0.1599627 * v.z,
+98:               0.4323053 * v.x + 0.5183603 * v.y + 0.0492912 * v.z,
+99:               -0.0085287 * v.x + 0.0400428 * v.y + 0.9684867 * v.z)
+100:     }
+101: }
+SELECTED SOURCE: Sources/LightingCore/Colorimetry.swift:123-179
+123:     /// Bradford adaptation, relative exposure, luminance Reinhard tone mapping and
+124:     /// neutral-axis gamut compression into display-encoded sRGB.
+125:     public func display(_ xyz: RelativeXYZ) -> DisplayRGB? {
+126:         guard xyz.x.isFinite, xyz.y.isFinite, xyz.z.isFinite, xyz.x >= 0, xyz.y >= 0, xyz.z >= 0 else { return nil }
+127:         // The normal scene range retains its original arithmetic. Above it,
+128:         // cancel the input scale analytically in the Reinhard denominator so
+129:         // finite inputs do not overflow in adaptation or exposure products.
+130:         let scale = max(xyz.x, max(xyz.y, xyz.z))
+131:         let scaled = scale > 1e150
+132:         let input = scaled ? xyz.vector / scale : xyz.vector
+133:         let adapted = PreviewColorimetry.inverseBradford(PreviewColorimetry.bradford(input) * adaptationRatio)
+134:             * (scaled ? 1 : exposure)
+135:         let rgb = SIMD3<Double>(3.24096994 * adapted.x - 1.53738318 * adapted.y - 0.49861076 * adapted.z,
+136:                                 -0.96924364 * adapted.x + 1.87596750 * adapted.y + 0.04155506 * adapted.z,
+137:                                 0.05563008 * adapted.x - 0.20397696 * adapted.y + 1.05697151 * adapted.z)
+138:         guard rgb.x.isFinite, rgb.y.isFinite, rgb.z.isFinite, adapted.y.isFinite, adapted.y >= 0 else { return nil }
+139:         if adapted.y == 0 { return .init(red: 0, green: 0, blue: 0) }
+140:         let denominator = scaled ? adapted.y + (1 / scale) / exposure : 1 + adapted.y
+141:         let luminance = adapted.y / denominator
+142:         let tone = rgb / denominator
+143:         var t = 1.0
+144:         for component in [tone.x, tone.y, tone.z] {
+145:             let delta = component - luminance
+146:             if delta > 0 { t = min(t, (1 - luminance) / delta) }
+147:             if delta < 0 { t = min(t, -luminance / delta) }
+148:         }
+149:         func encode(_ v: Double) -> Double {
+150:             let linear = min(1, max(0, luminance + t * (v - luminance)))
+151:             return linear <= 0.0031308 ? 12.92 * linear : 1.055 * pow(linear, 1 / 2.4) - 0.055
+152:         }
+153:         return .init(red: encode(tone.x), green: encode(tone.y), blue: encode(tone.z))
+154:     }
+155: }
+156: 
+157: /// Camera-facing neutral test card. Uses summed direct illuminance and an ideal spectrally flat
+158: /// 18% diffuse reflectance. No occlusion, bounce, actual materials or camera response.
+159: /// 1000 lx is an explicit relative-exposure reference; the result is a display preview, not EV100.
+160: public struct NeutralCardPreview: Equatable, Sendable {
+161:     public let totalLux: Double
+162:     public let incidentXYZ: RelativeXYZ
+163:     public let display: DisplayRGB
+164: 
+165:     public init?(scene: LightingScene) {
+166:         guard (try? scene.validated()) != nil, StudioPhotometry.receiverNormal(in: scene) != nil else { return nil }
+167:         var xyz = SIMD3<Double>.zero
+168:         var totalLux = 0.0
+169:         for light in scene.lights {
+170:             guard light.isValid else { return nil }
+171:             if light.candela == 0 { continue }
+172:             guard let lux = StudioPhotometry.illuminance(for: light, in: scene),
+173:                   let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { return nil }
+174:             totalLux += lux; xyz += color.vector * lux
+175:         }
+176:         let signal = RelativeXYZ(xyz * (0.18 / 1000))
+177:         guard let display = PreviewColorimetry.display(signal, settings: scene.effectivePreviewSettings) else { return nil }
+178:         self.totalLux = totalLux; self.incidentXYZ = RelativeXYZ(xyz); self.display = display
+179:     }
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:App/NeutralCardInspector.swift
+exit: 0
+SELECTED SOURCE: App/NeutralCardInspector.swift:25-46
+25:     private struct Sample {
+26:         let scene: LightingScene
+27:         let card: NeutralCardPreview?
+28:     }
+29: 
+30:     var body: some View {
+31:         VStack(alignment: .leading, spacing: 12) {
+32:             Group {
+33:                 if let sample, sample.scene == scene {
+34:                     if let card = sample.card {
+35:                         cardView(card)
+36:                     } else {
+37:                         VStack(alignment: .leading, spacing: 5) {
+38:                             Label("Meter unavailable", systemImage: "exclamationmark.triangle")
+39:                                 .font(.subheadline.weight(.semibold))
+40:                             Text("Check the camera position and active emitters. An unsupported light invalidates the combined estimate.")
+41:                                 .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+42:                         }.frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
+43:                     }
+44:                 } else {
+45:                     ProgressView("Updating test card").font(.subheadline)
+46:                         .frame(maxWidth: .infinity, minHeight: 100)
+SELECTED SOURCE: App/NeutralCardInspector.swift:97-141
+97:             Text("18% neutral card at subject center, with a relative 1000 lx reference. These controls affect the card and Study viewport, not the illustrative 3D shading. No measured fixture spectra, indirect light, actual camera response or exposure calibration.")
+98:                 .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+99:         }
+100:         .tint(StudioPalette.action)
+101:         .task(id: scene) {
+102:             // Debounce rapid slider changes, compute on a background executor and
+103:             // publish only the result of the current non-cancelled snapshot.
+104:             let snapshot = scene
+105:             do { try await Task.sleep(nanoseconds: 50_000_000) } catch { return }
+106:             let work = Task.detached(priority: .userInitiated) {
+107:                 try Task.checkCancellation()
+108:                 return NeutralCardPreview(scene: snapshot)
+109:             }
+110:             do {
+111:                 let result = try await withTaskCancellationHandler(operation: {
+112:                     try await work.value
+113:                 }, onCancel: {
+114:                     work.cancel()
+115:                 })
+116:                 guard !Task.isCancelled else { return }
+117:                 sample = Sample(scene: snapshot, card: result)
+118:             } catch { return }
+119:         }
+120:     }
+121: 
+122:     private func cardView(_ card: NeutralCardPreview) -> some View {
+123:         let rgb = card.display
+124:         return HStack(spacing: 14) {
+125:             RoundedRectangle(cornerRadius: 12)
+126:                 .fill(Color(.sRGB, red: rgb.red, green: rgb.green, blue: rgb.blue, opacity: 1))
+127:                 .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(Color.secondary.opacity(0.5), lineWidth: 1) }
+128:                 .frame(width: 80, height: 80)
+129:                 .accessibilityHidden(true)
+130:             VStack(alignment: .leading, spacing: 5) {
+131:                 Text("COMBINED DIRECT LIGHT").font(.caption2.weight(.semibold)).foregroundStyle(StudioPalette.secondaryText)
+132:                 Text(StudioMeterReadout.lux(card.totalLux, locale: locale))
+133:                     .font(.system(.title2, design: .monospaced).weight(.semibold))
+134:                     .accessibilityLabel("Combined ideal illuminance")
+135:                     .accessibilityValue(StudioNumericInput.formattedValue(card.totalLux, unit: "lx", locale: locale))
+136:                     .accessibilityIdentifier("combinedLux")
+137:                 Text("Relative 18% card · sRGB")
+138:                     .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+139:                 Text("R \(Int((rgb.red * 255).rounded())) · G \(Int((rgb.green * 255).rounded())) · B \(Int((rgb.blue * 255).rounded()))")
+140:                     .font(.caption2.monospacedDigit())
+141:                     .accessibilityLabel("Red \(Int((rgb.red * 255).rounded())), green \(Int((rgb.green * 255).rounded())), blue \(Int((rgb.blue * 255).rounded()))")
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:App/StudioView.swift
+exit: 0
+SELECTED SOURCE: App/StudioView.swift:895-906
+895:             .buttonStyle(.plain)
+896:             .accessibilityLabel("Light meter and test card")
+897:             .accessibilityValue(showMeter ? "Expanded" : "Collapsed")
+898:             .accessibilityHint(showMeter ? "Hides light meter controls" : "Shows light meter controls")
+899:             .accessibilityIdentifier("meterDisclosure")
+900:             if showMeter {
+901:                 Divider().padding(.vertical, 12)
+902:                 let owner = editOwner("preview")
+903:                 NeutralCardInspector(scene: scene, settings: previewSettingsBinding,
+904:                                      onEditingChanged: editHandler(owner: owner))
+905:                     .id(owner)
+906:             }
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:App/StudioMeterReadout.swift
+exit: 0
+SELECTED SOURCE: App/StudioMeterReadout.swift:1-29
+1: import Foundation
+2: 
+3: /// Compact readouts keep sub-resolution light distinct from an exact zero.
+4: enum StudioMeterReadout {
+5:     static func candela(_ value: Double, locale: Locale) -> String {
+6:         formattedValue(value, unit: "cd", fractionDigits: 0, quantum: 1, locale: locale)
+7:     }
+8: 
+9:     static func lux(_ value: Double, locale: Locale) -> String {
+10:         formattedValue(value, unit: "lx", fractionDigits: 1, quantum: 0.1, locale: locale)
+11:     }
+12: 
+13:     private static func formattedValue(_ value: Double, unit: String, fractionDigits: Int,
+14:                                        quantum: Double, locale: Locale) -> String {
+15:         guard value.isFinite, value >= 0 else {
+16:             return String(localized: "Unavailable", locale: locale)
+17:         }
+18:         let style = FloatingPointFormatStyle<Double>.number
+19:             .precision(.fractionLength(fractionDigits))
+20:             .grouping(.never)
+21:             .locale(locale)
+22:         if value > 0, value < quantum {
+23:             return "<\(quantum.formatted(style)) \(unit)"
+24:         }
+25:         // Normalize negative zero so the zero readout has no misleading sign.
+26:         let displayValue = value == 0 ? 0.0 : value
+27:         return "\(displayValue.formatted(style)) \(unit)"
+28:     }
+29: }
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:Sources/LightingCore/StudioNumericInput.swift
+exit: 0
+SELECTED SOURCE: Sources/LightingCore/StudioNumericInput.swift:1-100
+1: import Foundation
+2: 
+3: /// Strict decimal input for scene parameters. Values are never silently
+4: /// clamped, rounded to a slider step, or interpreted as grouped numbers.
+5: public enum StudioNumericInput {
+6:     /// A raw editing draft can include padding and temporarily incomplete
+7:     /// input. Keep the parser's existing byte allowance without walking an
+8:     /// unbounded pasted string or its potentially enormous grapheme clusters.
+9:     public static let maximumDraftUTF8Bytes = 256
+10: 
+11:     /// Check before storing a TextField replacement. This checks size only;
+12:     /// empty drafts, signs, local decimal digits, and intermediate edits remain
+13:     /// editable. A rejected replacement must leave the previous draft intact.
+14:     public static func isWithinDraftLimit(_ text: String) -> Bool {
+15:         text.utf8.prefix(maximumDraftUTF8Bytes + 1).count <= maximumDraftUTF8Bytes
+16:     }
+17: 
+18:     /// The shared current-value readout for numeric controls. Slider steps
+19:     /// describe adjustment increments, not the precision of an imported or
+20:     /// directly entered value. Round-trip digits preserve the stored Double;
+21:     /// scientific notation bounds values that need more than 32 decimal
+22:     /// characters. Localization changes symbols, never the numeric precision.
+23:     public static func formattedValue(_ value: Double, unit: String = "",
+24:                                       locale: Locale = .current) -> String {
+25:         guard value.isFinite else { return unit.isEmpty ? "Unavailable" : "Unavailable " + unit }
+26:         let source = decimalText(value, omitLeadingZeroWhenNeeded: false) ?? String(value)
+27:         let integerStyle = IntegerFormatStyle<Int>.number.grouping(.never).locale(locale)
+28:         let digits = (0...9).map { $0.formatted(integerStyle) }
+29:         let minus = (-1).formatted(integerStyle).replacingOccurrences(of: digits[1], with: "")
+30:         let number = source.map { character -> String in
+31:             if let digit = character.wholeNumberValue { return digits[digit] }
+32:             if character == "." { return locale.decimalSeparator ?? "." }
+33:             if character == "-" { return minus }
+34:             return String(character)
+35:         }.joined()
+36:         return unit.isEmpty ? number : number + " " + unit
+37:     }
+38: 
+39:     /// An exact, bounded decimal draft using ASCII digits and the user's
+40:     /// separator. nil means the editor must retain the value explicitly rather
+41:     /// than seed its decimal field with rounded zero or scientific notation.
+42:     public static func editableText(_ value: Double, decimalSeparator: String = ".") -> String? {
+43:         guard let decimal = decimalText(value, omitLeadingZeroWhenNeeded: true) else { return nil }
+44:         let text = decimal.replacingOccurrences(of: ".", with: decimalSeparator)
+45:         guard let parsed = parse(text, decimalSeparator: decimalSeparator,
+46:                                  in: -Double.greatestFiniteMagnitude...Double.greatestFiniteMagnitude),
+47:               parsed.bitPattern == value.bitPattern else { return nil }
+48:         return text
+49:     }
+50: 
+51:     /// Expand Double's round-trip description only after checking the output
+52:     /// length. No hundreds-of-digits intermediate is allocated for subnormals.
+53:     private static func decimalText(_ value: Double, omitLeadingZeroWhenNeeded: Bool) -> String? {
+54:         guard value.isFinite else { return nil }
+55:         let parts = String(value).split(separator: "e")
+56:         let exponent = parts.count == 2 ? Int(parts[1])! : 0
+57:         var mantissa = String(parts[0])
+58:         let negative = mantissa.first == "-"
+59:         if negative { mantissa.removeFirst() }
+60:         let components = mantissa.split(separator: ".")
+61:         var point = components[0].count + exponent
+62:         var digits = components.joined()
+63:         while digits.last == "0", digits.count > 1 { digits.removeLast() }
+64:         while digits.first == "0", digits.count > 1 { digits.removeFirst(); point -= 1 }
+65:         let sign = negative ? "-" : ""
+66:         let fullLength = sign.count + (point <= 0 ? 2 - point + digits.count :
+67:             max(point, digits.count) + (point < digits.count ? 1 : 0))
+68:         // The input grammar permits .125. Use that one-character saving only
+69:         // when necessary to retain an otherwise 33-character exact draft.
+70:         let omitZero = omitLeadingZeroWhenNeeded && point <= 0 && fullLength == 33
+71:         guard fullLength - (omitZero ? 1 : 0) <= 32 else { return nil }
+72:         if point <= 0 {
+73:             return sign + (omitZero ? "." : "0.") + String(repeating: "0", count: -point) + digits
+74:         }
+75:         if point >= digits.count {
+76:             return sign + digits + String(repeating: "0", count: point - digits.count)
+77:         }
+78:         let split = digits.index(digits.startIndex, offsetBy: point)
+79:         return sign + digits[..<split] + "." + digits[split...]
+80:     }
+81: 
+82:     public static func parse(_ text: String, decimalSeparator: String = ".",
+83:                              in range: ClosedRange<Double>) -> Double? {
+84:         // Bound pasted input before trimming or traversing grapheme clusters.
+85:         // The small whitespace allowance preserves ordinary padded decimals.
+86:         guard isWithinDraftLimit(text),
+87:               decimalSeparator.utf8.prefix(5).count <= 4,
+88:               range.lowerBound.isFinite, range.upperBound.isFinite else { return nil }
+89:         let input = text.trimmingCharacters(in: .whitespacesAndNewlines)
+90:         guard !input.isEmpty, input.utf8.count <= 96, input.count <= 32,
+91:               decimalSeparator.unicodeScalars.count == 1,
+92:               let scalar = decimalSeparator.unicodeScalars.first,
+93:               !CharacterSet.whitespacesAndNewlines.contains(scalar),
+94:               !CharacterSet.letters.contains(scalar),
+95:               let separator = decimalSeparator.first,
+96:               separator != "+", separator != "-", separator != "−",
+97:               separator.wholeNumberValue == nil else { return nil }
+98:         var canonical = ""
+99:         var seenSeparator = false
+100:         var digits = 0
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:docs/parallel/02/CONSUMER-REQUESTS.md
+exit: 0
+SELECTED SOURCE: docs/parallel/02/CONSUMER-REQUESTS.md:1-18
+1: # Consumer coordination — lane 02
+2: 
+3: No scene-schema or public-signature changes are proposed. All calculations stay
+4: pure, synchronous, value based and Sendable. Existing Optional/throw contracts,
+5: SI units and ordinary preview compute parameters remain intact.
+6: 
+7: | Owner | Request | Reason / acceptance |
+8: |---|---|---|
+9: | 01 architecture | Keep point, directional and rectangle identities; `directional` means finite-distance one-sided cosine emission, not a parallel beam. Preserve nil as unsupported, zero as supported darkness. | Existing authored-scene contract; don't change intensity units or use RGB as lux. |
+10: | 01 shared helper | Review Scene.swift `normalIlluminance(candela:100000,distanceMeters:1e155)`: r² overflow returns0 although1e-305 is representable. | Public helper admits this distance; scene positions cannot reach it. Prefer division ordering or explicit distance-domain bound. Source outside lane02 ownership; not changed here. |
+11: | CPU / GPU rendering | Review per-cell intensity underflow in ReferenceStudy.swift; meter now integrates tiny output at1cd then scales once, while ordinary meter/renderer ordering is preserved. | Extreme subnormal output only; no physical brightness claim. Do not remove invalid masks or replace independent rendering gates with diagnostic meter agreement. |
+12: | CPU / GPU color | Colorimetry finite huge XYZ path analytically cancels scale before tone mapping; normal-range arithmetic and computeParameters stay identical. | GPU Float32 input eligibility must remain explicit; huge Double API inputs are not an expanded Float32 rendering domain. |
+13: | inference | Solve each light's contribution independently; target lux is not total rig lux or a measured lamp setting. Check forward result and return uncertainty. | One-to-three-source additivity before display; no inverse-photo reconstruction claim. |
+14: | inspector / accessibility | Present `LightOutputAdjustmentError` localized descriptions and keep rejected targets editable. Treat .outputOutOfRange as either physical output range or unrepresentable numerical accuracy. | Error string now explains both; retain labels/units and non-color-only unsupported state. |
+15: | export | Preserve SI / camera-facing receiver assumptions, explicit unsupported states and ideal-model disclaimer. | No schema fields or physical calibration claims added. |
+16: | 19 CI / 20 integration | This branch is based on requested f150f98; retain later main b0d25ee native CGFloat measurement fix during integration. | Native baseline build failure was already documented on main9e0e2ba; lane02 does not own App source or CI. |
+17: 
+18: ## Numerical regression semantics
+
+COMMAND: git show 47de6afe6afe24a7822f4276950f70bd3db9f57d:docs/QUALITY.md
+exit: 0
+SELECTED SOURCE: docs/QUALITY.md:1-22
+1: # Quality and release contract (protected)
+2: 
+3: These are initial engineering targets, not measured achievements. Record actual numerical results with device/toolchain, build configuration, workload, sample size, revision and raw artifacts. If target proves infeasible, owner must approve an explicit tradeoff; agents cannot weaken it. A missing tool or unrun test is unverified, never pass.
+4: 
+5: ## Owner-authorized M02/M03 scope: m02-m03-code-v2
+6: 
+7: On 2026-11-25 the owner explicitly directed development to remove requirements dependent on unavailable outside factors and proceed through M02, then M03, by working on the code. The six M02/M03 gates below now use [the versioned code acceptance contract](acceptance/m02-m03-code.md). Physical scene collection/calibration, photographer review, physical-device performance/thermal measurement and manual device accessibility are removed from these two milestones. Apple-provided `.all` accessibility audits remain opt-in diagnostics with their actual outcomes preserved. App accessibility semantics, layout, contrast and functional workflows remain required.
+8: 
+9: This revision changes acceptance scope; it supplies no passing evidence. Prior failures and unperformed physical checks retain their original meaning. Completing these milestones means code acceptance only. M01 and M04–M07, release approval and distribution requirements are unchanged by this revision.
+10: 
+11: | Gate | Acceptance criteria |
+12: |---|---|
+13: | core_tests | swift test clean; analytic fixtures, invalid inputs and round-trip cases; no skipped required tests |
+14: | native_build | generated Xcode project builds unsigned for iOS simulator; capture command, Xcode version, SDK |
+15: | persistence_smoke | create/edit/save/relaunch; corrupt file surfaced, never silently overwritten; smoke evidence |
+16: | photometry | inverse-square and cosine analytic cases <= 1% error in supported point model; area model compare against numerical reference <= 5% on declared test cases; document limits and units |
+17: | rendering | m02-m03-code-v2: twelve synthetic image fixtures with zero unsupported pixels; six CPU/shared-kernel parity fixtures with exact invalid masks, mean RGB channel error <= 1 and fraction with error > 4 <= 0.005; eight precision fixtures with maximum channel error <= 1; geometry/color/visibility regressions and actual output review; see the code acceptance contract |
+18: | performance | m02-m03-code-v2: tested rendering/cancellation/cache bounds and optimized reproducible host benchmark; four cached frames, <= 256 KiB RGBA plus <= 64 KiB masks, mannequin width <= 144, cancellation observed after at most eight further pixel evaluations; no physical FPS/thermal/RSS claim |
+19: | editing | precise units, undo/redo, stable selection, valid gesture transforms, no lost edits, 10 repeatable core workflow runs |
+20: | accessibility | m02-m03-code-v2: app accessibility labels/values/actions, Dynamic Type layout, contrast, non-color-only cues, exact numeric editing and reduced motion; app-level checks and functional workflows; Apple-provided audits are separately reported diagnostics, not substitute passes |
+21: | persistence | migrations, atomic writes, malformed/oversized data, interruption, project library round-trip, deletion/recovery; no data loss in required tests |
+22: | inference | held-out 30+ controlled authorized examples, document ambiguity, uncertainty, calibration and failures; at least 80% of cases contain a practically usable rig in top 3 by two human reviewers; abstain on unsupported inputs; never claim exact setup |
+
+COMMAND: git diff --exit-code 1b286885cb803ba17e159713651515ab119e17f1 47de6afe6afe24a7822f4276950f70bd3db9f57d -- Sources/LightingCore/SurfacePhotometry.swift Sources/LightingCore/StudioOptics.swift Sources/LightingCore/Colorimetry.swift App/NeutralCardInspector.swift App/StudioView.swift App/StudioMeterReadout.swift Sources/LightingCore/StudioNumericInput.swift
+exit: 0
+
+
+COMMAND: git diff --exit-code 58b3ca43943e18d0fc7800189b08365f424d9c9e 47de6afe6afe24a7822f4276950f70bd3db9f57d -- Sources/LightingCore/SurfacePhotometry.swift Sources/LightingCore/StudioOptics.swift Sources/LightingCore/Colorimetry.swift App/NeutralCardInspector.swift App/StudioView.swift App/StudioMeterReadout.swift Sources/LightingCore/StudioNumericInput.swift
+exit: 0
+
+
+COMMAND: git show HEAD:Sources/LightingCore/Colorimetry.swift
+exit: 0
+SELECTED SOURCE: Sources/LightingCore/Colorimetry.swift:75-77
+75:     public static func display(_ xyz: RelativeXYZ, settings: PreviewSettings) -> DisplayRGB? {
+76:         PreviewColorTransform(settings: settings)?.display(xyz)
+77:     }
