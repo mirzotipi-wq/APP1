@@ -1,0 +1,15 @@
+diff --git a/App/StudioEntityGraph.swift b/App/StudioEntityGraph.swift
+index ca3ce32..3572330 100644
+--- a/App/StudioEntityGraph.swift
++++ b/App/StudioEntityGraph.swift
+@@ -272,7 +272,9 @@ private final class StudioLampEntity {
+             housing.scale = [width, height, 0.08]
+             // Stop the housing behind the diffuser to avoid coplanar surfaces.
+             housing.position = [0, 0, -0.046]
+-            face.scale = [max(0.01, width - 0.012), max(0.01, height - 0.012), 0.006]
++            // Rectangle dimensions describe the full emitting area.
++            face.scale = optics.kind == .rectangle ? [width, height, 0.006] :
++                [max(0.01, width - 0.012), max(0.01, height - 0.012), 0.006]
+             // The emitting face is exactly at the authored position, z = 0.
+             face.position = [0, 0, -0.003]
+             selection.position = isPoint ? .zero : [0, 0, -0.043]

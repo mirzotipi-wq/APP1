@@ -1,0 +1,139 @@
+diff --git a/NativeTests/SpatialAimRecoveryTests.swift b/NativeTests/SpatialAimRecoveryTests.swift
+new file mode 100644
+index 0000000..6fe6d78
+--- /dev/null
++++ b/NativeTests/SpatialAimRecoveryTests.swift
+@@ -0,0 +1,133 @@
++import SceneKit
++import XCTest
++import LightingCore
++@testable import KeyAndFill
++
++@MainActor
++final class SpatialAimRecoveryTests: XCTestCase {
++    private func update(_ scene: LightingScene, selected: UUID, view: SCNView,
++                        coordinator: SpatialPreview.Coordinator) {
++        SpatialPreview(scene: scene, selected: selected).updateView(view, coordinator: coordinator)
++        SCNTransaction.flush()
++    }
++
++    private func assertPosition(_ actual: SCNVector3, _ expected: Position,
++                                file: StaticString = #filePath, line: UInt = #line) {
++        // Translated SceneKit transforms retain Float32 precision.
++        XCTAssertEqual(Double(actual.x), expected.x, accuracy: 2e-5, file: file, line: line)
++        XCTAssertEqual(Double(actual.y), expected.y, accuracy: 2e-5, file: file, line: line)
++        XCTAssertEqual(Double(actual.z), expected.z, accuracy: 2e-5, file: file, line: line)
++    }
++
++    private func assertDirection(_ actual: SCNVector3, _ expected: SCNVector3,
++                                 file: StaticString = #filePath, line: UInt = #line) {
++        XCTAssertEqual(actual.x, expected.x, accuracy: 1e-6, file: file, line: line)
++        XCTAssertEqual(actual.y, expected.y, accuracy: 1e-6, file: file, line: line)
++        XCTAssertEqual(actual.z, expected.z, accuracy: 1e-6, file: file, line: line)
++    }
++
++    private func assertBasis(_ node: SCNNode, right: SCNVector3, up: SCNVector3, forward: SCNVector3,
++                             localForward: SCNVector3 = SCNVector3(0, 0, 1),
++                             file: StaticString = #filePath, line: UInt = #line) {
++        assertDirection(node.convertVector(SCNVector3(1, 0, 0), to: nil), right, file: file, line: line)
++        assertDirection(node.convertVector(SCNVector3(0, 1, 0), to: nil), up, file: file, line: line)
++        assertDirection(node.convertVector(localForward, to: nil), forward, file: file, line: line)
++    }
++
++    func testCoincidentAimRecoversRetainedLampAtTranslatedVerticalPose() throws {
++        let initialPosition = Position(x: 80, y: 2.1, z: 75)
++        let light = StudioLight(name: "Recovering softbox", position: initialPosition, candela: 900, kelvin: 5600,
++                                optics: .init(kind: .rectangle, aimTarget: .init(x: 80, y: 2.1, z: 72),
++                                              widthMeters: 1.2, heightMeters: 0.7, rollDegrees: 90))
++        var scene = LightingScene.portrait()
++        scene.subject = .init(x: 80, y: 1.5, z: 72)
++        scene.camera = .init(x: 80, y: 1.5, z: 78)
++        scene.lights = [light]
++        let preview = SpatialPreview(scene: scene, selected: light.id)
++        let coordinator = preview.makeCoordinator()
++        let view = preview.makeView(coordinator: coordinator)
++        view.frame = CGRect(x: 0, y: 0, width: 360, height: 280)
++        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
++        update(scene, selected: light.id, view: view, coordinator: coordinator)
++
++        let indicator = try XCTUnwrap(coordinator.selectionIndicators[light.id])
++        let fixture = try XCTUnwrap(indicator.parent)
++        let sources = coordinator.content.childNodes.filter { $0.light?.type == .spot }
++        let stands = coordinator.content.childNodes.filter { $0.geometry is SCNCylinder }
++        XCTAssertEqual(sources.count, 1)
++        XCTAssertEqual(stands.count, 1)
++        let source = try XCTUnwrap(sources.first)
++        let stand = try XCTUnwrap(stands.first)
++        let housing = try XCTUnwrap(fixture.geometry as? SCNBox)
++        let outline = try XCTUnwrap(indicator.geometry as? SCNBox)
++        let cylinder = try XCTUnwrap(stand.geometry as? SCNCylinder)
++        let children = coordinator.content.childNodes.map(ObjectIdentifier.init)
++        let front = SCNVector3(0, 0, 0.0275)
++
++        func assertRetainedEquipment(file: StaticString = #filePath, line: UInt = #line) {
++            XCTAssertEqual(coordinator.content.childNodes.map(ObjectIdentifier.init), children, file: file, line: line)
++            XCTAssertEqual(coordinator.selectionIndicators.count, 1, file: file, line: line)
++            XCTAssertTrue(coordinator.selectionIndicators[light.id] === indicator, file: file, line: line)
++            XCTAssertTrue(indicator.parent === fixture, file: file, line: line)
++            for node in [fixture, source, stand] {
++                XCTAssertTrue(node.parent === coordinator.content, file: file, line: line)
++            }
++            XCTAssertTrue(fixture.geometry === housing, file: file, line: line)
++            XCTAssertTrue(indicator.geometry === outline, file: file, line: line)
++            XCTAssertTrue(stand.geometry === cylinder, file: file, line: line)
++            for box in [housing, outline] {
++                XCTAssertEqual(Double(box.width), 1.2, accuracy: 1e-6, file: file, line: line)
++                XCTAssertEqual(Double(box.height), 0.7, accuracy: 1e-6, file: file, line: line)
++                XCTAssertEqual(Double(box.length), 0.055, accuracy: 1e-6, file: file, line: line)
++            }
++            XCTAssertEqual(Double(cylinder.height), 2.1, accuracy: 1e-6, file: file, line: line)
++            XCTAssertEqual(coordinator.lightIDs.count, 2, file: file, line: line)
++            for node in [fixture, indicator, stand] {
++                XCTAssertEqual(coordinator.lightID(for: node), light.id, file: file, line: line)
++            }
++            XCTAssertFalse(indicator.isHidden, file: file, line: line)
++            XCTAssertFalse(coordinator.content.isHidden, file: file, line: line)
++        }
++
++        assertRetainedEquipment()
++        assertPosition(fixture.convertPosition(front, to: nil), initialPosition)
++        assertPosition(source.worldPosition, initialPosition)
++        // Fixed cardinal expectations, independent of EmitterFrame and
++        // StudioPhotometry: -Z aim with +90-degree roll turns -X toward +Y.
++        assertBasis(fixture, right: SCNVector3(0, 1, 0), up: SCNVector3(1, 0, 0), forward: SCNVector3(0, 0, -1))
++        assertBasis(source, right: SCNVector3(0, -1, 0), up: SCNVector3(1, 0, 0), forward: SCNVector3(0, 0, -1),
++                    localForward: SCNVector3(0, 0, -1))
++        XCTAssertGreaterThan(try XCTUnwrap(source.light).intensity, 0)
++
++        scene.lights[0].optics?.aimTarget = initialPosition
++        update(scene, selected: light.id, view: view, coordinator: coordinator)
++        assertRetainedEquipment()
++        // Undefined aim leaves a centered, world-aligned selectable housing.
++        // Its source node survives, but no actual light may keep the old aim.
++        assertPosition(fixture.worldPosition, initialPosition)
++        assertBasis(fixture, right: SCNVector3(1, 0, 0), up: SCNVector3(0, 1, 0), forward: SCNVector3(0, 0, 1))
++        XCTAssertNil(source.light)
++        XCTAssertFalse(coordinator.content.childNodes.contains { $0.light?.type == .spot || $0.light?.type == .omni })
++
++        let recoveredPosition = Position(x: 81, y: 2.1, z: 74)
++        scene.lights[0].position = recoveredPosition
++        scene.lights[0].optics?.aimTarget = .init(x: 81, y: 5.1, z: 74)
++        scene.lights[0].optics?.rollDegrees = -90
++        update(scene, selected: light.id, view: view, coordinator: coordinator)
++        assertRetainedEquipment()
++        assertPosition(fixture.convertPosition(front, to: nil), recoveredPosition)
++        assertPosition(source.worldPosition, recoveredPosition)
++        assertPosition(stand.worldPosition, .init(x: 81, y: 1.05, z: 74))
++        // At vertical +Y aim, zero-roll right/up are +X/-Z. A -90-degree
++        // roll therefore gives +Z/+X, with the emitting normal still +Y.
++        assertBasis(fixture, right: SCNVector3(0, 0, 1), up: SCNVector3(1, 0, 0), forward: SCNVector3(0, 1, 0))
++        assertBasis(source, right: SCNVector3(0, 0, -1), up: SCNVector3(1, 0, 0), forward: SCNVector3(0, 1, 0),
++                    localForward: SCNVector3(0, 0, -1))
++        let restoredLight = try XCTUnwrap(source.light)
++        XCTAssertEqual(restoredLight.type, .spot)
++        XCTAssertGreaterThan(restoredLight.intensity, 0)
++        XCTAssertEqual(restoredLight.temperature, 5600, accuracy: 1e-6)
++        XCTAssertEqual(coordinator.content.childNodes.filter { $0.light?.type == .spot }.count, 1)
++        XCTAssertFalse(coordinator.content.childNodes.contains { $0.light?.type == .omni })
++    }
++}
