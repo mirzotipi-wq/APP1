@@ -1,0 +1,92 @@
+{
+  "worker": "w10-02",
+  "actual_context": 93,
+  "task": "/root/w10_acceptance/w10_02_data",
+  "worktree": "/tmp/keyfill01-wave10/w10-02/tree",
+  "baseline_commit": "adffee463896ba3484a6dde883f7e6745a4c0c6e",
+  "baseline_tree": "f1b9e9c2560c22eb3a9fedfa768bf6941f6c1770",
+  "commit": "61183b6dfcabedd6c7df71cdf97f6f3dff39200f",
+  "tree": "31a5e8c68ea964e7f7b2a7a9845b453fbdd48f1a",
+  "owned_paths": [
+    "NativeTests/StudioAdaptiveLayoutTests.swift"
+  ],
+  "owned_blob": "7116740e6820a1617446841b2fa13989b186df2e",
+  "owned_sha256": "a108c000814dc5adbf48fcb7869b3a832477ae299ae89030491682ccc79fdb6b",
+  "source_patch_sha256": "dfd74602c06f5be0df3289cb1ac9baa122a9bbedcb03b25c857f2837a903734a",
+  "git_status_porcelain": "",
+  "inspected_production_commit": "7cfab9d98895dbb36685f14191ddabaced4b323f",
+  "inspected_production_blobs": {
+    "App/StudioAdaptiveLayout.swift": "e0b286a09be9381d15e2741f5563731c3e570ae1",
+    "App/StudioView.swift": "3dd6e6fcd457b5c9fb511e0e75394bfe6a4a8bcb"
+  },
+  "inspected_baseline_blobs": {
+    "App/StudioView.swift": "88cbc339130ad6af7f9a77adda34754aeb1a2e9c",
+    "NativeTests/StudioTextLayoutDiagnosticsTests.swift": "c4b768eba5f9ad9e8d594d4b65070a7b89bd157e",
+    "NativeTests/StudioTextFieldTests.swift": "4bda87019af1b7c51161b91a0e94c654c31a0480",
+    "Package.swift": "7bd40d644a345b9c39c057517b421609e69d3e6f",
+    "project.yml": "056e9d4159ca0273f812728381723b60a253000f"
+  },
+  "commands": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git log -5 --oneline",
+      "result": "Baseline clean, detached at adffee463896ba3484a6dde883f7e6745a4c0c6e"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "scope": "Structure/evidence reference check only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03 outstanding editing/accessibility/persistence"
+    },
+    {
+      "command": "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc --version",
+      "exit_code": 0,
+      "result": "Swift6.0.3 x86_64-unknown-linux-gnu"
+    },
+    {
+      "command": "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc -frontend -parse NativeTests/StudioAdaptiveLayoutTests.swift",
+      "exit_code": 0,
+      "scope": "Syntax only; no Apple SDK/typecheck/execution"
+    },
+    {
+      "command": "git diff --no-index --check /dev/null NativeTests/StudioAdaptiveLayoutTests.swift",
+      "exit_code": 1,
+      "result": "No whitespace diagnostics; nonzero reflects added-file comparison"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git commit -m 'Add hosted adaptive layout state and geometry regression'",
+      "exit_code": 0,
+      "result": "61183b6dfcabedd6c7df71cdf97f6f3dff39200f"
+    },
+    {
+      "command": "git status --porcelain=v1",
+      "exit_code": 0,
+      "result": "Clean"
+    }
+  ],
+  "independent_source_review": {
+    "worker": "w10-03",
+    "finding": "No Swift5.9/iOS17 API mismatch found in current test source",
+    "native_execution": "unverified"
+  },
+  "native_methods_authored": 1,
+  "native_methods_executed": 0,
+  "builds_run": false,
+  "pushes_run": false,
+  "integration_required": [
+    "Root adds Package.swift native test exclusion",
+    "Apple compilation and native runtime acceptance"
+  ],
+  "working_token_target_requested": 12000,
+  "working_token_usage_measured": false,
+  "report_words": 180,
+  "report_characters": 1589,
+  "report_sha256": "bf8435512fcbef5752629b00c5521b99cbf85c9c4f50f633bf6ff259ecb8db29"
+}

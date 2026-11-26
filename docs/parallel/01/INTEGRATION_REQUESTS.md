@@ -1,0 +1,65 @@
+# Integration and owner requests — lane 01
+
+## Reviewed source
+
+This review inspected integrated source
+`ce9f7aabd2de935c933468a00f007604ed7ea6ca`, including the stable adaptive
+header/action layout and its app-hosted regression. All reviewed source blobs
+match the initially inspected `1f14d48a2e640ee9fe7986f15c20622461ede03f`;
+the intervening ten changed paths contain only documentation/evidence.
+The worker checkout began at
+`adffee463896ba3484a6dde883f7e6745a4c0c6e`; source comparisons use campaign
+baseline `f150f98e35dd735927075aac4d2f8b02295c6a67`. This document records
+implementation and remaining requests; it supplies no native execution result.
+
+## Available adapters and remaining requests
+
+| Owner / boundary | Current implementation | Remaining request or acceptance |
+|---|---|---|
+| 01 — scene feature composition | `StudioFeatureSheets` presents the session's single live receipt. Scene/lux results use captured inputs, owner/revision admission and one-shot retirement; accepted unchanged results return `true`. Lux may change only the captured light's candela. | Execute actual SwiftUI presentation, stale result, duplicate Apply and matching-dismissal checks on integrated source. Portable receipt behavior does not establish native dismissal behavior. |
+| Reference, arrangement and target-lux producers | All three still expose required `onApply: (...) -> Void`. Reference clears its photo/candidates before calling the parent; arrangement sets `didFinish`, and lux sets `didApply`, before their callbacks. All then dismiss. | Implement an explicitly labeled synchronous `onAccept: (...) -> Bool` with the feature owners, then update composition callers together. On `false`, retain the actual draft, show local rejection and leave the editor open. Consume/dismiss only on `true`, including accepted no-ops. Preserve duplicate/reentrant submission protection. The proposal in [FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md) remains unimplemented. |
+| Manual room / AR | Manual room already has optional Bool `onChange`/`onRemove`; AR forwards Bool `onRoomChange`/`onRoomRemove`. The host passes live `session.scene`. Rejection retains displayed measurements and prior kept state. Accepted room edits can repeat under one feature owner. Nested manual Done closes only the AR-owned child; outer Done retires the Studio receipt. | Verify repeated edits, rejection, nested close/reopen and outer close in the native hierarchy. Keep the existing callback labels, acceptance semantics and separate child/outer ownership. No replacement API is needed for this boundary. |
+| 05 — spatial preview / 01 — composition | Both Study and 3D preview identity follow `workspaceResetID`; the 3D callback separately checks captured storage generation and live light UUID membership. Lane 05's retained request at `1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a` acknowledges the composition implementation at `5ccfbaa`. | Integrate with the viewport owner's source and execute first-save retention, deliberate document replacement and overlapping-UUID stale-callback checks. The acknowledgment is not integrated native acceptance. |
+| Export owner / 01 — parent layout | `LightingPlanExportMenu` still owns its immutable UUID-keyed snapshot and single format/PDF/copy sheet. `LightingPlanExportView.swift` and `ProjectBackupView.swift` are Git-blob-identical to the campaign baseline. Composition now supplies one header/action subtree through `StudioAdaptiveLayout`. | Verify native export open, cancel, format changes and reopen after Undo, including narrow widths and largest Dynamic Type. Preserve the export owner's snapshot, document preparation and no-save/no-history-mutation contract. No export implementation change is made by this lane. |
+| 19 — CI execution | Apple target compilation and execution remain distinct from Linux package tests and syntax parsing. The new layout helper and hosted test are explicitly excluded from portable package targets; they remain native inputs. | Run and retain exact integrated-source Apple build/native/UI outcomes, including the layout and Darwin Observation regressions. Preserve failed/incomplete jobs and original captures; do not transfer earlier-source passes. |
+| 20 — main integration / canonical acceptance | Main `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318` contains the later `CGFloat.greatestFiniteMagnitude` qualification for both `CGSize` bounds. Reviewed lane-01 source still has the ambiguous shorthand. | Preserve that owner correction during integration, reconcile same-source evidence and update canonical state only from required outcomes. M03 remains active; this review does not promote a milestone. |
+
+The host's owner-matched legacy rejection message asks the user to reopen. It
+cannot restore drafts already consumed by a Void producer. Disabling busy UI,
+receipt tests or an adapter that ignores acceptance cannot close this API gap.
+Native rejection-retention tests require the producer change first.
+
+## Historical owner failures — retain their original scope
+
+The retained [owner-routed failure receipt](evidence/wave09/owner-routed-failures.json)
+was read from `b55c5236fde1571a093b81c6dd3220d34c258908`. All three complete
+temporary logs were checked against its SHA-256 values; the committed excerpts
+remain the durable evidence. These failures were not reproduced against the
+reviewed integrated source, and their product or harness causes are unestablished.
+
+| Exact source / job | Observed failure | Integration follow-up |
+|---|---|---|
+| `36ed6a1455dee7ca52b55f46d1a47262f5c98cc1` / `139992156791` | `ProjectLibraryUITests`: exact `Keep` entry wait failed at line 225; the normal-action check for `projectLibraryDone` failed at line 96. | Library/composition owners and lane 19 must reproduce or revalidate both workflows with their assertions intact. |
+| `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a` / `140022794554` | Full-library editable-copy workflow failed waiting for the export format chooser on reopen after Undo (`LightingPlanExportUITests.swift:163`). | Export/composition owners and lane 19 must execute that exact sequence on integrated source. |
+| Same `60059a0` source / `140022794912` | App accessibility failed scrolling to `openMeter` in the Plan/Meter workflow (`StudioAppAccessibilityUITests.swift:340`). | Plan/composition, accessibility and lane 19 must recheck both text sizes and capture a fresh outcome after the final gesture, preserving containment/hittability requirements. Teardown metrics cannot substitute for that outcome. |
+
+The adaptive layout removes duplicated header/action content ownership in source.
+Its new hosted regression checks state identity and geometry; neither the source
+change nor the unexecuted regression establishes the cause or resolution of any
+historical failure above.
+
+Separately, the retained [native build receipt](evidence/wave09/ci-corrected-native-blocker.json)
+records job `140060942813` at `bed58c338f9f53758c611b8642241c3ec7697505`:
+the build failed at the ambiguous `greatestFiniteMagnitude` in inherited UI test
+source. The prior Observation accessor diagnostics were absent from that log,
+but the failed build supplies no native test pass. Lane 20's explicit-`CGFloat`
+integration and lane 19's subsequent exact-source execution remain separate work.
+
+## Verification limits
+
+This review ran only structural `agent_cycle.py check`/`next`, source/blob
+comparisons and retained-log reconciliation. No build, native test or UI test ran
+in this worker. Actual sheet/window lifecycle, focus/caret, first-save viewport
+retention, native adaptive geometry, AR and StoreKit behavior remain unverified
+here. Existing feature-owner code, CI configuration and canonical state are
+unchanged by this document.

@@ -1,0 +1,86 @@
+{
+  "worker": "w10-08",
+  "actual_context": 98,
+  "role": "accessibility/privacy reviewer",
+  "reviewed_revision": "1f14d48a2e640ee9fe7986f15c20622461ede03f",
+  "reviewed_tree": "43438891139862c47c0fb95974011f8afbe8a1a5",
+  "isolated_head": "adffee463896ba3484a6dde883f7e6745a4c0c6e",
+  "isolated_status": "",
+  "source_blob_sha1": {
+    "App/StudioAdaptiveLayout.swift": "e0b286a09be9381d15e2741f5563731c3e570ae1",
+    "App/StudioView.swift": "3dd6e6fcd457b5c9fb511e0e75394bfe6a4a8bcb",
+    "App/LightingPlanExportView.swift": "2db6c333853c8f4cab16082cd4d9037cd05feafb",
+    "NativeTests/StudioAdaptiveLayoutTests.swift": "7116740e6820a1617446841b2fa13989b186df2e",
+    "UITests/StudioAppAccessibilityUITests.swift": "e75aa14b2c3bae2316d950cf118fee0e8e576c82",
+    "UITests/StudioContentReachability.swift": "c8d52aa6afdd44206e8e04a2f753886b94104f52",
+    "Package.swift": "7afcf4fa2582949170a1c6462fb348c321b0a328"
+  },
+  "historical_source": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+  "historical_helper_blob_sha1": "c8d52aa6afdd44206e8e04a2f753886b94104f52",
+  "historical_evidence_revision": "b55c5236fde1571a093b81c6dd3220d34c258908",
+  "historical_log": "/tmp/keyfill01-owner-logs/140022794912.log",
+  "historical_log_sha256": "2f71e4c2c6b0f755ca40009cb4e06fd449dc18aad33d5e1dfeb2c396addf9ac8",
+  "commands": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git log -5 --oneline",
+      "result": "Clean detached frozen baseline; inspected."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit": 0,
+      "result": "State structure/evidence references valid; not acceptance."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit": 0,
+      "result": "M03 active: editing/accessibility/persistence outstanding."
+    },
+    {
+      "command": "git show <reviewed_revision>:<source>; git diff adffee463896ba3484a6dde883f7e6745a4c0c6e <reviewed_revision> -- App Sources NativeTests Package.swift project.yml Config",
+      "result": "Read-only integrated source review."
+    },
+    {
+      "command": "git show <historical_source>:UITests/StudioContentReachability.swift; sed -n 3795,3827p <historical_log>; sha256sum <historical_log>",
+      "result": "12 pre-drag observations verified; checksum matches retained owner evidence."
+    },
+    {
+      "command": "git diff --name-only 1f14d48a2e640ee9fe7986f15c20622461ede03f ce9f7aabd2de935c933468a00f007604ed7ea6ca",
+      "exit": 0,
+      "result": "Ten documentation/evidence paths only; all non-documentation source inputs unchanged."
+    }
+  ],
+  "result": "No scoped source blocker found; native acceptance unverified.",
+  "followup_owner": "19/a11y",
+  "followup": "Reproduce current source, inspect post-final-drag geometry/hittability and starting scroll position; preserve containment and 44pt acceptance.",
+  "not_run": [
+    "Apple builds",
+    "native regression",
+    "UI workflow",
+    "RTL runtime",
+    "manual VoiceOver"
+  ],
+  "source_edits": false,
+  "builds": false,
+  "pushes": false,
+  "patch_bytes": 0,
+  "report_sha256": "bdab7255734efa8fe188756c35f7b077b0b20e0a1fbf39b1c8f9fcf0b71c56be",
+  "publication_source_equivalence": {
+    "published_revision": "ce9f7aabd2de935c933468a00f007604ed7ea6ca",
+    "publication_observed_by": "parent/root; remote not queried by this reviewer",
+    "compared_locally": true,
+    "changed_paths": [
+      "docs/parallel/01/CONFIGURATION.md",
+      "docs/parallel/01/COORDINATOR.md",
+      "docs/parallel/01/HANDOFF.md",
+      "docs/parallel/01/NAVIGATION.md",
+      "docs/parallel/01/evidence/wave10/configuration-checks.json",
+      "docs/parallel/01/evidence/wave10/native-syntax.json",
+      "docs/parallel/01/evidence/wave10/native-syntax.log",
+      "docs/parallel/01/evidence/wave10/package-describe.json",
+      "docs/parallel/01/evidence/wave10/package-dump.json",
+      "docs/parallel/01/evidence/wave10/source-manifest.json"
+    ],
+    "non_documentation_changes": [],
+    "source_equivalent": true
+  }
+}

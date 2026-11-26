@@ -1,6 +1,40 @@
 # Package and native target configuration
 
-## Reviewed source and evidence scope
+## Final source and current outcomes
+
+Current code is `ce9f7aabd2de935c933468a00f007604ed7ea6ca`, tree
+`7e02b41c9df248f84207afb5599cb2cdf76ded7d`. The final delivery changes only
+lane-01 documentation and evidence after that tested code. Target membership,
+exclusion lists and method counts below have been updated to this source.
+Chronological wave sections and the wave08 receipt table retain their original
+source boundaries.
+
+At exact `ce9f7aa`, local Swift 6.0.3 Linux Debug and explicit per-file optimized
+Release each pass **433 tests**, with no failures/skips. Those final local runs
+reuse isolated wave09 build paths and rebuild changed inputs; they are not clean
+build claims. CI Swift 6.4.2 core job **140083931415** / run **45870276318** succeeds
+with **433 standard Debug and 433 standard whole-module Release tests**, identical
+ordered case inventories. Project-state run **45870276335** also succeeds.
+The complete core result is distinct from whole-workflow acceptance.
+
+The final manifest covers **183 selected source/configuration inputs**; native
+syntax parsing covers **86 Swift inputs**. Package dump/describe and the UI shard
+check pass at source-equivalent `1f14d48`. Current source declares **195 native
+unit methods**; **36 required UI methods plus two diagnostics** remain unchanged.
+Normal Linux runs 396 core +37 composition tests. Darwin package source expects
+396 +40; its three extra Observation methods have not executed. The hosted
+layout regression is app-only and also remains unexecuted.
+
+Full current receipts and logs: [final evidence](evidence/final).
+The simulator job is in progress and five UI jobs are queued at the latest retained observation in
+[ci-latest-jobs.json](evidence/final/ci-latest-jobs.json). Apple SDK typechecking,
+XcodeGen output, native unit/UI execution and device acceptance remain
+**unverified for final code**. The preceding Apple job at `adffee4` failed the
+inherited ambiguous `greatestFiniteMagnitude` UI literal. Lane 20 must preserve
+main's explicit `CGFloat` correction; lane 19 must execute integrated-source
+acceptance. See [HANDOFF.md](HANDOFF.md) for precise limitations.
+
+## Historical wave08 reviewed source and evidence scope
 
 This inventory describes native source `08e80c756cb7c8aa4eaf11f27932c8f701000be1`,
 the documentation checkpoint `46a161cb01d0aee2e91940dbd06d82cfe2df5821`, and
@@ -53,9 +87,9 @@ historical receipts retain their original revision and scope.
 At `cdacffd3c6eb7bc178bf127187e2990adc4c676c`, two additional test files are
 explicitly included in `StudioCompositionTests`: `StudioCommittedSaveTests.swift`
 and `StudioObservationTests.swift`. The native directory inclusion also picks up
-both files without a `project.yml` change. The earlier tables below retain their
-wave 8 inventory; the current selected manifest has **181 inputs**, native syntax
-has **84 Swift inputs**, and native unit source declares **194 methods**.
+both files without a `project.yml` change. At this wave09 checkpoint the selected manifest had **181 inputs**, native syntax
+had **84 Swift inputs**, and native unit source declared **194 methods**.
+The tables below now reflect final wave10 membership.
 
 The committed-save file contains two real-store cancellation methods. They passed
 on Swift 6.0.3 Linux at `c3ce48761e2f927da82f1e86549aab77becf61a1` in a fresh
@@ -94,7 +128,7 @@ of children. It is specialized for intrinsic header/actions: nonfinite proposals
 ask for ideal size, not a general maximum-size layout contract. Only the outer
 header forces a column at accessibility sizes; inner actions stay width-adaptive.
 The hosted native regression checks actual State identity and live attached-view
-geometry through eight transitions. It does not run in the Linux/macOS portable
+geometry through eight phases. It does not run in the Linux/macOS portable
 target, and has not executed on an Apple simulator. Its bounded queue-turn settling
 strategy still needs native validation. The three existing Darwin Observation
 methods also remain outside normal Linux execution.
@@ -117,16 +151,16 @@ it is not an exported product and is not a dependency of the native app target.
 | `LightingCore` | Default `Sources/LightingCore`; all 35 Swift files, no exclusions. Exact resolved filenames are in `package-describe.json`. | None |
 | `LightingCoreTests` | Default `Tests/LightingCoreTests`; all 51 Swift files, no exclusions. Exact resolved filenames are in `package-describe.json`. | `LightingCore` |
 | `StudioComposition` | `App`; only `ProjectLibraryOperation.swift`, `ProjectStore.swift`, `StudioSession.swift`. | `LightingCore` |
-| `StudioCompositionTests` | `NativeTests`; only `StudioSessionTests.swift`, `StudioPlanSessionTests.swift`, `StudioFeatureSessionTests.swift`, `StudioFeatureWindowTests.swift`. | `StudioComposition`, `LightingCore` |
+| `StudioCompositionTests` | `NativeTests`; only `StudioSessionTests.swift`, `StudioPlanSessionTests.swift`, `StudioFeatureSessionTests.swift`, `StudioFeatureWindowTests.swift`, `StudioCommittedSaveTests.swift`, `StudioObservationTests.swift`. | `StudioComposition`, `LightingCore` |
 
-The last four files select `@testable import KeyAndFill` when that module is
+The six composition test files select `@testable import KeyAndFill` when that module is
 available and otherwise import `StudioComposition`. Their portable execution
 uses the actual session/store implementation, but does not instantiate SwiftUI
 sheets, native windows, UIKit, AR, StoreKit or an Apple renderer.
 
 ### Exact app exclusions
 
-The 47 `StudioComposition.exclude` entries below are relative to `App`.
+The 48 `StudioComposition.exclude` entries below are relative to `App`.
 `Assets.xcassets` excludes its whole subtree. None of these entries removes a
 file from the native application; SwiftPM and XcodeGen have separate membership.
 
@@ -162,6 +196,7 @@ ReferenceStudy.metal
 ReferenceStudyPreview.swift
 SceneArrangementView.swift
 SpatialPreview.swift
+StudioAdaptiveLayout.swift
 StudioEntityGraph.swift
 StudioFeatureSheets.swift
 StudioGuideView.swift
@@ -182,7 +217,7 @@ SubjectInspector.swift
 
 ### Exact native-test exclusions from SwiftPM
 
-The 19 `StudioCompositionTests.exclude` entries below are relative to
+The 20 `StudioCompositionTests.exclude` entries below are relative to
 `NativeTests`. All remain included in the native unit-test target.
 
 ```text
@@ -196,6 +231,7 @@ ReferencePhotoTests.swift
 RoomRotationReadoutTests.swift
 SpatialEmitterGeometryTests.swift
 SpatialPreviewTests.swift
+StudioAdaptiveLayoutTests.swift
 StudioPaletteTests.swift
 StudioSliderEditingTests.swift
 StudioSliderTrackingTests.swift
@@ -216,8 +252,8 @@ language-mode setting, distinct from the installed compiler version.
 
 | Native target | Declared sources/resources | Dependencies and host |
 |---|---|---|
-| `KeyAndFill` (`application`) | Entire `App` directory, without native exclusions: 47 Swift files, `ReferenceStudy.metal`, `StudyKernel.h`, and three tracked asset-catalog files. Separately includes `Resources/PrivacyInfo.xcprivacy` with `buildPhase: resources`. | Local package product `LightingCore`; the three portable composition files compile as app-module sources. |
-| `KeyAndFillTests` (`bundle.unit-test`) | Entire `NativeTests`: 23 Swift files. Also `UITests/StudioViewportGeometry.swift`, a shared helper. | App target plus package product `LightingCore`; `TEST_HOST` is `$(BUILT_PRODUCTS_DIR)/KeyAndFill.app/KeyAndFill`, and `BUNDLE_LOADER` is `$(TEST_HOST)`. |
+| `KeyAndFill` (`application`) | Entire `App` directory, without native exclusions: 48 Swift files, `ReferenceStudy.metal`, `StudyKernel.h`, and three tracked asset-catalog files. Separately includes `Resources/PrivacyInfo.xcprivacy` with `buildPhase: resources`. | Local package product `LightingCore`; the three portable composition files compile as app-module sources. |
+| `KeyAndFillTests` (`bundle.unit-test`) | Entire `NativeTests`: 26 Swift files. Also `UITests/StudioViewportGeometry.swift`, a shared helper. | App target plus package product `LightingCore`; `TEST_HOST` is `$(BUILT_PRODUCTS_DIR)/KeyAndFill.app/KeyAndFill`, and `BUNDLE_LOADER` is `$(TEST_HOST)`. |
 | `KeyAndFillUITests` (`bundle.ui-testing`) | Entire `UITests`: 12 Swift files, comprising nine XCTest classes and three helpers (`StudioContentReachability`, `StudioViewportGeometry`, `StudioViewportObservation`). | App target. |
 
 The app asset files are exactly `App/Assets.xcassets/Contents.json`,
@@ -257,16 +293,17 @@ bundle has been inspected by this worker.
 
 ## Native test selection
 
-The current source inventory contains **189 native methods** in 23 classes.
-The four portable composition classes contribute 35 of those methods; native
-execution of all 189 is still a separate requirement. The UI inventory contains
+The current source inventory contains **195 native methods** in 26 classes.
+The six portable composition classes contribute 40 declared methods, including
+three Darwin-only methods. Native execution of all 195 remains a separate
+requirement. The UI inventory contains
 **36 required methods** and **two opt-in diagnostic methods**. Counts here are
 declarations, not passing results. The protected-storage navigation regression
 is a method inside the existing `StudioSmokeTests` class.
 
 | Selector passed to `native_test_shards.py` | Target/classes | Declared methods |
 |---|---|---:|
-| `unit` | Entire `KeyAndFillTests` target | 189 |
+| `unit` | Entire `KeyAndFillTests` target | 195 |
 | `room-precision` | `ManualRoomPlacementUITests`, `PrecisionEditingUITests` | 5 |
 | `library-reference` | `ProjectLibraryUITests`, `ReferenceComparisonUITests` | 9 |
 | `studio-export` | `StudioSmokeTests`, `LightingPlanExportUITests` | 11 |
@@ -292,16 +329,17 @@ root owns serialized builds. This documentation worker ran no build or test.
 ```bash
 KEYFILL_SWIFT=/tmp/keyfill01-swift-6.0.3/usr/bin/swift
 "$KEYFILL_SWIFT" --version
-"$KEYFILL_SWIFT" package --scratch-path /tmp/keyfill01-build-v8-inspect \
+"$KEYFILL_SWIFT" package --scratch-path /tmp/keyfill01-build-v10-inspect \
   --cache-path /tmp/keyfill01-cache-v8 dump-package
-"$KEYFILL_SWIFT" package --scratch-path /tmp/keyfill01-build-v8-inspect \
+"$KEYFILL_SWIFT" package --scratch-path /tmp/keyfill01-build-v10-inspect \
   --cache-path /tmp/keyfill01-cache-v8 describe --type json
 "$KEYFILL_SWIFT" test --configuration debug \
-  --scratch-path /tmp/keyfill01-build-v8-debug \
+  --scratch-path /tmp/keyfill01-build-v9-debug \
   --cache-path /tmp/keyfill01-cache-v8 --jobs 1 -Xswiftc -disable-batch-mode
 "$KEYFILL_SWIFT" test --configuration release \
-  --scratch-path /tmp/keyfill01-build-v8-release \
-  --cache-path /tmp/keyfill01-cache-v8 --jobs 1 -Xswiftc -disable-batch-mode
+  --scratch-path /tmp/keyfill01-build-v9-release-per-file \
+  --cache-path /tmp/keyfill01-cache-v8 --jobs 1 -Xswiftc -disable-batch-mode \
+  -Xswiftc -no-whole-module-optimization
 ```
 
 The retained CI recipe instead uses `swift test --jobs 2` and

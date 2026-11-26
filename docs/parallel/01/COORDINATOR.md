@@ -1,5 +1,45 @@
-# Lane01 coordinator checkpoint — five waves complete
+# Lane 01 coordinator — all ten waves complete
 
+## Final checkpoint (2026-11-26)
+
+Exactly100 actual fresh contexts completed, ten per wave; no remaining workers.
+Root read all final reports and independently verified their hashes and budget
+estimates. W10 final source ledger SHA256
+8d14f08d97d086e3dbd88d38f02686cc1bdc104000845e9f6b21d058f72d2e47;
+normalized100 ledger and final root audit are in WORKER_LEDGER.json and
+evidence/final/root-closeout-audit.json. W10 same-context99 followup for final CI
+adds zero contexts; original and updated records are preserved. All temporary
+worker trees are removed after preservation; the root checkout remains.
+
+Final tested/published code ce9f7aabd2de935c933468a00f007604ed7ea6ca,
+tree7e02b41c9df248f84207afb5599cb2cdf76ded7d. Exact-source local normal Debug433
+and explicit per-file Release433 pass. Swift6.4.2 CI core140083931415 succeeds
+with433 standard Debug/433 standard Release; ordered inventories match.86native
+Swift inputs parse,183selectedsource/config hashes reconcile,195native methods
+are source inventory only. The final simulator job is in progress and five UI jobs are queued in the latest receipt;
+no native acceptance. Four added native methods remain unexecuted. No builds
+remain active and no further optional testing is required for this bounded lane.
+
+Integrated W10 code: writer04 stable native layout7cfab9d (initial47b965 retained),
+writer02 hosted geometry/State regression61183b6, root Package exclusions.
+Writer07 integration requests2dee46d became local4a5ae38. Final publication adds
+only docs/parallel/01 reports/evidence/handoff to ce9. Root must verify remote
+SHA and equal tree before final response; publication receipt is captured after
+that action rather than claiming a future commit hash here.
+
+Lane20 preserves main9e0e2ba's explicit CGFloat correction and canonical status.
+Lane19 owns final integrated native/UI acceptance and last-gesture Meter evidence.
+Reference/arrangement/lux owners must supply acceptance-before-consumption APIs;
+current obsolete-result rejection cannot retain drafts they already consumed.
+All precise requirements are in HANDOFF.md and INTEGRATION_REQUESTS.md.
+
+## Historical coordinator checkpoints
+
+The following notes preserve chronology. Earlier worker counts, current-source
+labels, queues and outstanding actions describe their checkpoint only; the
+final status above supersedes them.
+
+### Lane01 coordinator checkpoint — five waves complete
 ## Mission and authority
 
 Exactly100 actual fresh contexts in ten waves of ten on finish/01-architecture-composition only.50 completed in waves1–5;50 remain. Scheduler acceptance counts once plus9 peers. New contexts fork_turns:none, root+manager+2peers realcapacity4. Brief<=2000tokens, requested working target12000 (no enforceable cap/actual usage exposed), report<=800tokens. Future report target<=250words/2200chars, tool estimate checked. Followups count0. Root alone integrates/builds/publishes. Other feature implementations, CI(lane19), canonical status/main(lane20) untouched. Baselinef150f98; observedmain9e0e2ba retains later native-test fix; only finish01–05 advertised/no20BASE in inspected paths.

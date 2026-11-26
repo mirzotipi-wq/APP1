@@ -1,117 +1,222 @@
-# Lane 01 handoff — live feature ownership checkpoint
+# Lane 01 final handoff — architecture and app composition
 
-## Status and integration boundary
+## Delivery and acceptance
 
-Waves 1–9 are complete: **90 actual fresh contexts**, ten roles per wave. The final wave and ten fresh contexts remain; wave10 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.
+The ten-wave implementation is complete on `finish/01-architecture-composition`.
+Exactly **100 actual fresh contexts** performed the ten required roles in ten
+waves. Returned agent IDs, assignments, source revisions, reports, preservation
+and cleanup records are in [WORKER_LEDGER.json](WORKER_LEDGER.json) and the ten
+wave ledgers. Followups count zero; the root coordinator is not counted.
 
-Only `finish/01-architecture-composition` is pushed. Last verified publication is
-`adffee463896ba3484a6dde883f7e6745a4c0c6e`, tree
-`f1b9e9c2560c22eb3a9fedfa768bf6941f6c1770`. It includes the Observation correction,
-two actual-store cancellation tests, and three Darwin Observation tests. At this
-exact remote SHA, local Debug and per-file Release each pass433 tests; current
-Swift6.4.2 CI also passes433 in each default Debug/Release configuration. These
-passes exclude the three Darwin-only methods. Full raw logs, case reconciliation
-and181 selected source hashes are under evidence/wave09-final.
+The final tested code is **`ce9f7aabd2de935c933468a00f007604ed7ea6ca`**, tree
+`7e02b41c9df248f84207afb5599cb2cdf76ded7d`. The final publication adds only
+lane-01 documentation, reports and evidence to this code. Local and CI portable
+checks pass at that exact published code revision. **Native acceptance remains
+unverified**, and three producer APIs still prevent complete rejected-draft
+retention. Those are explicit integration dependencies below.
 
-Common inspected baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest observed main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`, including the later `UITests/StudioAppAccessibilityUITests.swift` correction that qualifies both `CGSize` bounds as `CGFloat.greatestFiniteMagnitude`, reserved for lane20 integration. Earlier coordinator brief shorthand calling this `Double` was inaccurate; the exact patch is retained under evidence/wave08. The observed origin advertises finish lanes01–05, with no lane20 branch or BASE_SHA at inspected paths. This is scoped observation, not a claim about every possible campaign location. CI belongs to lane19; canonical state and final main integration belong to lane20. Other feature-owner implementations remain unchanged.
+The inspected campaign baseline is `f150f98e35dd735927075aac4d2f8b02295c6a67`.
+Latest inspected main is `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`. The bounded
+origin inspection advertised finish lanes 01–05 and no lane-20 ref. Earlier
+BASE_SHA searches were limited to inspected campaign paths; metadata elsewhere
+was not surveyed. Lane 20 must preserve later main changes during integration. Only this lane's branch was pushed.
+CI configuration remains lane 19's responsibility; canonical status and final
+main integration remain lane 20's.
 
-## Implemented composition
+## Architecture delivered
 
-`StudioEditorState` owns validated scene, live UUID selection, revision identity and bounded undo history. Invalid candidates are atomic. Full validation remains at arbitrary scene/update/replacement/adoption boundaries. A no-reset receipt cannot replace content beneath retained redo or an open edit. Typed `StudioFieldCommand` validates closed changed payloads without rescanning unchanged names/lights; optional default and optical-roll representation remain intact. No measured UI speedup is claimed.
+| Owner | Responsibility and resulting behavior |
+|---|---|
+| `StudioEditorState` | Owns the validated scene, live UUID selection, revision identity and undo history. Invalid changes are atomic. A no-reset receipt cannot replace scene content beneath retained history. |
+| `StudioFieldCommand` | Separates typed control mutations from rendering. Resolves the addressed live light and validates the complete changed payload; arbitrary scene/adoption boundaries still receive full validation. |
+| `StudioSession` | Owns each window's editor, library, saved snapshot, project-operation reservation/task, Plan gesture and active feature presentation. Reserves before edit teardown and validates prospective receipt adoption before publishing state. |
+| `StudioFeatureContext` / `StudioFeaturePresentation` | Carry immutable opening identity/snapshot and the live acceptance receipt. Distinguish logical workspace identity from storage generation and reject foreign owners, obsolete revisions and retired callbacks. |
+| `StudioFeatureSheets` | Connects reference, arrangement, target-lux, room and AR through one session-owned presentation. Uses matching teardown, immutable one-shot inputs and live room/AR inputs. |
+| `StudioAdaptiveLayout` | Supplies one stable header/action subtree while delegating geometry to native horizontal/vertical stacks. Accessibility forces only the outer header into a column; inner actions continue to fit by width. |
 
-`StudioSession` owns each window's editor, library, saved snapshot, project-operation reservation/task and cumulative Plan gesture. It reserves before ending edits and stages receipt adoption before publishing state. Cancelling a sheet observer does not abandon a committed write. Plan keeps a frozen origin/scale; a stale end cannot close a new generation's gesture. Ordinary control identity follows `workspaceResetID`, while callbacks separately check storage generation. Healthy repeated initial load is rejected before touching a dirty editor; failed-load retry remains available.
+`StudioView` is reduced from 1,537 to 1,240 lines against the common baseline.
+The extraction removes seven duplicate feature route fields and transfers
+editor, operation, gesture and presentation ownership to cohesive types. It
+retains the portrait-lighting workflow and existing feature implementations.
+`Scene.swift`, `KeyAndFillApp.swift`, `project.yml`, scene/document codecs, CI and
+other feature-owner files are unchanged. The non-documentation diff consists of
+20 scoped composition, package and regression files.
 
-The session now owns one `StudioFeaturePresentation`: destination, immutable context and live receipt. Opening requires a loaded, writable, idle editor and valid target UUID. A currently presented draft cannot be replaced. Admission checks live owner, logical document identity and current revision; equal content after undo does not revive a result. First save retains the logical feature context. Successful document switch/reload/recovery clears it. Old teardown cannot close a newer owner.
+### Scene, selection and undo invariants
 
-Scene/lux results are one-shot, retiring callbacks synchronously after validation; valid unchanged results still report acceptance. Lux may change only the captured light's candela. Room/AR results can repeat, advance their own receipt, and share one owner undo group. Unrelated valid commands start their own undo change; invalid/no-op commands preserve the feature group. A successful changed feature result clears a frozen zero-motion Plan origin so a later drag cannot overwrite the new geometry. Rejected/no-op results retain that still-valid gesture.
+Supported schemas 1–5 continue through existing scene validation. Stable UUIDs,
+SI values, optional default representation, optical roll and manual versus
+automatic aim remain intact. A removed selection falls back to a remaining live
+light; an empty rig has no selection. Undo does not steal an existing valid
+selection. Invalid or effective no-op commands preserve revision, redo and the
+active edit owner.
 
-`StudioFeatureSheets` now connects all five native scene-mutating routes to the live session presentation. It uses owner-matched retirement/teardown, captured inputs for one-shot proposals, and live scene input for room/AR. StudioView no longer carries seven duplicate route fields, equality/masked-room guards or blanket first-save dismissal. Both Study and 3D preview lifetimes follow `workspaceResetID`, preserving captured storage-generation and light-UUID mutation guards. Broad onDisappear retirement is intentionally absent because modal coverage can hide the root while work remains pending.
+Every actual scene change and undo/redo receives a new revision token. Equal
+content after undo cannot revive an old asynchronous result. Room/AR can submit
+multiple accepted changes under one owner undo group; an unrelated valid command
+starts its own change. Rejected/no-op commands leave the feature group intact.
+Changed feature results clear a frozen zero-motion Plan origin so a later drag
+cannot overwrite newly accepted geometry. A stale gesture end cannot close a
+new owner's gesture.
 
-The internal StudioComposition package target compiles actual app orchestration and storage adapters. [INTERFACES.md](INTERFACES.md) contains live contract examples; [FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md) distinguishes current producer APIs from future acceptance proposals. Native wiring is implemented in source; Apple behavior remains unverified.
+### Project work and lifecycle
 
-The protected-storage utility path now keeps Studio Tools → Settings → Purchase options available, while scene tools, export, Projects, Recipes and Save remain protected. The corresponding test is a new method in existing `StudioSmokeTests`; its shard registration is unchanged. [NAVIGATION.md](NAVIGATION.md) maps real callers, local versus outer dismissal, exports, purchase ownership and remaining native checks.
+Project operations reserve synchronously before ending an edit. Stale or busy
+reservations have no edit side effects. The session owns the task and reconciles
+a committed receipt even when its sheet observer or task is cancelled after the
+write. Request identity and storage generation protect adoption and cleanup.
+Healthy repeated initial load cannot overwrite a dirty editor; explicit retry
+remains available after failed initial load.
 
-## Observation compilation correction
+First save preserves selection, history, control/preview identity and the active
+feature's logical workspace. It still invalidates old storage callbacks.
+Successful document switch, reload or recovery rotates `workspaceResetID` and
+clears the presentation. Both Study and 3D wrappers use that reset identity; 3D
+selection separately checks storage generation and live light UUID. The actual
+two-store conflict/recovery regressions exercise independent window sessions.
 
-Apple Swift6.3.3 CI at `5ccfbaa` exposed an owned-source failure in the conditional `@ObservationIgnored` task properties. Both the macOS package build and a native UI build failed with unexpected getter/init-accessor diagnostics. Correction `8b18366c1c718c2c81f6b275d66140f6dc9d49c9` places each attribute directly on its complete Darwin declaration and keeps plain Linux declarations. Types, access and orchestration behavior are unchanged. A controlled actual-source Linux macro probe reproduces the original four errors and passes with the correction; it is not an Apple SDK check. Corrected source passes full431 Debug and431 per-file Release tests, with82 native syntax inputs parsed. Apple compilation/execution of the correction remains unverified pending CI. See [CONFIGURATION.md](CONFIGURATION.md) and [wave08-fixed evidence](evidence/wave08-fixed).
+Scene/lux proposals accept once, including valid unchanged proposals. Lux may
+change only the captured light's candela. Feature dismissal retires callbacks
+immediately; old teardown cannot clear a newer presentation. Nested manual-room
+close stays local to AR. Root disappearance does not broadly retire features,
+because modal coverage may hide the root while a draft is still active.
 
-## Wave 9 lifecycle regressions
+### Navigation and presenter ownership
 
-Two actual-store first-save tests now gate the receipt after `ProjectStore.perform`
-commits to disk. Cancelling either the UI observer or the session-owned task at
-that point must still adopt the committed receipt once, retain the room draft,
-selection and undo history, and reject callbacks carrying the old storage generation.
-Both methods passed at `c3ce487` on Swift 6.0.3 Linux. Three additional Darwin-only
-Observation methods check edit/undo, presentation retirement/removal, and busy
-notifications while task bookkeeping stays ignored. A controlled Linux forced-branch attempt compiled them but failed at link time
-with unresolved `swift::threading::fatal` in the Observation library; no methods
-executed. The log and exact transformation are retained. Apple execution remains
-unverified; normal Linux discovery excludes these methods.
+Reference/comparison, room, AR, arrangement and lux use the shared host. Export
+continues to capture its owner's immutable scene/name/text snapshot. Protected
+storage keeps Tools → Settings → Purchase options accessible while preserving
+the existing restrictions on scene editing and project work. A source-specific
+UI regression covers that utility route.
 
-## Wave 10 final composition work
+The adaptive header removes duplicate structural export-presenter positions
+across fitting and accessibility branches. Export/PDF/document implementation
+bytes remain unchanged. This is a state-ownership correction; it does **not**
+establish the cause or resolution of the historical export-reopening failure.
+The layout helper is specialized for intrinsic header/actions, not a general
+maximum-size layout contract.
 
-Independent reviewers confirmed four structural export presenter positions in
-normal header layouts and two in the separate accessibility branch. Each owns
-private snapshot state. At local source `1f14d48a2e640ee9fe7986f15c20622461ede03f`, both fitting
-levels and the outer accessibility branch now use one stable adaptive content tree.
-The outer header forces a column for accessibility sizes; inner actions continue
-to wrap only when width requires it, preserving their prior policy. The corresponding native hosted test checks installed child State UUIDs and live
-geometry across eight width/accessibility phases. Syntax passes, but its Apple
-compilation/runtime remains unverified, including the bounded main-queue settling
-strategy. The fixture tests allocated layout geometry, not physical-window visibility.
-This is state-ownership hardening; it is not an established explanation
-or fix for the historical export-reopening failure reported by lane05.
+## Final actual verification
 
-New owner-routed native failures are preserved with exact source SHAs and excerpts
-in `evidence/wave09/owner-routed-failures.json`: library name/Done interaction at
-`36ed6a1`, export reopening and meter reachability at `60059a0`. None was reproduced
-against current composition. The meter helper makes twelve observations followed
-by drags, then fails without observing the last drag; this is a specific harness
-investigation for the accessibility/CI owners, not permission to weaken visibility
-acceptance. Other feature-owner files remain unchanged.
+All results below identify their source and execution scope. Full commands,
+logs, ordered case reconciliation and hashes are under [final evidence](evidence/final).
 
-## Actual verification
-
-| Exact local test revision | Check | Result |
+| Check | Actual outcome | Scope |
 |---|---|---|
-| `adffee463896ba3484a6dde883f7e6745a4c0c6e` | Full local Debug / per-file Release | **433 passed each**; exact remote source, no skips |
-| Same source | CI Swift6.4.2 default Debug / Release | **433 passed each**, full corejob140065248357 success |
-| Same source | Native syntax and package inspection |84 Swift inputs parse; package dump/describe exit0; Apple runtime remains unverified |
-| `bed58c338f9f53758c611b8642241c3ec7697505` | Corrected-source Apple job140060942813 | Failed inherited UI literal ambiguity at line95; prior Observation errors absent; no native runtime pass |
-| `cdacffd3c6eb7bc178bf127187e2990adc4c676c` | Forced-Darwin Linux Observation test probe | Compilation succeeded; link failed with unresolved runtime symbol; **zero tests executed** |
-| `c3ce48761e2f927da82f1e86549aab77becf61a1` | Actual-store cancellation regressions | **2 passed**, fresh separate Debug scratch |
-| `bed58c338f9f53758c611b8642241c3ec7697505` | Corrected production CI Swift6.4.2 default Debug + Release | **431 passed each**, corejob140058830854 success; predates newtests |
-| `8b18366c1c718c2c81f6b275d66140f6dc9d49c9` | Corrected Swift6.0.3 Linux Debug + per-file Release |431 passed each; Release has explicit no-whole-module-optimization flag |
-| Same corrected source | Forced Observation-branch macro typecheck / native syntax |Before4 errors → afterexit0;82native syntax inputs; no Apple SDK/runtime |
-| `7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f` | Pre-correction default local Release |Compile interrupted by signal9 beforetests; notpassed, causeunproven |
-| Same pre-correction source | CI Swift6.4.2 default Debug + Release |431passed each;corejob140036374958success |
-| `5ccfbaae821a32d88c12ed8b3abf1600aef25753` | CI Swift6.4.2 Linux Debug + Release | **431 passed in each configuration, zero failures; full core job success** |
-| Same published source | CI case/source reconciliation |431 unique started/passed cases per configuration;175 source hashes; complete raw log retained |
-| `08e80c756cb7c8aa4eaf11f27932c8f701000be1` | Wave7 native syntax/shard inventory |82 Swift files parse;9 UI classes correctly assigned; native UI method not executed |
-| `73a829dc5c3af0394b15f9103421d89a245edcf1` | Local compiler-literal correction |12 affected boundary tests passed on Swift6.0.3 |
-| `785d4587287b4a44b1d9f8f6e3d941700b04d871` | Wave6 full Swift6.0.3 Linux Debug | **431 tests passed, zero failures** |
-| Same source | Shared-storage feature regression | Two actual session/store owners: foreign callbacks, competing save, continued draft editing, successful recovery; no native windows instantiated |
-| Same source | App/NativeTests/UITests syntax |82 Swift inputs parsed; syntax only |
-| Same source | Source manifest |175 inputs independently matched to disk and Git blobs |
-| `363a7149e4eb6f195f478b3ce0210e33e8ac7ed0` | Earlier wave5 full Debug |430 tests passed, zero failures |
-| Wave5 source | Feature orchestration inventory |16 actual StudioFeatureSession methods passed, including failed save/reload/recover retention |
-| Wave5 source | App/NativeTests/UITests syntax |80 Swift inputs parsed; syntax only |
-| Wave5 source | Source manifest |173 inputs independently matched to disk and Git blobs |
-| `721186e93d4f4a511823d4f3013414929e54a56d` | Earlier wave5 full Debug |429 passed; retained separately before the failure-path test |
-| `2f8be604d403d02a7a8c3273ce82cb4e3f969545` | Wave4 full Debug |413 passed |
-| `6fe2cfab49f1b087553f65341f4471f786b309f9` | Wave3 full Debug |400 passed, including real two-window save conflict/recovery |
-| Apple SDK compilation, SwiftUI Observation/UI, focus/caret, AR, StoreKit/device behavior | Native validation |**Unverified** |
+| Local Swift 6.0.3 Linux Debug at `ce9f7aa` | **433 passed**, zero failures/skips | Normal package suite; existing isolated build directory reused and changed inputs rebuilt. |
+| Local Swift 6.0.3 optimized Release at `ce9f7aa` | **433 passed**, zero failures/skips | Explicit `-Xswiftc -no-whole-module-optimization`; distinct from default Release. |
+| CI Swift 6.4.2 Linux core job `140083931415` at `ce9f7aa` | **433 Debug + 433 standard Release passed**, zero failures/skips; complete core job succeeded | Standard CI configurations, including whole-module Release. Raw case inventories match both local runs exactly. |
+| Project-state workflow `45870276335` | **Succeeded** | Structural state validation, not milestone promotion. |
+| Swift frontend parse at `ce9f7aa` | **86 native Swift inputs parsed**, exit 0 | Syntax only; no Apple SDK typecheck or runtime. |
+| Package dump/describe and UI shard preflight at source-equivalent `1f14d48` | **Passed** | Target declarations inspected; nine UI classes retain their assignments. |
+| Final selected input manifest | **183 hashes matched Git** | 182 checked-out files and the sparse privacy resource read from Git. Not complete CI dependency closure. |
+| Apple native/simulator/UI jobs at final code | **Unverified** | Simulator job in progress and five UI jobs queued at the latest retained observation; no whole-workflow success claim. |
 
-Wave7 syntax, shard, targeted correction and CI evidence: [evidence/wave07](evidence/wave07). The historical failed CI run45842239860 is preserved separately; corrected run45851159581 core job140017565927 succeeded. Native jobs were queued at the recorded observation. Wave6 complete local logs: [evidence/wave06](evidence/wave06). Wave5 final logs: [evidence/wave05-final](evidence/wave05-final). Initial429 run: [evidence/wave05](evidence/wave05). Earlier retained evidence: wave04, wave03-restored and revalidated. Official Swift6.0.3 restored-toolchain provenance and signature are under wave06-toolchain and earlier toolchain directories. Source-specific evidence is never transferred to changed inputs without revalidation.
+The 433 portable methods comprise 396 core and 37 actual composition/store
+methods. Darwin package source additionally declares three Observation methods;
+436 is the expected Darwin inventory, not an execution result. Native source
+declares 195 unit methods, with 36 required UI methods plus two diagnostics.
+Those counts also describe source inventory, not completed native tests.
 
-Several early temporary environments reset. Exact recovered source/report hashes and original versus reconstructed provenance are retained under evidence/recovery and evidence/wave03-recovery. Earlier raw logs that were lost are identified as historical, not presented as recovered. Durable source/reports now use sparse workspace worktrees; disposable build/cache output uses separate temporary paths.
+The final CI result is [ci-final-core.json](evidence/final/ci-final-core.json);
+the later job-state observation is [ci-latest-jobs.json](evidence/final/ci-latest-jobs.json).
+The raw core log SHA-256 is
+`c0fe6034fcc10e287441adac752285961640c0484d9dfe6484f410b8f04ed857`.
+Host benchmark workloads and cancellation observations were independently
+reconciled, but establish no device performance or measured UI speedup.
 
-## Remaining integration work and limitations
+### Meaningful added regressions
 
-Wave6 implements the live presentation host, matching teardown and first-save logical identity. Existing room/AR Bool callbacks receive current scene state without an identity reset of the AR controller. Their actual SwiftUI lifecycle, Observation and nested dismissal still require Apple execution.
+The suite tests actual orchestration and storage. `StudioSessionTests`,
+`StudioPlanSessionTests`, `StudioFeatureSessionTests` and `StudioFeatureWindowTests`
+cover stale reservations/results, selection/undo, continuous edits, one-shot and
+repeated acceptance, failed operations, competing saves and document recovery.
 
-ReferenceComparisonView clears its photo/candidate session before its Void callback. Arrangement and target-lux also mark completion and dismiss after Void callbacks. The parent can reject obsolete results but cannot retain already-consumed feature drafts through those APIs. An owner-provided acceptance callback is required; do not claim that core receipt tests solve this native boundary. Observed producer interfaces are unchanged across main and advertised lanes01–05.
+Two `StudioCommittedSaveTests` call the real store, pause **after disk commit and
+before receipt adoption**, then cancel either the observer or session task. They
+prove exactly one adoption, released task bookkeeping, retained room/selection/
+history/workspace and rejection of old storage callbacks. They do not separately
+prove Save closing an open room group: selection has already ended that group in
+the fixture; existing Plan reservation tests cover edit teardown.
 
-The latest lane05 owner request at `1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a` acknowledges implementation at5ccfbaa. Its exact document/receipt is retained under evidence/wave08/owner05-requests.*. The lane05 spatial-preview owner request is implemented at the composition wrapper: both preview identities follow workspaceResetID, and storage-generation/light-UUID guards remain. Renderer files are unchanged. Native first-save viewport retention still needs runtime verification.
+Three Darwin-only `StudioObservationTests` exercise actual observation of
+scene edit/undo, feature lifecycle and busy reservation/completion. One native
+`StudioAdaptiveLayoutTests` method hosts the production helper and checks three
+installed State UUIDs plus live geometry across eight width/accessibility phases.
+**These four methods remain unexecuted.** The hosted fixture checks allocated
+geometry, not physical viewport visibility, real export/PDF sheets, RTL,
+VoiceOver, real rotation or actual control targets. Its bounded main-queue
+settling may need a phase-specific observation if native execution demonstrates
+a timing failure; no such runtime failure or false pass has been established.
 
-Wave7 has implemented the protected-storage utility navigation fix and corresponding UI regression, with source reviews of reference/comparison, room/AR, export and purchase. All ten wave7 workers completed, with scoped source acceptance and source-specific evidence independently checked. Wave8 completed package/target source inventory, applicable local build checks and the owned Observation compiler correction; generated Apple targets remain unverified. Wave9 challenges duplicate state/lifecycle/undo and adds the actual-store postcommit cancellation regression. Wave10 delivers the final100-context ledger, current-source evidence and precise lane20 handoff. Only preserved work may be cleaned.
+### Preserved failures and native boundary
+
+An earlier Apple Swift 6.3.3 build exposed conditional `@ObservationIgnored`
+accessor errors. Owned correction `8b18366` places attributes directly on complete
+Darwin declarations. An actual-source macro probe reproduced four errors before
+the correction and typechecked after it. Later Apple logs compile the corrected
+session and no longer contain those diagnostics, but still fail elsewhere.
+
+The latest completed retained native job, `140067450161` at prior code `adffee4`,
+failed in inherited `StudioAppAccessibilityUITests.swift:95` on ambiguous
+`greatestFiniteMagnitude`, with no native case execution. Main's later fix uses
+**`CGFloat.greatestFiniteMagnitude` for both `CGSize` bounds**. Lane 20 must retain
+it when integrating; this lane did not edit that owner's file.
+
+The forced-Darwin Linux Observation test attempt compiled but failed to link on
+an unresolved Swift Observation runtime symbol: zero tests executed. An earlier
+local default Release compile ended with signal 9 before tests; its cause is
+unproven. Both failures retain their original source/commands/logs. Successful
+later checks do not relabel them. Historical Keep/Done, export reopen after Undo
+and Meter reachability failures retain exact owner source SHAs and job receipts
+in [INTEGRATION_REQUESTS.md](INTEGRATION_REQUESTS.md).
+
+## Integration steps and unresolved owner dependencies
+
+1. **Lane 20:** integrate this branch while preserving later main and feature-owner
+   changes, especially the explicit `CGFloat` correction. Reconcile conflicts at
+   the shared composition seams against [INTERFACES.md](INTERFACES.md). Keep
+   canonical M03 status tied to required evidence.
+2. **Reference, arrangement and lux owners:** add explicit synchronous acceptance
+   callbacks and update callers together using [FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md).
+   Their current Void callbacks consume/dismiss local drafts before the parent can
+   communicate rejection. Current scene admission is protected, but complete
+   pending-draft retention is **not implemented** for those three producers.
+   On rejection retain the actual draft and editor; consume/dismiss only on
+   acceptance, including accepted no-ops, with reentrancy protection.
+3. **Lane 19 with feature owners:** run generated Apple targets and required native/UI
+   suites on the final integrated source, including Observation, hosted layout,
+   first-save viewport retention, nested room/AR dismissal, protected-storage
+   purchase navigation and export reopen/cancel. Preserve exact source hashes,
+   method accounting, failures and result bundles. Native commands and target
+   membership are in [CONFIGURATION.md](CONFIGURATION.md).
+4. **Accessibility/CI owners:** recheck Meter reachability with a fresh observation
+   after the last scroll. The historical helper makes twelve observations followed
+   by drags, then fails without inspecting the final gesture. Do not infer recovery
+   from accumulated teardown metrics or weaken containment/hittability criteria.
+
+Existing room/AR Bool adapters are connected; they need native validation rather
+than a replacement interface. Actual SwiftUI lifecycle, focus/caret, first-save
+viewport retention, AR, StoreKit and device accessibility remain unverified.
+
+## Worker and evidence integrity
+
+Each wave includes acceptance, data invariants, API compatibility, implementation,
+concurrency, resource lifetime, feature integration, accessibility/privacy,
+platform/performance and independent review. Acceptance schedulers count once
+alongside nine peers. Root, scheduler and at most two peers respect real capacity;
+integration and expensive builds are serialized. Final reports meet the
+800-tool-estimated-token cap; briefs have a 2,000-token limit. The requested
+12,000-token working budget cannot be enforced or measured by the spawn API.
+
+Source revisions, patches, original/condensed reports, same-context followups and
+cleanup records remain attributable. Earlier environment resets and reconstructed
+provenance are explicitly recorded; missing historical raw logs are not described
+as recovered. Temporary trees were removed only after source and artifacts were
+preserved. The final root audit checks 100 distinct actual IDs, ten roles per
+wave, all report hashes and final-source equivalence. No additional contexts are
+counted for retries, followups or failed capacity requests.
+
+For entry points, read this handoff, [INTERFACES.md](INTERFACES.md),
+[FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md), [NAVIGATION.md](NAVIGATION.md),
+[INTEGRATION_REQUESTS.md](INTEGRATION_REQUESTS.md), and the final evidence receipts.
