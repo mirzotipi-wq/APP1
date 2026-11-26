@@ -1,0 +1,81 @@
+{
+  "fixture": "minus63_roll_triangular_grazing_corner",
+  "method": "nested composite Simpson on analytic y slices, direct world-space cosine factors",
+  "formula": "E = (onAxisCandela / area) * integral(cosEmitter * max(0, cosReceiver) / distance^2 dA)",
+  "expected_value_independence": "No production clipping, triangle mapping, Gaussian nodes/weights, or normal helper",
+  "roll_degrees": -63.0,
+  "center_m": [
+    -0.8,
+    1.1,
+    0.4
+  ],
+  "aim_target_m": [
+    -0.8,
+    1.1,
+    2.4
+  ],
+  "width_m": 1.6,
+  "height_m": 0.9,
+  "candela": 1375.0,
+  "receiver_local_m": [
+    0.18,
+    -0.11,
+    0.405
+  ],
+  "receiver_world_m": [
+    -0.8162924277076021,
+    0.8896798706747437,
+    0.805
+  ],
+  "receiver_normal_raw_world": [
+    -0.036063088564055545,
+    -1.1407012990451186,
+    1.1839506172839507
+  ],
+  "receiver_normal_unit_world": [
+    -0.02193008814965137,
+    -0.6936643819635201,
+    0.7199644410864443
+  ],
+  "minimum_plane_separation_m": 0.4,
+  "plane_separation_m": 0.405,
+  "positive_incidence_domain": "x - 0.55*y > 0.72; y in [-0.45, (0.8-0.72)/0.55], x in [0.72+0.55*y, 0.8]",
+  "contributing_area_m2": 0.09750568181818188,
+  "contributing_face_fraction": 0.06771227904040407,
+  "refinement": [
+    {
+      "intervals_per_dimension": 32,
+      "integrand_evaluations": 1089,
+      "reference_lux": 10.232643383905863
+    },
+    {
+      "intervals_per_dimension": 64,
+      "integrand_evaluations": 4225,
+      "reference_lux": 10.232644975124407,
+      "relative_change_from_previous": 1.555041289386445e-07
+    },
+    {
+      "intervals_per_dimension": 128,
+      "integrand_evaluations": 16641,
+      "reference_lux": 10.232645074561843,
+      "relative_change_from_previous": 9.717666872879093e-09
+    },
+    {
+      "intervals_per_dimension": 256,
+      "integrand_evaluations": 66049,
+      "reference_lux": 10.232645080776454,
+      "relative_change_from_previous": 6.073318285679075e-10
+    },
+    {
+      "intervals_per_dimension": 512,
+      "integrand_evaluations": 263169,
+      "reference_lux": 10.232645081164865,
+      "relative_change_from_previous": 3.7958033137575134e-11
+    }
+  ],
+  "total_integrand_evaluations": 351173,
+  "finest_reference_lux": 10.232645081164865,
+  "last_refinement_relative_change": 3.7958033137575134e-11,
+  "area_relative_error_gate_unchanged": 0.05,
+  "point_relative_error_gate_unchanged_not_exercised": 0.01
+}

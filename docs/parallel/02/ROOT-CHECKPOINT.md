@@ -82,3 +82,23 @@ Current source CIcore374Debug/374Release passes; simulator/app-accessibility
 failed inherited ambiguity in UITests. Original excerpts retained.
 Lane01 contract966c9c21 inspected; no signature/schema change required; route
 admission remains lane01's pending work. Consumer requests updated.
+
+## Wave04 recovery and source checkpoint
+
+Second executor reset erased/tmp duringW04. Verified remote047803c preserved
+all30 earlier role reports and the new directional test. Restored same paths,
+Swift6.0.3 andv1module (built047803c; all Sources identical1b28688). All affected
+W04 checks regenerated actual second-executor logs in SAME contexts, no new
+worker count. tools/resumed-* preserve state/harvest/probe/publish helpers and
+briefs. RESET-RECOVERY.md records exact losses and recovery. Do not claim lost
+original logs were recovered.
+
+Verified remote928ca0eafa6330742114c2e0ac184789c2f17752 preserves reviewed tiny
+clipped-face regression, targeted1/1 package pass and W04R01–08 evidence. W04R09
+now completed;R10independent grazing is active.40created/39completed actual.
+W05ten worktrees already prepared at928ca0e (not counted as contexts).
+Root resumed direct scheduling forW04R06–10 to bound coordinator recoverycontext.
+Later waves can use freshR01coordinator plus9children, max2atonce.
+Latest/tmp free2.0GiB, RAM available2739MiB; keep one-job package builds and
+serializedprobecompilation. Keep shared SDK intact. Public API/source math still
+58b3; only two new focused regressions added since that core374 CI pass.

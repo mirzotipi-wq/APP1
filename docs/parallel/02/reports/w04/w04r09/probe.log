@@ -1,0 +1,14 @@
+W04R09 snapshot=v1 module_revision=1b286885cb803ba17e159713651515ab119e17f1 worktree_head=47de6afe6afe24a7822f4276950f70bd3db9f57d compiler=Swift6.0.3 target=x86_64-unknown-linux-gnu module_configuration=Debug probe_configuration=swiftc_without_O
+OS Debian GNU/Linux 13 (trixie)
+METHOD one batch per path, exactly 100 calls each, no warmup, DispatchTime monotonic clock; loop and array append included; construction/classification/validation excluded
+INPUT path=full_rectangle source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(0.0,0.0,1.0) normal=(0.0,0.0,-1.0) dimensions_m=(1,1) candela=1000.0 roll=0
+CLASSIFICATION path=full_rectangle depth_m=2 minimum_depth_m=0.25 corner_incidence_m=[2.0, 2.0, 2.0, 2.0] geometry=full_face_32x32 intensity=ordinary scaling_threshold_cd=2.2784756311113742e-305
+INPUT path=partially_clipped_rectangle source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(1.0,0.0,2.0) normal=(1.0,0.0,0.0) dimensions_m=(1,1) candela=1000.0 roll=0
+CLASSIFICATION path=partially_clipped_rectangle depth_m=2 minimum_depth_m=0.25 corner_incidence_m=[-0.5, 0.5, 0.5, -0.5] geometry=partial_half_face_2_triangles intensity=ordinary scaling_threshold_cd=2.2784756311113742e-305
+INPUT path=scaled_tiny_clipped_rectangle source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(1.0,0.0,2.0) normal=(1.0,0.0,0.0) dimensions_m=(1,1) candela=2.2250738585072014e-308 roll=0
+CLASSIFICATION path=scaled_tiny_clipped_rectangle depth_m=2 minimum_depth_m=0.25 corner_incidence_m=[-0.5, 0.5, 0.5, -0.5] geometry=partial_half_face_2_triangles intensity=unit_scaling_then_partial_integration scaling_threshold_cd=2.2784756311113742e-305
+RESULT path=full_rectangle calls=100 finite_positive=100 deterministic=true classification=normal total_ns=39066143 mean_ns_per_call=390661.43 lux=230.85282958801525
+RESULT path=partially_clipped_rectangle calls=100 finite_positive=100 deterministic=true classification=normal total_ns=15989094 mean_ns_per_call=159890.94 lux=14.141865396693397
+RESULT path=scaled_tiny_clipped_rectangle calls=100 finite_positive=100 deterministic=true classification=subnormal total_ns=15969274 mean_ns_per_call=159692.74 lux=3.146669500471e-310
+CHECK ordinary_partial_coefficient=0.014141865396693397 expected_tiny_lux=3.146669500471e-310 actual_tiny_lux=3.146669500471e-310 ulp_distance=0; proportionality consistency only, not an independent area-accuracy reference
+PASS 300/300 finite positive bitwise-deterministic results; normal/normal/subnormal classifications; no performance threshold

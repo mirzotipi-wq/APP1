@@ -93,3 +93,14 @@ Primary sources:
 - [Wyman, Sloan & Shirley2013](https://jcgt.org/published/0002/02/01/), analytic CIE matching-function approximation.
 - [CIE1931 2° dataset](https://www.cie.co.at/datatable/cie-1931-colour-matching-functions-2-degree-observer), CIE2019, DOI10.25039/CIE.DS.xvudnb9b, CC BY-SA4.0. Download metadata and checksum are recorded with derived reference tables; production source does not embed the table.
 - [W3C CSS Color4](https://www.w3.org/TR/2026/CRD-css-color-4-20261008/), independent color-conversion/Bradford conventions.
+
+## Additional independent grazing witness (wave04)
+
+R10's held-out fixture uses a -63degree rolled1.6x0.9m rectangle at1375cd,
+0.405m plane separation (minimum0.4m). Its analytically derived contributing
+triangle occupies6.77123% of the face. Direct world-space cosine factors,
+analytic slice limits, and composite Simpson refinement32/64/128/256/512
+(351173evaluations total) produce10.232645081164865lx. Actual Swift returns
+10.232645081190737lx, relativeerror2.52844e-12. Final reference refinement
+changes3.79580e-11 relative. Raw source/results are reports/w04/w04r10.
+This is a separate witness, not an expansion of the1440-case declared sweep.
