@@ -46,11 +46,11 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-Full integrated [run45778673562](https://github.com/mirzotipi-wq/APP1/actions/runs/45778673562) is running at source `c118c3f2125af23d6ed864cab6dd98adf8c51b59`. Its exact192-input manifest verifies the eight reviewed test/CI changes; App, Sources and portable Tests are unchanged fromcd5. Required inventory is138 native,35 UI and24 original Default/AXXXL PNGs. Runtime acceptance remains pending.
+M02 is complete under the code acceptance contract. M03 repairs are published at `02797d359f699a90e72c7629d3dba2ba7de04b95` and are being validated in [run 45785778015](https://github.com/mirzotipi-wq/APP1/actions/runs/45785778015). The required inventory is 150 native methods, 35 UI workflows and 24 original default/AXXXL layout captures. M03 remains active until their required results and image review pass.
 
-M02 is complete under the code acceptance contract. M03 remains active. Full run45761900201 passed359 Debug/359 Release and92 tooling checks, but failed required native execution135/137 and UI33/35 (one room failure, one accessibility timeout). Focused followups retain their distinct failures. Eight reviewed test/CI corrections now cover native observer scale, repeated accessibility queries and measured host-observation budgets. The next integrated run requires138 native and35 UI methods, including the new hosted-State rapid-edit regression; no unrun candidate is accepted.
+The current [closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) records rejected-paste and legacy-name safeguards, corrected independent text measurement, efficient accessibility snapshot traversal, local tests and the actual 100-worker campaign. Local checks passed 359 Debug tests, 359 Release tests, 92 tooling tests and eight viewport geometry regressions. Local Linux evidence does not establish Apple runtime acceptance.
 
-The [completion packet](docs/evidence/m03-completion-2026-11-25/README.md) preserves exact source revisions, failed originals, reviewed corrections,141 original report objects and the100-worker ledger. All100 requested contexts exist;99 initial specialist assignments are complete and the coordinator remains active. All24 required original layout captures and the complete integrated native/UI matrix must pass before M03 is complete.
+The [preceding completion packet](docs/evidence/m03-completion-2026-11-25/README.md) retains earlier source revisions, original artifacts and failures. The superseded c118 run passed portable verification and library/reference UI but failed two native observer methods and the room's initial status observation; unfinished methods remain unverified.
 
 Code changes run the full development workflow. Documentation-only evidence updates run project-state validation and do not cancel unchanged simulator work.
 

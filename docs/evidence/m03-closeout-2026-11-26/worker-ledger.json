@@ -10,8 +10,8 @@
     "status": "active"
   },
   "requestedChildren": 93,
-  "createdChildren": 12,
-  "completedChildren": 10,
+  "createdChildren": 19,
+  "completedChildren": 17,
   "workers": [
     {
       "number": 8,
@@ -116,13 +116,83 @@
       "agent": "/root/a007_worker_coordinator/a018_app_cache",
       "assignment": "App renderer cache cancellation publication and backend downgrade",
       "paths": "App/MetalStudyRenderer.swift; NativeTests/StudyRenderCacheTests.swift",
-      "status": "running"
+      "status": "completed",
+      "finding": "No renderer cache defect",
+      "detail": "Actor work has no suspension between cache/render/admission;validate before name-strip;task cancellation and preview publication guards;CPU downgrade evicts Metal. Runtime forced Metal-failure eviction lacks deterministic test.",
+      "verification": "Static app/native/core source review,state check. No Apple runtime."
     },
     {
       "number": 19,
       "agent": "/root/a007_worker_coordinator/a019_cancellation",
       "assignment": "Study cancellation eight-pixel bound and partial work rejection",
       "paths": "Sources/LightingCore/ReferenceStudy.swift; Tests/LightingCoreTests/StudyCancellationTests.swift",
+      "status": "completed",
+      "finding": "Cancellation bound verified",
+      "detail": "64 completed-pixel request boundaries and immediate-after-false-poll case passed;exactly8 further evaluations. Both loops checkpoint before unsupported/background paths and final return.",
+      "verification": "Extracted unchanged checkpoint via Swift stdin exit0;renderer source/test review;no full suite."
+    },
+    {
+      "number": 20,
+      "agent": "/root/a007_worker_coordinator/a020_float32_routing",
+      "assignment": "Conservative float32 eligibility near-field and far-world routing",
+      "paths": "Sources/LightingCore/StudyFloat32Eligibility.swift; Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+      "status": "completed",
+      "finding": "No Float32 routing defect",
+      "detail": "Relative geometry, conservative near-field margins/AABB checks and camera distance bounds align with validated packing. Invalid compute camera constraints propagate without permanently disabling Metal.",
+      "verification": "Static source/tests/routing review at d201eb3; no GPU or Swift execution."
+    },
+    {
+      "number": 21,
+      "agent": "/root/a007_worker_coordinator/a021_parity_metrics",
+      "assignment": "Exact unsupported mask and numerical parity acceptance robustness",
+      "paths": "Sources/LightingCore/StudyValidationFixtures.swift; Tests/LightingCoreTests/StudyParityMetricsTests.swift",
+      "status": "completed",
+      "finding": "Parity boundary checks pass",
+      "detail": "Actual metric via stdin accepted exactly 0.005 outlier fraction, rejected next outlier, excluded error four and rejected shifted masks. Dimension/count/alpha/mask invariants reviewed.",
+      "verification": "Targeted Swift metric probe and source/tests at d201eb3; no full suite."
+    },
+    {
+      "number": 22,
+      "agent": "/root/a007_worker_coordinator/a022_study_inputs",
+      "assignment": "Packed compute input bounds and unsupported sample semantics",
+      "paths": "Sources/LightingCore/ReferenceStudy.swift; Tests/LightingCoreTests/StudyComputeInputTests.swift",
+      "status": "completed",
+      "finding": "No compute-input defect",
+      "detail": "Validated scene and resolution bound arrays; maximum 768 interactive samples and 12288 reference samples; upstream scalar ranges protect Float conversion; exact RGBA/mask and flagged-magenta handling reviewed.",
+      "verification": "Static source and four compute tests plus dependency tracing at 02797d3; no execution."
+    },
+    {
+      "number": 23,
+      "agent": "/root/a007_worker_coordinator/a023_portrait_mesh",
+      "assignment": "Neutral head mesh BVH bounds and degenerate intersection behavior",
+      "paths": "Sources/LightingCore/PortraitHeadMesh.swift; Tests/LightingCoreTests/PortraitHeadMeshTests.swift",
+      "status": "completed",
+      "finding": "No mesh/BVH defect; focused smoke passed",
+      "detail": "Median BVH bounded to 11 levels/2047 nodes; degenerate poles discarded; outward normals and half-open intersection semantics reviewed. Actual-source smoke checked 5248 triangles,12 rays and18 endpoints.",
+      "verification": "Swift stdin smoke exit0. swift test --skip-build unavailable because no built executable; no suite pass claimed."
+    },
+    {
+      "number": 24,
+      "agent": "/root/a007_worker_coordinator/a024_portrait_study",
+      "assignment": "Mannequin width bound, cancellation and geometry visibility",
+      "paths": "Sources/LightingCore/PortraitStudy.swift; Tests/LightingCoreTests/PortraitStudyTests.swift",
+      "status": "completed",
+      "finding": "No mannequin renderer defect",
+      "detail": "24\u2013144 width bounds, exact aspect, finite shadow endpoint with geometric-normal offset, eight-pixel/final cancellation and opaque unsupported masks consistent; dedicated tests reviewed.",
+      "verification": "Static source/dependency review plus agent_cycle structural check; no Swift runtime."
+    },
+    {
+      "number": 25,
+      "agent": "/root/a007_worker_coordinator/a025_png_export",
+      "assignment": "Synthetic PNG encoder dimensions, pixel bounds and deterministic output",
+      "paths": "Sources/LightingCore/ReferencePNG.swift; Tests/LightingCoreTests/ReferencePNGTests.swift",
+      "status": "running"
+    },
+    {
+      "number": 26,
+      "agent": "/root/a007_worker_coordinator/a026_fixture_matrix",
+      "assignment": "Twelve synthetic fixture definitions preserve original six and validity",
+      "paths": "scripts/render-study-fixtures.swift; docs/acceptance/m02-m03-code.md",
       "status": "running"
     }
   ],
@@ -674,5 +744,59 @@
       "assignment": "Final campaign evidence integrity, exact worker counts and unperformed runtime separation",
       "paths": "docs/evidence/m03-closeout-2026-11-26; agents/state.json"
     }
-  ]
+  ],
+  "initialWorkers": [
+    {
+      "number": 1,
+      "agent": "/root/a001_m02_audit",
+      "assignment": "Initial M02 requirements, accepted source and evidence audit",
+      "status": "completed",
+      "finding": "Accepted M02 relevant-source carry-forward; read-only.",
+      "verification": "Completion and result reported by integration lead; original child report available in session."
+    },
+    {
+      "number": 2,
+      "agent": "/root/a002_m03_audit",
+      "assignment": "Initial M03 app integration and incomplete flow audit",
+      "status": "completed",
+      "finding": "Found rejected oversized project-name paste could submit previous name.",
+      "verification": "Completion and result reported by integration lead; original child report available in session."
+    },
+    {
+      "number": 3,
+      "agent": "/root/a003_ci_audit",
+      "assignment": "CI verification and retained evidence audit",
+      "status": "completed",
+      "finding": "Reviewed fail-closed method accounting and cancellation risk from source pushes.",
+      "verification": "Completion and result reported by integration lead; original child report available in session."
+    },
+    {
+      "number": 4,
+      "agent": "/root/a004_name_guard",
+      "assignment": "Repair rejected project-name submission policy",
+      "status": "completed",
+      "finding": "Implemented ProjectNameDraft and four native regressions; syntax and production-state smoke passed; Apple runtime pending.",
+      "verification": "Completion and result reported by integration lead; original child report available in session."
+    },
+    {
+      "number": 5,
+      "agent": "/root/a005_native_measurement",
+      "assignment": "Repair native layout observer fixture",
+      "status": "completed",
+      "finding": "Corrected fractional proposal sizing and aligned fixture placement while preserving strict assertions; syntax passed; Apple runtime pending.",
+      "verification": "Completion and result reported by integration lead; original child report available in session."
+    },
+    {
+      "number": 6,
+      "agent": "/root/a006_ui_efficiency",
+      "assignment": "Measure UI query overhead and propose efficiency correction",
+      "status": "completed",
+      "finding": "Measured 2395 AX event rows and about 36 minutes for retained Default flow; proposed fresh snapshot batching without reduced assertions.",
+      "verification": "Completion and result reported by integration lead; original child report available in session."
+    }
+  ],
+  "currentSourceRevision": "02797d359f699a90e72c7629d3dba2ba7de04b95",
+  "currentWorkflowRun": 45785778015,
+  "createdDistinctWorkers": 26,
+  "completedDistinctWorkers": 23
 }

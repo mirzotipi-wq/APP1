@@ -1,0 +1,229 @@
+{
+  "schema": 1,
+  "product": "Key & Fill",
+  "release": "1.0",
+  "milestones": [
+    {
+      "id": "M01",
+      "name": "Foundation and reproducible iOS build",
+      "depends": [],
+      "gates": [
+        "core_tests",
+        "native_build",
+        "persistence_smoke"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "M02",
+      "name": "Photometry and interactive 3D studio",
+      "depends": [
+        "M01"
+      ],
+      "gates": [
+        "photometry",
+        "rendering",
+        "performance"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "M03",
+      "name": "Professional editing and project library",
+      "depends": [
+        "M02"
+      ],
+      "gates": [
+        "editing",
+        "accessibility",
+        "persistence"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "M04",
+      "name": "Reference analysis and comparison",
+      "depends": [
+        "M03"
+      ],
+      "gates": [
+        "inference",
+        "reference_privacy"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M05",
+      "name": "AR placement and export",
+      "depends": [
+        "M03",
+        "M04"
+      ],
+      "gates": [
+        "ar_device",
+        "export"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M06",
+      "name": "Entitlements and product validation",
+      "depends": [
+        "M05"
+      ],
+      "gates": [
+        "commerce",
+        "customer_validation",
+        "privacy"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M07",
+      "name": "Release candidate",
+      "depends": [
+        "M06"
+      ],
+      "gates": [
+        "regression",
+        "device_matrix",
+        "release_review",
+        "owner_approval"
+      ],
+      "status": "pending"
+    }
+  ],
+  "lastCycle": {
+    "date": "2026-11-25",
+    "observedAtUTC": "2026-11-26T08:05:00Z",
+    "baseRevision": "916ecb9284747e91cb3840c4776c634d798f1a51",
+    "sourceRevision": "c118c3f2125af23d6ed864cab6dd98adf8c51b59",
+    "destinationBranch": "main",
+    "status": "M02 complete; c118 portable verification independently passed359Debug/359Release/92tooling andcomplete12image/numeric/benchmark/probe matrix; currentnative138/UI35/24layoutPNGs stillrunning; M03 active",
+    "requestedDistinctWorkers": 100,
+    "createdDistinctWorkers": 100,
+    "completedDistinctWorkers": 99,
+    "concurrentWorkerSlots": 3,
+    "workerLedger": "docs/evidence/m03-completion-2026-11-25/workers/100-contexts-pending-runtime.json",
+    "workerCountNote": "All 100 distinct contexts are created. The 99 specialist initial assignments are complete. Coordinator 007 and same-context runtime verification continue; followups do not increment counts.",
+    "report": "docs/evidence/m03-completion-2026-11-25/README.md",
+    "candidateRevision": "c118c3f2125af23d6ed864cab6dd98adf8c51b59",
+    "candidateWorkflow": "https://github.com/mirzotipi-wq/APP1/actions/runs/45778673562",
+    "m02Acceptance": "docs/evidence/m03-completion-2026-11-25/m02-revalidation.md",
+    "priorCycle": "agents/history/2026-11-26-before-75e-runtime-checkpoint-state.json",
+    "remainingRequiredWork": [
+      "Run the integrated138-native/35-UI candidate and verify the scale correction plus hosted-State rapid-name regression",
+      "Resolve any remaining exactKeep input, room-status or other actual runtime failures while retaining original assertions",
+      "Recover, hash-verify and actually inspect all24 original Default/AXXXL captures",
+      "Reconcile the complete core/build/actualMetal/probe matrix on the integrated source",
+      "Complete coordinator007 and final100-context ledger; promote M03 only after every required gate passes"
+    ],
+    "physicalValidationClaimed": false,
+    "lastCompletedTestedRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+    "portableCheckpoint": {
+      "sourceRevision": "c118c3f2125af23d6ed864cab6dd98adf8c51b59",
+      "workflowRun": 45778673562,
+      "jobId": 139768497092,
+      "conclusion": "success",
+      "debug": 359,
+      "release": 359,
+      "tooling": 92,
+      "originalImages": 12,
+      "receipt": "docs/evidence/m03-completion-2026-11-25/validation/source-c118c3f/ci-core/summary.json",
+      "reviewers": [
+        "Root",
+        "058",
+        "059"
+      ]
+    },
+    "nativeCheckpoint": {
+      "sourceRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "workflowRun": 45761900201,
+      "jobId": 139715217001,
+      "conclusion": "failure",
+      "passed": 135,
+      "failed": 2,
+      "receipt": "docs/evidence/m03-completion-2026-11-25/validation/source-cd5b461/native-execution-summary.json"
+    },
+    "uiCheckpoint": {
+      "sourceRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "workflowRun": 45761900201,
+      "conclusion": "failure",
+      "required": 35,
+      "started": 35,
+      "terminal": 34,
+      "passed": 33,
+      "failed": 1,
+      "incomplete": 1,
+      "recoveredRequiredPNGs": 0,
+      "receipt": "docs/evidence/m03-completion-2026-11-25/validation/terminal-checkpoint-20261126T0734.json"
+    },
+    "focusedCandidate": {
+      "sourceRevision": "6e8179b1795e5e4ba2c01ca50086cd41d1a71ef3",
+      "workflowRun": 45772992319,
+      "conclusion": "failure",
+      "expectedNative": 137,
+      "passed": 135,
+      "failed": 2,
+      "assertionFailures": 3,
+      "receipt": "docs/evidence/m03-completion-2026-11-25/validation/source-6e8179b/execution-summary.json"
+    },
+    "priorFocusedFailures": [
+      {
+        "revision": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+        "runId": 45768421649,
+        "conclusion": "failure",
+        "native": {
+          "started": 137,
+          "passed": 135,
+          "failed": 2,
+          "assertions": 8,
+          "geometry": "Retained live native views still yielded local-origin UIAccessibility conversions. All3 size fixtures reached, strict geometry failed."
+        },
+        "library": {
+          "started": 9,
+          "passed": 7,
+          "failed": 2,
+          "normalOwnerChecks": "Actual Done/Cancel/Save leaf Button checks passed in the completed create/duplicate/rename/switch/relaunch method.",
+          "nameFailure": "One typeText Keep request ended with actual focused field K; cause unresolved.",
+          "readinessFailure": "Large-library INITIAL launch consumed approximately29 seconds in one existence resolution before the30-second wait failed. Later original screenshot shows loaded studio and enabled Projects; this does not prove earlier readiness."
+        }
+      },
+      {
+        "revision": "19f75af24fc274b44aa0119e4e49071a5aa0b1f9",
+        "runId": 45769542620,
+        "conclusion": "failure",
+        "started": 5,
+        "passed": 4,
+        "failed": 1,
+        "changedPrecisionMethod": "passed251.155 seconds",
+        "distinctFailure": "ManualRoomPlacementUITests.testManualRoomReportsOutOfBoundsAndRecordsRoomEdit failed its10-second outside-label wait after half-turn. Later text says1 of5center positions outside room; later correct state does not pass earlier deadline. Existing query already label-only Other."
+      }
+    ],
+    "pendingIntegratedCandidate": {
+      "sourceRevision": "c118c3f2125af23d6ed864cab6dd98adf8c51b59",
+      "workflowRun": 45778673562,
+      "sourceManifest": "docs/evidence/m03-completion-2026-11-25/validation/source-c118c3f/source-manifest.json",
+      "requiredNativeMethods": 138,
+      "requiredUIMethods": 35,
+      "requiredOriginalPNGs": 24,
+      "status": "running"
+    },
+    "projectStateValidation": {
+      "workflowRun": 45778673198,
+      "jobId": 139768496212,
+      "conclusion": "success",
+      "scope": "Structure only, not runtime acceptance"
+    }
+  },
+  "activeRequest": {
+    "date": "2026-11-25",
+    "scope": "M02 then M03; m02-m03-code-v2",
+    "ownerAuthorization": "Remove requirements depending on unavailable outside factors; implement code, repair CI, commit and push to main.",
+    "acceptanceContract": "docs/acceptance/m02-m03-code.md",
+    "requestedWorkers": 100,
+    "workerLedger": "docs/evidence/m03-completion-2026-11-25/workers/100-contexts-pending-runtime.json",
+    "physicalValidationClaimed": false,
+    "currentReport": "docs/evidence/m03-completion-2026-11-25/README.md"
+  }
+}

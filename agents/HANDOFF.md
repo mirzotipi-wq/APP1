@@ -1,5 +1,14 @@
 # Current handoff
 
+## Current closeout — 26 November 2026
+
+M02 remains accepted, with unchanged source/fixture hashes independently checked. M03 repairs are published at `02797d359f699a90e72c7629d3dba2ba7de04b95`. Full [run 45785778015](https://github.com/mirzotipi-wq/APP1/actions/runs/45785778015) must execute **150 native and 35 required UI methods**, retaining the 24 actual default/AXXXL captures. No pending method is a pass.
+
+See [the closeout packet](../docs/evidence/m03-closeout-2026-11-26/README.md) for the naming safeguards, fractional native observer correction, snapshot-based viewport verification, typed room-status observation, local tests and retained baseline failures. The new 100-context campaign is recorded in its worker ledger. Finish runtime evidence and actual image review before promoting M03. Leave M04–M07 pending. Documentation-only pushes do not cancel the integrated source run.
+
+The prior handoff is retained below for revision-specific history.
+
+
 ## Current integrated validation — c118c3f
 
 Full integrated [run45778673562](https://github.com/mirzotipi-wq/APP1/actions/runs/45778673562) is running at source `c118c3f2125af23d6ed864cab6dd98adf8c51b59`. Its exact192-input manifest verifies the eight reviewed test/CI changes; App, Sources and portable Tests are unchanged fromcd5. Required inventory is138 native,35 UI and24 original Default/AXXXL PNGs. Runtime acceptance remains pending.
