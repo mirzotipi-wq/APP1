@@ -129,6 +129,37 @@ final class StudioSessionTests: XCTestCase {
         XCTAssertNotEqual(session.saved, session.scene)
     }
 
+    func testStaleControlEndCannotCloseSameControlAfterFirstSave() async throws {
+        let session = StudioSession(execute: { request in
+            if case .load = request.operation { return nil }
+            return try ProjectLibrary(name: "Saved", scene: request.scene)
+        })
+        try await open(session)
+        let original = session.scene
+        let previousGeneration = session.generation
+        let owner = session.editOwner("camera.position.x")
+        session.editChanged(true, owner: owner, from: previousGeneration)
+        try await session.beginLibraryOperation(.save, from: previousGeneration).value
+        let currentGeneration = session.generation
+        XCTAssertNotEqual(currentGeneration, previousGeneration)
+        XCTAssertEqual(session.editOwner("camera.position.x"), owner)
+
+        session.editChanged(true, owner: owner, from: currentGeneration)
+        var changed = session.scene
+        changed.camera.x += 0.1
+        XCTAssertTrue(session.update(changed, from: currentGeneration))
+        let editing = session.editor
+        session.editChanged(false, owner: owner, from: previousGeneration)
+        XCTAssertEqual(session.editor, editing)
+        XCTAssertTrue(session.history.isEditing)
+        changed.camera.x += 0.1
+        XCTAssertTrue(session.update(changed, from: currentGeneration))
+        session.editChanged(false, owner: owner, from: currentGeneration)
+        XCTAssertTrue(session.undo(from: currentGeneration))
+        XCTAssertEqual(session.scene, original)
+        XCTAssertFalse(session.history.canUndo, "The old callback must not split the new edit")
+    }
+
     func testCancellingSheetObserverStillReconcilesCommittedSaveExactlyOnce() async throws {
         let gate = StudioReceiptGate()
         let original = LightingScene.portrait()
@@ -224,6 +255,61 @@ final class StudioSessionTests: XCTestCase {
         XCTAssertEqual(try disk.load(), remote)
         XCTAssertFalse(session.isBusy)
         XCTAssertNil(session.operationTask)
+    }
+
+    func testTwoWindowsKeepIndependentEditorsAndRecoverCompetingSave() async throws {
+        let base = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: base) }
+        let first = StudioSession(store: ProjectStore(applicationSupportDirectory: base,
+                                                       arguments: [], environment: [:]))
+        let second = StudioSession(store: ProjectStore(applicationSupportDirectory: base,
+                                                        arguments: [], environment: [:]))
+        try await open(first)
+        try await first.beginLibraryOperation(.save, from: first.generation).value
+        try await open(second)
+        let original = first.scene
+        XCTAssertEqual(second.scene, original, "Windows open the same stored light UUIDs")
+        XCTAssertNotEqual(first.generation, second.generation)
+        XCTAssertNotEqual(first.workspaceResetID, second.workspaceResetID)
+        XCTAssertTrue(second.select(original.lights[1].id, from: second.generation))
+        XCTAssertEqual(first.selection, original.lights[0].id)
+
+        var firstEdit = original
+        firstEdit.lights[0].candela += 100
+        XCTAssertTrue(first.replace(firstEdit, from: first.generation))
+        try await first.beginLibraryOperation(.save, from: first.generation).value
+        let firstEditor = first.editor
+        let firstLibrary = first.library
+        let firstScope = first.workspaceResetID
+        var secondEdit = original
+        secondEdit.lights[1].position.x += 0.2
+        XCTAssertFalse(second.replace(secondEdit, from: first.generation))
+        XCTAssertTrue(second.replace(secondEdit, from: second.generation))
+        let secondEditor = second.editor
+        do {
+            try await second.beginLibraryOperation(.save, from: second.generation).value
+            XCTFail("The second window must not overwrite the first window's save")
+        } catch ProjectLibraryError.staleSnapshot { }
+        XCTAssertEqual(second.editor, secondEditor)
+        XCTAssertEqual(second.saved, original)
+        XCTAssertTrue(second.saveConflict)
+        XCTAssertEqual(first.editor, firstEditor)
+        XCTAssertEqual(first.library, firstLibrary)
+
+        try await second.beginLibraryOperation(.recover(name: "Second window recovery", replacing: nil),
+                                                from: second.generation).value
+        XCTAssertEqual(second.scene, secondEdit)
+        XCTAssertEqual(second.saved, secondEdit)
+        XCTAssertFalse(second.saveConflict)
+        XCTAssertFalse(second.history.canUndo, "Recovery explicitly starts another document scope")
+        XCTAssertEqual(first.editor, firstEditor)
+        XCTAssertEqual(first.library, firstLibrary)
+        XCTAssertEqual(first.workspaceResetID, firstScope)
+        let disk = ProjectLibraryFileStore(directory: base.appendingPathComponent("KeyAndFill"))
+        let stored = try XCTUnwrap(disk.load())
+        XCTAssertEqual(stored.projects.count, 2)
+        XCTAssertTrue(stored.projects.contains { $0.scene == firstEdit })
+        XCTAssertTrue(stored.projects.contains { $0.scene == secondEdit })
     }
 
     func testProjectSwitchResetsHistoryAndPresentationButMetadataDoesNot() async throws {

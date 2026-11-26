@@ -1123,8 +1123,8 @@ struct StudioView: View {
         })
     }
 
-    /// Each editor has one stable draft scope until its first saved project.
-    /// Copies may share light UUIDs, so project identity is part of ownership.
+    /// Controls retain identity through first save; intentional document
+    /// switching resets the scope even when copied rigs share light UUIDs.
     private func editOwner(_ control: String) -> String {
         session.editOwner(control)
     }
@@ -1139,12 +1139,7 @@ struct StudioView: View {
     }
 
     private func editChanged(_ editing: Bool, owner: String, generation: UUID) {
-        if editing {
-            guard libraryOperation.allowsSceneMutation(from: generation) else { return }
-            session.editChanged(true, owner: owner, from: generation)
-        } else {
-            session.endEditing(owner: owner)
-        }
+        session.editChanged(editing, owner: owner, from: generation)
     }
 
     private var recipeSheet: some View {
