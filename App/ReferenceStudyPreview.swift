@@ -172,7 +172,7 @@ struct StudyPreviewOutput: Sendable {
                                 .padding(8)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
                                 .accessibilityLabel(updateStatus)
-                                .accessibilityValue("Showing the previous scene")
+                                .accessibilityValue("Showing the previous render")
                                 .accessibilityIdentifier(activeRequest == nil ? "studyPaused" : "studyUpdating")
                         }
                     } else {
