@@ -1,0 +1,1285 @@
+{
+  "worker": "w08-09",
+  "context": 79,
+  "role": "platform/evidence reviewer; readonly",
+  "audited_utc": "2026-11-26T16:37:13.804749+00:00",
+  "worker_head": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "worker_status_final": "",
+  "root_head_observed": "167eb90f49462cddab780798825e07e5954be4a9",
+  "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+  "baseline_revision": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "native_source_revision": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+  "prior_ci_source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+  "commands": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "cwd": "/tmp/keyfill01-wave08/w08-09/tree",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; not evidence truth or acceptance"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "cwd": "/tmp/keyfill01-wave08/w08-09/tree",
+      "exit_code": 0,
+      "result": "M03; editing, accessibility, persistence outstanding"
+    },
+    {
+      "command": "git ls-tree -rz --full-tree REV; git cat-file blob BLOB (four fixed revisions)",
+      "cwd": "/workspace/scratch/e08d5190f17c/keyfill-01",
+      "exit_code": 0,
+      "result": "Programmatic path sets and SHA256 Git-byte comparison; no builds"
+    },
+    {
+      "command": "python3 inline read-only fixed receipt audit: git diff-tree/show/rev-parse, SHA256 sources/logs, exact macro transform comparison, ordered test-event accounting",
+      "exit_code": 0
+    }
+  ],
+  "local_tests": {
+    "debug": {
+      "receipt": {
+        "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "test",
+          "--configuration",
+          "debug",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-debug",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "--jobs",
+          "1",
+          "-Xswiftc",
+          "-disable-batch-mode"
+        ],
+        "started_utc": "2026-11-26T16:13:03.684018+00:00",
+        "scope": "Fresh Swift6.0.3 Linux debug build and full XCTest suite; native UI excluded",
+        "exit_code": 0,
+        "finished_utc": "2026-11-26T16:14:07.315774+00:00",
+        "log_sha256": "3abf5af90d8eb280d4cb0acea6ec125bfa466a3d23bf200860b8b3c8f29dc566"
+      },
+      "log": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/debug.log",
+      "log_bytes": 125270,
+      "actual_log_sha256": "3abf5af90d8eb280d4cb0acea6ec125bfa466a3d23bf200860b8b3c8f29dc566",
+      "receipt_hash_matches": true,
+      "starts": 431,
+      "unique_started": 431,
+      "passes": 431,
+      "unique_passed": 431,
+      "failed": [],
+      "skipped": [],
+      "duplicates_started": 0,
+      "duplicates_passed": 0,
+      "missing_pass": [],
+      "case_inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d",
+      "hard_diagnostics": []
+    },
+    "release-per-file": {
+      "receipt": {
+        "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "test",
+          "--configuration",
+          "release",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-release-per-file",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "--jobs",
+          "1",
+          "-Xswiftc",
+          "-disable-batch-mode",
+          "-Xswiftc",
+          "-no-whole-module-optimization"
+        ],
+        "started_utc": "2026-11-26T16:17:10.124471+00:00",
+        "scope": "Release -O with per-file compilation instead of whole-module optimization; separate lower-memory retry after default Release signal9. No source change. Not equivalent to a default-WMO pass.",
+        "exit_code": 0,
+        "finished_utc": "2026-11-26T16:18:57.037226+00:00",
+        "log_sha256": "123c5526549e0e3c71d9151dcbe25740b6d7dfa5de4db6028e4be2e279ae8b83",
+        "maximum_child_rss_kib": 359096
+      },
+      "log": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/release-per-file.log",
+      "log_bytes": 124761,
+      "actual_log_sha256": "123c5526549e0e3c71d9151dcbe25740b6d7dfa5de4db6028e4be2e279ae8b83",
+      "receipt_hash_matches": true,
+      "starts": 431,
+      "unique_started": 431,
+      "passes": 431,
+      "unique_passed": 431,
+      "failed": [],
+      "skipped": [],
+      "duplicates_started": 0,
+      "duplicates_passed": 0,
+      "missing_pass": [],
+      "case_inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d",
+      "hard_diagnostics": []
+    },
+    "release-default": {
+      "receipt": {
+        "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "test",
+          "--configuration",
+          "release",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-release",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "--jobs",
+          "1",
+          "-Xswiftc",
+          "-disable-batch-mode"
+        ],
+        "started_utc": "2026-11-26T16:14:07.320984+00:00",
+        "scope": "Fresh Swift6.0.3 Linux release build and full XCTest suite; native UI excluded",
+        "exit_code": 1,
+        "finished_utc": "2026-11-26T16:14:39.082467+00:00",
+        "log_sha256": "dd26185e7d2e96cd226e491c85041bfd1bd237c6a25e24e54f3b5cf6e7d73814"
+      },
+      "log": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/release.log",
+      "log_bytes": 306,
+      "actual_log_sha256": "dd26185e7d2e96cd226e491c85041bfd1bd237c6a25e24e54f3b5cf6e7d73814",
+      "receipt_hash_matches": true,
+      "starts": 0,
+      "unique_started": 0,
+      "passes": 0,
+      "unique_passed": 0,
+      "failed": [],
+      "skipped": [],
+      "duplicates_started": 0,
+      "duplicates_passed": 0,
+      "missing_pass": [],
+      "case_inventory_sha256": null,
+      "hard_diagnostics": [
+        "error: compile command failed due to signal 9 (use -v to see invocation)",
+        "error: fatalError"
+      ]
+    }
+  },
+  "same_local_debug_release_cases": true,
+  "configuration_receipt": {
+    "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+    "started_utc": "2026-11-26T16:12:56.619876+00:00",
+    "native_tools": {
+      "xcodebuild": null,
+      "xcodegen": null
+    },
+    "checks": [
+      {
+        "name": "toolchain",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "--version"
+        ],
+        "exit_code": 0,
+        "output": "toolchain.log"
+      },
+      {
+        "name": "package-dump",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "package",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-inspect",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "dump-package"
+        ],
+        "exit_code": 0,
+        "output": "package-dump.json"
+      },
+      {
+        "name": "package-describe",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "package",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-inspect",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "describe",
+          "--type",
+          "json"
+        ],
+        "exit_code": 0,
+        "output": "package-describe.json"
+      }
+    ]
+  },
+  "setup_attempt": {
+    "receipt": {
+      "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+      "status": "launcher failed before Swift execution",
+      "reason": "Optional /usr/bin/time executable was absent; replaced with Python resource accounting. No compiler or tests ran in this setup attempt."
+    },
+    "log_bytes": 0,
+    "execution_limit": "No Swift/tests; original setup receipt supplies no exit code"
+  },
+  "package": {
+    "targets": {
+      "StudioCompositionTests": {
+        "path": "NativeTests",
+        "source_count": 4,
+        "dependencies": [
+          "StudioComposition",
+          "LightingCore"
+        ]
+      },
+      "StudioComposition": {
+        "path": "App",
+        "source_count": 3,
+        "dependencies": [
+          "LightingCore"
+        ]
+      },
+      "LightingCoreTests": {
+        "path": "Tests/LightingCoreTests",
+        "source_count": 51,
+        "dependencies": [
+          "LightingCore"
+        ]
+      },
+      "LightingCore": {
+        "path": "Sources/LightingCore",
+        "source_count": 35,
+        "dependencies": []
+      }
+    },
+    "no_declared_resources": true,
+    "no_external_dependencies": true,
+    "platforms": [
+      {
+        "options": [],
+        "platformName": "ios",
+        "version": "17.0"
+      },
+      {
+        "options": [],
+        "platformName": "macos",
+        "version": "14.0"
+      }
+    ],
+    "products": [
+      {
+        "name": "LightingCore",
+        "targets": [
+          "LightingCore"
+        ],
+        "type": {
+          "library": [
+            "automatic"
+          ]
+        }
+      }
+    ],
+    "toolsVersion": {
+      "_version": "5.9.0"
+    }
+  },
+  "manifest": {
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/source-manifest.json",
+    "sha256": "ac66296b6caf05455da47bb5fd8555f43755a6e50702c0f85333528a365c5bab",
+    "entries": 179,
+    "unique_paths": 179,
+    "counts_by_root": {
+      ".github": 2,
+      "App": 52,
+      "NativeTests": 23,
+      "Package.swift": 1,
+      "Resources": 1,
+      "Sources": 35,
+      "Tests": 51,
+      "UITests": 12,
+      "project.yml": 1,
+      "scripts": 1
+    },
+    "expected_declared_scope_count": 179,
+    "missing_from_manifest": [],
+    "extra_in_manifest": [],
+    "hash_mismatches_by_revision": {
+      "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f": [],
+      "46a161cb01d0aee2e91940dbd06d82cfe2df5821": [],
+      "08e80c756cb7c8aa4eaf11f27932c8f701000be1": []
+    },
+    "limit": "Selected configuration scope only: other invoked scripts/tooling/SDK/runtime not closed"
+  },
+  "portable_input_equivalence": {
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/portable-input-equivalence.json",
+    "sha256": "2217e02680e2ac09005b2c0666fbf640d7e4707c1169f4ed3c7dffec02d2f0f0",
+    "resolved_input_count": 94,
+    "recorded_input_count": 94,
+    "manifest_unique_paths": 94,
+    "missing_from_recorded": [],
+    "extra_in_recorded": [],
+    "recorded_hash_mismatches": [],
+    "actual_changed_paths": [],
+    "limit": "Input byte identity only; native conditional compilation and compiler/environment differ"
+  },
+  "key_blobs": {
+    "Package.swift": {
+      "git_blob": "8d52ab9da2fdcf986d1035a271029078752aae8c",
+      "sha256": "2f0af38da3e97072cbb127d93d7da3afb925eb71ddbac02263013e2f1d344caf",
+      "prior_blob": "8d52ab9da2fdcf986d1035a271029078752aae8c"
+    },
+    "project.yml": {
+      "git_blob": "056e9d4159ca0273f812728381723b60a253000f",
+      "sha256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+      "prior_blob": "056e9d4159ca0273f812728381723b60a253000f"
+    },
+    "App/StudioSession.swift": {
+      "git_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4",
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+      "prior_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4"
+    },
+    "Resources/PrivacyInfo.xcprivacy": {
+      "git_blob": "e400f8aa47d2371eab42ca43eb9197fbcb0a48dc",
+      "sha256": "faf85354c10094841f8a1dcd974ca746433553eb93d4683243d57357a83602a7",
+      "prior_blob": "e400f8aa47d2371eab42ca43eb9197fbcb0a48dc"
+    },
+    "scripts/native_test_shards.py": {
+      "git_blob": "e0f098eb6b1965c44cb6c5869c0b6ceacb6aa249",
+      "sha256": "12e982beab8e472432121b24171bc1e2963b71a227123016d022f127bfcf3454",
+      "prior_blob": "e0f098eb6b1965c44cb6c5869c0b6ceacb6aa249"
+    },
+    ".github/workflows/ios-prototype.yml": {
+      "git_blob": "55e68ee810a4dbe72cd8bd5c4aba295958f80d7c",
+      "sha256": "a695b17bad26f9d6e6617ac22d1e8e7fb0431b17186bba0a29d3eb285b6e7210",
+      "prior_blob": "55e68ee810a4dbe72cd8bd5c4aba295958f80d7c"
+    },
+    ".github/workflows/platform-accessibility-diagnostics.yml": {
+      "git_blob": "9f472293be18fc008a794ccd18e92d62031c8996",
+      "sha256": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9",
+      "prior_blob": "9f472293be18fc008a794ccd18e92d62031c8996"
+    }
+  },
+  "native_tool_availability": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "PATH": {
+      "swift": null,
+      "xcodegen": null,
+      "xcodebuild": null,
+      "xcrun": null
+    },
+    "recorded_swift_binary_exists": true
+  },
+  "configuration_doc": {
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/CONFIGURATION.md",
+    "sha256": "f0fd2ade8ff75d6f1ae179e233786dd6612f14481717a59457cb06071c8348b7"
+  },
+  "limits": [
+    "No builds, Swift parse, native generation or tests run by this reviewer; startup state checks only",
+    "Apple/current-source native runtime/UI and physical-device/performance unverified",
+    "Three existing Void producers still consume rejected drafts",
+    "Compile RSS359096KiB in root receipt is compiler-process accounting, not app performance; default signal9 cause unproven",
+    "Read-only worker tree unchanged; empty source.patch"
+  ],
+  "ci": {
+    "recorded_utc": "2026-11-26T16:39:19.130Z",
+    "current_jobs_observed_utc": "2026-11-26T16:38:39.615Z",
+    "repo": "mirzotipi-wq/APP1",
+    "runs": [
+      {
+        "id": 45856461091,
+        "name": "iOS Prototype",
+        "head_branch": "finish/01-architecture-composition",
+        "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "status": "queued",
+        "conclusion": null,
+        "run_attempt": 1,
+        "created_at": "2026-11-26T16:11:49Z",
+        "updated_at": "2026-11-26T16:16:45Z",
+        "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091"
+      },
+      {
+        "id": 45851159581,
+        "name": "iOS Prototype",
+        "head_branch": "finish/01-architecture-composition",
+        "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "run_attempt": 1,
+        "created_at": "2026-11-26T15:38:49Z",
+        "updated_at": "2026-11-26T16:12:29Z",
+        "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581"
+      },
+      {
+        "id": 45856461162,
+        "name": "Project state",
+        "head_branch": "finish/01-architecture-composition",
+        "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "status": "completed",
+        "conclusion": "success",
+        "run_attempt": 1,
+        "created_at": "2026-11-26T16:11:50Z",
+        "updated_at": "2026-11-26T16:12:00Z",
+        "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461162"
+      }
+    ],
+    "jobs": {
+      "current": [
+        {
+          "id": 140036374958,
+          "name": "core",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-26T16:12:31Z",
+          "completed_at": "2026-11-26T16:16:45Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140036374958",
+          "relevant_steps": [
+            {
+              "number": 5,
+              "name": "Portable debug tests",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T16:13:17Z",
+              "completed_at": "2026-11-26T16:13:57Z"
+            },
+            {
+              "number": 6,
+              "name": "Portable release tests",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T16:13:57Z",
+              "completed_at": "2026-11-26T16:14:39Z"
+            }
+          ]
+        },
+        {
+          "id": 140038746649,
+          "name": "ui (room-precision)",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-26T16:16:45Z",
+          "completed_at": null,
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140038746649",
+          "relevant_steps": []
+        },
+        {
+          "id": 140038746705,
+          "name": "simulator",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-26T16:16:45Z",
+          "completed_at": null,
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140038746705",
+          "relevant_steps": []
+        },
+        {
+          "id": 140038746717,
+          "name": "ui (studio-export)",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-26T16:16:45Z",
+          "completed_at": null,
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140038746717",
+          "relevant_steps": []
+        },
+        {
+          "id": 140038746731,
+          "name": "ui (library-reference)",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-26T16:16:45Z",
+          "completed_at": null,
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140038746731",
+          "relevant_steps": []
+        },
+        {
+          "id": 140038746762,
+          "name": "ui (app-accessibility)",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-26T16:16:45Z",
+          "completed_at": null,
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140038746762",
+          "relevant_steps": []
+        },
+        {
+          "id": 140038746812,
+          "name": "ui (studio-optics)",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "queued",
+          "conclusion": null,
+          "started_at": "2026-11-26T16:16:45Z",
+          "completed_at": null,
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461091/job/140038746812",
+          "relevant_steps": []
+        }
+      ],
+      "prior": [
+        {
+          "id": 140017565927,
+          "name": "core",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-26T15:38:52Z",
+          "completed_at": "2026-11-26T15:42:49Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140017565927",
+          "relevant_steps": [
+            {
+              "number": 5,
+              "name": "Portable debug tests",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T15:39:33Z",
+              "completed_at": "2026-11-26T15:40:07Z"
+            },
+            {
+              "number": 6,
+              "name": "Portable release tests",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T15:40:07Z",
+              "completed_at": "2026-11-26T15:40:45Z"
+            }
+          ]
+        },
+        {
+          "id": 140019833234,
+          "name": "ui (room-precision)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-26T15:58:42Z",
+          "completed_at": "2026-11-26T16:01:33Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140019833234",
+          "relevant_steps": [
+            {
+              "number": 5,
+              "name": "Generate project",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T15:59:37Z",
+              "completed_at": "2026-11-26T15:59:48Z"
+            },
+            {
+              "number": 7,
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:00:09Z",
+              "completed_at": "2026-11-26T16:01:25Z"
+            },
+            {
+              "number": 11,
+              "name": "Verify required UI method accounting",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:01:25Z",
+              "completed_at": "2026-11-26T16:01:25Z"
+            },
+            {
+              "number": 14,
+              "name": "Export finalized XCTest result bundle and genuine attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:01:26Z",
+              "completed_at": "2026-11-26T16:01:26Z"
+            }
+          ]
+        },
+        {
+          "id": 140019833324,
+          "name": "ui (library-reference)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-26T16:01:37Z",
+          "completed_at": "2026-11-26T16:08:01Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140019833324",
+          "relevant_steps": [
+            {
+              "number": 5,
+              "name": "Generate project",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T16:02:48Z",
+              "completed_at": "2026-11-26T16:03:08Z"
+            },
+            {
+              "number": 7,
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:05:16Z",
+              "completed_at": "2026-11-26T16:07:52Z"
+            },
+            {
+              "number": 11,
+              "name": "Verify required UI method accounting",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:07:52Z",
+              "completed_at": "2026-11-26T16:07:52Z"
+            },
+            {
+              "number": 14,
+              "name": "Export finalized XCTest result bundle and genuine attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:07:53Z",
+              "completed_at": "2026-11-26T16:07:53Z"
+            }
+          ]
+        },
+        {
+          "id": 140019833325,
+          "name": "simulator",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-26T16:08:00Z",
+          "completed_at": "2026-11-26T16:09:22Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140019833325",
+          "relevant_steps": [
+            {
+              "number": 3,
+              "name": "Record Apple toolchain and test the portable package on macOS",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:08:09Z",
+              "completed_at": "2026-11-26T16:09:15Z"
+            },
+            {
+              "number": 7,
+              "name": "Generate project",
+              "status": "completed",
+              "conclusion": "skipped",
+              "started_at": "2026-11-26T16:09:15Z",
+              "completed_at": "2026-11-26T16:09:15Z"
+            },
+            {
+              "number": 15,
+              "name": "Verify required native method accounting",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:09:15Z",
+              "completed_at": "2026-11-26T16:09:16Z"
+            },
+            {
+              "number": 16,
+              "name": "Export finalized XCTest result bundle and genuine attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:09:16Z",
+              "completed_at": "2026-11-26T16:09:16Z"
+            }
+          ]
+        },
+        {
+          "id": 140019833332,
+          "name": "ui (studio-export)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-26T16:09:26Z",
+          "completed_at": "2026-11-26T16:12:19Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140019833332",
+          "relevant_steps": [
+            {
+              "number": 5,
+              "name": "Generate project",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T16:10:28Z",
+              "completed_at": "2026-11-26T16:10:37Z"
+            },
+            {
+              "number": 7,
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "cancelled",
+              "started_at": "2026-11-26T16:11:00Z",
+              "completed_at": "2026-11-26T16:12:03Z"
+            },
+            {
+              "number": 11,
+              "name": "Verify required UI method accounting",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:12:03Z",
+              "completed_at": "2026-11-26T16:12:03Z"
+            },
+            {
+              "number": 14,
+              "name": "Export finalized XCTest result bundle and genuine attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:12:03Z",
+              "completed_at": "2026-11-26T16:12:03Z"
+            }
+          ]
+        },
+        {
+          "id": 140019833450,
+          "name": "ui (app-accessibility)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-26T15:42:50Z",
+          "completed_at": "2026-11-26T16:11:50Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140019833450",
+          "relevant_steps": []
+        },
+        {
+          "id": 140019833488,
+          "name": "ui (studio-optics)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-26T16:04:25Z",
+          "completed_at": "2026-11-26T16:07:56Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140019833488",
+          "relevant_steps": [
+            {
+              "number": 5,
+              "name": "Generate project",
+              "status": "completed",
+              "conclusion": "success",
+              "started_at": "2026-11-26T16:05:07Z",
+              "completed_at": "2026-11-26T16:05:14Z"
+            },
+            {
+              "number": 7,
+              "name": "Build native UI test bundle",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:06:03Z",
+              "completed_at": "2026-11-26T16:07:47Z"
+            },
+            {
+              "number": 11,
+              "name": "Verify required UI method accounting",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:07:47Z",
+              "completed_at": "2026-11-26T16:07:47Z"
+            },
+            {
+              "number": 14,
+              "name": "Export finalized XCTest result bundle and genuine attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:07:48Z",
+              "completed_at": "2026-11-26T16:07:48Z"
+            }
+          ]
+        },
+        {
+          "id": 140036285913,
+          "name": "visual review (Default)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-26T16:12:22Z",
+          "completed_at": "2026-11-26T16:12:25Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140036285913",
+          "relevant_steps": [
+            {
+              "number": 2,
+              "name": "Download original app accessibility attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:12:23Z",
+              "completed_at": "2026-11-26T16:12:23Z"
+            }
+          ]
+        },
+        {
+          "id": 140036286046,
+          "name": "visual review (AXXXL)",
+          "head_sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-26T16:12:22Z",
+          "completed_at": "2026-11-26T16:12:28Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45851159581/job/140036286046",
+          "relevant_steps": [
+            {
+              "number": 2,
+              "name": "Download original app accessibility attachments",
+              "status": "completed",
+              "conclusion": "failure",
+              "started_at": "2026-11-26T16:12:24Z",
+              "completed_at": "2026-11-26T16:12:27Z"
+            }
+          ]
+        }
+      ],
+      "project_state": [
+        {
+          "id": 140036019449,
+          "name": "state",
+          "head_sha": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-26T16:11:53Z",
+          "completed_at": "2026-11-26T16:11:59Z",
+          "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45856461162/job/140036019449",
+          "relevant_steps": []
+        }
+      ]
+    },
+    "current_core_case_reconciliation": {
+      "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+      "run_id": 45856461091,
+      "job_id": 140036374958,
+      "raw_log_sha256_utf8": "a7982746e086adb670f457b9387d964cd39d1863a480fbb5394751fe5e8e61a4",
+      "utf8_sha256_self_check": "Known empty/abc digests passed",
+      "configs": {
+        "debug": {
+          "command": "swift test --jobs 2",
+          "starts": 431,
+          "unique_started": 431,
+          "passes": 431,
+          "unique_passed": 431,
+          "failed": 0,
+          "skipped": 0,
+          "missing_pass": [],
+          "duplicate_starts": 0,
+          "duplicate_passes": 0,
+          "case_inventory_sha256_newline": "e1852dec74d6e7318dfd6797f1cc68b309042ec8e0f7ae8f29edabfbd4304e41",
+          "case_inventory_sha256_newline_terminated": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d",
+          "case_inventory_sha256_json": "d89112401efad31e4117c5a7cefdd2923f6f7d84f8fb5e482aa2e0dfa53ef2be",
+          "composition": {
+            "StudioFeatureSessionTests": 16,
+            "StudioFeatureWindowTests": 1,
+            "StudioPlanSessionTests": 6,
+            "StudioSessionTests": 12
+          }
+        },
+        "release": {
+          "command": "swift test --configuration release --jobs 2",
+          "starts": 431,
+          "unique_started": 431,
+          "passes": 431,
+          "unique_passed": 431,
+          "failed": 0,
+          "skipped": 0,
+          "missing_pass": [],
+          "duplicate_starts": 0,
+          "duplicate_passes": 0,
+          "case_inventory_sha256_newline": "e1852dec74d6e7318dfd6797f1cc68b309042ec8e0f7ae8f29edabfbd4304e41",
+          "case_inventory_sha256_newline_terminated": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d",
+          "case_inventory_sha256_json": "d89112401efad31e4117c5a7cefdd2923f6f7d84f8fb5e482aa2e0dfa53ef2be",
+          "composition": {
+            "StudioFeatureSessionTests": 16,
+            "StudioFeatureWindowTests": 1,
+            "StudioPlanSessionTests": 6,
+            "StudioSessionTests": 12
+          }
+        }
+      },
+      "same_case_inventory": true
+    },
+    "prior_apple_failures": [
+      {
+        "job_id": 140019833234,
+        "run_id": 45851159581,
+        "source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+        "step": "Build native UI test bundle",
+        "raw_log_sha256_utf8": "af20ec0075a93587d7a6c78cef444499e76551a4cc8e8b01445e48ecfcb98fc9",
+        "raw_log_characters": 206690,
+        "apple_swift": "6.3.3",
+        "diagnostics": [
+          "2026-11-26T16:01:25.1119960Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "2026-11-26T16:01:25.1745770Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor",
+          "2026-11-26T16:01:25.1886170Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "2026-11-26T16:01:25.1892130Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor"
+        ]
+      },
+      {
+        "job_id": 140019833325,
+        "run_id": 45851159581,
+        "source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+        "step": "Record Apple toolchain and test the portable package on macOS",
+        "raw_log_sha256_utf8": "4ae2a31cc8377f5e2a2c2dcd8a7730411323efd6b4270aa6d44bf66bc6e5147e",
+        "raw_log_characters": 33147,
+        "apple_swift": "6.3.3",
+        "diagnostics": [
+          "2026-11-26T16:09:14.6370610Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "2026-11-26T16:09:14.6399410Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor",
+          "2026-11-26T16:09:14.6414080Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "2026-11-26T16:09:14.6422660Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor",
+          "2026-11-26T16:09:15.3050580Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "2026-11-26T16:09:15.3058040Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor",
+          "2026-11-26T16:09:15.3064500Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "2026-11-26T16:09:15.3071460Z /Users/runner/work/APP1/APP1/App/StudioSession.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor"
+        ]
+      }
+    ],
+    "limits": [
+      "Current six queued Apple jobs establish no execution; API started_at fields do not override status queued",
+      "Overall prior cancelled retains individual failures and successful core; generation succeeded in inspected prior UI job only",
+      "Conditional ObservationIgnored diagnostics affect StudioSession blob91b76ee55820642c39793acd2aa6ccf4006910f4 unchanged from5cc through7b; distinct from later-main CGFloat correction",
+      "No large logs saved/copied by reviewer; root retains originals",
+      "Default CI Swift6.4.2 Release pass is distinct from local Swift6.0.3 default Release signal9 failure"
+    ],
+    "api_reads": [
+      "GET actions/runs/{45851159581,45856461091,45856461162}",
+      "GET actions/runs/{45851159581,45856461091,45856461162}/jobs?per_page=100",
+      "fetch_workflow_run_jobs for those three runs",
+      "fetch_workflow_job_logs for140036374958,140019833234,140019833325"
+    ],
+    "api_read_failure": {
+      "command": "github_fetch GET actions/jobs/140017565927",
+      "result": "400 INVALID_ARGUMENT: endpoint not allowed; recovered through supported run/jobs endpoint"
+    }
+  },
+  "native_selection": {
+    "class_check": "all UI classes assigned once; static declaration only",
+    "ui_class_count": 9,
+    "native_classes": 23,
+    "native_methods": 189,
+    "shards": {
+      "room-precision": {
+        "classes": [
+          "ManualRoomPlacementUITests",
+          "PrecisionEditingUITests"
+        ],
+        "methods": 5
+      },
+      "library-reference": {
+        "classes": [
+          "ProjectLibraryUITests",
+          "ReferenceComparisonUITests"
+        ],
+        "methods": 9
+      },
+      "studio-export": {
+        "classes": [
+          "StudioSmokeTests",
+          "LightingPlanExportUITests"
+        ],
+        "methods": 11
+      },
+      "studio-optics": {
+        "classes": [
+          "StudioOpticsUITests"
+        ],
+        "methods": 10
+      },
+      "app-accessibility": {
+        "classes": [
+          "StudioAppAccessibilityUITests"
+        ],
+        "methods": 1
+      },
+      "platform-audit": {
+        "classes": [
+          "AccessibilityAuditUITests"
+        ],
+        "methods": 2
+      }
+    },
+    "exit_code": 0,
+    "command": "python3 -B: runpy.run_path(scripts/native_test_shards.py, run_name=w08_09_inventory); check(); discover_methods(NativeTests/UITests)",
+    "required_ui_methods": 36,
+    "diagnostic_ui_methods": 2,
+    "limit": "Static source selection, not native execution"
+  },
+  "configuration_doc_findings": [
+    "Static package/native inventory and retained default Release distinction verified",
+    "New current7b CI core success and prior5cc actual Apple Observation macro failures need incorporation; current CONFIGURATION.md last described current workflow queued without its completed core",
+    "Pre-fix94-input equality is superseded for8b18366: StudioSession is the sole changed portable and179-manifest input; priorCI pass cannot validate the changed input."
+  ],
+  "fixed_followup": {
+    "source_revision": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+    "audited_utc": "2026-11-26T16:41:17.089427+00:00",
+    "fix_commit_changed_paths": [
+      "App/StudioSession.swift"
+    ],
+    "tests": {
+      "debug": {
+        "receipt": {
+          "source_revision": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+          "command": [
+            "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+            "test",
+            "--configuration",
+            "debug",
+            "--scratch-path",
+            "/tmp/keyfill01-build-v8-debug",
+            "--cache-path",
+            "/tmp/keyfill01-cache-v8",
+            "--jobs",
+            "1",
+            "-Xswiftc",
+            "-disable-batch-mode"
+          ],
+          "started_utc": "2026-11-26T16:39:01.841931+00:00",
+          "scope": "Rebuild affected sources and run fullsuite afterObservationdeclarationfix. Release uses per-file -O, notdefaultWMO.",
+          "exit_code": 0,
+          "finished_utc": "2026-11-26T16:39:21.042895+00:00",
+          "log_sha256": "0c9111f2e126b85bcdd3294d3b203e6eeffc9923d7229ca044fe9329a10ce75c"
+        },
+        "log": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08-fixed/debug.log",
+        "log_bytes": 118158,
+        "actual_log_sha256": "0c9111f2e126b85bcdd3294d3b203e6eeffc9923d7229ca044fe9329a10ce75c",
+        "receipt_hash_matches": true,
+        "starts": 431,
+        "unique_started": 431,
+        "passes": 431,
+        "unique_passed": 431,
+        "failed": [],
+        "skipped": [],
+        "duplicate_starts": {},
+        "duplicate_passes": {},
+        "missing_pass": [],
+        "foreign_pass": [],
+        "order_errors": [],
+        "unfinished": [],
+        "case_inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d",
+        "same_inventory_as_pre_fix": true,
+        "limit": "Affected source rebuilt in existing scratch directory; complete suite executed; not a fresh build"
+      },
+      "release-per-file": {
+        "receipt": {
+          "source_revision": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+          "command": [
+            "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+            "test",
+            "--configuration",
+            "release",
+            "--scratch-path",
+            "/tmp/keyfill01-build-v8-release-per-file",
+            "--cache-path",
+            "/tmp/keyfill01-cache-v8",
+            "--jobs",
+            "1",
+            "-Xswiftc",
+            "-disable-batch-mode",
+            "-Xswiftc",
+            "-no-whole-module-optimization"
+          ],
+          "started_utc": "2026-11-26T16:39:21.044211+00:00",
+          "scope": "Rebuild affected sources and run fullsuite afterObservationdeclarationfix. Release uses per-file -O, notdefaultWMO.",
+          "exit_code": 0,
+          "finished_utc": "2026-11-26T16:39:34.385339+00:00",
+          "log_sha256": "0f377057927467fce168a37dcdc160b0c50b3b05672f6028fa010bdf7fbd89fe"
+        },
+        "log": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08-fixed/release-per-file.log",
+        "log_bytes": 118086,
+        "actual_log_sha256": "0f377057927467fce168a37dcdc160b0c50b3b05672f6028fa010bdf7fbd89fe",
+        "receipt_hash_matches": true,
+        "starts": 431,
+        "unique_started": 431,
+        "passes": 431,
+        "unique_passed": 431,
+        "failed": [],
+        "skipped": [],
+        "duplicate_starts": {},
+        "duplicate_passes": {},
+        "missing_pass": [],
+        "foreign_pass": [],
+        "order_errors": [],
+        "unfinished": [],
+        "case_inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d",
+        "same_inventory_as_pre_fix": true,
+        "limit": "Affected source rebuilt in existing scratch directory; complete suite executed; not a fresh build"
+      }
+    },
+    "manifest": {
+      "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08-fixed/source-manifest.json",
+      "sha256": "e943578533a6bf66a59411818ff52a876012c307e7bdd2cf6a5450e74bac555d",
+      "entries": 179,
+      "unique_paths": 179,
+      "missing_from_prior_scope": [],
+      "extra_to_prior_scope": [],
+      "git_hash_mismatches": [],
+      "changed_from_pre_fix": [
+        "App/StudioSession.swift"
+      ]
+    },
+    "portable_changed_from_pre_fix": [
+      "App/StudioSession.swift"
+    ],
+    "observation_probe": {
+      "before": {
+        "receipt": {
+          "source_revision": "167eb90f49462cddab780798825e07e5954be4a9",
+          "source_sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+          "transformed_source_sha256": "f2939be17673faaa591b4a377c36c22a8b93d35bd3e1d1cb12c7240a3e996465",
+          "transform": "Only replace #if canImport(Darwin) with #if true in actual StudioSession source to exercise Observation macros on Linux; no linking or Apple SDK",
+          "command": [
+            "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc",
+            "-typecheck",
+            "-parse-as-library",
+            "-swift-version",
+            "5",
+            "-module-name",
+            "StudioCompositionMacroProbe",
+            "-I",
+            "/tmp/keyfill01-build-v8-debug/x86_64-unknown-linux-gnu/debug/Modules",
+            "/tmp/keyfill01-observation-probe/StudioSession-before.swift",
+            "App/ProjectStore.swift",
+            "App/ProjectLibraryOperation.swift"
+          ],
+          "exit_code": 1
+        },
+        "actual_source_sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+        "source_hash_matches": true,
+        "actual_transformed_sha256": "f2939be17673faaa591b4a377c36c22a8b93d35bd3e1d1cb12c7240a3e996465",
+        "transform_exact": true,
+        "transformed_hash_matches": true,
+        "replacement_count": 4,
+        "log_sha256": "06b4e7e3a5ff7c8e83fa232a33a54ceaa7502ce6949b1be9a8f47f7eafa21707",
+        "log_bytes": 1741,
+        "unique_primary_diagnostics": [
+          "/tmp/keyfill01-observation-probe/StudioSession-before.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor",
+          "/tmp/keyfill01-observation-probe/StudioSession-before.swift:46:22: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter",
+          "/tmp/keyfill01-observation-probe/StudioSession-before.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected 'init' accessor",
+          "/tmp/keyfill01-observation-probe/StudioSession-before.swift:50:17: error: expansion of macro 'ObservationIgnored()' produced an unexpected getter"
+        ]
+      },
+      "after": {
+        "receipt": {
+          "source_revision": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+          "source_sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+          "transformed_source_sha256": "f4d60ce1931dd6ca420a8e6a416ed82ad776614a53ae30af087911406432bffb",
+          "transform": "Only replace #if canImport(Darwin) with #if true in actual StudioSession source to exercise Observation macros on Linux; no linking or Apple SDK",
+          "command": [
+            "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc",
+            "-typecheck",
+            "-parse-as-library",
+            "-swift-version",
+            "5",
+            "-module-name",
+            "StudioCompositionMacroProbe",
+            "-I",
+            "/tmp/keyfill01-build-v8-debug/x86_64-unknown-linux-gnu/debug/Modules",
+            "/tmp/keyfill01-observation-probe/StudioSession-after.swift",
+            "App/ProjectStore.swift",
+            "App/ProjectLibraryOperation.swift"
+          ],
+          "exit_code": 0
+        },
+        "actual_source_sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+        "source_hash_matches": true,
+        "actual_transformed_sha256": "f4d60ce1931dd6ca420a8e6a416ed82ad776614a53ae30af087911406432bffb",
+        "transform_exact": true,
+        "transformed_hash_matches": true,
+        "replacement_count": 3,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "log_bytes": 0,
+        "unique_primary_diagnostics": []
+      },
+      "limit": "Transformed actual source with Darwin macro branch enabled on LinuxSwift6.0.3; macOS/iOS AppleSwift6.3.3 and real lifecycle still unverified; no source semantics beyond narrow annotation correction claimed"
+    },
+    "syntax_receipt": {
+      "source_revision": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc",
+        "-frontend",
+        "-parse",
+        "App/ARPlacementController.swift",
+        "App/ARPlacementView.swift",
+        "App/BoundedFileReader.swift",
+        "App/CameraInspector.swift",
+        "App/DistanceValueButton.swift",
+        "App/EntitlementStore.swift",
+        "App/KeyAndFillApp.swift",
+        "App/LightTargetLuxView.swift",
+        "App/LightingPlanExportView.swift",
+        "App/LightingPlanPDF.swift",
+        "App/ManualRoomPlacementView.swift",
+        "App/MetalStudyRenderer.swift",
+        "App/NeutralCardInspector.swift",
+        "App/OpticsInspector.swift",
+        "App/PhotoComparisonView.swift",
+        "App/PrecisionValueButton.swift",
+        "App/ProFeaturesView.swift",
+        "App/ProjectBackupView.swift",
+        "App/ProjectDocumentIO.swift",
+        "App/ProjectLibraryOperation.swift",
+        "App/ProjectLibraryThumbnail.swift",
+        "App/ProjectLibraryView.swift",
+        "App/ProjectStore.swift",
+        "App/RealityStudioPreview.swift",
+        "App/RecoveryCapacityView.swift",
+        "App/ReferenceAnalysisService.swift",
+        "App/ReferenceComparisonView.swift",
+        "App/ReferencePhoto.swift",
+        "App/ReferenceStudyPreview.swift",
+        "App/SceneArrangementView.swift",
+        "App/SpatialPreview.swift",
+        "App/StudioEntityGraph.swift",
+        "App/StudioFeatureSheets.swift",
+        "App/StudioGuideView.swift",
+        "App/StudioMeterReadout.swift",
+        "App/StudioPalette.swift",
+        "App/StudioPlanMarkers.swift",
+        "App/StudioPreferences.swift",
+        "App/StudioSession.swift",
+        "App/StudioSettingsView.swift",
+        "App/StudioSlider.swift",
+        "App/StudioSliderEditing.swift",
+        "App/StudioSliderTracking.swift",
+        "App/StudioTextField.swift",
+        "App/StudioTextLayoutDiagnostics.swift",
+        "App/StudioView.swift",
+        "App/SubjectInspector.swift",
+        "NativeTests/BoundedFileReaderTests.swift",
+        "NativeTests/LightingPlanPDFTests.swift",
+        "NativeTests/ProjectDocumentIOTests.swift",
+        "NativeTests/ProjectLibraryPresentationTests.swift",
+        "NativeTests/ProjectNameEditorTests.swift",
+        "NativeTests/ProjectStoreOperationTests.swift",
+        "NativeTests/ReferencePhotoTests.swift",
+        "NativeTests/RoomRotationReadoutTests.swift",
+        "NativeTests/SpatialEmitterGeometryTests.swift",
+        "NativeTests/SpatialPreviewTests.swift",
+        "NativeTests/StudioFeatureSessionTests.swift",
+        "NativeTests/StudioFeatureWindowTests.swift",
+        "NativeTests/StudioPaletteTests.swift",
+        "NativeTests/StudioPlanSessionTests.swift",
+        "NativeTests/StudioSessionTests.swift",
+        "NativeTests/StudioSliderEditingTests.swift",
+        "NativeTests/StudioSliderTrackingTests.swift",
+        "NativeTests/StudioTextFieldTests.swift",
+        "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+        "NativeTests/StudioTrackingSliderTests.swift",
+        "NativeTests/StudioViewportGeometryTests.swift",
+        "NativeTests/StudyRenderCacheTests.swift",
+        "NativeTests/StudyRendererTests.swift",
+        "UITests/AccessibilityAuditUITests.swift",
+        "UITests/LightingPlanExportUITests.swift",
+        "UITests/ManualRoomPlacementUITests.swift",
+        "UITests/PrecisionEditingUITests.swift",
+        "UITests/ProjectLibraryUITests.swift",
+        "UITests/ReferenceComparisonUITests.swift",
+        "UITests/StudioAppAccessibilityUITests.swift",
+        "UITests/StudioContentReachability.swift",
+        "UITests/StudioOpticsUITests.swift",
+        "UITests/StudioSmokeTests.swift",
+        "UITests/StudioViewportGeometry.swift",
+        "UITests/StudioViewportObservation.swift"
+      ],
+      "exit_code": 0,
+      "input_count": 82,
+      "scope": "Syntax only, notAppleSDKcompilation"
+    },
+    "syntax_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "syntax_limit": "82 input parse only, no Apple SDK typecheck",
+    "session_blob": "7b965091e3043fd294502f3cf900b7bd970f8458",
+    "session_sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+    "ci_status": "No post-fix CI evidence inspected.7bdea CI pass remains pre-fix and is not transferred."
+  },
+  "final_review_scope": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+  "report_bounds": {
+    "words": 208,
+    "characters": 1566,
+    "tool_estimated_tokens": 392,
+    "measurement": "exec_command original_token_count for command printing only report.md"
+  }
+}

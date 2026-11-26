@@ -1,0 +1,842 @@
+{
+  "worker": "w08-08",
+  "actual_fresh_context": 78,
+  "role": "accessibility/privacy source reviewer",
+  "base": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "native_source": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+  "published_source": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+  "source_changes": false,
+  "commit": null,
+  "git_status_before": "",
+  "git_status_after": "",
+  "branch": "detached HEAD",
+  "startup": {
+    "mandatory_documents_read": true,
+    "agent_cycle_check": {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "result": "State structure/evidence references valid; not test truth or readiness."
+    },
+    "agent_cycle_next": {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03; outstanding editing, accessibility, persistence."
+    }
+  },
+  "static_commands": [
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "exit_code": 0,
+      "result": "9 UI classes; 5 required + 1 opt-in diagnostic; unit target separate."
+    },
+    {
+      "command": "git show HEAD:Resources/PrivacyInfo.xcprivacy",
+      "exit_code": 0
+    },
+    {
+      "command": "rg -n 'NSCamera|UsageDescription|Privacy|Resources|PRODUCT|PRODUCT_ID|StoreKit|KeyFillUITests|StudioSmoke|shard|KeyFillNativeTests|sources:|resources:' project.yml App/Info.plist Package.swift .github/workflows scripts UITests/StudioSmokeTests.swift App/EntitlementStore.swift App/ProFeaturesView.swift App/SettingsView.swift App/ARPlacementController.swift",
+      "exit_code": 2,
+      "result": "Initial discovery referenced nonexistent App/Info.plist and App/SettingsView.swift. Correct sources are generated Info settings in project.yml and App/StudioSettingsView.swift; resolved by source reads."
+    }
+  ],
+  "verification_commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:project.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:project.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:project.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:project.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:Resources/PrivacyInfo.xcprivacy"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:Resources/PrivacyInfo.xcprivacy"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:Resources/PrivacyInfo.xcprivacy"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:Resources/PrivacyInfo.xcprivacy"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:scripts/verify_privacy_manifest.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:scripts/verify_privacy_manifest.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:scripts/verify_privacy_manifest.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:scripts/verify_privacy_manifest.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:scripts/native_test_shards.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:scripts/native_test_shards.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:scripts/native_test_shards.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:scripts/native_test_shards.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:.github/workflows/ios-prototype.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:.github/workflows/ios-prototype.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:.github/workflows/ios-prototype.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:.github/workflows/ios-prototype.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:.github/workflows/platform-accessibility-diagnostics.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:.github/workflows/platform-accessibility-diagnostics.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:.github/workflows/platform-accessibility-diagnostics.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:.github/workflows/platform-accessibility-diagnostics.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/StudioView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/StudioView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/StudioView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/StudioView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/StudioSettingsView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/StudioSettingsView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/StudioSettingsView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/StudioSettingsView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/ProFeaturesView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/ProFeaturesView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/ProFeaturesView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/ProFeaturesView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/EntitlementStore.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/EntitlementStore.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/EntitlementStore.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/EntitlementStore.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/KeyAndFillApp.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/KeyAndFillApp.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/KeyAndFillApp.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/KeyAndFillApp.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/ARPlacementView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/ARPlacementView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/ARPlacementView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/ARPlacementView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/ARPlacementController.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:App/ARPlacementController.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:App/ARPlacementController.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:App/ARPlacementController.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:UITests/StudioSmokeTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:UITests/StudioSmokeTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:UITests/StudioSmokeTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:UITests/StudioSmokeTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:UITests/AccessibilityAuditUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:UITests/AccessibilityAuditUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "08e80c756cb7c8aa4eaf11f27932c8f701000be1:UITests/AccessibilityAuditUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f:UITests/AccessibilityAuditUITests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "46a161cb01d0aee2e91940dbd06d82cfe2df5821:Resources/PrivacyInfo.xcprivacy"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "files": [
+    {
+      "path": "project.yml",
+      "git_blob": "056e9d4159ca0273f812728381723b60a253000f",
+      "sha256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "Resources/PrivacyInfo.xcprivacy",
+      "git_blob": "e400f8aa47d2371eab42ca43eb9197fbcb0a48dc",
+      "sha256": "faf85354c10094841f8a1dcd974ca746433553eb93d4683243d57357a83602a7",
+      "in_worktree": false,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "scripts/verify_privacy_manifest.py",
+      "git_blob": "2358c562d91469abc8b7279b58872b7d6f73c145",
+      "sha256": "29c652fa0e8fcfbd53eb45704f9a75bed1b989eb2d234d98c8abab2396dfe202",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true
+    },
+    {
+      "path": "scripts/native_test_shards.py",
+      "git_blob": "e0f098eb6b1965c44cb6c5869c0b6ceacb6aa249",
+      "sha256": "12e982beab8e472432121b24171bc1e2963b71a227123016d022f127bfcf3454",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "git_blob": "55e68ee810a4dbe72cd8bd5c4aba295958f80d7c",
+      "sha256": "a695b17bad26f9d6e6617ac22d1e8e7fb0431b17186bba0a29d3eb285b6e7210",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": ".github/workflows/platform-accessibility-diagnostics.yml",
+      "git_blob": "9f472293be18fc008a794ccd18e92d62031c8996",
+      "sha256": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/StudioView.swift",
+      "git_blob": "88cbc339130ad6af7f9a77adda34754aeb1a2e9c",
+      "sha256": "a574f3bc04d0d854de7fa7d6710dc38a58d87c11654721cc25fff5635a67b506",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/StudioSettingsView.swift",
+      "git_blob": "4f45e201369051598cae04134c4ebb5c5016b06c",
+      "sha256": "ddcfa02b0e49c8bf81d776a698aa03e20a040596a08cf170d1dd078c57a4e32e",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/ProFeaturesView.swift",
+      "git_blob": "c9f143fbf563c4fe279b6be552de1a89924f4931",
+      "sha256": "6b43d11bbe4e4badd7762e875509213c1942de32da2075da064469d1029ce532",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/EntitlementStore.swift",
+      "git_blob": "b251ac7ec075424e8289f1edceb95d9cf3e6e8eb",
+      "sha256": "e009365d3d0ae8fbf7efa28383ef4fc0b4ee87ce64347009524cada4fd3b7605",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/KeyAndFillApp.swift",
+      "git_blob": "cc2a16ba3aa26976fd54a8a85167921eadcaf1d1",
+      "sha256": "40638244f7f65ac622c891ea4e3d2462679975a8f314981d685d64d0d0c61a4e",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/ARPlacementView.swift",
+      "git_blob": "ec10f43d57234af9245bddc2fd90785d6ef21b22",
+      "sha256": "e6085889ed25337c729c2dbb7d2b9027e7368e08b8cd3ff46ab980a617979c0a",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "App/ARPlacementController.swift",
+      "git_blob": "a65a5d09b1e2daf9b2a047cf22158913e87de07f",
+      "sha256": "21843199fc457a6252d00a691381c53568438357b2602a6a073cc494a0e49f4b",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "git_blob": "9f086fe2d3de9eb65785005187da63787d5aba01",
+      "sha256": "963ea1efbf72a1b365a6bf339c5031a9a163e396c791173726032692c4d36b23",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "git_blob": "e75aa14b2c3bae2316d950cf118fee0e8e576c82",
+      "sha256": "175d68304602e9496dcab5953f0533604466f029ebe075c4e80fa265b5246216",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    },
+    {
+      "path": "UITests/AccessibilityAuditUITests.swift",
+      "git_blob": "fa2b0844a92719bf9efa84b24a04b82ec7a6e402",
+      "sha256": "51274546aee8d1470210f6fe6243b85232467ca793678595723070ea703c905c",
+      "in_worktree": true,
+      "matches_native": true,
+      "matches_published": true,
+      "matches_manifest": true
+    }
+  ],
+  "root_configuration": {
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/CONFIGURATION.md",
+    "sha256": "f0fd2ade8ff75d6f1ae179e233786dd6612f14481717a59457cb06071c8348b7"
+  },
+  "manifest": {
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/source-manifest.json",
+    "sha256": "ac66296b6caf05455da47bb5fd8555f43755a6e50702c0f85333528a365c5bab",
+    "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+    "entry_count": 179,
+    "verified_scope": "16 review inputs; 15 appear in manifest. Native/published Git bytes identical for all review inputs. No whole-tree equivalence claim."
+  },
+  "privacy": {
+    "manifest": {
+      "NSPrivacyTracking": false,
+      "NSPrivacyTrackingDomains": [],
+      "NSPrivacyCollectedDataTypes": [],
+      "NSPrivacyAccessedAPITypes": [
+        {
+          "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+          "NSPrivacyAccessedAPITypeReasons": [
+            "CA92.1"
+          ]
+        },
+        {
+          "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp",
+          "NSPrivacyAccessedAPITypeReasons": [
+            "C617.1",
+            "3B52.1"
+          ]
+        }
+      ]
+    },
+    "matches_verifier_expected": true,
+    "sparse_resource_absence": "Expected sparse checkout omission; tracked Git resource is available.",
+    "declaration": "project.yml includes Resources/PrivacyInfo.xcprivacy with buildPhase: resources.",
+    "bundle_evidence": "UNVERIFIED; CI declares source plus Debug/Release bundle checks, none run by this worker.",
+    "runtime_network_audit": false
+  },
+  "generated_info": {
+    "GENERATE_INFOPLIST_FILE": "YES for app and both test targets",
+    "camera_key": "INFOPLIST_KEY_NSCameraUsageDescription",
+    "camera_purpose": "Camera access lets you place your lighting plan in the room with AR. Camera frames stay on your device.",
+    "KEYFILL_PRO_PRODUCT_ID": "",
+    "INFOPLIST_KEY_KEYFILL_PRO_PRODUCT_ID": "$(KEYFILL_PRO_PRODUCT_ID)",
+    "notes": "No checked-in App/Info.plist is required by this declaration; generated output remains uninspected."
+  },
+  "camera": {
+    "source_refs": [
+      "App/ARPlacementView.swift:232",
+      "App/ARPlacementController.swift:130",
+      "App/ARPlacementController.swift:149"
+    ],
+    "finding": "The explicit startARCamera button invokes controller.start; appearance only sets visible/foreground. Permission request is behind supported, visible/foreground start admission. No permission action executed.",
+    "runtime": "UNVERIFIED"
+  },
+  "commerce": {
+    "source_refs": [
+      "App/EntitlementStore.swift:58",
+      "App/EntitlementStore.swift:319",
+      "App/StudioSettingsView.swift:31",
+      "App/ProFeaturesView.swift:272"
+    ],
+    "finding": "Blank or unexpanded product IDs normalize to nil, suppress startup StoreKit tasks; settings opens a local Pro sheet. Purchase/restore/refresh require explicit guarded buttons. Product price comes from StoreKit.",
+    "limit": "Configured app initialization may perform product/entitlement lookup independently of navigation. No transaction behavior was exercised."
+  },
+  "test_inventory": {
+    "native_classes": 23,
+    "native_methods": 189,
+    "required_ui_methods": 36,
+    "diagnostic_ui_methods": 2,
+    "shards": {
+      "room-precision": 5,
+      "library-reference": 9,
+      "studio-export": 11,
+      "studio-optics": 10,
+      "app-accessibility": 1,
+      "platform-audit": 2
+    },
+    "protected_storage_method": "StudioSmokeTests.testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+    "method_occurrences": 1,
+    "required_shard": "studio-export",
+    "navigation_assertions": [
+      "UUID-scoped corrupt store and English locale",
+      "Completed saved-data-protected status",
+      "Save/Projects/export/Recipes retained disabled",
+      "Scene/reference absent; Subject/Arrange/AR disabled",
+      "Settings to actual Pro to same Settings to protected Studio",
+      "Relaunch with same UUID and corrupt-fixture flag removed"
+    ],
+    "actions_not_called": [
+      "purchase",
+      "restore",
+      "refresh",
+      "AR camera start"
+    ],
+    "assertion_limits": [
+      "No privacy prose assertion",
+      "No dedicated Settings/Pro largest-text layout assertion",
+      "No VoiceOver assertion",
+      "Current-source native execution UNVERIFIED"
+    ]
+  },
+  "limits": [
+    "No source changes, build, Swift parse/typecheck, native/UI test, permission, commerce or external action performed.",
+    "Only source inventory and read-only Python structure checks ran.",
+    "Accessibility, actual camera permissions, packaged privacy manifest and StoreKit acceptance remain UNVERIFIED.",
+    "Current three Void producers still consume rejected drafts; not fixed or revalidated here.",
+    "Root reported Debug431/0 and separate per-file Release431/0; default Release signal-9 failure remains distinct. Worker claims no root test execution."
+  ]
+}

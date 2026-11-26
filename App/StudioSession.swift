@@ -40,14 +40,15 @@ final class StudioSession {
     private let execute: Executor
     // Observation is the native SwiftUI adapter. Portable tests execute this
     // same orchestration without depending on a Linux Observation runtime.
+    // Keep each ignored attribute on its complete native declaration so the
+    // Observable macro does not also generate tracking accessors for it.
     #if canImport(Darwin)
-    @ObservationIgnored
-    #endif
+    @ObservationIgnored private(set) var operationTask: Task<Void, Error>?
+    @ObservationIgnored private var operationTaskID: UUID?
+    #else
     private(set) var operationTask: Task<Void, Error>?
-    #if canImport(Darwin)
-    @ObservationIgnored
-    #endif
     private var operationTaskID: UUID?
+    #endif
 
     init(editor: StudioEditorState = .init(), store: ProjectStore = ProjectStore(),
          execute: Executor? = nil) {

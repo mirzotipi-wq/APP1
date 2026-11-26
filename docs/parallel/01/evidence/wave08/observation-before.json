@@ -1,0 +1,21 @@
+{
+  "source_revision": "167eb90f49462cddab780798825e07e5954be4a9",
+  "source_sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+  "transformed_source_sha256": "f2939be17673faaa591b4a377c36c22a8b93d35bd3e1d1cb12c7240a3e996465",
+  "transform": "Only replace #if canImport(Darwin) with #if true in actual StudioSession source to exercise Observation macros on Linux; no linking or Apple SDK",
+  "command": [
+    "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc",
+    "-typecheck",
+    "-parse-as-library",
+    "-swift-version",
+    "5",
+    "-module-name",
+    "StudioCompositionMacroProbe",
+    "-I",
+    "/tmp/keyfill01-build-v8-debug/x86_64-unknown-linux-gnu/debug/Modules",
+    "/tmp/keyfill01-observation-probe/StudioSession-before.swift",
+    "App/ProjectStore.swift",
+    "App/ProjectLibraryOperation.swift"
+  ],
+  "exit_code": 1
+}

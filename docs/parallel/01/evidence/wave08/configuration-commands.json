@@ -1,0 +1,49 @@
+{
+  "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+  "started_utc": "2026-11-26T16:12:56.619876+00:00",
+  "native_tools": {
+    "xcodebuild": null,
+    "xcodegen": null
+  },
+  "checks": [
+    {
+      "name": "toolchain",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+        "--version"
+      ],
+      "exit_code": 0,
+      "output": "toolchain.log"
+    },
+    {
+      "name": "package-dump",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+        "package",
+        "--scratch-path",
+        "/tmp/keyfill01-build-v8-inspect",
+        "--cache-path",
+        "/tmp/keyfill01-cache-v8",
+        "dump-package"
+      ],
+      "exit_code": 0,
+      "output": "package-dump.json"
+    },
+    {
+      "name": "package-describe",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+        "package",
+        "--scratch-path",
+        "/tmp/keyfill01-build-v8-inspect",
+        "--cache-path",
+        "/tmp/keyfill01-cache-v8",
+        "describe",
+        "--type",
+        "json"
+      ],
+      "exit_code": 0,
+      "output": "package-describe.json"
+    }
+  ]
+}

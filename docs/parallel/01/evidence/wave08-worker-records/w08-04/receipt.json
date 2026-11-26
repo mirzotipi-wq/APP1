@@ -1,0 +1,280 @@
+{
+  "schema": 1,
+  "worker": "w08-04",
+  "fresh_context": 73,
+  "date": "2026-11-26",
+  "role": "configuration documentation writer",
+  "base_revision": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "native_source_revision": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+  "root_test_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+  "commit": "4cb6824ca7adac6c2706c9cb1a73a814dd4fd647",
+  "changed_paths": [
+    "docs/parallel/01/CONFIGURATION.md"
+  ],
+  "git_status_before": "",
+  "git_status_after": "",
+  "source_hashes": {
+    "Package.swift": {
+      "git_blob": "8d52ab9da2fdcf986d1035a271029078752aae8c",
+      "sha256": "2f0af38da3e97072cbb127d93d7da3afb925eb71ddbac02263013e2f1d344caf"
+    },
+    "project.yml": {
+      "git_blob": "056e9d4159ca0273f812728381723b60a253000f",
+      "sha256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+    },
+    "Resources/PrivacyInfo.xcprivacy": {
+      "git_blob": "e400f8aa47d2371eab42ca43eb9197fbcb0a48dc",
+      "sha256": "faf85354c10094841f8a1dcd974ca746433553eb93d4683243d57357a83602a7"
+    },
+    "scripts/native_test_shards.py": {
+      "git_blob": "e0f098eb6b1965c44cb6c5869c0b6ceacb6aa249",
+      "sha256": "12e982beab8e472432121b24171bc1e2963b71a227123016d022f127bfcf3454"
+    },
+    ".github/workflows/ios-prototype.yml": {
+      "git_blob": "55e68ee810a4dbe72cd8bd5c4aba295958f80d7c",
+      "sha256": "a695b17bad26f9d6e6617ac22d1e8e7fb0431b17186bba0a29d3eb285b6e7210"
+    },
+    ".github/workflows/platform-accessibility-diagnostics.yml": {
+      "git_blob": "9f472293be18fc008a794ccd18e92d62031c8996",
+      "sha256": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9"
+    },
+    "docs/parallel/01/CONFIGURATION.md": {
+      "git_blob": "1e29b722f0b524d9ddb93a5da52c22c2ecf7f108",
+      "sha256": "ca23369101388ae4a37ebdc4859ab8bda35654288fc31c7fce5c01b5091c258d"
+    }
+  },
+  "manifest": {
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/source-manifest.json",
+    "sha256": "ac66296b6caf05455da47bb5fd8555f43755a6e50702c0f85333528a365c5bab",
+    "entries": 179,
+    "comparison": "sha256(git show frozen_base:path) for every entry",
+    "mismatches": [],
+    "complete_ci_dependency_closure": false
+  },
+  "commands": [
+    {
+      "command": "git status --short && git rev-parse HEAD && git log -5 --oneline",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "meaning": "State references valid; M03 active. Not acceptance."
+    },
+    {
+      "command": "git ls-tree -r --name-only HEAD .github Resources App NativeTests Tests Sources UITests && git sparse-checkout list",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 - (runpy.run_path of scripts/native_test_shards.py; discover_methods only)",
+      "exit_code": 0,
+      "meaning": "Source inventory only; no shard verification or tests run."
+    },
+    {
+      "command": "python3 - (SHA256 comparison of all179 manifest entries with git show frozen_base:path)",
+      "exit_code": 0,
+      "mismatches": 0
+    },
+    {
+      "command": "git diff --check && git status --short && git add docs/parallel/01/CONFIGURATION.md && git commit -m \"Document package and native configuration boundaries\" && git rev-parse HEAD && git status --short",
+      "exit_code": 0
+    },
+    {
+      "command": "git show --check --format= 4cb6824ca7adac6c2706c9cb1a73a814dd4fd647",
+      "exit_code": 0
+    }
+  ],
+  "read_limits": [
+    {
+      "requested_path": ".github/workflows/ci.yml",
+      "observation": "Absent from tracked Git tree; combined cat command exit1. Correct ios-prototype.yml was read."
+    },
+    {
+      "requested_path": "docs/parallel/01/CONFIGURATION.md",
+      "observation": "Did not exist before assignment; initial headings search exit2. Created under assigned ownership."
+    },
+    {
+      "requested_path": "Resources/PrivacyInfo.xcprivacy",
+      "observation": "Local sed exit2 because sparse checkout excludes Resources. Tracked Git content/hash verified; not a native source defect."
+    }
+  ],
+  "root_receipts": {
+    "configuration-commands.json": {
+      "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/configuration-commands.json",
+      "sha256": "89ccfbe3a1b564fdafb2d0b93d82e5bf5ef64753df5634985f8f79d1edd9aeb6",
+      "data": {
+        "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "started_utc": "2026-11-26T16:12:56.619876+00:00",
+        "native_tools": {
+          "xcodebuild": null,
+          "xcodegen": null
+        },
+        "checks": [
+          {
+            "name": "toolchain",
+            "command": [
+              "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+              "--version"
+            ],
+            "exit_code": 0,
+            "output": "toolchain.log"
+          },
+          {
+            "name": "package-dump",
+            "command": [
+              "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+              "package",
+              "--scratch-path",
+              "/tmp/keyfill01-build-v8-inspect",
+              "--cache-path",
+              "/tmp/keyfill01-cache-v8",
+              "dump-package"
+            ],
+            "exit_code": 0,
+            "output": "package-dump.json"
+          },
+          {
+            "name": "package-describe",
+            "command": [
+              "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+              "package",
+              "--scratch-path",
+              "/tmp/keyfill01-build-v8-inspect",
+              "--cache-path",
+              "/tmp/keyfill01-cache-v8",
+              "describe",
+              "--type",
+              "json"
+            ],
+            "exit_code": 0,
+            "output": "package-describe.json"
+          }
+        ]
+      }
+    },
+    "debug-command.json": {
+      "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/debug-command.json",
+      "sha256": "7c1ffc45493734086fd162b1c44b6d05ff165ba8da6e2839ff7aabee294ae1c3",
+      "data": {
+        "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "test",
+          "--configuration",
+          "debug",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-debug",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "--jobs",
+          "1",
+          "-Xswiftc",
+          "-disable-batch-mode"
+        ],
+        "started_utc": "2026-11-26T16:13:03.684018+00:00",
+        "scope": "Fresh Swift6.0.3 Linux debug build and full XCTest suite; native UI excluded",
+        "exit_code": 0,
+        "finished_utc": "2026-11-26T16:14:07.315774+00:00",
+        "log_sha256": "3abf5af90d8eb280d4cb0acea6ec125bfa466a3d23bf200860b8b3c8f29dc566"
+      },
+      "observed_terminal_summary": {
+        "tests": 431,
+        "failures": 0
+      }
+    },
+    "release-command.json": {
+      "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave08/release-command.json",
+      "sha256": "08d67cff12560f5c67a17459a85e841bfff15462629e870f510a18f81dd6a627",
+      "data": {
+        "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+        "command": [
+          "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+          "test",
+          "--configuration",
+          "release",
+          "--scratch-path",
+          "/tmp/keyfill01-build-v8-release",
+          "--cache-path",
+          "/tmp/keyfill01-cache-v8",
+          "--jobs",
+          "1",
+          "-Xswiftc",
+          "-disable-batch-mode"
+        ],
+        "started_utc": "2026-11-26T16:14:07.320984+00:00",
+        "scope": "Fresh Swift6.0.3 Linux release build and full XCTest suite; native UI excluded",
+        "exit_code": 1,
+        "finished_utc": "2026-11-26T16:14:39.082467+00:00",
+        "log_sha256": "dd26185e7d2e96cd226e491c85041bfd1bd237c6a25e24e54f3b5cf6e7d73814"
+      },
+      "observed_log_error": "compile command failed due to signal 9; fatalError; no test execution"
+    }
+  },
+  "inventory": {
+    "core_swift_files": 35,
+    "core_test_swift_files": 51,
+    "composition_swift_files": 3,
+    "composition_test_swift_files": 4,
+    "composition_methods": 35,
+    "app_swift_files": 47,
+    "app_tracked_files": 52,
+    "privacy_files": 1,
+    "native_test_swift_files": 23,
+    "native_methods": 189,
+    "ui_swift_files": 12,
+    "ui_classes": 9,
+    "required_ui_methods": 36,
+    "diagnostic_ui_methods": 2
+  },
+  "pending": {
+    "release_per_file_retry": {
+      "status": "pending per manager/root; not claimed passed",
+      "configuration": "Release -O with -Xswiftc -no-whole-module-optimization",
+      "original_failure_preserved": true
+    },
+    "apple_generation_typecheck_build_native_ui": "unverified; xcodegen/xcodebuild unavailable"
+  },
+  "ci_observations": {
+    "provenance": "Manager relayed root observations; worker did not query provider",
+    "current_source": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+    "ios_workflow": {
+      "run": "45856461091",
+      "status": "queued at last root observation"
+    },
+    "project_state": {
+      "run": "45856461162",
+      "status": "success at last root observation"
+    },
+    "prior_5cc_workflow": {
+      "run": "45851159581",
+      "status": "cancelled after subsequent push",
+      "core_job": "140017565927",
+      "core_job_status": "succeeded; not overall workflow success"
+    }
+  },
+  "findings": [
+    "No configuration source defect found in declared membership.",
+    "Old175 omitted privacy resource; new179 adds privacy plus selected workflow/shard inputs, not every CI dependency.",
+    "Native declarations are not generated target verification.",
+    "Three Void producers still consume rejected drafts."
+  ],
+  "worker_execution": {
+    "builds": 0,
+    "tests": 0,
+    "native_generation": 0,
+    "pushes": 0,
+    "nested_agents": 0
+  },
+  "artifacts": {
+    "report": "report.md",
+    "receipt": "receipt.json",
+    "source_patch": "source.patch",
+    "source_patch_sha256": "b84897ecec09c1593212dff93318b42cf3b5380002372803597d7752310fad5b"
+  },
+  "report_budget": {
+    "words": 162,
+    "characters": 1308,
+    "token_estimate": 327,
+    "token_estimate_source": "exec_command original_token_count for report-only cat output"
+  }
+}
