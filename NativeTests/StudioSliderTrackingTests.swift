@@ -10,6 +10,7 @@ final class StudioSliderTrackingTests: XCTestCase {
         var begins = 0
         var ends = 0
         var writes = 0
+        var afterRead: (() -> Void)?
         var afterBegin: (() -> Void)?
         var afterEnd: (() -> Void)?
         var afterWrite: (() -> Void)?
@@ -22,7 +23,11 @@ final class StudioSliderTrackingTests: XCTestCase {
 
         func adapter() -> StudioSliderEditing {
             let captured = generation
-            return StudioSliderEditing(read: { self.width }, write: { value in
+            return StudioSliderEditing(read: {
+                let value = self.width
+                self.afterRead?()
+                return value
+            }, write: { value in
                 guard self.generation == captured else { return }
                 var optics = self.scene.lights[0].effectiveOptics
                 optics.widthMeters = value
@@ -201,6 +206,64 @@ final class StudioSliderTrackingTests: XCTestCase {
         XCTAssertEqual(replacement.ends, 1)
         XCTAssertFalse(replacement.history.isEditing)
         XCTAssertFalse(tracking.isTracking)
+        XCTAssertEqual(replacement.history.undo(current: replacement.scene), replacementInitial)
+    }
+
+    func testReadThatFinishesSessionCannotReopenHistory() throws {
+        let editor = Editor(), tracking = StudioSliderTracking()
+        let initial = editor.scene
+        let token = try XCTUnwrap(tracking.begin(editing: editor.adapter(), mapping: mapping,
+                                               displayedValue: mapping.normalized(editor.width)!))
+        editor.afterRead = { tracking.finish(token) }
+
+        tracking.change(mapping.normalized(1.85)!, for: token)
+
+        XCTAssertFalse(tracking.isTracking)
+        XCTAssertFalse(editor.history.isEditing)
+        XCTAssertEqual(editor.begins, 1)
+        XCTAssertEqual(editor.ends, 1)
+        XCTAssertEqual(editor.writes, 0)
+        XCTAssertEqual(editor.scene, initial)
+        XCTAssertFalse(editor.history.canUndo)
+        tracking.finish(token, finalDisplay: 1)
+        XCTAssertEqual(editor.begins, 1)
+        XCTAssertEqual(editor.ends, 1)
+    }
+
+    func testReadThatReplacesSessionCannotReopenRetiredOwner() throws {
+        let original = Editor(), replacement = Editor(width: 1.1)
+        let tracking = StudioSliderTracking(), mapping = self.mapping
+        let originalInitial = original.scene, replacementInitial = replacement.scene
+        let retired = try XCTUnwrap(tracking.begin(editing: original.adapter(), mapping: mapping,
+                                                 displayedValue: mapping.normalized(original.width)!))
+        var replacementToken: StudioSliderTracking.Token?
+        original.afterRead = {
+            replacementToken = tracking.begin(editing: replacement.adapter(), mapping: mapping,
+                                              displayedValue: mapping.normalized(replacement.width)!)
+        }
+
+        tracking.change(mapping.normalized(1.85)!, for: retired)
+
+        let current = try XCTUnwrap(replacementToken)
+        XCTAssertEqual(tracking.currentToken, current)
+        XCTAssertNotEqual(current, retired)
+        XCTAssertEqual(original.scene, originalInitial)
+        XCTAssertEqual(original.begins, 1)
+        XCTAssertEqual(original.ends, 1)
+        XCTAssertEqual(original.writes, 0)
+        XCTAssertFalse(original.history.isEditing)
+        XCTAssertTrue(replacement.history.isEditing)
+        XCTAssertEqual(replacement.begins, 1)
+        XCTAssertEqual(replacement.ends, 0)
+        tracking.change(1, for: retired)
+        tracking.finish(retired, finalDisplay: 1)
+        XCTAssertEqual(replacement.scene, replacementInitial)
+        XCTAssertEqual(tracking.currentToken, current)
+
+        tracking.finish(current, finalDisplay: mapping.normalized(1.8)!)
+        XCTAssertFalse(tracking.isTracking)
+        XCTAssertFalse(replacement.history.isEditing)
+        XCTAssertEqual(replacement.ends, 1)
         XCTAssertEqual(replacement.history.undo(current: replacement.scene), replacementInitial)
     }
 

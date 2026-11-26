@@ -84,7 +84,10 @@ final class StudioSliderTracking {
         guard let next, next.isFinite else { return }
         current.lastDisplay = displayedValue
         session = current
-        guard next != current.editing.read() else { return }
+        let observed = current.editing.read()
+        // Reading the captured binding can retire or replace this session.
+        // Do not reopen its history owner after that synchronous boundary.
+        guard session?.token == token, next != observed else { return }
         // A parent lifecycle boundary may have force-closed history while the
         // native touch is still active. Reassert this captured owner, then
         // recheck the token in case the callback cancelled or replaced it.
