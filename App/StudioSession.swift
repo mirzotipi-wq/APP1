@@ -96,6 +96,15 @@ final class StudioSession {
         catch { return false }
     }
 
+    /// Controls send a closed field command rather than replacing an entire
+    /// scene. The editor validates its payload before touching history/state.
+    @discardableResult
+    func apply(_ command: StudioFieldCommand, from generation: UUID) -> Bool {
+        guard allowsMutation(from: generation) else { return false }
+        do { return try editor.apply(command) }
+        catch { return false }
+    }
+
     func editChanged(_ editing: Bool, owner: String, from generation: UUID) {
         guard generation == self.generation else { return }
         if editing {
@@ -123,8 +132,7 @@ final class StudioSession {
                                 pointsPerMeter: scale, owner: owner)
         }
         guard let drag = planDrag, drag.lightID == id, drag.generation == generation,
-              let source = drag.scene.lights.first(where: { $0.id == id }),
-              let index = scene.lights.firstIndex(where: { $0.id == id }) else { return false }
+              let source = drag.scene.lights.first(where: { $0.id == id }) else { return false }
         let range = Position.coordinateRange
         var position = source.position
         position.x = min(range.upperBound, max(range.lowerBound,
@@ -132,9 +140,7 @@ final class StudioSession {
         position.z = min(range.upperBound, max(range.lowerBound,
             source.position.z + translationZ / drag.pointsPerMeter))
         guard position.isValid else { return false }
-        var candidate = scene
-        candidate.lights[index].position = position
-        return update(candidate, from: generation)
+        return apply(.lightPosition(id: id, position: position), from: generation)
     }
 
     func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {

@@ -52,14 +52,72 @@ public struct StudioEditorState: Equatable, Sendable {
     /// otherwise it is one discrete change. Only the editor owns history writes.
     @discardableResult
     public mutating func update(with candidate: LightingScene) throws -> Bool {
-        let validated = try candidate.validated()
-        let normalized = history.preservingOptionalRepresentations(in: validated)
-        guard normalized != scene else { return false }
-        if !history.isEditing { history.record(previous: scene) }
-        scene = normalized
-        revision = UUID()
-        repairSelection()
-        return true
+        commitValidatedUpdate(try candidate.validated())
+    }
+
+    /// Like `update(with:)`, joins the current continuous edit or records one
+    /// discrete change. The private scene is already validated, so these closed
+    /// edits validate only their payload and live light UUID before any mutation.
+    @discardableResult
+    public mutating func apply(_ command: StudioFieldCommand) throws -> Bool {
+        var candidate = scene
+        switch command {
+        case let .lightValue(id, field, value):
+            guard value.isFinite, field.domain.contains(value),
+                  let index = scene.lights.firstIndex(where: { $0.id == id }) else {
+                throw SceneError.invalidLight
+            }
+            guard field.value(in: scene.lights[index]) != value else { return false }
+            switch field {
+            case .x: candidate.lights[index].position.x = value
+            case .y: candidate.lights[index].position.y = value
+            case .z: candidate.lights[index].position.z = value
+            case .candela: candidate.lights[index].candela = value
+            case .kelvin: candidate.lights[index].kelvin = value
+            }
+        case let .lightPosition(id, position):
+            guard position.isValid,
+                  let index = scene.lights.firstIndex(where: { $0.id == id }) else {
+                throw SceneError.invalidLight
+            }
+            guard scene.lights[index].position != position else { return false }
+            candidate.lights[index].position = position
+        case let .lightOptics(id, optics):
+            guard optics.isValid,
+                  let index = scene.lights.firstIndex(where: { $0.id == id }) else {
+                throw SceneError.invalidLight
+            }
+            let current = scene.lights[index].effectiveOptics
+            var normalized = optics
+            if normalized.effectiveRollDegrees == current.effectiveRollDegrees {
+                normalized.rollDegrees = current.rollDegrees
+            }
+            // An implicit subject target remains distinct from a manual target,
+            // even when their current positions happen to be equal.
+            guard normalized != current else { return false }
+            candidate.lights[index].optics = normalized
+        case let .cameraPosition(position):
+            guard position.isValid else { throw SceneError.invalidScene }
+            guard scene.camera != position else { return false }
+            candidate.camera = position
+        case let .subjectPosition(position):
+            guard position.isValid else { throw SceneError.invalidScene }
+            guard scene.subject != position else { return false }
+            candidate.subject = position
+        case let .cameraLens(lens):
+            guard lens.isValid else { throw SceneError.invalidScene }
+            guard scene.effectiveCameraLens != lens else { return false }
+            candidate.cameraLens = lens
+        case let .previewSettings(settings):
+            guard settings.isValid else { throw SceneError.invalidScene }
+            guard scene.effectivePreviewSettings != settings else { return false }
+            candidate.previewSettings = settings
+        case let .room(room):
+            guard room?.isValid ?? true else { throw SceneError.invalidScene }
+            guard scene.placementRoom != room else { return false }
+            candidate.placementRoom = room
+        }
+        return commitValidatedUpdate(candidate)
     }
 
     public mutating func beginEditing(owner: String) {
@@ -114,6 +172,18 @@ public struct StudioEditorState: Equatable, Sendable {
             selection = scene.lights.first?.id
             revision = UUID()
         }
+    }
+
+    /// Only fully validated candidates or closed, payload-validated commands
+    /// enter here. Keep normalization and history/revision changes in one place.
+    private mutating func commitValidatedUpdate(_ candidate: LightingScene) -> Bool {
+        let normalized = history.preservingOptionalRepresentations(in: candidate)
+        guard normalized != scene else { return false }
+        if !history.isEditing { history.record(previous: scene) }
+        scene = normalized
+        revision = UUID()
+        repairSelection()
+        return true
     }
 
     private mutating func repairSelection() {

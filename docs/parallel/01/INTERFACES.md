@@ -24,9 +24,8 @@ control identity must not include the per-change revision.
 ```swift
 var editor = try StudioEditorState(scene: loadedScene)
 editor.beginEditing(owner: controlID)
-var candidate = editor.scene
-candidate.lights[0].candela = 1200 // cd; geometry remains in meters
-try editor.update(with: candidate)
+try editor.apply(.lightValue(id: lightID, field: .candela, value: 1200))
+// cd; geometry remains in meters and UUIDs are not editable fields.
 editor.endEditing(owner: controlID)
 editor.undo() // restores the complete pre-gesture scene
 ```
@@ -37,6 +36,23 @@ adoption uses the explicit `resettingHistory` policy. First save may establish a
 new project identity without resetting history, selection or presentation mode.
 A no-reset adoption must contain the same validated live scene; differing content
 throws `StudioEditorState.AdoptionError.changesSceneWithoutReset` before mutation.
+
+`StudioFieldCommand` is the closed control interface for light scalars/position/
+optics, camera and subject position, lens, preview and room. Each command validates
+its complete changed payload and resolves a live light UUID before committing.
+It cannot change names, UUIDs, schema or light count. Full candidate validation
+still runs for arbitrary scene updates, replacement and receipt adoption. A
+rejected command preserves revision, selection, redo and any open edit owner.
+Valid effective no-ops preserve optional default representation, including nil
+versus zero optical roll. A manual aim at the subject remains distinct from
+automatic nil aim. Room validation includes coupled dimensions and ceiling.
+
+Native controls call `session.apply(command, from: capturedGeneration)`. Admission
+requires a loaded, writable, idle session and the current storage generation.
+The Bool means a scene mutation occurred; feature adapters must independently
+report accepted valid no-ops. Typed mutation avoids scanning unchanged imported
+names and complete lights. Equality, history normalization, array copying and
+preview rendering still have costs; no measured UI performance claim is made.
 
 ## Feature result identity
 

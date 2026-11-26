@@ -42,10 +42,7 @@ struct StudioView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     // Read-through projections, never independently stored copies of the editor.
-    private var scene: LightingScene {
-        get { session.scene }
-        nonmutating set { session.update(newValue, from: session.generation) }
-    }
+    private var scene: LightingScene { session.scene }
     private var selected: UUID? {
         get { session.selection }
         nonmutating set { session.select(newValue, from: session.generation) }
@@ -1018,29 +1015,24 @@ struct StudioView: View {
                             onEditingChanged: editHandler(owner: opticsOwner))
                 .id(opticsOwner)
             Divider()
-            control("Horizontal", id: light.id, key: \.position.x, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightX")
-            control("Depth", id: light.id, key: \.position.z, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightZ")
-            control("Height", id: light.id, key: \.position.y, range: 0...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightY")
+            control("Horizontal", id: light.id, field: .x, range: -4...4, step: 0.05, unit: "m", fieldID: "lightX")
+            control("Depth", id: light.id, field: .z, range: -4...4, step: 0.05, unit: "m", fieldID: "lightZ")
+            control("Height", id: light.id, field: .y, range: 0...4, step: 0.05, unit: "m", fieldID: "lightY")
             Divider()
-            control("Intensity", id: light.id, key: \.candela, range: 0...3000, domain: 0...100_000, step: 25, unit: "cd", fieldID: "lightIntensity")
-            control("Temperature", id: light.id, key: \.kelvin, range: 2000...9000, domain: 1000...20_000, step: 100, unit: "K", fieldID: "lightTemperature")
+            control("Intensity", id: light.id, field: .candela, range: 0...3000, step: 25, unit: "cd", fieldID: "lightIntensity")
+            control("Temperature", id: light.id, field: .kelvin, range: 2000...9000, step: 100, unit: "K", fieldID: "lightTemperature")
         }.padding(14).background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
     }
 
-    private func control(_ title: String, id: UUID, key: WritableKeyPath<StudioLight, Double>,
-                         range: ClosedRange<Double>, domain: ClosedRange<Double>,
-                         step: Double, unit: String, fieldID: String) -> some View {
+    private func control(_ title: String, id: UUID, field: StudioLightField,
+                         range: ClosedRange<Double>, step: Double,
+                         unit: String, fieldID: String) -> some View {
         let generation = libraryOperation.generation
+        let domain = field.domain
         let value = Binding<Double>(
-            get: { scene.lights.first(where: { $0.id == id })?[keyPath: key] ?? range.lowerBound },
+            get: { scene.lights.first(where: { $0.id == id }).map { field.value(in: $0) } ?? range.lowerBound },
             set: { new in
-                guard libraryOperation.allowsSceneMutation(from: generation),
-                      let i = scene.lights.firstIndex(where: { $0.id == id }),
-                      new.isFinite, domain.contains(new), new != scene.lights[i][keyPath: key] else { return }
-                var next = scene.lights[i]
-                next[keyPath: key] = new
-                guard next.isValid else { return }
-                scene.lights[i] = next
+                session.apply(.lightValue(id: id, field: field, value: new), from: generation)
             })
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         // Capture this project, light and field identity. A late callback must
@@ -1076,51 +1068,31 @@ struct StudioView: View {
     private func opticsBinding(for id: UUID) -> Binding<LightOptics> {
         let generation = libraryOperation.generation
         return Binding(get: { scene.lights.first(where: { $0.id == id })?.effectiveOptics ?? LightOptics() },
-                set: { new in
-                    guard libraryOperation.allowsSceneMutation(from: generation),
-                          new.isValid, let i = scene.lights.firstIndex(where: { $0.id == id }),
-                          scene.lights[i].effectiveOptics != new else { return }
-                    var next = scene
-                    next.lights[i].optics = new
-                    scene = next
-                })
+                       set: { session.apply(.lightOptics(id: id, optics: $0), from: generation) })
     }
 
     private var cameraPositionBinding: Binding<Position> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.camera }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.camera else { return }
-            scene.camera = new
-        })
+        return Binding(get: { scene.camera },
+                       set: { session.apply(.cameraPosition($0), from: generation) })
     }
 
     private var subjectPositionBinding: Binding<Position> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.subject }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid,
-                  new != scene.subject else { return }
-            scene.subject = new
-        })
+        return Binding(get: { scene.subject },
+                       set: { session.apply(.subjectPosition($0), from: generation) })
     }
 
     private var previewSettingsBinding: Binding<PreviewSettings> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.effectivePreviewSettings }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.effectivePreviewSettings else { return }
-            var next = scene
-            next.previewSettings = new
-            scene = next
-        })
+        return Binding(get: { scene.effectivePreviewSettings },
+                       set: { session.apply(.previewSettings($0), from: generation) })
     }
 
     private var cameraLensBinding: Binding<CameraLens> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.effectiveCameraLens }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.effectiveCameraLens else { return }
-            var next = scene
-            next.cameraLens = new
-            scene = next
-        })
+        return Binding(get: { scene.effectiveCameraLens },
+                       set: { session.apply(.cameraLens($0), from: generation) })
     }
 
     /// Controls retain identity through first save; intentional document
@@ -1271,8 +1243,7 @@ struct StudioView: View {
         guard room.isValid, acceptsRoomResult(from: context) else { return false }
         guard room != scene.placementRoom else { return true }
         session.editChanged(true, owner: context.owner, from: context.generation)
-        scene.placementRoom = room
-        return true
+        return session.apply(.room(room), from: context.generation)
     }
 
     private func finishRoomEditing(_ context: SceneContext?) {
@@ -1292,8 +1263,7 @@ struct StudioView: View {
         guard acceptsRoomResult(from: context) else { return false }
         guard scene.placementRoom != nil else { return true }
         session.editChanged(true, owner: context.owner, from: context.generation)
-        scene.placementRoom = nil
-        return true
+        return session.apply(.room(nil), from: context.generation)
     }
 
     private func dismissSceneEditors() {

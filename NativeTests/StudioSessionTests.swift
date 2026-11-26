@@ -36,6 +36,33 @@ final class StudioSessionTests: XCTestCase {
         try await session.beginLibraryOperation(.load, from: session.generation).value
     }
 
+    func testTypedCommandsRequireCurrentLoadedEditorAndUseTheAddressedLight() async throws {
+        let session = StudioSession(execute: { _ in nil })
+        let initial = session.editor
+        let beforeLoad = session.generation
+        let id = initial.scene.lights[0].id
+        let command = StudioFieldCommand.lightValue(id: id, field: .candela, value: 1234)
+        XCTAssertFalse(session.apply(command, from: beforeLoad))
+        XCTAssertEqual(session.editor, initial)
+        try await open(session)
+        let loaded = session.editor
+        XCTAssertNotEqual(session.generation, beforeLoad)
+        XCTAssertFalse(session.apply(command, from: beforeLoad))
+        XCTAssertEqual(session.editor, loaded)
+        let selected = initial.scene.lights[2].id
+        XCTAssertTrue(session.select(selected, from: session.generation))
+        XCTAssertTrue(session.apply(command, from: session.generation))
+        XCTAssertEqual(session.scene.lights[0].candela, 1234)
+        XCTAssertEqual(session.scene.lights[2], initial.scene.lights[2])
+        XCTAssertEqual(session.selection, selected, "A queued field command keeps its captured light UUID")
+        let changed = session.editor
+        XCTAssertFalse(session.apply(.lightValue(id: UUID(), field: .x, value: 2),
+                                     from: session.generation))
+        XCTAssertEqual(session.editor, changed)
+        XCTAssertFalse(session.apply(command, from: session.generation))
+        XCTAssertEqual(session.editor, changed)
+    }
+
     func testStaleReservationDoesNotEndCurrentContinuousEdit() async throws {
         let scene = LightingScene.portrait()
         let receipt = try ProjectLibrary(name: "Saved", scene: scene)
@@ -205,6 +232,7 @@ final class StudioSessionTests: XCTestCase {
         changed.camera.x = 2
         XCTAssertFalse(session.replace(changed, from: generation))
         XCTAssertFalse(session.update(changed, from: generation))
+        XCTAssertFalse(session.apply(.cameraPosition(changed.camera), from: generation))
         XCTAssertFalse(session.select(scene.lights[2].id, from: generation))
         XCTAssertThrowsError(try session.beginLibraryOperation(.save, from: generation)) {
             XCTAssertEqual($0 as? ProjectLibraryOperationState.OperationError, .busy)
@@ -226,6 +254,7 @@ final class StudioSessionTests: XCTestCase {
         var next = session.scene
         next.camera.x = 1
         XCTAssertFalse(session.replace(next, from: session.generation))
+        XCTAssertFalse(session.apply(.cameraPosition(next.camera), from: session.generation))
         XCTAssertThrowsError(try session.beginLibraryOperation(.save, from: session.generation))
         XCTAssertEqual(session.editor, original)
     }
