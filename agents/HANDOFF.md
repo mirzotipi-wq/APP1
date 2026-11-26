@@ -2,9 +2,11 @@
 
 ## Current closeout — 26 November 2026
 
-M02 remains accepted under `m02-m03-code-v2`. Integrated source `9faebc529ff434feef8995d0a565d2ee04e98c13` is published on `main`; [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392) must complete 154 native and 35 required UI methods plus26 original Default/AXXXL captures. The original 24 captures remain; Camera selection adds one at each text size. M03 stays active until required runtime outcomes and actual image review pass.
+M02 remains accepted under `m02-m03-code-v2`. Integrated source `f150f98e35dd735927075aac4d2f8b02295c6a67` is published on `main`; [run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256) must complete 154 native and 35 required UI methods plus 28 original Default/AXXXL captures. The original 26 captures remain, with Workspace-header added at both sizes. M03 stays active until commands, exact method accounting, finalized results and actual image review pass.
 
-All100 actual worker contexts completed their assignments; the ledger separates each initial assignment and followup without extra credit. Final local366 Debug/366 Release/100 tooling tests and actual Linux tmpfs write/interruption probes pass. See [the closeout packet](../docs/evidence/m03-closeout-2026-11-26/README.md) for exact changes, hashes and retained02797 failures. Do not transfer earlier-source runtime passes. Leave M04–M07 pending; no physical calibration, device performance or manual VoiceOver acceptance is claimed.
+The preceding 9fa run is terminal: core 366/366 Debug and Release plus 100 tooling passed; native 153/154 and UI 34/35 passed. Raw fixture-boundary containment and the largest-text selected-caption minimum failed; original images also show a narrow Scene/Meter header. The reviewed repair gives the header adaptive rows, adds actual interline spacing to the caption and name-save action, and moves fixture Text one point inside its control after both observers. Thresholds and all prior captures remain intact. [The closeout packet](../docs/evidence/m03-closeout-2026-11-26/README.md) retains original outcomes and images.
+
+All 100 actual worker contexts completed their initial assignments; followups reuse their original identities. Worker 001 verified 109 portable inputs and renderer integration remain unchanged, so accepted M02 evidence carries forward explicitly. Fresh native/UI outcomes remain source-specific. Leave M04–M07 pending; no physical calibration, device performance or manual VoiceOver acceptance is claimed.
 
 The prior handoff is retained below for revision-specific history.
 

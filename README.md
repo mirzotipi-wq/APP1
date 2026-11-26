@@ -46,11 +46,11 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-M02 is complete under the code acceptance contract. The integrated editing and CI corrections are published at `9faebc529ff434feef8995d0a565d2ee04e98c13` and are running in [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392). Required execution is **154 native methods, 35 UI methods and 26 original Default/AXXXL layout captures**. The ten optics methods repeat the same editing workflow. M03 remains active until all required results and image review pass.
+M02 is complete under the code acceptance contract. The reviewed layout and fixture corrections are published at `f150f98e35dd735927075aac4d2f8b02295c6a67` and are running in [run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256). Required execution is **154 native methods, 35 UI methods and 28 original Default/AXXXL layout captures**. The ten optics methods repeat the same editing workflow. M03 remains active until all required results and image review pass.
 
 The [closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) records exactly 100 completed worker contexts, Unicode and history boundaries, room precision, camera selection/slider contrast, native measurement/focus fixtures and CI ownership/retention repairs. Final local checks passed 366 Debug, 366 Release and 100 tooling tests. Actual atomic-write and interruption probes passed on the local Linux tmpfs host; Apple runtime execution remains separately required.
 
-The preceding 02797 run passed core, 5 room/precision, 10 optics and 9 library/reference UI methods. Studio/export passed 9/10 and failed its saved-status wait after relaunch. Native execution passed 148/150; the accessibility job failed before its one method began. Original failures and unfinished outcomes remain in the packet and are not passes for the integrated source.
+The preceding 9fa run passed all 366 Debug/366 Release/100 tooling checks, 153/154 native methods and 34/35 UI methods. The native fixture containment and largest-text caption assertions failed; recovered original images also identified a cramped Scene/Meter header. These failures and the preceding 02797 outcomes remain in the packet. The new repair keeps every minimum-fit, containment, growth and hit-target requirement and adds two header captures.
 
 Code changes run the full development workflow. Documentation-only evidence updates run project-state validation and do not cancel unchanged simulator work.
 

@@ -146,3 +146,9 @@ The integration lead published the reviewed source batch to `main` as [`9faebc52
 The campaign found additional defects and improved targeted coverage; the number of workers is not a quality score. Repeatability runs are distinguished from distinct operation coverage. For example, the ten optics UI methods repeat a substantive rectangle-width workflow; they do not independently cover ten different optical operations. Library collision routing, archived-state relaunch behavior, and other explicit gaps are recorded as coverage limits rather than invented production failures.
 
 The integration lead reconciles the source revision, complete test inventory, CI outcomes, and final milestone state. This worker record does not declare M02 or M03 accepted by itself.
+
+## Published layout follow-up
+
+The integration lead published the reviewed five-file repair as [`f150f98`](https://github.com/mirzotipi-wq/APP1/commit/f150f98e35dd735927075aac4d2f8b02295c6a67), with exact remote/local tree agreement. Existing workers 002, 005 and 093 reviewed the adaptive header, actual caption/name-action spacing and native fixture inset; worker 001 verified the unchanged portable inputs and acceptance scope. These are follow-ups within existing contexts. The campaign remains exactly 100 distinct completed initial assignments.
+
+[Run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256) must complete 154 native methods, 35 UI methods and 28 original screenshots. Runtime and image acceptance remain pending. The preceding source passed 153/154 native and 34/35 UI methods; its failures and actual original images remain retained.
