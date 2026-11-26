@@ -1,0 +1,100 @@
+{
+  "worker": "/root/w031/w033",
+  "base": "c08cd0be2548467add169c3594207cf489760787",
+  "kind": "Read-only source/interface inspection; no Swift, C++, or Metal execution",
+  "source_sha256": {
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+    "App/MetalStudyRenderer.swift": "ac846f97796b90929b4c27ae72e2698fb54f62cbc100664f455251e60de88df4",
+    "App/ReferenceStudy.metal": "39a474e15c28f00f81cbda1a02dc25763d5bada763d12ac269b69bca08af08f8",
+    "scripts/verify-kernel-host.cpp": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216"
+  },
+  "candidate_header_sha256": "5bdba47a2620807b9fa61f899c2c6d8ed2cc534f5a3e26693cbdbfbc786ef628",
+  "startup": {
+    "status": "clean detached HEAD",
+    "check": "State structure and evidence references valid; this does NOT verify test truth or release readiness.",
+    "next": "M03: Professional editing and project library; outstanding editing, accessibility, persistence; superseded for this task by lane04-only owner scope",
+    "mandatory_documents_read": [
+      "AGENTS.md",
+      "agents/OPERATING_PROTOCOL.md",
+      "agents/HANDOFF.md",
+      "agents/state.json",
+      "docs/PRODUCT.md",
+      "docs/ARCHITECTURE.md",
+      "docs/ROADMAP.md",
+      "docs/QUALITY.md",
+      "docs/DESIGN.md"
+    ]
+  },
+  "findings": [
+    {
+      "claim": "Scene validation permits 0 through 12 lights; inactive lights are skipped.",
+      "source": [
+        "Sources/LightingCore/Scene.swift:64",
+        "Sources/LightingCore/ReferenceStudy.swift:235"
+      ]
+    },
+    {
+      "claim": "Point/directional emits 1 sample; each interactive rectangle emits 64 samples and one area. Therefore sample count is 0...768 and area count is 0...12, both exact Float32 integers.",
+      "source": [
+        "Sources/LightingCore/ReferenceStudy.swift:239",
+        "Sources/LightingCore/ReferenceStudy.swift:245",
+        "Sources/LightingCore/ReferenceStudy.swift:248",
+        "Sources/LightingCore/ReferenceStudy.swift:254",
+        "Sources/LightingCore/ReferenceStudy.swift:434"
+      ]
+    },
+    {
+      "claim": "Point/directional color.w is zero; every rectangle sample uses the exact one-based area index. Nonzero tags are integral 1...areaCount.",
+      "source": [
+        "Sources/LightingCore/ReferenceStudy.swift:250",
+        "Sources/LightingCore/ReferenceStudy.swift:260",
+        "Sources/LightingCore/ReferenceStudy.swift:275"
+      ]
+    },
+    {
+      "claim": "The sole public packed constructor uses interactive quality and always emits raw grid 8, even with empty sample and area arrays.",
+      "source": [
+        "Sources/LightingCore/ReferenceStudy.swift:424",
+        "Sources/LightingCore/ReferenceStudy.swift:434"
+      ]
+    },
+    {
+      "claim": "Constructor resolution is 24...192, divisible by 3, height=width*2/3. Native wrapper skips out-of-grid threads.",
+      "source": [
+        "Sources/LightingCore/ReferenceStudy.swift:448",
+        "Sources/LightingCore/ReferenceStudy.swift:449",
+        "Sources/LightingCore/ReferenceStudy.swift:456",
+        "App/ReferenceStudy.metal:9"
+      ]
+    },
+    {
+      "claim": "Empty arrays receive a one-row SIMD4<Float>.zero backing allocation, not a zero-byte Metal buffer; count remains zero and loops do not dereference those arrays.",
+      "source": [
+        "App/MetalStudyRenderer.swift:121",
+        "App/MetalStudyRenderer.swift:124"
+      ]
+    },
+    {
+      "claim": "Candidate finite/range/integrality guards precede uint casts; width bound precedes width multiplication; raw grid equality precedes grid cast; nonzero tag guard precedes index subtraction. No packed ABI change.",
+      "source": [
+        "App/StudyKernel.h candidate SHA256 listed above"
+      ]
+    },
+    {
+      "claim": "Host parser requires six parameter rows, <=2304 sample rows, <=36 area rows, both lengths divisible by 3, finite row values, and exact metadata-count/row-count equality. No lane02/03/19 parser request is needed.",
+      "source": [
+        "scripts/verify-kernel-host.cpp:39",
+        "scripts/verify-kernel-host.cpp:51",
+        "scripts/verify-kernel-host.cpp:56",
+        "scripts/verify-kernel-host.cpp:57"
+      ]
+    }
+  ],
+  "limits": [
+    "Header raw pointers carry no lengths; arbitrary caller must supply valid backing rows.",
+    "This review does not execute constructor or kernel and establishes no changed-source parity or actual Metal result.",
+    "Header candidate remains subject to designated sanitizer/strict host compile and actual Metal CI checks."
+  ],
+  "recommendation": "Accept header-only candidate as constructor-compatible, subject to assigned validation. No source edits by this worker."
+}

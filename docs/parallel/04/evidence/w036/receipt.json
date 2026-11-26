@@ -1,0 +1,83 @@
+{
+  "actual_worker_id": "/root/w031/w036",
+  "base": "c08cd0be2548467add169c3594207cf489760787",
+  "candidate_git_blob": "f60258402a96f58b62607d5cefec5e41c7ec4137",
+  "hashes": {
+    "candidate_header_sha256": "5bdba47a2620807b9fa61f899c2c6d8ed2cc534f5a3e26693cbdbfbc786ef628",
+    "test_source_sha256": "20c625f7f92b3c84647f944b99d62d35772102d4cc8ef373ff2797f6d3d42e51",
+    "runner_sha256": "d8af45eb32e59bdf92adc5b83b89b7977512ee879ae12236eb99f6fb96ac0a43",
+    "compiler_binary_sha256": "6b3696e4dcb85e1c949c732a02befa50e3983ecf94ce7e8e58d9d503b954b79d",
+    "test_binary_sha256": "2c6d5c61317442f4b02cc47b24a8e65d9baf396d70c5b191f7db35b9f5b933f1"
+  },
+  "commands": [
+    {
+      "name": "compiler-version",
+      "cwd": "/workspace/scratch/2987b1ee980d/lane04/results/w036",
+      "command": "g++ --version",
+      "exitcode": 0,
+      "sanitizer_diagnostics": 0,
+      "stdout": "g++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    {
+      "name": "compiler-target",
+      "cwd": "/workspace/scratch/2987b1ee980d/lane04/results/w036",
+      "command": "g++ -dumpmachine",
+      "exitcode": 0,
+      "sanitizer_diagnostics": 0,
+      "stdout": "x86_64-linux-gnu\n",
+      "stderr": ""
+    },
+    {
+      "name": "platform",
+      "cwd": "/workspace/scratch/2987b1ee980d/lane04/results/w036",
+      "command": "uname -a",
+      "exitcode": 0,
+      "sanitizer_diagnostics": 0,
+      "stdout": "Linux 6e77ed83c607 6.18.57 #1 SMP Tue Oct 20 21:56:04 UTC 2026 x86_64 GNU/Linux\n",
+      "stderr": ""
+    },
+    {
+      "name": "compile",
+      "cwd": "/workspace/scratch/2987b1ee980d/lane04/results/w036",
+      "command": "flock /tmp/keyfill04-2987b1ee980d/build.lock g++ -std=c++17 -O1 -g -Wall -Wextra -Wpedantic -Werror -ffp-contract=off -fno-omit-frame-pointer -fsanitize=float-cast-overflow -fno-sanitize-recover=all /workspace/scratch/2987b1ee980d/lane04/results/w036/candidate_metadata_test.cpp -o /tmp/keyfill04-builds-2987b1ee980d/w036/candidate-metadata-test",
+      "exitcode": 0,
+      "sanitizer_diagnostics": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "test",
+      "cwd": "/workspace/scratch/2987b1ee980d/lane04/results/w036",
+      "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=0 /tmp/keyfill04-builds-2987b1ee980d/w036/candidate-metadata-test",
+      "exitcode": 0,
+      "sanitizer_diagnostics": 0,
+      "stdout": "host_cpp_only=1 parser_used=0 sample_records=769 area_records=13 dimensions=24x16 pixel=12,8\nvalid-control pixel=24,24,24,255 result=PASS\nsamples-negative value=-1 call=begin\nsamples-negative pixel=255,0,255,0 result=PASS\nsamples-fractional value=64.5 call=begin\nsamples-fractional pixel=255,0,255,0 result=PASS\nsamples-max-plus-one value=769 call=begin\nsamples-max-plus-one pixel=255,0,255,0 result=PASS\nsamples-nan value=nan call=begin\nsamples-nan pixel=255,0,255,0 result=PASS\nsamples-large value=4294967296 call=begin\nsamples-large pixel=255,0,255,0 result=PASS\nareas-negative value=-1 call=begin\nareas-negative pixel=255,0,255,0 result=PASS\nareas-fractional value=1.5 call=begin\nareas-fractional pixel=255,0,255,0 result=PASS\nareas-max-plus-one value=13 call=begin\nareas-max-plus-one pixel=255,0,255,0 result=PASS\nareas-nan value=nan call=begin\nareas-nan pixel=255,0,255,0 result=PASS\nareas-large value=4294967296 call=begin\nareas-large pixel=255,0,255,0 result=PASS\ngrid-negative value=-1 call=begin\ngrid-negative pixel=255,0,255,0 result=PASS\ngrid-fractional value=8.5 call=begin\ngrid-fractional pixel=255,0,255,0 result=PASS\ngrid-nine value=9 call=begin\ngrid-nine pixel=255,0,255,0 result=PASS\ngrid-nan value=nan call=begin\ngrid-nan pixel=255,0,255,0 result=PASS\ngrid-large value=4294967296 call=begin\ngrid-large pixel=255,0,255,0 result=PASS\ntag-negative value=-1 call=begin\ntag-negative pixel=255,0,255,0 result=PASS\ntag-fractional value=1.5 call=begin\ntag-fractional pixel=255,0,255,0 result=PASS\ntag-above-area-count value=2 call=begin\ntag-above-area-count pixel=255,0,255,0 result=PASS\ntag-nan value=nan call=begin\ntag-nan pixel=255,0,255,0 result=PASS\ntag-large value=4294967296 call=begin\ntag-large pixel=255,0,255,0 result=PASS\nsummary valid_controls=1 invalid_cases=20 failures=0\n",
+      "stderr": ""
+    }
+  ],
+  "case_results": [
+    "valid-control pixel=24,24,24,255 result=PASS",
+    "samples-negative pixel=255,0,255,0 result=PASS",
+    "samples-fractional pixel=255,0,255,0 result=PASS",
+    "samples-max-plus-one pixel=255,0,255,0 result=PASS",
+    "samples-nan pixel=255,0,255,0 result=PASS",
+    "samples-large pixel=255,0,255,0 result=PASS",
+    "areas-negative pixel=255,0,255,0 result=PASS",
+    "areas-fractional pixel=255,0,255,0 result=PASS",
+    "areas-max-plus-one pixel=255,0,255,0 result=PASS",
+    "areas-nan pixel=255,0,255,0 result=PASS",
+    "areas-large pixel=255,0,255,0 result=PASS",
+    "grid-negative pixel=255,0,255,0 result=PASS",
+    "grid-fractional pixel=255,0,255,0 result=PASS",
+    "grid-nine pixel=255,0,255,0 result=PASS",
+    "grid-nan pixel=255,0,255,0 result=PASS",
+    "grid-large pixel=255,0,255,0 result=PASS",
+    "tag-negative pixel=255,0,255,0 result=PASS",
+    "tag-fractional pixel=255,0,255,0 result=PASS",
+    "tag-above-area-count pixel=255,0,255,0 result=PASS",
+    "tag-nan pixel=255,0,255,0 result=PASS",
+    "tag-large pixel=255,0,255,0 result=PASS"
+  ],
+  "limits": "Candidate-only host C++; no baseline execution, parser execution, Swift, actual Metal, CPU-oracle parity or cache-lifetime acceptance."
+}

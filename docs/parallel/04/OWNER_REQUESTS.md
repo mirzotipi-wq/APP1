@@ -14,7 +14,7 @@ No numerical oracle, sample order, color or packed ABI changes planned. Preserve
 
 ## Lane19 (harness/CI)
 
-Existing host fixture parser permits finite nonintegral/negative/huge grid/area tags before shared Float-to-UInt casts, and does not verify contiguous area-group metadata. Production StudyComputeInput is immutable and validated, so this is a harness-input concern. Reproduce under UBSan and harden parser without weakening parity criteria. New native tests should stay in already owned StudyRendererTests/StudyRenderCacheTests classes; preserve explicit actual-Metal required methods and distinguish mocked backend lifecycle tests.
+Existing host fixture parser permits finite nonintegral/negative/huge grid/area tags before shared Float-to-UInt casts, and does not verify contiguous area-group metadata. Production StudyComputeInput is immutable and validated, so this is a harness-input concern. Reproduce under UBSan and harden parser without weakening parity criteria. Preserve the three explicit actual-Metal required methods and distinguish mocked backend lifecycle tests. StudyRendererTests receives raw metadata cases; the new disjoint StudyPrecisionMatrixTests class adds the same eight strict fixtures on actual Metal. The existing XcodeGen NativeTests directory and native_test_shards.py discovery already include new native classes, and CI rejects every native skip; no shared build/harness edit is required.
 
 ## Lanes01/20 (composition/integration)
 

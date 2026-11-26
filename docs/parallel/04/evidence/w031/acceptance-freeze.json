@@ -1,0 +1,63 @@
+{
+  "worker": "/root/w031",
+  "input_sha": "c08cd0be2548467add169c3594207cf489760787",
+  "source_sha256": {
+    "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+    "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+    "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": "4058929a4fddd1786fbb2d1f0d57ac387d091ef64bd367de0b93962f0c8e30d3",
+    "App/MetalStudyRenderer.swift": "ac846f97796b90929b4c27ae72e2698fb54f62cbc100664f455251e60de88df4",
+    "scripts/verify-kernel-host.cpp": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+    "scripts/prepare-kernel-fixtures.swift": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+    "scripts/precision-boundary.swift": "9125dca07db18c9cf4f029216b1264456e729590ceec7f32de41026d3ca68b45",
+    ".github/workflows/ios-prototype.yml": "a695b17bad26f9d6e6617ac22d1e8e7fb0431b17186bba0a29d3eb285b6e7210",
+    "NativeTests/StudyRendererTests.swift": "42eeb73ea602b333d0672c77e4cb4bd66ae884abf7c08bce8f06b199849a6b59",
+    "App/StudyKernel.h": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e"
+  },
+  "frozen": {
+    "oracle": "shipped Swift ReferenceStudyRenderer authoritative",
+    "six_parity_names": [
+      "hard",
+      "soft",
+      "warm-rotated",
+      "dark",
+      "near-field",
+      "translated"
+    ],
+    "exact_invalid_masks": true,
+    "mean_rgb_max": 1,
+    "fraction_channel_error_over4_max": 0.005,
+    "strict_precision_cases": 8,
+    "strict_max_channel_error": 1,
+    "strict_selection": "6 area-camera +2 world-translation at width192, CI --maximum-channel-error 1",
+    "cache_max_entries": 4,
+    "cache_max_rgba_bytes": 262144,
+    "cache_max_mask_bytes": 65536
+  },
+  "allowed_source_changes": [
+    "App/StudyKernel.h",
+    "NativeTests/StudyRendererTests.swift"
+  ],
+  "executed": [
+    "Repository startup reads",
+    "git status/HEAD/recent log inspection: clean detached private worktree at stated input",
+    "python3 scripts/agent_cycle.py check: exit0",
+    "python3 scripts/agent_cycle.py next: exit0; global M03 queue; current owner lane scope applied",
+    "Source review of protected contract limits and CI precision selection"
+  ],
+  "unrun": [
+    "Swift Debug/Release suites",
+    "Six current shared-kernel parity fixtures",
+    "Eight current strict precision cases",
+    "Apple compile/native/actualMetal tests",
+    "Full cache runtime validation"
+  ],
+  "limits": [
+    "Source invariance and small diagnostics do not prove full current acceptance",
+    "Host C++ is not actualMetal",
+    "Parent-reported baseline5bf9da7 evidence not recertified here"
+  ],
+  "incidental_failures": [
+    "Initial SHA inventory attempt named nonexistent split StudyComputeInput.swift/ReferenceStudyRenderer.swift; corrected actual combined file ReferenceStudy.swift. No source changed."
+  ]
+}

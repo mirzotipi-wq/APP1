@@ -1,0 +1,60 @@
+{
+  "actualWorkerID": "w036",
+  "canonicalTask": "/root/w031/w036",
+  "role": "resource-lifetime/sanitizer diagnostic; bounded metadata review",
+  "base": "c08cd0be2548467add169c3594207cf489760787",
+  "permittedOwnership": "finish/04-metal-cache; read-only repository sources; private evidence only; root owns integration",
+  "observedCommands": [
+    {
+      "command": "cat AGENTS.md && git status --short --branch && rg --files agents scripts docs | rg '(status|check|next|START|startup|README)' | head -100",
+      "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w036",
+      "exitcode": 0,
+      "selectedVerbatimOutput": "## HEAD (no branch)\n",
+      "note": "AGENTS.md was read. Read-only inspection returned no changed-file lines."
+    },
+    {
+      "command": "for f in agents/OPERATING_PROTOCOL.md agents/HANDOFF.md agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md; do cat \"$f\"; done\n git rev-parse HEAD\n git log -5 --oneline\n python3 scripts/agent_cycle.py check\n python3 scripts/agent_cycle.py next",
+      "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w036",
+      "exitcode": 0,
+      "selectedVerbatimOutput": "c08cd0be2548467add169c3594207cf489760787\nc08cd0b fix(metal): route precision boundaries through CPU with width-aware eligibility\nc76e176 docs(metal): preserve 20 worker reports and wave 2 precision reproductions\n5bf9da7 Merge current main into Metal workstream and preserve execution recovery\n3d0e206 docs(metal): record wave 1 audits and reproduced silhouette boundary\n9d8bb0b docs(metal): initialize lane 04 baseline and worker plan\nState structure and evidence references valid; this does NOT verify test truth or release readiness.\nM03: Professional editing and project library\nOutstanding gates: editing, accessibility, persistence\nRead agents/HANDOFF.md and docs/QUALITY.md before implementing.\n",
+      "note": "Tool response truncated part of the lengthy startup documents; state/product/architecture were subsequently read in a separate successful call."
+    },
+    {
+      "command": "cat agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md",
+      "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w036",
+      "exitcode": 0,
+      "note": "Completed startup reading; state remains historical/global M03 context, overridden by owner lane-only scope."
+    },
+    {
+      "command": "cat docs/parallel/04/evidence/w016/malformed-metadata-probe.cpp docs/parallel/04/evidence/w016/run_probe.py\n sed -n '1,120p' App/StudyKernel.h\n rg -n 'sampleCount|areaCount|grid|areaIndex|studyPixel|kfStudyPixel|uint|kernel' App/StudyKernel.h\n diff -u App/StudyKernel.h /tmp/keyfill04-2987b1ee980d/workers/w034/App/StudyKernel.h",
+      "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w036",
+      "exitcode": 1,
+      "note": "Expected diff exit 1: candidate differs. Historical w016 script was inspected, not executed.",
+      "inspectedChange": "Candidate validates width 24...192 divisible by 3, height 2w/3, x/y bounds; finite integral sampleCount 0...768 and areaCount 0...12; rawGrid == 8; finite nonzero tags integral in 1...areaCount before uint casts."
+    },
+    {
+      "command": "sed -n '1,260p' scripts/verify-kernel-host.cpp\n sed -n '145,300p' App/StudyKernel.h\n sha256sum App/StudyKernel.h /tmp/keyfill04-2987b1ee980d/workers/w034/App/StudyKernel.h\n git hash-object App/StudyKernel.h /tmp/keyfill04-2987b1ee980d/workers/w034/App/StudyKernel.h\n g++ --version\n command -v g++\n git status --short --branch",
+      "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w036",
+      "exitcode": 0,
+      "selectedVerbatimOutput": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e  App/StudyKernel.h\n5bdba47a2620807b9fa61f899c2c6d8ed2cc534f5a3e26693cbdbfbc786ef628  /tmp/keyfill04-2987b1ee980d/workers/w034/App/StudyKernel.h\ndf3175546623508b192d29210dcd9b51efce4c37\nf60258402a96f58b62607d5cefec5e41c7ec4137\ng++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n/usr/bin/g++\n## HEAD (no branch)\n"
+    }
+  ],
+  "reviewFindings": {
+    "parser": "Original adapter readF32 rejects nonfinite rows; compare rejects p[5].x or p[5].y unequal to serialized sample/area row counts before calling kfStudyPixel.",
+    "candidate": "Observed checks precede their uint conversions. Runtime reachability, supported controls, canonical invalid pixels and zero sanitizer diagnostics were not tested.",
+    "geometryPlanOnly": "Planned fixed 24x16 sphere/area fixture with pixel (12,8); no pixel output observed, so valid surface reachability is unverified."
+  },
+  "blockedAction": {
+    "observedToolResult": "aborted before dispatch",
+    "action": "Combined private snapshot copying and diagnostic-source creation request",
+    "dispatched": false,
+    "shellExitcode": null,
+    "filesCreatedByRequest": false,
+    "compilationAttempted": false,
+    "sanitizerCasesRun": 0,
+    "diagnosticCount": null,
+    "note": "No shell/sanitizer exit status exists. Scheduler additionally reported an earlier turn was flagged before execution; that is preserved as scheduler-reported context."
+  },
+  "laterSteering": "Root narrowed to candidate-only bounded numeric tests and forbade baseline undefined-conversion execution. This arrived after the aborted request. Environment subsequently reported unavailable. No candidate-only retry or workaround was attempted.",
+  "limits": "No compilation, binary/source hash for a probe, fixture, sanitizer run, CPU-oracle parity, Swift build, actual Metal, device, CI or cache-lifetime validation. Frozen thresholds, layouts, production harness and all source files unchanged."
+}
