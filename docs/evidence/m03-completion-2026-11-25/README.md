@@ -2,11 +2,17 @@
 
 **Scope:** M02, then M03, under [m02-m03-code-v2](../../acceptance/m02-m03-code.md).
 **Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
-**Current status:** M02 remains complete. M03 remains active. The completed required UI run passed 29 of 35 methods and failed six. The known leaf-button text-query defect, current library/export failures and missing two-size captures require revalidation.
+**Current status:** M02 remains complete. M03 remains active. The actual leaf-button Text-layout repair is integrated; full validation is pending. The completed required UI run passed 29 of 35 methods and failed six. The known leaf-button text-query defect, current library/export failures and missing two-size captures require revalidation.
 
 The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/commit/75e827f2ee3f99798d619aff62f3a5188b509428). [Full verification run 45751931160](https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160) completed with a failed conclusion. This checkpoint retains its exact unsuccessful outcomes and does not promote M03.
 
-## Completed current-source core verification
+## Current source candidate
+
+[Source `cd5b461`](https://github.com/mirzotipi-wq/APP1/commit/cd5b461e9b1e534911ead986bed0a79188e20add) contains the four reviewed Text-layout repair files. [Full CI run 45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) must compile and execute 137 native methods, the unchanged 35 required UI methods, all existing core/tooling/build/Metal/persistence checks and all 24 original accessibility captures. The [repair note](text-layout-repair.md), [implementation report](workers/w038-text-layout-implementation.json), [independent source review](workers/w100-text-layout-source-review.json), and [192-input source manifest](validation/source-cd5b461/source-manifest.json) describe its exact scope. No new runtime pass is claimed.
+
+The completed-source sections below describe the preceding 75e run and retain its failures. Results are not transferred to changed App/test files.
+
+## Completed 75e core verification
 
 | Check | Actual result |
 |---|---|
@@ -50,7 +56,7 @@ Both full/compact failure archives were SHA-256 verified and preserved in indepe
 
 The [complete UI summary](validation/source-75e827f/ui-execution-summary.json) and [original-image/hierarchy receipt](validation/source-75e827f/app-accessibility/original-review.json) retain the terminal result. Worker 100 independently reconciled all 35 methods and actually viewed all 11 captured PNGs: nine required Default states plus two failure diagnostics. Three remaining Default states and all twelve AXXXL states were not reached.
 
-Save is visibly above the keyboard and passed the parent control's exact label, enabled, hittable, 44-point target and containment assertions. The full original hierarchy proves Save, Cancel and Done are leaf accessibility Buttons, without child StaticText nodes. The next query assumed such a child existed. A measurement repair is being prepared using actual intrinsic Text layout with explicitly identified test instrumentation; the existing font-size, text-growth, control and original-image requirements remain. No corrected test execution is claimed yet.
+Save is visibly above the keyboard and passed the parent control's exact label, enabled, hittable, 44-point target and containment assertions. The full original hierarchy proves Save, Cancel and Done are leaf accessibility Buttons, without child StaticText nodes. The next query assumed such a child existed. The integrated measurement repair uses actual intrinsic Text layout with explicitly identified test instrumentation; the existing font-size, text-growth, control and original-image requirements remain. No corrected test execution is claimed yet.
 
 ## First repaired-source run: retained failures
 
