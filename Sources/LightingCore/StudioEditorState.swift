@@ -4,6 +4,9 @@ import Foundation
 /// and disk state live outside this value. Revisions are identity tokens, not
 /// counters: undoing back to equal content never revives an obsolete result.
 public struct StudioEditorState: Equatable, Sendable {
+    public enum AdoptionError: Error, Equatable {
+        case changesSceneWithoutReset
+    }
     public private(set) var scene: LightingScene
     public private(set) var selection: UUID?
     public private(set) var history = SceneEditHistory()
@@ -100,15 +103,16 @@ public struct StudioEditorState: Equatable, Sendable {
     /// first save establishes project identity but must retain undo/selection.
     public mutating func adopt(_ candidate: LightingScene, resettingHistory: Bool) throws {
         let validated = try candidate.validated()
+        // Save and metadata receipts retain the live scene. Replacing it while
+        // keeping another scene's redo or open transaction would rebase history.
+        guard resettingHistory || validated == scene else {
+            throw AdoptionError.changesSceneWithoutReset
+        }
         if resettingHistory {
             history.reset()
             scene = validated
             selection = scene.lights.first?.id
             revision = UUID()
-        } else if validated != scene {
-            scene = validated
-            revision = UUID()
-            repairSelection()
         }
     }
 
