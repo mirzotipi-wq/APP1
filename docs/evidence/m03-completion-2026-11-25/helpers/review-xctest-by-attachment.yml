@@ -1,0 +1,155 @@
+name: Review XCTest Evidence
+on:
+  push:
+    paths:
+      - '.github/workflows/review-xctest-evidence.yml'
+      - 'docs/evidence/m03-completion-2026-11-25/review-request.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: keyfill-evidence-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the requested original run and artifact
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.request
+          from pathlib import Path
+          path = Path("docs/evidence/m03-completion-2026-11-25/review-request.json")
+          if path.stat().st_size > 8192:
+              raise SystemExit("Oversized review request")
+          request = json.loads(path.read_text())
+          run_id = request.get("runId")
+          revision = request.get("sourceRevision", "")
+          artifact = request.get("artifactName", "")
+          captures = request.get("captureNames")
+          if type(run_id) is not int or not 0 < run_id < 2**63:
+              raise SystemExit("Invalid workflow run")
+          if not re.fullmatch(r"[a-f0-9]{40}", revision):
+              raise SystemExit("Invalid source revision")
+          if not re.fullmatch(r"ui-(app-accessibility|room-precision|studio-export|studio-optics|library-reference)-evidence-compact", artifact):
+              raise SystemExit("Only original compact UI artifacts may be reviewed")
+          if not isinstance(captures, list) or not 1 <= len(captures) <= 24:
+              raise SystemExit("Invalid capture selection")
+          if any(not isinstance(name, str) or not (
+              re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,95}", name) or
+              re.fullmatch(r"[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}\.(png|txt)", name)
+          ) for name in captures):
+              raise SystemExit("Invalid capture name")
+          if len(set(captures)) != len(captures):
+              raise SystemExit("Duplicate capture selection")
+          repository = os.environ["GITHUB_REPOSITORY"]
+          def get(suffix):
+              url = "https://api.github.com/repos/" + repository + suffix
+              call = urllib.request.Request(url, headers={
+                  "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              })
+              with urllib.request.urlopen(call, timeout=30) as response:
+                  return json.load(response)
+          run = get("/actions/runs/" + str(run_id))
+          if run["head_sha"] != revision or run["repository"]["full_name"] != repository:
+              raise SystemExit("Requested source does not match the original run")
+          artifacts = get("/actions/runs/" + str(run_id) + "/artifacts?per_page=100")
+          matches = [item for item in artifacts["artifacts"] if item["name"] == artifact and not item["expired"]]
+          if len(matches) != 1:
+              raise SystemExit("Original artifact is missing or ambiguous")
+          original = matches[0]
+          if original["workflow_run"]["head_sha"] != revision:
+              raise SystemExit("Artifact source mismatch")
+          print("KEYFILL_REVIEW " + json.dumps({
+              "type": "artifact", "runId": run_id, "sourceRevision": revision,
+              "artifactId": original["id"], "artifactName": artifact,
+              "archiveBytes": original["size_in_bytes"], "archiveDigest": original.get("digest"),
+          }), flush=True)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("run_id=" + str(run_id) + "\nartifact_name=" + artifact + "\n")
+          PY
+      - name: Download the original compact artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ steps.source.outputs.artifact_name }}
+          run-id: ${{ steps.source.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: review-artifacts
+      - name: Expose bounded original captures and hierarchy
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, re
+          from pathlib import Path
+          request = json.loads(Path("docs/evidence/m03-completion-2026-11-25/review-request.json").read_text())
+          root = Path("review-artifacts").resolve()
+          manifests = list(root.rglob("manifest.json"))
+          if len(manifests) != 1 or manifests[0].stat().st_size > 512 * 1024:
+              raise SystemExit("Expected one bounded original attachment manifest")
+          manifest = json.loads(manifests[0].read_text())
+          if not isinstance(manifest, list):
+              raise SystemExit("Unexpected original attachment manifest")
+          wanted = set(request["captureNames"])
+          selected = {}
+          for result in manifest:
+              for attachment in result.get("attachments", []):
+                  human = attachment.get("suggestedHumanReadableName", "")
+                  filename = attachment.get("exportedFileName", "")
+                  matches = [name for name in wanted if filename == name or
+                             (human.startswith(name + "_") and human.endswith((".png", ".txt")))]
+                  if len(matches) > 1:
+                      raise SystemExit("Ambiguous original capture selection")
+                  if not matches:
+                      continue
+                  name = matches[0]
+                  filename = attachment.get("exportedFileName", "")
+                  if not re.fullmatch(r"[A-Fa-f0-9-]+\.(png|txt)", filename):
+                      raise SystemExit("Unexpected original attachment filename")
+                  candidates = list(root.rglob(filename))
+                  if name in selected or len(candidates) != 1:
+                      raise SystemExit("Duplicate or missing original capture: " + name)
+                  path = candidates[0]
+                  if path.is_symlink() or not path.resolve().is_relative_to(root):
+                      raise SystemExit("Capture escaped artifact directory")
+                  selected[name] = (path, attachment)
+          total = 0
+          for name in sorted(selected):
+              path, attachment = selected[name]
+              limit = 1024 * 1024 if path.suffix == ".png" else 256 * 1024
+              with path.open("rb") as source:
+                  data = source.read(limit + 1)
+              if len(data) > limit:
+                  raise SystemExit("Original capture exceeds its review bound")
+              if path.suffix == ".png" and not data.startswith(b"\x89PNG\r\n\x1a\n"):
+                  raise SystemExit("Invalid original PNG")
+              total += len(data)
+              if total > 8 * 1024 * 1024:
+                  raise SystemExit("Review payload exceeds its bound")
+              encoded = base64.b64encode(data).decode("ascii")
+              chunks = [encoded[index:index + 24000] for index in range(0, len(encoded), 24000)]
+              print("KEYFILL_REVIEW " + json.dumps({
+                  "type": "image" if path.suffix == ".png" else "text",
+                  "name": name, "sourceRevision": request["sourceRevision"], "file": path.name,
+                  "humanName": attachment.get("suggestedHumanReadableName"),
+                  "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "chunks": len(chunks),
+                  "deviceName": attachment.get("deviceName"), "captureTimestamp": attachment.get("timestamp"),
+              }), flush=True)
+              for index, chunk in enumerate(chunks):
+                  print("KEYFILL_REVIEW " + json.dumps({
+                      "type": "chunk", "name": name, "index": index, "data": chunk,
+                  }), flush=True)
+          missing = sorted(wanted - set(selected))
+          print("KEYFILL_REVIEW " + json.dumps({
+              "type": "summary", "sourceRevision": request["sourceRevision"],
+              "captures": len(selected), "bytes": total, "missing": missing,
+          }), flush=True)
+          if missing:
+              raise SystemExit("Original requested captures missing: " + ", ".join(missing))
+          PY

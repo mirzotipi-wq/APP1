@@ -48,6 +48,8 @@ The current repair scopes navigation boundaries to ancestors of the target conte
 
 Room input now waits for a usable numeric keyboard and reveals the actual field after the keyboard transition. It types once and retains the exact draft equality, Set, geometry and keyboard-dismissal assertions. Failure-only screenshot/hierarchy and bounded geometry output preserve a future failure. This is a synchronization candidate, not proof of the earlier placeholder's cause.
 
+The [original Duplicate failure diagnostic](validation/source-7b91c1a/library-reference/original-hierarchy-review.json) was also recovered by its exact exported attachment identity. It reports an unusable infinite-origin/zero-size ancestor chain and an old name; it does not establish a visible sheet or product cause. The original bytes and independent SHA-256 check are retained.
+
 Status polling uses one immutable snapshot per attempt, with the existing exact label and deadline. Export captures use the original screen image after the existing document/share assertions. The AR and duplicate-sheet query failures remain historical failures until their full workflows pass; source review has not established a product cause.
 
 Two production edge cases found by independent workers were corrected:
@@ -59,7 +61,7 @@ The required current inventories are **134 native methods and 35 UI methods**. T
 
 ## Review and provenance
 
-The owner requested 100 distinct agents. Three worker slots plus the integration lead are available, so the work runs in batches. [The initial six reports](workers/initial-six-reports.json) and [the 43-child checkpoint ledger](workers/checkpoint-43-ledger.json) preserve actual returned work. The [matching report aggregate](workers/checkpoint-43-reports.json) contains real source/log reviews and their stated limits. Followups reuse their original context and never increase the distinct-agent count. Remaining contexts continue; the final ledger will reconcile all 100 once complete.
+The owner requested 100 distinct agents. Three worker slots plus the integration lead are available, so the work runs in batches. [The initial six reports](workers/initial-six-reports.json) and [the 57-child checkpoint ledger](workers/checkpoint-57-ledger.json) preserve actual returned work. The [matching report aggregate](workers/checkpoint-57-reports.json) contains real source/log reviews and their stated limits. Followups reuse their original context and never increase the distinct-agent count. Remaining contexts continue; the final ledger will reconcile all 100 once complete.
 
 The local executor became unavailable during an additional local Swift check. That unfinished check has no claimed result. Integration continued through authenticated GitHub Git operations and actual CI. A bounded, read-only [evidence review workflow](../../../.github/workflows/review-xctest-evidence.yml) verifies original run/artifact source before exposing selected original screenshot/hierarchy bytes. A temporary diagnostic branch kept the previous main run intact; the normal iOS source-push trigger was restored before publishing the current source.
 
