@@ -1,0 +1,258 @@
+{
+  "reviewer": "/root/wave06/w60_independent_review",
+  "input_sha": "74f7584b4e474c752ec0939add6b7522ba98094f",
+  "reviewed_candidate": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W60-independent-review",
+  "output": "/tmp/keyfill03-7f4b/builds/W60-independent-review",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "source_bindings": {
+    "App/ReferenceStudyPreview.swift": {
+      "sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "matches_candidate_commit": true,
+      "matches_W54_tree": true
+    },
+    "NativeTests/StudyPreviewPipelineTests.swift": {
+      "sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "matches_candidate_commit": true,
+      "matches_W54_tree": true
+    }
+  },
+  "original_nine_tests_byte_preserved": true,
+  "unchanged_sections": {
+    "request_identity": true,
+    "load_and_publication_guards": true,
+    "task_after_begin_and_image_conversion": true
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W60-independent-review",
+      "exit_code": 0,
+      "stdout": "74f7584b4e474c752ec0939add6b7522ba98094f\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W60-independent-review",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+      "exit_code": 0,
+      "stdout": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "74f7584b4e474c752ec0939add6b7522ba98094f",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+        "--",
+        "App/ReferenceStudyPreview.swift",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--reverse",
+        "docs/parallel/03/workers/wave06-evidence/W54-paused-and-cancellation.patch"
+      ],
+      "cwd": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/agent_cycle.py",
+        "check"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W60-independent-review",
+      "exit_code": 0,
+      "stdout": "State structure and evidence references valid; this does NOT verify test truth or release readiness.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/agent_cycle.py",
+        "next"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W60-independent-review",
+      "exit_code": 0,
+      "stdout": "M03: Professional editing and project library\nOutstanding gates: editing, accessibility, persistence\nRead agents/HANDOFF.md and docs/QUALITY.md before implementing.\n",
+      "stderr": ""
+    }
+  ],
+  "retained_execution_evidence": {
+    "preview-cancelled-begin-original": {
+      "path": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/evidence/preview-cancelled-begin-original.log",
+      "sha256": "8b3641bc1cb7a209c535b7e0998a131f17c91b35b642165a51b3233edd20925c",
+      "methods": [
+        [
+          "testCancellationDiscardsNoncooperativeRenderCompletion",
+          "passed"
+        ],
+        [
+          "testCancelledErrorsAndPrecancelledWorkStaySilent",
+          "passed"
+        ],
+        [
+          "testConversionFailureHasNoSuccessfulImageOrBackend",
+          "passed"
+        ],
+        [
+          "testCurrentFailureCanRetryWithFreshAttempt",
+          "passed"
+        ],
+        [
+          "testDisappearanceOrInactivityInvalidatesLateFailure",
+          "passed"
+        ],
+        [
+          "testInvalidationDuringConversionCannotPublish",
+          "passed"
+        ],
+        [
+          "testLateFailureCannotReplaceNewerImage",
+          "passed"
+        ],
+        [
+          "testLateSuccessCannotReplaceNewerCompletion",
+          "passed"
+        ],
+        [
+          "testPrecancelledBeginCannotInvalidateLiveRequest",
+          "failed"
+        ],
+        [
+          "testReturningToCompletedRequestInvalidatesIntermediateWork",
+          "passed"
+        ]
+      ],
+      "failed_assertions": 2,
+      "execution_owner": "root; W60 independently read and counted retained terminal results"
+    },
+    "preview-cancelled-begin-corrected": {
+      "path": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/evidence/preview-cancelled-begin-corrected.log",
+      "sha256": "48dc3c908acd8b3c08037a7c3cac6cf9a57173310045ea3c01d034330926d31e",
+      "methods": [
+        [
+          "testCancellationDiscardsNoncooperativeRenderCompletion",
+          "passed"
+        ],
+        [
+          "testCancelledErrorsAndPrecancelledWorkStaySilent",
+          "passed"
+        ],
+        [
+          "testConversionFailureHasNoSuccessfulImageOrBackend",
+          "passed"
+        ],
+        [
+          "testCurrentFailureCanRetryWithFreshAttempt",
+          "passed"
+        ],
+        [
+          "testDisappearanceOrInactivityInvalidatesLateFailure",
+          "passed"
+        ],
+        [
+          "testInvalidationDuringConversionCannotPublish",
+          "passed"
+        ],
+        [
+          "testLateFailureCannotReplaceNewerImage",
+          "passed"
+        ],
+        [
+          "testLateSuccessCannotReplaceNewerCompletion",
+          "passed"
+        ],
+        [
+          "testPrecancelledBeginCannotInvalidateLiveRequest",
+          "passed"
+        ],
+        [
+          "testReturningToCompletedRequestInvalidatesIntermediateWork",
+          "passed"
+        ]
+      ],
+      "failed_assertions": 0,
+      "execution_owner": "root; W60 independently read and counted retained terminal results"
+    }
+  },
+  "manual_state_matrix": [
+    {
+      "frame": "none",
+      "active": "loading progress",
+      "inactive": "static studyPaused"
+    },
+    {
+      "frame": "stale image, same subject",
+      "active": "previous image plus updating progress; no current backend/warning",
+      "inactive": "previous image plus static paused label; no current backend/warning"
+    },
+    {
+      "frame": "stale image, other subject",
+      "active": "loading progress; no wrong-subject image",
+      "inactive": "static studyPaused; no wrong-subject image"
+    },
+    {
+      "frame": "current image",
+      "active": "current image/backend/warning",
+      "inactive": "current image/backend/warning; no progress"
+    },
+    {
+      "frame": "current error",
+      "active": "error with retry",
+      "inactive": "error with retry; retry only changes attempt and awaits foreground for rendering"
+    },
+    {
+      "frame": "stale error",
+      "active": "loading progress",
+      "inactive": "static studyPaused"
+    }
+  ],
+  "matrix_scope": "Manual reading of exact source branches, not runtime UI tests or an executed substitute model.",
+  "adversarial_conclusions": [
+    "Precancelled begin returns a fresh unused ticket and cannot supersede the held live generation. A later uncancelled load with that ticket also fails current-ticket matching.",
+    "Task-entry guard precedes begin and frame clearing; this covers cancellation already present at entry, not a claim of atomic protection against cancellation at every later instruction.",
+    "Uncancelled A to B to A begins a new generation before completed-A reuse, rejecting B completion. Retry preserves scene/cache identity and begins a fresh generation after attempt changes.",
+    "ControlledRender waits for live render entry; explicit MainActor cancelled task cannot run before synchronous cancel and subsequent await. It checks pre-cancellation, no cancelled renderer entry, and exactly one live image publication.",
+    "No concrete regression or supported counterexample found. Keep candidate integration and current-source native verification pending."
+  ],
+  "limits": [
+    "No tests, builds, native/UI hosting, screenshots, VoiceOver, measurements or new timing executed by W60.",
+    "Root Linux evidence executes production pipeline only; SwiftUI/CoreGraphics body is conditionally excluded.",
+    "Prior native evidence has old source hashes and does not validate this candidate.",
+    "Tool output truncations occurred in broad file/stat reads; all review-relevant source, protocols, hashes and regression terminal results were recovered through focused reads. No shell command failure occurred.",
+    "Token counter unavailable."
+  ],
+  "status": "Independent source review complete; recommend retain integration; affected native/UI acceptance unverified."
+}

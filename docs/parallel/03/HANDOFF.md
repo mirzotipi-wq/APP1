@@ -1,76 +1,81 @@
-# Lane 03 — CPU Study and mannequin
+# Lane 03 — CPU Study and mannequin handoff
 
-## Active checkpoint
+## Current review checkpoint
 
-Branch: `finish/03-cpu-study-mannequin`.
-Campaign fallback: `f150f98e35dd735927075aac4d2f8b02295c6a67`.
-Remote main at startup: `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`.
-No lane 20 baseline was published in the initial remote branch inventory.
-Later main changes are preserved for lane 20 integration. Canonical status, CI,
-shared composition, photometry and GPU/cache implementation remain with their owners.
+Accepted executable source: `36ed6a1455dee7ca52b55f46d1a47262f5c98cc1` on `finish/03-cpu-study-mannequin`. CPU rendering source is identical to `db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5`; the later executable change affects preview presentation/publication and its matching test. Sixty actual fresh workers have completed six ten-worker waves. Waves7–10 and final100-worker acceptance are still in progress at this checkpoint.
 
-Baseline Linux Swift 6.2.1 suites: 366 Debug and 366 Release tests, zero failures. All twelve
-unchanged image configurations render with zero unsupported pixels; original
-PPMs, PNG conversions, scene JSONs, manifest and source hashes are retained in
-`evidence/`. Root inspected `evidence/original-contact.png`.
+Campaign fallback was `f150f98e35dd735927075aac4d2f8b02295c6a67`; no lane20 baseline was published in the initial inventory. An ordinary merge retained already-existing main `9e0e2ba` and its `b0d25ee` native UITest CGFloat correction. This lane authored no CI/shared-composition/GPU/cache implementation and never pushed main. Global M02/M03 status remains with20.
 
-Verified geometry defect: the absolute determinant threshold rejects a legitimate
-near-tangent finite ray on the small bottom-pole triangle. The independent
-normalized ray/plane and projected-area witness has positive barycentric weights
-and distance 0.00004999790731633365 m. The shipped BVH and visibility test both miss
-it. `grazing-original.json` preserves the actual Swift result. The candidate now
-scales its parallel cutoff by triangle area and caches the outward geometric
-normal. Independent plane/projected-area probes cover 25 near-tangent finite rays;
-the original failures are retained in `wave02-original-probes.log`.
+## Accepted changes and why they matter
 
-Sphere setup now checks cancellation after resolution validation and before
-camera preparation or light-sample allocation, matching the mannequin's ordering.
-All 380 portable Debug and 380 Release tests pass with these two corrections, including new
-input-boundary, analytic-visibility and cancellation probes. This is a Linux
-Swift result, not an Apple UI or Metal result.
+### Independent mesh visibility correction
 
-Waves 1 and 2 completed twenty real fresh contexts; their ledgers contain actual
-IDs, reports, hashes and private-worktree/recovery receipts. Wave 3 independently
-reviews the accepted intersection and early cancellation fixes. The execution plan is ten acceptance
-leaders plus nine distinct specialists per leader, with at most two children active
-alongside root and leader. The root integrator is not included in the count.
+The head mesh contains5,248 triangles. Its former absolute determinant cutoff rejected legitimate finite near-tangent rays on small polar triangles. The independent ray/plane and projected-area witness has positive barycentric weights and distance about0.0000499979073163m; the old accelerated nearest-hit and visibility queries both missed it.
 
-## Runtime and recovery
+The parallel cutoff now scales by triangle twice-area. Each immutable triangle caches its outward geometric normal and twice-area; vertices, BVH topology, interval/tie behavior and triangle coverage stay unchanged. Tests use an independent plane/projected-area calculation, not only the accelerated implementation against another loop calling the same intersection routine. Twenty-five actual Swift near-tangent cases pass after the fix. W22 preserves50forward/reverse and150interval checks; W30 independently solved75windows with90-digit arithmetic and confirmed seven original misses. Their Python evidence is separately labelled from Swift execution.
 
-The original shared workspace had only 95 MiB free and shared `/tmp` subsequently
-filled. The first attempted build could not write a log. The retry passed using
-private TMPDIR and build outputs. The execution environment then became
-unavailable and its temporary files were lost. The published `9c172d3` checkpoint
-survived. Worker test patches were recovered through content-addressed GitHub
-blobs; the geometry file's recorded SHA-256 also matches. The checkout is now
-`/workspace/scratch/7f4be4bbb2d6/APP1-lane03`, with private build outputs and TMPDIR
-under `/home/agent/keyfill03-7f4b`. `recovery/README.md` distinguishes recovered
-content from rerun evidence. No other task's files were removed.
+The additional cached scalar payload is logically164KiB across the fixed mesh; this is not a measured Swift allocation or RSS claim. See `evidence/grazing-original.json`, `wave02-original-probes.log`, and worker wave2/3 evidence.
 
-Linux can execute portable Swift and the shared C++ kernel harness. SwiftUI,
-CoreGraphics rendering, native Metal and Apple simulator tests cannot execute on
-this host. No native or physical-device pass is inferred. Later wave reports and
-the final handoff must preserve this distinction.
+### Camera clipping now preserves closed surfaces
 
-## Next work
+A primary mannequin ray now finds its true first surface from minimum distance0 before checking the camera-depth plane. If the first head/clothing surface is closer than the minimum camera depth, the renderer throws invalidCamera. A clipped open-panel hit remains background. The correction uses one geometry traversal and does not weaken real near-emitter invalid-surface masks.
 
-Finish independent review of the corrected intersection in wave 3 and proceed
-through the remaining waves. The camera correction now rejects outward back
-faces exposed by the near plane as invalidCamera. Original width144 overhead
-output had 11,708 false unsupported pixels with no lights; the corrected renderer
-returns no image for that invalid camera. Thirteen close front/side and safe
-overhead views remain supported, and the clear overhead image is byte-identical.
-Twenty-one targeted camera/portrait/visibility/cancellation tests pass. Initial
-test-design failures and their corrected pixel-ray witness are recorded in
-evidence/camera-review.json; no true near-emitter mask was weakened. Add explicit preview
-generation/adoption coverage and review loading,
-retry, cancellation and subject transitions. Preserve the six parity fixtures,
-eight precision cases, twelve original images and all resource/cancellation bounds.
+The original overhead width144 image contained11,708 unsupported pixels despite having no lights. It is retained under `evidence/camera-original/`. An initial facing-only repair missed rays whose later neck entry faced the camera. W32's held-out scan found22affected poses; of40retained renderer calls,32returned images and8already rejected the camera. The final first-surface repair rejects all40. The exact source-hash sidecar `workers/wave04-evidence/W32-depth-corrected-inputs.json` identifies the tested source; the raw probe's older path/revision labels were deliberately not rewritten.
 
-## Checkpoint: direct nearest-surface depth and native preview verification
+Five camera-depth regression methods now cover close safe views, original clipped entries/exits, hidden-neck exposure and open-panel clipping. Initial incorrect test assumptions and their failed logs are retained in `evidence/camera-review.json`. A camera rejection has no new render to compare; diagnostic magenta was not painted out or relabelled valid.
 
-Thirty actual workers are complete in published waves1–3; wave4 has ten actual contexts and is finalizing reports. Its independent scan found22 poses missed by the initial facing-only camera guard. Of40 retained renderer calls,32 returned an image and8 threw invalidCamera. The corrected nearest-surface depth implementation rejected all40. It uses one geometry traversal; open-panel clipping remains background. Full Debug384/0 and the later7-method emitter-normal suite/0 passed before the executor became unavailable again. Source recovery matches the independent full SHA-256; see evidence/depth-recovery-checkpoint.json.
+### Tiny intensity is restored after each emitter's integration
 
-Apple CI for ace9f2e passed163 native tests with no skipped native methods, including all9 new preview-pipeline tests and six actual simulator Metal parity cases. Both unsigned Debug and Release apps built. This is source-specific simulator evidence; newer depth code and UI interaction jobs require separate results.
+Positive emitters whose rounded per-sample candela is subnormal are evaluated at unit intensity, then their lux and XYZ contributions are scaled once per emitter. Ordinary accumulation arithmetic/order stays unchanged. Point/directional and contiguous rectangle groups remain separate, preserving mixed-light addition. Rectangle sampling remains64interactive/1,024reference samples. Positive tiny sources retain near-field guards; exact-zero sources retain inactive-light behavior.
 
-New private worker indexes are now hosted by a temporary sparse shared control clone, because persistent linked-worktree indexes exhausted disk space. Environment interruption and remote-only review fallbacks are recorded explicitly. No other task's files or branch were removed. Remaining waves5–10 and final source-bound evidence are still required.
+The frozen actual Swift W42 probe failed56of166checks before the correction and passed166of166afterward. Five new XCTest methods cover analytic grazing material response, full/clipped rectangles, mixed emitter order, near-field rejection and exact GPU rows. Packing restores the original candela before Float conversion; no field or row was added to the public ABI.
+
+This is an intensity-scaling repair, conditioned on a finite nondegenerate unit evaluation. It is not universal extreme-Double accuracy. Normal sample intensity followed by an extremely grazing cosine/clipped weight can still underflow; W50 preserved copied-arithmetic half-vector and BRDF-intermediate limits separately from actual Swift results. Tiny finite contributions can still pack to Float32 zero and display as black. See [NUMERICS.md](NUMERICS.md).
+
+### Preview lifecycle and cancellation
+
+`ReferenceStudyPreview(scene:subject:)` remains the entry point; its render request excludes placementRoom only. The view presents loading, retryable camera/emitter/general/conversion errors, explicit same-subject previous-frame labels, and static paused status when inactive. Another subject's old image and an obsolete error cannot stand in for the requested result. Current unsupported-pixel warnings/backend badges remain tied to the current request. Retry preserves scene/cache identity; error content can scroll and its button label has a44-point minimum height.
+
+A MainActor publication pipeline checks generation and cancellation before rendering, after rendering and after conversion. Disappearance/inactivity invalidate old work; A→B→A reuse begins a generation even when it reuses A's completed image. An already-cancelled caller now receives an unused ticket without replacing live work, and a cancelled view task returns before mutating generation/frame state.
+
+Ten actual controlled asynchronous tests cover late success/failure, A→B→A, noncooperative completion, invalidation, retry, conversion failure and pre-cancelled entry. The added pre-cancelled-begin test failed two assertions in the original pipeline because the live result was discarded; all ten pass with the correction. This reproduces the generation-seam defect, not SwiftUI's scheduling itself. The original nine test bodies are byte-preserved. The80ms sleep is a debounce, not a cancellation-latency guarantee.
+
+## Evidence and acceptance boundaries
+
+| Evidence | Actual result and scope |
+| --- | --- |
+| Baseline portable core |366Debug and366Release tests, zero failures. |
+| Final CPU local core |391Debug and391optimized per-file Release tests, zero failures. Ordinary local compilation was killed by signal9; failed/empty retry and test-compile logs are retained. |
+| Standard CPU CI at db7 |391Debug/0 in13.45s,391standardRelease/0 in5.679s; core job139979301968 of run45839289363. Full log and JSON retained. |
+| Final preview portable seam |Original10methods: ninepass, newmethod twoassertionfailures. Corrected10methods/0 failures. Exact production source and XCTest file in a temporary Linux package. |
+| Earlier Apple native source ace9 |163native methods/0, no skipped native methods, including nine preview methods; unsigned Debug/Release app builds and six actual simulator Metal fixtures passed. Full raw log/receipt retained. This predates the later depth/tiny/paused/cancelled-begin source. |
+| Latest source native/UI |Source36 CI is running/queued at checkpoint creation. No latest-native, VoiceOver, lifecycle-layout or physical-device pass is inferred from portable execution. |
+| Final image matrix |All12 frozen original scene JSONs preserved byte-for-byte; all12 PPMs byte-identical; final opaque RGBA and independent valid zero masks archived. |
+| CPU/shared-Float32 host parity |Six required cases pass with exact masks; near-field retains84/84unsupported pixels. Eight required precision cases pass with maximum channel error≤1. This executes the actual Swift fixture generator and shared C++ Float32 harness, not Metal. |
+| Bounded benchmark |Eight frames, twelve observed cancellations, four visibility workloads; one warm-up and seven measured samples. Raw samples and nearest-rank percentiles preserved. |
+
+Actual native evidence remains attached to its tested source, even if a later workflow was cancelled. CI project-state success is structural validation, not rendering/native acceptance.
+
+## Image review and hashes
+
+Original images, JSON and manifest are in `evidence/original/`; final images, JSON, RGBA and raw validity masks are in `evidence/final/`. `final-comparison.json` records individual SHA-256 values and zero changed pixels for all twelve required scenes. `final-source-manifest.json` binds the compiled CPU source; `final-parity-inputs.json` binds the fixture commands, kernel/header and binary hashes. The original twelve-scene archive had validated zero-mask counts, not separately saved raw mask files; final raw masks are now included.
+
+The required matrix covers soft/hard/warm sphere lighting, soft/hard/side mannequin lighting, key-only/fill-only, rim-only bust, rolled rectangle, exposure−2 and3200K white balance. Root inspected the original and final contact sheets; W37 independently inspected the previous source's sheet and three paired bust images. Review sees preserved authored silhouettes, continuous neutral shading and finite-emitter shadows. Dark fill/rim cases remain deliberate direct-light scenes. The original pointed crown is authored geometry, not a newly introduced intersection artifact. Final independent visual review remains scheduled in wave8.
+
+No baseline image was replaced to conceal a changed result. Ordinary images are unchanged; the repaired grazing ray, clipped-camera rejection and tiny numerical response are preserved as additional diagnostic cases with their originals/failures.
+
+## Runtime and resource limits
+
+Mannequin width remains≤144, per-emitter rectangle sample counts remain64/1,024, and cancellation polling remains at most eight further pixel evaluations. Engine/cache ownership stays with04; existing limits are fourframes,256KiB RGBA and64KiB masks. This lane did not alter those implementations.
+
+Final shared Linux optimized diagnostics: mannequin144point3 p50/p95=8.259656/8.685065ms; mannequin144area3=181.067702/186.794669ms. All12 cancellation probes observed cancellation; maximum requested-deadline-to-return was1.606625ms. These are short shared-host measurements with scheduler noise, not iPhone frame-rate, sustained throughput, RSS, energy or thermal evidence. `final-benchmark.json` retains every workload/sample; its raw revision field names the parent while the candidate was uncommitted, and `final-benchmark-inputs.json` binds the exact later db7 source without rewriting raw data.
+
+Four executor outages lost temporary trees/builds while persistent evidence survived. Persistent worktree indexes initially exhausted disk; later workers use a private sparse shared control clone with temporary indexes. Signal9 builds, empty-log retry, source/test compile error and unavailable native work remain explicit. `runtime-interruption-four.json` records a partial artifact upload at that moment; `runtime-four-recovery.json` confirms all51unique artifact blobs were subsequently preserved by exact Git SHA checks. Only this lane's clean trees are removed after remote preservation; no other task's files were removed.
+
+## Coordination and remaining integration work
+
+[OWNER_REQUESTS.md](OWNER_REQUESTS.md) and [CONTRACTS.md](CONTRACTS.md) route numerical02, shared composition01, GPU/cache04, CI19 and final integration20 responsibilities. The actual Swift width24/focal161.27198111190464 silhouette counterexample remains preserved at the unchanged parity thresholds. Lane04 has since reported a width-aware eligibility guard; wave7 will bind its current source and routing request. Lane02's newest positive-tiny Float-underflow routing request is also being reconciled with04; this lane does not silently expand the Float32 domain or edit its engine.
+
+ReferencePNG is the existing imported-photo PNG sanitizer. It was not changed by this lane; Study diagnostic PPM-to-PNG conversion is separate and does not add photo metadata or a new asset source. Required fixtures and failure artifacts remain intact.
+
+The per-wave ledgers and primary reports are under `workers/`. Ten acceptance leaders each instantiate nine distinct fresh specialists; root is excluded, followups/precreated trees are excluded, and actual tool-returned canonical IDs are recorded. Four concurrent contexts is the platform ceiling. Exact token counters are unavailable; requested brief/working/report targets and the coordinator checkpoints are recorded without claiming unmeasured compliance. Final100-worker ledger audit, independent final review and final branch preservation remain outstanding at this sixty-worker checkpoint.

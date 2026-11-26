@@ -1,0 +1,116 @@
+74f7584b4e474c752ec0939add6b7522ba98094f
+App/StudioView.swift:504:                    else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
+App/ReferenceComparisonView.swift:261:            ReferenceStudyPreview(scene: selectedRig?.scene ?? scene).frame(height: 200)
+Sources/LightingCore/Colorimetry.swift-10-    public init(whiteBalanceKelvin: Double = 5600, exposureStops: Double = 0) {
+Sources/LightingCore/Colorimetry.swift-11-        self.whiteBalanceKelvin = whiteBalanceKelvin; self.exposureStops = exposureStops
+Sources/LightingCore/Colorimetry.swift-12-    }
+Sources/LightingCore/Colorimetry.swift:13:    public var isValid: Bool {
+Sources/LightingCore/Colorimetry.swift:14:        whiteBalanceKelvin.isFinite && Self.whiteBalanceRange.contains(whiteBalanceKelvin) &&
+Sources/LightingCore/Colorimetry.swift:15:        exposureStops.isFinite && Self.exposureRange.contains(exposureStops)
+Sources/LightingCore/Colorimetry.swift-16-    }
+Sources/LightingCore/Colorimetry.swift-17-}
+Sources/LightingCore/Colorimetry.swift-18-
+--
+Sources/LightingCore/Colorimetry.swift-28-    public init(x: Double, y: Double, z: Double) { self.x = x; self.y = y; self.z = z }
+Sources/LightingCore/Colorimetry.swift-29-    public var chromaticity: Chromaticity? {
+Sources/LightingCore/Colorimetry.swift-30-        let sum = x + y + z
+Sources/LightingCore/Colorimetry.swift:31:        guard sum.isFinite, sum > 0, x >= 0, y >= 0, z >= 0 else { return nil }
+Sources/LightingCore/Colorimetry.swift-32-        return .init(x: x / sum, y: y / sum)
+Sources/LightingCore/Colorimetry.swift-33-    }
+Sources/LightingCore/Colorimetry.swift-34-    fileprivate var vector: SIMD3<Double> { .init(x, y, z) }
+--
+Sources/LightingCore/Colorimetry.swift-52-    /// camera sensitivities or color rendering. CIE XYZ normalized to Y = 1.
+Sources/LightingCore/Colorimetry.swift-53-    /// 380–780 nm, 5 nm trapezoidal samples; Wyman/Sloan/Shirley (JCGT 2013), Eq. 4.
+Sources/LightingCore/Colorimetry.swift-54-    public static func blackbody(kelvin: Double) -> RelativeXYZ? {
+Sources/LightingCore/Colorimetry.swift:55:        guard kelvin.isFinite, (1000...20000).contains(kelvin) else { return nil }
+Sources/LightingCore/Colorimetry.swift-56-        var total = SIMD3<Double>.zero
+Sources/LightingCore/Colorimetry.swift-57-        for nm in stride(from: 380, through: 780, by: 5) {
+Sources/LightingCore/Colorimetry.swift-58-            let wavelength = Double(nm)
+--
+Sources/LightingCore/Colorimetry.swift-62-            let weight = (nm == 380 || nm == 780) ? 0.5 : 1.0
+Sources/LightingCore/Colorimetry.swift-63-            total += matchingFunctions(wavelength) * (spectrum * weight)
+Sources/LightingCore/Colorimetry.swift-64-        }
+Sources/LightingCore/Colorimetry.swift:65:        guard total.y.isFinite, total.y > 0 else { return nil }
+Sources/LightingCore/Colorimetry.swift-66-        return RelativeXYZ(total / total.y)
+Sources/LightingCore/Colorimetry.swift-67-    }
+Sources/LightingCore/Colorimetry.swift-68-
+--
+Sources/LightingCore/Colorimetry.swift-101-    private let exposure: Double
+Sources/LightingCore/Colorimetry.swift-102-
+Sources/LightingCore/Colorimetry.swift-103-    public init?(settings: PreviewSettings) {
+Sources/LightingCore/Colorimetry.swift:104:        guard settings.isValid, let white = PreviewColorimetry.blackbody(kelvin: settings.whiteBalanceKelvin) else { return nil }
+Sources/LightingCore/Colorimetry.swift-105-        let d65 = SIMD3<Double>(0.3127 / 0.3290, 1, (1 - 0.3127 - 0.3290) / 0.3290)
+Sources/LightingCore/Colorimetry.swift-106-        let src = PreviewColorimetry.bradford(white.vector), dst = PreviewColorimetry.bradford(d65)
+Sources/LightingCore/Colorimetry.swift-107-        guard src.x > 0, src.y > 0, src.z > 0 else { return nil }
+--
+Sources/LightingCore/Colorimetry.swift-117-    /// Bradford adaptation, relative exposure, luminance Reinhard tone mapping and
+Sources/LightingCore/Colorimetry.swift-118-    /// neutral-axis gamut compression into display-encoded sRGB.
+Sources/LightingCore/Colorimetry.swift-119-    public func display(_ xyz: RelativeXYZ) -> DisplayRGB? {
+Sources/LightingCore/Colorimetry.swift:120:        guard xyz.x.isFinite, xyz.y.isFinite, xyz.z.isFinite, xyz.x >= 0, xyz.y >= 0, xyz.z >= 0 else { return nil }
+Sources/LightingCore/Colorimetry.swift-121-        let adapted = PreviewColorimetry.inverseBradford(PreviewColorimetry.bradford(xyz.vector) * adaptationRatio) * exposure
+Sources/LightingCore/Colorimetry.swift-122-        let rgb = SIMD3<Double>(3.24096994 * adapted.x - 1.53738318 * adapted.y - 0.49861076 * adapted.z,
+Sources/LightingCore/Colorimetry.swift-123-                                -0.96924364 * adapted.x + 1.87596750 * adapted.y + 0.04155506 * adapted.z,
+Sources/LightingCore/Colorimetry.swift-124-                                0.05563008 * adapted.x - 0.20397696 * adapted.y + 1.05697151 * adapted.z)
+Sources/LightingCore/Colorimetry.swift:125:        guard rgb.x.isFinite, rgb.y.isFinite, rgb.z.isFinite, adapted.y.isFinite, adapted.y >= 0 else { return nil }
+Sources/LightingCore/Colorimetry.swift-126-        if adapted.y == 0 { return .init(red: 0, green: 0, blue: 0) }
+Sources/LightingCore/Colorimetry.swift-127-        let luminance = adapted.y / (1 + adapted.y)
+Sources/LightingCore/Colorimetry.swift-128-        let tone = rgb / (1 + adapted.y)
+--
+Sources/LightingCore/Colorimetry.swift-153-        var xyz = SIMD3<Double>.zero
+Sources/LightingCore/Colorimetry.swift-154-        var totalLux = 0.0
+Sources/LightingCore/Colorimetry.swift-155-        for light in scene.lights {
+Sources/LightingCore/Colorimetry.swift:156:            guard light.isValid else { return nil }
+Sources/LightingCore/Colorimetry.swift-157-            if light.candela == 0 { continue }
+Sources/LightingCore/Colorimetry.swift-158-            guard let lux = StudioPhotometry.illuminance(for: light, in: scene),
+Sources/LightingCore/Colorimetry.swift-159-                  let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { return nil }
+--
+Sources/LightingCore/CameraFraming.swift-12-        self.focalLengthMillimeters = focalLengthMillimeters
+Sources/LightingCore/CameraFraming.swift-13-    }
+Sources/LightingCore/CameraFraming.swift-14-
+Sources/LightingCore/CameraFraming.swift:15:    public var isValid: Bool {
+Sources/LightingCore/CameraFraming.swift:16:        focalLengthMillimeters.isFinite && Self.focalLengthRange.contains(focalLengthMillimeters)
+Sources/LightingCore/CameraFraming.swift-17-    }
+Sources/LightingCore/CameraFraming.swift-18-}
+Sources/LightingCore/CameraFraming.swift-19-
+--
+Sources/LightingCore/CameraFraming.swift-46-    public init?(scene: LightingScene) {
+Sources/LightingCore/CameraFraming.swift-47-        let lens = scene.effectiveCameraLens
+Sources/LightingCore/CameraFraming.swift-48-        let distance = scene.camera.distance(to: scene.subject)
+Sources/LightingCore/CameraFraming.swift:49:        guard lens.isValid, distance >= Self.minimumDepthMeters,
+Sources/LightingCore/CameraFraming.swift-50-              let frame = EmitterFrame(source: scene.camera, target: scene.subject),
+Sources/LightingCore/CameraFraming.swift-51-              let right = UnitDirection(x: -frame.right.x, y: -frame.right.y, z: -frame.right.z) else { return nil }
+Sources/LightingCore/CameraFraming.swift-52-        self.position = scene.camera; self.target = scene.subject; self.lens = lens
+--
+Sources/LightingCore/CameraFraming.swift-69-    }
+Sources/LightingCore/CameraFraming.swift-70-
+Sources/LightingCore/CameraFraming.swift-71-    public func project(_ world: Position) -> CameraProjection? {
+Sources/LightingCore/CameraFraming.swift:72:        guard world.isValid else { return nil }
+Sources/LightingCore/CameraFraming.swift-73-        let dx = world.x - position.x, dy = world.y - position.y, dz = world.z - position.z
+Sources/LightingCore/CameraFraming.swift-74-        func dot(_ direction: UnitDirection) -> Double { dx * direction.x + dy * direction.y + dz * direction.z }
+Sources/LightingCore/CameraFraming.swift-75-        let depth = dot(forward)
+30-    /// out-and-back slider gesture exactly unchanged, including nil defaults,
+31-    /// so it cannot create an undo entry or discard redo. With no active
+32-    /// transaction, the scene is returned unchanged.
+33:    public func preservingOptionalRepresentations(in scene: LightingScene) -> LightingScene {
+34-        guard let start = transactionStart else { return scene }
+35-        var result = scene
+36-        if result.effectivePreviewSettings == start.effectivePreviewSettings {
+--
+109-        return start
+110-    }
+111-
+112:    public mutating func undo(current: LightingScene) -> LightingScene? {
+113-        end(scene: current)
+114-        guard let previous = past.popLast() else { return nil }
+115-        if future.last != current { future.append(current) }
+--
+117-        return previous
+118-    }
+119-
+120:    public mutating func redo(current: LightingScene) -> LightingScene? {
+121-        end(scene: current)
+122-        guard let next = future.popLast() else { return nil }
+123-        pushPast(current)
+
+Post-review source diff: empty
+All 25 reviewed source/document blob hashes match pinned input.

@@ -1,0 +1,1551 @@
+FILE App/ReferenceStudyPreview.swift
+SHA256 f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2
+1: import Foundation
+2: import LightingCore
+3: #if canImport(SwiftUI) && canImport(CoreGraphics)
+4: import SwiftUI
+5: import CoreGraphics
+6: #endif
+7: 
+8: /// The publication seam has no dependency on a GPU or on image conversion.
+9: /// Tests can finish a noncooperative renderer after a newer request has won.
+10: struct StudyPreviewOutput: Sendable {
+11:     let image: StudyImage
+12:     let backendLabel: String
+13: }
+14: 
+15: @MainActor final class StudyPreviewPipeline<DisplayImage> {
+16:     struct Completion {
+17:         let image: DisplayImage?
+18:         let unsupportedPixels: Int
+19:         let backendLabel: String?
+20:         let message: String?
+21:     }
+22: 
+23:     private var current: UUID?
+24: 
+25:     /// Begin even when reusing a completed frame: an A → B → A switch must
+26:     /// invalidate B without requiring another render of the cached A image.
+27:     func begin() -> UUID {
+28:         let ticket = UUID()
+29:         current = ticket
+30:         return ticket
+31:     }
+32: 
+33:     func invalidate() { current = nil }
+34: 
+35:     func load(ticket: UUID,
+36:               render: () async throws -> StudyPreviewOutput,
+37:               convert: (StudyImage) -> DisplayImage?,
+38:               publish: (Completion) -> Void) async {
+39:         guard current == ticket, !Task.isCancelled else { return }
+40:         do {
+41:             let output = try await render()
+42:             guard current == ticket, !Task.isCancelled else { return }
+43:             let image = convert(output.image)
+44:             guard current == ticket, !Task.isCancelled else { return }
+45:             publish(.init(image: image, unsupportedPixels: image == nil ? 0 : output.image.unsupportedPixels,
+46:                           backendLabel: image == nil ? nil : output.backendLabel,
+47:                           message: image == nil ? "The rendered image could not be displayed." : nil))
+48:         } catch {
+49:             guard current == ticket, !Task.isCancelled, !(error is CancellationError),
+50:                   (error as? StudyError) != .cancelled else { return }
+51:             let message: String
+52:             switch error as? StudyError {
+53:             case .invalidCamera: message = "Move the camera above the panel and away from the subject."
+54:             case .invalidEmitter: message = "Check the aiming direction of each active light."
+55:             default: message = "Check the camera, light positions, and preview settings."
+56:             }
+57:             publish(.init(image: nil, unsupportedPixels: 0, backendLabel: nil, message: message))
+58:         }
+59:     }
+60: }
+61: 
+62: #if canImport(SwiftUI) && canImport(CoreGraphics)
+63: 
+64: /// The bounded direct-light study is deliberately distinct from the illustrative
+65: /// SceneKit views. A serialized worker validates Metal against CPU before use.
+66: @MainActor struct ReferenceStudyPreview: View {
+67:     let scene: LightingScene
+68:     var subject: StudySubject = .sphere
+69:     @Environment(\.scenePhase) private var scenePhase
+70:     @State private var frame: Frame?
+71:     @State private var attempt = UUID()
+72:     @State private var pipeline = StudyPreviewPipeline<CGImage>()
+73: 
+74:     private struct Request: Equatable {
+75:         let scene: LightingScene
+76:         let subject: StudySubject
+77: 
+78:         init(scene: LightingScene, subject: StudySubject) {
+79:             // Measured-room placement does not participate in this direct-light
+80:             // study. Keep its snapshot and identity independent of room edits,
+81:             // retaining the complete light optics, camera and preview settings.
+82:             var renderScene = scene
+83:             renderScene.placementRoom = nil
+84:             self.scene = renderScene
+85:             self.subject = subject
+86:         }
+87:     }
+88:     private var request: Request { .init(scene: scene, subject: subject) }
+89:     // Changing to nil cancels in-flight work while inactive; foregrounding
+90:     // starts the latest scene/subject request without discarding a valid frame.
+91:     private var activeRequest: Request? { scenePhase == .active ? request : nil }
+92:     private struct Work: Equatable {
+93:         let request: Request?
+94:         let attempt: UUID
+95:     }
+96:     private var work: Work { .init(request: activeRequest, attempt: attempt) }
+97:     private var imageLabel: String {
+98:         subject == .sphere ? "Rendered neutral sphere and panel" : "Rendered neutral mannequin bust"
+99:     }
+100: 
+101:     private struct Frame {
+102:         let request: Request
+103:         let image: CGImage?
+104:         let unsupportedPixels: Int
+105:         let backendLabel: String?
+106:         let message: String?
+107:     }
+108: 
+109:     var body: some View {
+110:         GeometryReader { geometry in
+111:             ZStack(alignment: .bottomLeading) {
+112:                 Color.black
+113:                 // A previous scene may remain visible while it updates, but a
+114:                 // different subject or an old error must never stand in for it.
+115:                 if let frame,
+116:                    frame.request == request || (frame.image != nil && frame.request.subject == subject) {
+117:                     let isCurrent = frame.request == request
+118:                     if let image = frame.image {
+119:                         let width = min(geometry.size.width, geometry.size.height * 1.5)
+120:                         let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). Updating light study."
+121:                         Image(image, scale: 1, orientation: .up, label: Text(label))
+122:                             .resizable().interpolation(.medium)
+123:                             .frame(width: width, height: width / 1.5)
+124:                             .frame(maxWidth: .infinity, maxHeight: .infinity)
+125:                             .accessibilityLabel(label)
+126:                             .accessibilityIdentifier(isCurrent ? "studyPreview" : "studyPreviousPreview")
+127:                         if isCurrent, let backendLabel = frame.backendLabel {
+128:                             Text(backendLabel).font(.caption2.monospaced())
+129:                                 .foregroundStyle(.white.opacity(0.8))
+130:                                 .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))
+131:                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+132:                                 .padding(8).accessibilityIdentifier("studyBackend")
+133:                         }
+134:                         if isCurrent, frame.unsupportedPixels > 0 {
+135:                             Label("\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.",
+136:                                   systemImage: "exclamationmark.triangle.fill")
+137:                                 .font(.caption2.weight(.medium))
+138:                                 .foregroundStyle(.white)
+139:                                 .padding(8).background(.black.opacity(0.85))
+140:                                 .accessibilityIdentifier("studyWarning")
+141:                         }
+142:                         if !isCurrent {
+143:                             ProgressView("Updating light study")
+144:                                 .controlSize(.small)
+145:                                 .font(.caption.weight(.medium))
+146:                                 .tint(.white).foregroundStyle(.white)
+147:                                 .padding(8)
+148:                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
+149:                                 .padding(8)
+150:                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+151:                                 .accessibilityLabel("Updating light study")
+152:                                 .accessibilityValue("Showing the previous scene")
+153:                                 .accessibilityIdentifier("studyUpdating")
+154:                         }
+155:                     } else {
+156:                         ScrollView {
+157:                             VStack(spacing: 8) {
+158:                                 Image(systemName: "exclamationmark.triangle").font(.title2)
+159:                                     .accessibilityHidden(true)
+160:                                 Text("Study unavailable").font(.headline)
+161:                                 Text(frame.message ?? "Check camera and lighting geometry.").font(.caption)
+162:                                 Button { attempt = UUID() } label: {
+163:                                     Text("Retry light study").frame(minHeight: 44)
+164:                                 }
+165:                                     .buttonStyle(.bordered)
+166:                                     .accessibilityIdentifier("studyRetry")
+167:                             }
+168:                             .multilineTextAlignment(.center)
+169:                             .foregroundStyle(.white).padding(24)
+170:                             .frame(maxWidth: .infinity)
+171:                         }
+172:                         .defaultScrollAnchor(.center)
+173:                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+174:                         .accessibilityIdentifier("studyUnavailable")
+175:                     }
+176:                 } else {
+177:                     ProgressView("Rendering light study")
+178:                         .tint(.white).foregroundStyle(.white)
+179:                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+180:                         .accessibilityIdentifier("studyLoading")
+181:                 }
+182:             }
+183:         }
+184:         .onDisappear { pipeline.invalidate() }
+185:         .task(id: work) {
+186:             let ticket = pipeline.begin()
+187:             guard let snapshot = activeRequest else { return }
+188:             // A quick switch back to a completed request can reuse its pixels.
+189:             // Failed frames remain retryable when this view appears again.
+190:             if let frame, frame.request == snapshot, frame.image != nil { return }
+191:             // A new attempt shows loading, not an obsolete failure. Retrying
+192:             // never edits the scene or changes its cache identity.
+193:             if frame?.request == snapshot { frame = nil }
+194:             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
+195:             await pipeline.load(ticket: ticket, render: {
+196:                 let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)
+197:                 return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)
+198:             }, convert: Self.makeImage) { completion in
+199:                 frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,
+200:                               backendLabel: completion.backendLabel, message: completion.message)
+201:             }
+202:         }
+203:     }
+204: 
+205:     private static func makeImage(_ study: StudyImage) -> CGImage? {
+206:         guard study.rgba.count == study.width * study.height * 4,
+207:               let provider = CGDataProvider(data: study.rgba as CFData),
+208:               let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+209:         return CGImage(width: study.width, height: study.height,
+210:                        bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: study.width * 4,
+211:                        space: space, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
+212:                        provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+213:     }
+214: }
+215: #endif
+FILE NativeTests/StudyPreviewPipelineTests.swift
+SHA256 4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79
+1: import Foundation
+2: import XCTest
+3: import LightingCore
+4: #if canImport(KeyAndFill)
+5: @testable import KeyAndFill
+6: #else
+7: @testable import StudyPreviewHarness
+8: #endif
+9: 
+10: final class StudyPreviewPipelineTests: XCTestCase {
+11:     @MainActor private final class ControlledRender {
+12:         private var continuation: CheckedContinuation<StudyPreviewOutput, Error>?
+13:         private var waiters: [CheckedContinuation<Void, Never>] = []
+14:         private var requested = false
+15: 
+16:         func render() async throws -> StudyPreviewOutput {
+17:             try await withCheckedThrowingContinuation { continuation in
+18:                 self.continuation = continuation
+19:                 requested = true
+20:                 waiters.forEach { $0.resume() }
+21:                 waiters.removeAll()
+22:             }
+23:         }
+24: 
+25:         func waitUntilRequested() async {
+26:             if requested { return }
+27:             await withCheckedContinuation { waiters.append($0) }
+28:         }
+29: 
+30:         func finish(_ result: Result<StudyPreviewOutput, Error>) {
+31:             precondition(continuation != nil)
+32:             continuation?.resume(with: result)
+33:             continuation = nil
+34:         }
+35:     }
+36: 
+37:     private func output(_ value: UInt8) throws -> StudyPreviewOutput {
+38:         var bytes = [UInt8](repeating: value, count: 24 * 16 * 4)
+39:         for i in stride(from: 3, to: bytes.count, by: 4) { bytes[i] = 255 }
+40:         return .init(image: try StudyImage.fromComputeRGBA(width: 24, height: 16, data: Data(bytes)),
+41:                      backendLabel: "Controlled CPU")
+42:     }
+43: 
+44:     @MainActor func testLateSuccessCannotReplaceNewerCompletion() async throws {
+45:         let pipeline = StudyPreviewPipeline<UInt8>()
+46:         let old = ControlledRender(), new = ControlledRender()
+47:         var published: [UInt8] = []
+48:         let firstTicket = pipeline.begin()
+49:         let first = Task { await pipeline.load(ticket: firstTicket, render: old.render,
+50:                                                convert: { $0.rgba[0] }, publish: { published.append($0.image!) }) }
+51:         await old.waitUntilRequested()
+52:         let secondTicket = pipeline.begin()
+53:         let second = Task { await pipeline.load(ticket: secondTicket, render: new.render,
+54:                                                 convert: { $0.rgba[0] }, publish: { published.append($0.image!) }) }
+55:         await new.waitUntilRequested()
+56:         new.finish(.success(try output(2)))
+57:         await second.value
+58:         old.finish(.success(try output(1)))
+59:         await first.value
+60:         XCTAssertEqual(published, [2])
+61:     }
+62: 
+63:     @MainActor func testLateFailureCannotReplaceNewerImage() async throws {
+64:         let pipeline = StudyPreviewPipeline<UInt8>(), old = ControlledRender()
+65:         var completions: [StudyPreviewPipeline<UInt8>.Completion] = []
+66:         let firstTicket = pipeline.begin()
+67:         let first = Task { await pipeline.load(ticket: firstTicket, render: old.render,
+68:                                                convert: { $0.rgba[0] }, publish: { completions.append($0) }) }
+69:         await old.waitUntilRequested()
+70:         await pipeline.load(ticket: pipeline.begin(), render: { try self.output(3) },
+71:                             convert: { $0.rgba[0] }, publish: { completions.append($0) })
+72:         old.finish(.failure(StudyError.invalidCamera))
+73:         await first.value
+74:         XCTAssertEqual(completions.count, 1)
+75:         XCTAssertEqual(completions.first?.image, 3)
+76:         XCTAssertNil(completions.first?.message)
+77:     }
+78: 
+79:     @MainActor func testReturningToCompletedRequestInvalidatesIntermediateWork() async throws {
+80:         let pipeline = StudyPreviewPipeline<UInt8>(), intermediate = ControlledRender()
+81:         _ = pipeline.begin() // Previously completed A.
+82:         let ticketB = pipeline.begin()
+83:         var published = 0
+84:         let task = Task { await pipeline.load(ticket: ticketB, render: intermediate.render,
+85:                                               convert: { $0.rgba[0] }, publish: { _ in published += 1 }) }
+86:         await intermediate.waitUntilRequested()
+87:         _ = pipeline.begin() // Reuse A without another render.
+88:         intermediate.finish(.success(try output(4)))
+89:         await task.value
+90:         XCTAssertEqual(published, 0)
+91:     }
+92: 
+93:     @MainActor func testCancellationDiscardsNoncooperativeRenderCompletion() async throws {
+94:         let pipeline = StudyPreviewPipeline<UInt8>(), renderer = ControlledRender()
+95:         let ticket = pipeline.begin()
+96:         var conversions = 0, publications = 0
+97:         let task = Task { await pipeline.load(ticket: ticket, render: renderer.render,
+98:             convert: { conversions += 1; return $0.rgba[0] }, publish: { _ in publications += 1 }) }
+99:         await renderer.waitUntilRequested()
+100:         task.cancel()
+101:         renderer.finish(.success(try output(5)))
+102:         await task.value
+103:         XCTAssertEqual(conversions, 0)
+104:         XCTAssertEqual(publications, 0)
+105:     }
+106: 
+107:     @MainActor func testDisappearanceOrInactivityInvalidatesLateFailure() async {
+108:         let pipeline = StudyPreviewPipeline<UInt8>(), renderer = ControlledRender()
+109:         let ticket = pipeline.begin()
+110:         var publications = 0
+111:         let task = Task { await pipeline.load(ticket: ticket, render: renderer.render,
+112:             convert: { $0.rgba[0] }, publish: { _ in publications += 1 }) }
+113:         await renderer.waitUntilRequested()
+114:         pipeline.invalidate()
+115:         renderer.finish(.failure(StudyError.invalidEmitter))
+116:         await task.value
+117:         XCTAssertEqual(publications, 0)
+118:     }
+119: 
+120:     @MainActor func testCurrentFailureCanRetryWithFreshAttempt() async throws {
+121:         let pipeline = StudyPreviewPipeline<UInt8>()
+122:         var completions: [StudyPreviewPipeline<UInt8>.Completion] = []
+123:         let first = pipeline.begin()
+124:         await pipeline.load(ticket: first, render: { throw StudyError.invalidCamera },
+125:                             convert: { $0.rgba[0] }, publish: { completions.append($0) })
+126:         let retry = pipeline.begin()
+127:         XCTAssertNotEqual(first, retry)
+128:         await pipeline.load(ticket: retry, render: { try self.output(6) },
+129:                             convert: { $0.rgba[0] }, publish: { completions.append($0) })
+130:         XCTAssertEqual(completions.count, 2)
+131:         XCTAssertNil(completions[0].image)
+132:         XCTAssertEqual(completions[0].message, "Move the camera above the panel and away from the subject.")
+133:         XCTAssertEqual(completions[1].image, 6)
+134:         XCTAssertNil(completions[1].message)
+135:         XCTAssertEqual(completions[1].backendLabel, "Controlled CPU")
+136:     }
+137: 
+138:     @MainActor func testConversionFailureHasNoSuccessfulImageOrBackend() async throws {
+139:         let pipeline = StudyPreviewPipeline<UInt8>()
+140:         var completion: StudyPreviewPipeline<UInt8>.Completion?
+141:         await pipeline.load(ticket: pipeline.begin(), render: { try self.output(7) },
+142:                             convert: { _ in nil }, publish: { completion = $0 })
+143:         XCTAssertNotNil(completion)
+144:         XCTAssertNil(completion?.image)
+145:         XCTAssertNil(completion?.backendLabel)
+146:         XCTAssertEqual(completion?.unsupportedPixels, 0)
+147:         XCTAssertEqual(completion?.message, "The rendered image could not be displayed.")
+148:     }
+149: 
+150:     @MainActor func testInvalidationDuringConversionCannotPublish() async throws {
+151:         let pipeline = StudyPreviewPipeline<UInt8>()
+152:         var publications = 0
+153:         await pipeline.load(ticket: pipeline.begin(), render: { try self.output(8) },
+154:                             convert: { image in pipeline.invalidate(); return image.rgba[0] },
+155:                             publish: { _ in publications += 1 })
+156:         XCTAssertEqual(publications, 0)
+157:     }
+158: 
+159:     @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {
+160:         let pipeline = StudyPreviewPipeline<UInt8>()
+161:         var publications = 0, renders = 0
+162:         for error in [CancellationError() as Error, StudyError.cancelled] {
+163:             await pipeline.load(ticket: pipeline.begin(), render: { throw error },
+164:                                 convert: { $0.rgba[0] }, publish: { _ in publications += 1 })
+165:         }
+166:         let ticket = pipeline.begin()
+167:         let task = Task { await pipeline.load(ticket: ticket, render: {
+168:             renders += 1
+169:             throw StudyError.invalidCamera
+170:         }, convert: { $0.rgba[0] }, publish: { _ in publications += 1 }) }
+171:         task.cancel()
+172:         await task.value
+173:         XCTAssertEqual(renders, 0)
+174:         XCTAssertEqual(publications, 0)
+175:     }
+176: }
+FILE Sources/LightingCore/Scene.swift
+SHA256 76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898
+1: import Foundation
+2: 
+3: public struct Position: Codable, Equatable, Sendable {
+4:     public static let coordinateRange: ClosedRange<Double> = -100...100
+5:     public var x: Double
+6:     public var y: Double
+7:     public var z: Double
+8:     public init(x: Double, y: Double, z: Double) {
+9:         self.x = x; self.y = y; self.z = z
+10:     }
+11:     public var isValid: Bool {
+12:         [x, y, z].allSatisfy { $0.isFinite && Self.coordinateRange.contains($0) }
+13:     }
+14:     public func distance(to other: Position) -> Double {
+15:         let dx = x - other.x, dy = y - other.y, dz = z - other.z
+16:         return (dx * dx + dy * dy + dz * dz).squareRoot()
+17:     }
+18: }
+19: 
+20: public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
+21:     public var id: UUID
+22:     public var name: String
+23:     public var position: Position
+24:     /// On-axis luminous intensity, not electrical watts.
+25:     public var candela: Double
+26:     public var kelvin: Double
+27:     /// Nil preserves the legacy isotropic point source.
+28:     public var optics: LightOptics?
+29:     public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
+30:         self.id = id; self.name = name; self.position = position
+31:         self.candela = candela; self.kelvin = kelvin; self.optics = optics
+32:     }
+33:     public var isValid: Bool {
+34:         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
+35:         position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
+36:         kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
+37:     }
+38: }
+39: 
+40: public enum SceneError: Error, Equatable {
+41:     case unsupportedVersion, invalidScene, invalidLight, duplicateLight
+42: }
+43: 
+44: public struct LightingScene: Codable, Equatable, Sendable {
+45:     public static let currentSchemaVersion = 5
+46:     public var schemaVersion: Int = currentSchemaVersion
+47:     public var subject: Position
+48:     public var camera: Position
+49:     /// Nil uses the default 50 mm full-frame perspective.
+50:     public var cameraLens: CameraLens?
+51:     public var lights: [StudioLight]
+52:     /// Nil retains the default diagnostic card balance and exposure.
+53:     public var previewSettings: PreviewSettings?
+54:     /// Nil means no measured room has been saved with this scene.
+55:     public var placementRoom: ManualRoom?
+56: 
+57:     public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil, placementRoom: ManualRoom? = nil) {
+58:         self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens; self.previewSettings = previewSettings
+59:         self.placementRoom = placementRoom
+60:     }
+61: 
+62:     public func validated() throws -> Self {
+63:         guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+64:         guard lights.count <= 12 else { throw SceneError.invalidScene }
+65:         // Version 1 never contained optics; reject ambiguous mislabeled files.
+66:         guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
+67:         // Version 2 adds light optics, version 3 adds a camera lens.
+68:         guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+69:         guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
+70:         // Version 5 adds measured rooms and rectangular-emitter roll.
+71:         guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+72:             throw SceneError.invalidScene
+73:         }
+74:         guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+75:               (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
+76:         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
+77:         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
+78:         var migrated = self
+79:         migrated.schemaVersion = Self.currentSchemaVersion
+80:         return migrated
+81:     }
+82: 
+83:     public static func portrait() -> Self {
+84:         .init(subject: .init(x: 0, y: 1.5, z: 0),
+85:               camera: .init(x: 0, y: 1.5, z: 3),
+86:               lights: [
+87:                 .init(name: "Key", position: .init(x: -1.5, y: 2.1, z: 1.2), candela: 900, kelvin: 5600),
+88:                 .init(name: "Fill", position: .init(x: 1.5, y: 1.7, z: 1.5), candela: 300, kelvin: 5600),
+89:                 .init(name: "Rim", position: .init(x: 0.8, y: 2.2, z: -1.2), candela: 450, kelvin: 3200)
+90:               ])
+91:     }
+92: }
+93: 
+94: public enum Photometry {
+95:     /// Ideal point source, normal incidence. No occlusion, falloff pattern, modifier or near-field model.
+96:     public static func normalIlluminance(candela: Double, distanceMeters: Double) -> Double? {
+97:         guard candela.isFinite, (0...100_000).contains(candela),
+98:               distanceMeters.isFinite, distanceMeters >= 0.05 else { return nil }
+99:         return candela / (distanceMeters * distanceMeters)
+100:     }
+101: }
+FILE Sources/LightingCore/ReferenceStudy.swift
+SHA256 86ca1199487d567af8e444e714eabca8252b500bc33b40763d7b258d505977cf
+1: import Foundation
+2: 
+3: public enum StudyQuality: Sendable {
+4:     /// 8×8 samples per rectangle. Full faces retain their midpoint grid; grazing
+5:     /// faces redistribute the same number of samples over the positive region.
+6:     case interactive
+7:     /// 32×32 midpoint samples per rectangle, matching the diagnostic meter for fully
+8:     /// front-facing receivers. Partial faces use bounded, continuous clipped-area
+9:     /// sampling, including per-sample visibility and material evaluation.
+10:     case reference
+11:     fileprivate var grid: Int { self == .interactive ? 8 : 32 }
+12: }
+13: 
+14: public enum StudyError: Error, Equatable {
+15:     case invalidScene, invalidCamera, invalidEmitter, invalidResolution, invalidSurface, invalidComputeOutput, cancelled
+16: }
+17: 
+18: /// Achromatic, spectrally flat materials. Dielectric uses a direct-light GGX/Smith/Schlick
+19: /// approximation; no measured skin/fabric, subsurface, multi-scattering or indirect lighting.
+20: public enum StudyMaterial: Equatable, Sendable {
+21:     case diffuse(reflectance: Double)
+22:     case dielectric(reflectance: Double, roughness: Double, f0: Double)
+23: 
+24:     fileprivate var isValid: Bool {
+25:         switch self {
+26:         case .diffuse(let r): return r.isFinite && (0...1).contains(r)
+27:         case .dielectric(let r, let rough, let f0):
+28:             return r.isFinite && (0...1).contains(r) && rough.isFinite && (0.05...1).contains(rough) && f0.isFinite && (0...0.08).contains(f0)
+29:         }
+30:     }
+31: 
+32:     /// Returns π·BRDF, making a pure diffuse material equal to its reflectance.
+33:     /// The caller supplies incident irradiance (lux), including N·L.
+34:     fileprivate func response(normal n: SIMD3<Double>, light l: SIMD3<Double>, view v: SIMD3<Double>, nl: Double) -> Double {
+35:         switch self {
+36:         case .diffuse(let r): return r
+37:         case .dielectric(let r, let rough, let f0):
+38:             let nv = max(0, dot3(n, v))
+39:             guard nv > 0, let h = normalized3(l + v) else { return 0 }
+40:             let nh = min(1, max(0, dot3(n, h)))
+41:             let vh = min(1, max(0, dot3(v, h)))
+42:             let alpha = rough * rough, a2 = alpha * alpha
+43:             let d = nh * nh * (a2 - 1) + 1
+44:             let distributionTimesPi = a2 / (d * d)
+45:             // Height-correlated Smith visibility: stable at grazing angles.
+46:             let denominator = 2 * (nl * sqrt(nv * nv * (1 - a2) + a2) + nv * sqrt(nl * nl * (1 - a2) + a2))
+47:             let fresnel = f0 + (1 - f0) * pow(1 - vh, 5)
+48:             let specular = denominator > 0 ? distributionTimesPi * fresnel / denominator : 0
+49:             return r * (1 - fresnel) + specular
+50:         }
+51:     }
+52: }
+53: 
+54: /// Diagnostic geometry: neutral sphere resting on a finite horizontal reference panel.
+55: /// This plane is at subject height minus radius; it is not the actual room floor.
+56: public struct StudyGeometry: Equatable, Sendable {
+57:     public let center: Position
+58:     public let radius: Double
+59:     public let panelHalfExtent: Double
+60:     public var panelY: Double { center.y - radius }
+61: 
+62:     public init?(center: Position, radius: Double = 0.22, panelHalfExtent: Double = 3) {
+63:         guard center.isValid, radius.isFinite, (0.05...1).contains(radius),
+64:               panelHalfExtent.isFinite, (1...10).contains(panelHalfExtent), panelHalfExtent >= radius else { return nil }
+65:         self.center = center; self.radius = radius; self.panelHalfExtent = panelHalfExtent
+66:     }
+67: 
+68:     fileprivate func inPanel(_ p: SIMD3<Double>) -> Bool {
+69:         abs(p.x - center.x) <= panelHalfExtent && abs(p.z - center.z) <= panelHalfExtent
+70:     }
+71: 
+72:     /// Positive ray/sphere intersection; a receiver's shadow ray is offset separately.
+73:     fileprivate func sphereHit(origin: SIMD3<Double>, direction: SIMD3<Double>, minimum: Double) -> Double? {
+74:         let offset = origin - vec(center)
+75:         let b = dot3(offset, direction), c = dot3(offset, offset) - radius * radius
+76:         let discriminant = b * b - c
+77:         guard discriminant >= 0 else { return nil }
+78:         let root = sqrt(discriminant)
+79:         let near = -b - root, far = -b + root
+80:         if near >= minimum { return near }
+81:         if far >= minimum { return far }
+82:         return nil
+83:     }
+84: 
+85:     fileprivate func occludes(from origin: SIMD3<Double>, to direction: SIMD3<Double>, distance: Double) -> Bool {
+86:         let epsilon = 1e-5
+87:         if let hit = sphereHit(origin: origin, direction: direction, minimum: epsilon), hit < distance - epsilon { return true }
+88:         if abs(direction.y) > 1e-12 {
+89:             let t = (panelY - origin.y) / direction.y
+90:             if t >= epsilon, t < distance - epsilon, inPanel(origin + direction * t) { return true }
+91:         }
+92:         return false
+93:     }
+94: }
+95: 
+96: public struct StudySurfaceSignal: Equatable, Sendable {
+97:     /// Incident illuminance including visibility, before any material or exposure.
+98:     public let visibleLux: Double
+99:     public let unoccludedLux: Double
+100:     /// Relative scene-linear XYZ; π·outgoing radiance / 1000 lx reference.
+101:     public let signalXYZ: RelativeXYZ
+102: }
+103: 
+104: /// Positive receiver incidence in normalized emitter coordinates [-1, 1]².
+105: struct StudyAreaSamplingPlane {
+106:     let center: Double
+107:     let x: Double
+108:     let y: Double
+109:     var isFull: Bool { center >= abs(x) + abs(y) }
+110:     var isEmpty: Bool { center <= -abs(x) - abs(y) }
+111:     func at(_ p: SIMD2<Double>) -> Double { center + x * p.x + y * p.y }
+112: }
+113: 
+114: /// A fixed number of samples over a moving convex domain. Clip the emitter once,
+115: /// divide its x projection into equal columns, and use each column's exact area
+116: /// and centroid x. Uniform vertical samples stay inside the illuminated interval.
+117: /// Column areas and centroids vary continuously when a clip crosses a grid edge;
+118: /// at the full-face limit the positions/weights approach the original midpoints.
+119: /// Visibility can still have the usual discrete shadow-sampling transitions.
+120: enum StudyAreaSliceSampling {
+121:     static func forEach(grid: Int, normal: StudyAreaSamplingPlane, geometric: StudyAreaSamplingPlane? = nil,
+122:                         _ body: (SIMD2<Double>, Double) throws -> Void) rethrows {
+123:         guard !normal.isEmpty, !(geometric?.isEmpty ?? false) else { return }
+124:         // A rectangle clipped by two hemisphere and two column planes has at
+125:         // most eight vertices. Four separate buffers avoid input/output aliasing.
+126:         try withUnsafeTemporaryAllocation(of: SIMD2<Double>.self, capacity: 32) { storage in
+127:             let first = UnsafeMutableBufferPointer(rebasing: storage[0..<8])
+128:             let second = UnsafeMutableBufferPointer(rebasing: storage[8..<16])
+129:             let left = UnsafeMutableBufferPointer(rebasing: storage[16..<24])
+130:             let column = UnsafeMutableBufferPointer(rebasing: storage[24..<32])
+131:             first[0] = .init(-1, -1); first[1] = .init(1, -1)
+132:             first[2] = .init(1, 1); first[3] = .init(-1, 1)
+133:             var count = clip(first, count: 4, plane: normal, into: second)
+134:             var polygon = second
+135:             if let geometric {
+136:                 count = clip(second, count: count, plane: geometric, into: first)
+137:                 polygon = first
+138:             }
+139:             guard count >= 3 else { return }
+140:             var minimum = polygon[0].x, maximum = minimum
+141:             for i in 1..<count { minimum = min(minimum, polygon[i].x); maximum = max(maximum, polygon[i].x) }
+142:             guard minimum < maximum else { return }
+143:             for col in 0..<grid {
+144:                 let a = minimum + (maximum - minimum) * Double(col) / Double(grid)
+145:                 let b = minimum + (maximum - minimum) * Double(col + 1) / Double(grid)
+146:                 let leftCount = clip(polygon, count: count, plane: .init(center: -a, x: 1, y: 0), into: left)
+147:                 let columnCount = clip(left, count: leftCount, plane: .init(center: b, x: -1, y: 0), into: column)
+148:                 guard columnCount >= 3 else { continue }
+149:                 let anchor = column[0]
+150:                 var twiceArea = 0.0, momentX = 0.0
+151:                 for i in 1..<(columnCount - 1) {
+152:                     let u = column[i] - anchor, v = column[i + 1] - anchor
+153:                     let cross = abs(u.x * v.y - u.y * v.x)
+154:                     twiceArea += cross
+155:                     momentX += cross * (u.x + v.x) / 3
+156:                 }
+157:                 guard twiceArea > 0 else { continue }
+158:                 let x = min(b, max(a, anchor.x + momentX / twiceArea))
+159:                 var lower = -1.0, upper = 1.0
+160:                 func constrain(_ plane: StudyAreaSamplingPlane) {
+161:                     let atX = plane.center + plane.x * x
+162:                     if plane.y > 0 { lower = max(lower, -atX / plane.y) }
+163:                     else if plane.y < 0 { upper = min(upper, -atX / plane.y) }
+164:                     else if atX <= 0 { upper = lower }
+165:                 }
+166:                 constrain(normal)
+167:                 if let geometric { constrain(geometric) }
+168:                 guard lower < upper else { continue }
+169:                 // twiceArea / 8 is the column's fraction of the whole emitter.
+170:                 // Each row takes 1/grid of it; base samples carry candela/grid².
+171:                 let weight = twiceArea * Double(grid) / 8
+172:                 for row in 0..<grid {
+173:                     let y = lower + (upper - lower) * (Double(row) + 0.5) / Double(grid)
+174:                     try body(.init(x, y), weight)
+175:                 }
+176:             }
+177:         }
+178:     }
+179: 
+180:     private static func clip(_ input: UnsafeMutableBufferPointer<SIMD2<Double>>, count: Int,
+181:                              plane: StudyAreaSamplingPlane, into output: UnsafeMutableBufferPointer<SIMD2<Double>>) -> Int {
+182:         guard count > 0 else { return 0 }
+183:         var result = 0, previous = input[count - 1], previousDistance = plane.at(previous)
+184:         for i in 0..<count {
+185:             let current = input[i], distance = plane.at(current)
+186:             // Intersect only strict sign crossings and retain exact tangencies.
+187:             // Rounding can produce coincident vertices; their triangles have
+188:             // zero area in the column moment calculation.
+189:             if (previousDistance < 0 && distance > 0) || (previousDistance > 0 && distance < 0) {
+190:                 let t = previousDistance / (previousDistance - distance)
+191:                 output[result] = previous + (current - previous) * t
+192:                 result += 1
+193:             }
+194:             if distance >= 0 { output[result] = current; result += 1 }
+195:             previous = current; previousDistance = distance
+196:         }
+197:         return result
+198:     }
+199: }
+200: 
+201: /// Prepared light samples are shared across surface evaluations. Rectangular sources
+202: /// retain midpoint samples on full faces and redistribute them continuously on
+203: /// clipped faces, with weights proportional to the actual illuminated area.
+204: public struct StudyLighting: Sendable {
+205:     private struct Sample: Sendable {
+206:         let position: SIMD3<Double>
+207:         let emittingNormal: SIMD3<Double>?
+208:         let candela: Double
+209:         let xyz: SIMD3<Double>
+210:         let areaIndex: Int?
+211:     }
+212:     private struct AreaGuard: Sendable {
+213:         let center: SIMD3<Double>
+214:         let right: SIMD3<Double>
+215:         let up: SIMD3<Double>
+216:         let halfWidth: Double
+217:         let halfHeight: Double
+218:         let minimumDistance: Double
+219: 
+220:         func containsNearReceiver(_ p: SIMD3<Double>) -> Bool {
+221:             let delta = p - center
+222:             let x = min(halfWidth, max(-halfWidth, dot3(delta, right)))
+223:             let y = min(halfHeight, max(-halfHeight, dot3(delta, up)))
+224:             let separation = delta - right * x - up * y
+225:             return dot3(separation, separation) < minimumDistance * minimumDistance
+226:         }
+227:     }
+228:     private let samples: [Sample]
+229:     private let areaGuards: [AreaGuard]
+230:     private let grid: Int
+231: 
+232:     public init(scene: LightingScene, quality: StudyQuality = .interactive) throws {
+233:         guard (try? scene.validated()) != nil else { throw StudyError.invalidScene }
+234:         var result: [Sample] = []
+235:         var guards: [AreaGuard] = []
+236:         for light in scene.lights where light.candela > 0 {
+237:             guard let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { throw StudyError.invalidEmitter }
+238:             let xyz = SIMD3<Double>(color.x, color.y, color.z)
+239:             let optics = light.effectiveOptics, center = vec(light.position)
+240:             if optics.kind == .point {
+241:                 result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz, areaIndex: nil))
+242:             } else {
+243:                 guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }
+244:                 let axis = vec(frame.normal)
+245:                 if optics.kind == .directional {
+246:                     result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz, areaIndex: nil))
+247:                 } else {
+248:                     let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
+249:                     let perCell = light.candela / Double(grid * grid)
+250:                     let areaIndex = guards.count
+251:                     guards.append(.init(center: center, right: right, up: up,
+252:                                         halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
+253:                                         minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))
+254:                     for row in 0..<grid {
+255:                         let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters
+256:                         for col in 0..<grid {
+257:                             let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
+258:                             result.append(.init(position: center + right * x + up * y, emittingNormal: axis,
+259:                                                 candela: perCell, xyz: xyz, areaIndex: areaIndex))
+260:                         }
+261:                     }
+262:                 }
+263:             }
+264:         }
+265:         samples = result; areaGuards = guards; grid = quality.grid
+266:     }
+267: 
+268:     public var sampleCount: Int { samples.count }
+269: 
+270:     // Structure-of-vectors contract: three aligned float4 rows per sample and area.
+271:     // Translate positions to the subject center to reduce Float32 roundoff.
+272:     fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+273:         samples.flatMap { s in
+274:             [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),
+275:              pack(s.xyz, s.areaIndex.map { Double($0 + 1) } ?? 0)]
+276:         }
+277:     }
+278: 
+279:     fileprivate func computeAreas(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+280:         areaGuards.flatMap { a in
+281:             [pack(a.center - center, a.minimumDistance), pack(a.right, a.halfWidth), pack(a.up, a.halfHeight)]
+282:         }
+283:     }
+284: 
+285:     /// Evaluates one arbitrary receiver. Geometry nil means no visibility/occlusion.
+286:     /// A point sample nearer than 5 cm, or a receiver within the declared finite-area
+287:     /// near-field guard (max of 5 cm and one quarter longest side), is unsupported.
+288:     public func evaluate(receiver: Position, normal: UnitDirection, view: UnitDirection,
+289:                          material: StudyMaterial, geometry: StudyGeometry? = nil) throws -> StudySurfaceSignal {
+290:         guard receiver.isValid, material.isValid, dot3(vec(normal), vec(view)) > 0 else { throw StudyError.invalidSurface }
+291:         return try evaluate(receiver: vec(receiver), normal: vec(normal), view: vec(view), material: material, geometry: geometry)
+292:     }
+293: 
+294:     /// Internal direct-light evaluator shared by the sphere and mannequin
+295:     /// diagnostics. The additional visibility function is CPU-only; the sphere
+296:     /// and its Metal oracle share the clipped-area sampling contract.
+297:     func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,
+298:                   material: StudyMaterial, geometry: StudyGeometry? = nil,
+299:                   occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil,
+300:                   geometricNormal: SIMD3<Double>? = nil) throws -> StudySurfaceSignal {
+301:         if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }
+302:         var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero
+303:         let shadowOrigin = receiver + (geometricNormal ?? normal) * 1e-5
+304:         func accumulate(position: SIMD3<Double>, candela: Double, sample: Sample) throws {
+305:             let delta = position - receiver
+306:             let r2 = dot3(delta, delta)
+307:             guard r2 >= 0.0025 else { throw StudyError.invalidSurface }
+308:             let distance = sqrt(r2), wi = delta / distance
+309:             // Mesh shading normals must not admit light from below the actual face.
+310:             // Analytic sphere and planar receivers retain their original path.
+311:             if let geometricNormal, dot3(geometricNormal, wi) <= 0 { return }
+312:             let nl = min(1, max(0, dot3(normal, wi)))
+313:             if nl == 0 { return }
+314:             let emitted = sample.emittingNormal.map { min(1, max(0, -dot3($0, wi))) } ?? 1
+315:             if emitted == 0 { return }
+316:             let lux = candela * emitted * nl / r2
+317:             total += lux
+318:             // Offset origin while keeping the shadow ray aimed at the actual source sample.
+319:             if geometry != nil || occlusionTest != nil {
+320:                 let segment = position - shadowOrigin
+321:                 let length = sqrt(dot3(segment, segment))
+322:                 let shadowDirection = segment / length
+323:                 if geometry?.occludes(from: shadowOrigin, to: shadowDirection, distance: length) == true ||
+324:                     occlusionTest?(shadowOrigin, shadowDirection, length) == true { return }
+325:             }
+326:             visible += lux
+327:             let scale = lux * material.response(normal: normal, light: wi, view: view, nl: nl) / 1000
+328:             xyz += sample.xyz * scale
+329:         }
+330:         var index = 0
+331:         while index < samples.count {
+332:             let sample = samples[index]
+333:             guard let areaIndex = sample.areaIndex else {
+334:                 try accumulate(position: sample.position, candela: sample.candela, sample: sample)
+335:                 index += 1
+336:                 continue
+337:             }
+338:             let area = areaGuards[areaIndex]
+339:             // A rectangle is one-sided, so every sample on its back side has
+340:             // zero emission. Keep all area guards above this shortcut. The
+341:             // additional 5 cm depth and 1 nm roundoff allowance also keep the
+342:             // per-sample distance rejection unchanged at its exact boundary;
+343:             // coplanar and nearly coplanar receivers use the original path.
+344:             if let axis = sample.emittingNormal,
+345:                dot3(receiver - area.center, axis) < -(0.05 + 1e-9) {
+346:                 index += grid * grid
+347:                 continue
+348:             }
+349:             func plane(_ n: SIMD3<Double>) -> StudyAreaSamplingPlane {
+350:                 .init(center: dot3(n, area.center - receiver),
+351:                       x: dot3(n, area.right) * area.halfWidth,
+352:                       y: dot3(n, area.up) * area.halfHeight)
+353:             }
+354:             let shading = plane(normal), geometric = geometricNormal.map(plane)
+355:             if shading.isFull && (geometric?.isFull ?? true) {
+356:                 // Keep both positions and accumulation order on ordinary full faces.
+357:                 for offset in 0..<(grid * grid) {
+358:                     let full = samples[index + offset]
+359:                     try accumulate(position: full.position, candela: full.candela, sample: full)
+360:                 }
+361:             } else {
+362:                 try StudyAreaSliceSampling.forEach(grid: grid, normal: shading, geometric: geometric) { p, weight in
+363:                     let position = area.center + area.right * (p.x * area.halfWidth) + area.up * (p.y * area.halfHeight)
+364:                     try accumulate(position: position, candela: sample.candela * weight, sample: sample)
+365:                 }
+366:             }
+367:             index += grid * grid
+368:         }
+369:         return .init(visibleLux: visible, unoccludedLux: total, signalXYZ: .init(x: xyz.x, y: xyz.y, z: xyz.z))
+370:     }
+371: }
+372: 
+373: /// Packed, opaque RGBA8, top-to-bottom rows, 3:2 frame. Invalid near-emitter
+374: /// receivers are marked diagnostic magenta and counted, never passed off as shadows.
+375: public struct StudyImage: Equatable, Sendable {
+376:     public let width: Int
+377:     public let height: Int
+378:     public let rgba: Data
+379:     public let unsupportedPixels: Int
+380:     /// One byte per pixel in RGBA row order: 1 is unsupported, 0 is valid.
+381:     /// Retained separately so an opaque magenta color is never mistaken for a flag.
+382:     public let unsupportedPixelMask: Data
+383: 
+384:     // Keep the existing internal initializer available, but missing metadata
+385:     // remains an empty mask and cannot pass parity validation.
+386:     init(width: Int, height: Int, rgba: Data, unsupportedPixels: Int,
+387:          unsupportedPixelMask: Data = Data()) {
+388:         self.width = width; self.height = height; self.rgba = rgba
+389:         self.unsupportedPixels = unsupportedPixels
+390:         self.unsupportedPixelMask = unsupportedPixelMask
+391:     }
+392: 
+393:     /// Compute buffer uses alpha 0 exclusively as an invalid-surface flag. Restore
+394:     /// opaque alpha and retain flags, without guessing from the visible RGB color.
+395:     public static func fromComputeRGBA(width: Int, height: Int, data: Data) throws -> StudyImage {
+396:         guard (24...192).contains(width), width.isMultiple(of: 3), height == width * 2 / 3,
+397:               data.count == width * height * 4 else { throw StudyError.invalidComputeOutput }
+398:         var bytes = [UInt8](data), unsupported = 0
+399:         var unsupportedMask = [UInt8](repeating: 0, count: width * height)
+400:         for i in stride(from: 0, to: bytes.count, by: 4) {
+401:             if bytes[i+3] == 0 {
+402:                 guard bytes[i] == 255, bytes[i+1] == 0, bytes[i+2] == 255 else { throw StudyError.invalidComputeOutput }
+403:                 unsupported += 1; unsupportedMask[i / 4] = 1; bytes[i+3] = 255
+404:             } else if bytes[i+3] != 255 { throw StudyError.invalidComputeOutput }
+405:         }
+406:         return .init(width: width, height: height, rgba: Data(bytes), unsupportedPixels: unsupported,
+407:                      unsupportedPixelMask: Data(unsupportedMask))
+408:     }
+409: }
+410: 
+411: /// Optional GPU backend input, generated from the same validated source samples,
+412: /// camera, and display transform as the CPU oracle. Every row is a 16-byte float4.
+413: /// Parameters: 0 origin/halfW, 1 forward/halfH, 2 right/radius, 3 up/panelHalfExtent,
+414: /// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/grid count.
+415: /// Sample color.w is zero for a point/directional source or a one-based area index.
+416: public struct StudyComputeInput: Sendable {
+417:     public let width: Int
+418:     public let height: Int
+419:     public let parameters: [SIMD4<Float>]
+420:     public let samples: [SIMD4<Float>]
+421:     public let areas: [SIMD4<Float>]
+422: 
+423:     public init(scene: LightingScene, width: Int = 192) throws {
+424:         let setup = try StudySetup(scene: scene, width: width, quality: .interactive)
+425:         let c = vec(setup.geometry.center), camera = setup.camera
+426:         let origin = vec(camera.position) - c
+427:         let samples = setup.lighting.computeSamples(relativeTo: c)
+428:         let areas = setup.lighting.computeAreas(relativeTo: c)
+429:         self.width = width; self.height = setup.height
+430:         self.samples = samples; self.areas = areas
+431:         parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),
+432:                       pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),
+433:                       setup.transform.computeParameters,
+434:                       .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 8)]
+435:     }
+436: }
+437: 
+438: private struct StudySetup {
+439:     let camera: CameraFraming
+440:     let geometry: StudyGeometry
+441:     let lighting: StudyLighting
+442:     let transform: PreviewColorTransform
+443:     let height: Int
+444:     let halfW: Double
+445:     let halfH: Double
+446: 
+447:     init(scene: LightingScene, width: Int, quality: StudyQuality, isCancelled: () -> Bool = { false }) throws {
+448:         let maximum = quality == .reference ? 96 : 192
+449:         guard width >= 24, width <= maximum, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
+450:         // Reject cancelled work before camera validation and sample allocation.
+451:         // Resolution keeps its cheap, deterministic validation precedence.
+452:         guard !isCancelled() else { throw StudyError.cancelled }
+453:         guard let camera = CameraFraming(scene: scene), let geometry = StudyGeometry(center: scene.subject),
+454:               camera.position.y > geometry.panelY + 0.01,
+455:               camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters else { throw StudyError.invalidCamera }
+456:         let light = try StudyLighting(scene: scene, quality: quality)
+457:         guard let transform = PreviewColorTransform(settings: scene.effectivePreviewSettings) else { throw StudyError.invalidScene }
+458:         self.camera = camera; self.geometry = geometry; lighting = light; self.transform = transform
+459:         height = width * 2 / 3
+460:         halfW = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
+461:         halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
+462:     }
+463: }
+464: 
+465: /// Shared cooperative work bound for the two deterministic CPU renderers.
+466: struct StudyPixelCancellation {
+467:     private var pixelsUntilCheck = 0
+468: 
+469:     /// Call before each pixel, including background/unsupported pixels. A
+470:     /// close-up with many area lights can make a whole scanline expensive;
+471:     /// bound cooperative work between checks without changing pixel sampling.
+472:     @inline(__always)
+473:     mutating func check(_ isCancelled: () -> Bool) throws {
+474:         if pixelsUntilCheck == 0 {
+475:             guard !isCancelled() else { throw StudyError.cancelled }
+476:             pixelsUntilCheck = 8
+477:         }
+478:         pixelsUntilCheck -= 1
+479:     }
+480: }
+481: 
+482: /// Deterministic CPU oracle/diagnostic preview. Direct light only; deliberately small
+483: /// bounded images. Not a real-time production GPU renderer or photographic ground truth.
+484: public enum ReferenceStudyRenderer {
+485:     public static func render(scene: LightingScene, width: Int = 120, quality: StudyQuality = .interactive,
+486:                               isCancelled: () -> Bool = { false }) throws -> StudyImage {
+487:         let setup = try StudySetup(scene: scene, width: width, quality: quality, isCancelled: isCancelled)
+488:         let camera = setup.camera, geometry = setup.geometry, light = setup.lighting, transform = setup.transform
+489:         let height = setup.height, origin = vec(camera.position)
+490:         let forward = vec(camera.forward), right = vec(camera.right), up = vec(camera.up)
+491:         let halfW = setup.halfW, halfH = setup.halfH
+492:         var pixels = [UInt8](repeating: 255, count: width * height * 4)
+493:         var unsupportedMask = [UInt8](repeating: 0, count: width * height)
+494:         var unsupported = 0
+495:         var cancellation = StudyPixelCancellation()
+496:         let sphere: StudyMaterial = .dielectric(reflectance: 0.18, roughness: 0.32, f0: 0.04)
+497:         let panel: StudyMaterial = .diffuse(reflectance: 0.30)
+498:         for y in 0..<height {
+499:             let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfH
+500:             for x in 0..<width {
+501:                 try cancellation.check(isCancelled)
+502:                 let px = (2 * (Double(x) + 0.5) / Double(width) - 1) * halfW
+503:                 guard let ray = normalized3(forward + right * px + up * py) else { throw StudyError.invalidCamera }
+504:                 let minT = CameraFraming.minimumDepthMeters / dot3(ray, forward)
+505:                 let sphereT = geometry.sphereHit(origin: origin, direction: ray, minimum: minT)
+506:                 var planeT: Double?
+507:                 if ray.y < -1e-12 {
+508:                     let t = (geometry.panelY - origin.y) / ray.y
+509:                     if t >= minT, geometry.inPanel(origin + ray * t) { planeT = t }
+510:                 }
+511:                 let index = 4 * (y * width + x)
+512:                 var p: SIMD3<Double>, n: SIMD3<Double>, material: StudyMaterial
+513:                 if let t = sphereT, t < (planeT ?? .infinity) {
+514:                     p = origin + ray * t
+515:                     guard let unit = normalized3(p - vec(geometry.center)) else { throw StudyError.invalidSurface }
+516:                     n = unit; material = sphere
+517:                 } else if let t = planeT {
+518:                     p = origin + ray * t; n = .init(0, 1, 0); material = panel
+519:                 } else {
+520:                     pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
+521:                     continue
+522:                 }
+523:                 do {
+524:                     let signal = try light.evaluate(receiver: p, normal: n, view: -ray, material: material, geometry: geometry)
+525:                     guard let color = transform.display(signal.signalXYZ) else { throw StudyError.invalidSurface }
+526:                     pixels[index] = byte(color.red); pixels[index + 1] = byte(color.green); pixels[index + 2] = byte(color.blue)
+527:                 } catch StudyError.invalidSurface {
+528:                     unsupported += 1
+529:                     unsupportedMask[index / 4] = 1
+530:                     pixels[index] = 255; pixels[index + 1] = 0; pixels[index + 2] = 255
+531:                 }
+532:             }
+533:         }
+534:         if isCancelled() { throw StudyError.cancelled }
+535:         return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported,
+536:                      unsupportedPixelMask: Data(unsupportedMask))
+537:     }
+538: 
+539:     private static func byte(_ v: Double) -> UInt8 { UInt8((min(1, max(0, v)) * 255).rounded()) }
+540: }
+541: 
+542: private func vec(_ p: Position) -> SIMD3<Double> { .init(p.x, p.y, p.z) }
+543: private func vec(_ d: UnitDirection) -> SIMD3<Double> { .init(d.x, d.y, d.z) }
+544: private func dot3(_ a: SIMD3<Double>, _ b: SIMD3<Double>) -> Double { a.x * b.x + a.y * b.y + a.z * b.z }
+545: private func normalized3(_ v: SIMD3<Double>) -> SIMD3<Double>? {
+546:     let length = sqrt(dot3(v, v))
+547:     guard length.isFinite, length > 0 else { return nil }
+548:     return v / length
+549: }
+550: 
+551: private func pack(_ v: SIMD3<Double>, _ w: Double) -> SIMD4<Float> {
+552:     .init(Float(v.x), Float(v.y), Float(v.z), Float(w))
+553: }
+FILE Sources/LightingCore/PortraitStudy.swift
+SHA256 f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb
+1: import Foundation
+2: 
+3: /// Session-only study subjects. They share the actual camera and lighting
+4: /// controls; selecting a study never modifies or saves the lighting scene.
+5: public enum StudySubject: String, CaseIterable, Sendable, Hashable {
+6:     case sphere = "Sphere"
+7:     case bust = "Bust"
+8: }
+9: 
+10: /// Analytic, original neutral mannequin geometry in meters. Front faces +Z;
+11: /// the head's center is the scene subject. This is a controlled lighting
+12: /// target, not a reconstruction of a person or calibrated skin/fabric.
+13: struct PortraitGeometry: Sendable {
+14:     enum Region: Equatable, Sendable {
+15:         case head, clothing, panel
+16: 
+17:         var material: StudyMaterial {
+18:             switch self {
+19:             case .head: return .dielectric(reflectance: 0.34, roughness: 0.48, f0: 0.04)
+20:             case .clothing: return .dielectric(reflectance: 0.10, roughness: 0.85, f0: 0.025)
+21:             case .panel: return .diffuse(reflectance: 0.24)
+22:             }
+23:         }
+24:     }
+25: 
+26:     struct Hit: Sendable {
+27:         let distance: Double
+28:         let normal: SIMD3<Double>
+29:         let geometricNormal: SIMD3<Double>
+30:         let region: Region
+31:     }
+32: 
+33:     private struct Ellipsoid: Sendable {
+34:         let center: SIMD3<Double>
+35:         let radii: SIMD3<Double>
+36:         let region: Region
+37: 
+38:         func contains(_ p: SIMD3<Double>) -> Bool {
+39:             let delta = (p - center) / radii
+40:             return portraitDot(delta, delta) <= 1
+41:         }
+42: 
+43:         /// Intersect the transformed unit sphere without normalizing its
+44:         /// direction, so the ray parameter remains in world-space meters.
+45:         func interval(origin: SIMD3<Double>, direction: SIMD3<Double>) -> (Double, Double)? {
+46:             let o = (origin - center) / radii, d = direction / radii
+47:             let a = portraitDot(d, d), b = portraitDot(o, d)
+48:             let c = portraitDot(o, o) - 1
+49:             let discriminant = b * b - a * c
+50:             guard a.isFinite, a > 0, discriminant.isFinite, discriminant >= 0 else { return nil }
+51:             let root = sqrt(discriminant)
+52:             return ((-b - root) / a, (-b + root) / a)
+53:         }
+54: 
+55:         func hit(origin: SIMD3<Double>, direction: SIMD3<Double>, minimum: Double,
+56:                  maximum: Double) -> Hit? {
+57:             guard let (near, far) = interval(origin: origin, direction: direction) else { return nil }
+58:             let distance = near >= minimum ? near : far
+59:             guard distance >= minimum, distance < maximum else { return nil }
+60:             // Analytic gradient of the ellipsoid; inverse-square scaling is
+61:             // essential for non-uniform radii and accurate incidence.
+62:             let gradient = (origin + direction * distance - center) / (radii * radii)
+63:             guard let normal = portraitUnit(gradient) else { return nil }
+64:             return Hit(distance: distance, normal: normal, geometricNormal: normal, region: region)
+65:         }
+66:     }
+67: 
+68:     let center: SIMD3<Double>
+69:     static let panelOffset = -0.565
+70:     private static let epsilon = 1e-5
+71:     private static let panelHalfExtent = 3.0
+72:     private static let bound = Ellipsoid(center: .init(0, -0.20, 0),
+73:                                          radii: .init(repeating: 0.46), region: .head)
+74:     // Ears, neck and clothing use analytic forms; the entire facial
+75:     // surface is a continuous, accelerated, original neutral head mesh.
+76:     // No external asset, photograph, identity or inferred attributes.
+77:     private static let head = PortraitHeadMesh.standard
+78:     private static let parts: [Ellipsoid] = [
+79:         .init(center: .init(-0.087, 0.004, -0.015), radii: .init(0.015, 0.034, 0.023), region: .head),
+80:         .init(center: .init(0.087, 0.004, -0.015), radii: .init(0.015, 0.034, 0.023), region: .head),
+81:         .init(center: .init(0, -0.175, -0.016), radii: .init(0.053, 0.095, 0.052), region: .head),
+82:         .init(center: .init(0, -0.360, -0.022), radii: .init(0.203, 0.205, 0.108), region: .clothing),
+83:         .init(center: .init(-0.129, -0.294, -0.020), radii: .init(0.107, 0.086, 0.090), region: .clothing),
+84:         .init(center: .init(0.129, -0.294, -0.020), radii: .init(0.107, 0.086, 0.090), region: .clothing)
+85:     ]
+86: 
+87:     init(center: Position) { self.center = portraitVector(center) }
+88: 
+89:     func contains(_ point: SIMD3<Double>) -> Bool {
+90:         let local = point - center
+91:         return Self.head.containsExclusionBounds(local) || Self.parts.contains { $0.contains(local) }
+92:     }
+93: 
+94:     private func inPanel(_ local: SIMD3<Double>) -> Bool {
+95:         abs(local.x) <= Self.panelHalfExtent && abs(local.z) <= Self.panelHalfExtent
+96:     }
+97: 
+98:     private func canHitBust(origin: SIMD3<Double>, direction: SIMD3<Double>,
+99:                             minimum: Double, maximum: Double) -> Bool {
+100:         guard let (near, far) = Self.bound.interval(origin: origin, direction: direction) else { return false }
+101:         return far >= minimum && near < maximum
+102:     }
+103: 
+104:     /// The primary camera sees the nearest surface, preserving world scale
+105:     /// and camera parallax. The finite neutral panel is a study background.
+106:     func hit(origin: SIMD3<Double>, direction: SIMD3<Double>, minimum: Double) -> Hit? {
+107:         let local = origin - center
+108:         var nearest: Hit?
+109:         if direction.y < -1e-12 {
+110:             let t = (Self.panelOffset - local.y) / direction.y
+111:             if t >= minimum, inPanel(local + direction * t) {
+112:                 nearest = .init(distance: t, normal: .init(0, 1, 0), geometricNormal: .init(0, 1, 0), region: .panel)
+113:             }
+114:         }
+115:         if canHitBust(origin: local, direction: direction, minimum: minimum,
+116:                       maximum: nearest?.distance ?? .infinity) {
+117:             if let head = Self.head.hit(origin: local, direction: direction,
+118:                                         minimum: minimum, maximum: nearest?.distance ?? .infinity) {
+119:                 nearest = .init(distance: head.distance, normal: head.normal,
+120:                                 geometricNormal: head.geometricNormal, region: .head)
+121:             }
+122:             for part in Self.parts {
+123:                 if let hit = part.hit(origin: local, direction: direction, minimum: minimum,
+124:                                       maximum: nearest?.distance ?? .infinity) {
+125:                     nearest = hit
+126:                 }
+127:             }
+128:         }
+129:         return nearest
+130:     }
+131: 
+132:     /// Segment visibility, not an infinite ray. Lights nearer than a later
+133:     /// intersection are not falsely shadowed. The same geometry casts and
+134:     /// receives shadows; a small surface-normal offset is applied by the
+135:     /// shared direct-light evaluator before invoking this function.
+136:     func occludes(origin: SIMD3<Double>, direction: SIMD3<Double>, distance: Double) -> Bool {
+137:         let local = origin - center, limit = distance - Self.epsilon
+138:         guard limit > Self.epsilon else { return false }
+139:         if abs(direction.y) > 1e-12 {
+140:             let t = (Self.panelOffset - local.y) / direction.y
+141:             if t >= Self.epsilon, t < limit, inPanel(local + direction * t) { return true }
+142:         }
+143:         guard canHitBust(origin: local, direction: direction, minimum: Self.epsilon, maximum: limit) else { return false }
+144:         if Self.head.occludes(origin: local, direction: direction, minimum: Self.epsilon, maximum: limit) {
+145:             return true
+146:         }
+147:         return Self.parts.contains { part in
+148:             guard let (near, far) = part.interval(origin: local, direction: direction) else { return false }
+149:             return far >= Self.epsilon && near < limit
+150:         }
+151:     }
+152: }
+153: 
+154: /// Deterministic CPU-only direct-light mannequin study. Uses the same
+155: /// photometric samples, BRDF, white balance, tone mapping, and rectilinear
+156: /// camera contract as the sphere oracle. Bounded small images; no skin
+157: /// spectra, subsurface scattering, hair, textures, indirect light, or
+158: /// physical performance/portrait-realism guarantee.
+159: public enum PortraitStudyRenderer {
+160:     public static let maximumWidth = 144
+161: 
+162:     public static func render(scene: LightingScene, width: Int = 120,
+163:                               isCancelled: () -> Bool = { false }) throws -> StudyImage {
+164:         guard (24...maximumWidth).contains(width), width.isMultiple(of: 3) else {
+165:             throw StudyError.invalidResolution
+166:         }
+167:         guard !isCancelled() else { throw StudyError.cancelled }
+168:         guard let camera = CameraFraming(scene: scene) else { throw StudyError.invalidCamera }
+169:         let geometry = PortraitGeometry(center: scene.subject)
+170:         let origin = portraitVector(camera.position)
+171:         guard origin.y > geometry.center.y + PortraitGeometry.panelOffset + 0.01,
+172:               camera.subjectDistanceMeters > 0.17,
+173:               !geometry.contains(origin) else { throw StudyError.invalidCamera }
+174:         let lighting = try StudyLighting(scene: scene, quality: .interactive)
+175:         guard let transform = PreviewColorTransform(settings: scene.effectivePreviewSettings) else {
+176:             throw StudyError.invalidScene
+177:         }
+178:         let forward = portraitVector(camera.forward), right = portraitVector(camera.right)
+179:         let up = portraitVector(camera.up)
+180:         let halfW = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
+181:         let halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
+182:         let height = width * 2 / 3
+183:         var pixels = [UInt8](repeating: 255, count: width * height * 4)
+184:         var unsupportedMask = [UInt8](repeating: 0, count: width * height)
+185:         var unsupported = 0
+186:         var cancellation = StudyPixelCancellation()
+187:         for y in 0..<height {
+188:             let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfH
+189:             for x in 0..<width {
+190:                 try cancellation.check(isCancelled)
+191:                 let index = 4 * (y * width + x)
+192:                 let px = (2 * (Double(x) + 0.5) / Double(width) - 1) * halfW
+193:                 guard let ray = portraitUnit(forward + right * px + up * py) else {
+194:                     throw StudyError.invalidCamera
+195:                 }
+196:                 let minimum = CameraFraming.minimumDepthMeters / portraitDot(ray, forward)
+197:                 // Find the actual first surface before applying the camera's
+198:                 // near plane. Skipping a clipped head entry can expose either
+199:                 // its back face or another front-facing part inside the head.
+200:                 guard let hit = geometry.hit(origin: origin, direction: ray, minimum: 0) else {
+201:                     pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
+202:                     continue
+203:                 }
+204:                 if hit.distance < minimum {
+205:                     // The open panel can be clipped normally. A cut through a
+206:                     // closed subject would misrepresent its visible geometry.
+207:                     guard hit.region == .panel else { throw StudyError.invalidCamera }
+208:                     pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
+209:                     continue
+210:                 }
+211:                 do {
+212:                     guard portraitDot(hit.normal, -ray) > 0 else { throw StudyError.invalidSurface }
+213:                     let signal = try lighting.evaluate(receiver: origin + ray * hit.distance,
+214:                                                         normal: hit.normal, view: -ray,
+215:                                                         material: hit.region.material,
+216:                                                         occlusionTest: geometry.occludes,
+217:                                                         geometricNormal: hit.geometricNormal)
+218:                     guard let color = transform.display(signal.signalXYZ) else { throw StudyError.invalidSurface }
+219:                     pixels[index] = byte(color.red); pixels[index + 1] = byte(color.green)
+220:                     pixels[index + 2] = byte(color.blue)
+221:                 } catch StudyError.invalidSurface {
+222:                     unsupported += 1
+223:                     unsupportedMask[index / 4] = 1
+224:                     pixels[index] = 255; pixels[index + 1] = 0; pixels[index + 2] = 255
+225:                 }
+226:             }
+227:         }
+228:         guard !isCancelled() else { throw StudyError.cancelled }
+229:         return .init(width: width, height: height, rgba: Data(pixels), unsupportedPixels: unsupported,
+230:                      unsupportedPixelMask: Data(unsupportedMask))
+231:     }
+232: 
+233:     private static func byte(_ value: Double) -> UInt8 {
+234:         UInt8((min(1, max(0, value)) * 255).rounded())
+235:     }
+236: }
+237: 
+238: private func portraitVector(_ p: Position) -> SIMD3<Double> { .init(p.x, p.y, p.z) }
+239: private func portraitVector(_ d: UnitDirection) -> SIMD3<Double> { .init(d.x, d.y, d.z) }
+240: private func portraitDot(_ a: SIMD3<Double>, _ b: SIMD3<Double>) -> Double {
+241:     a.x * b.x + a.y * b.y + a.z * b.z
+242: }
+243: private func portraitUnit(_ v: SIMD3<Double>) -> SIMD3<Double>? {
+244:     let length = sqrt(portraitDot(v, v))
+245:     guard length.isFinite, length > 0 else { return nil }
+246:     return v / length
+247: }
+FILE App/MetalStudyRenderer.swift
+SHA256 a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f
+1: import Foundation
+2: import Metal
+3: import LightingCore
+4: 
+5: enum StudyBackend: String, Sendable {
+6:     case cpu = "CPU reference"
+7:     case metal = "Metal compute"
+8: }
+9: 
+10: struct StudyRenderedFrame: Sendable {
+11:     let image: StudyImage
+12:     let backend: StudyBackend
+13: }
+14: 
+15: enum MetalStudyError: Error {
+16:     case unavailable, allocation, command, parity, precisionDomain
+17: }
+18: 
+19: /// Retains the compiled pipeline/queue. Used only inside the render actor or
+20: /// a serial native parity test. The buffer layout is explicit float4/uchar4.
+21: final class MetalStudyRenderer {
+22:     private let device: MTLDevice
+23:     private let queue: MTLCommandQueue
+24:     private let pipeline: MTLComputePipelineState
+25: 
+26:     init(device: MTLDevice) throws {
+27:         guard let queue = device.makeCommandQueue(),
+28:               let library = device.makeDefaultLibrary(),
+29:               let function = library.makeFunction(name: "keyfillStudy") else {
+30:             throw MetalStudyError.unavailable
+31:         }
+32:         self.device = device; self.queue = queue
+33:         pipeline = try device.makeComputePipelineState(function: function)
+34:     }
+35: 
+36:     /// Far-away geometry and potentially ambiguous near-field masks stay on
+37:     /// the Double-precision oracle. Routing does not invalidate this backend.
+38:     static func supports(_ scene: LightingScene) -> Bool {
+39:         StudyFloat32Eligibility.supports(scene)
+40:     }
+41: 
+42:     func render(scene: LightingScene, width: Int) throws -> StudyImage {
+43:         guard Self.supports(scene) else { throw MetalStudyError.precisionDomain }
+44:         return try compute(StudyComputeInput(scene: scene, width: width))
+45:     }
+46: 
+47:     /// Internal parity-only path: retain the deliberately unsupported fixture
+48:     /// even though production routing now chooses CPU for near-field scenes.
+49:     /// Input validation and the relative-coordinate limit still apply. The
+50:     /// render engine never uses this entry point to publish a user's frame.
+51:     func renderValidationFixture(scene: LightingScene, width: Int) throws -> StudyImage {
+52:         let limit = StudyFloat32Eligibility.maximumRelativeDistanceMeters
+53:         guard scene.camera.distance(to: scene.subject) <= limit,
+54:               scene.lights.allSatisfy({ $0.position.distance(to: scene.subject) <= limit })
+55:         else { throw MetalStudyError.precisionDomain }
+56:         return try compute(StudyComputeInput(scene: scene, width: width))
+57:     }
+58: 
+59:     private func compute(_ input: StudyComputeInput) throws -> StudyImage {
+60:         guard let params = buffer(input.parameters),
+61:               let samples = buffer(input.samples),
+62:               let areas = buffer(input.areas),
+63:               let output = device.makeBuffer(length: input.width * input.height * 4, options: .storageModeShared),
+64:               let command = queue.makeCommandBuffer(),
+65:               let encoder = command.makeComputeCommandEncoder() else { throw MetalStudyError.allocation }
+66:         command.label = "Key & Fill diagnostic study"
+67:         encoder.setComputePipelineState(pipeline)
+68:         encoder.setBuffer(params, offset: 0, index: 0)
+69:         encoder.setBuffer(samples, offset: 0, index: 1)
+70:         encoder.setBuffer(areas, offset: 0, index: 2)
+71:         encoder.setBuffer(output, offset: 0, index: 3)
+72:         var dimensions = SIMD2<UInt32>(UInt32(input.width), UInt32(input.height))
+73:         encoder.setBytes(&dimensions, length: MemoryLayout<SIMD2<UInt32>>.stride, index: 4)
+74:         let groupWidth = min(pipeline.threadExecutionWidth, pipeline.maxTotalThreadsPerThreadgroup)
+75:         guard groupWidth > 0 else { encoder.endEncoding(); throw MetalStudyError.command }
+76:         let groupHeight = max(1, min(8, pipeline.maxTotalThreadsPerThreadgroup / groupWidth))
+77:         let group = MTLSize(width: groupWidth, height: groupHeight, depth: 1)
+78:         let count = MTLSize(width: (input.width + groupWidth - 1) / groupWidth,
+79:                             height: (input.height + groupHeight - 1) / groupHeight, depth: 1)
+80:         encoder.dispatchThreadgroups(count, threadsPerThreadgroup: group)
+81:         encoder.endEncoding()
+82:         command.commit()
+83:         // Only the isolated rendering actor waits. Read shared memory after GPU completion.
+84:         command.waitUntilCompleted()
+85:         guard command.status == .completed else { throw MetalStudyError.command }
+86:         let bytes = Data(bytes: output.contents(), count: input.width * input.height * 4)
+87:         return try StudyImage.fromComputeRGBA(width: input.width, height: input.height, data: bytes)
+88:     }
+89: 
+90:     /// Fail closed to CPU on any image-parity failure. Runtime gate is a numerical
+91:     /// sanity check, not a measured performance or physical-rendering claim.
+92:     func validate(isCancelled: () -> Bool = { Task.isCancelled }) throws {
+93:         for fixture in StudyValidationFixtures.all() {
+94:             guard !isCancelled() else { throw StudyError.cancelled }
+95:             let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 48,
+96:                                                                isCancelled: isCancelled)
+97:             guard !isCancelled() else { throw StudyError.cancelled }
+98:             let candidate = try renderValidationFixture(scene: fixture.scene, width: 48)
+99:             // A submitted GPU command must finish before its buffers can be
+100:             // read, but cancellation prevents starting another fixture.
+101:             guard !isCancelled() else { throw StudyError.cancelled }
+102:             guard StudyParityMetrics(reference: reference, candidate: candidate)?.passes == true else {
+103:                 throw MetalStudyError.parity
+104:             }
+105:         }
+106:     }
+107: 
+108:     private func buffer(_ rows: [SIMD4<Float>]) -> MTLBuffer? {
+109:         // Metal requires a valid binding even when the shader's count is zero.
+110:         let storage = rows.isEmpty ? [SIMD4<Float>.zero] : rows
+111:         return storage.withUnsafeBufferPointer { pointer in
+112:             guard let base = pointer.baseAddress else { return nil }
+113:             return device.makeBuffer(bytes: UnsafeRawPointer(base),
+114:                                      length: pointer.count * MemoryLayout<SIMD4<Float>>.stride,
+115:                                      options: .storageModeShared)
+116:         }
+117:     }
+118: }
+119: 
+120: /// Single worker serializes compute submissions and CPU fallbacks. A cancelled
+121: /// request cannot publish a stale frame. GPU commands already submitted are
+122: /// allowed to complete, then discarded; CPU pixel work checks cancellation at most every eight evaluations.
+123: actor StudyRenderEngine {
+124:     static let shared = StudyRenderEngine()
+125:     // Bound both the number of scene snapshots and retained RGBA storage.
+126:     // Four small frames fit; at 192 × 128 the byte limit retains at most two.
+127:     static let maximumCachedFrames = 4
+128:     static let maximumCachedPixelBytes = 256 * 1024
+129:     static let maximumCachedMaskBytes = 64 * 1024
+130: 
+131:     private struct CacheKey: Equatable, Sendable {
+132:         let scene: LightingScene
+133:         let width: Int
+134:         let subject: StudySubject
+135: 
+136:         init?(scene: LightingScene, width: Int, subject: StudySubject) {
+137:             // A hit must never bypass validation of metadata that the renderer
+138:             // otherwise rejects. Leave errors and their ordering to the actual
+139:             // render path when validation fails.
+140:             guard (try? scene.validated()) != nil else { return nil }
+141:             var snapshot = scene
+142:             snapshot.lights = scene.lights.map { light in
+143:                 var copy = light
+144:                 // Display names do not affect pixels. Do not retain arbitrary
+145:                 // Unicode storage: the 80-character limit is not a byte limit.
+146:                 copy.name = ""
+147:                 return copy
+148:             }
+149:             // Retain every other scene value, including complete optics, light
+150:             // order, camera, exposure and room metadata. Equality is exact;
+151:             // there is no hash-only or rounded-coordinate cache identity.
+152:             self.scene = snapshot
+153:             self.width = width
+154:             self.subject = subject
+155:         }
+156:     }
+157: 
+158:     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
+159:     private var state = State.unchecked
+160:     // Least recently used first. Validated keys contain at most twelve lights
+161:     // and only bounded, fixed-size values after display names are removed.
+162:     private var frameCache = StudyFrameCache<CacheKey, StudyRenderedFrame>(
+163:         maximumCount: StudyRenderEngine.maximumCachedFrames,
+164:         maximumPixelBytes: StudyRenderEngine.maximumCachedPixelBytes,
+165:         maximumMaskBytes: StudyRenderEngine.maximumCachedMaskBytes)
+166:     private let additionalCancellation: @Sendable () -> Bool
+167: 
+168:     /// An additional cooperative cancellation source is useful to callers that
+169:     /// invalidate work independently of a task, and permits deterministic
+170:     /// lifecycle tests. It can never suppress actual task cancellation.
+171:     init(cancellationRequested: @escaping @Sendable () -> Bool = { false }) {
+172:         additionalCancellation = cancellationRequested
+173:     }
+174: 
+175:     func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {
+176:         let additionalCancellation = additionalCancellation
+177:         let isCancelled = { Task.isCancelled || additionalCancellation() }
+178:         guard !isCancelled() else { throw StudyError.cancelled }
+179:         let renderWidth = subject == .bust ? min(width, PortraitStudyRenderer.maximumWidth) : width
+180:         let key = CacheKey(scene: scene, width: renderWidth, subject: subject)
+181:         if let key {
+182:             // Check before the cache promotes a hit. A cancelled request must
+183:             // neither publish pixels nor change the eviction order.
+184:             guard !isCancelled() else { throw StudyError.cancelled }
+185:             if let cached = frameCache.value(for: key) { return cached }
+186:         }
+187:         if subject == .bust {
+188:             // The mannequin has additional geometry. Do not send it
+189:             // to the sphere-only Metal kernel or claim a validated GPU path.
+190:             let image = try PortraitStudyRenderer.render(scene: scene, width: renderWidth,
+191:                                                         isCancelled: isCancelled)
+192:             guard !isCancelled() else { throw StudyError.cancelled }
+193:             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+194:         }
+195:         if case .unchecked = state {
+196:             do {
+197:                 guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
+198:                 let renderer = try MetalStudyRenderer(device: device)
+199:                 try renderer.validate(isCancelled: isCancelled)
+200:                 guard !isCancelled() else { throw StudyError.cancelled }
+201:                 state = .metal(renderer)
+202:             } catch let error as StudyError where error == .cancelled {
+203:                 // Incomplete validation is not a failed backend. Leave the
+204:                 // state unchecked so the next live request can validate it.
+205:                 throw error
+206:             } catch {
+207:                 guard !isCancelled() else { throw StudyError.cancelled }
+208:                 selectCPU()
+209:             }
+210:         }
+211:         guard !isCancelled() else { throw StudyError.cancelled }
+212:         if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
+213:             do {
+214:                 let image = try renderer.render(scene: scene, width: width)
+215:                 guard !isCancelled() else { throw StudyError.cancelled }
+216:                 return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)
+217:             } catch let error as StudyError {
+218:                 // Validation/cancellation is a scene error, not a backend failure.
+219:                 if error != .invalidComputeOutput { throw error }
+220:                 guard !isCancelled() else { throw StudyError.cancelled }
+221:                 selectCPU()
+222:             } catch {
+223:                 guard !isCancelled() else { throw StudyError.cancelled }
+224:                 selectCPU()
+225:             }
+226:         }
+227:         let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
+228:         guard !isCancelled() else { throw StudyError.cancelled }
+229:         return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+230:     }
+231: 
+232:     private func selectCPU() {
+233:         state = .cpu
+234:         // A runtime backend failure invalidates its old frames as well. A later
+235:         // hit must not resurrect Metal after the engine has failed closed.
+236:         frameCache.removeAll { $0.backend == .metal }
+237:     }
+238: 
+239:     /// Only called after the final cooperative cancellation check. There is no
+240:     /// suspension between that check, cache admission and returning the frame.
+241:     private func retain(_ frame: StudyRenderedFrame, for key: CacheKey?) -> StudyRenderedFrame {
+242:         guard let key else { return frame }
+243:         frameCache.insert(frame, for: key, pixelBytes: frame.image.rgba.count,
+244:                           maskBytes: frame.image.unsupportedPixelMask.count)
+245:         return frame
+246:     }
+247: }

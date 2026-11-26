@@ -1,6 +1,6 @@
 # Lane 03 worker protocol
 
-This lane owns the CPU Study, mannequin geometry, PNG encoder, Study fixtures,
+This lane owns the CPU Study, mannequin geometry, reference-photo PNG sanitizer, Study fixtures,
 and `App/ReferenceStudyPreview.swift`, with source-specific tests. The integration
 branch is `finish/03-cpu-study-mannequin`. Do not write main, canonical agent state,
 other lanes' source, CI, shared composition, GPU implementation or cache code.

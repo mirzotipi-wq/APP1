@@ -1,0 +1,262 @@
+{
+  "worker": "W52",
+  "actual_runtime_id": "/root/wave06/w52_geometry",
+  "canonical_task_path": "/root/wave06/w52_geometry",
+  "role": "geometry/data",
+  "input_sha": "74f7584b4e474c752ec0939add6b7522ba98094f",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W52-geometry",
+  "output": "/tmp/keyfill03-7f4b/builds/W52-geometry",
+  "report": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/W52-geometry.md",
+  "evidence": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave06-evidence/W52-source-inspection.json",
+  "source": "App/ReferenceStudyPreview.swift",
+  "source_sha256": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "status": "complete: source-inspected defect and correction proposal; no implementation",
+  "method": "Static source inspection only; no Python model, Swift compilation, SwiftUI execution, build or test execution.",
+  "current_state_table_columns": [
+    "Frame relation to normalized current request",
+    "Active body snapshot",
+    "Inactive/background body snapshot"
+  ],
+  "current_state_table": [
+    [
+      "Current image",
+      "Image; current backend/warning when present",
+      "Same"
+    ],
+    [
+      "Stale image, same subject",
+      "Previous image + Updating",
+      "Same, falsely implies ongoing work"
+    ],
+    [
+      "Image, other subject",
+      "Rendering; image hidden",
+      "Same, falsely implies ongoing work"
+    ],
+    [
+      "Current error / failed conversion",
+      "Unavailable + Retry",
+      "Same"
+    ],
+    [
+      "Stale error, same subject",
+      "Rendering; error hidden",
+      "Same, falsely implies ongoing work"
+    ],
+    [
+      "Error, other subject",
+      "Rendering; error hidden",
+      "Same, falsely implies ongoing work"
+    ],
+    [
+      "No frame",
+      "Rendering",
+      "Same, falsely implies ongoing work"
+    ]
+  ],
+  "source_witness": {
+    "74": "    private struct Request: Equatable {",
+    "75": "        let scene: LightingScene",
+    "76": "        let subject: StudySubject",
+    "77": "",
+    "78": "        init(scene: LightingScene, subject: StudySubject) {",
+    "79": "            // Measured-room placement does not participate in this direct-light",
+    "80": "            // study. Keep its snapshot and identity independent of room edits,",
+    "81": "            // retaining the complete light optics, camera and preview settings.",
+    "82": "            var renderScene = scene",
+    "83": "            renderScene.placementRoom = nil",
+    "84": "            self.scene = renderScene",
+    "85": "            self.subject = subject",
+    "86": "        }",
+    "87": "    }",
+    "88": "    private var request: Request { .init(scene: scene, subject: subject) }",
+    "89": "    // Changing to nil cancels in-flight work while inactive; foregrounding",
+    "90": "    // starts the latest scene/subject request without discarding a valid frame.",
+    "91": "    private var activeRequest: Request? { scenePhase == .active ? request : nil }",
+    "92": "    private struct Work: Equatable {",
+    "93": "        let request: Request?",
+    "94": "        let attempt: UUID",
+    "95": "    }",
+    "96": "    private var work: Work { .init(request: activeRequest, attempt: attempt) }",
+    "97": "    private var imageLabel: String {",
+    "98": "        subject == .sphere ? \"Rendered neutral sphere and panel\" : \"Rendered neutral mannequin bust\"",
+    "99": "    }",
+    "100": "",
+    "101": "    private struct Frame {",
+    "102": "        let request: Request",
+    "103": "        let image: CGImage?",
+    "104": "        let unsupportedPixels: Int",
+    "105": "        let backendLabel: String?",
+    "106": "        let message: String?",
+    "107": "    }",
+    "113": "                // A previous scene may remain visible while it updates, but a",
+    "114": "                // different subject or an old error must never stand in for it.",
+    "115": "                if let frame,",
+    "116": "                   frame.request == request || (frame.image != nil && frame.request.subject == subject) {",
+    "117": "                    let isCurrent = frame.request == request",
+    "118": "                    if let image = frame.image {",
+    "119": "                        let width = min(geometry.size.width, geometry.size.height * 1.5)",
+    "120": "                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). Updating light study.\"",
+    "121": "                        Image(image, scale: 1, orientation: .up, label: Text(label))",
+    "122": "                            .resizable().interpolation(.medium)",
+    "123": "                            .frame(width: width, height: width / 1.5)",
+    "124": "                            .frame(maxWidth: .infinity, maxHeight: .infinity)",
+    "125": "                            .accessibilityLabel(label)",
+    "126": "                            .accessibilityIdentifier(isCurrent ? \"studyPreview\" : \"studyPreviousPreview\")",
+    "127": "                        if isCurrent, let backendLabel = frame.backendLabel {",
+    "128": "                            Text(backendLabel).font(.caption2.monospaced())",
+    "129": "                                .foregroundStyle(.white.opacity(0.8))",
+    "130": "                                .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))",
+    "131": "                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)",
+    "132": "                                .padding(8).accessibilityIdentifier(\"studyBackend\")",
+    "133": "                        }",
+    "134": "                        if isCurrent, frame.unsupportedPixels > 0 {",
+    "135": "                            Label(\"\\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.\",",
+    "136": "                                  systemImage: \"exclamationmark.triangle.fill\")",
+    "137": "                                .font(.caption2.weight(.medium))",
+    "138": "                                .foregroundStyle(.white)",
+    "139": "                                .padding(8).background(.black.opacity(0.85))",
+    "140": "                                .accessibilityIdentifier(\"studyWarning\")",
+    "141": "                        }",
+    "142": "                        if !isCurrent {",
+    "143": "                            ProgressView(\"Updating light study\")",
+    "144": "                                .controlSize(.small)",
+    "145": "                                .font(.caption.weight(.medium))",
+    "146": "                                .tint(.white).foregroundStyle(.white)",
+    "147": "                                .padding(8)",
+    "148": "                                .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))",
+    "149": "                                .padding(8)",
+    "150": "                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)",
+    "151": "                                .accessibilityLabel(\"Updating light study\")",
+    "152": "                                .accessibilityValue(\"Showing the previous scene\")",
+    "153": "                                .accessibilityIdentifier(\"studyUpdating\")",
+    "154": "                        }",
+    "155": "                    } else {",
+    "156": "                        ScrollView {",
+    "157": "                            VStack(spacing: 8) {",
+    "158": "                                Image(systemName: \"exclamationmark.triangle\").font(.title2)",
+    "159": "                                    .accessibilityHidden(true)",
+    "160": "                                Text(\"Study unavailable\").font(.headline)",
+    "161": "                                Text(frame.message ?? \"Check camera and lighting geometry.\").font(.caption)",
+    "162": "                                Button { attempt = UUID() } label: {",
+    "163": "                                    Text(\"Retry light study\").frame(minHeight: 44)",
+    "164": "                                }",
+    "165": "                                    .buttonStyle(.bordered)",
+    "166": "                                    .accessibilityIdentifier(\"studyRetry\")",
+    "167": "                            }",
+    "168": "                            .multilineTextAlignment(.center)",
+    "169": "                            .foregroundStyle(.white).padding(24)",
+    "170": "                            .frame(maxWidth: .infinity)",
+    "171": "                        }",
+    "172": "                        .defaultScrollAnchor(.center)",
+    "173": "                        .frame(maxWidth: .infinity, maxHeight: .infinity)",
+    "174": "                        .accessibilityIdentifier(\"studyUnavailable\")",
+    "175": "                    }",
+    "176": "                } else {",
+    "177": "                    ProgressView(\"Rendering light study\")",
+    "178": "                        .tint(.white).foregroundStyle(.white)",
+    "179": "                        .frame(maxWidth: .infinity, maxHeight: .infinity)",
+    "180": "                        .accessibilityIdentifier(\"studyLoading\")",
+    "181": "                }",
+    "182": "            }",
+    "183": "        }",
+    "184": "        .onDisappear { pipeline.invalidate() }",
+    "185": "        .task(id: work) {",
+    "186": "            let ticket = pipeline.begin()",
+    "187": "            guard let snapshot = activeRequest else { return }",
+    "188": "            // A quick switch back to a completed request can reuse its pixels.",
+    "189": "            // Failed frames remain retryable when this view appears again.",
+    "190": "            if let frame, frame.request == snapshot, frame.image != nil { return }",
+    "191": "            // A new attempt shows loading, not an obsolete failure. Retrying",
+    "192": "            // never edits the scene or changes its cache identity.",
+    "193": "            if frame?.request == snapshot { frame = nil }",
+    "194": "            do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }",
+    "195": "            await pipeline.load(ticket: ticket, render: {",
+    "196": "                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)",
+    "197": "                return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)",
+    "198": "            }, convert: Self.makeImage) { completion in",
+    "199": "                frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,",
+    "200": "                              backendLabel: completion.backendLabel, message: completion.message)",
+    "201": "            }"
+  },
+  "findings": [
+    "The body does not read scenePhase. activeRequest is nil unless active; the task begins a new ticket before returning when inactive.",
+    "Current means Request equality, including subject and scene after placementRoom removal. Stale same-subject images remain eligible; stale errors and other-subject images are excluded.",
+    "Current image uses studyPreview and normal subject label, optional current backend and unsupported warning. Stale image uses studyPreviousPreview, no backend/warning, progress studyUpdating and AX text Previous render. [subject label]. Updating light study.",
+    "Current errors show studyUnavailable, message, and studyRetry. On active retry/re-entry the task clears matching failed frame before debounce; inactive exits before clearing.",
+    "Minimal correction: phase-gate only pending progress UI and stale-image Updating AX text; use a static paused cue while inactive, retain completed frame/error logic, visibility predicate, request normalization, work identity, ticket checks, debounce, engine and cache."
+  ],
+  "test_proposals": [
+    "Host the real SwiftUI view with controlled render completion and phase. For active/inactive/background, verify no-frame and wrong-subject snapshots, stale same-subject image retention, stale error filtering, current image backend/warning, and current error/retry.",
+    "Transition active to inactive/background while pending; assert no progress or Updating/Rendering semantics and a static paused cue. Foreground should restore loading/updating and eventually current image; retain existing cancellation/out-of-order publication tests."
+  ],
+  "commands": [
+    {
+      "command": "Python Path.read_text on AGENTS.md, agents/OPERATING_PROTOCOL.md, docs/acceptance/m02-m03-code.md, docs/parallel/03/WORKER_PROTOCOL.md",
+      "result": "Exit 0; required instructions read."
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "result": "74f7584b4e474c752ec0939add6b7522ba98094f",
+      "exit": 0
+    },
+    {
+      "command": "git status --short",
+      "result": "",
+      "exit": 0
+    },
+    {
+      "command": "git branch --show-current",
+      "result": "Empty output: detached HEAD.",
+      "exit": 0
+    },
+    {
+      "command": "git log -3 --oneline",
+      "result": "74f7584 docs(study): preserve forty-worker review and clipped-surface counterexamples\nc9ff1a7 fix(study): test nearest surface depth before clipping closed subjects\n03d5823 docs(study): preserve thirty workers, fixture parity and current-source evidence",
+      "exit": 0
+    },
+    {
+      "command": "rg --files -g AGENTS.md -g *ReferenceStudy* -g *Study*Tests*",
+      "result": "Found root AGENTS.md, preview source, renderer and related tests.",
+      "exit": 0
+    },
+    {
+      "command": "Python Path.read_bytes, hashlib.sha256, and numbered output of App/ReferenceStudyPreview.swift",
+      "result": "Read all 215 source lines; hash recorded.",
+      "exit": 0
+    },
+    {
+      "command": "Python Path.read_text on agents/HANDOFF.md, agents/state.json, docs/PRODUCT.md, docs/ARCHITECTURE.md, docs/ROADMAP.md, docs/QUALITY.md, docs/DESIGN.md",
+      "result": "Exit 0; tool display truncated combined output; no claim of full visible review."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "State structure and evidence references valid; this does NOT verify test truth or release readiness.",
+      "exit": 0
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M03: Professional editing and project library. Outstanding gates: editing, accessibility, persistence.",
+      "exit": 0
+    },
+    {
+      "command": "rg -n scenePhase|studyLoading|studyUpdating|studyPreviousPreview|studyUnavailable|ReferenceStudyPreview|func test NativeTests/StudyPreviewPipelineTests.swift UITests NativeTests scripts Tests/LightingCoreTests",
+      "result": "Exit 0; 601 lines; broad search output truncated. Argument was quoted as a single regex in actual shell command. Not used to claim repository-wide absence of tests."
+    },
+    {
+      "command": "sed -n '1,300p' NativeTests/StudyPreviewPipelineTests.swift",
+      "result": "Exit 0; read all nine pipeline tests; they exercise publication tickets, cancellation, errors, retry and conversion, not SwiftUI display/scenePhase behavior."
+    },
+    {
+      "command": "Python source hash/HEAD/clean-status assertions while writing W52 report/evidence",
+      "result": "All assertions held; no source changes."
+    }
+  ],
+  "errors_and_limits": [
+    "No shell command failures. Combined startup output and broad grep-style rg output were truncated by tool display.",
+    "Only source inspection supports these conclusions; native/UI acceptance remains unrun.",
+    "No source edits, commits, pushes, cleanup, spawned workers or external messages. Working token counter unavailable; no token consumption claim."
+  ]
+}
