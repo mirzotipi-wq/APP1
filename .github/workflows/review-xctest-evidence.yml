@@ -41,7 +41,10 @@ jobs:
               raise SystemExit("Only original compact UI artifacts may be reviewed")
           if not isinstance(captures, list) or not 1 <= len(captures) <= 24:
               raise SystemExit("Invalid capture selection")
-          if any(not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,95}", name) for name in captures):
+          if any(not isinstance(name, str) or not (
+              re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,95}", name) or
+              re.fullmatch(r"[A-Fa-f0-9]{8}(?:-[A-Fa-f0-9]{4}){3}-[A-Fa-f0-9]{12}\.(png|txt)", name)
+          ) for name in captures):
               raise SystemExit("Invalid capture name")
           if len(set(captures)) != len(captures):
               raise SystemExit("Duplicate capture selection")
@@ -98,7 +101,11 @@ jobs:
           for result in manifest:
               for attachment in result.get("attachments", []):
                   human = attachment.get("suggestedHumanReadableName", "")
-                  matches = [name for name in wanted if human.startswith(name + "_") and human.endswith((".png", ".txt"))]
+                  filename = attachment.get("exportedFileName", "")
+                  matches = [name for name in wanted if filename == name or
+                             (human.startswith(name + "_") and human.endswith((".png", ".txt")))]
+                  if len(matches) > 1:
+                      raise SystemExit("Ambiguous original capture selection")
                   if not matches:
                       continue
                   name = matches[0]
@@ -130,6 +137,7 @@ jobs:
               print("KEYFILL_REVIEW " + json.dumps({
                   "type": "image" if path.suffix == ".png" else "text",
                   "name": name, "sourceRevision": request["sourceRevision"], "file": path.name,
+                  "humanName": attachment.get("suggestedHumanReadableName"),
                   "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "chunks": len(chunks),
                   "deviceName": attachment.get("deviceName"), "captureTimestamp": attachment.get("timestamp"),
               }), flush=True)
