@@ -26,9 +26,13 @@ Integrated source **`f150f98e35dd735927075aac4d2f8b02295c6a67`** is published on
 
 These are Linux results, not Apple runtime passes. [The input manifest](source-manifest.json) records 197 committed source inputs; [local results](integrated-local/summary.json) distinguish working-source execution from the separately reviewed workflow-only retention change. Earlier 365-test evidence in `boundary-corrections` is a prior local checkpoint; final 366-test results include the cardinal regression.
 
-## Accepted portable CI and unchanged-source carry-forward
+## Current portable CI
 
-The integrated [core job](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392/job/139828554548) passed all 366 Debug, 366 Release and 100 tooling tests. Independent review verified both original artifact digests, all twelve image bytes against the retained reviewed originals, all six kernel/eight precision fixtures, every benchmark percentile and all twelve cancellation outcomes. Actual ext4 EFBIG, before/after-rename interruption and rename-EIO evidence preserves the required bytes and identities. The [current receipt](source-9fa-core/report.json) identifies the host, exact source and raw evidence. Root separately recomputed both archive hashes and all twelve image comparisons. This refreshes M02 code acceptance. Worker 001 verified 109 portable inputs and the renderer integration remain unchanged by the five-file layout repair, so these results continue to support M02 while fresh CI runs. Apple native/UI acceptance remains pending.
+The [fresh f150 core job](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256/job/139858259874) passed all **366 Debug, 366 Release and 100 tooling tests**. Independent review verified both original artifact digests, all twelve image bytes/configurations against the retained reviewed originals, all six kernel/eight precision fixtures, every benchmark percentile and all twelve cancellation outcomes. Actual ext4 EFBIG, before/after-rename interruption and rename-EIO evidence preserves the required bytes and identities.
+
+The [current receipt](source-f150-core/report.json) records Ubuntu 24.04.5, AMD EPYC 7763, Swift 6.4.2, Python 3.12.3, exact source hashes and raw evidence. Root separately checked both archive hashes, all twelve image/scene comparisons, every ordered Debug/Release method pair and all twelve timed workload percentiles. This refreshes M02 code acceptance directly on the repaired source. Apple native/UI acceptance remains pending.
+
+The [preceding 9fa core receipt](source-9fa-core/report.json) remains historical evidence from its distinct Xeon/Swift 6.4.3 host. The unchanged-source justification supported continued acceptance while the new job ran; no earlier host metadata is reassigned to f150.
 
 ## Retained 9fa Apple findings and published repair
 
