@@ -89,6 +89,7 @@ jobs:
               assert len(samples) >= 7 and all(math.isfinite(x) and x >= 0 for x in samples)
           print("Eight deterministic frames, twelve observed cancellations and four visibility workloads passed.")
           print("Host timings are diagnostics; no physical-device frame-rate, memory or thermal claim.")
+          print("KEYFILL_BENCHMARK " + json.dumps(report, separators=(",", ":")), flush=True)
           PY
       - name: Compare shared Float32 kernel math against Swift CPU oracle
         run: |
