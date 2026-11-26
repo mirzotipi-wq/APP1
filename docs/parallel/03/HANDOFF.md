@@ -66,3 +66,11 @@ evidence/camera-review.json; no true near-emitter mask was weakened. Add explici
 generation/adoption coverage and review loading,
 retry, cancellation and subject transitions. Preserve the six parity fixtures,
 eight precision cases, twelve original images and all resource/cancellation bounds.
+
+## Checkpoint: direct nearest-surface depth and native preview verification
+
+Thirty actual workers are complete in published waves1–3; wave4 has ten actual contexts and is finalizing reports. Its independent scan found22 poses missed by the initial facing-only camera guard. Of40 retained renderer calls,32 returned an image and8 threw invalidCamera. The corrected nearest-surface depth implementation rejected all40. It uses one geometry traversal; open-panel clipping remains background. Full Debug384/0 and the later7-method emitter-normal suite/0 passed before the executor became unavailable again. Source recovery matches the independent full SHA-256; see evidence/depth-recovery-checkpoint.json.
+
+Apple CI for ace9f2e passed163 native tests with no skipped native methods, including all9 new preview-pipeline tests and six actual simulator Metal parity cases. Both unsigned Debug and Release apps built. This is source-specific simulator evidence; newer depth code and UI interaction jobs require separate results.
+
+New private worker indexes are now hosted by a temporary sparse shared control clone, because persistent linked-worktree indexes exhausted disk space. Environment interruption and remote-only review fallbacks are recorded explicitly. No other task's files or branch were removed. Remaining waves5–10 and final source-bound evidence are still required.

@@ -62,4 +62,19 @@ final class PortraitCameraDepthTests: XCTestCase {
         }
         XCTAssertTrue(witnessedClippedExit)
     }
+
+    func testClippedHeadCannotRevealAFrontFacingNeckAtAnyPreviewWidth() {
+        var input = scene(distance: 0.18, axis: 0)
+        // Independent W32 scan: every low-resolution pixel's head entry is
+        // clipped, while the later neck entry faces the camera. Normal-facing
+        // validation alone therefore cannot detect the hidden first surface.
+        input.camera = .init(x: 0.0023027557228276507, y: 0.16976801953781231,
+                             z: 0.008594001355012789)
+        input.cameraLens = .init(focalLengthMillimeters: 200)
+        for width in [24, 48, 72, 120, 144] {
+            XCTAssertThrowsError(try PortraitStudyRenderer.render(scene: input, width: width)) {
+                XCTAssertEqual($0 as? StudyError, .invalidCamera)
+            }
+        }
+    }
 }
