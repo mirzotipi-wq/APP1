@@ -1,0 +1,23 @@
+W22 geometry/data; cwd=/tmp/keyfill03-7f4b/workers/W22-geometry
+Input=1cefc654630a86ab320e58283957f4e91d6cbce6
+Runtime/canonical task=/root/wave03/geometry_data
+
+Read-only inspection commands (exit 0):
+git status --short && git rev-parse HEAD
+cat AGENTS.md agents/OPERATING_PROTOCOL.md docs/acceptance/m02-m03-code.md docs/parallel/03/WORKER_PROTOCOL.md
+rg --files -g 'PortraitHeadMesh.swift' -g 'PortraitHeadMeshTests.swift' -g 'grazing-original.json' -g 'grazing-ray-probe.swift'
+git log -3 --oneline
+git branch --show-current
+cat Sources/LightingCore/PortraitHeadMesh.swift
+cat Tests/LightingCoreTests/PortraitHeadMeshTests.swift
+cat docs/parallel/03/evidence/grazing-original.json docs/parallel/03/evidence/grazing-ray-probe.swift
+sed -n '1,135p' Tests/LightingCoreTests/PortraitHeadMeshTests.swift
+git diff HEAD^ HEAD -- Sources/LightingCore/PortraitHeadMesh.swift Tests/LightingCoreTests/PortraitHeadMeshTests.swift
+
+Final arithmetic command (exit 0):
+python3 /tmp/keyfill03-7f4b/builds/W22-geometry/probe.py > /tmp/keyfill03-7f4b/builds/W22-geometry/summary.json
+
+The first successful arithmetic invocation printed summary to stdout. The final
+script additionally asserts exact matching of stored witness plane fields and
+uses the production multiplication comparison for the angular stress threshold.
+No Swift compile/test, BVH run, renderer run, or native/device check was executed.
