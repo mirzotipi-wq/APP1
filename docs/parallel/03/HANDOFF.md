@@ -8,16 +8,21 @@ fixtures retain their original scene and image bytes. Portable CPU evidence
 passes again at corrected-test source **dbbc264fde91bfb04a1e82fbebdf2f8d5792d761**.
 The production source remains identical to **342e3280e3eb077d55e122c8bfb88b4062b431ed**.
 Its Apple Debug/Release builds passed; a new native run is required for the
-test-only observer correction. The retained studio-optics UI failure occurred
-before any selected method started.
+test-only observer correction. The earlier source-342 studio-optics UI failure occurred before any selected
+method started. At corrected source dbbc, the optics shard executed ten methods:
+nine passed and one failed during screenshot acquisition.
 
 <!-- CURRENT_NATIVE_STATUS_BEGIN -->
 **Current corrected-test source: dbbc264fde91bfb04a1e82fbebdf2f8d5792d761.**
 Run **45868801497** passed portable core job **140078568188**: 391 Debug and
 391 standard Release tests with zero failures, six required host parity cases,
 eight strict precision cases and the unchanged bounded benchmark checks.
-Native job **140080474886** is queued at this checkpoint. See the
-[source-bound core receipt](evidence/ci-core-dbbc.json). W100 accepted the
+Native job **140080474886** has passed its macOS prerequisites and both unsigned
+Debug/native-bundle and Release app builds. Its native test step is still
+reported in progress; finalized method accounting and its full job log are
+unavailable at this checkpoint. See the
+[core receipt](evidence/ci-core-dbbc.json) and
+[Apple build receipt](evidence/ci-apple-build-dbbc.json). W100 accepted the
 exact observer source after 47 review checks, with its runtime/AX limits retained
 in the [review receipt](workers/wave10-evidence/W100-observer-correction-review.json).
 
@@ -75,7 +80,7 @@ photographic calibration, manual VoiceOver session or completed platform audit.
 | Item | Identity and meaning |
 | --- | --- |
 | Lane branch | finish/03-cpu-study-mannequin |
-| Current observer-corrected source | dbbc264fde91bfb04a1e82fbebdf2f8d5792d761; portable gates passed, new native execution pending |
+| Current observer-corrected source | dbbc264fde91bfb04a1e82fbebdf2f8d5792d761; portable gates and Apple Debug/Release builds passed; native execution pending |
 | Last executed production source | 342e3280e3eb077d55e122c8bfb88b4062b431ed; current test-only observer is identified by hash below |
 | Documentation input for this rewrite | 92dc7a69c0032141ee49de0b96940fccab83a33e; later documentation does not create a new executed source result |
 | CPU implementation checkpoint | db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5 |
@@ -279,7 +284,28 @@ cancellation does not erase a finalized result, and that result remains tied to
 its actual source. Project-state/ledger success is structural validation, not
 rendering, native, UI or milestone acceptance.
 
-### Current source-342 UI execution failed before the selected methods started
+### Corrected-source optics run executed; screenshot acquisition failed
+
+At source **dbbc264fde91bfb04a1e82fbebdf2f8d5792d761**, run **45868801497**,
+job **140080474884** completed with ten starts, nine passes, one failed method,
+zero skips and zero unstarted methods. The sole failure was
+`StudioOpticsUITests.testOpticsEditingUndoRedoAndRelaunch`, at the
+`app.screenshot()` call in StudioOpticsUITests.swift:142:
+“Failed to get screenshot: Timed out while requesting screenshot.”
+
+Width Undo/Redo checks had completed; save/relaunch was not reached within that
+failed method. Repeatability methods 02–10 passed. This is a screenshot-acquisition
+failure, with no demonstrated optics-value, Undo or owned Study-preview failure
+in this selected run. It does not establish the screenshot timeout's root cause.
+The [source/method receipt](evidence/ci-ui-studio-optics-dbbc.json) and
+[lossless full job log](evidence/ci-ui-studio-optics-dbbc.log.gz) retain exact
+accounting and extraction boundaries. W99 reviewed this in the same runtime
+context; no additional worker was counted. Root verified the archive hash and
+failure lines independently. Route snapshot/runner investigation to **19**, with
+**01** copied for the incomplete first user-flow gate. Keep its original artifacts
+and leave the UI gate failed.
+
+### Earlier source-342 UI execution failed before the selected methods started
 
 The finalized studio-optics job 140042273238 in run 45857561126 has **zero
 method starts and all ten selected methods unstarted**. Simulator
@@ -428,8 +454,8 @@ requests, not acknowledgments or completed work by the receiving owners.
 | **02 — photometry/color** | Review the scoped per-emitter restoration against the positive-tiny consumer request, using NUMERICS and the 166-check Swift before/after evidence. Agree the positive per-cell Float-subnormal/zero routing policy with 04; CPU repair alone does not settle that GPU policy. The inspected 02 head was b5c1f008446f8b33f3ee97f8fefe6675058ef347. |
 | **04 — GPU/cache** | Integrate the current engine and paired supports(scene,width:) helper at the exact identities below, passing the actual requested width. Establish integrated backend behavior and preserve lane 03 tiny-output/preallocation-cancellation fixes. Keep the separate width-24 silhouette counterexample and unchanged thresholds. Resolve the open 02 tiny-Float policy in owned eligibility/fallback code. W057 is addressed by lane 03 activation/ticket logic; its synthetic hosted test retains the native status above. |
 | **01 — shared composition/UI** | Keep the entry point and full render-request semantics when wiring the preview. Investigate the two retained project-library UI failures with their original attachments; no root cause is asserted here. Decide any light-name byte bound or admitted-scene optimization in shared validation without bypassing full validation. |
-| **19 — CI/tooling** | Resolve the source-342 studio-optics runner initialization failure while retaining zero starts / ten unstarted methods and the boot/host/xcresult artifacts. Preserve the failed source-342 initial observer and exact 165-method accounting; the corrected pixel observer requires its own source-bound native run, with hosted adoption and actual Metal execution distinguished. Review source-36 missing compact-artifact dependencies and the lane-04 host-parser concern. No unstarted or cancelled method is a pass. |
-| **20 — integration** | Use the completed worker ledger and retained evidence to integrate lane 03 with the owners' paired changes, preserving original failures/fixtures/masks and exact source IDs. Complete final artifact verification, obtain the outstanding native/UI execution evidence and verify remote preservation. Evaluate M02 before M03 under the governing contract; worker accounting and lane CPU/native successes do not settle required UI work or release gates. |
+| **19 — CI/tooling** | Investigate the corrected-source dbbc screenshot-acquisition failure with its original artifacts (10 starts / 9 passes / 1 failed method). Preserve the separate source-342 runner initialization failure (zero starts / ten unstarted methods) and boot/host/xcresult artifacts. Preserve the failed source-342 initial observer and exact 165-method accounting; the corrected pixel observer requires its own source-bound native run, with hosted adoption and actual Metal execution distinguished. Review source-36 missing compact-artifact dependencies and the lane-04 host-parser concern. No unstarted or cancelled method is a pass. |
+| **20 — integration** | Use the completed worker ledger and retained evidence to integrate lane 03 with the owners' paired changes, preserving original failures/fixtures/masks and exact source IDs. Complete final artifact verification, obtain the pending corrected native result and outstanding UI execution evidence and verify remote preservation. Evaluate M02 before M03 under the governing contract; worker accounting and lane CPU/native successes do not settle required UI work or release gates. |
 
 The current inspected lane 04 source is pinned by [W97's consumer receipt](workers/wave10-evidence/W97-consumer.json).
 The earlier 88279ba0ee0262ea6c880580c8a85b56342abbff review remains historical.
