@@ -221,7 +221,9 @@ struct SpatialPreview: UIViewRepresentable {
         SCNTransaction.disableActions = true
         defer { SCNTransaction.commit() }
         let available = valid && (!cameraMode || CameraFraming(scene: scene) != nil)
-        coordinator.lastCameraMode = cameraMode
+        // An invalid scene cannot apply a mode change. Preserve the last
+        // applied mode so recovery still performs any pending orbit Fit.
+        if valid { coordinator.lastCameraMode = cameraMode }
         coordinator.setContentAvailable(available)
         coordinator.content.isHidden = !available
         (view as? OrbitAwareSceneView)?.setUnavailableMessage(available ? nil :
