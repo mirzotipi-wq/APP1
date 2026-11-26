@@ -7,7 +7,7 @@
       "worker": "W05R01",
       "agent_id": "/root/w05r01",
       "task": "W05R01 acceptance: bounded assignment in WAVE-TASKS.md",
-      "status": "running",
+      "status": "completed",
       "input_sha": "928ca0eafa6330742114c2e0ac184789c2f17752",
       "worktree": "/tmp/keyfill02-r2-workers/w05r01",
       "artifact": "w05r01/report.md",
@@ -29,7 +29,8 @@
         "w05r01/report.md": "4c625bdd25c73ae59f5b1d43f00b19f19ff8fae1aa85698a7479f0beed1b93cf",
         "w05r01/team-ledger.json": "16700311be83bfba409e8908303f729a011c3afbfb35abe8944750248b7d959f"
       },
-      "outcome": "# W05R01 \u2014 target-lux acceptance guards"
+      "outcome": "# W05R01 — target-lux acceptance guards",
+      "closure_note": "Acceptance check complete; coordinator delivered partial-wave handoff after executor failure. Wave remains incomplete."
     },
     {
       "worker": "W05R02",
@@ -61,7 +62,7 @@
         "w05r02/report.md": "474ad9b907c03c8347c0ba89f9e279b8308b8955879a22098eb49b4f55894ae7",
         "w05r02/run_probe.py": "146d19e4e605847f1c432117d5ccac7628d34bbe9e64bb757edc31db6d8b3176"
       },
-      "outcome": "# W05 R02 \u2014 target-lux source preservation"
+      "outcome": "# W05 R02 — target-lux source preservation"
     },
     {
       "worker": "W05R03",
@@ -109,7 +110,7 @@
         "w05r03/references/probe-helper.py": "60a4da96e1e931a5c932adf067b2fb518d01a8d48d4890e2cb77c335069adee9",
         "w05r03/report.md": "420a6167cfd7de62df0d29e1ea2243952fcb3d37792d28ef877c5323a28fad45"
       },
-      "outcome": "# W05 R03 \u2014 solver error classification"
+      "outcome": "# W05 R03 — solver error classification"
     },
     {
       "worker": "W05R08",
@@ -139,7 +140,7 @@
         "w05r08/review_check.py": "a7ff34bcd411e04ace3eda3dd6963203fd7c4fcb7e6569fc4aab160f27b67ee3",
         "w05r08/source-evidence.txt": "ffb425bbc07b77500fdb75f73b8a02b69ba080ac92db3cb859e6f8448b332313"
       },
-      "outcome": "# W05 R08 \u2014 actionable target-lux errors"
+      "outcome": "# W05 R08 — actionable target-lux errors"
     },
     {
       "worker": "W05R04",
@@ -169,7 +170,7 @@
         "w05r04/raw-results.tsv": "d56d492ffc2c3fd7ba416e1ed77a8818972c2f204fd8eae0d9c72a11088c9a57",
         "w05r04/report.md": "ac8ed353eac7ba9394ae0d0b77d7560d2f7feb73d9d1e185034805415515af92"
       },
-      "outcome": "# W05 R04 \u2014 attainable-target round-trip candidate"
+      "outcome": "# W05 R04 — attainable-target round-trip candidate"
     },
     {
       "worker": "W05R05",
@@ -219,7 +220,7 @@
         "w05r05/references/keyfill02-r2-probe.py": "60a4da96e1e931a5c932adf067b2fb518d01a8d48d4890e2cb77c335069adee9",
         "w05r05/report.md": "a837e64c7067d3e72b5cb4a5ee18806916fe25d04bdc9baedc04c326efc3f48a"
       },
-      "outcome": "# W05 R05 \u2014 immutable-input solver concurrency"
+      "outcome": "# W05 R05 — immutable-input solver concurrency"
     },
     {
       "worker": "W05R06",
@@ -245,21 +246,43 @@
         "w05r06/report.md": "c8af5c295a3779bf615710f4092d1f902e2dfb6e3d1ee484b628fe95f62c661f",
         "w05r06/source-excerpts.txt": "cf555d84e6f02ae693fa4611f0f1e9ae5ee2b4331526600a34f2d544c7a6ee85"
       },
-      "outcome": "# W05 R06 \u2014 target-lux evaluation and memory bound"
+      "outcome": "# W05 R06 — target-lux evaluation and memory bound"
     },
     {
       "worker": "W05R07",
       "agent_id": "/root/w05r01/r07",
       "task": "W05R07 consumers: bounded assignment in WAVE-TASKS.md",
-      "status": "running",
+      "status": "blocked_incomplete",
       "input_sha": "928ca0eafa6330742114c2e0ac184789c2f17752",
       "worktree": "/tmp/keyfill02-r2-workers/w05r07",
-      "artifact": "w05r07/report.md"
+      "artifact": "w05r07/recovered-partial.md",
+      "artifacts": [
+        "w05r07/recovered-partial.md"
+      ],
+      "closure_note": "Only returned partial assessment preserved; original local captures unverified and no original report.md was written. No pass."
+    },
+    {
+      "worker": "W05R09",
+      "agent_id": "/root/w05r01/r09",
+      "task": "W05R09 platform/performance: maximum-output neighbors across emitter kinds",
+      "status": "blocked_unexecuted",
+      "input_sha": "928ca0eafa6330742114c2e0ac184789c2f17752",
+      "worktree": "/tmp/keyfill02-r2-workers/w05r09",
+      "artifact": "w05r09/blocked.md",
+      "artifacts": [
+        "w05r09/blocked.md"
+      ],
+      "closure_note": "First exec failed before any read, numerical check or write. Actual spawn counted; assignment not completed."
     }
   ],
   "coordinator": "/root",
-  "completed_count": 6,
-  "actual_created_count": 8,
-  "status": "active",
-  "wave_complete": false
+  "completed_count": 7,
+  "actual_created_count": 9,
+  "status": "interrupted_environment_unavailable",
+  "wave_complete": false,
+  "blocked_count": 2,
+  "not_created": [
+    "W05R10"
+  ],
+  "closure_note": "R01 plus six child assignments completed. R07 partial and R09 unexecuted are blocked. R10 never spawned. All dispatches stopped."
 }

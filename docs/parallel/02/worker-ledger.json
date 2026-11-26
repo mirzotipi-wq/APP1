@@ -3,13 +3,13 @@
   "lane": "02",
   "branch": "finish/02-photometry-color",
   "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
-  "code_revision": "58b3ca43943e18d0fc7800189b08365f424d9c9e",
+  "code_revision": "87dd5ad55a6cb5ee8c40cc430952ef577bc8fce7",
   "requested_contexts": 100,
-  "actual_created_contexts": 48,
-  "completed_role_assignments": 46,
-  "not_created_contexts": 52,
-  "status": "active_resumed",
-  "reason": "Execution restored; reset evidence retained.",
+  "actual_created_contexts": 49,
+  "completed_role_assignments": 47,
+  "not_created_contexts": 51,
+  "status": "interrupted_environment_unavailable",
+  "reason": "Executor disconnected during W05; 45-second recovery timed out and environment explicitly reported unavailable. Current source/core CI and checkpoint are verified remotely.",
   "waves": [
     {
       "wave": 1,
@@ -42,9 +42,10 @@
     {
       "wave": 5,
       "requested": 10,
-      "created": 8,
-      "completed": 6,
-      "status": "active"
+      "created": 9,
+      "completed": 7,
+      "blocked": 2,
+      "status": "interrupted"
     },
     {
       "wave": 6,
@@ -82,11 +83,11 @@
       "status": "not_started"
     }
   ],
-  "fresh_contexts": "All 48 initial role contexts use fork_turns:none; followups do not increase counts.",
+  "fresh_contexts": "All49 initial role contexts used fork_turns:none; recovery followups reused identities and added no contexts.",
   "concurrency": "Four slots: root plus at most three workers, or root/coordinator plus two children.",
   "budgets": "Briefs targeted<=2000tokens, working budgets12000per worker/24000root, reports<=800tokens; exact working-token consumption was not instrumented. These targets did not alter platform limits.",
-  "storage": "Every created context received a detached sparse worktree and private-output directory. Wave01 reports/hashes were verified in remote5579b4f before its10owned worktrees were removed. Remaining local artifacts could not be inspected after outage.",
-  "next": "Continue next incomplete wave/role; no planned identity counted.",
+  "storage": "Every actual context received a detached sparse worktree and private-output directory. Completed wave04's63 artifact hashes matched verified remote3889f09 before its10owned worktrees were removed; SDK retained. Completed wave01 preservation was verified earlier. Original W04 outputs lost in the second reset were genuinely rerun in same contexts; new raw evidence is published. Final outage leaves W05R07 raw captures unverified and W05R09 unexecuted. Current closure uses cloud tools.",
+  "next": "Restore execution. Finish W05R07 and W05R09 in their existing contexts when available; spawn new W05R10, then all50 fresh contexts in waves06–10. Preserve100 total and actual statuses.",
   "workers": [
     {
       "wave": 1,
@@ -530,7 +531,7 @@
         "w02r09/report.md": "f6892e7f9d02c73559d8294e3aa78e8370bd287c8624803dfa099bf7ee7a45d0",
         "w02r09/scalar-results.json": "faf2ed08c59e50328eb9be046e8d7cdd8cba1ae9949b4d8f55d6f1be67b29fba"
       },
-      "outcome": "# W02R09 \u2014 photometric path timing"
+      "outcome": "# W02R09 — photometric path timing"
     },
     {
       "wave": 2,
@@ -565,7 +566,7 @@
         "w02r10/table.csv": "e33f00ba8f1089ff35100f32d0ec7e74d9455ab735e94f6b4e95e392e7cc0f68",
         "w02r10/table.json": "9bfed231955d27d4f78ef575333ae6dff024a57d5274f593ffee951000aba5ef"
       },
-      "outcome": "# W02R10 \u2014 independent CIE/Planck reference"
+      "outcome": "# W02R10 — independent CIE/Planck reference"
     },
     {
       "wave": 3,
@@ -598,7 +599,7 @@
         "w03r01/results.csv": "f1ef7bbb3aae3580f06388d34adde52fa7adb7de6aed597d0778e383e0739423",
         "w03r01/summary.json": "98f8fd7d61d80d8eac58a1b7140fda4d7701d73c53450766bdb32448b9642325"
       },
-      "outcome": "# W03R01 \u2014 point/orientation acceptance"
+      "outcome": "# W03R01 — point/orientation acceptance"
     },
     {
       "wave": 3,
@@ -629,7 +630,7 @@
         "w03r02/report.md": "6565ae41b7f28f7cdd23adfb886c91a0d0711d9d444e87869457f23c45f034f9",
         "w03r02/scalar_references.json": "02dc2831864a040d492215d4d1004864a8cfd1709deb05fb10d464508fe4f7ac"
       },
-      "outcome": "# W03R02 \u2014 rigid-transform point/directional invariance"
+      "outcome": "# W03R02 — rigid-transform point/directional invariance"
     },
     {
       "wave": 3,
@@ -654,7 +655,7 @@
         "w03r03/report.md": "bb60dfc0d4189ec47b3ede41dc7df4564fa8fca6293ba25bdd06458fd825aa70",
         "w03r03/scalar-references.md": "7718bf0dfdb84e485f9c67af2b1eed08286afb40c256a71ff99f3042a4f75e77"
       },
-      "outcome": "# W03R03 \u2014 unsupported orientation versus valid zero"
+      "outcome": "# W03R03 — unsupported orientation versus valid zero"
     },
     {
       "wave": 3,
@@ -681,7 +682,7 @@
         "w03r04/report.md": "07d8289dbc9957ebd2c165bed6bd986df87a40d70d229f637e3a4e47677359f0",
         "w03r04/scalar-reference.txt": "71f6a7c7515b93b65e17417d249616ed5b53246efba94c11ebb2ad80519f91ff"
       },
-      "outcome": "# W03R04 \u2014 directional double-cosine analytic regression"
+      "outcome": "# W03R04 — directional double-cosine analytic regression"
     },
     {
       "wave": 3,
@@ -710,7 +711,7 @@
         "w03r05/report.md": "c6a2a7f446f658b8119953266681a13a9ba44e40b8ef524b26541a52991e7fe2",
         "w03r05/serial-reference.csv": "0a087de88c18c0b99683e95e476cfdb8cca0d2ac8d18da699a15d209fe49ecfe"
       },
-      "outcome": "# W03R05 \u2014 concurrent point/directional evaluations"
+      "outcome": "# W03R05 — concurrent point/directional evaluations"
     },
     {
       "wave": 3,
@@ -733,7 +734,7 @@
         "w03r06/report.md": "7c5aeb69ed63ca80e889f4ac2cdf9ffe6082a1214124b0c4f2db0e0003e5b2f7",
         "w03r06/resource-snapshot.json": "8a550f4340a6a6ff783a4e89ae6bef3d7beff89283e2279d8e9b057aa37062cb"
       },
-      "outcome": "# W03R06 \u2014 point/directional resource bounds"
+      "outcome": "# W03R06 — point/directional resource bounds"
     },
     {
       "wave": 3,
@@ -752,7 +753,7 @@
         "w03r07/report.md": "8ce8afdd5fc00e24a37999d6bcf4b85622cedc4aadc268c63f599736b9ce623d",
         "w03r07/source-trace.txt": "6f619d558d1312b45e9596dfca24cfb9b9240efcb222fe90d5b5b26d463948d0"
       },
-      "outcome": "# W03R07 \u2014 receiver-normal consumer trace"
+      "outcome": "# W03R07 — receiver-normal consumer trace"
     },
     {
       "wave": 3,
@@ -783,7 +784,7 @@
         "w03r08/source-manifest.json": "d01bce16e96c99fd1b35822f74b451cc94c8a54dd434c78aa8bfc098d74c47f1",
         "w03r08/source_check.py": "028decd4d8de2781ae6e71cdec12e0a7d94ccceb575bc688fa8060cead7d22b9"
       },
-      "outcome": "# W03R08 \u2014 unsupported receiver-orientation text"
+      "outcome": "# W03R08 — unsupported receiver-orientation text"
     },
     {
       "wave": 3,
@@ -810,7 +811,7 @@
         "w03r09/report.md": "24a750ce25e0666c725a58f64ca4a3e68d393a5969f0129091402b959ad2dbf8",
         "w03r09/scalar-reference.tsv": "388bbccf75bd074b9ca2e04cd51f6728bb1dfcbad019eb98eb04aa8ce354e0c5"
       },
-      "outcome": "# W03R09 \u2014 5 cm point boundary and 1\u20133-light additivity"
+      "outcome": "# W03R09 — 5 cm point boundary and 1–3-light additivity"
     },
     {
       "wave": 3,
@@ -841,7 +842,7 @@
         "w03r10/report.md": "48ac92a6b318defb75d810409224b1470e7edadda3ee9f997f6f5ee64bda58fc",
         "w03r10/scalar-reference.json": "eda8e6c2c09f1610b6ec3db277cb8fd34d116f3dbf3c98368e6ec94a45aadd1e"
       },
-      "outcome": "# W03R10 \u2014 independent directional double-cosine check"
+      "outcome": "# W03R10 — independent directional double-cosine check"
     },
     {
       "wave": 4,
@@ -874,7 +875,7 @@
         "w04r01/team-ledger.json": "f092f53668c77097198bccaadf18eae3a9eedbec1301687baca619478437cc10",
         "w04r01/team-summary.md": "824da91ef5b75b3490bc623d0c96b3d91b8bdf40ebb4cc8a48415b4bda7e130d"
       },
-      "outcome": "# W04 R01 \u2014 rectangle acceptance"
+      "outcome": "# W04 R01 — rectangle acceptance"
     },
     {
       "wave": 4,
@@ -901,7 +902,7 @@
         "w04r02/report.md": "70af4b04b8f4cb34f7f869ef540089015564efed547c83e3522b2fbdb15eb813",
         "w04r02/scalars.json": "8b840779348e9db5efb8144961cf72db4492b24d42f7c4496abe9aa5d29ac4a9"
       },
-      "outcome": "# W04 R02 \u2014 rectangle roll invariance, evidence recovery"
+      "outcome": "# W04 R02 — rectangle roll invariance, evidence recovery"
     },
     {
       "wave": 4,
@@ -934,7 +935,7 @@
         "w04r03/restore_evidence.py": "3164e58c01a42969c5ec917b23b7ffb6535839f81b4fd605a4f8851eb1d2ffed",
         "w04r03/scalars.tsv": "e579166b635382e4d864757c77f00238e9fa0b3d6afb2b22b9cd744e9356e4b2"
       },
-      "outcome": "# W04 R03 \u2014 exact rectangle separation boundary"
+      "outcome": "# W04 R03 — exact rectangle separation boundary"
     },
     {
       "wave": 4,
@@ -963,7 +964,7 @@
         "w04r04/reference.md": "757e8f9f2c740943df60e17be80b197ccf1248052476925f9ba0f86548b1814b",
         "w04r04/report.md": "8196c24bd33b67463964d3738714de2c42417085af53a779552f25624db41fb9"
       },
-      "outcome": "# W04 R04 \u2014 tiny clipped-face regression candidate"
+      "outcome": "# W04 R04 — tiny clipped-face regression candidate"
     },
     {
       "wave": 4,
@@ -994,7 +995,7 @@
         "w04r05/report.md": "2eec9bc0c6cb2d46d486e4fa03abfe0a85217b4e4326b1c1cd7c15c618b5c6b2",
         "w04r05/scalars.csv": "8196f4a85c1d4ae232df593533e329111ec0866e1207cc91ecab1ba14cf0648e"
       },
-      "outcome": "# W04 R05 \u2014 partial-face concurrency determinism"
+      "outcome": "# W04 R05 — partial-face concurrency determinism"
     },
     {
       "wave": 4,
@@ -1015,7 +1016,7 @@
         "w04r06/raw.txt": "421c5f50d1cabf610a1cb87d972ad909d8331f7ffa317f0911ceda1ecf3603a5",
         "w04r06/report.md": "45e0a018a88ca19569b8c9a788af6eb2d4d0cc15bf7b4f00f4956847eb30fbba"
       },
-      "outcome": "# W04R06 \u2014 rectangle resource bound"
+      "outcome": "# W04R06 — rectangle resource bound"
     },
     {
       "wave": 4,
@@ -1036,7 +1037,7 @@
         "w04r07/source-trace.log": "0873ee630a855d3c7e20839b6d4e5942a689363d8c1327edf9e62b9213712dbc",
         "w04r07/trace_source.py": "d4c7eda07b40a0a892563b26bb5f99b114d98f0f73a4e3776ebd66a1aecbf267"
       },
-      "outcome": "# W04R07 \u2014 renderer consumer request"
+      "outcome": "# W04R07 — renderer consumer request"
     },
     {
       "wave": 4,
@@ -1057,7 +1058,7 @@
         "w04r08/source-evidence.txt": "edefdb0a845d645ae274228e66f652f17702a0ce1eb918e1f78d87458eff1f2e",
         "w04r08/source-hashes.json": "1569c56e385fa6832167d9b0fc48a3ae635c0e01db544f307e1d2eb7e28832a9"
       },
-      "outcome": "# W04R08 \u2014 nil versus black neutral card"
+      "outcome": "# W04R08 — nil versus black neutral card"
     },
     {
       "wave": 4,
@@ -1086,7 +1087,7 @@
         "w04r09/raw-results.json": "e630559340f9cd84edc7c93196a59bbf2bd1fb99a31bb3ba85fe163d3a6a8d10",
         "w04r09/report.md": "bda4d624ea0e54842341d39e3b9ce72a556a3f51ff042e16122f464b36e3b116"
       },
-      "outcome": "# W04R09 \u2014 rectangle path timing"
+      "outcome": "# W04R09 — rectangle path timing"
     },
     {
       "wave": 4,
@@ -1117,14 +1118,14 @@
         "w04r10/reference.py": "3e131a62e377985e508d5a3bb3f857fc663fc73f6bfa3ab4afad390be067bad5",
         "w04r10/report.md": "dc284f4c526db9716ca98422586f6ee95b7cd5ac03d6793bf117bca5473fddf6"
       },
-      "outcome": "# W04R10 \u2014 independent rolled grazing rectangle"
+      "outcome": "# W04R10 — independent rolled grazing rectangle"
     },
     {
       "wave": 5,
       "worker": "W05R01",
       "agent_id": "/root/w05r01",
       "task": "W05R01 acceptance: bounded assignment in WAVE-TASKS.md",
-      "status": "running",
+      "status": "completed",
       "input_sha": "928ca0eafa6330742114c2e0ac184789c2f17752",
       "worktree": "/tmp/keyfill02-r2-workers/w05r01",
       "artifact": "w05r01/report.md",
@@ -1146,7 +1147,8 @@
         "w05r01/report.md": "4c625bdd25c73ae59f5b1d43f00b19f19ff8fae1aa85698a7479f0beed1b93cf",
         "w05r01/team-ledger.json": "16700311be83bfba409e8908303f729a011c3afbfb35abe8944750248b7d959f"
       },
-      "outcome": "# W05R01 \u2014 target-lux acceptance guards"
+      "outcome": "# W05R01 — target-lux acceptance guards",
+      "closure_note": "Acceptance check complete; coordinator delivered partial-wave handoff after executor failure. Wave remains incomplete."
     },
     {
       "wave": 5,
@@ -1179,7 +1181,7 @@
         "w05r02/report.md": "474ad9b907c03c8347c0ba89f9e279b8308b8955879a22098eb49b4f55894ae7",
         "w05r02/run_probe.py": "146d19e4e605847f1c432117d5ccac7628d34bbe9e64bb757edc31db6d8b3176"
       },
-      "outcome": "# W05 R02 \u2014 target-lux source preservation"
+      "outcome": "# W05 R02 — target-lux source preservation"
     },
     {
       "wave": 5,
@@ -1228,7 +1230,7 @@
         "w05r03/references/probe-helper.py": "60a4da96e1e931a5c932adf067b2fb518d01a8d48d4890e2cb77c335069adee9",
         "w05r03/report.md": "420a6167cfd7de62df0d29e1ea2243952fcb3d37792d28ef877c5323a28fad45"
       },
-      "outcome": "# W05 R03 \u2014 solver error classification"
+      "outcome": "# W05 R03 — solver error classification"
     },
     {
       "wave": 5,
@@ -1259,7 +1261,7 @@
         "w05r08/review_check.py": "a7ff34bcd411e04ace3eda3dd6963203fd7c4fcb7e6569fc4aab160f27b67ee3",
         "w05r08/source-evidence.txt": "ffb425bbc07b77500fdb75f73b8a02b69ba080ac92db3cb859e6f8448b332313"
       },
-      "outcome": "# W05 R08 \u2014 actionable target-lux errors"
+      "outcome": "# W05 R08 — actionable target-lux errors"
     },
     {
       "wave": 5,
@@ -1290,7 +1292,7 @@
         "w05r04/raw-results.tsv": "d56d492ffc2c3fd7ba416e1ed77a8818972c2f204fd8eae0d9c72a11088c9a57",
         "w05r04/report.md": "ac8ed353eac7ba9394ae0d0b77d7560d2f7feb73d9d1e185034805415515af92"
       },
-      "outcome": "# W05 R04 \u2014 attainable-target round-trip candidate"
+      "outcome": "# W05 R04 — attainable-target round-trip candidate"
     },
     {
       "wave": 5,
@@ -1341,7 +1343,7 @@
         "w05r05/references/keyfill02-r2-probe.py": "60a4da96e1e931a5c932adf067b2fb518d01a8d48d4890e2cb77c335069adee9",
         "w05r05/report.md": "a837e64c7067d3e72b5cb4a5ee18806916fe25d04bdc9baedc04c326efc3f48a"
       },
-      "outcome": "# W05 R05 \u2014 immutable-input solver concurrency"
+      "outcome": "# W05 R05 — immutable-input solver concurrency"
     },
     {
       "wave": 5,
@@ -1368,17 +1370,36 @@
         "w05r06/report.md": "c8af5c295a3779bf615710f4092d1f902e2dfb6e3d1ee484b628fe95f62c661f",
         "w05r06/source-excerpts.txt": "cf555d84e6f02ae693fa4611f0f1e9ae5ee2b4331526600a34f2d544c7a6ee85"
       },
-      "outcome": "# W05 R06 \u2014 target-lux evaluation and memory bound"
+      "outcome": "# W05 R06 — target-lux evaluation and memory bound"
     },
     {
       "wave": 5,
       "worker": "W05R07",
       "agent_id": "/root/w05r01/r07",
       "task": "W05R07 consumers: bounded assignment in WAVE-TASKS.md",
-      "status": "running",
+      "status": "blocked_incomplete",
       "input_sha": "928ca0eafa6330742114c2e0ac184789c2f17752",
       "worktree": "/tmp/keyfill02-r2-workers/w05r07",
-      "artifact": "w05r07/report.md"
+      "artifact": "w05r07/recovered-partial.md",
+      "artifacts": [
+        "w05r07/recovered-partial.md"
+      ],
+      "closure_note": "Only returned partial assessment preserved; original local captures unverified and no original report.md was written. No pass."
+    },
+    {
+      "wave": 5,
+      "worker": "W05R09",
+      "agent_id": "/root/w05r01/r09",
+      "task": "W05R09 platform/performance: maximum-output neighbors across emitter kinds",
+      "status": "blocked_unexecuted",
+      "input_sha": "928ca0eafa6330742114c2e0ac184789c2f17752",
+      "worktree": "/tmp/keyfill02-r2-workers/w05r09",
+      "artifact": "w05r09/blocked.md",
+      "artifacts": [
+        "w05r09/blocked.md"
+      ],
+      "closure_note": "First exec failed before any read, numerical check or write. Actual spawn counted; assignment not completed."
     }
-  ]
+  ],
+  "blocked_role_assignments": 2
 }
