@@ -127,10 +127,12 @@ final class PrecisionEditingUITests: XCTestCase {
         let open = app.buttons["openRoomPlacement"]
         reveal(open, in: app, towardBottom: false)
         open.tap()
-        let centers = app.descendants(matching: .any)["roomPlacementStatus"].firstMatch
+        XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 15),
+                      "Room sheet must actually open")
+        let centers = app.otherElements["roomPlacementStatus"]
         let faces = app.descendants(matching: .any)["modifierCrossingStatus"].firstMatch
         func expect(_ target: XCUIElement, contains message: String) {
-            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label CONTAINS %@", message), object: target)
+            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", message), object: target)
             XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 15), .completed)
         }
         expect(centers, contains: "All 5 center positions inside room")
