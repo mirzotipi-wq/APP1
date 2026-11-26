@@ -1,6 +1,6 @@
 # M02/M03 closeout — 26 November 2026
 
-Integrated source **`9faebc529ff434feef8995d0a565d2ee04e98c13`** is published on `main` and is being validated in [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392). M02 remains accepted under `m02-m03-code-v2`; M03 remains active until all required native/UI execution and original screenshot review succeed. This packet starts from `e4c8b10b6f853c72cae7752d7ec897e75e6d0531`.
+Integrated source **`b0d25eece01a3edb4c46e89cd487105d4d5a8cdd`** is published on `main` and is being validated in [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966). M02 remains accepted under `m02-m03-code-v2`; M03 remains active until all required native/UI execution and original screenshot review succeed. This packet starts from `e4c8b10b6f853c72cae7752d7ec897e75e6d0531`.
 
 ## Reviewed implementation
 
@@ -28,19 +28,29 @@ These are Linux results, not Apple runtime passes. [The input manifest](source-m
 
 ## Current portable CI
 
-The integrated [core job](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392/job/139828554548) passed all 366 Debug, 366 Release and 100 tooling tests. Independent review verified both original artifact digests, all twelve image bytes against the retained reviewed originals, all six kernel/eight precision fixtures, every benchmark percentile and all twelve cancellation outcomes. Actual ext4 EFBIG, before/after-rename interruption and rename-EIO evidence preserves the required bytes and identities. The [current receipt](source-9fa-core/report.json) identifies the host, exact source and raw evidence. Root separately recomputed both archive hashes and all twelve image comparisons. This refreshes M02 code acceptance; Apple native/UI acceptance remains pending.
+The [fresh f150 core job](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256/job/139858259874) passed all **366 Debug, 366 Release and 100 tooling tests**. Independent review verified both original artifact digests, all twelve image bytes/configurations against the retained reviewed originals, all six kernel/eight precision fixtures, every benchmark percentile and all twelve cancellation outcomes. Actual ext4 EFBIG, before/after-rename interruption and rename-EIO evidence preserves the required bytes and identities.
 
-## Current Apple findings and prepared repair
+The [current receipt](source-f150-core/report.json) records Ubuntu 24.04.5, AMD EPYC 7763, Swift 6.4.2, Python 3.12.3, exact source hashes and raw evidence. Root separately checked both archive hashes, all twelve image/scene comparisons, every ordered Debug/Release method pair and all twelve timed workload percentiles. This refreshes M02 code acceptance directly on the repaired source. Apple native/UI acceptance remains pending.
+
+The [preceding 9fa core receipt](source-9fa-core/report.json) remains historical evidence from its distinct Xeon/Swift 6.4.3 host. The unchanged-source justification supported continued acceptance while the new job ran; no earlier host metadata is reassigned to f150.
+
+## Explicit measurement type correction
+
+The f150 Apple test-bundle build failed because `CGSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude)` has ambiguous overload inference. [The original native build outcome](source-f150-native/native-execution-summary.json) records zero of 154 methods started; [UI execution likewise never began](source-f150-ui/ui-execution-summary.json): four jobs failed the common compilation and the library job was cancelled during its build. Its never-started selected-test step remains pending in the terminal API; the unavailable cancelled-job log is explicitly recorded. No screenshot or native method is passed by that failed build.
+
+The corrected source names both values as `CGFloat.greatestFiniteMagnitude`. Worker 093 independently reviewed the exact diff. [A minimal Linux Foundation compiler witness](compile-correction/result.json) fails before and type-checks after; it is not an Apple runtime pass. The original measurement, fonts, rounding and assertions are unchanged. Only one UI test file differs from f150, preserving accepted M02 inputs. Fresh native/UI commands and all 28 originals remain required.
+
+## Retained 9fa Apple findings and published repair
 
 Native execution on source `9faebc5` is terminal **153/154 passed**. Its single failure is strict containment at a flush fixture edge: global conversion returned `19.999999999999996` instead of `20`, while exact physical-pixel geometry and font-fit checks passed. All three required Metal methods, all 264 contrast observations, the hosted rapid-name focus regression, both unsigned builds and the actual macOS persistence probe passed. The [native receipt](source-9fa-native/native-execution-summary.json) preserves the unsuccessful method and original evidence.
 
-Room/precision passed 5/5, optics 10/10 and studio/export 10/10; library is still running at this checkpoint. The accessibility method failed its largest-text selected caption assertion: 460 observed physical pixels versus 462 required. [All 14 recovered required originals and one diagnostic](source-9fa-ui/app-accessibility-captures.json) are retained without alteration. The [actual image review](source-9fa-ui/independent-image-review.json) found a cramped Scene/Meter header at AXXXL; the caption words appear complete, so glyph clipping is not established by that image. Twelve required largest-text captures were not reached.
+Room/precision passed 5/5, optics 10/10, studio/export 10/10 and library 9/9: [34 of 35 UI methods passed](source-9fa-ui/ui-execution-summary.json), with no skipped, incomplete or unstarted methods. The accessibility method failed its largest-text selected caption assertion: 460 observed physical pixels versus 462 required. [All 14 recovered required originals and one diagnostic](source-9fa-ui/app-accessibility-captures.json) are retained without alteration. The [actual image review](source-9fa-ui/independent-image-review.json) found a cramped Scene/Meter header at AXXXL; the caption words appear complete, so glyph clipping is not established by that image. Twelve required largest-text captures were not reached.
 
-The [reviewed follow-up](layout-repair-review.md) gives the header separate rows at accessibility sizes, adds actual caption/name-action line spacing, places the native fixture text one point inside its control, and adds two original header captures. Its next required inventory is 154 native methods, 35 UI methods and **28 original PNGs**. The source repair is prepared but not published or runtime-accepted at this evidence checkpoint. No threshold or existing required capture was removed.
+The [reviewed follow-up](layout-repair-review.md) gives the header separate rows at accessibility sizes, adds actual caption/name-action line spacing, places the native fixture text one point inside its control, and adds two original header captures. Its next required inventory is 154 native methods, 35 UI methods and **28 original PNGs**. The five-file repair is now published as `f150f98`; new runtime acceptance remains pending. No threshold or existing required capture was removed.
 
 ## Required integrated execution
 
-[The exact inventory](required-execution.json) requires **154 native methods, 35 UI methods and 26 original PNGs**. Every required method must have exactly one ordered start/pass pair, with no failures, skips, duplicates or omissions. The ten optics methods are ten repeatability runs of the shared width-editing workflow, not ten different optical operations. The original 24 Default/AXXXL screenshots remain required; two Camera-selection states are added. Each image must be recovered, hash-verified and actually reviewed. The two opt-in platform-audit methods remain separate.
+[The exact inventory](required-execution.json) requires **154 native methods, 35 UI methods and 28 original PNGs**. Every required method must have exactly one ordered start/pass pair, with no failures, skips, duplicates or omissions. The ten optics methods are ten repeatability runs of the shared width-editing workflow, not ten different optical operations. The original 24 Default/AXXXL screenshots remain required; Camera-selection and Workspace-header pairs bring the total to 28. Each image must be recovered, hash-verified and actually reviewed. The two opt-in platform-audit methods remain separate.
 
 ## Retained 02797 outcomes
 
