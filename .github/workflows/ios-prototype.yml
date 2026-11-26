@@ -698,11 +698,15 @@ jobs:
               "Project-name-save-keyboard", "Project-name-cancel-keyboard", "Library-done",
           ]
           wanted = {category + "-" + suffix for suffix in suffixes}
+          # Failure screenshots are diagnostic originals, never substitutes for
+          # the twelve required captures. Emit them once even if AXXXL failed.
+          allowed = wanted | ({"Accessibility-workflow-failure", "Unreachable-studio-content"}
+                              if category == "Default" else set())
           selected = {}
           for result in manifest:
               for attachment in result.get("attachments", []):
                   human = attachment.get("suggestedHumanReadableName", "")
-                  matches = [name for name in wanted if human.startswith(name + "_") and human.endswith(".png")]
+                  matches = [name for name in allowed if human.startswith(name + "_") and human.endswith(".png")]
                   if not matches:
                       continue
                   name = matches[0]
@@ -745,7 +749,8 @@ jobs:
           missing = sorted(wanted - set(selected))
           print("KEYFILL_REVIEW " + json.dumps({
               "type": "summary", "sourceRevision": os.environ["GITHUB_SHA"],
-              "category": category, "images": len(selected), "bytes": total, "missing": missing,
+              "category": category, "images": len(selected),
+              "requiredImages": len(wanted & set(selected)), "bytes": total, "missing": missing,
           }), flush=True)
           if missing:
               raise SystemExit("Required visual captures missing: " + ", ".join(missing))
