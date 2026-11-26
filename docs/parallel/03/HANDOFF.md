@@ -18,8 +18,16 @@ Verified geometry defect: the absolute determinant threshold rejects a legitimat
 near-tangent finite ray on the small bottom-pole triangle. The independent
 normalized ray/plane and projected-area witness has positive barycentric weights
 and distance 0.00004999790731633365 m. The shipped BVH and visibility test both miss
-it. `grazing-original.json` preserves the actual Swift result; no correction has
-yet been applied at this checkpoint.
+it. `grazing-original.json` preserves the actual Swift result. The candidate now
+scales its parallel cutoff by triangle area and caches the outward geometric
+normal. Independent plane/projected-area probes cover 25 near-tangent finite rays;
+the original failures are retained in `wave02-original-probes.log`.
+
+Sphere setup now checks cancellation after resolution validation and before
+camera preparation or light-sample allocation, matching the mannequin's ordering.
+All 380 portable Debug and 380 Release tests pass with these two corrections, including new
+input-boundary, analytic-visibility and cancellation probes. This is a Linux
+Swift result, not an Apple UI or Metal result.
 
 Wave 1 completed all ten real fresh contexts; its final ledger contains actual
 IDs, reports, hashes and clean private-worktree receipts. Wave 2 is building the
@@ -31,9 +39,13 @@ alongside root and leader. The root integrator is not included in the count.
 
 The original shared workspace had only 95 MiB free and shared `/tmp` subsequently
 filled. The first attempted build could not write a log. The retry passed using
-private TMPDIR and build outputs under `/home/agent/keyfill03-7f4b`; the original
-`/tmp/keyfill03-7f4b` name is a symlink to that directory. No other task's files
-were removed. The existing Swift toolchain is used read-only.
+private TMPDIR and build outputs. The execution environment then became
+unavailable and its temporary files were lost. The published `9c172d3` checkpoint
+survived. Worker test patches were recovered through content-addressed GitHub
+blobs; the geometry file's recorded SHA-256 also matches. The checkout is now
+`/workspace/scratch/7f4be4bbb2d6/APP1-lane03`, with private build outputs and TMPDIR
+under `/home/agent/keyfill03-7f4b`. `recovery/README.md` distinguishes recovered
+content from rerun evidence. No other task's files were removed.
 
 Linux can execute portable Swift and the shared C++ kernel harness. SwiftUI,
 CoreGraphics rendering, native Metal and Apple simulator tests cannot execute on
@@ -42,8 +54,11 @@ the final handoff must preserve this distinction.
 
 ## Next work
 
-Finish wave 1, build independent geometry/visibility probes in wave 2, correct the
-verified intersection defect in wave 3, and proceed through the user's remaining
-waves. Add explicit preview generation/adoption coverage and review loading,
+Finish wave 2's actual-worker ledger, independently review the corrected
+intersection in wave 3, and proceed through the user's remaining waves. A second
+preserved probe shows near-plane clipping in close overhead mannequin cameras
+being mislabeled as unsupported lighting pixels; address it with camera-specific
+regressions without relaxing true unsupported masks. Add explicit preview
+generation/adoption coverage and review loading,
 retry, cancellation and subject transitions. Preserve the six parity fixtures,
 eight precision cases, twelve original images and all resource/cancellation bounds.

@@ -444,9 +444,12 @@ private struct StudySetup {
     let halfW: Double
     let halfH: Double
 
-    init(scene: LightingScene, width: Int, quality: StudyQuality) throws {
+    init(scene: LightingScene, width: Int, quality: StudyQuality, isCancelled: () -> Bool = { false }) throws {
         let maximum = quality == .reference ? 96 : 192
         guard width >= 24, width <= maximum, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
+        // Reject cancelled work before camera validation and sample allocation.
+        // Resolution keeps its cheap, deterministic validation precedence.
+        guard !isCancelled() else { throw StudyError.cancelled }
         guard let camera = CameraFraming(scene: scene), let geometry = StudyGeometry(center: scene.subject),
               camera.position.y > geometry.panelY + 0.01,
               camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters else { throw StudyError.invalidCamera }
@@ -481,7 +484,7 @@ struct StudyPixelCancellation {
 public enum ReferenceStudyRenderer {
     public static func render(scene: LightingScene, width: Int = 120, quality: StudyQuality = .interactive,
                               isCancelled: () -> Bool = { false }) throws -> StudyImage {
-        let setup = try StudySetup(scene: scene, width: width, quality: quality)
+        let setup = try StudySetup(scene: scene, width: width, quality: quality, isCancelled: isCancelled)
         let camera = setup.camera, geometry = setup.geometry, light = setup.lighting, transform = setup.transform
         let height = setup.height, origin = vec(camera.position)
         let forward = vec(camera.forward), right = vec(camera.right), up = vec(camera.up)

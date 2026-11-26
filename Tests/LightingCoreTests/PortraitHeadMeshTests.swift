@@ -18,6 +18,12 @@ final class PortraitHeadMeshTests: XCTestCase {
             self.direction = delta / sqrt(Self.dot(delta, delta))
         }
 
+        init(_ name: String, origin: SIMD3<Double>, direction: SIMD3<Double>) {
+            self.name = name
+            self.origin = origin
+            self.direction = direction
+        }
+
         private static func dot(_ a: SIMD3<Double>, _ b: SIMD3<Double>) -> Double {
             a.x * b.x + a.y * b.y + a.z * b.z
         }
@@ -58,6 +64,12 @@ final class PortraitHeadMeshTests: XCTestCase {
             // nearest distance is compared separately to an absolute 1e-8 m.
             guard wa >= -1e-10, wb >= -1e-10, wc >= -1e-10 else { return nil }
             return distance
+        }
+
+        func barycentricWeights(at point: SIMD3<Double>) -> [Double] {
+            [Self.area(point, b, c, firstAxis, secondAxis) / signedArea,
+             Self.area(a, point, c, firstAxis, secondAxis) / signedArea,
+             Self.area(a, b, point, firstAxis, secondAxis) / signedArea]
         }
 
         private static func area(_ a: SIMD3<Double>, _ b: SIMD3<Double>, _ c: SIMD3<Double>,
@@ -145,6 +157,50 @@ final class PortraitHeadMeshTests: XCTestCase {
         XCTAssertEqual(rays.count, 63)
         for ray in rays { _ = compare(ray, facesCamera: true) }
         print("BVH independent oracle: \(rays.count) seam, pole, shared-edge and grazing rays")
+    }
+
+    func testPreservedNearTangentPolarSegmentMatchesIndependentOracle() throws {
+        // Preserve the exact shipped-source failure recorded by
+        // docs/parallel/03/evidence/grazing-{ray-probe.swift,original.json}.
+        // Do not renormalize or reconstruct these recorded ray components.
+        let ray = Ray("preserved polar grazing witness",
+                      origin: .init(3.404646637409472e-5, -0.1327573713979657, 0.026792162348130817),
+                      direction: .init(0.08733597770659, 0.2924411459428683, 0.9522870382178139))
+        let triangle = try oracleTriangle(row: 0, column: 0, second: true)
+        try assertNearTangentFiniteSegment(ray, triangle: triangle, incidence: 1e-8)
+    }
+
+    func testNearTangentFiniteSegmentsAcrossPolarAndRegularFaces() throws {
+        // Three tiny polar and three regular faces, two angular incidences,
+        // and both tangent directions. Geometry comes only from prescribed
+        // vertices; neither BVH ordering nor a production hit chooses a ray.
+        let faces = [(0, 0, true), (0, 16, true), (41, 32, false),
+                     (10, 7, false), (20, 19, true), (30, 37, false)]
+        var count = 0
+        for (row, column, second) in faces {
+            let triangle = try oracleTriangle(row: row, column: column, second: second)
+            let rawNormal = cross(triangle.b - triangle.a, triangle.c - triangle.a)
+            let twiceArea = sqrt(dot(rawNormal, rawNormal))
+            if row == 0 || row == 41 {
+                XCTAssertLessThan(twiceArea, 1e-6)
+            } else {
+                XCTAssertGreaterThan(twiceArea, 1e-5)
+            }
+            let centroid = (triangle.a + triangle.b + triangle.c) / 3
+            // This radial edge also avoids crossing an adjacent polar face
+            // within the finite window; uniqueness is asserted below.
+            let tangent = unit(triangle.c - triangle.a)
+            for incidence in [1e-6, 1e-8] {
+                for sign in [-1.0, 1.0] {
+                    let direction = unit(tangent * sign - triangle.normal * incidence)
+                    let ray = Ray("row\(row) column\(column) second\(second) cosine\(incidence) sign\(sign)",
+                                  origin: centroid - direction * 5e-5, direction: direction)
+                    try assertNearTangentFiniteSegment(ray, triangle: triangle, incidence: incidence)
+                    count += 1
+                }
+            }
+        }
+        XCTAssertEqual(count, 24)
     }
 
     func testInteriorOriginsReturnNearestExitWithOutwardUnitNormals() {
@@ -237,6 +293,48 @@ final class PortraitHeadMeshTests: XCTestCase {
             XCTAssertTrue(mesh.occludes(origin: origin, direction: direction,
                                          minimum: hit.distance, maximum: hit.distance.nextUp))
         }
+    }
+
+    private func oracleTriangle(row: Int, column: Int, second: Bool) throws -> OracleTriangle {
+        func vertex(_ row: Int, _ column: Int) -> SIMD3<Double> {
+            PortraitHeadMesh.surfacePoint(y: PortraitHeadMesh.ringY(row),
+                angle: 2 * Double.pi * Double(column % PortraitHeadMesh.longitudeSegments) /
+                    Double(PortraitHeadMesh.longitudeSegments))
+        }
+        let a = vertex(row, column), b = vertex(row, column + 1)
+        let c = vertex(row + 1, column), d = vertex(row + 1, column + 1)
+        return try XCTUnwrap(second ? OracleTriangle(b, d, c) : OracleTriangle(a, b, c))
+    }
+
+    private func assertNearTangentFiniteSegment(_ ray: Ray, triangle: OracleTriangle, incidence: Double,
+                                               file: StaticString = #filePath, line: UInt = #line) throws {
+        XCTAssertEqual(dot(triangle.normal, ray.direction), -incidence, accuracy: 1e-12,
+                       ray.name, file: file, line: line)
+        let expected = try XCTUnwrap(triangle.distance(ray, minimum: 1e-6, maximum: 1e-4),
+                                     ray.name, file: file, line: line)
+        // Near-parallel plane division amplifies coordinate roundoff. Retain
+        // the existing 1e-8 m distance tolerance and use brackets 1e-5 m away.
+        XCTAssertEqual(expected, 5e-5, accuracy: 1e-8, ray.name, file: file, line: line)
+        let weights = triangle.barycentricWeights(at: ray.origin + ray.direction * expected)
+        for weight in weights {
+            // Every oracle crossing is deep inside its face, far from the
+            // oracle's dimensionless -1e-10 shared-edge tolerance.
+            XCTAssertGreaterThan(weight, 0.30, ray.name, file: file, line: line)
+            XCTAssertLessThan(weight, 0.37, ray.name, file: file, line: line)
+        }
+        XCTAssertEqual(weights.reduce(0, +), 1, accuracy: 1e-10, ray.name, file: file, line: line)
+        let candidates = Self.triangles.compactMap { $0.distance(ray, minimum: 1e-6, maximum: 1e-4) }
+        XCTAssertEqual(candidates.count, 1, "unique oracle surface: \(ray.name)", file: file, line: line)
+
+        // These windows are fixed independently of production and oracle
+        // results. Exact floating-point endpoint semantics remain covered
+        // by the existing half-open interval and silhouette tests.
+        XCTAssertFalse(compare(ray, minimum: 1e-6, maximum: 4e-5, facesCamera: true, file: file, line: line),
+                       ray.name, file: file, line: line)
+        XCTAssertTrue(compare(ray, minimum: 1e-6, maximum: 1e-4, facesCamera: true, file: file, line: line),
+                      ray.name, file: file, line: line)
+        XCTAssertFalse(compare(ray, minimum: 6e-5, maximum: 1e-4, facesCamera: true, file: file, line: line),
+                       ray.name, file: file, line: line)
     }
 
     @discardableResult
