@@ -1,0 +1,326 @@
+W05 R02 actual subprocess output
+$ git rev-parse HEAD
+928ca0eafa6330742114c2e0ac184789c2f17752
+
+[exit 0]
+$ git status --short --branch
+## HEAD (no branch)
+?? private-output/
+
+[exit 0]
+$ git log -1 --format=%H -- Sources/LightingCore
+58b3ca43943e18d0fc7800189b08365f424d9c9e
+
+[exit 0]
+$ cat /tmp/keyfill02-r2-snapshots/v1/READY
+1b286885cb803ba17e159713651515ab119e17f1
+
+[exit 0]
+$ git diff --exit-code 1b286885cb803ba17e159713651515ab119e17f1 HEAD -- Sources/LightingCore
+
+[exit 0]
+$ /tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+Swift version 6.0.3 (swift-6.0.3-RELEASE)
+Target: x86_64-unknown-linux-gnu
+
+[exit 0]
+$ sha256sum Sources/LightingCore/LightOutputAdjustment.swift Sources/LightingCore/Scene.swift Sources/LightingCore/StudioOptics.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a /tmp/keyfill02-r2-snapshots/v1/Modules/LightingCore.swiftmodule /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift
+7865e65f02f356abf2a0030801fdfdc4b1795c038676a486ebc6c2a6d6b724c8  Sources/LightingCore/LightOutputAdjustment.swift
+76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898  Sources/LightingCore/Scene.swift
+94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd  Sources/LightingCore/StudioOptics.swift
+8a6187ca36a27bb59ccedf13f52bc41aea1f92f028f1c2f83f2cff5dfbce852a  /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a
+b10ada7675ce8caa6cba97318bcbe446987be899e47abda3177a80d189533cf0  /tmp/keyfill02-r2-snapshots/v1/Modules/LightingCore.swiftmodule
+60a4da96e1e931a5c932adf067b2fb518d01a8d48d4890e2cb77c335069adee9  /tmp/keyfill02-r2-probe.py
+e241f0297870abdf3fce11629e86facf70389c930ac0d768c93b5a6a21f9bd55  /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift
+
+[exit 0]
+$ cat Sources/LightingCore/LightOutputAdjustment.swift
+import Foundation
+
+public enum LightOutputAdjustmentError: Error, Equatable, Sendable, LocalizedError {
+    case invalidTargetLux
+    case invalidLight
+    case unsupportedGeometry
+    case outputOutOfRange
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidTargetLux:
+            return "Enter a finite target illuminance of zero lux or more."
+        case .invalidLight:
+            return "The light's settings must be valid before adjusting its output."
+        case .unsupportedGeometry:
+            return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
+        case .outputOutOfRange:
+            return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
+        }
+    }
+}
+
+/// Adjusts one ideal source's contribution at the camera-facing subject plane.
+/// This is a model calculation, not a measured lamp setting or image exposure.
+/// Other lights, occlusion, reflections and real modifier losses are excluded.
+public enum LightOutputAdjustment {
+    /// Returns a valid light with only its candela changed. The source and scene
+    /// remain unchanged, and the light need not already belong to the scene.
+    /// Positive targets require a supported, nonzero contribution at one candela.
+    /// Zero explicitly turns the source off without requiring a photometric sample.
+    /// Invalid inputs and unrepresentable outputs throw; values are never clamped.
+    public static func light(_ source: StudioLight, targetingLux targetLux: Double,
+                             in scene: LightingScene) throws -> StudioLight {
+        guard targetLux.isFinite, targetLux >= 0 else {
+            throw LightOutputAdjustmentError.invalidTargetLux
+        }
+        guard source.isValid else { throw LightOutputAdjustmentError.invalidLight }
+        guard let scene = try? scene.validated() else {
+            throw LightOutputAdjustmentError.unsupportedGeometry
+        }
+
+        var adjusted = source
+        if targetLux == 0 {
+            adjusted.candela = 0
+            return adjusted
+        }
+
+        // Using a unit source also supports increasing a currently off light;
+        // scaling its existing zero contribution would be undefined.
+        adjusted.candela = 1
+        guard let unitLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+              unitLux.isFinite, unitLux > 0 else {
+            throw LightOutputAdjustmentError.unsupportedGeometry
+        }
+
+        // Bound the request by the forward model, not the independently
+        // rounded inverse quotient. Even the next representable lux above
+        // this output is outside the supported physical range.
+        var maximum = source
+        maximum.candela = 100_000
+        guard maximum.isValid,
+              let maximumLux = StudioPhotometry.illuminance(for: maximum, in: scene),
+              maximumLux.isFinite, maximumLux > 0, targetLux <= maximumLux else {
+            throw LightOutputAdjustmentError.outputOutOfRange
+        }
+
+        // Preserve an already exact setting before inverting the model.
+        // Independently rounded division and integration can miss an exactly
+        // achieved target, including subnormal values and the upper boundary.
+        if source.candela > 0,
+           StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
+            return source
+        }
+
+        adjusted.candela = targetLux / unitLux
+        if adjusted.candela <= 0 || !adjusted.isValid {
+            guard adjusted.candela > maximum.candela else {
+                throw LightOutputAdjustmentError.outputOutOfRange
+            }
+            // The validated maximum is a separate forward-model candidate.
+            // It must still achieve the request within the accuracy gate below.
+            adjusted = maximum
+        }
+
+        // Extremely small positive outputs can underflow or lose substantial
+        // precision in finite-emitter integration even when their candela is
+        // representable. A nonzero result alone does not establish that the
+        // requested contribution was achieved. Comparing a ratio also avoids
+        // underflowing an absolute tolerance for subnormal target values.
+        guard let achievedLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+              achievedLux.isFinite, achievedLux > 0,
+              abs(achievedLux / targetLux - 1) <= 1e-9 else {
+            throw LightOutputAdjustmentError.outputOutOfRange
+        }
+        return adjusted
+    }
+}
+
+[exit 0]
+$ sed -n 19,89p Sources/LightingCore/Scene.swift
+
+public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
+    public var id: UUID
+    public var name: String
+    public var position: Position
+    /// On-axis luminous intensity, not electrical watts.
+    public var candela: Double
+    public var kelvin: Double
+    /// Nil preserves the legacy isotropic point source.
+    public var optics: LightOptics?
+    public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
+        self.id = id; self.name = name; self.position = position
+        self.candela = candela; self.kelvin = kelvin; self.optics = optics
+    }
+    public var isValid: Bool {
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
+        position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
+        kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
+    }
+}
+
+public enum SceneError: Error, Equatable {
+    case unsupportedVersion, invalidScene, invalidLight, duplicateLight
+}
+
+public struct LightingScene: Codable, Equatable, Sendable {
+    public static let currentSchemaVersion = 5
+    public var schemaVersion: Int = currentSchemaVersion
+    public var subject: Position
+    public var camera: Position
+    /// Nil uses the default 50 mm full-frame perspective.
+    public var cameraLens: CameraLens?
+    public var lights: [StudioLight]
+    /// Nil retains the default diagnostic card balance and exposure.
+    public var previewSettings: PreviewSettings?
+    /// Nil means no measured room has been saved with this scene.
+    public var placementRoom: ManualRoom?
+
+    public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil, placementRoom: ManualRoom? = nil) {
+        self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens; self.previewSettings = previewSettings
+        self.placementRoom = placementRoom
+    }
+
+    public func validated() throws -> Self {
+        guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+        guard lights.count <= 12 else { throw SceneError.invalidScene }
+        // Version 1 never contained optics; reject ambiguous mislabeled files.
+        guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
+        // Version 2 adds light optics, version 3 adds a camera lens.
+        guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+        guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
+        // Version 5 adds measured rooms and rectangular-emitter roll.
+        guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+            throw SceneError.invalidScene
+        }
+        guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+              (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
+        guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
+        guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
+        var migrated = self
+        migrated.schemaVersion = Self.currentSchemaVersion
+        return migrated
+    }
+
+    public static func portrait() -> Self {
+        .init(subject: .init(x: 0, y: 1.5, z: 0),
+              camera: .init(x: 0, y: 1.5, z: 3),
+              lights: [
+                .init(name: "Key", position: .init(x: -1.5, y: 2.1, z: 1.2), candela: 900, kelvin: 5600),
+                .init(name: "Fill", position: .init(x: 1.5, y: 1.7, z: 1.5), candela: 300, kelvin: 5600),
+                .init(name: "Rim", position: .init(x: 0.8, y: 2.2, z: -1.2), candela: 450, kelvin: 3200)
+
+[exit 0]
+$ sed -n 1,48p Sources/LightingCore/StudioOptics.swift
+import Foundation
+
+public enum EmitterKind: String, Codable, CaseIterable, Sendable {
+    case point, directional, rectangle
+
+    public var title: String {
+        switch self {
+        case .point: return "Bare point"
+        case .directional: return "Directional"
+        case .rectangle: return "Rectangular softbox"
+        }
+    }
+    public var isAimed: Bool { self != .point }
+}
+
+/// Ideal emitter geometry, not a measured modifier or equipment profile.
+/// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
+public struct LightOptics: Codable, Equatable, Sendable {
+    public static let dimensionRange: ClosedRange<Double> = 0.05...4
+    public static let rollRange: ClosedRange<Double> = -180...180
+    public var kind: EmitterKind
+    public var aimTarget: Position?
+    public var widthMeters: Double
+    public var heightMeters: Double
+    /// Rotation about the emitting normal. Nil preserves the legacy world-up orientation.
+    public var rollDegrees: Double?
+
+    public init(kind: EmitterKind = .point, aimTarget: Position? = nil,
+                widthMeters: Double = 0.6, heightMeters: Double = 0.9,
+                rollDegrees: Double? = nil) {
+        self.kind = kind; self.aimTarget = aimTarget
+        self.widthMeters = widthMeters; self.heightMeters = heightMeters
+        self.rollDegrees = rollDegrees
+    }
+
+    public var effectiveRollDegrees: Double { rollDegrees ?? 0 }
+
+    public var isValid: Bool {
+        (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
+        Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters) &&
+        effectiveRollDegrees.isFinite && Self.rollRange.contains(effectiveRollDegrees)
+    }
+}
+
+extension StudioLight {
+    public var effectiveOptics: LightOptics { optics ?? .init() }
+    public func target(subject: Position) -> Position { effectiveOptics.aimTarget ?? subject }
+}
+
+[exit 0]
+$ rg -n 'photometry|missing tool|unrun test' docs/QUALITY.md
+3:These are initial engineering targets, not measured achievements. Record actual numerical results with device/toolchain, build configuration, workload, sample size, revision and raw artifacts. If target proves infeasible, owner must approve an explicit tradeoff; agents cannot weaken it. A missing tool or unrun test is unverified, never pass.
+16:| photometry | inverse-square and cosine analytic cases <= 1% error in supported point model; area model compare against numerical reference <= 5% on declared test cases; document limits and units |
+
+[exit 0]
+$ sed -n 61,71p /tmp/keyfill02-r2/docs/parallel/02/WAVE-TASKS.md
+## W05 — target lux
+
+R01 unchanged1e-9 forward solver acceptance and100000cd cap; R02 check source
+identity/non-output fields preserved; R03 classify invalid target/light/scene,
+unsupported geometry and numeric unattainability with actual Swift; R04 add
+point/directional/rectangle attainable-target round-trip regression candidate;
+R05 run pure solver independent inputs concurrently, no shared mutations;
+R06 inspect solve evaluation bound and memory; R07 inspect single-light versus
+total-rig consumer assumption; R08 review actionable error wording; R09 exercise
+max.nextDown, max, max.nextUp for3 emitter kinds; R10 challenge representable
+subnormal targets versus true unrepresentable target using independent equation.
+
+[exit 0]
+$ cat /tmp/keyfill02-r2-brief.md
+One bounded real role in100-context lane02 campaign. Relevant tasks: /tmp/keyfill02-r2/docs/parallel/02/WAVE-TASKS.md; use only YOUR isolated worktree/private-output for writes. Read AGENTS/relevant quality and source contracts; root already read startup documents. Production read-only; candidate tests/patches only inprivate-output. No package builds/installs/spawns/commits/push/cleanup or external messages. One concrete check then short report <=300words/hard800tokens, workingtarget12000 or platformcapacity; checkpoint60% if approached. No broad redundant audits. Swift helper: python3 /tmp/keyfill02-r2-probe.py WORKTREE WORKTREE/private-output/probe.swift v1. It serializes compilation via flock with immutablemodule1b286885cb803ba17e159713651515ab119e17f1 (production58b3). WorktreeHEAD can have newer docs/tests; record both SHA distinctions. Preserve1%point/5%area gates. Record exactcommands/results/limits; no device/calibration claims. Save report.md and raw/probe/reference evidence before returning. Following executor reset, reports recreated from actual re-execution must say so; do not call reconstructed text recovered original logs. Root alone integrates and publishes, retaining reports before cleanup.
+
+[exit 0]
+$ cat /tmp/keyfill02-r2-probe.py
+import pathlib,sys,subprocess
+work=pathlib.Path(sys.argv[1]).resolve();source=pathlib.Path(sys.argv[2]).resolve();snap=pathlib.Path('/tmp/keyfill02-r2-snapshots')/(sys.argv[3] if len(sys.argv)>3 else 'v1');out=work/'private-output'
+assert work.is_relative_to('/tmp/keyfill02-r2-workers') and source.is_relative_to(work) and (snap/'READY').exists()
+cmd=['flock','/tmp/keyfill02-r2-build.lock','/tmp/keyfill02-r2-toolchain/usr/bin/swiftc','-I',str(snap/'Modules'),str(source),str(snap/'libLightingCore.a'),'-o',str(out/'probe')]
+with (out/'compile.log').open('w') as f:r=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)
+if r.returncode:print((out/'compile.log').read_text());sys.exit(r.returncode)
+with (out/'probe.log').open('w') as f:r=subprocess.run([str(out/'probe')],stdout=f,stderr=subprocess.STDOUT)
+print((out/'probe.log').read_text());sys.exit(r.returncode)
+
+[exit 0]
+$ python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w05r02 /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift v1
+{"event":"scene","value":"{\"camera\":{\"x\":0.55,\"y\":1.7,\"z\":4.5},\"cameraLens\":{\"focalLengthMillimeters\":83.25},\"lights\":[{\"candela\":271.25,\"id\":\"A0000000-0000-4000-8000-000000000001\",\"kelvin\":3123.5,\"name\":\"\\tKey – α  \\n\",\"position\":{\"x\":-1.3,\"y\":2.05,\"z\":2.4}},{\"candela\":647.5,\"id\":\"A0000000-0000-4000-8000-000000000004\",\"kelvin\":9876.75,\"name\":\"Rolled rectangle β\",\"optics\":{\"aimTarget\":{\"x\":0.2,\"y\":1.35,\"z\":0.1},\"heightMeters\":1.29,\"kind\":\"rectangle\",\"rollDegrees\":37.25,\"widthMeters\":0.87},\"position\":{\"x\":1.45,\"y\":2.75,\"z\":2.6}},{\"candela\":81.5,\"id\":\"A0000000-0000-4000-8000-000000000005\",\"kelvin\":5100.25,\"name\":\"Unrelated fill\",\"position\":{\"x\":-2,\"y\":1.8,\"z\":2}}],\"placementRoom\":{\"ceilingHeightMeters\":3.8,\"depthMeters\":9.6,\"subjectX\":3.4,\"subjectZ\":2.1,\"widthMeters\":7.2,\"yawDegrees\":32.5},\"previewSettings\":{\"exposureStops\":-1.25,\"whiteBalanceKelvin\":4375},\"schemaVersion\":5,\"subject\":{\"x\":0.2,\"y\":1.35,\"z\":0.1}}"}
+{"event":"source","fixture":"legacy_point","preservedFingerprint":{"id":"A0000000-0000-4000-8000-000000000001","kelvinBits":"4659087064212439040","nameUTF8":"CUtleSDigJMgzrEgIAo=","opticsPresence":"nil","positionBits":"13831905535543004365,4611798608418072166,4612586738352862003"},"source":"{\"candela\":271.25,\"id\":\"A0000000-0000-4000-8000-000000000001\",\"kelvin\":3123.5,\"name\":\"\\tKey – α  \\n\",\"position\":{\"x\":-1.3,\"y\":2.05,\"z\":2.4}}"}
+{"achievedLux":0,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"legacy_point","inputCandela":271.25,"memberOfScene":true,"mode":"zero","outputCandela":0,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":0}
+{"achievedLux":123.45600000000002,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"legacy_point","inputCandela":271.25,"memberOfScene":true,"mode":"changed_positive","outputCandela":1264.0779170330093,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","opticsPresence","positionBits"],"relativeError":2.220446049250313e-16,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"achievedLux":26.49159482083218,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"legacy_point","inputCandela":271.25,"memberOfScene":true,"mode":"already_exact","outputCandela":271.25,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":26.49159482083218}
+{"achievedLux":123.45600000000002,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"legacy_point","inputCandela":0,"memberOfScene":true,"mode":"initially_off","outputCandela":1264.0779170330093,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","opticsPresence","positionBits"],"relativeError":2.220446049250313e-16,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"event":"source","fixture":"explicit_point","preservedFingerprint":{"id":"A0000000-0000-4000-8000-000000000002","kelvinBits":"4664186874019971072","nameUTF8":"IFBvaW50IHdpdGggcmV0YWluZWQgb3B0aWNzIA==","optics.aimTarget":"4600877379321698714,4607857958744122982,13819745816549104026","optics.heightBits":"4608578534684502262","optics.kind":"point","optics.rollBits":"9223372036854775808","optics.widthBits":"4604750475001237340","opticsPresence":"some","positionBits":"4607632778762754458,4611010478483282330,4614388178203810202"},"source":"{\"candela\":389.75,\"id\":\"A0000000-0000-4000-8000-000000000002\",\"kelvin\":6789.25,\"name\":\" Point with retained optics \",\"optics\":{\"aimTarget\":{\"x\":0.4,\"y\":1.15,\"z\":-0.2},\"heightMeters\":1.31,\"kind\":\"point\",\"rollDegrees\":-0,\"widthMeters\":0.73},\"position\":{\"x\":1.1,\"y\":1.85,\"z\":3.2}}"}
+{"achievedLux":0,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"explicit_point","inputCandela":389.75,"memberOfScene":false,"mode":"zero","outputCandela":0,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":0}
+{"achievedLux":123.456,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"explicit_point","inputCandela":389.75,"memberOfScene":false,"mode":"changed_positive","outputCandela":1348.3420916025011,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"achievedLux":35.68602975437272,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"explicit_point","inputCandela":389.75,"memberOfScene":false,"mode":"already_exact","outputCandela":389.75,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":35.68602975437272}
+{"achievedLux":123.456,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"explicit_point","inputCandela":0,"memberOfScene":false,"mode":"initially_off","outputCandela":1348.3420916025011,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"event":"source","fixture":"directional","preservedFingerprint":{"id":"A0000000-0000-4000-8000-000000000003","kelvinBits":"4661743621744099328","nameUTF8":"RGlyZWN0aW9uYWwgzqk=","optics.aimTarget":"nil","optics.heightBits":"4606371770867090719","optics.kind":"directional","optics.rollBits":"nil","optics.widthBits":"4602138387217362452","opticsPresence":"some","positionBits":"13828753015803845018,4612248968380809216,4613712638259704627"},"source":"{\"candela\":523.125,\"id\":\"A0000000-0000-4000-8000-000000000003\",\"kelvin\":4567.125,\"name\":\"Directional Ω\",\"optics\":{\"heightMeters\":0.91,\"kind\":\"directional\",\"widthMeters\":0.47},\"position\":{\"x\":-0.8,\"y\":2.25,\"z\":2.9}}"}
+{"achievedLux":0,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"directional","inputCandela":523.125,"memberOfScene":false,"mode":"zero","outputCandela":0,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":0}
+{"achievedLux":123.45599999999999,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"directional","inputCandela":523.125,"memberOfScene":false,"mode":"changed_positive","outputCandela":1333.8636397976568,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":1.1102230246251565e-16,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"achievedLux":48.417932742957916,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"directional","inputCandela":523.125,"memberOfScene":false,"mode":"already_exact","outputCandela":523.125,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":48.417932742957916}
+{"achievedLux":123.45599999999999,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"directional","inputCandela":0,"memberOfScene":false,"mode":"initially_off","outputCandela":1333.8636397976568,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":1.1102230246251565e-16,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"event":"source","fixture":"rolled_rectangle","preservedFingerprint":{"id":"A0000000-0000-4000-8000-000000000004","kelvinBits":"4666655415063281664","nameUTF8":"Um9sbGVkIHJlY3RhbmdsZSDOsg==","optics.aimTarget":"4596373779694328218,4608758678669597082,4591870180066957722","optics.heightBits":"4608488462691954852","optics.kind":"rectangle","optics.rollBits":"4630439288750735360","optics.widthBits":"4606011482896901079","opticsPresence":"some","positionBits":"4609209038632334131,4613374868287651840,4613037098315599053"},"source":"{\"candela\":647.5,\"id\":\"A0000000-0000-4000-8000-000000000004\",\"kelvin\":9876.75,\"name\":\"Rolled rectangle β\",\"optics\":{\"aimTarget\":{\"x\":0.2,\"y\":1.35,\"z\":0.1},\"heightMeters\":1.29,\"kind\":\"rectangle\",\"rollDegrees\":37.25,\"widthMeters\":0.87},\"position\":{\"x\":1.45,\"y\":2.75,\"z\":2.6}}"}
+{"achievedLux":0,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"rolled_rectangle","inputCandela":647.5,"memberOfScene":true,"mode":"zero","outputCandela":0,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":0}
+{"achievedLux":123.45600000000027,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"rolled_rectangle","inputCandela":647.5,"memberOfScene":true,"mode":"changed_positive","outputCandela":1457.6286517275732,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":2.220446049250313e-15,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"achievedLux":54.84096371545563,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"rolled_rectangle","inputCandela":647.5,"memberOfScene":true,"mode":"already_exact","outputCandela":647.5,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":0,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":54.84096371545563}
+{"achievedLux":123.45600000000027,"allNonOutputFieldsEqual":true,"event":"case","fieldBitPatternsPreserved":true,"fixture":"rolled_rectangle","inputCandela":0,"memberOfScene":true,"mode":"initially_off","outputCandela":1457.6286517275732,"pass":true,"preservedFields":["id","kelvinBits","nameUTF8","optics.aimTarget","optics.heightBits","optics.kind","optics.rollBits","optics.widthBits","opticsPresence","positionBits"],"relativeError":2.220446049250313e-15,"sceneUnchanged":true,"sourceUnchanged":true,"targetLux":123.456}
+{"areaGateUnchanged":0.05,"cases":16,"event":"summary","failed":0,"maximumRelativeTargetError":2.220446049250313e-15,"passed":16,"pointGateUnchanged":0.01,"scope":"Synthetic identity\/value-preservation probe; no independent photometric-accuracy, device or calibration claim.","targetRelativeTolerance":1e-09}
+
+
+[exit 0]
+$ git status --short --branch
+## HEAD (no branch)
+?? private-output/
+
+[exit 0]

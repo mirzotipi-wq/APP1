@@ -1,0 +1,45 @@
+UTC start: 2026-11-26T13:30:29.629404+00:00
+Platform: Linux-6.18.57-x86_64-with-glibc2.41
+Worker HEAD and compiled module are intentionally distinct.
+$ git rev-parse HEAD
+928ca0eafa6330742114c2e0ac184789c2f17752
+
+[exit 0]
+$ git status --short --branch
+## HEAD (no branch)
+?? private-output/
+
+[exit 0]
+$ git log -1 --format=%H -- Sources/LightingCore
+58b3ca43943e18d0fc7800189b08365f424d9c9e
+
+[exit 0]
+$ cat /tmp/keyfill02-r2-snapshots/v1/READY
+1b286885cb803ba17e159713651515ab119e17f1
+
+[exit 0]
+$ git diff --exit-code 1b286885cb803ba17e159713651515ab119e17f1 HEAD -- Sources/LightingCore
+
+[exit 0]
+$ /tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+Swift version 6.0.3 (swift-6.0.3-RELEASE)
+Target: x86_64-unknown-linux-gnu
+
+[exit 0]
+$ sha256sum Sources/LightingCore/LightOutputAdjustment.swift Sources/LightingCore/Scene.swift Sources/LightingCore/StudioOptics.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a /tmp/keyfill02-r2-snapshots/v1/Modules/LightingCore.swiftmodule /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift
+7865e65f02f356abf2a0030801fdfdc4b1795c038676a486ebc6c2a6d6b724c8  Sources/LightingCore/LightOutputAdjustment.swift
+76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898  Sources/LightingCore/Scene.swift
+94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd  Sources/LightingCore/StudioOptics.swift
+8a6187ca36a27bb59ccedf13f52bc41aea1f92f028f1c2f83f2cff5dfbce852a  /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a
+b10ada7675ce8caa6cba97318bcbe446987be899e47abda3177a80d189533cf0  /tmp/keyfill02-r2-snapshots/v1/Modules/LightingCore.swiftmodule
+60a4da96e1e931a5c932adf067b2fb518d01a8d48d4890e2cb77c335069adee9  /tmp/keyfill02-r2-probe.py
+e241f0297870abdf3fce11629e86facf70389c930ac0d768c93b5a6a21f9bd55  /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift
+
+[exit 0]
+$ git status --short --branch
+## HEAD (no branch)
+?? private-output/
+
+[exit 0]
+UTC end: 2026-11-26T13:30:30.737092+00:00
+Actual helper exit: 0

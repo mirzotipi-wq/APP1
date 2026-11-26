@@ -1,0 +1,668 @@
+===== ORIGINAL SOURCE: Sources/LightingCore/LightOutputAdjustment.swift; SHA256 7865e65f02f356abf2a0030801fdfdc4b1795c038676a486ebc6c2a6d6b724c8 =====
+   1 import Foundation
+   2 
+   3 public enum LightOutputAdjustmentError: Error, Equatable, Sendable, LocalizedError {
+   4     case invalidTargetLux
+   5     case invalidLight
+   6     case unsupportedGeometry
+   7     case outputOutOfRange
+   8 
+   9     public var errorDescription: String? {
+  10         switch self {
+  11         case .invalidTargetLux:
+  12             return "Enter a finite target illuminance of zero lux or more."
+  13         case .invalidLight:
+  14             return "The light's settings must be valid before adjusting its output."
+  15         case .unsupportedGeometry:
+  16             return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
+  17         case .outputOutOfRange:
+  18             return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
+  19         }
+  20     }
+  21 }
+  22 
+  23 /// Adjusts one ideal source's contribution at the camera-facing subject plane.
+  24 /// This is a model calculation, not a measured lamp setting or image exposure.
+  25 /// Other lights, occlusion, reflections and real modifier losses are excluded.
+  26 public enum LightOutputAdjustment {
+  27     /// Returns a valid light with only its candela changed. The source and scene
+  28     /// remain unchanged, and the light need not already belong to the scene.
+  29     /// Positive targets require a supported, nonzero contribution at one candela.
+  30     /// Zero explicitly turns the source off without requiring a photometric sample.
+  31     /// Invalid inputs and unrepresentable outputs throw; values are never clamped.
+  32     public static func light(_ source: StudioLight, targetingLux targetLux: Double,
+  33                              in scene: LightingScene) throws -> StudioLight {
+  34         guard targetLux.isFinite, targetLux >= 0 else {
+  35             throw LightOutputAdjustmentError.invalidTargetLux
+  36         }
+  37         guard source.isValid else { throw LightOutputAdjustmentError.invalidLight }
+  38         guard let scene = try? scene.validated() else {
+  39             throw LightOutputAdjustmentError.unsupportedGeometry
+  40         }
+  41 
+  42         var adjusted = source
+  43         if targetLux == 0 {
+  44             adjusted.candela = 0
+  45             return adjusted
+  46         }
+  47 
+  48         // Using a unit source also supports increasing a currently off light;
+  49         // scaling its existing zero contribution would be undefined.
+  50         adjusted.candela = 1
+  51         guard let unitLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+  52               unitLux.isFinite, unitLux > 0 else {
+  53             throw LightOutputAdjustmentError.unsupportedGeometry
+  54         }
+  55 
+  56         // Bound the request by the forward model, not the independently
+  57         // rounded inverse quotient. Even the next representable lux above
+  58         // this output is outside the supported physical range.
+  59         var maximum = source
+  60         maximum.candela = 100_000
+  61         guard maximum.isValid,
+  62               let maximumLux = StudioPhotometry.illuminance(for: maximum, in: scene),
+  63               maximumLux.isFinite, maximumLux > 0, targetLux <= maximumLux else {
+  64             throw LightOutputAdjustmentError.outputOutOfRange
+  65         }
+  66 
+  67         // Preserve an already exact setting before inverting the model.
+  68         // Independently rounded division and integration can miss an exactly
+  69         // achieved target, including subnormal values and the upper boundary.
+  70         if source.candela > 0,
+  71            StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
+  72             return source
+  73         }
+  74 
+  75         adjusted.candela = targetLux / unitLux
+  76         if adjusted.candela <= 0 || !adjusted.isValid {
+  77             guard adjusted.candela > maximum.candela else {
+  78                 throw LightOutputAdjustmentError.outputOutOfRange
+  79             }
+  80             // The validated maximum is a separate forward-model candidate.
+  81             // It must still achieve the request within the accuracy gate below.
+  82             adjusted = maximum
+  83         }
+  84 
+  85         // Extremely small positive outputs can underflow or lose substantial
+  86         // precision in finite-emitter integration even when their candela is
+  87         // representable. A nonzero result alone does not establish that the
+  88         // requested contribution was achieved. Comparing a ratio also avoids
+  89         // underflowing an absolute tolerance for subnormal target values.
+  90         guard let achievedLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+  91               achievedLux.isFinite, achievedLux > 0,
+  92               abs(achievedLux / targetLux - 1) <= 1e-9 else {
+  93             throw LightOutputAdjustmentError.outputOutOfRange
+  94         }
+  95         return adjusted
+  96     }
+  97 }
+
+===== ORIGINAL SOURCE: Sources/LightingCore/StudioOptics.swift; SHA256 94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd =====
+   1 import Foundation
+   2 
+   3 public enum EmitterKind: String, Codable, CaseIterable, Sendable {
+   4     case point, directional, rectangle
+   5 
+   6     public var title: String {
+   7         switch self {
+   8         case .point: return "Bare point"
+   9         case .directional: return "Directional"
+  10         case .rectangle: return "Rectangular softbox"
+  11         }
+  12     }
+  13     public var isAimed: Bool { self != .point }
+  14 }
+  15 
+  16 /// Ideal emitter geometry, not a measured modifier or equipment profile.
+  17 /// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
+  18 public struct LightOptics: Codable, Equatable, Sendable {
+  19     public static let dimensionRange: ClosedRange<Double> = 0.05...4
+  20     public static let rollRange: ClosedRange<Double> = -180...180
+  21     public var kind: EmitterKind
+  22     public var aimTarget: Position?
+  23     public var widthMeters: Double
+  24     public var heightMeters: Double
+  25     /// Rotation about the emitting normal. Nil preserves the legacy world-up orientation.
+  26     public var rollDegrees: Double?
+  27 
+  28     public init(kind: EmitterKind = .point, aimTarget: Position? = nil,
+  29                 widthMeters: Double = 0.6, heightMeters: Double = 0.9,
+  30                 rollDegrees: Double? = nil) {
+  31         self.kind = kind; self.aimTarget = aimTarget
+  32         self.widthMeters = widthMeters; self.heightMeters = heightMeters
+  33         self.rollDegrees = rollDegrees
+  34     }
+  35 
+  36     public var effectiveRollDegrees: Double { rollDegrees ?? 0 }
+  37 
+  38     public var isValid: Bool {
+  39         (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
+  40         Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters) &&
+  41         effectiveRollDegrees.isFinite && Self.rollRange.contains(effectiveRollDegrees)
+  42     }
+  43 }
+  44 
+  45 extension StudioLight {
+  46     public var effectiveOptics: LightOptics { optics ?? .init() }
+  47     public func target(subject: Position) -> Position { effectiveOptics.aimTarget ?? subject }
+  48 }
+  49 
+  50 /// Right-handed world-space basis; right × up = emitting normal.
+  51 /// Zero roll follows world up, with a deterministic basis at a vertical aim.
+  52 /// Positive roll turns right toward up around the emitting normal (the right-hand rule).
+  53 public struct EmitterFrame: Equatable, Sendable {
+  54     public let right: UnitDirection
+  55     public let up: UnitDirection
+  56     public let normal: UnitDirection
+  57 
+  58     public init?(source: Position, target: Position, rollDegrees: Double = 0) {
+  59         guard source.isValid, target.isValid, rollDegrees.isFinite,
+  60               LightOptics.rollRange.contains(rollDegrees),
+  61               let n = UnitDirection(x: target.x - source.x, y: target.y - source.y, z: target.z - source.z) else { return nil }
+  62         let horizontal = hypot(n.x, n.z)
+  63         let r = horizontal > 1e-12
+  64             ? UnitDirection(x: n.z, y: 0, z: -n.x)
+  65             : UnitDirection(x: 1, y: 0, z: 0)
+  66         guard let r, let u = UnitDirection(x: n.y * r.z - n.z * r.y,
+  67                                            y: n.z * r.x - n.x * r.z,
+  68                                            z: n.x * r.y - n.y * r.x) else { return nil }
+  69         // Keep legacy sample coordinates exactly unchanged when no roll is requested.
+  70         if rollDegrees == 0 {
+  71             self.right = r; self.up = u; self.normal = n
+  72             return
+  73         }
+  74         // Exact cardinal coefficients keep mathematical wall/floor/ceiling
+  75         // contact from becoming a trigonometric overhang. Do not snap other
+  76         // angles or physical coordinates: real overhangs must remain outside.
+  77         let c: Double
+  78         let s: Double
+  79         switch rollDegrees {
+  80         case 90: c = 0; s = 1
+  81         case -90: c = 0; s = -1
+  82         case -180, 180: c = -1; s = 0
+  83         default:
+  84             let radians = rollDegrees * .pi / 180
+  85             c = cos(radians); s = sin(radians)
+  86         }
+  87         guard let rolledRight = UnitDirection(x: c * r.x + s * u.x,
+  88                                               y: c * r.y + s * u.y,
+  89                                               z: c * r.z + s * u.z),
+  90               let rolledUp = UnitDirection(x: -s * r.x + c * u.x,
+  91                                            y: -s * r.y + c * u.y,
+  92                                            z: -s * r.z + c * u.z) else { return nil }
+  93         self.right = rolledRight; self.up = rolledUp; self.normal = n
+  94     }
+  95 }
+  96 
+  97 /// Estimates illuminance at the subject's center on a plane facing the scene camera.
+  98 /// This is a diagnostic sample, not exposure or the brightness of a rendered face.
+  99 public enum StudioPhotometry {
+ 100     public static func receiverNormal(in scene: LightingScene) -> UnitDirection? {
+ 101         guard scene.subject.isValid, scene.camera.isValid else { return nil }
+ 102         return UnitDirection(x: scene.camera.x - scene.subject.x,
+ 103                              y: scene.camera.y - scene.subject.y,
+ 104                              z: scene.camera.z - scene.subject.z)
+ 105     }
+ 106 
+ 107     public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
+ 108         guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
+ 109         return EmitterFrame(source: light.position, target: light.target(subject: subject),
+ 110                             rollDegrees: light.effectiveOptics.effectiveRollDegrees)
+ 111     }
+ 112 
+ 113     public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {
+ 114         guard light.isValid, let normal = receiverNormal(in: scene) else { return nil }
+ 115         let optics = light.effectiveOptics
+ 116         switch optics.kind {
+ 117         case .point:
+ 118             return Photometry.pointIlluminance(candela: light.candela, source: light.position,
+ 119                                               receiver: scene.subject, receiverNormal: normal)
+ 120         case .directional:
+ 121             // Ideal one-sided cosine emitter. Not a hard-edged spotlight or a measured beam.
+ 122             guard let frame = frame(for: light, subject: scene.subject),
+ 123                   let ray = UnitDirection(x: scene.subject.x - light.position.x,
+ 124                                           y: scene.subject.y - light.position.y,
+ 125                                           z: scene.subject.z - light.position.z),
+ 126                   let lux = Photometry.pointIlluminance(candela: light.candela, source: light.position,
+ 127                                                         receiver: scene.subject, receiverNormal: normal) else { return nil }
+ 128             let n = frame.normal
+ 129             let emission = min(1, max(0, n.x * ray.x + n.y * ray.y + n.z * ray.z))
+ 130             return lux * emission
+ 131         case .rectangle:
+ 132             guard let frame = frame(for: light, subject: scene.subject),
+ 133                   let emitter = LambertianRectangle(center: light.position, right: frame.right, up: frame.up,
+ 134                                                       widthMeters: optics.widthMeters, heightMeters: optics.heightMeters,
+ 135                                                       onAxisCandela: light.candela) else { return nil }
+ 136             return Photometry.rectangularIlluminance(emitter: emitter, receiver: scene.subject, receiverNormal: normal)
+ 137         }
+ 138     }
+ 139 }
+
+===== ORIGINAL SOURCE: Sources/LightingCore/SurfacePhotometry.swift; SHA256 8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f =====
+   1 import Foundation
+   2 
+   3 /// A finite, normalized direction. Scene positions remain in meters.
+   4 public struct UnitDirection: Equatable, Sendable {
+   5     public let x: Double
+   6     public let y: Double
+   7     public let z: Double
+   8 
+   9     public init?(x: Double, y: Double, z: Double) {
+  10         guard x.isFinite, y.isFinite, z.isFinite else { return nil }
+  11         let scale = max(abs(x), max(abs(y), abs(z)))
+  12         guard scale > 0 else { return nil }
+  13         let a = x / scale, b = y / scale, c = z / scale
+  14         let length = (a * a + b * b + c * c).squareRoot()
+  15         self.x = a / length; self.y = b / length; self.z = c / length
+  16     }
+  17 
+  18     fileprivate var vector: SIMD3<Double> { .init(x, y, z) }
+  19 }
+  20 
+  21 private func dot(_ a: SIMD3<Double>, _ b: SIMD3<Double>) -> Double {
+  22     a.x * b.x + a.y * b.y + a.z * b.z
+  23 }
+  24 
+  25 private func vector(_ p: Position) -> SIMD3<Double> { .init(p.x, p.y, p.z) }
+  26 
+  27 /// Uniform, one-sided Lambertian rectangle; not a calibrated equipment profile.
+  28 /// `right` cross `up` points along the emitting normal. `onAxisCandela` is the
+  29 /// total far-field intensity along that normal, not luminous flux or watts.
+  30 public struct LambertianRectangle: Sendable {
+  31     public let center: Position
+  32     public let right: UnitDirection
+  33     public let up: UnitDirection
+  34     public let widthMeters: Double
+  35     public let heightMeters: Double
+  36     public let onAxisCandela: Double
+  37     fileprivate let normal: SIMD3<Double>
+  38 
+  39     public init?(center: Position, right: UnitDirection, up: UnitDirection,
+  40                  widthMeters: Double, heightMeters: Double, onAxisCandela: Double) {
+  41         guard center.isValid, widthMeters.isFinite, heightMeters.isFinite,
+  42               (0.05...4).contains(widthMeters), (0.05...4).contains(heightMeters),
+  43               onAxisCandela.isFinite, (0...100_000).contains(onAxisCandela),
+  44               abs(dot(right.vector, up.vector)) <= 1e-8 else { return nil }
+  45         self.center = center; self.right = right; self.up = up
+  46         self.widthMeters = widthMeters; self.heightMeters = heightMeters
+  47         self.onAxisCandela = onAxisCandela
+  48         let r = right.vector, u = up.vector
+  49         // The cross product of two represented unit axes can be slightly
+  50         // shorter than one after rounding. Depth is a distance, so its normal
+  51         // must itself be normalized; otherwise rolling a rectangle can reject
+  52         // an exact minimum-separation receiver. No separation epsilon is used.
+  53         guard let direction = UnitDirection(x: r.y * u.z - r.z * u.y,
+  54                                             y: r.z * u.x - r.x * u.z,
+  55                                             z: r.x * u.y - r.y * u.x) else { return nil }
+  56         normal = direction.vector
+  57     }
+  58 }
+  59 
+  60 /// A vertex of the emitting face in its local meter coordinates. Incidence
+  61 /// is the unnormalized projection toward the receiver's front hemisphere.
+  62 /// Keeping it at vertices permits stable positive barycentric interpolation
+  63 /// even for a very narrow, nearly tangent contributing part of the face.
+  64 private struct IncidenceVertex {
+  65     let point: SIMD2<Double>
+  66     let incidence: Double
+  67 }
+  68 
+  69 /// Twelve-point Gauss-Legendre nodes and weights on [0, 1].
+  70 /// A square-to-triangle map integrates the clipped polygon as a triangle fan.
+  71 /// The higher order keeps the partial/full transition error small even at
+  72 /// the minimum supported plane separation.
+  73 private let gauss12: [(node: Double, weight: Double)] = [
+  74     (0.009219682876640378, 0.023587668193255706),
+  75     (0.0479413718147626, 0.05346966299765953),
+  76     (0.11504866290284765, 0.08003916427167321),
+  77     (0.20634102285669126, 0.10158371336153287),
+  78     (0.31608425050090994, 0.1167462682691773),
+  79     (0.43738329574426554, 0.12457352290670134),
+  80     (0.5626167042557344, 0.12457352290670134),
+  81     (0.6839157494990901, 0.1167462682691773),
+  82     (0.7936589771433087, 0.10158371336153287),
+  83     (0.8849513370971523, 0.08003916427167321),
+  84     (0.9520586281852375, 0.05346966299765953),
+  85     (0.9907803171233596, 0.023587668193255706)
+  86 ]
+  87 
+  88 extension Photometry {
+  89     /// Ideal isotropic point source incident on an oriented surface, in lux.
+  90     /// Intensity is the candela in the receiver's direction; no occlusion.
+  91     /// Returns nil for invalid input or distances below 5 cm.
+  92     public static func pointIlluminance(candela: Double, source: Position, receiver: Position,
+  93                                         receiverNormal: UnitDirection) -> Double? {
+  94         guard source.isValid, receiver.isValid else { return nil }
+  95         let delta = vector(source) - vector(receiver)
+  96         let distance = dot(delta, delta).squareRoot()
+  97         guard let normalLux = normalIlluminance(candela: candela, distanceMeters: distance) else { return nil }
+  98         return normalLux * min(1, max(0, dot(delta / distance, receiverNormal.vector)))
+  99     }
+ 100 
+ 101     /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2,
+ 102     /// with L = on-axis cd / emitter area. Fully front-facing emitters use
+ 103     /// the same 32x32 midpoint grid as the unoccluded reference renderer.
+ 104     /// Partially front-facing emitters are clipped to the receiver hemisphere,
+ 105     /// preventing a narrow contributing strip from disappearing between samples.
+ 106     /// A clipped rectangle has at most five vertices; 12x12 Gaussian quadrature
+ 107     /// per triangle bounds this partial-face calculation to 432 evaluations.
+ 108     /// The sampled renderer remains approximate at grazing incidence.
+ 109     /// The receiver must still be separated from the emitter plane by at least
+ 110     /// 5 cm and one quarter of the longest side; nearer configurations abstain.
+ 111     /// No occlusion, reflection, spectral effects or modifier transmission.
+ 112     public static func rectangularIlluminance(emitter: LambertianRectangle, receiver: Position,
+ 113                                               receiverNormal: UnitDirection) -> Double? {
+ 114         guard receiver.isValid else { return nil }
+ 115         let toReceiver = vector(receiver) - vector(emitter.center)
+ 116         let depth = dot(toReceiver, emitter.normal)
+ 117         let minimumDepth = max(0.05, max(emitter.widthMeters, emitter.heightMeters) / 4)
+ 118         guard abs(depth) >= minimumDepth else { return nil }
+ 119         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
+ 120 
+ 121         // Keep the geometric integration at unit intensity when dividing an
+ 122         // extremely small output among cells would lose its significant bits.
+ 123         // Apply intensity once, after summation. The ordinary-output path keeps
+ 124         // its established sample ordering and rounding for renderer parity.
+ 125         if emitter.onAxisCandela < Double.leastNormalMagnitude * 1024 {
+ 126             guard let unit = LambertianRectangle(
+ 127                 center: emitter.center, right: emitter.right, up: emitter.up,
+ 128                 widthMeters: emitter.widthMeters, heightMeters: emitter.heightMeters,
+ 129                 onAxisCandela: 1),
+ 130                 let unitLux = rectangularIlluminance(emitter: unit, receiver: receiver,
+ 131                                                      receiverNormal: receiverNormal) else { return nil }
+ 132             return unitLux * emitter.onAxisCandela
+ 133         }
+ 134 
+ 135         let right = emitter.right.vector, up = emitter.up.vector
+ 136         let normal = receiverNormal.vector
+ 137         let nx = dot(right, normal), ny = dot(up, normal)
+ 138         let offset = dot(toReceiver, normal)
+ 139         let halfWidth = emitter.widthMeters / 2
+ 140         let halfHeight = emitter.heightMeters / 2
+ 141         let corners: [SIMD2<Double>] = [
+ 142             .init(-halfWidth, -halfHeight), .init(halfWidth, -halfHeight),
+ 143             .init(halfWidth, halfHeight), .init(-halfWidth, halfHeight)
+ 144         ]
+ 145         let vertices = corners.map { p in
+ 146             IncidenceVertex(point: p, incidence: nx * p.x + ny * p.y - offset)
+ 147         }
+ 148         if vertices.allSatisfy({ $0.incidence <= 0 }) { return 0 }
+ 149         if vertices.allSatisfy({ $0.incidence >= 0 }) {
+ 150             // Preserve the existing 32x32 sample convention, ordering, and
+ 151             // normalization for ordinary fully illuminated surfaces.
+ 152             return fullRectangleMidpoint(emitter: emitter, toReceiver: toReceiver,
+ 153                                          receiverNormal: receiverNormal)
+ 154         }
+ 155         var polygon: [IncidenceVertex] = []
+ 156         polygon.reserveCapacity(5)
+ 157         // Sutherland-Hodgman clipping against one affine half-plane. A
+ 158         // boundary vertex has zero contribution; avoid duplicating it.
+ 159         for i in vertices.indices {
+ 160             let a = vertices[(i + vertices.count - 1) % vertices.count]
+ 161             let b = vertices[i]
+ 162             if (a.incidence < 0 && b.incidence > 0) || (a.incidence > 0 && b.incidence < 0) {
+ 163                 let t = a.incidence / (a.incidence - b.incidence)
+ 164                 polygon.append(.init(point: a.point + (b.point - a.point) * t, incidence: 0))
+ 165             }
+ 166             if b.incidence >= 0 { polygon.append(b) }
+ 167         }
+ 168         guard polygon.count >= 3 else { return 0 }
+ 169 
+ 170         var integral = 0.0
+ 171         let a = polygon[0]
+ 172         for i in 1..<(polygon.count - 1) {
+ 173             let b = polygon[i], c = polygon[i + 1]
+ 174             let ab = b.point - a.point, ac = c.point - a.point
+ 175             let determinant = abs(ab.x * ac.y - ab.y * ac.x)
+ 176             if determinant == 0 { continue }
+ 177             // Duffy map: p = a + u(b-a) + (1-u)v(c-a).
+ 178             // The Jacobian is determinant * (1-u).
+ 179             for (u, wu) in gauss12 {
+ 180                 let remaining = 1 - u
+ 181                 for (v, wv) in gauss12 {
+ 182                     let cWeight = remaining * v
+ 183                     let aWeight = remaining * (1 - v)
+ 184                     let p = a.point + ab * u + ac * cWeight
+ 185                     // The signed projection is affine across each triangle.
+ 186                     // Its three nonnegative vertex values prevent cancellation
+ 187                     // from erasing a sliver of grazing-angle illumination.
+ 188                     let incidence = aWeight * a.incidence + u * b.incidence + cWeight * c.incidence
+ 189                     let delta = toReceiver - right * p.x - up * p.y
+ 190                     let r2 = dot(delta, delta)
+ 191                     integral += determinant * wu * wv * remaining * depth * incidence / (r2 * r2)
+ 192                 }
+ 193             }
+ 194         }
+ 195         let radiance = emitter.onAxisCandela / (emitter.widthMeters * emitter.heightMeters)
+ 196         return radiance * integral
+ 197     }
+ 198 
+ 199     /// Existing reference-grid integration for fully front-facing receivers.
+ 200     private static func fullRectangleMidpoint(emitter: LambertianRectangle,
+ 201                                               toReceiver: SIMD3<Double>,
+ 202                                               receiverNormal: UnitDirection) -> Double {
+ 203         let samples = 32
+ 204         let candelaPerCell = emitter.onAxisCandela / Double(samples * samples)
+ 205         var lux = 0.0
+ 206         for j in 0..<samples {
+ 207             let y = ((Double(j) + 0.5) / Double(samples) - 0.5) * emitter.heightMeters
+ 208             for i in 0..<samples {
+ 209                 let x = ((Double(i) + 0.5) / Double(samples) - 0.5) * emitter.widthMeters
+ 210                 let delta = toReceiver - emitter.right.vector * x - emitter.up.vector * y
+ 211                 let r2 = dot(delta, delta)
+ 212                 let direction = delta / r2.squareRoot()
+ 213                 let emission = min(1, max(0, dot(direction, emitter.normal)))
+ 214                 let incidence = min(1, max(0, -dot(direction, receiverNormal.vector)))
+ 215                 lux += candelaPerCell * emission * incidence / r2
+ 216             }
+ 217         }
+ 218         return lux
+ 219     }
+ 220 }
+
+===== ORIGINAL SOURCE: Sources/LightingCore/Scene.swift; SHA256 76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898 =====
+   1 import Foundation
+   2 
+   3 public struct Position: Codable, Equatable, Sendable {
+   4     public static let coordinateRange: ClosedRange<Double> = -100...100
+   5     public var x: Double
+   6     public var y: Double
+   7     public var z: Double
+   8     public init(x: Double, y: Double, z: Double) {
+   9         self.x = x; self.y = y; self.z = z
+  10     }
+  11     public var isValid: Bool {
+  12         [x, y, z].allSatisfy { $0.isFinite && Self.coordinateRange.contains($0) }
+  13     }
+  14     public func distance(to other: Position) -> Double {
+  15         let dx = x - other.x, dy = y - other.y, dz = z - other.z
+  16         return (dx * dx + dy * dy + dz * dz).squareRoot()
+  17     }
+  18 }
+  19 
+  20 public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
+  21     public var id: UUID
+  22     public var name: String
+  23     public var position: Position
+  24     /// On-axis luminous intensity, not electrical watts.
+  25     public var candela: Double
+  26     public var kelvin: Double
+  27     /// Nil preserves the legacy isotropic point source.
+  28     public var optics: LightOptics?
+  29     public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
+  30         self.id = id; self.name = name; self.position = position
+  31         self.candela = candela; self.kelvin = kelvin; self.optics = optics
+  32     }
+  33     public var isValid: Bool {
+  34         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
+  35         position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
+  36         kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
+  37     }
+  38 }
+  39 
+  40 public enum SceneError: Error, Equatable {
+  41     case unsupportedVersion, invalidScene, invalidLight, duplicateLight
+  42 }
+  43 
+  44 public struct LightingScene: Codable, Equatable, Sendable {
+  45     public static let currentSchemaVersion = 5
+  46     public var schemaVersion: Int = currentSchemaVersion
+  47     public var subject: Position
+  48     public var camera: Position
+  49     /// Nil uses the default 50 mm full-frame perspective.
+  50     public var cameraLens: CameraLens?
+  51     public var lights: [StudioLight]
+  52     /// Nil retains the default diagnostic card balance and exposure.
+  53     public var previewSettings: PreviewSettings?
+  54     /// Nil means no measured room has been saved with this scene.
+  55     public var placementRoom: ManualRoom?
+  56 
+  57     public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil, placementRoom: ManualRoom? = nil) {
+  58         self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens; self.previewSettings = previewSettings
+  59         self.placementRoom = placementRoom
+  60     }
+  61 
+  62     public func validated() throws -> Self {
+  63         guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+  64         guard lights.count <= 12 else { throw SceneError.invalidScene }
+  65         // Version 1 never contained optics; reject ambiguous mislabeled files.
+  66         guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
+  67         // Version 2 adds light optics, version 3 adds a camera lens.
+  68         guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+  69         guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
+  70         // Version 5 adds measured rooms and rectangular-emitter roll.
+  71         guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+  72             throw SceneError.invalidScene
+  73         }
+  74         guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+  75               (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
+  76         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
+  77         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
+  78         var migrated = self
+  79         migrated.schemaVersion = Self.currentSchemaVersion
+  80         return migrated
+  81     }
+  82 
+  83     public static func portrait() -> Self {
+  84         .init(subject: .init(x: 0, y: 1.5, z: 0),
+  85               camera: .init(x: 0, y: 1.5, z: 3),
+  86               lights: [
+  87                 .init(name: "Key", position: .init(x: -1.5, y: 2.1, z: 1.2), candela: 900, kelvin: 5600),
+  88                 .init(name: "Fill", position: .init(x: 1.5, y: 1.7, z: 1.5), candela: 300, kelvin: 5600),
+  89                 .init(name: "Rim", position: .init(x: 0.8, y: 2.2, z: -1.2), candela: 450, kelvin: 3200)
+  90               ])
+  91     }
+  92 }
+  93 
+  94 public enum Photometry {
+  95     /// Ideal point source, normal incidence. No occlusion, falloff pattern, modifier or near-field model.
+  96     public static func normalIlluminance(candela: Double, distanceMeters: Double) -> Double? {
+  97         guard candela.isFinite, (0...100_000).contains(candela),
+  98               distanceMeters.isFinite, distanceMeters >= 0.05 else { return nil }
+  99         return candela / (distanceMeters * distanceMeters)
+ 100     }
+ 101 }
+
+===== ORIGINAL SOURCE: Sources/LightingCore/CameraFraming.swift; SHA256 f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3 =====
+   1 import Foundation
+   2 
+   3 /// An ideal rectilinear full-frame camera. Focal length is actual millimeters,
+   4 /// not a zoom factor; distortion, focus breathing and depth of field are excluded.
+   5 public struct CameraLens: Codable, Equatable, Sendable {
+   6     public static let sensorWidthMillimeters = 36.0
+   7     public static let sensorHeightMillimeters = 24.0
+   8     public static let focalLengthRange: ClosedRange<Double> = 14...200
+   9     public var focalLengthMillimeters: Double
+  10 
+  11     public init(focalLengthMillimeters: Double = 50) {
+  12         self.focalLengthMillimeters = focalLengthMillimeters
+  13     }
+  14 
+  15     public var isValid: Bool {
+  16         focalLengthMillimeters.isFinite && Self.focalLengthRange.contains(focalLengthMillimeters)
+  17     }
+
+===== ORIGINAL SOURCE: Sources/LightingCore/Colorimetry.swift; SHA256 059589eebc77120df5a5715f9b8b708c08da6701a55383a665312d3fda1e3a84 =====
+   1 import Foundation
+   2 
+   3 /// Preview settings are relative controls, not camera ISO/aperture/shutter calibration.
+   4 public struct PreviewSettings: Codable, Equatable, Sendable {
+   5     public static let whiteBalanceRange: ClosedRange<Double> = 2000...10000
+   6     public static let exposureRange: ClosedRange<Double> = -6...6
+   7     public var whiteBalanceKelvin: Double
+   8     public var exposureStops: Double
+   9 
+  10     public init(whiteBalanceKelvin: Double = 5600, exposureStops: Double = 0) {
+  11         self.whiteBalanceKelvin = whiteBalanceKelvin; self.exposureStops = exposureStops
+  12     }
+  13     public var isValid: Bool {
+  14         whiteBalanceKelvin.isFinite && Self.whiteBalanceRange.contains(whiteBalanceKelvin) &&
+  15         exposureStops.isFinite && Self.exposureRange.contains(exposureStops)
+  16     }
+  17 }
+
+===== ORIGINAL SOURCE: Sources/LightingCore/RoomPlacement.swift; SHA256 1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb =====
+   1 import Foundation
+   2 
+   3 public enum RoomPlacementError: Error, Equatable {
+   4     case invalidRoom
+   5 }
+   6 
+   7 /// User-measured rectangular room stored with a scene. X increases from the left
+   8 /// wall and Z from the near wall. Y is height above the studio floor.
+   9 /// Positive yaw rotates scene +Z toward room +X; scale is always 1:1.
+  10 public struct ManualRoom: Codable, Equatable, Sendable {
+  11     public static let dimensionRange: ClosedRange<Double> = 1...30
+  12     public var widthMeters: Double
+  13     public var depthMeters: Double
+  14     /// Nil means the ceiling height has not been measured.
+  15     public var ceilingHeightMeters: Double?
+  16     public var subjectX: Double
+  17     public var subjectZ: Double
+  18     public var yawDegrees: Double
+  19 
+  20     public init(widthMeters: Double = 6, depthMeters: Double = 7,
+  21                 subjectX: Double = 3, subjectZ: Double = 2, yawDegrees: Double = 0,
+  22                 ceilingHeightMeters: Double? = nil) {
+  23         self.widthMeters = widthMeters; self.depthMeters = depthMeters
+  24         self.ceilingHeightMeters = ceilingHeightMeters
+  25         self.subjectX = subjectX; self.subjectZ = subjectZ; self.yawDegrees = yawDegrees
+  26     }
+  27 
+  28     /// Resizing is independent of the subject's location. The editor must
+  29     /// require an explicit subject move before accepting a smaller room.
+  30     public var widthEditRange: ClosedRange<Double> { dimensionRangePreserving(subjectX) }
+  31     public var depthEditRange: ClosedRange<Double> { dimensionRangePreserving(subjectZ) }
+  32 
+  33     private func dimensionRangePreserving(_ offset: Double) -> ClosedRange<Double> {
+  34         guard offset.isFinite, offset >= 0, offset <= Self.dimensionRange.upperBound else {
+  35             return Self.dimensionRange
+  36         }
+  37         return max(Self.dimensionRange.lowerBound, offset)...Self.dimensionRange.upperBound
+  38     }
+  39 
+  40     /// Rotate relative to the current placement, preserving dimensions and
+  41     /// subject offsets. Canonical output is in (-180, 180], matching the UI's
+  42     /// slider range. Invalid input leaves the entire room unchanged.
+  43     @discardableResult
+  44     public mutating func rotate(byDegrees degrees: Double) -> Bool {
+  45         guard isValid, degrees.isFinite else { return false }
+  46         // Reduce the delta before addition so even a very large finite input
+  47         // cannot overflow or lose the bounded starting orientation.
+  48         var angle = (yawDegrees + degrees.truncatingRemainder(dividingBy: 360))
+  49             .truncatingRemainder(dividingBy: 360)
+  50         if angle > 180 { angle -= 360 }
+  51         if angle <= -180 { angle += 360 }
+  52         yawDegrees = angle == 0 ? 0 : angle
+  53         return true
+  54     }
+  55 
+  56     public var isValid: Bool {
+  57         widthMeters.isFinite && depthMeters.isFinite &&
+  58         Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(depthMeters) &&
+  59         (ceilingHeightMeters.map { $0.isFinite && Self.dimensionRange.contains($0) } ?? true) &&
+  60         subjectX.isFinite && subjectZ.isFinite && subjectX >= 0 && subjectX <= widthMeters &&
+  61         subjectZ >= 0 && subjectZ <= depthMeters &&
+  62         yawDegrees.isFinite && (-360...360).contains(yawDegrees)
+  63     }
+  64 }

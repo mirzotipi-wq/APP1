@@ -78,3 +78,20 @@ W04R08 confirms unsupported rectangles yield a textual unavailable card while
 valid darkness retains numeric lux and RGB accessibility labels. Geometry help
 is generic; UI owners should explain the5cm/quarter-longest-side separation
 when that specific cause is known. No platform accessibility execution claimed.
+
+## Wave05 recovery messages
+
+Three existing LightOutputAdjustmentError descriptions now provide concrete
+recovery: validated source-name/settings ranges; scene/camera/position/aim checks
+for unsupported geometry; a different positive target or geometry adjustment
+for range/accuracy failure, with0lux as explicit off. The invalid-target message,
+four enum cases, signatures,100000cd cap and1e-9 forward gate are unchanged.
+Very small targets can need an increase; no blanket lower-output instruction is
+used. Scene validation precedes zero-target handling, so geometry advice is
+conditional on positive requests. All messages remain static, without private
+scene values. UI owner: verify wrapping and error announcement at largest text
+size after integration; this core change does not establish a native AX pass.
+
+The proposed three-kind oblique round-trip test was reviewed and package-run
+with the existing boundary suite:11tests passed. It verifies inverse/forward
+consistency, separately from the independent absolute photometry references.

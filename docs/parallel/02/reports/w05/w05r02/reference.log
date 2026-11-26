@@ -1,0 +1,260 @@
+Actual source/contract excerpts read for W05 R02.
+$ cat Sources/LightingCore/LightOutputAdjustment.swift
+import Foundation
+
+public enum LightOutputAdjustmentError: Error, Equatable, Sendable, LocalizedError {
+    case invalidTargetLux
+    case invalidLight
+    case unsupportedGeometry
+    case outputOutOfRange
+
+    public var errorDescription: String? {
+        switch self {
+        case .invalidTargetLux:
+            return "Enter a finite target illuminance of zero lux or more."
+        case .invalidLight:
+            return "The light's settings must be valid before adjusting its output."
+        case .unsupportedGeometry:
+            return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
+        case .outputOutOfRange:
+            return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
+        }
+    }
+}
+
+/// Adjusts one ideal source's contribution at the camera-facing subject plane.
+/// This is a model calculation, not a measured lamp setting or image exposure.
+/// Other lights, occlusion, reflections and real modifier losses are excluded.
+public enum LightOutputAdjustment {
+    /// Returns a valid light with only its candela changed. The source and scene
+    /// remain unchanged, and the light need not already belong to the scene.
+    /// Positive targets require a supported, nonzero contribution at one candela.
+    /// Zero explicitly turns the source off without requiring a photometric sample.
+    /// Invalid inputs and unrepresentable outputs throw; values are never clamped.
+    public static func light(_ source: StudioLight, targetingLux targetLux: Double,
+                             in scene: LightingScene) throws -> StudioLight {
+        guard targetLux.isFinite, targetLux >= 0 else {
+            throw LightOutputAdjustmentError.invalidTargetLux
+        }
+        guard source.isValid else { throw LightOutputAdjustmentError.invalidLight }
+        guard let scene = try? scene.validated() else {
+            throw LightOutputAdjustmentError.unsupportedGeometry
+        }
+
+        var adjusted = source
+        if targetLux == 0 {
+            adjusted.candela = 0
+            return adjusted
+        }
+
+        // Using a unit source also supports increasing a currently off light;
+        // scaling its existing zero contribution would be undefined.
+        adjusted.candela = 1
+        guard let unitLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+              unitLux.isFinite, unitLux > 0 else {
+            throw LightOutputAdjustmentError.unsupportedGeometry
+        }
+
+        // Bound the request by the forward model, not the independently
+        // rounded inverse quotient. Even the next representable lux above
+        // this output is outside the supported physical range.
+        var maximum = source
+        maximum.candela = 100_000
+        guard maximum.isValid,
+              let maximumLux = StudioPhotometry.illuminance(for: maximum, in: scene),
+              maximumLux.isFinite, maximumLux > 0, targetLux <= maximumLux else {
+            throw LightOutputAdjustmentError.outputOutOfRange
+        }
+
+        // Preserve an already exact setting before inverting the model.
+        // Independently rounded division and integration can miss an exactly
+        // achieved target, including subnormal values and the upper boundary.
+        if source.candela > 0,
+           StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
+            return source
+        }
+
+        adjusted.candela = targetLux / unitLux
+        if adjusted.candela <= 0 || !adjusted.isValid {
+            guard adjusted.candela > maximum.candela else {
+                throw LightOutputAdjustmentError.outputOutOfRange
+            }
+            // The validated maximum is a separate forward-model candidate.
+            // It must still achieve the request within the accuracy gate below.
+            adjusted = maximum
+        }
+
+        // Extremely small positive outputs can underflow or lose substantial
+        // precision in finite-emitter integration even when their candela is
+        // representable. A nonzero result alone does not establish that the
+        // requested contribution was achieved. Comparing a ratio also avoids
+        // underflowing an absolute tolerance for subnormal target values.
+        guard let achievedLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+              achievedLux.isFinite, achievedLux > 0,
+              abs(achievedLux / targetLux - 1) <= 1e-9 else {
+            throw LightOutputAdjustmentError.outputOutOfRange
+        }
+        return adjusted
+    }
+}
+
+[exit 0]
+$ sed -n 19,89p Sources/LightingCore/Scene.swift
+
+public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
+    public var id: UUID
+    public var name: String
+    public var position: Position
+    /// On-axis luminous intensity, not electrical watts.
+    public var candela: Double
+    public var kelvin: Double
+    /// Nil preserves the legacy isotropic point source.
+    public var optics: LightOptics?
+    public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
+        self.id = id; self.name = name; self.position = position
+        self.candela = candela; self.kelvin = kelvin; self.optics = optics
+    }
+    public var isValid: Bool {
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
+        position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
+        kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
+    }
+}
+
+public enum SceneError: Error, Equatable {
+    case unsupportedVersion, invalidScene, invalidLight, duplicateLight
+}
+
+public struct LightingScene: Codable, Equatable, Sendable {
+    public static let currentSchemaVersion = 5
+    public var schemaVersion: Int = currentSchemaVersion
+    public var subject: Position
+    public var camera: Position
+    /// Nil uses the default 50 mm full-frame perspective.
+    public var cameraLens: CameraLens?
+    public var lights: [StudioLight]
+    /// Nil retains the default diagnostic card balance and exposure.
+    public var previewSettings: PreviewSettings?
+    /// Nil means no measured room has been saved with this scene.
+    public var placementRoom: ManualRoom?
+
+    public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil, placementRoom: ManualRoom? = nil) {
+        self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens; self.previewSettings = previewSettings
+        self.placementRoom = placementRoom
+    }
+
+    public func validated() throws -> Self {
+        guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+        guard lights.count <= 12 else { throw SceneError.invalidScene }
+        // Version 1 never contained optics; reject ambiguous mislabeled files.
+        guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
+        // Version 2 adds light optics, version 3 adds a camera lens.
+        guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+        guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
+        // Version 5 adds measured rooms and rectangular-emitter roll.
+        guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+            throw SceneError.invalidScene
+        }
+        guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+              (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
+        guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
+        guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
+        var migrated = self
+        migrated.schemaVersion = Self.currentSchemaVersion
+        return migrated
+    }
+
+    public static func portrait() -> Self {
+        .init(subject: .init(x: 0, y: 1.5, z: 0),
+              camera: .init(x: 0, y: 1.5, z: 3),
+              lights: [
+                .init(name: "Key", position: .init(x: -1.5, y: 2.1, z: 1.2), candela: 900, kelvin: 5600),
+                .init(name: "Fill", position: .init(x: 1.5, y: 1.7, z: 1.5), candela: 300, kelvin: 5600),
+                .init(name: "Rim", position: .init(x: 0.8, y: 2.2, z: -1.2), candela: 450, kelvin: 3200)
+
+[exit 0]
+$ sed -n 1,48p Sources/LightingCore/StudioOptics.swift
+import Foundation
+
+public enum EmitterKind: String, Codable, CaseIterable, Sendable {
+    case point, directional, rectangle
+
+    public var title: String {
+        switch self {
+        case .point: return "Bare point"
+        case .directional: return "Directional"
+        case .rectangle: return "Rectangular softbox"
+        }
+    }
+    public var isAimed: Bool { self != .point }
+}
+
+/// Ideal emitter geometry, not a measured modifier or equipment profile.
+/// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
+public struct LightOptics: Codable, Equatable, Sendable {
+    public static let dimensionRange: ClosedRange<Double> = 0.05...4
+    public static let rollRange: ClosedRange<Double> = -180...180
+    public var kind: EmitterKind
+    public var aimTarget: Position?
+    public var widthMeters: Double
+    public var heightMeters: Double
+    /// Rotation about the emitting normal. Nil preserves the legacy world-up orientation.
+    public var rollDegrees: Double?
+
+    public init(kind: EmitterKind = .point, aimTarget: Position? = nil,
+                widthMeters: Double = 0.6, heightMeters: Double = 0.9,
+                rollDegrees: Double? = nil) {
+        self.kind = kind; self.aimTarget = aimTarget
+        self.widthMeters = widthMeters; self.heightMeters = heightMeters
+        self.rollDegrees = rollDegrees
+    }
+
+    public var effectiveRollDegrees: Double { rollDegrees ?? 0 }
+
+    public var isValid: Bool {
+        (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
+        Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters) &&
+        effectiveRollDegrees.isFinite && Self.rollRange.contains(effectiveRollDegrees)
+    }
+}
+
+extension StudioLight {
+    public var effectiveOptics: LightOptics { optics ?? .init() }
+    public func target(subject: Position) -> Position { effectiveOptics.aimTarget ?? subject }
+}
+
+[exit 0]
+$ rg -n 'photometry|missing tool|unrun test' docs/QUALITY.md
+3:These are initial engineering targets, not measured achievements. Record actual numerical results with device/toolchain, build configuration, workload, sample size, revision and raw artifacts. If target proves infeasible, owner must approve an explicit tradeoff; agents cannot weaken it. A missing tool or unrun test is unverified, never pass.
+16:| photometry | inverse-square and cosine analytic cases <= 1% error in supported point model; area model compare against numerical reference <= 5% on declared test cases; document limits and units |
+
+[exit 0]
+$ sed -n 61,71p /tmp/keyfill02-r2/docs/parallel/02/WAVE-TASKS.md
+## W05 — target lux
+
+R01 unchanged1e-9 forward solver acceptance and100000cd cap; R02 check source
+identity/non-output fields preserved; R03 classify invalid target/light/scene,
+unsupported geometry and numeric unattainability with actual Swift; R04 add
+point/directional/rectangle attainable-target round-trip regression candidate;
+R05 run pure solver independent inputs concurrently, no shared mutations;
+R06 inspect solve evaluation bound and memory; R07 inspect single-light versus
+total-rig consumer assumption; R08 review actionable error wording; R09 exercise
+max.nextDown, max, max.nextUp for3 emitter kinds; R10 challenge representable
+subnormal targets versus true unrepresentable target using independent equation.
+
+[exit 0]
+$ cat /tmp/keyfill02-r2-brief.md
+One bounded real role in100-context lane02 campaign. Relevant tasks: /tmp/keyfill02-r2/docs/parallel/02/WAVE-TASKS.md; use only YOUR isolated worktree/private-output for writes. Read AGENTS/relevant quality and source contracts; root already read startup documents. Production read-only; candidate tests/patches only inprivate-output. No package builds/installs/spawns/commits/push/cleanup or external messages. One concrete check then short report <=300words/hard800tokens, workingtarget12000 or platformcapacity; checkpoint60% if approached. No broad redundant audits. Swift helper: python3 /tmp/keyfill02-r2-probe.py WORKTREE WORKTREE/private-output/probe.swift v1. It serializes compilation via flock with immutablemodule1b286885cb803ba17e159713651515ab119e17f1 (production58b3). WorktreeHEAD can have newer docs/tests; record both SHA distinctions. Preserve1%point/5%area gates. Record exactcommands/results/limits; no device/calibration claims. Save report.md and raw/probe/reference evidence before returning. Following executor reset, reports recreated from actual re-execution must say so; do not call reconstructed text recovered original logs. Root alone integrates and publishes, retaining reports before cleanup.
+
+[exit 0]
+$ cat /tmp/keyfill02-r2-probe.py
+import pathlib,sys,subprocess
+work=pathlib.Path(sys.argv[1]).resolve();source=pathlib.Path(sys.argv[2]).resolve();snap=pathlib.Path('/tmp/keyfill02-r2-snapshots')/(sys.argv[3] if len(sys.argv)>3 else 'v1');out=work/'private-output'
+assert work.is_relative_to('/tmp/keyfill02-r2-workers') and source.is_relative_to(work) and (snap/'READY').exists()
+cmd=['flock','/tmp/keyfill02-r2-build.lock','/tmp/keyfill02-r2-toolchain/usr/bin/swiftc','-I',str(snap/'Modules'),str(source),str(snap/'libLightingCore.a'),'-o',str(out/'probe')]
+with (out/'compile.log').open('w') as f:r=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)
+if r.returncode:print((out/'compile.log').read_text());sys.exit(r.returncode)
+with (out/'probe.log').open('w') as f:r=subprocess.run([str(out/'probe')],stdout=f,stderr=subprocess.STDOUT)
+print((out/'probe.log').read_text());sys.exit(r.returncode)
+
+[exit 0]

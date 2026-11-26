@@ -1,0 +1,301 @@
+## Sources/LightingCore/LightOutputAdjustment.swift; SHA256 7865e65f02f356abf2a0030801fdfdc4b1795c038676a486ebc6c2a6d6b724c8
+1: import Foundation
+2: 
+3: public enum LightOutputAdjustmentError: Error, Equatable, Sendable, LocalizedError {
+4:     case invalidTargetLux
+5:     case invalidLight
+6:     case unsupportedGeometry
+7:     case outputOutOfRange
+8: 
+9:     public var errorDescription: String? {
+10:         switch self {
+11:         case .invalidTargetLux:
+12:             return "Enter a finite target illuminance of zero lux or more."
+13:         case .invalidLight:
+14:             return "The light's settings must be valid before adjusting its output."
+15:         case .unsupportedGeometry:
+16:             return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
+17:         case .outputOutOfRange:
+18:             return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
+19:         }
+20:     }
+21: }
+22: 
+23: /// Adjusts one ideal source's contribution at the camera-facing subject plane.
+24: /// This is a model calculation, not a measured lamp setting or image exposure.
+25: /// Other lights, occlusion, reflections and real modifier losses are excluded.
+26: public enum LightOutputAdjustment {
+27:     /// Returns a valid light with only its candela changed. The source and scene
+28:     /// remain unchanged, and the light need not already belong to the scene.
+29:     /// Positive targets require a supported, nonzero contribution at one candela.
+30:     /// Zero explicitly turns the source off without requiring a photometric sample.
+31:     /// Invalid inputs and unrepresentable outputs throw; values are never clamped.
+32:     public static func light(_ source: StudioLight, targetingLux targetLux: Double,
+33:                              in scene: LightingScene) throws -> StudioLight {
+34:         guard targetLux.isFinite, targetLux >= 0 else {
+35:             throw LightOutputAdjustmentError.invalidTargetLux
+36:         }
+37:         guard source.isValid else { throw LightOutputAdjustmentError.invalidLight }
+38:         guard let scene = try? scene.validated() else {
+39:             throw LightOutputAdjustmentError.unsupportedGeometry
+40:         }
+41: 
+42:         var adjusted = source
+43:         if targetLux == 0 {
+44:             adjusted.candela = 0
+45:             return adjusted
+46:         }
+47: 
+48:         // Using a unit source also supports increasing a currently off light;
+49:         // scaling its existing zero contribution would be undefined.
+50:         adjusted.candela = 1
+51:         guard let unitLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+52:               unitLux.isFinite, unitLux > 0 else {
+53:             throw LightOutputAdjustmentError.unsupportedGeometry
+54:         }
+55: 
+56:         // Bound the request by the forward model, not the independently
+57:         // rounded inverse quotient. Even the next representable lux above
+58:         // this output is outside the supported physical range.
+59:         var maximum = source
+60:         maximum.candela = 100_000
+61:         guard maximum.isValid,
+62:               let maximumLux = StudioPhotometry.illuminance(for: maximum, in: scene),
+63:               maximumLux.isFinite, maximumLux > 0, targetLux <= maximumLux else {
+64:             throw LightOutputAdjustmentError.outputOutOfRange
+65:         }
+66: 
+67:         // Preserve an already exact setting before inverting the model.
+68:         // Independently rounded division and integration can miss an exactly
+69:         // achieved target, including subnormal values and the upper boundary.
+70:         if source.candela > 0,
+71:            StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
+72:             return source
+73:         }
+74: 
+75:         adjusted.candela = targetLux / unitLux
+76:         if adjusted.candela <= 0 || !adjusted.isValid {
+77:             guard adjusted.candela > maximum.candela else {
+78:                 throw LightOutputAdjustmentError.outputOutOfRange
+79:             }
+80:             // The validated maximum is a separate forward-model candidate.
+81:             // It must still achieve the request within the accuracy gate below.
+82:             adjusted = maximum
+83:         }
+84: 
+85:         // Extremely small positive outputs can underflow or lose substantial
+86:         // precision in finite-emitter integration even when their candela is
+87:         // representable. A nonzero result alone does not establish that the
+88:         // requested contribution was achieved. Comparing a ratio also avoids
+89:         // underflowing an absolute tolerance for subnormal target values.
+90:         guard let achievedLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+91:               achievedLux.isFinite, achievedLux > 0,
+92:               abs(achievedLux / targetLux - 1) <= 1e-9 else {
+93:             throw LightOutputAdjustmentError.outputOutOfRange
+94:         }
+95:         return adjusted
+96:     }
+97: }
+## Sources/LightingCore/Scene.swift; SHA256 76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898
+3: public struct Position: Codable, Equatable, Sendable {
+4:     public static let coordinateRange: ClosedRange<Double> = -100...100
+5:     public var x: Double
+6:     public var y: Double
+7:     public var z: Double
+8:     public init(x: Double, y: Double, z: Double) {
+9:         self.x = x; self.y = y; self.z = z
+10:     }
+11:     public var isValid: Bool {
+12:         [x, y, z].allSatisfy { $0.isFinite && Self.coordinateRange.contains($0) }
+13:     }
+14:     public func distance(to other: Position) -> Double {
+15:         let dx = x - other.x, dy = y - other.y, dz = z - other.z
+16:         return (dx * dx + dy * dy + dz * dz).squareRoot()
+17:     }
+18: }
+19: 
+20: public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
+21:     public var id: UUID
+22:     public var name: String
+23:     public var position: Position
+24:     /// On-axis luminous intensity, not electrical watts.
+25:     public var candela: Double
+26:     public var kelvin: Double
+27:     /// Nil preserves the legacy isotropic point source.
+28:     public var optics: LightOptics?
+29:     public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
+30:         self.id = id; self.name = name; self.position = position
+31:         self.candela = candela; self.kelvin = kelvin; self.optics = optics
+32:     }
+33:     public var isValid: Bool {
+34:         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
+35:         position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
+36:         kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
+37:     }
+38: }
+60:     }
+61: 
+62:     public func validated() throws -> Self {
+63:         guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+64:         guard lights.count <= 12 else { throw SceneError.invalidScene }
+65:         // Version 1 never contained optics; reject ambiguous mislabeled files.
+66:         guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
+67:         // Version 2 adds light optics, version 3 adds a camera lens.
+68:         guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+69:         guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
+70:         // Version 5 adds measured rooms and rectangular-emitter roll.
+71:         guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+72:             throw SceneError.invalidScene
+73:         }
+74:         guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+75:               (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
+76:         guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
+77:         guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
+78:         var migrated = self
+79:         migrated.schemaVersion = Self.currentSchemaVersion
+80:         return migrated
+81:     }
+82: 
+83:     public static func portrait() -> Self {
+84:         .init(subject: .init(x: 0, y: 1.5, z: 0),
+85:               camera: .init(x: 0, y: 1.5, z: 3),
+86:               lights: [
+87:                 .init(name: "Key", position: .init(x: -1.5, y: 2.1, z: 1.2), candela: 900, kelvin: 5600),
+88:                 .init(name: "Fill", position: .init(x: 1.5, y: 1.7, z: 1.5), candela: 300, kelvin: 5600),
+89:                 .init(name: "Rim", position: .init(x: 0.8, y: 2.2, z: -1.2), candela: 450, kelvin: 3200)
+90:               ])
+91:     }
+92: }
+93: 
+94: public enum Photometry {
+95:     /// Ideal point source, normal incidence. No occlusion, falloff pattern, modifier or near-field model.
+## Sources/LightingCore/StudioOptics.swift; SHA256 94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd
+16: /// Ideal emitter geometry, not a measured modifier or equipment profile.
+17: /// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
+18: public struct LightOptics: Codable, Equatable, Sendable {
+19:     public static let dimensionRange: ClosedRange<Double> = 0.05...4
+20:     public static let rollRange: ClosedRange<Double> = -180...180
+21:     public var kind: EmitterKind
+22:     public var aimTarget: Position?
+23:     public var widthMeters: Double
+24:     public var heightMeters: Double
+25:     /// Rotation about the emitting normal. Nil preserves the legacy world-up orientation.
+26:     public var rollDegrees: Double?
+27: 
+28:     public init(kind: EmitterKind = .point, aimTarget: Position? = nil,
+29:                 widthMeters: Double = 0.6, heightMeters: Double = 0.9,
+30:                 rollDegrees: Double? = nil) {
+31:         self.kind = kind; self.aimTarget = aimTarget
+32:         self.widthMeters = widthMeters; self.heightMeters = heightMeters
+33:         self.rollDegrees = rollDegrees
+34:     }
+35: 
+36:     public var effectiveRollDegrees: Double { rollDegrees ?? 0 }
+37: 
+38:     public var isValid: Bool {
+39:         (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
+40:         Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters) &&
+41:         effectiveRollDegrees.isFinite && Self.rollRange.contains(effectiveRollDegrees)
+42:     }
+43: }
+44: 
+45: extension StudioLight {
+46:     public var effectiveOptics: LightOptics { optics ?? .init() }
+97: /// Estimates illuminance at the subject's center on a plane facing the scene camera.
+98: /// This is a diagnostic sample, not exposure or the brightness of a rendered face.
+99: public enum StudioPhotometry {
+100:     public static func receiverNormal(in scene: LightingScene) -> UnitDirection? {
+101:         guard scene.subject.isValid, scene.camera.isValid else { return nil }
+102:         return UnitDirection(x: scene.camera.x - scene.subject.x,
+103:                              y: scene.camera.y - scene.subject.y,
+104:                              z: scene.camera.z - scene.subject.z)
+105:     }
+106: 
+107:     public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
+108:         guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
+109:         return EmitterFrame(source: light.position, target: light.target(subject: subject),
+110:                             rollDegrees: light.effectiveOptics.effectiveRollDegrees)
+111:     }
+112: 
+113:     public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {
+114:         guard light.isValid, let normal = receiverNormal(in: scene) else { return nil }
+115:         let optics = light.effectiveOptics
+116:         switch optics.kind {
+117:         case .point:
+118:             return Photometry.pointIlluminance(candela: light.candela, source: light.position,
+119:                                               receiver: scene.subject, receiverNormal: normal)
+120:         case .directional:
+121:             // Ideal one-sided cosine emitter. Not a hard-edged spotlight or a measured beam.
+122:             guard let frame = frame(for: light, subject: scene.subject),
+123:                   let ray = UnitDirection(x: scene.subject.x - light.position.x,
+124:                                           y: scene.subject.y - light.position.y,
+125:                                           z: scene.subject.z - light.position.z),
+126:                   let lux = Photometry.pointIlluminance(candela: light.candela, source: light.position,
+127:                                                         receiver: scene.subject, receiverNormal: normal) else { return nil }
+128:             let n = frame.normal
+129:             let emission = min(1, max(0, n.x * ray.x + n.y * ray.y + n.z * ray.z))
+130:             return lux * emission
+131:         case .rectangle:
+132:             guard let frame = frame(for: light, subject: scene.subject),
+133:                   let emitter = LambertianRectangle(center: light.position, right: frame.right, up: frame.up,
+134:                                                       widthMeters: optics.widthMeters, heightMeters: optics.heightMeters,
+135:                                                       onAxisCandela: light.candela) else { return nil }
+136:             return Photometry.rectangularIlluminance(emitter: emitter, receiver: scene.subject, receiverNormal: normal)
+137:         }
+138:     }
+139: }
+## Sources/LightingCore/SurfacePhotometry.swift; SHA256 8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f
+88: extension Photometry {
+89:     /// Ideal isotropic point source incident on an oriented surface, in lux.
+90:     /// Intensity is the candela in the receiver's direction; no occlusion.
+91:     /// Returns nil for invalid input or distances below 5 cm.
+92:     public static func pointIlluminance(candela: Double, source: Position, receiver: Position,
+93:                                         receiverNormal: UnitDirection) -> Double? {
+94:         guard source.isValid, receiver.isValid else { return nil }
+95:         let delta = vector(source) - vector(receiver)
+96:         let distance = dot(delta, delta).squareRoot()
+97:         guard let normalLux = normalIlluminance(candela: candela, distanceMeters: distance) else { return nil }
+98:         return normalLux * min(1, max(0, dot(delta / distance, receiverNormal.vector)))
+99:     }
+100: 
+101:     /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2,
+102:     /// with L = on-axis cd / emitter area. Fully front-facing emitters use
+103:     /// the same 32x32 midpoint grid as the unoccluded reference renderer.
+104:     /// Partially front-facing emitters are clipped to the receiver hemisphere,
+105:     /// preventing a narrow contributing strip from disappearing between samples.
+106:     /// A clipped rectangle has at most five vertices; 12x12 Gaussian quadrature
+107:     /// per triangle bounds this partial-face calculation to 432 evaluations.
+108:     /// The sampled renderer remains approximate at grazing incidence.
+109:     /// The receiver must still be separated from the emitter plane by at least
+110:     /// 5 cm and one quarter of the longest side; nearer configurations abstain.
+111:     /// No occlusion, reflection, spectral effects or modifier transmission.
+112:     public static func rectangularIlluminance(emitter: LambertianRectangle, receiver: Position,
+113:                                               receiverNormal: UnitDirection) -> Double? {
+114:         guard receiver.isValid else { return nil }
+115:         let toReceiver = vector(receiver) - vector(emitter.center)
+116:         let depth = dot(toReceiver, emitter.normal)
+117:         let minimumDepth = max(0.05, max(emitter.widthMeters, emitter.heightMeters) / 4)
+118:         guard abs(depth) >= minimumDepth else { return nil }
+119:         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
+## docs/QUALITY.md; SHA256 af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336
+1: # Quality and release contract (protected)
+2: 
+3: These are initial engineering targets, not measured achievements. Record actual numerical results with device/toolchain, build configuration, workload, sample size, revision and raw artifacts. If target proves infeasible, owner must approve an explicit tradeoff; agents cannot weaken it. A missing tool or unrun test is unverified, never pass.
+4: 
+5: ## Owner-authorized M02/M03 scope: m02-m03-code-v2
+6: 
+7: On 2026-11-25 the owner explicitly directed development to remove requirements dependent on unavailable outside factors and proceed through M02, then M03, by working on the code. The six M02/M03 gates below now use [the versioned code acceptance contract](acceptance/m02-m03-code.md). Physical scene collection/calibration, photographer review, physical-device performance/thermal measurement and manual device accessibility are removed from these two milestones. Apple-provided `.all` accessibility audits remain opt-in diagnostics with their actual outcomes preserved. App accessibility semantics, layout, contrast and functional workflows remain required.
+8: 
+9: This revision changes acceptance scope; it supplies no passing evidence. Prior failures and unperformed physical checks retain their original meaning. Completing these milestones means code acceptance only. M01 and M04–M07, release approval and distribution requirements are unchanged by this revision.
+10: 
+11: | Gate | Acceptance criteria |
+12: |---|---|
+13: | core_tests | swift test clean; analytic fixtures, invalid inputs and round-trip cases; no skipped required tests |
+14: | native_build | generated Xcode project builds unsigned for iOS simulator; capture command, Xcode version, SDK |
+15: | persistence_smoke | create/edit/save/relaunch; corrupt file surfaced, never silently overwritten; smoke evidence |
+16: | photometry | inverse-square and cosine analytic cases <= 1% error in supported point model; area model compare against numerical reference <= 5% on declared test cases; document limits and units |
+17: | rendering | m02-m03-code-v2: twelve synthetic image fixtures with zero unsupported pixels; six CPU/shared-kernel parity fixtures with exact invalid masks, mean RGB channel error <= 1 and fraction with error > 4 <= 0.005; eight precision fixtures with maximum channel error <= 1; geometry/color/visibility regressions and actual output review; see the code acceptance contract |
+18: | performance | m02-m03-code-v2: tested rendering/cancellation/cache bounds and optimized reproducible host benchmark; four cached frames, <= 256 KiB RGBA plus <= 64 KiB masks, mannequin width <= 144, cancellation observed after at most eight further pixel evaluations; no physical FPS/thermal/RSS claim |
+19: | editing | precise units, undo/redo, stable selection, valid gesture transforms, no lost edits, 10 repeatable core workflow runs |
+20: | accessibility | m02-m03-code-v2: app accessibility labels/values/actions, Dynamic Type layout, contrast, non-color-only cues, exact numeric editing and reduced motion; app-level checks and functional workflows; Apple-provided audits are separately reported diagnostics, not substitute passes |
+21: | persistence | migrations, atomic writes, malformed/oversized data, interruption, project library round-trip, deletion/recovery; no data loss in required tests |
