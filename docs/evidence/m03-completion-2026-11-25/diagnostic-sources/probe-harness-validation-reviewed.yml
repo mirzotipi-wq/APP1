@@ -1,0 +1,625 @@
+name: Probe Harness Diagnostic Validation
+on:
+  push:
+    branches: ['m03-evidence-inspection']
+    paths:
+      - '.github/workflows/probe-harness-validation.yml'
+      - 'docs/evidence/m03-completion-2026-11-25/probe-harness-request.json'
+permissions:
+  contents: read
+concurrency:
+  group: keyfill-probe-harness-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  simulator:
+    # Standard Intel pool avoids the observed ARM hosted-runner acquisition failure.
+    # Same Xcode/runtime and complete suite; 3D evidence covers the SceneKit fallback.
+    runs-on: macos-26-intel
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    # 12 Metal + 25 Debug/test build + 15 Release + 10 boot + 18 test minutes,
+    # with 10 minutes for setup, the macOS package check and evidence export.
+    # Boot and compilation must not consume the test/finalization deadline.
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact candidate build inputs
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, re, stat, subprocess
+          from pathlib import Path
+          assert os.environ['GITHUB_REPOSITORY'] == 'mirzotipi-wq/APP1'
+          assert os.environ['GITHUB_REF'] == 'refs/heads/m03-evidence-inspection'
+          path = Path('docs/evidence/m03-completion-2026-11-25/probe-harness-request.json')
+          assert path.stat().st_size <= 65536
+          request = json.loads(path.read_text())
+          assert request['schema'] == 1 and request['purpose'] == 'probe-harness-correction'
+          assert re.fullmatch('[a-f0-9]{40}', request['baseSourceRevision'])
+          expected = request['buildInputs']
+          assert len(expected) == 187 and len({item['path'] for item in expected}) == 187
+          actual = {}
+          tracked = {}
+          for entry in subprocess.check_output(['git', 'ls-files', '--stage', '-z']).decode().split('\0'):
+              if not entry: continue
+              metadata, name = entry.split('\t', 1)
+              mode, blob, stage = metadata.split()
+              assert stage == '0'
+              tracked[name] = {'mode': mode, 'gitBlobSHA': blob}
+              if name.startswith(('docs/', 'agents/', '.github/')) or name.endswith('.md'): continue
+              assert mode in ('100644', '100755')
+              actual[name] = tracked[name]
+          assert set(actual) == {item['path'] for item in expected}
+          validators = request['validatorInputs']
+          assert len(validators) == 2 and {item['path'] for item in validators} == {
+              '.github/workflows/ios-prototype.yml', '.github/workflows/platform-accessibility-diagnostics.yml'}
+          workflow = '.github/workflows/probe-harness-validation.yml'
+          workflow_row = {'path': workflow, 'mode': '100644', 'gitBlobSHA': request['workflowBlobSHA']}
+          working_modes = {}
+          for item in expected + validators + [workflow_row]:
+              name = item['path']
+              assert re.fullmatch('[a-f0-9]{40}', item['gitBlobSHA'])
+              assert item['mode'] in ('100644', '100755')
+              assert tracked[name] == {'mode': item['mode'], 'gitBlobSHA': item['gitBlobSHA']}
+              info = Path(name).lstat()
+              assert stat.S_ISREG(info.st_mode) and not stat.S_ISLNK(info.st_mode)
+              executable = item['mode'] == '100755'
+              assert bool(info.st_mode & stat.S_IXUSR) == executable
+              if not executable: assert info.st_mode & 0o111 == 0
+              working_modes[name] = format(stat.S_IMODE(info.st_mode), '04o')
+              assert subprocess.check_output(['git', 'hash-object', '--', name]).decode().strip() == item['gitBlobSHA']
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+          assert head == os.environ['GITHUB_SHA']
+          report = {'schema': 1, 'sourceRevision': head, 'baseSourceRevision': request['baseSourceRevision'],
+                    'workflowBlobSHA': request['workflowBlobSHA'], 'buildInputCount': len(actual),
+                    'buildInputs': expected, 'validatorInputs': validators, 'workingFileModes': working_modes,
+                    'scope': '187 non-.github build inputs, two validator workflows and this diagnostic workflow; focused native and complete library validation only.'}
+          Path('harness-inputs.json').write_text(json.dumps(report, indent=2) + '\n')
+          print('KEYFILL_HARNESS_INPUTS ' + json.dumps(report, separators=(',', ':')))
+          PY
+      - name: Record Apple toolchain and test the portable package on macOS
+        run: |
+          set -euo pipefail
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            git rev-parse HEAD
+          } | tee macos-environment.log
+          [ "$(uname -m)" = x86_64 ] || { echo "::error::Expected the standard Intel runner"; exit 1; }
+          [ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }
+          swift test --jobs 2 2>&1 | tee macos-core-tests.log
+      - name: Verify bounded atomic library write failure on macOS host
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          python3 scripts/run_atomic_library_write_probe.py \
+            --swiftc "$(xcrun --find swiftc)" \
+            --output "$RUNNER_TEMP/atomic-library-write-macos" 2>&1 | tee "$RUNNER_TEMP/atomic-library-write-macos.log"
+      - name: Upload macOS atomic library write evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atomic-library-write-macos-evidence
+          path: |
+            ${{ runner.temp }}/atomic-library-write-macos.log
+            ${{ runner.temp }}/atomic-library-write-macos/
+          if-no-files-found: warn
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
+      - name: Generate project
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee xcodegen-version.log
+          xcodegen generate
+      - name: Select available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > simulators.json
+          python3 - <<'PY'
+          import json, os
+          data = json.load(open("simulators.json"))
+          runtime = "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+          devices = data["devices"].get(runtime, [])
+          device = next((d for d in devices if d.get("isAvailable") and d["name"] == "iPhone 17 Pro"), None)
+          if device is None:
+              raise SystemExit("Required iPhone 17 Pro / iOS 26.5 simulator is unavailable")
+          print({"runtime": runtime, "device": device})
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build unsigned simulator app and native unit test bundle
+        id: debug_build
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          selectors=$(python3 scripts/native_test_shards.py unit)
+          tests=()
+          while IFS= read -r selector; do
+            tests+=("$selector")
+          done <<< "$selectors"
+          [ "${#tests[@]}" -gt 0 ]
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" build-for-testing 2>&1 | tee build.log
+          python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee icon-debug.log
+          python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee privacy-debug.log
+          mkdir -p artifacts
+          ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator.zip
+      - name: Upload simulator application
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-iOS-Simulator
+          path: artifacts/KeyAndFill-simulator.zip
+          if-no-files-found: error
+      - name: Build unsigned release simulator application
+        id: release_build
+        timeout-minutes: 15
+        # Collect independent Release evidence before the longer UI suite.
+        # A UI failure or timeout must not erase these artifacts.
+        if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
+          python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee icon-release.log
+          python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee privacy-release.log
+          mkdir -p artifacts
+          ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator-release.zip
+      - name: Upload unsigned release simulator application
+        if: ${{ !cancelled() && steps.release_build.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-iOS-Simulator-Release
+          path: artifacts/KeyAndFill-simulator-release.zip
+          if-no-files-found: error
+      # Preparatory host warm-up is diagnostic. The required xcodebuild run
+      # still targets this exact UDID and must execute every selected test.
+      - name: Warm selected iPhone simulator (diagnostic)
+        id: simulator_warmup
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          python3 scripts/boot_simulator.py --udid "$SIMULATOR_ID" \
+            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \
+            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+            --output simulator-startup 2>&1 | tee simulator-boot.log
+      - name: Run native unit tests
+        timeout-minutes: 18
+        env:
+          TEST_SHARD: unit
+          SIMULATOR_WARMUP_OUTCOME: ${{ steps.simulator_warmup.outcome }}
+        run: |
+          set -euo pipefail
+          echo "Simulator warm-up outcome: $SIMULATOR_WARMUP_OUTCOME (diagnostic only)"
+          selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
+          tests=()
+          while IFS= read -r selector; do
+            tests+=("$selector")
+          done <<< "$selectors"
+          [ "${#tests[@]}" -gt 0 ]
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          log = Path("native-tests.log").read_text(encoding="utf-8", errors="replace")
+          required_metal = {
+              "testMetalMatchesCPUOnAvailableDevice",
+              "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+              "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+          }
+          skipped = re.findall(r"Test Case '-\[([^\]]+)\]' skipped", log)
+          if skipped:
+              raise SystemExit(f"Incomplete native execution: skipped={skipped}")
+          for method in sorted(required_metal):
+              pattern = r"Test Case '-\[KeyAndFillTests\.StudyRendererTests " + re.escape(method) + r"\]' (passed|failed|skipped)\b"
+              outcomes = re.findall(pattern, log)
+              if outcomes != ["passed"]:
+                  raise SystemExit(f"Required Metal test {method}: expected one pass; observed {outcomes}")
+          print("Required Metal methods executed and passed; no native methods skipped.")
+          PY
+      - name: Verify required native method accounting
+        if: always()
+        run: |
+          python3 scripts/native_test_shards.py verify-log unit native-tests.log \
+            --report native-method-accounting.json
+      - name: Export finalized XCTest result bundle and genuine attachments
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -f NativeTests.xcresult/Info.plist ]; then
+            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            exit 1
+          fi
+          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          mkdir -p artifacts/native-attachments
+          xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload native result and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-unit-and-build-evidence
+          path: |
+            harness-inputs.json
+            macos-environment.log
+            metal-toolchain.log
+            macos-core-tests.log
+            xcodegen-version.log
+            simulators.json
+            simulator-startup/
+            simulator-boot.log
+            build.log
+            release-build.log
+            icon-debug.log
+            privacy-debug.log
+            icon-release.log
+            privacy-release.log
+            native-tests.log
+            native-method-accounting.json
+            artifacts/native-results.zip
+            artifacts/native-attachments/
+          if-no-files-found: warn
+      - name: Upload compact native attachments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-unit-and-build-evidence-compact
+          path: |
+            artifacts/native-attachments/manifest.json
+            artifacts/native-attachments/*.png
+            artifacts/native-attachments/*.txt
+            artifacts/native-attachments/*.ips
+            artifacts/native-attachments/*.pdf
+          if-no-files-found: warn
+  ui:
+    # Independent class-level shards retain all scenarios and avoid losing an
+    # entire result bundle when a different test class overruns its budget.
+    runs-on: ${{ matrix.runner }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    # The 16-minute setup/evidence allowance includes the 10-minute boot preflight.
+    # Each job budgets 12 minutes for Metal, 25 for compilation, its bounded
+    # selected UI run, and the setup/evidence allowance.
+    timeout-minutes: ${{ matrix.job_minutes }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - shard: library-reference
+            runner: macos-26-intel
+            expected_arch: x86_64
+            ui_test_minutes: 32
+            job_minutes: 85
+    name: ui (${{ matrix.shard }})
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify exact candidate build inputs
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, re, stat, subprocess
+          from pathlib import Path
+          assert os.environ['GITHUB_REPOSITORY'] == 'mirzotipi-wq/APP1'
+          assert os.environ['GITHUB_REF'] == 'refs/heads/m03-evidence-inspection'
+          path = Path('docs/evidence/m03-completion-2026-11-25/probe-harness-request.json')
+          assert path.stat().st_size <= 65536
+          request = json.loads(path.read_text())
+          assert request['schema'] == 1 and request['purpose'] == 'probe-harness-correction'
+          assert re.fullmatch('[a-f0-9]{40}', request['baseSourceRevision'])
+          expected = request['buildInputs']
+          assert len(expected) == 187 and len({item['path'] for item in expected}) == 187
+          actual = {}
+          tracked = {}
+          for entry in subprocess.check_output(['git', 'ls-files', '--stage', '-z']).decode().split('\0'):
+              if not entry: continue
+              metadata, name = entry.split('\t', 1)
+              mode, blob, stage = metadata.split()
+              assert stage == '0'
+              tracked[name] = {'mode': mode, 'gitBlobSHA': blob}
+              if name.startswith(('docs/', 'agents/', '.github/')) or name.endswith('.md'): continue
+              assert mode in ('100644', '100755')
+              actual[name] = tracked[name]
+          assert set(actual) == {item['path'] for item in expected}
+          validators = request['validatorInputs']
+          assert len(validators) == 2 and {item['path'] for item in validators} == {
+              '.github/workflows/ios-prototype.yml', '.github/workflows/platform-accessibility-diagnostics.yml'}
+          workflow = '.github/workflows/probe-harness-validation.yml'
+          workflow_row = {'path': workflow, 'mode': '100644', 'gitBlobSHA': request['workflowBlobSHA']}
+          working_modes = {}
+          for item in expected + validators + [workflow_row]:
+              name = item['path']
+              assert re.fullmatch('[a-f0-9]{40}', item['gitBlobSHA'])
+              assert item['mode'] in ('100644', '100755')
+              assert tracked[name] == {'mode': item['mode'], 'gitBlobSHA': item['gitBlobSHA']}
+              info = Path(name).lstat()
+              assert stat.S_ISREG(info.st_mode) and not stat.S_ISLNK(info.st_mode)
+              executable = item['mode'] == '100755'
+              assert bool(info.st_mode & stat.S_IXUSR) == executable
+              if not executable: assert info.st_mode & 0o111 == 0
+              working_modes[name] = format(stat.S_IMODE(info.st_mode), '04o')
+              assert subprocess.check_output(['git', 'hash-object', '--', name]).decode().strip() == item['gitBlobSHA']
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip()
+          assert head == os.environ['GITHUB_SHA']
+          report = {'schema': 1, 'sourceRevision': head, 'baseSourceRevision': request['baseSourceRevision'],
+                    'workflowBlobSHA': request['workflowBlobSHA'], 'buildInputCount': len(actual),
+                    'buildInputs': expected, 'validatorInputs': validators, 'workingFileModes': working_modes,
+                    'scope': '187 non-.github build inputs, two validator workflows and this diagnostic workflow; focused native and complete library validation only.'}
+          Path('harness-inputs.json').write_text(json.dumps(report, indent=2) + '\n')
+          print('KEYFILL_HARNESS_INPUTS ' + json.dumps(report, separators=(',', ':')))
+          PY
+      - name: Record Apple toolchain and exact revision
+        env:
+          EXPECTED_RUNNER_ARCH: ${{ matrix.expected_arch }}
+        run: |
+          set -euo pipefail
+          {
+            sw_vers
+            uname -a
+            swift --version
+            xcodebuild -version
+            xcodebuild -showsdks
+            git rev-parse HEAD
+          } | tee macos-environment.log
+          [ "$(uname -m)" = "$EXPECTED_RUNNER_ARCH" ] || { echo "::error::Expected the configured $EXPECTED_RUNNER_ARCH runner"; exit 1; }
+          [ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }
+      - name: Verify Metal compiler component
+        timeout-minutes: 12
+        run: |
+          set -euo pipefail
+          bash scripts/ensure-metal-toolchain.sh 2>&1 | tee metal-toolchain.log
+      - name: Generate project
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          xcodegen --version | tee xcodegen-version.log
+          xcodegen generate
+      - name: Select available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > simulators.json
+          python3 - <<'PY'
+          import json, os
+          data = json.load(open("simulators.json"))
+          runtime = "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+          devices = data["devices"].get(runtime, [])
+          device = next((d for d in devices if d.get("isAvailable") and d["name"] == "iPhone 17 Pro"), None)
+          if device is None:
+              raise SystemExit("Required iPhone 17 Pro / iOS 26.5 simulator is unavailable")
+          print({"runtime": runtime, "device": device})
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write("SIMULATOR_ID=" + device["udid"] + "\n")
+          PY
+      - name: Build native UI test bundle
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
+      # Preparatory host warm-up is diagnostic. The required xcodebuild run
+      # still targets this exact UDID and must execute every selected test.
+      - name: Warm selected iPhone simulator (diagnostic)
+        id: simulator_warmup
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          python3 scripts/boot_simulator.py --udid "$SIMULATOR_ID" \
+            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \
+            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
+            --output simulator-startup 2>&1 | tee simulator-boot.log
+      - name: Capture host conditions before UI tests
+        continue-on-error: true
+        timeout-minutes: 1
+        run: |
+          mkdir -p artifacts
+          python3 - <<'PY' > artifacts/ui-host-before-tests.log 2>&1
+          import datetime, json, os, subprocess, time
+          print("phase=before-ui-tests", flush=True)
+          print("utc=" + datetime.datetime.now(datetime.timezone.utc).isoformat(), flush=True)
+          commands = [
+              ("virtual_memory", ["/usr/bin/vm_stat"]),
+              ("swap_and_memory", ["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]),
+              ("process_cpu_rss", ["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]),
+              ("workspace_and_temp_disk", ["/bin/df", "-k", os.environ["GITHUB_WORKSPACE"], os.environ["RUNNER_TEMP"]]),
+          ]
+          for label, arguments in commands:
+              print("\ncommand=" + label + " argv=" + json.dumps(arguments), flush=True)
+              started = time.monotonic()
+              try:
+                  result = subprocess.run(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                          text=True, errors="replace", timeout=5, check=False)
+                  output = result.stdout
+                  status = "success" if result.returncode == 0 else "failed"
+                  return_code = result.returncode
+              except subprocess.TimeoutExpired as error:
+                  output = error.stdout or ""
+                  if isinstance(output, bytes):
+                      output = output.decode("utf-8", errors="replace")
+                  status, return_code = "timed_out", None
+              except OSError as error:
+                  output = str(error)
+                  status, return_code = "unavailable", None
+              print(output[:65536], flush=True)
+              print(json.dumps({"status": status, "return_code": return_code,
+                                "elapsed_seconds": round(time.monotonic() - started, 3),
+                                "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
+          PY
+      - name: Run selected native UI shard
+        id: selected_ui_tests
+        timeout-minutes: ${{ matrix.ui_test_minutes }}
+        env:
+          TEST_SHARD: ${{ matrix.shard }}
+          SIMULATOR_WARMUP_OUTCOME: ${{ steps.simulator_warmup.outcome }}
+        run: |
+          set -euo pipefail
+          echo "Simulator warm-up outcome: $SIMULATOR_WARMUP_OUTCOME (diagnostic only)"
+          selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
+          tests=()
+          while IFS= read -r selector; do
+            tests+=("$selector")
+          done <<< "$selectors"
+          [ "${#tests[@]}" -gt 0 ]
+          if [ "$TEST_SHARD" = "studio-export" ] || [ "$TEST_SHARD" = "studio-optics" ]; then
+            printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
+            record_studio_trace_end() {
+              studio_test_exit_code=$?
+              set +e
+              # Include the final fractional second without changing the test exit status.
+              printf 'STUDIO_TRACE_END=%s\nSTUDIO_TRACE_TEST_EXIT_CODE=%s\n' \
+                "$(date -u -v+1S '+%Y-%m-%d %H:%M:%S%z')" "$studio_test_exit_code" >> "$GITHUB_ENV"
+              exit "$studio_test_exit_code"
+            }
+            trap record_studio_trace_end EXIT
+          fi
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
+            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+      - name: Verify required UI method accounting
+        if: always()
+        env:
+          TEST_SHARD: ${{ matrix.shard }}
+        run: |
+          python3 scripts/native_test_shards.py verify-log "$TEST_SHARD" native-tests.log \
+            --report native-method-accounting.json
+      - name: Capture host conditions after UI tests
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 1
+        env:
+          UI_TEST_STEP_OUTCOME: ${{ steps.selected_ui_tests.outcome }}
+        run: |
+          mkdir -p artifacts
+          python3 - <<'PY' > artifacts/ui-host-after-tests.log 2>&1
+          import datetime, json, os, subprocess, time
+          print("phase=after-ui-tests", flush=True)
+          print("utc=" + datetime.datetime.now(datetime.timezone.utc).isoformat(), flush=True)
+          print("github_test_step_outcome=" + os.environ.get("UI_TEST_STEP_OUTCOME", "unavailable"), flush=True)
+          commands = [
+              ("virtual_memory", ["/usr/bin/vm_stat"]),
+              ("swap_and_memory", ["/usr/sbin/sysctl", "vm.swapusage", "hw.memsize"]),
+              ("process_cpu_rss", ["/bin/ps", "-A", "-r", "-o", "pid=,ppid=,pcpu=,rss=,comm="]),
+              ("workspace_and_temp_disk", ["/bin/df", "-k", os.environ["GITHUB_WORKSPACE"], os.environ["RUNNER_TEMP"]]),
+          ]
+          for label, arguments in commands:
+              print("\ncommand=" + label + " argv=" + json.dumps(arguments), flush=True)
+              started = time.monotonic()
+              try:
+                  result = subprocess.run(arguments, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                          text=True, errors="replace", timeout=5, check=False)
+                  output = result.stdout
+                  status = "success" if result.returncode == 0 else "failed"
+                  return_code = result.returncode
+              except subprocess.TimeoutExpired as error:
+                  output = error.stdout or ""
+                  if isinstance(output, bytes):
+                      output = output.decode("utf-8", errors="replace")
+                  status, return_code = "timed_out", None
+              except OSError as error:
+                  output = str(error)
+                  status, return_code = "unavailable", None
+              print(output[:65536], flush=True)
+              print(json.dumps({"status": status, "return_code": return_code,
+                                "elapsed_seconds": round(time.monotonic() - started, 3),
+                                "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
+          PY
+      - name: Export studio slider unified log
+        if: ${{ always() && (matrix.shard == 'studio-export' || matrix.shard == 'studio-optics') }}
+        continue-on-error: true
+        timeout-minutes: 2
+        env:
+          UI_TEST_STEP_OUTCOME: ${{ steps.selected_ui_tests.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          # The EXIT trap observes the shell; GitHub records the test-step outcome.
+          printf 'simulator=%s\nstart=%s\nend=%s\ngithub_test_step_outcome=%s\nobserved_shell_exit_code=%s\n' \
+            "${SIMULATOR_ID:-}" "${STUDIO_TRACE_START:-}" "${STUDIO_TRACE_END:-}" \
+            "${UI_TEST_STEP_OUTCOME:-unavailable}" \
+            "${STUDIO_TRACE_TEST_EXIT_CODE:-unavailable}" > artifacts/studio-slider-trace-status.txt
+          if [ -z "${SIMULATOR_ID:-}" ] || [ -z "${STUDIO_TRACE_START:-}" ] || [ -z "${STUDIO_TRACE_END:-}" ]; then
+            printf 'collection=unavailable\n' >> artifacts/studio-slider-trace-status.txt
+            echo "::warning::Studio slider log collection needs a simulator and both test timestamps."
+            exit 1
+          fi
+          if xcrun simctl spawn "$SIMULATOR_ID" log show \
+            --start "$STUDIO_TRACE_START" --end "$STUDIO_TRACE_END" \
+            --predicate 'process = "KeyAndFill" AND subsystem = "com.example.keyandfill" AND category = "StudioSliderTrace" AND message CONTAINS "StudioSliderTrace "' \
+            > artifacts/studio-slider-trace.log 2> artifacts/studio-slider-trace-stderr.log; then
+            printf 'collection=completed\ncollection_exit_code=0\n' >> artifacts/studio-slider-trace-status.txt
+          else
+            studio_collection_exit_code=$?
+            printf 'collection=failed\ncollection_exit_code=%s\n' "$studio_collection_exit_code" >> artifacts/studio-slider-trace-status.txt
+            echo "::warning::Studio slider log collection failed; the test outcome is unchanged."
+            cat artifacts/studio-slider-trace-stderr.log >&2
+            exit "$studio_collection_exit_code"
+          fi
+      - name: Export finalized XCTest result bundle and genuine attachments
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -f NativeTests.xcresult/Info.plist ]; then
+            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            exit 1
+          fi
+          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          mkdir -p artifacts/native-attachments
+          xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload native result and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-${{ matrix.shard }}-evidence
+          path: |
+            harness-inputs.json
+            macos-environment.log
+            metal-toolchain.log
+            macos-core-tests.log
+            xcodegen-version.log
+            simulators.json
+            build.log
+            release-build.log
+            icon-debug.log
+            privacy-debug.log
+            icon-release.log
+            privacy-release.log
+            native-tests.log
+            native-method-accounting.json
+            native-ui-build.log
+            simulator-startup/
+            simulator-boot.log
+            artifacts/ui-host-*.log
+            artifacts/studio-slider-trace*
+            artifacts/native-results.zip
+            artifacts/native-attachments/
+          if-no-files-found: warn
+      - name: Upload compact native attachments
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-${{ matrix.shard }}-evidence-compact
+          path: |
+            artifacts/native-attachments/manifest.json
+            artifacts/native-attachments/*.png
+            artifacts/native-attachments/*.txt
+            artifacts/native-attachments/*.ips
+            artifacts/native-attachments/*.pdf
+            artifacts/studio-slider-trace*
+          if-no-files-found: warn
+
+  # Retain the original artifact and expose bounded copies for remote review
+  # when an editor cannot unpack the ZIP locally. This is evidence transport;
+  # native/UI assertions and finalized-result checks remain required above.

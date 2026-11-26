@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "context": "/root/w007_review_coordinator/w097_native_build_target_coverage",
+  "type": "same-context-seventh-source-followup",
+  "workerCountIncrement": 0,
+  "status": "complete",
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "workflowBlob": "ae8a924938c405cbf363eab892c69a2fcc39dcab",
+  "requestBlob": "1d6fc32f51e08a2442f3ad986cad378b18bc8941",
+  "baselineRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "priorReviewBlob": "29c6c4a4b6d55024adeefe290f790bbbcacb6ac6",
+  "priorWorkflowBlob": "bf2477dc7a057733980f5ef09a3cf51a4c3dd4ad",
+  "verdict": "Source review complete with no remaining finding in the corrected workflow and concrete request. Prior working-file mode/type finding is closed by inspected code changes. All 187 source rows map exactly to the pinned baseline except the two authorized test replacements; validator and own-workflow pins are correct. This does not establish runtime execution or full main acceptance.",
+  "findings": [],
+  "resolvedFindings": [
+    {
+      "id": "w097-followup6-working-mode",
+      "priorReportBlob": "29c6c4a4b6d55024adeefe290f790bbbcacb6ac6",
+      "priorStatus": "Open P2 in bf2477: index modes checked but actual filesystem modes/types unchecked.",
+      "currentStatus": "Closed by source inspection in ae8a; execution unverified.",
+      "evidence": "Both identical admission copies use lstat(), require a regular nonsymlink file, compare owner execute bit with Git mode, reject every execute bit for nonexecutables, hash actual file contents, and record stat.S_IMODE in workingFileModes. Checks cover 187 source rows, both validator workflows and the diagnostic workflow itself."
+    }
+  ],
+  "checks": [
+    {
+      "topic": "Concrete request mapping",
+      "result": "Parsed the actual 33,850-byte request and compared every row against a freshly fetched nontruncated cd5 tree. Exactly 187 unique paths; zero omissions or extras; all modes remain 100644. Exactly 185 source rows retain baseline hashes; only the two explicitly authorized test paths change.",
+      "changedRows": [
+        {
+          "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+          "oldBlob": "ed138c6197160ae614580d53ebdf85444551ea35",
+          "newBlob": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+          "mode": "100644"
+        },
+        {
+          "path": "UITests/ProjectLibraryUITests.swift",
+          "oldBlob": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+          "newBlob": "618c70bb4677c1d391c54bd3d6b4584e641b21d4",
+          "mode": "100644"
+        }
+      ]
+    },
+    {
+      "topic": "Unchanged App and AX",
+      "result": "Every admitted App path retains the baseline hash/mode. Instrumented UITests/StudioAppAccessibilityUITests.swift remains 5c5f6360f63267f6dc50473d88a7261bb0387e3b exactly."
+    },
+    {
+      "topic": "Validator scope",
+      "result": "Request separately pins exactly ios-prototype.yml at 0baeea7d2ce6e5c627e850500a75cc4a3223a607 and platform-accessibility-diagnostics.yml at 9f472293be18fc008a794ccd18e92d62031c8996, both mode 100644. Both actual blobs were fetched. Admission enforces their exact two-path set, index hashes/modes, working modes/types and content hashes."
+    },
+    {
+      "topic": "Own workflow and request metadata",
+      "result": "workflowBlobSHA in the concrete request equals reviewed workflow ae8a924938c405cbf363eab892c69a2fcc39dcab. Own workflow is now checked through the same tracked index, lstat/mode and content-hash loop with required mode 100644. Schema/purpose/baseSourceRevision are correct and request fits 64 KiB."
+    },
+    {
+      "topic": "Working-file finding closure",
+      "result": "The earlier chmod/nonregular-file admission gap is corrected in both identical copies. Source-derived counterexamples now fail the explicit lstat/type or execute-bit assertions. No runtime reproduction was executed."
+    },
+    {
+      "topic": "Exact body preservation",
+      "result": "Compared new workflow to bf2477: every byte outside the two admission blocks is unchanged. Simulator body still matches cd5 after only removing needs:core and added admission/receipt entries. UI steps still match cd5 after removing admission/receipt entries. Runner/deadlines/build/test/accounting/Metal/finalization/export behavior is unchanged.",
+      "comparisons": {
+        "allPriorSourceOutsideAdmissionUnchanged": true,
+        "simulatorBaselineBodyExact": true,
+        "UIBaselineStepsExact": true,
+        "admissionCopiesIdentical": true,
+        "ownHashMatches": true,
+        "requestUnderLimit": true
+      }
+    },
+    {
+      "topic": "Actual source method inventory",
+      "result": "Fetched every NativeTests blob listed in the request and counted methods using the same regex structure as the pinned inventory script. Seventeen native files contain exactly 137 test methods, with one recognized XCTestCase class per file and unique method names. Revised library source retains seven methods; fetched reference source supplies two; concrete requiredNativeMethods=137 and requiredLibraryMethods=9 are accurate. This is source inventory, not execution."
+    },
+    {
+      "topic": "Trigger and isolation",
+      "result": "The diagnostic workflow retains push-only trigger restricted to m03-evidence-inspection and its workflow/request paths, contents:read only, separate concurrency prefix and cancel-in-progress:false. The actually fetched pinned iOS validator excludes pushes to that branch. Platform diagnostics remain dispatch-only. No trigger or concurrency change occurred in this correction."
+    },
+    {
+      "topic": "Failure and artifact semantics",
+      "result": "Admission failures remain fatal before build/test steps. The full native and UI evidence uploads retain harness-inputs.json, now including validatorInputs and all 190 observed workingFileModes. Existing method accounting and finalized results remain required. Scope explicitly states focused native and complete library validation only."
+    }
+  ],
+  "mappingSummary": {
+    "buildInputs": 187,
+    "unchangedFromBaseline": 185,
+    "authorizedReplacements": 2,
+    "missing": [],
+    "extra": [],
+    "allModes": "100644",
+    "allAppUnchanged": true,
+    "AXBlob": "5c5f6360f63267f6dc50473d88a7261bb0387e3b",
+    "validatorInputs": 2,
+    "ownWorkflowInputs": 1,
+    "totalAdmittedWorkingFiles": 190
+  },
+  "inspected": [
+    {
+      "path": ".github/workflows/probe-harness-validation.yml",
+      "blobSHA": "ae8a924938c405cbf363eab892c69a2fcc39dcab"
+    },
+    {
+      "path": "docs/evidence/m03-completion-2026-11-25/probe-harness-request.json",
+      "blobSHA": "1d6fc32f51e08a2442f3ad986cad378b18bc8941"
+    },
+    {
+      "path": ".github/workflows/probe-harness-validation.yml",
+      "version": "prior finding version",
+      "blobSHA": "bf2477dc7a057733980f5ef09a3cf51a4c3dd4ad"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "version": "cd5 baseline",
+      "blobSHA": "c83e4340e5b0b6d6ec10f6b3439195a648aa9894"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blobSHA": "0baeea7d2ce6e5c627e850500a75cc4a3223a607",
+      "mode": "100644"
+    },
+    {
+      "path": ".github/workflows/platform-accessibility-diagnostics.yml",
+      "blobSHA": "9f472293be18fc008a794ccd18e92d62031c8996",
+      "mode": "100644"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blobSHA": "618c70bb4677c1d391c54bd3d6b4584e641b21d4"
+    },
+    {
+      "path": "NativeTests/BoundedFileReaderTests.swift",
+      "blobSHA": "7afb4c0edc67c310fe1da87e2e79ca7ea9b4e1cb",
+      "methodCount": 13
+    },
+    {
+      "path": "NativeTests/LightingPlanPDFTests.swift",
+      "blobSHA": "57e6619a02d55a14972ffde0368e1f2927f491f9",
+      "methodCount": 4
+    },
+    {
+      "path": "NativeTests/ProjectDocumentIOTests.swift",
+      "blobSHA": "96f33253c58ace19d83d02d33791e05351b3b7e7",
+      "methodCount": 9
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "blobSHA": "1c108acca53243472810eef5cb8570fee99fe674",
+      "methodCount": 8
+    },
+    {
+      "path": "NativeTests/ProjectStoreOperationTests.swift",
+      "blobSHA": "7005e2583b347c46e2fb3fd92e0c60e1f7c506c4",
+      "methodCount": 16
+    },
+    {
+      "path": "NativeTests/ReferencePhotoTests.swift",
+      "blobSHA": "91a4f5956579df8d248a82cc881b1baf67ab367a",
+      "methodCount": 7
+    },
+    {
+      "path": "NativeTests/RoomRotationReadoutTests.swift",
+      "blobSHA": "fccf67bb8302904007ae902a46d186fbf493c0be",
+      "methodCount": 3
+    },
+    {
+      "path": "NativeTests/SpatialEmitterGeometryTests.swift",
+      "blobSHA": "7fecaa44cbed76f421a0d91d6553754ece2908c4",
+      "methodCount": 5
+    },
+    {
+      "path": "NativeTests/SpatialPreviewTests.swift",
+      "blobSHA": "4475b46c379e08e4bc8509f75031d1636ce50d83",
+      "methodCount": 3
+    },
+    {
+      "path": "NativeTests/StudioPaletteTests.swift",
+      "blobSHA": "3e9b05371e4855f36aa9c4ec634b422dcf578450",
+      "methodCount": 5
+    },
+    {
+      "path": "NativeTests/StudioSliderEditingTests.swift",
+      "blobSHA": "8fef54c202db6c48f4767a40c2dc00bb45581e8e",
+      "methodCount": 8
+    },
+    {
+      "path": "NativeTests/StudioSliderTrackingTests.swift",
+      "blobSHA": "c3e435726f8192a2228740b5dfb759af2ed67599",
+      "methodCount": 18
+    },
+    {
+      "path": "NativeTests/StudioTextFieldTests.swift",
+      "blobSHA": "2b7e89a2f02b22b981278bb72ef6a49801dc0833",
+      "methodCount": 14
+    },
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "blobSHA": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+      "methodCount": 3
+    },
+    {
+      "path": "NativeTests/StudioTrackingSliderTests.swift",
+      "blobSHA": "df0f559fbacd691f893aefef3ff24ebd8332d382",
+      "methodCount": 3
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blobSHA": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+      "methodCount": 11
+    },
+    {
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blobSHA": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+      "methodCount": 7
+    },
+    {
+      "path": "UITests/ReferenceComparisonUITests.swift",
+      "blobSHA": "908a41c5b143c47e4dbccd119cb30e3d6441c994",
+      "methodCount": 2
+    }
+  ],
+  "nativeSourceMethodCount": 137,
+  "librarySourceMethodCount": 9,
+  "execution": {
+    "workflowTriggered": false,
+    "workflowExecuted": false,
+    "pythonExecuted": false,
+    "yamlParserExecuted": false,
+    "gitCommandsExecuted": false,
+    "buildsExecuted": false,
+    "testsExecuted": false,
+    "imagesReviewed": false
+  },
+  "limitations": [
+    "This review validates remote blobs, concrete manifest mapping, text equality and source method inventory only; no runtime or passing tests are claimed.",
+    "The corrected code still uses Python assert under normal nonoptimized python3, as before; the workflow does not enable optimization.",
+    "Final integration onto the diagnostic branch, resulting HEAD and admission receipts must still be verified by root after integration/execution.",
+    "The Swift replacements were counted for preserved test inventory; this narrow review does not replace their separate semantic reviews.",
+    "Full main validation remains required; focused native/library results must not be promoted as other UI shard passes."
+  ],
+  "historicalIntegrity": "The original bf2477 finding and report 29c6c4a4b6d55024adeefe290f790bbbcacb6ac6 remain unchanged. This is a subsequent correction review, not a relabeling of the earlier candidate.",
+  "mutationScope": "Only this authorized unreferenced JSON report is created. No source/tree/branch/ref changes, execution or new contexts."
+}

@@ -1,0 +1,552 @@
+{
+  "schema": 1,
+  "sourceRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "workflowRun": 45761900201,
+  "jobId": 139715217001,
+  "conclusion": "failure",
+  "counts": {
+    "required_native": "failed",
+    "expected_native_files": 17,
+    "expected_native_classes": 17,
+    "expected_methods": 137,
+    "observed_distinct_methods": 137,
+    "started": 137,
+    "passed": 135,
+    "failed_methods": 2,
+    "assertion_failures": 7,
+    "method_events": 274,
+    "missing": 0,
+    "unexpected": 0,
+    "skipped": 0,
+    "malformed": 0,
+    "duplicate": 0,
+    "invalid_order_or_multiplicity": 0,
+    "distinction": "All 137 methods have one ordered start and one pass/failure terminal event. The two start->failure sequences correctly fail the required start->pass accounting gate. Seven assertion failures are spread over two methods, not seven failed methods.",
+    "previous_134_methods": "All previous 134 methods actually started and passed again in this cd5 job; their 16 source files are byte-identical by Git blob SHA to 75e.",
+    "new_three": {
+      "passed": [
+        "StudioTextLayoutDiagnosticsTests.testExplicitGatingAndExactFrameRoundTrip"
+      ],
+      "failed": [
+        "StudioTextLayoutDiagnosticsTests.testDisabledHostedProbePreservesNormalValueAndElementGrouping",
+        "StudioTextLayoutDiagnosticsTests.testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton"
+      ]
+    },
+    "command": "TEST EXECUTE FAILED, exit 65",
+    "accounting": "failed, exit 1",
+    "result_bundle_finalization": "succeeded",
+    "artifact_uploads": "full and compact native evidence succeeded; unsigned Debug/Release apps and Apple atomic-write probe artifacts also exist",
+    "preparatory_warmup": "failed despite wrapper step conclusion success",
+    "full_m03": "not_passed",
+    "ui_and_images": "Outside this native phase and pending same-context reconciliation. This report does not promote UI methods or images from job metadata."
+  },
+  "log": {
+    "decodedUTF8Bytes": 898954,
+    "sha256": "b24b85629008570616717917d5a13f58c428d08acd42bbd333ce0ebf5ba46484",
+    "hashScope": "Exact GitHub connector decoded log encoded as UTF-8; not the compressed download."
+  },
+  "nativeMethodAccounting": "native-method-accounting.json",
+  "independentReview": "../../workers/w100-cd5-native-runtime-review.json",
+  "builds": {
+    "debug": {
+      "command_receipt": {
+        "line": 1932,
+        "raw": "2026-11-26T05:38:34.1478430Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" build-for-testing"
+      },
+      "terminal": {
+        "line": 3455,
+        "raw": "2026-11-26T05:40:25.7840530Z ** TEST BUILD SUCCEEDED **"
+      },
+      "status": "passed",
+      "scope": "Unsigned Debug simulator application plus native unit-test bundle build-for-testing"
+    },
+    "release": {
+      "command_receipt": {
+        "line": 3503,
+        "raw": "2026-11-26T05:40:32.9733970Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO build"
+      },
+      "terminal": {
+        "line": 4447,
+        "raw": "2026-11-26T05:43:22.7492540Z ** BUILD SUCCEEDED **"
+      },
+      "status": "passed",
+      "scope": "Unsigned Release simulator application build; not a Release native test run"
+    },
+    "native_debug_execution": {
+      "command": "/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" test-without-building",
+      "terminal": {
+        "line": 5146,
+        "raw": "2026-11-26T05:57:22.9398850Z ** TEST EXECUTE FAILED **"
+      },
+      "process_exit_receipt": {
+        "line": 5149,
+        "raw": "2026-11-26T05:57:42.9835330Z ##[error]Process completed with exit code 65."
+      },
+      "status": "failed"
+    }
+  },
+  "metal": {
+    "methods": [
+      {
+        "method": "StudyRendererTests.testMetalMatchesCPUOnAvailableDevice",
+        "events": [
+          {
+            "target": "KeyAndFillTests",
+            "event": "started",
+            "line": 5068,
+            "timestamp": "2026-11-26T05:54:04.1264460Z",
+            "raw": "2026-11-26T05:54:04.1264460Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalMatchesCPUOnAvailableDevice]' started."
+          },
+          {
+            "target": "KeyAndFillTests",
+            "event": "passed",
+            "line": 5077,
+            "timestamp": "2026-11-26T05:54:05.0301460Z",
+            "raw": "2026-11-26T05:54:05.0301460Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalMatchesCPUOnAvailableDevice]' passed (5.735 seconds)."
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+        "events": [
+          {
+            "target": "KeyAndFillTests",
+            "event": "started",
+            "line": 5078,
+            "timestamp": "2026-11-26T05:54:05.1306750Z",
+            "raw": "2026-11-26T05:54:05.1306750Z Test Case '-[KeyAndFillTests.StudyRendererTests testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal]' started."
+          },
+          {
+            "target": "KeyAndFillTests",
+            "event": "passed",
+            "line": 5081,
+            "timestamp": "2026-11-26T05:54:05.4314270Z",
+            "raw": "2026-11-26T05:54:05.4314270Z Test Case '-[KeyAndFillTests.StudyRendererTests testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal]' passed (1.888 seconds)."
+          }
+        ]
+      },
+      {
+        "method": "StudyRendererTests.testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "events": [
+          {
+            "target": "KeyAndFillTests",
+            "event": "started",
+            "line": 5051,
+            "timestamp": "2026-11-26T05:54:02.3948630Z",
+            "raw": "2026-11-26T05:54:02.3948630Z Test Case '-[KeyAndFillTests.StudyRendererTests testCancelledInitialParityValidationCanRetryMetalOnSameEngine]' started."
+          },
+          {
+            "target": "KeyAndFillTests",
+            "event": "passed",
+            "line": 5054,
+            "timestamp": "2026-11-26T05:54:02.6961460Z",
+            "raw": "2026-11-26T05:54:02.6961460Z Test Case '-[KeyAndFillTests.StudyRendererTests testCancelledInitialParityValidationCanRetryMetalOnSameEngine]' passed (2.294 seconds)."
+          }
+        ]
+      }
+    ],
+    "fixtures": [
+      {
+        "line": 5069,
+        "raw": "2026-11-26T05:54:04.2268140Z Metal hard: mean 0.0, max 0, outliers 0.0, invalid match true",
+        "name": "hard",
+        "mean_channel_error": 0,
+        "maximum_channel_error": 0,
+        "fraction_above_four": 0,
+        "invalid_count_matches": true
+      },
+      {
+        "line": 5072,
+        "raw": "2026-11-26T05:54:04.5278890Z Metal soft: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true",
+        "name": "soft",
+        "mean_channel_error": 0.00005425347222222222,
+        "maximum_channel_error": 1,
+        "fraction_above_four": 0,
+        "invalid_count_matches": true
+      },
+      {
+        "line": 5073,
+        "raw": "2026-11-26T05:54:04.6281470Z Metal warm-rotated: mean 0.0, max 0, outliers 0.0, invalid match true",
+        "name": "warm-rotated",
+        "mean_channel_error": 0,
+        "maximum_channel_error": 0,
+        "fraction_above_four": 0,
+        "invalid_count_matches": true
+      },
+      {
+        "line": 5074,
+        "raw": "2026-11-26T05:54:04.7294550Z Metal dark: mean 0.0, max 0, outliers 0.0, invalid match true",
+        "name": "dark",
+        "mean_channel_error": 0,
+        "maximum_channel_error": 0,
+        "fraction_above_four": 0,
+        "invalid_count_matches": true
+      },
+      {
+        "line": 5075,
+        "raw": "2026-11-26T05:54:04.8296760Z Metal near-field: mean 0.0, max 0, outliers 0.0, invalid match true",
+        "name": "near-field",
+        "mean_channel_error": 0,
+        "maximum_channel_error": 0,
+        "fraction_above_four": 0,
+        "invalid_count_matches": true
+      },
+      {
+        "line": 5076,
+        "raw": "2026-11-26T05:54:04.9299700Z Metal translated: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true",
+        "name": "translated",
+        "mean_channel_error": 0.00005425347222222222,
+        "maximum_channel_error": 1,
+        "fraction_above_four": 0,
+        "invalid_count_matches": true
+      }
+    ],
+    "maximumMeanError": 0.00005425347222222222,
+    "maximumChannelError": 1,
+    "maximumFractionAboveFour": 0,
+    "invalidCountMatches": true,
+    "maskBasis": "Source StudyParityMetrics.passes requires invalidMaskMatches as well as invalidCountMatches. The test asserts metrics.passes for all six real GPU fixtures and passed; the raw print explicitly includes only count match.",
+    "inlinePostcheck": "Unrun after xcodebuild exit65; actual three Metal method passes retained separately."
+  },
+  "contrast": {
+    "expected": 116,
+    "observed": 116,
+    "unique": 116,
+    "status": "all 116 expected distinct pairs passed; independently recomputed all ratios from logged resolved RGB components"
+  },
+  "portableMacOS": {
+    "started": 359,
+    "passed": 359,
+    "configuration": "Debug/default SwiftPM"
+  },
+  "applePersistence": {
+    "status": "passed",
+    "report": {
+      "checks": {
+        "activeIdentityPreserved": true,
+        "exactPriorBytesPreserved": true,
+        "freshProcessVerificationSucceeded": true,
+        "injectionReturnedCaughtSaveError": true,
+        "observedPOSIXEFBIG": true,
+        "priorCompleteSnapshotPreserved": true,
+        "setupAndUnrestrictedControlSucceeded": true,
+        "unrelatedRecordsPreserved": true,
+        "unrestrictedControlCandidateReopened": true,
+        "unrestrictedControlExactCandidateBytes": true,
+        "validFixturesBelowApplicationByteLimit": true
+      },
+      "compiledSourceProvenance": {
+        "baseRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "helperBinaryMatchesManifest": true,
+        "manifestPath": "/Users/runner/work/_temp/atomic-library-write-macos/compile-manifest.json",
+        "manifestSHA256": "8392d92ad4df448b798ab783d3ce4df2280a0148ac496e8adb3beb244ca3006d",
+        "source": "current working tree",
+        "sourceFilesSHA256": {
+          "Sources/LightingCore/ARPlacementLayout.swift": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+          "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+          "Sources/LightingCore/Colorimetry.swift": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+          "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+          "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+          "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+          "Sources/LightingCore/LightingProjectDocument.swift": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+          "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+          "Sources/LightingCore/PortraitHeadMesh.swift": "2d43056a7eab9371126188e6b161000ca3696e812eca51f69945f19d2cf5740f",
+          "Sources/LightingCore/PortraitStudy.swift": "f1b4aadb74c89bcef57a353221ef7a279f13c87284bdf919bcb1fe345034fc71",
+          "Sources/LightingCore/ProjectLibrary.swift": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+          "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+          "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+          "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+          "Sources/LightingCore/RoomPlacement.swift": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+          "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+          "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+          "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+          "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a",
+          "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+          "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+          "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+          "Sources/LightingCore/StudioDisplayName.swift": "0a9c19b880631b485f43089a6f0ab94dac0cfe1b128233099c063a7650badf09",
+          "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+          "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+          "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+          "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+          "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+          "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+          "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+          "Sources/LightingCore/SurfacePhotometry.swift": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+          "scripts/probe-atomic-library-write.swift": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18"
+        },
+        "workingTreePathsDifferingFromCompiledSources": []
+      },
+      "excludedClaims": [
+        "ENOSPC or physical low storage",
+        "abrupt process interruption",
+        "rename-only replacement failure",
+        "physical-device or iOS execution"
+      ],
+      "expectedFailureEvidence": {
+        "errorChainContainsPOSIXEFBIG": true,
+        "resetErrnoCapturedImmediatelyAfterSaveIsEFBIG": true
+      },
+      "files": {
+        "after.json": {
+          "bytes": 3900,
+          "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+        },
+        "candidate.json": {
+          "bytes": 242569,
+          "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+        },
+        "control/projects.json": {
+          "bytes": 242569,
+          "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+        },
+        "library/projects.json": {
+          "bytes": 3900,
+          "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+        },
+        "prior.json": {
+          "bytes": 3900,
+          "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+        }
+      },
+      "helperBinarySHA256": "2e569f10f1db2edea8fdaef05e29a3a106af2e1a98c6c6bf396a92b06d87680e",
+      "host": {
+        "machine": "x86_64",
+        "python": "3.14.7",
+        "release": "25.6.0",
+        "system": "Darwin"
+      },
+      "injection": {
+        "expectedPOSIXErrno": 27,
+        "expectedPOSIXName": "EFBIG",
+        "fileLimitBytes": 32768,
+        "mechanism": "RLIMIT_FSIZE",
+        "signal": "SIGXFSZ ignored in injection child only"
+      },
+      "parentFileSizeLimitAfter": [
+        "9223372036854775807",
+        "9223372036854775807"
+      ],
+      "parentFileSizeLimitBefore": [
+        "9223372036854775807",
+        "9223372036854775807"
+      ],
+      "parentLimitAndSignalUnchanged": true,
+      "phases": [
+        {
+          "fileSizeLimitInjected": false,
+          "observed": {
+            "candidateBytes": 242569,
+            "candidateProjects": 64,
+            "candidateValidated": true,
+            "fileLimitBytes": 32768,
+            "fixtureByteCeiling": 1048576,
+            "initialReopenMatchesPrior": true,
+            "libraryByteLimit": 8388608,
+            "phase": "setup",
+            "priorBytes": 3900,
+            "priorProjects": 3,
+            "status": "setup_complete"
+          },
+          "phase": "setup",
+          "returnCode": 0
+        },
+        {
+          "fileSizeLimitInjected": false,
+          "observed": {
+            "phase": "control",
+            "saveReturnedNormally": true,
+            "status": "control_saved"
+          },
+          "phase": "control",
+          "returnCode": 0
+        },
+        {
+          "fileSizeLimitInjected": true,
+          "observed": {
+            "errorChain": [
+              {
+                "code": 512,
+                "description": "The file “projects.json” couldn’t be saved in the folder “library”.",
+                "domain": "NSCocoaErrorDomain"
+              },
+              {
+                "code": 27,
+                "description": "The operation couldn’t be completed. File too large",
+                "domain": "NSPOSIXErrorDomain"
+              }
+            ],
+            "phase": "inject",
+            "posixErrnoImmediatelyAfterSave": 27,
+            "posixErrnoResetBeforeSave": true,
+            "status": "save_threw",
+            "writeAttempted": true
+          },
+          "phase": "inject",
+          "returnCode": 0
+        },
+        {
+          "fileSizeLimitInjected": false,
+          "observed": {
+            "activeIdentityPreserved": true,
+            "controlCandidateReopened": true,
+            "controlExactCandidateBytes": true,
+            "phase": "verify",
+            "priorCompleteSnapshotPreserved": true,
+            "priorExactBytesPreserved": true,
+            "status": "verification_complete",
+            "unrelatedProjectIDs": [
+              "00000001-0000-4000-8000-000000000002",
+              "00000001-0000-4000-8000-000000000001"
+            ],
+            "unrelatedRecordsPreserved": true
+          },
+          "phase": "verify",
+          "returnCode": 0
+        }
+      ],
+      "probe": "project_library_atomic_write_EFBIG",
+      "schemaVersion": 2,
+      "sourceRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "status": "passed",
+      "workingTreeFilesSHA256": {
+        "Sources/LightingCore/ARPlacementLayout.swift": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+        "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+        "Sources/LightingCore/Colorimetry.swift": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+        "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+        "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+        "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+        "Sources/LightingCore/LightingProjectDocument.swift": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+        "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+        "Sources/LightingCore/PortraitHeadMesh.swift": "2d43056a7eab9371126188e6b161000ca3696e812eca51f69945f19d2cf5740f",
+        "Sources/LightingCore/PortraitStudy.swift": "f1b4aadb74c89bcef57a353221ef7a279f13c87284bdf919bcb1fe345034fc71",
+        "Sources/LightingCore/ProjectLibrary.swift": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+        "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+        "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+        "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+        "Sources/LightingCore/RoomPlacement.swift": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+        "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+        "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+        "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+        "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a",
+        "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+        "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+        "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+        "Sources/LightingCore/StudioDisplayName.swift": "0a9c19b880631b485f43089a6f0ab94dac0cfe1b128233099c063a7650badf09",
+        "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+        "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+        "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+        "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+        "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+        "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+        "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+        "Sources/LightingCore/SurfacePhotometry.swift": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+        "scripts/probe-atomic-library-write.swift": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18",
+        "scripts/probe_atomic_library_write.py": "de458619bfb13f18cefa32517a37276c003a4b4340cd42c10735374a962d02cb"
+      }
+    }
+  },
+  "warmup": {
+    "wrapper_step": {
+      "name": "Warm selected iPhone simulator (diagnostic)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13
+    },
+    "raw_status": "failed",
+    "raw_receipts": [
+      {
+        "line": 4490,
+        "raw": "2026-11-26T05:43:26.7282470Z Simulator startup: preflight; evidence /Users/runner/work/APP1/APP1/simulator-startup/01-preflight"
+      },
+      {
+        "line": 4491,
+        "raw": "2026-11-26T05:43:27.1323160Z Simulator startup: preflight: exited, exit=0"
+      },
+      {
+        "line": 4492,
+        "raw": "2026-11-26T05:43:27.1379420Z Simulator startup: attempt-1-boot; evidence /Users/runner/work/APP1/APP1/simulator-startup/02-attempt-1-boot"
+      },
+      {
+        "line": 4493,
+        "raw": "2026-11-26T05:43:32.4773110Z Simulator startup: attempt-1-boot: exited, exit=0"
+      },
+      {
+        "line": 4494,
+        "raw": "2026-11-26T05:43:32.4806570Z Simulator startup: attempt-1-bootstatus; evidence /Users/runner/work/APP1/APP1/simulator-startup/03-attempt-1-bootstatus"
+      },
+      {
+        "line": 4495,
+        "raw": "2026-11-26T05:47:48.4763350Z Simulator startup: attempt-1-bootstatus: exited, exit=0"
+      },
+      {
+        "line": 4496,
+        "raw": "2026-11-26T05:47:50.1823550Z Simulator startup: attempt-1-postflight; evidence /Users/runner/work/APP1/APP1/simulator-startup/04-attempt-1-postflight"
+      },
+      {
+        "line": 4497,
+        "raw": "2026-11-26T05:48:15.6105560Z Simulator startup: attempt-1-postflight: timed_out, exit=-9"
+      },
+      {
+        "line": 4498,
+        "raw": "2026-11-26T05:48:15.8065060Z Simulator startup: recovery-preflight; evidence /Users/runner/work/APP1/APP1/simulator-startup/05-recovery-preflight"
+      },
+      {
+        "line": 4499,
+        "raw": "2026-11-26T05:48:36.1936720Z Simulator startup: recovery-preflight: timed_out, exit=-9"
+      },
+      {
+        "line": 4500,
+        "raw": "2026-11-26T05:48:36.2425740Z Simulator startup failed: recovery-preflight did not complete successfully before its deadline (status=timed_out, exit=-9)"
+      },
+      {
+        "line": 4501,
+        "raw": "2026-11-26T05:48:36.3436260Z Simulator startup: failed; report /Users/runner/work/APP1/APP1/simulator-startup/report.json"
+      },
+      {
+        "line": 4502,
+        "raw": "2026-11-26T05:48:36.4138830Z ##[error]Process completed with exit code 1."
+      },
+      {
+        "line": 4542,
+        "raw": "2026-11-26T05:48:37.5051660Z Simulator warm-up outcome: failure (diagnostic only)"
+      }
+    ],
+    "ordered_stages": [
+      {
+        "stage": "preflight",
+        "status": "exited",
+        "exit": 0
+      },
+      {
+        "stage": "attempt-1-boot",
+        "status": "exited",
+        "exit": 0
+      },
+      {
+        "stage": "attempt-1-bootstatus",
+        "status": "exited",
+        "exit": 0
+      },
+      {
+        "stage": "attempt-1-postflight",
+        "status": "timed_out",
+        "exit": -9
+      },
+      {
+        "stage": "recovery-preflight",
+        "status": "timed_out",
+        "exit": -9
+      }
+    ],
+    "terminal": "2026-11-26T05:48:36.3436260Z Simulator startup: failed; process exit1 at05:48:36.4138830Z",
+    "workflow_explanation": "ios-prototype.yml lines243-252 explicitly make only warm-up continue-on-error. The selected test command later receives SIMULATOR_WARMUP_OUTCOME=failure. Its wrapper conclusion success is not a warm-up pass."
+  },
+  "limitations": [
+    "No original UI job logs or screenshots were reconciled in this native phase; UI/image work remains pending for same-context follow-up.",
+    "No fix or candidate repair is included in this original cd5 receipt. Worker038 owns repair; later source/execution must be reviewed separately.",
+    "No platform audit, manual VoiceOver session, physical-device performance or power-loss/provider durability is established.",
+    "Seven assertion failures and two failed methods are explicitly distinct; zero method skips does not erase unrun sub-stages inside a failed method.",
+    "Repository state and reports describing prior75e outcomes remain historical. No prior pass was used to replace current cd5 runtime evidence."
+  ]
+}

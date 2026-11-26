@@ -2,19 +2,41 @@
 
 **Scope:** M02, then M03, under [m02-m03-code-v2](../../acceptance/m02-m03-code.md).
 **Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
-**Current status:** M02 remains complete. M03 remains active. The actual leaf-button Text-layout repair is integrated; full validation is pending. The completed required UI run passed 29 of 35 methods and failed six. The known leaf-button text-query defect, current library/export failures and missing two-size captures require revalidation.
+**Current status:** M02 remains complete at the retained75e checkpoint. M03 remains active. Current cd5 native execution failed135/137; completed UI groups passed33/34, and app accessibility plus24 original captures remain pending. No failed or unrun requirement is promoted.
 
-The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/commit/75e827f2ee3f99798d619aff62f3a5188b509428). [Full verification run 45751931160](https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160) completed with a failed conclusion. This checkpoint retains its exact unsuccessful outcomes and does not promote M03.
+## Current source and actual runtime findings
 
-## Current source candidate
+[Source `cd5b461`](https://github.com/mirzotipi-wq/APP1/commit/cd5b461e9b1e534911ead986bed0a79188e20add) contains the four reviewed intrinsic Text-layout files. [Full CI run45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) retains the complete137-native/35-UI requirement and24 original Default/AXXXL captures. The [repair note](text-layout-repair.md), [source review](workers/w100-text-layout-source-review.json) and [192-input manifest](validation/source-cd5b461/source-manifest.json) remain source-specific records.
 
-[Source `cd5b461`](https://github.com/mirzotipi-wq/APP1/commit/cd5b461e9b1e534911ead986bed0a79188e20add) contains the four reviewed Text-layout repair files. [Full CI run 45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) must compile and execute 137 native methods, the unchanged 35 required UI methods, all existing core/tooling/build/Metal/persistence checks and all 24 original accessibility captures. The [repair note](text-layout-repair.md), [implementation report](workers/w038-text-layout-implementation.json), [independent source review](workers/w100-text-layout-source-review.json), and [192-input source manifest](validation/source-cd5b461/source-manifest.json) describe its exact scope. No new runtime pass is claimed.
+The current cd5 portable job has completed successfully. Its [source-specific receipt](validation/source-cd5b461/ci-core/summary.json), [raw job log](validation/source-cd5b461/ci-core/core-job.log), [benchmark payload](validation/source-cd5b461/ci-core/benchmark-from-ci.json) and [persistence reports](validation/source-cd5b461/ci-core/persistence-reports-from-ci.json) record 359 Debug and 359 Release tests, 92 tooling tests, twelve exact image matches, six parity and eight precision fixtures, the complete 8/12/4 benchmark inventory, and actual ext4 EFBIG/interruption/rename-EIO checks. This run used an AMD EPYC 9V74 host; earlier Xeon timings are not reused. [Worker 058](workers/w058-cd5-core-counts-images.json) independently reconciled all 359 started/pass pairs per configuration and the twelve original image hashes. [Worker 059](workers/w059-cd5-core-numerics-probes.json) independently reconciled all numerical, benchmark and real persistence output. The [method ledger](validation/source-cd5b461/ci-core/method-accounting.json) and [decoded-log hash receipt](validation/source-cd5b461/ci-core/log-receipt.json) retain root's separate reconciliation. The separate Apple/UI findings are recorded below.
 
-The current cd5 portable job has completed successfully. Its [source-specific receipt](validation/source-cd5b461/ci-core/summary.json), [raw job log](validation/source-cd5b461/ci-core/core-job.log), [benchmark payload](validation/source-cd5b461/ci-core/benchmark-from-ci.json) and [persistence reports](validation/source-cd5b461/ci-core/persistence-reports-from-ci.json) record 359 Debug and 359 Release tests, 92 tooling tests, twelve exact image matches, six parity and eight precision fixtures, the complete 8/12/4 benchmark inventory, and actual ext4 EFBIG/interruption/rename-EIO checks. This run used an AMD EPYC 9V74 host; earlier Xeon timings are not reused. [Worker 058](workers/w058-cd5-core-counts-images.json) independently reconciled all 359 started/pass pairs per configuration and the twelve original image hashes. [Worker 059](workers/w059-cd5-core-numerics-probes.json) independently reconciled all numerical, benchmark and real persistence output. The [method ledger](validation/source-cd5b461/ci-core/method-accounting.json) and [decoded-log hash receipt](validation/source-cd5b461/ci-core/log-receipt.json) retain root's separate reconciliation. Apple and UI execution remain pending.
+| Current cd5 check | Actual result |
+|---|---|
+| Unsigned Debug/test bundle and Release app builds | Passed |
+| macOS portable package |359 methods started and passed |
+| Required native methods |135 passed,2 failed;137 distinct starts and terminal events;7 assertions in the two failed methods |
+| Actual Metal methods |All3 passed; inline post-command checker unrun after xcodebuild exit65 |
+| Resolved palette contrast |116 distinct pairs passed and independently recomputed |
+| Actual APFS persistence probe |Passed EFBIG/control/exact-byte/fresh-process checks |
+| Studio/export UI |10/10 passed |
+| Library/reference UI |9/9 passed |
+| Studio/optics UI |10/10 passed |
+| Room/precision UI |4/5 passed; first room-status check failed |
+| App accessibility and24 original captures |Pending |
 
-A [conditional stall-diagnostic plan](workers/w050-repeat-stall-diagnostic-plan.json) is retained for a repeat of the earlier library relaunch or AR query failure. It proposes bounded, identity-verified samples from test-owned processes with the same app/test source, selectors and deadlines. It has not been implemented or executed and will remain unused if those workflows pass.
+The [native receipt](validation/source-cd5b461/native-execution-summary.json), [raw native log](validation/source-cd5b461/native-job.log), [exact method ledger](validation/source-cd5b461/native-method-accounting.json) and [worker100 independent runtime review](workers/w100-cd5-native-runtime-review.json) preserve the failed result. All previous134 native methods passed again. New codec/gating passed; the two hosted methods failed with callback-time native frames were still at zero origin and in-process public accessibility traversal returned no elements. The first positive Default iteration threw before AXXXL, growth or the8-point negative fixture: those later substages were unrun. The diagnostic warm-up also actually failed despite its continued wrapper conclusion.
 
-The completed-source sections below describe the preceding 75e run and retain its failures. Results are not transferred to changed App/test files.
+The [UI progress receipt](validation/source-cd5b461/ui-execution-progress.json) and four original logs retain33 passes and one failure among34 completed methods. Every previous75e library/studio-export failed method now passes freshly; no causal product fix is claimed. The room failure occurred after exact modifier editing, Undo, Redo and Save passed, at the first status predicate after opening the sheet. Later room/crossing checks were not reached. [Worker039's review](workers/w039-cd5-room-status-review.json) and the [original attachment receipt](validation/source-cd5b461/room-status-original/receipt.json) retain the distinction: the224-byte TXT contains only the query chain, not an actual label or hierarchy. Cause is unresolved.
+
+## Focused native harness correction
+
+Diagnostic [source03cfd3c](https://github.com/mirzotipi-wq/APP1/commit/03cfd3c90d2a45e96ee03ad71234363dfc899be7) is executing [run45768421649](https://github.com/mirzotipi-wq/APP1/actions/runs/45768421649). All187 build inputs match cd5 except two reviewed test files. Native observation now retains actual UIView references until layout finishes and preserves strict physical-pixel equality, actual font sizing, Default/AXXXL growth and the undersized8-point negative fixture. Ordinary Save/Cancel/Done leaf Button semantics are checked through external immutable UI snapshots in the existing complete library flow. No production or app-accessibility source changed.
+
+[Implementation](workers/w038-native-harness-correction.json), [normal-value refinement](workers/w038-normal-action-value-correction.json) and [independent review](workers/w100-native-harness-source-review.json) are retained. The [initial workflow review](workers/w097-probe-harness-workflow-initial-review.json) identified a working-file mode/type gap; the [corrected review](workers/w097-probe-harness-workflow-corrected-review.json) verifies all190 admitted files and exact copies of the normal native and library job steps. Both workflow versions and the concrete request are retained under diagnostic-sources. Source review establishes no runtime pass. Full main validation remains required.
+
+The conditional [repeat-stall plan](workers/w050-repeat-stall-diagnostic-plan.json) was not executed because the earlier large-library and AR failures now passed. The updated100-context ledger clarifies that017/018 returned real JSON while their attempted local-file creation was failed/unconfirmed. No additional worker contexts were counted.
+
+The completed-source sections below describe the preceding75e run and retain its failures. Results are not transferred to changed App/test files.
 
 ## Completed 75e core verification
 
@@ -34,7 +56,7 @@ The source-specific [core summary](validation/source-75e827f/ci-core/summary.jso
 
 This run used Ubuntu 24.04.5, Swift 6.4.2, Python 3.12.3, x86_64 Intel Xeon 6975P-C, and ext4. Timings are short host diagnostics. The six parity cases include the deliberately unsupported near-field case; it is separate from the twelve fully supported image fixtures. Actual Apple/Metal results are tracked separately.
 
-## Completed current-source native checks and UI progress
+## Previous75e native checks and UI outcome
 
 [M02 revalidation](m02-revalidation.md) is complete at the current source. [The native receipt](validation/source-75e827f/native/verification.json) records **134/134 native methods passed**, both new slider reentrancy regressions, all three actual Metal methods, 359 macOS package tests, both unsigned simulator builds and finalized XCTest export. All 116 contrast pairs passed: 80 text pairs have a minimum 5.41294844133131:1 and 36 non-text pairs a minimum 4.272705279813226:1. The actual macOS APFS EFBIG/control/reopen probe also passed.
 

@@ -1,0 +1,170 @@
+{
+  "status": "complete",
+  "completion_scope": "Actual-failure diagnosis and source-only candidate preparation; candidate has not been compiled or executed.",
+  "context_path": "/root/w007_review_coordinator/w038_project_name_ax_failure",
+  "parent_context": "/root/w007_review_coordinator",
+  "repository": "mirzotipi-wq/APP1",
+  "link_id": "link_6b0496ede3088191ad7f6c85f178a8a8",
+  "base_ref": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "authorization": "Unreferenced candidate source and report blobs only; no commit/tree/ref/source integration or CI mutation.",
+  "provenance": {
+    "workflow_run": 45761900201,
+    "job_id": 139715217001,
+    "job_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201/job/139715217001",
+    "raw_log_retrieved_directly": true,
+    "raw_log_characters": 898908,
+    "raw_log_lines": 5330,
+    "source_blobs": {
+      "NativeTests/StudioTextLayoutDiagnosticsTests.swift": "ed138c6197160ae614580d53ebdf85444551ea35",
+      "UITests/ProjectLibraryUITests.swift": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "App/StudioTextLayoutDiagnostics.swift": "699a0bf7a441d28d8d2f16d9332a481165f09313",
+      "App/ProjectLibraryView.swift": "2d540991327e5db1569e9b0f6839c732e33d843f",
+      "UITests/StudioAppAccessibilityUITests.swift": "5c5f6360f63267f6dc50473d88a7261bb0387e3b"
+    },
+    "previous_report_blobs": [
+      "24d21a23d38e72ca7649004a80125c0dd714198b",
+      "d4370610520876761781da1be8b45e425cef4f7e",
+      "4a777b9d533991945505ec861daf8389a0f2fe52",
+      "2d53456dfe7dce35b652c43c140eeb842a25f9a4"
+    ]
+  },
+  "observed": {
+    "native_total_executed": 137,
+    "assertion_failures": 7,
+    "new_class_methods": 3,
+    "failed_methods": [
+      {
+        "name": "testDisabledHostedProbePreservesNormalValueAndElementGrouping",
+        "source_lines": [
+          92,
+          95,
+          96,
+          97
+        ],
+        "observations": "Public native AX traversal produced []; count 0 vs 1; first label, value and button trait absent. Baseline and disabled cached UIView frames were both Text(0,0,42,20), control(0,0,300,100)."
+      },
+      {
+        "name": "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+        "source_lines": [
+          55,
+          58,
+          64
+        ],
+        "observations": "Default preference Text(149.16666666666666,121.83333333333333,41.66666666666666,20.33333333333333); cached native Text(0,0,42,20), control(0,0,300,100). Containment false, physical rectangle(448,366,125,61) != (0,0,126,60), then XCTUnwrap of first native AX value throws."
+      }
+    ],
+    "passed_method": "testExplicitGatingAndExactFrameRoundTrip",
+    "not_reached": "The original positive method threw on the first Default fixture's absent AX value, before AXXXL, growth and undersized fixture checks.",
+    "exact_log_excerpt": "2026-11-26T05:53:55.7738720Z Test Suite 'StudioTextLayoutDiagnosticsTests' started at 2026-11-26 05:53:30.995.\n2026-11-26T05:53:55.8773020Z Test Case '-[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testDisabledHostedProbePreservesNormalValueAndElementGrouping]' started.\n2026-11-26T05:53:55.9802990Z Hosted Text probe: enabled=false, category=L, frames=[:], nativeText=Optional((0.0, 0.0, 42.0, 20.0)), nativeControl=Optional((0.0, 0.0, 300.0, 100.0)), elements=[]\n2026-11-26T05:53:56.1355840Z Hosted Text probe: enabled=false, category=L, frames=[:], nativeText=Optional((0.0, 0.0, 42.0, 20.0)), nativeControl=Optional((0.0, 0.0, 300.0, 100.0)), elements=[]\n2026-11-26T05:53:56.2399570Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:92: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testDisabledHostedProbePreservesNormalValueAndElementGrouping] : XCTAssertEqual failed: (\"0\") is not equal to (\"1\") - Read the real foreground-hosted action; an empty AX tree is not a pass\n2026-11-26T05:53:56.3580010Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:95: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testDisabledHostedProbePreservesNormalValueAndElementGrouping] : XCTAssertEqual failed: (\"nil\") is not equal to (\"Optional(\"Done\")\")\n2026-11-26T05:53:56.4813140Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:96: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testDisabledHostedProbePreservesNormalValueAndElementGrouping] : XCTAssertEqual failed: (\"nil\") is not equal to (\"Optional(\"Original action value\")\")\n2026-11-26T05:53:56.5818650Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:97: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testDisabledHostedProbePreservesNormalValueAndElementGrouping] : XCTAssertEqual failed: (\"nil\") is not equal to (\"Optional(true)\")\n2026-11-26T05:53:56.6833530Z Test Case '-[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testDisabledHostedProbePreservesNormalValueAndElementGrouping]' failed (1.005 seconds).\n2026-11-26T05:53:56.7856910Z Test Case '-[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testExplicitGatingAndExactFrameRoundTrip]' started.\n2026-11-26T05:53:56.8865920Z Test Case '-[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testExplicitGatingAndExactFrameRoundTrip]' passed (0.014 seconds).\n2026-11-26T05:53:56.9888400Z Test Case '-[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton]' started.\n2026-11-26T05:53:57.0977830Z Hosted Text probe: enabled=true, category=L, frames=[\"hostedDoneTitle\": (149.16666666666666, 121.83333333333333, 41.66666666666666, 20.33333333333333)], nativeText=Optional((0.0, 0.0, 42.0, 20.0)), nativeControl=Optional((0.0, 0.0, 300.0, 100.0)), elements=[]\n2026-11-26T05:53:57.1993150Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:55: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton] : XCTAssertTrue failed\n2026-11-26T05:53:57.3009580Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:58: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton] : XCTAssertEqual failed: (\"(448.0, 366.0, 125.0, 61.0)\") is not equal to (\"(0.0, 0.0, 126.0, 60.0)\")\n2026-11-26T05:53:57.4298220Z /Users/runner/work/APP1/APP1/NativeTests/StudioTextLayoutDiagnosticsTests.swift:64: error: -[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton] : XCTUnwrap failed: expected non-nil value of type \"String\"\n2026-11-26T05:53:57.5332230Z Test Case '-[KeyAndFillTests.StudioTextLayoutDiagnosticsTests testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton]' failed (0.113 seconds).\n2026-11-26T05:53:57.6422580Z Test Suite 'StudioTextLayoutDiagnosticsTests' failed at 2026-11-26 05:53:32.389.\n2026-11-26T05:53:57.7429660Z \t Executed 3 tests, with 7 failures (0 unexpected) in 1.133 (1.393) seconds"
+  },
+  "diagnosis": [
+    {
+      "confidence": "source/log-supported fixture defect; exact live result still unknown",
+      "finding": "The native test cached CGRects from its representable's update/layout/attachment callbacks. A later ancestor layout may change the real view-to-screen conversion without refreshing that cache. The logged zero-origin cache demonstrably disagrees with the later SwiftUI preference, but the log does not prove that every live size will match or that app geometry is defective."
+    },
+    {
+      "confidence": "direct runtime observation",
+      "finding": "All three logged native fixtures exposed no leaves through the public in-process AX traversal. That path cannot establish SwiftUI Button label/value/grouping in this run. This is not evidence of a normal external AX defect."
+    }
+  ],
+  "candidate_files": [
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "base_blob": "ed138c6197160ae614580d53ebdf85444551ea35",
+      "candidate_blob": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+      "changes": [
+        "Replace callback-time CGRect capture with retained actual UIView references; read bounds-to-screen conversion after the existing foreground-hosted layout drains while the views remain attached.",
+        "Assert each view belongs to the expected UIWindow and UIHostingController subtree; require finite nonempty bounds/screen frames and distinct text/control references.",
+        "Keep exact existing physical-pixel equality without coordinate/size tolerance; keep 44-point parent height, actual Text containment, independent font/physical-pixel requirement, 1.25 growth, and the large-button/8-point-text negative fixture.",
+        "Round-trip actual measured geometry through the diagnostic encoder/decoder; transport through actual owner AX values remains covered by the existing instrumented external workflow.",
+        "Replace unavailable native AX traversal assertions with meaningful baseline-versus-disabled live text/control geometry, exact parent fixture size, containment/font-size checks and absence of preferences. Rename the method to describe layout coverage honestly."
+      ]
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "base_blob": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "candidate_blob": "97c2db93fdf2d047324344cd89960ee8fd6a8370",
+      "changes": [
+        "In existing testCreateDuplicateRenameSwitchAndRelaunch, assert the probe flag is absent from the launch environment.",
+        "Snapshot actual uninstrumented Done, Cancel and Save project name owners; require exact identifier/label, Button element type, nil normal value, no AX child nodes, enabled and hittable.",
+        "Record the actual external snapshot properties and children in three text attachments/log records before assertions. No new screenshot capture is added.",
+        "Keep every pre-existing UI test method and remaining functional workflow; other library UI method bodies are unchanged."
+      ]
+    }
+  ],
+  "unchanged": [
+    "All App production sources and App/StudioTextLayoutDiagnostics.swift, including DEBUG + -ui-testing + explicit environment-flag gate and existing VoiceOver grouping/actions/labels.",
+    "UITests/StudioAppAccessibilityUITests.swift including real StaticText oracle, independently computed viewport, control/hittability/keyboard/44-point/full-containment checks, font-size/growth gates and the 24 required original screenshot captures.",
+    "No Vision or OCR use, no synthesized accessibility leaves, no skips, no threshold/tolerance changes, no workflow/shard-map changes."
+  ],
+  "inventory": {
+    "native_method_count_before": 3,
+    "native_method_count_after": 3,
+    "native_count_delta": 0,
+    "renamed_native_method": {
+      "from": "testDisabledHostedProbePreservesNormalValueAndElementGrouping",
+      "to": "testDisabledHostedProbePreservesUninstrumentedLayout"
+    },
+    "library_ui_method_count_before": 7,
+    "library_ui_method_count_after": 7,
+    "ui_count_delta": 0,
+    "expected_native_total": 137,
+    "expected_required_ui_total": 35,
+    "expected_counts_basis": "Native 137 is actual cd5 log inventory; required UI35 is parent-reconciled existing inventory. Candidate adds no methods; one native method is renamed. No new global inventory was executed.",
+    "required_accessibility_original_png_count": 24,
+    "additional_text_attachments": 3
+  },
+  "source_review": {
+    "nativeMethodsBefore": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesNormalValueAndElementGrouping"
+    ],
+    "nativeMethodsAfter": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesUninstrumentedLayout"
+    ],
+    "libraryUIMethodsBefore": [
+      "testCreateDuplicateRenameSwitchAndRelaunch",
+      "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+      "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+      "testStaleSaveReloadRequiresConfirmation",
+      "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+      "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+      "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch"
+    ],
+    "libraryUIMethodsAfter": [
+      "testCreateDuplicateRenameSwitchAndRelaunch",
+      "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+      "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+      "testStaleSaveReloadRequiresConfirmation",
+      "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+      "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+      "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch"
+    ],
+    "gatingAndLiteralRoundtripUnchanged": true,
+    "nativePixelAndFontPredicateUnchanged": true,
+    "allOtherLibraryUIMethodsUnchanged": true,
+    "noNativeAXTraversal": true,
+    "retainedLiveReferences": true,
+    "noCallbackCGRectStorage": true,
+    "ownershipGuards": true,
+    "normalExternalSemanticChecks": true,
+    "noNewUIEnvironmentFlagEnable": true
+  },
+  "validation": {
+    "candidate_compilation": "UNVERIFIED: no local native compiler/host available.",
+    "candidate_native_runtime": "UNVERIFIED: candidate was not executed.",
+    "candidate_ui_runtime": "UNVERIFIED: candidate was not executed.",
+    "vision_runtime": "Not applicable; no Vision dependency or code.",
+    "original_failure": "Preserved verbatim above; no original evidence was overwritten.",
+    "next_required_evidence": "Run the three native methods and existing library UI workflow, then required full accounting. Confirm LIVE diagnostics, exact geometry equality, both content sizes/growth, undersized rejection, normal external owner snapshots, and unchanged instrumented workflow/screenshots.",
+    "limits": [
+      "Live UIKit geometry may still differ in physical size; exact assertion is intentionally retained and must be resolved from actual subsequent logs, not a tolerance.",
+      "External nil-value/leaf assertions have source and preserved hierarchy support but have not been run in this candidate.",
+      "Native disabled test now claims layout/preference behavior only; the fixture's arbitrary Original action value is no longer claimed as verified through unavailable in-process AX.",
+      "Actual normal app Buttons are checked externally. This is not a full VoiceOver audit or release-runtime claim."
+    ]
+  }
+}

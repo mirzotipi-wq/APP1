@@ -1,32 +1,59 @@
 {
   "schema": "app1-m02-m03-review-disposition-v1",
   "created_at_utc": "2026-11-26 05:34:44 UTC",
-  "status": "interim_pending_newsource_runtime",
+  "status": "interim_pending_reviewed_harness_repair_and_required_runtime",
   "acceptance_contract": "m02-m03-code-v2",
   "acceptance_source_blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
-  "review_reports_aggregate_blob_sha": "a4786a3763b29962444d79e978f649a1801131ed",
+  "review_reports_aggregate_blob_sha": "6fb83d7c0e01b25da02e14e5ddb9bd23d890f31f",
   "runtime": {
-    "executed_source_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
-    "executed_run_id": 45751931160,
-    "executed_run_conclusion": "failure",
-    "native_required_passed": 134,
-    "native_required_total": 134,
-    "ui_required_passed": 29,
-    "ui_required_total": 35,
-    "ui_required_failed": 6,
-    "required_original_images_verified": 9,
-    "required_original_images_total": 24,
-    "additional_diagnostic_original_images_verified": 2,
-    "m03_accepted": false,
-    "new_source_revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
-    "new_source_run_id": 45761900201,
-    "new_source_run_status": "active; actual outcomes not yet independently reconciled",
-    "expected_new_native_required": 137,
-    "expected_new_ui_required": 35,
-    "expected_new_required_images": 24,
-    "provenance": "Executed75e counts were independently reconciled in worker100 reports655318fa and2607c032. Root reported the new source commit and active run. No new-source native or UI pass is claimed."
+    "source_revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+    "run_id": 45761900201,
+    "core": {
+      "status": "success",
+      "independent_reports": [
+        "fcf8f7dd029fc586aa8f19f30b196ee8c4c8b0e6",
+        "3437ace82bd4978a2bd8203b6abc87f051290c01"
+      ]
+    },
+    "native": {
+      "status": "failure",
+      "passed": 135,
+      "failed": 2,
+      "total": 137,
+      "assertion_failures": 7,
+      "previous134": "all passed",
+      "independent_report": "0e1e8e9008f32a3985a0ff829cc380f35248943c",
+      "warmup": "actual failure; wrapper continued success",
+      "metal": "3 actual tests passed; inline post-xcodebuild checker unrun afterexit65"
+    },
+    "ui": {
+      "status": "pending complete independent reconciliation",
+      "root_reported_success_shards": [
+        "library-reference",
+        "studio-export",
+        "studio-optics"
+      ],
+      "root_reported_passed_methods": 33,
+      "remaining_shards": [
+        "app-accessibility"
+      ],
+      "root_reported_failed_methods": 1,
+      "room_precision": {
+        "status": "failure",
+        "passed": 4,
+        "failed": 1,
+        "root_reported_failed_method": "PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters",
+        "line": 134,
+        "independent_review": "queued039"
+      }
+    },
+    "required_screenshots": {
+      "status": "pending",
+      "required": 24
+    },
+    "m03_accepted": false
   },
-  "conclusion": "No additional demonstrated must-fix product defect remains unimplemented in the reviewed reports. M03 remains blocked: the completed75e run has six failed UI methods and15 missing required images. The proven leaf-button-label test defect is implemented atcd5b461 but not yet validated. The causes of the other five failed methods remain unproved. The new full run must provide actual137-native,35-UI and24-image evidence.",
+  "conclusion": "M02 remains supported by retained accepted evidence and current core/Metal results. M03 is not accepted. Current cd5 native execution has135 passes and two failures in newly added hosted fixtures. Root reports33 of34 completed UI methods passing, with one initial room-status predicate failure and the app-accessibility method still pending. All five prior non-AX failed methods passed on the fresh run, without a proved causal product fix. The two-file native/live-geometry and external-AX repair is independently source-reviewed and remains unexecuted.",
   "dispositions": [
     {
       "id": "confirmed-product-slider-reentrant-read",
@@ -44,7 +71,12 @@
       "report_shas": [
         "000d16616a3865859966e3fac056f97c376938f0",
         "655318fa58dfa18ca7b08dbedce4b60ee759929c"
-      ]
+      ],
+      "current_native_confirmation": {
+        "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "report_sha": "0e1e8e9008f32a3985a0ff829cc380f35248943c",
+        "result": "All previous134 native methods, including these regressions, passed in the currentcd5 execution. Overall native run failed two new hosted methods."
+      }
     },
     {
       "id": "confirmed-product-braille-blank",
@@ -64,7 +96,12 @@
         "4870a97ce3809e9aac2a8fdbc15f8dce310ec787",
         "036b94469e4fa539f11fac0bc4dd2b6a8b468a1e",
         "655318fa58dfa18ca7b08dbedce4b60ee759929c"
-      ]
+      ],
+      "current_native_confirmation": {
+        "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "report_sha": "0e1e8e9008f32a3985a0ff829cc380f35248943c",
+        "result": "All previous134 native methods, including these regressions, passed in the currentcd5 execution. Overall native run failed two new hosted methods."
+      }
     },
     {
       "id": "confirmed-product-done-target",
@@ -156,7 +193,13 @@
         "8c8e994cdc5564317cff1ce9c049b06869e6d0c9",
         "8ae355098d316113c4489db27623791159458b8c",
         "2607c032fd481fcccce028abb4be6a000e7d2fae"
-      ]
+      ],
+      "current_ui_confirmation": {
+        "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "run_id": 45761900201,
+        "evidence_kind": "Root's completed current-job reconciliation; independent full UI/image followup pending",
+        "result": "The complete library-reference, studio-export and studio-optics shards passed. Prior failed methods are preserved as historical failures; no product-causal fix is claimed."
+      }
     },
     {
       "id": "actual-large-library-relaunch-failure",
@@ -172,12 +215,18 @@
       ],
       "evidence": "The actual75e original PNG and hierarchy show Opening projects after relaunch, with Projects and Save disabled. Eight of nine library methods passed. This is not a title mismatch or merely an invalid snapshot.",
       "disposition": "Source establishes a pending load and duplicated fixture load/validation work, but no actor, cancellation, locking or adoption cause was proved. Preserve the original failure and require a fresh successful workflow. No speculative product patch or deadline waiver was applied.",
-      "status": "blocking_runtime_gate; fresh_run_pending",
+      "status": "passed_on_fresh_cd5_execution_per_root; historical_cause_unproved",
       "report_shas": [
         "075f956381c023c60d83da36bde7f0a271ab8cdc",
         "c918dc02132cc86b2b082793568252af824511c7",
         "2607c032fd481fcccce028abb4be6a000e7d2fae"
-      ]
+      ],
+      "current_ui_confirmation": {
+        "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "run_id": 45761900201,
+        "evidence_kind": "Root's completed current-job reconciliation; independent full UI/image followup pending",
+        "result": "The complete library-reference, studio-export and studio-optics shards passed. Prior failed methods are preserved as historical failures; no product-causal fix is claimed."
+      }
     },
     {
       "id": "actual-export-studio-four-failures",
@@ -205,12 +254,18 @@
         }
       ],
       "disposition": "Six of ten75e methods passed. Root retained full and compact archives, original captures, the raw log and host data. Host stalls outside app commands occurred before tests, but their role in the later PDF/AR failures remains unproved. Fresh execution is required. No arbitrary retry loop, wider assertion deadline or speculative product patch was applied.",
-      "status": "blocking_runtime_gates; fresh_run_pending",
+      "status": "passed_on_fresh_cd5_execution_per_root; historical_cause_unproved",
       "report_shas": [
         "91791f7c09250d58a61bcd1707a00b5d98b3e769",
         "37dc2d7138cf48dde062e3423356b9901f3e58c6",
         "2607c032fd481fcccce028abb4be6a000e7d2fae"
-      ]
+      ],
+      "current_ui_confirmation": {
+        "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "run_id": 45761900201,
+        "evidence_kind": "Root's completed current-job reconciliation; independent full UI/image followup pending",
+        "result": "The complete library-reference, studio-export and studio-optics shards passed. Prior failed methods are preserved as historical failures; no product-causal fix is claimed."
+      }
     },
     {
       "id": "ci-optics-budget",
@@ -225,7 +280,13 @@
       "report_shas": [
         "d9b45320cb150c1d5a41d583a83b9c3891c7c320",
         "2607c032fd481fcccce028abb4be6a000e7d2fae"
-      ]
+      ],
+      "current_ui_confirmation": {
+        "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+        "run_id": 45761900201,
+        "evidence_kind": "Root's completed current-job reconciliation; independent full UI/image followup pending",
+        "result": "The complete library-reference, studio-export and studio-optics shards passed. Prior failed methods are preserved as historical failures; no product-causal fix is claimed."
+      }
     },
     {
       "id": "nonblocking-unbounded-standalone-photometry",
@@ -272,6 +333,45 @@
         "63cc009fe12e7eaedd21c84d00b86a6e3ef5f178"
       ],
       "superseded_report_sha": "fc38e93870fd4d8678b7978de6f7fa4d592ba098"
+    },
+    {
+      "id": "current-native-hosted-fixture-failure",
+      "workers": [
+        "w038",
+        "w100"
+      ],
+      "kind": "Observed failures in new native test fixtures; production geometry defect not established",
+      "paths": [
+        "NativeTests/StudioTextLayoutDiagnosticsTests.swift"
+      ],
+      "evidence": "Two of137 methods failed with seven assertions. Public native AX traversal returned zero leaves. Cached UIKit rectangles remained at zero origin and differed in size from recorded Text. The first Default fixture threw before AXXXL/growth/undersized cases ran.",
+      "disposition": "Reviewed candidate retains live attached UIView references and strict physical-pixel equality, with real window/host ownership. Native disabled layout and positive/AXXXL/undersized coverage remain. Actual normal owner labels, values and grouping move to external snapshots in an existing library method. Exactly nil or empty String represents absent value; other values fail.137 native and35 UI methods remain.",
+      "status": "blocking_runtime_gate; reviewed_candidate_unexecuted",
+      "native_candidate_sha": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+      "ui_candidate_sha": "618c70bb4677c1d391c54bd3d6b4584e641b21d4",
+      "report_shas": [
+        "0e1e8e9008f32a3985a0ff829cc380f35248943c",
+        "bc8b196a0e3818a94818722841b045a70bf2c200",
+        "50119f8844cfd2cb391d4bc873b15ef3bc1f485d",
+        "b6d62159cd44dc22928d79731415a93a58d6b04f"
+      ],
+      "superseded_ui_candidate_sha": "97c2db93fdf2d047324344cd89960ee8fd6a8370"
+    },
+    {
+      "id": "current-room-first-status-predicate",
+      "workers": [
+        "w039"
+      ],
+      "kind": "Observed required UI failure; actual incorrect status/geometry unproved",
+      "paths": [
+        "UITests/PrecisionEditingUITests.swift:134"
+      ],
+      "evidence": "Current room shard has four passes and one failure. Modifier width1.237, undo0.6, redo1.237 and local saving passed. The first roomPlacementStatus exists-plus-label predicate timed out after opening the sheet; no room measurements or crossing assertions were reached.",
+      "disposition": "The failing query uses broad Any descendants and lacks the explicit closeRoomPlacement readiness boundary used in passing manual tests. The passing resize test uses typed Other and a label-only predicate at the same15-second deadline. Original debug TXT6FC5D73E-BA12-4702-BC5C-2A68F3F6274F is being retrieved before selecting a fix. No deadline widening or product-geometry change.",
+      "status": "blocking_runtime_gate; original_attachment_pending",
+      "report_shas": [
+        "f33fb35106f811d3740896a58ff6a1e1bbba203c"
+      ]
     }
   ],
   "corrections": [
@@ -299,6 +399,16 @@
       "status": "explicit independent outcomes",
       "report_sha": "655318fa58dfa18ca7b08dbedce4b60ee759929c",
       "reason": "The actual75e warm-up failed with timeouts and exit1 despite wrapper SUCCESS. The actual selected native command,134-method accounting, Metal execution and finalized export subsequently passed. Neither outcome overwrites the other."
+    },
+    {
+      "id": "focused-harness-working-file-modes",
+      "status": "source finding closed by independent correction review; execution pending",
+      "initial_report_sha": "29c6c4a4b6d55024adeefe290f790bbbcacb6ac6",
+      "initial_workflow_sha": "bf2477dc7a057733980f5ef09a3cf51a4c3dd4ad",
+      "revised_workflow_sha": "ae8a924938c405cbf363eab892c69a2fcc39dcab",
+      "request_sha": "1d6fc32f51e08a2442f3ad986cad378b18bc8941",
+      "reason": "Initial admission validated index modes/content but not working-file types/modes. Corrected admission lstat-checks all190 pinned files, rejects nonregular/symlink files and checks executable modes. Two consumed validator workflows are now pinned separately. Exact187 baseline input paths/modes contain only the two authorized test replacements; no diagnostic execution yet claimed.",
+      "corrected_review_sha": "6d293c5d0adeaaa82f0a6a07c5e103610a8007e5"
     }
   ],
   "other_review_limits": [
@@ -309,5 +419,6 @@
     "Historical failed and unavailable evidence remains retained. Diagnostic images do not replace the required24 captures.",
     "Original report files008-016 remain unavailable after the executor outage. Their actual returned summaries are explicitly identified as the retained evidence."
   ],
-  "supersedes_blob_sha": "79a612674907bcd4884eb10130cdbc3cab655f75"
+  "supersedes_blob_sha": "f2b9cbb756057ea46454c6543acfc66f007aa8bc",
+  "updated_at_utc": "2026-11-26 06:23:50 UTC"
 }

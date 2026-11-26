@@ -1,0 +1,219 @@
+{
+  "worker": "worker039",
+  "context_path": "/root/w007_review_coordinator/w039_room_draft_input_failure",
+  "status": "complete",
+  "review_kind": "Same-context bounded source and exact finalized CI trace review; new initial center-status failure",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "prior_reports_preserved": [
+    "7628ad3643526dd1d8677eccd210497adf252fc5",
+    "f9929d396dcd91eaa3312a95994965dc391369bd"
+  ],
+  "scope": "Investigate PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters first room center-status predicate timeout. This is not the old7b91 roomWidth draft-entry failure.",
+  "sources": [
+    {
+      "path": "UITests/PrecisionEditingUITests.swift",
+      "blob_sha": "d0478631b8569dbf9636607312e812cb7dbbb7a7",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/cd5b461e9b1e534911ead986bed0a79188e20add/UITests/PrecisionEditingUITests.swift"
+    },
+    {
+      "path": "App/ManualRoomPlacementView.swift",
+      "blob_sha": "37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/cd5b461e9b1e534911ead986bed0a79188e20add/App/ManualRoomPlacementView.swift"
+    },
+    {
+      "path": "UITests/ManualRoomPlacementUITests.swift",
+      "blob_sha": "c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/cd5b461e9b1e534911ead986bed0a79188e20add/UITests/ManualRoomPlacementUITests.swift"
+    }
+  ],
+  "log_provenance": {
+    "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+    "run_id": 45761900201,
+    "job_id": 139715216957,
+    "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201/job/139715216957",
+    "checked_out_revision_excerpt": [
+      "2026-11-26T05:34:23.9917480Z [command]/usr/local/bin/git log -1 --format=%H",
+      "2026-11-26T05:34:23.9921570Z cd5b461e9b1e534911ead986bed0a79188e20add"
+    ],
+    "failure_excerpt": [
+      "2026-11-26T06:02:47.5626680Z     t =   123.21s Tap \"openRoomPlacement\" Button",
+      "2026-11-26T06:02:47.6639610Z     t =   123.21s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:47.7652150Z     t =   123.23s     Find the \"openRoomPlacement\" Button",
+      "2026-11-26T06:02:48.4702380Z     t =   124.11s     Check for interrupting elements affecting \"openRoomPlacement\" Button",
+      "2026-11-26T06:02:49.1940410Z     t =   124.76s     Synthesize event",
+      "2026-11-26T06:02:49.7005090Z     t =   125.28s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:57.3126360Z     t =   132.85s Checking `Expect predicate `exists == 1 AND label CONTAINS \"All 5 center positions inside room\"` for object \"roomPlacementStatus\" Any`",
+      "2026-11-26T06:02:57.4139160Z     t =   132.85s     Checking existence of `\"roomPlacementStatus\" Any`",
+      "2026-11-26T06:03:03.7809790Z     t =   139.30s     Find the \"roomPlacementStatus\" Any",
+      "2026-11-26T06:03:11.7014080Z     t =   147.11s     Capturing element debug description",
+      "2026-11-26T06:03:17.2672120Z /Users/runner/work/APP1/APP1/UITests/PrecisionEditingUITests.swift:134: error: -[KeyAndFillUITests.PrecisionEditingUITests testExactModifierWidthAndRoomCrossingWithInsideCenters] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+      "2026-11-26T06:03:17.3859450Z     t =   152.37s Tear Down",
+      "2026-11-26T06:03:25.5717370Z Test Case '-[KeyAndFillUITests.PrecisionEditingUITests testExactModifierWidthAndRoomCrossingWithInsideCenters]' failed (161.204 seconds).",
+      "2026-11-26T06:03:25.7742640Z Test Suite 'PrecisionEditingUITests' failed at 2026-11-26 06:03:25.539.",
+      "2026-11-26T06:03:26.0091420Z \t Executed 3 tests, with 1 failure (0 unexpected) in 409.659 (409.666) seconds",
+      "2026-11-26T06:03:26.1101750Z Test Suite 'KeyAndFillUITests.xctest' failed at 2026-11-26 06:03:25.540.",
+      "2026-11-26T06:03:26.2110230Z \t Executed 5 tests, with 1 failure (0 unexpected) in 919.627 (919.642) seconds",
+      "2026-11-26T06:03:26.3162760Z Test Suite 'Selected tests' failed at 2026-11-26 06:03:25.542.",
+      "2026-11-26T06:03:26.4180690Z \t Executed 5 tests, with 1 failure (0 unexpected) in 919.627 (919.645) seconds"
+    ],
+    "preceding_successful_edit_excerpt": [
+      "2026-11-26T06:01:54.3202580Z     t =    69.94s Checking `Expect predicate `exists == 1 AND value == \"1.237 m\"` for object \"emitterWidthExact\" Button`",
+      "2026-11-26T06:01:54.4251030Z     t =    69.95s     Checking existence of `\"emitterWidthExact\" Button`",
+      "2026-11-26T06:01:55.0423720Z     t =    70.60s     Find the \"emitterWidthExact\" Button",
+      "2026-11-26T06:01:57.7587560Z     t =    73.02s Checking `Expect predicate `exists == 1 AND value == \"1.237 m\"` for object \"emitterWidth\" Slider`",
+      "2026-11-26T06:01:57.8864050Z     t =    73.02s     Checking existence of `\"emitterWidth\" Slider`",
+      "2026-11-26T06:01:58.3628530Z     t =    73.98s     Find the \"emitterWidth\" Slider",
+      "2026-11-26T06:01:59.3917890Z     t =    74.93s Tap \"undo\" Button",
+      "2026-11-26T06:01:59.4929390Z     t =    74.93s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:01:59.5933110Z     t =    74.94s     Find the \"undo\" Button",
+      "2026-11-26T06:02:00.3018120Z     t =    75.96s     Check for interrupting elements affecting \"undo\" Button",
+      "2026-11-26T06:02:01.0282700Z     t =    76.60s     Synthesize event",
+      "2026-11-26T06:02:02.3434050Z     t =    76.99s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:02.8114400Z     t =    78.33s Checking `Expect predicate `exists == 1 AND value == \"0.6 m\"` for object \"emitterWidth\" Slider`",
+      "2026-11-26T06:02:02.9167410Z     t =    78.33s     Checking existence of `\"emitterWidth\" Slider`",
+      "2026-11-26T06:02:04.1838730Z     t =    79.55s     Find the \"emitterWidth\" Slider",
+      "2026-11-26T06:02:05.2554870Z     t =    80.83s Tap \"redo\" Button",
+      "2026-11-26T06:02:05.3553730Z     t =    80.83s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:05.4561880Z     t =    80.84s     Find the \"redo\" Button",
+      "2026-11-26T06:02:05.8585750Z     t =    81.48s     Check for interrupting elements affecting \"redo\" Button",
+      "2026-11-26T06:02:06.5700350Z     t =    82.22s     Synthesize event",
+      "2026-11-26T06:02:07.6930800Z     t =    82.59s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:08.6283330Z     t =    83.81s Checking `Expect predicate `exists == 1 AND value == \"1.237 m\"` for object \"emitterWidth\" Slider`",
+      "2026-11-26T06:02:08.8290490Z     t =    83.82s     Checking existence of `\"emitterWidth\" Slider`",
+      "2026-11-26T06:02:09.0513720Z     t =    84.62s     Find the \"emitterWidth\" Slider",
+      "2026-11-26T06:02:10.1805570Z     t =    85.75s Find the \"emitterWidthExact\" Button",
+      "2026-11-26T06:02:11.3951840Z     t =    86.98s Tap \"saveProject\" Button",
+      "2026-11-26T06:02:11.5011250Z     t =    86.98s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:11.5333170Z     t =    86.99s     Find the \"saveProject\" Button",
+      "2026-11-26T06:02:12.4082050Z     t =    88.02s     Check for interrupting elements affecting \"saveProject\" Button",
+      "2026-11-26T06:02:12.8584840Z     t =    88.48s     Synthesize event",
+      "2026-11-26T06:02:13.2116570Z     t =    88.83s     Wait for com.example.keyandfill to idle",
+      "2026-11-26T06:02:15.4334950Z     t =    90.91s Checking `Expect predicate `exists == 1 AND label == \"Saved locally\"` for object \"projectStatus\" StaticText`",
+      "2026-11-26T06:02:15.5502500Z     t =    90.92s     Checking existence of `\"projectStatus\" StaticText`",
+      "2026-11-26T06:02:16.5764810Z     t =    92.14s     Find the \"projectStatus\" StaticText"
+    ],
+    "case_outcomes": [
+      "2026-11-26T05:49:25.7625600Z Test Case '-[KeyAndFillUITests.ManualRoomPlacementUITests testManualRoomReportsOutOfBoundsAndRecordsRoomEdit]' passed (79.555 seconds).",
+      "2026-11-26T05:56:35.9003730Z Test Case '-[KeyAndFillUITests.ManualRoomPlacementUITests testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates]' passed (430.413 seconds).",
+      "2026-11-26T05:58:23.4557360Z Test Case '-[KeyAndFillUITests.PrecisionEditingUITests testExactCameraFocalLengthUndoRedoAndReopen]' passed (107.573 seconds).",
+      "2026-11-26T06:00:44.3364360Z Test Case '-[KeyAndFillUITests.PrecisionEditingUITests testExactLightIntensityValidationUndoRedoAndReopen]' passed (140.882 seconds).",
+      "2026-11-26T06:03:25.5717370Z Test Case '-[KeyAndFillUITests.PrecisionEditingUITests testExactModifierWidthAndRoomCrossingWithInsideCenters]' failed (161.204 seconds)."
+    ]
+  },
+  "observed_boundary": {
+    "method": "PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters",
+    "failure_source": "UITests/PrecisionEditingUITests.swift:134",
+    "caller_source_line": 136,
+    "predicate": "exists == true AND label CONTAINS \"All 5 center positions inside room\"",
+    "target": "app.descendants(matching: .any)[\"roomPlacementStatus\"].firstMatch",
+    "configured_timeout_seconds": 15,
+    "passed_before_failure": [
+      "Exact modifier width1.237m",
+      "Slider width1.237m",
+      "Undo width0.6m",
+      "Redo width1.237m",
+      "Exact width1.237m again",
+      "Saved locally receipt"
+    ],
+    "not_reached": [
+      "Initial modifier-face status assertion",
+      "setRoomMeasurement(\"1.6\", id:\"roomSubjectX\")",
+      "Post-subject-move center assertion",
+      "Modifier crossing assertion",
+      "Crossing screenshot",
+      "Room edit undo/redo/save"
+    ],
+    "timing": [
+      {
+        "event": "openRoomPlacement tap",
+        "relative_seconds": 123.21
+      },
+      {
+        "event": "status predicate/existence check",
+        "relative_seconds": 132.85
+      },
+      {
+        "event": "Find roomPlacementStatus Any",
+        "relative_seconds": 139.3
+      },
+      {
+        "event": "Capturing element debug description",
+        "relative_seconds": 147.11
+      },
+      {
+        "event": "Timeout failure/tear down",
+        "relative_seconds": 152.37
+      }
+    ],
+    "method_start_utc": "2026-11-26T06:00:44",
+    "method_failure_utc": "2026-11-26T06:03:25",
+    "method_duration_seconds": 161.204,
+    "raw_observed_status_label": null
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "certainty": "confirmed",
+      "detail": "The required method fails at the FIRST center-status expectation immediately after presenting room placement. The room numeric helper is never reached. Four other methods pass, including the previously failing explicit room-resize workflow."
+    },
+    {
+      "id": "F2",
+      "certainty": "confirmed source",
+      "detail": "The predicate demands accessibility existence and a label substring; it does not demand visibility, hittability, room fields, rectangular-face success, or committed room persistence. The app explicitly sets accessibilityLabel(centerStatus), where centerStatus is derived from plan.outsideCount and plan.points.count. No locale mismatch is evident: the test forces English/en_US, and source supplies the matching English phrase."
+    },
+    {
+      "id": "F3",
+      "certainty": "confirmed source and trace",
+      "detail": "The failing helper resolves a broad Any firstMatch and asks exists plus label in each predicate. The trace shows existence at132.85, Find at139.30, and debug capture at147.11 before timeout. These observed intervals support expensive query resolution or availability as an investigation target; they do not reveal the returned label or precisely instrument each internal query duration."
+    },
+    {
+      "id": "F4",
+      "certainty": "confirmed comparison",
+      "detail": "The passing room-resize method queries app.otherElements[roomPlacementStatus] and uses a label-only CONTAINS predicate with the same15-second timeout. Its existing source comment documents prior captured Other semantics and redundant existence snapshots. The other passing manual-room test uses the same broad combined predicate but awaits closeRoomPlacement first. Therefore broad-query failure is not deterministic, and its removal is not by itself proof of cause."
+    },
+    {
+      "id": "F5",
+      "certainty": "confirmed source distinction",
+      "detail": "The failing precision method does not await closeRoomPlacement between open.tap and status predicate; both passing ManualRoomPlacement methods do. UI presentation and accessibility availability may consume the same initial status window. This is a plausible synchronization difference, not proof that the sheet failed to present."
+    },
+    {
+      "id": "F6",
+      "certainty": "unresolved product state",
+      "detail": "Status is rendered only if try? RoomPlacementPlan(scene:room:) succeeds. On nil plan the source displays Check room measurements and scene geometry. Current trace contains neither that fallback nor an observed wrong outside-count label. No incorrect-center calculation, missing summary, or product defect is demonstrated."
+    },
+    {
+      "id": "F7",
+      "certainty": "confirmed diagnostic opportunity",
+      "detail": "The finalized job exported an actual debug-description TXT for roomPlacementStatus plus a failure UI snapshot and screen recording. The specific bytes have not been supplied or viewed by this worker; their existence and paths come from the exact job log."
+    }
+  ],
+  "artifacts": {
+    "full": {
+      "id": 15091239178,
+      "name": "ui-room-precision-evidence",
+      "sha256_from_job": "050c702b00eb682618dd28f8fdfcf54a108c943abb8ce1f3dda5b19c360d4242"
+    },
+    "compact": {
+      "id": 15091413582,
+      "name": "ui-room-precision-evidence-compact",
+      "sha256_from_job": "38cf964dfbf2ab51e8c1f3652bf101737590dde7a46d6c26badf2b4bcc21e459"
+    },
+    "priority_text_attachment": "artifacts/native-attachments/6FC5D73E-BA12-4702-BC5C-2A68F3F6274F.txt",
+    "text_suggested_name": "Debug description for `\"roomPlacementStatus\" Any`_0_7BA3D922-F6FC-4AC9-A842-E7388F4E45F8.txt",
+    "failure_ui_snapshot": "artifacts/native-attachments/7AC04F85-BDDB-4A67-B157-9E6ADB639D5C",
+    "screen_recording": "artifacts/native-attachments/60BDDBBE-7F70-4116-A95D-E25E7B62A705.mp4",
+    "bytes_or_visuals_inspected": false
+  },
+  "recommendation": {
+    "immediate": "Read the exact exported roomPlacementStatus debug-description attachment; distinguish actual correct label, wrong label, missing element, or unresolved query before a product change. Root is retrieving original attachments.",
+    "conditional": "If attachment proves the expected Other element and label, a typed label-only status predicate at the unchanged15-second limit and explicit sheet-readiness boundary are a narrow test synchronization candidate consistent with the passing room-resize test. Preserve the first center assertion and every later crossing/edit assertion. Otherwise investigate the actual captured state.",
+    "not_supported": "No speculative geometry patch, expectation weakening, timeout widening, or retry loop. No claim that the initial center calculation is incorrect or that the previous room-input fix regressed."
+  },
+  "limits": [
+    "No host or new simulator/native execution; source and existing exact job logs only.",
+    "Original cd5 failure attachment contents/screenshots/video remain unviewed by this worker. Briefly waited for supplied evidence; source report preserves that boundary.",
+    "No source, tree, ref or new context created. Only this authorized unreferenced report blob.",
+    "M03 required room/precision acceptance remains failed for this run; four passing methods do not complete the fifth."
+  ]
+}
