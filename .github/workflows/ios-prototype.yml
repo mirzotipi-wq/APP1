@@ -345,7 +345,8 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     # The 16-minute setup/evidence allowance includes the 10-minute boot preflight.
-    # Keep the existing 12 + 25 + UI bounds and total job deadlines unchanged.
+    # Each job budgets 12 minutes for Metal, 25 for compilation, its bounded
+    # selected UI run, and the setup/evidence allowance.
     timeout-minutes: ${{ matrix.job_minutes }}
     strategy:
       fail-fast: false
@@ -375,13 +376,20 @@ jobs:
           - shard: studio-optics
             runner: macos-26-intel
             expected_arch: x86_64
-            ui_test_minutes: 32
-            job_minutes: 85
+            # At 5d8b065 all ten methods passed, but the last terminal event and
+            # command completion arrived after the 32-minute step timeout.
+            # Keep every method and require normal command/accounting success.
+            ui_test_minutes: 40
+            job_minutes: 93
           - shard: app-accessibility
             runner: macos-26-intel
             expected_arch: x86_64
-            ui_test_minutes: 32
-            job_minutes: 85
+            # This method exercises the complete workflow twice, then checks
+            # observed text growth. Default-size execution alone took 13 minutes
+            # before its former library-heading failure; allow both sizes and
+            # finalized XCTest export without dropping any required assertion.
+            ui_test_minutes: 45
+            job_minutes: 98
     name: ui (${{ matrix.shard }})
     steps:
       - uses: actions/checkout@v4

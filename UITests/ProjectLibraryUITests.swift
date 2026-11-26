@@ -1,10 +1,11 @@
 import XCTest
 
 final class ProjectLibraryUITests: XCTestCase {
-    private func waitUntilEnabled(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
+    private func waitUntilEnabled(_ element: XCUIElement, timeout: TimeInterval = 15,
+                                  file: StaticString = #filePath, line: UInt = #line) {
         let predicate = NSPredicate(format: "exists == true AND enabled == true")
         let ready = XCTNSPredicateExpectation(predicate: predicate, object: element)
-        let result = XCTWaiter.wait(for: [ready], timeout: 15)
+        let result = XCTWaiter.wait(for: [ready], timeout: timeout)
         if result != .completed {
             // Preserve the real timeout. A cold-launch failure previously
             // retained only a query chain, although the recording later showed
@@ -28,6 +29,14 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertEqual(result, .completed, file: file, line: line)
     }
 
+    /// These scenarios launch a valid library. Finish launch readiness before
+    /// starting their separate title and interaction deadlines.
+    private func launchStudio(_ app: XCUIApplication,
+                              file: StaticString = #filePath, line: UInt = #line) {
+        app.launch()
+        waitUntilEnabled(app.buttons["openProjectLibrary"], timeout: 30, file: file, line: line)
+    }
+
     private func waitForTitle(_ title: String, in app: XCUIApplication) {
         let predicate = NSPredicate(format: "exists == true AND label == %@", title)
         let ready = XCTNSPredicateExpectation(predicate: predicate, object: app.staticTexts["projectName"])
@@ -39,7 +48,7 @@ final class ProjectLibraryUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
-        app.launch()
+        launchStudio(app)
         let projects = app.buttons["openProjectLibrary"]
         waitUntilEnabled(projects)
         waitUntilEnabled(app.buttons["saveProject"])
@@ -115,7 +124,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["Done"].tap()
         waitForTitle("Editorial", in: app)
         app.terminate()
-        app.launch()
+        launchStudio(app)
         waitForTitle("Editorial", in: app)
         waitUntilEnabled(projects)
         projects.tap()
@@ -136,7 +145,7 @@ final class ProjectLibraryUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
-        app.launch()
+        launchStudio(app)
         let projects = app.buttons["openProjectLibrary"]
         waitUntilEnabled(projects)
         waitUntilEnabled(app.buttons["saveProject"])
@@ -191,7 +200,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["Done"].tap()
         waitForTitle("Keep", in: app)
         app.terminate()
-        app.launch()
+        launchStudio(app)
         waitForTitle("Keep", in: app)
         waitUntilEnabled(projects)
         projects.tap()
@@ -206,7 +215,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         app.launchEnvironment["KEYFILL_UI_TEST_CONFLICT"] = "1"
-        app.launch()
+        launchStudio(app)
         let save = app.buttons["saveProject"]
         waitUntilEnabled(save)
         save.tap()
@@ -238,7 +247,7 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         app.terminate()
         app.launchEnvironment.removeValue(forKey: "KEYFILL_UI_TEST_CONFLICT")
-        app.launch()
+        launchStudio(app)
         waitForTitle("Portrait setup recovery", in: app)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         let backlight = app.buttons["light-Backlight"]
@@ -286,7 +295,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         app.launchEnvironment["KEYFILL_UI_TEST_CONFLICT"] = "1"
         app.launchEnvironment["KEYFILL_UI_TEST_FULL_LIBRARY"] = "1"
-        app.launch()
+        launchStudio(app)
         waitForTitle("Portrait setup", in: app)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
 
@@ -342,7 +351,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.launchEnvironment.removeValue(forKey: "KEYFILL_UI_TEST_CONFLICT")
         // Deliberately leave FULL_LIBRARY enabled: initialization must not
         // replace the existing recovery library during the next launch.
-        app.launch()
+        launchStudio(app)
         waitForTitle("Portrait setup recovery", in: app)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         XCTAssertTrue(newLight.waitForExistence(timeout: 15))
@@ -355,7 +364,7 @@ final class ProjectLibraryUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
-        app.launch()
+        launchStudio(app)
         let projects = app.buttons["openProjectLibrary"]
         waitUntilEnabled(projects)
         projects.tap()
@@ -387,7 +396,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         app.launchEnvironment["KEYFILL_UI_TEST_LARGE_LIBRARY"] = "1"
-        app.launch()
+        launchStudio(app)
         let save = app.buttons["saveProject"]
         waitUntilEnabled(save)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
@@ -412,7 +421,7 @@ final class ProjectLibraryUITests: XCTestCase {
         app.terminate()
         // Keep the fixture flag enabled: a new actor must not recreate or
         // overwrite the existing large library during relaunch.
-        app.launch()
+        launchStudio(app)
         waitUntilEnabled(save)
         XCTAssertEqual(app.staticTexts["projectStatus"].label, "Saved locally")
         XCTAssertTrue(light.waitForExistence(timeout: 15))

@@ -140,10 +140,10 @@ extension XCTestCase {
                              file: StaticString = #filePath, line: UInt = #line) {
         for _ in 0..<12 {
             // Full-frame callers separately assert the real scroll-container
-            // bounds. Keep a small screen margin here, then exclude observed
-            // bars/keyboard below; a fixed 100pt bottom inset could make the
-            // last Form footer unreachable even when it is fully visible.
-            var viewport = app.frame.insetBy(dx: 0, dy: fullyVisible ? 8 : 100)
+            // bounds. Use the actual visible boundaries: a List row can begin
+            // exactly below its navigation bar. An extra inset made the fully
+            // visible library warning permanently fail this reachability check.
+            var viewport = app.frame.insetBy(dx: 0, dy: fullyVisible ? 0 : 100)
             if fullyVisible {
                 // The keyboard and fixed edit bar can cover scroll content.
                 // Full-frame assertions opt in; ordinary functional navigation
@@ -157,21 +157,41 @@ extension XCTestCase {
                     .map(\.maxY).max()
                 if let navigationBottom {
                     let bottom = viewport.maxY
-                    viewport.origin.y = max(viewport.minY, navigationBottom + 8)
+                    viewport.origin.y = max(viewport.minY, navigationBottom)
                     viewport.size.height = max(0, bottom - viewport.minY)
                 }
                 let keyboard = app.keyboards.firstMatch
                 if keyboard.exists {
-                    viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY - 8) - viewport.minY)
+                    viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY) - viewport.minY)
                 }
-                let undo = app.buttons["undo"]
-                if undo.exists, undo.isHittable {
-                    viewport.size.height = max(0, min(viewport.maxY, undo.frame.minY - 8) - viewport.minY)
+                let fixedControls = app.buttons.matching(NSPredicate(
+                    format: "identifier IN %@", ["undo", "projectLibraryDone"]))
+                for control in fixedControls.allElementsBoundByIndex where control.isHittable {
+                    viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)
                 }
             }
             var down = towardBottom
             if target.exists {
-                let frame = target.frame
+                let frame: CGRect
+                if fullyVisible {
+                    guard let state = try? target.snapshot() else { break }
+                    frame = state.frame
+                    let key = state.identifier.isEmpty ? state.label : state.identifier
+                    let containers = [app.scrollViews.containing(state.elementType, identifier: key).firstMatch,
+                                      app.collectionViews.containing(state.elementType, identifier: key).firstMatch,
+                                      app.tables.containing(state.elementType, identifier: key).firstMatch]
+                    var scrollFrame = CGRect.null
+                    for container in containers where container.exists {
+                        let observed = container.frame.intersection(app.frame)
+                        if !observed.isEmpty { scrollFrame = observed; break }
+                    }
+                    // A fixed bar can have padding above its button. Use the
+                    // actual scroll surface too, so reveal cannot stop in that
+                    // padding before the independent containment assertion.
+                    viewport = viewport.intersection(scrollFrame)
+                } else {
+                    frame = target.frame
+                }
                 if !frame.isEmpty, frame.midX.isFinite, frame.midY.isFinite {
                     let contained = fullyVisible ? viewport.contains(frame)
                         : viewport.contains(CGPoint(x: frame.midX, y: frame.midY))

@@ -158,10 +158,27 @@ struct ProjectLibraryView: View {
             .searchable(text: boundedSearch, placement: .navigationBarDrawer(displayMode: .automatic),
                         prompt: "Search project names")
             .scrollDismissesKeyboard(.interactively)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { acceptingImports = false; cancelImport(); dismiss() }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                // The native navigation-bar action exposed a 36pt target.
+                // This close action owns its full target and can grow with
+                // accessibility text without a fixed toolbar height.
+                Button { acceptingImports = false; cancelImport(); dismiss() } label: {
+                    HStack {
+                        Spacer(minLength: 0)
+                        Text("Done")
+                            .font(.body.weight(.semibold))
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .padding(.vertical, 8)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(StudioPalette.action)
+                .accessibilityIdentifier("projectLibraryDone")
+                .padding(.horizontal, 16)
+                .background(Color(uiColor: .systemGroupedBackground))
             }
             .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json],
                           allowsMultipleSelection: false) { result in

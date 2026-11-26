@@ -31,7 +31,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                                      launchValue: "UICTContentSizeCategoryL", name: "Default")
         let largest = try exerciseEssentialWorkflow(category: .accessibilityExtraExtraExtraLarge,
                                                     launchValue: "UICTContentSizeCategoryAccessibilityXXXL", name: "AXXXL")
-        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning", "projectNameHeading"] {
+        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning", "projectNameHeading", "libraryDone"] {
             let before = try XCTUnwrap(standard[key], key)
             let after = try XCTUnwrap(largest[key], key)
             observations.append("Growth \(key): default=\(before), AXXXL=\(after)")
@@ -243,8 +243,12 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         nameCancel.tap()
         expectGone(nameField)
 
-        let done = app.navigationBars["Projects"].buttons["Done"]
-        try control(done, label: "Done", in: app, scrolling: false)
+        let done = app.buttons["projectLibraryDone"]
+        let doneState = try control(done, label: "Done", in: app, scrolling: false)
+        measured["libraryDone"] = try text(done.staticTexts["Done"], equals: "Done", style: .body,
+                                             category: category, in: app, weight: .semibold, scrolling: false)
+        assertContained(try XCTUnwrap(measured["libraryDone"]), inside: doneState.frame)
+        capture(name + "-Library-done", in: app)
         done.tap()
         waitForCommittedProject(in: app)
         expectValue(exact, "4321.5 cd")
@@ -273,13 +277,13 @@ final class StudioAppAccessibilityUITests: XCTestCase {
     private func text(_ element: XCUIElement, equals expected: String, style: UIFont.TextStyle,
                       category: UIContentSizeCategory, in app: XCUIApplication,
                       weight: UIFont.Weight? = nil, monospacedDigits: Bool = false,
-                      towardBottom: Bool = true) throws -> CGRect {
-        revealStudioContent(element, in: app, towardBottom: towardBottom, fullyVisible: true)
+                      towardBottom: Bool = true, scrolling: Bool = true) throws -> CGRect {
+        if scrolling { revealStudioContent(element, in: app, towardBottom: towardBottom, fullyVisible: true) }
         let state = try element.snapshot()
         record(state)
         XCTAssertEqual(state.elementType, .staticText, "Measure actual text, not its surrounding control")
         XCTAssertEqual(state.label, expected)
-        assertContained(state.frame, inside: contentViewport(for: state, in: app))
+        assertContained(state.frame, inside: scrolling ? contentViewport(for: state, in: app) : app.frame)
         let traits = UITraitCollection(preferredContentSizeCategory: category)
         var font = UIFont.preferredFont(forTextStyle: style, compatibleWith: traits)
         if monospacedDigits { font = .monospacedDigitSystemFont(ofSize: font.pointSize, weight: weight ?? .regular) }
@@ -339,9 +343,10 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         }
         let keyboard = app.keyboards.firstMatch
         if keyboard.exists { viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY) - viewport.minY) }
-        let undo = app.buttons["undo"]
-        if undo.exists, undo.isHittable {
-            viewport.size.height = max(0, min(viewport.maxY, undo.frame.minY) - viewport.minY)
+        let fixedControls = app.buttons.matching(NSPredicate(
+            format: "identifier IN %@", ["undo", "projectLibraryDone"]))
+        for control in fixedControls.allElementsBoundByIndex where control.isHittable {
+            viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)
         }
         return viewport
     }

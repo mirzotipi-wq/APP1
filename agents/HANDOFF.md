@@ -1,5 +1,14 @@
 # Current handoff
 
+## Active completion pass — 25 November 2026
+
+The current pass starts from `916ecb9284747e91cb3840c4776c634d798f1a51`.
+M02 evidence has been independently revalidated against all 188 unchanged inputs.
+The M03 repair and its remaining runtime checks are documented in
+[the current completion packet](../docs/evidence/m03-completion-2026-11-25/README.md).
+Do not promote M03 until fresh required native/UI execution and actual screenshot
+review succeed. The historical handoff below describes the preceding run.
+
 ## M03 text-field validation — 25 November 2026
 
 Current source is `5d8b065ec935faa2d85671725cd9b20adc1b035f` on `main`; [workflow 45720754048](https://github.com/mirzotipi-wq/APP1/actions/runs/45720754048) reruns the full suite after two independently reviewed test corrections. M02 remains accepted under `m02-m03-code-v2`. M03 remains active until all required results and the actual screenshot review finish.
