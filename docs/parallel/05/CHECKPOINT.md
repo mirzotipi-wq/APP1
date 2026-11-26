@@ -29,3 +29,5 @@ Thirty completed contexts are hash/identity checked in WORKER_LEDGER.json. Wave 
 Next: finalize wave04 ledger, run waves05–10 as actual fresh contexts, preserve each report and reviewed patch before cleanup, serialize integrations and source publication around native evidence, then publish exact final handoff. First-save wrapper identity is a concrete lane01 owner request. SceneKit controller clipping after large translation is a conditional investigation, not a verified native defect. No root token telemetry is available; checkpoints are explicit planning records, not measured budget claims.
 
 Wave 04 is now complete: 40 actual contexts across four waves. All ten wave-04 reports and the exact reviewed repair are preserved; six waves remain.
+
+Wave 05 complete: fifty actual fresh contexts across five waves. Three selection-lifetime regressions are remotely preserved in bc08f3b8cd72b9d40bf86ea42a132c685b69d6d9; inventory183native/37spatial is discovery, not execution. The source9725 simulator job is running; newer seven recovery/selection methods remain unexecuted. Five waves remain.

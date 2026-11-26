@@ -1,0 +1,14 @@
+# Wave 05 resources review
+
+Frozen source: `deffb5e3c93b507ceb4189a414a4ff0e3cf19395`. Read-only, one retained-hit lifetime check; no build or source edits.
+
+**Finding:** source supports revoking old-hit selection authority through deletion, invalid-scene recovery, and SceneKit dismantle. It does not prove object deallocation.
+
+- **SceneKit deletion/recovery:** `lamps` owns the four-node wrapper; `selectionIndicators` separately references its indicator; `lightIDs` stores identity keys and UUIDs. Deletion removes the wrapper/indicator entries, detaches fixture, source and stand, and rebuilds identity entries from surviving fixtures/stands. Invalid input disables/hides content, clears the callback, detaches all equipment and clears all three maps plus `lastScene`. Recovery creates replacement equipment, including for the same UUID. The indicator remains a child of its detached fixture; a retained fixture can therefore retain that indicator. A deliberately retained source or stand can likewise keep its light/geometry. These retained objects do not acquire replacement selection authority. The source is never an identity-map entry; the indicator resolves through its fixture only while current. [Source: `App/SpatialPreview.swift`, 95–103, 148–163, 224–238, 349–369, 405–408, 475–481.]
+
+- **SceneKit dismantle:** `detach` clears callback/gesture links, scene and point-of-view references, content children, equipment maps, base and cached state. The coordinator still owns its empty content/camera nodes; external old-hit references may remain alive. Selection rejects them through unavailable content and cleared maps. [Source: `App/SpatialPreview.swift`, 106–135, 150–163, 200–202.]
+
+- **RealityKit comparison:** deletion/invalid input remove lamp ownership entries, root identity entries and anchor parent links; resolution also requires the currently owned root and its current anchor parent. Coordinator detach removes view anchors, gesture/callback links and current-scene/view state, but does not clear its strongly owned graph or graph maps/subtrees. Thus graph-only resolution is not a view-attachment test; production dispatch is disabled by `isRendering = false`, nil current scene/view and callback. Retained detached subtrees are distinct from active selection authority. [Source: `App/StudioEntityGraph.swift`, 14–22, 69–79, 100–137; `App/RealityStudioPreview.swift`, 98–106, 154–156, 208–225, 273–278.]
+
+**Evidence limit:** no leak, allocation-bound, timing, performance or deallocation conclusion. Existing frozen tests cover retained fixtures; the reported three-method `SpatialSelectionLifetimeTests` candidate extends four-node checks outside this SHA and still needs native execution. Historical `68c83` 171 native/25 spatial passes do not validate `deff`; its 180 native/34 spatial counts are discovery only.
+
