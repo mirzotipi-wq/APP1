@@ -141,90 +141,26 @@ extension XCTestCase {
         var geometry: [String] = []
         revealAttempts: for _ in 0..<12 {
             let targetExists = target.exists
-            let targetState: (any XCUIElementSnapshot)? = fullyVisible && targetExists
-                ? try? target.snapshot() : nil
-            // Full-frame callers separately assert the real scroll-container
-            // bounds. Use the actual visible boundaries: a List row can begin
-            // exactly below its navigation bar. An extra inset made the fully
-            // visible library warning permanently fail this reachability check.
-            // Reuse this real window frame only within the current attempt.
-            // A scroll starts a new attempt and reads all geometry again.
-            let appFrame = app.frame
-            var viewport = appFrame.insetBy(dx: 0, dy: fullyVisible ? 0 : 100)
+            let expected = fullyVisible && targetExists ? try? target.snapshot() : nil
+            let observation: StudioViewportObservation?
             if fullyVisible {
-                // The keyboard and fixed edit bar can cover scroll content.
-                // Full-frame assertions opt in; ordinary functional navigation
-                // retains its established midpoint/hit-point requirement.
-                // Covered sheets retain navigation bars in the AX tree. Find
-                // bars belonging to ancestors of this target, not an unrelated
-                // covered library whose large title extends below this sheet.
-                let navigationBars: [XCUIElement]
-                if let state = targetState {
-                    let key = state.identifier.isEmpty ? state.label : state.identifier
-                    navigationBars = app.otherElements.containing(state.elementType, identifier: key)
-                        .children(matching: .navigationBar).allElementsBoundByIndex
-                } else {
-                    navigationBars = []
-                }
-                // One snapshot supplies each bar's identifier and geometry.
-                // A failed read must fail this attempt, never omit an obstacle.
-                guard let navigationStates = try? navigationBars.map({ try $0.snapshot() }) else {
+                do { observation = try StudioViewportObservation(in: app, matching: expected) }
+                catch {
+                    geometry.append("AX viewport capture failed: \(error)")
                     break revealAttempts
                 }
-                let navigationIdentifiers = Set(navigationStates.map { $0.identifier })
-                let navigationBottom = navigationStates.map { $0.frame }
-                    .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
-                    .map(\.maxY).max()
-                if let navigationBottom {
-                    let bottom = viewport.maxY
-                    viewport.origin.y = max(viewport.minY, navigationBottom)
-                    viewport.size.height = max(0, bottom - viewport.minY)
-                }
-                let keyboard = app.keyboards.firstMatch
-                if keyboard.exists {
-                    // The predictive/input-assistant strip begins above the
-                    // Keyboard's key frame in the actual exported hierarchy.
-                    let inputViews = app.otherElements.matching(NSPredicate(
-                        format: "identifier IN %@", ["inputView", "SystemInputAssistantView"]))
-                    let frames = [keyboard.frame] + inputViews.allElementsBoundByIndex.map(\.frame)
-                    if let top = frames.filter({ !$0.isEmpty && $0.minY.isFinite && $0.intersects(viewport) })
-                        .map(\.minY).min() {
-                        viewport.size.height = max(0, min(viewport.maxY, top) - viewport.minY)
-                    }
-                }
-                let fixedControls = app.buttons.matching(NSPredicate(
-                    format: "identifier IN %@", ["undo", "projectLibraryDone"]))
-                for control in fixedControls.allElementsBoundByIndex where control.isHittable {
-                    guard let controlState = try? control.snapshot() else { break revealAttempts }
-                    let owners = app.otherElements.containing(.button, identifier: controlState.identifier)
-                        .children(matching: .navigationBar)
-                        .matching(NSPredicate(format: "identifier IN %@", Array(navigationIdentifiers)))
-                    guard owners.firstMatch.exists else { continue }
-                    viewport.size.height = max(0, min(viewport.maxY, controlState.frame.minY) - viewport.minY)
-                }
-            }
+            } else { observation = nil }
+            // One immutable capture supplies this attempt. The independent
+            // containment check takes a different capture after reveal returns.
+            let appFrame = observation?.applicationFrame ?? app.frame
+            let viewport = observation?.viewport ?? appFrame.insetBy(dx: 0, dy: 100)
             var down = towardBottom
             if targetExists {
                 let frame: CGRect
                 if fullyVisible {
-                    guard let state = targetState else { break }
+                    guard let state = observation?.target else { break }
                     frame = state.frame
-                    let key = state.identifier.isEmpty ? state.label : state.identifier
-                    let containers = [app.scrollViews.containing(state.elementType, identifier: key).firstMatch,
-                                      app.collectionViews.containing(state.elementType, identifier: key).firstMatch,
-                                      app.tables.containing(state.elementType, identifier: key).firstMatch]
-                    var scrollFrame = CGRect.null
-                    for container in containers where container.exists {
-                        let observed = container.frame.intersection(appFrame)
-                        if !observed.isEmpty { scrollFrame = observed; break }
-                    }
-                    // A fixed bar can have padding above its button. Use the
-                    // actual scroll surface too, so reveal cannot stop in that
-                    // padding before the independent containment assertion.
-                    viewport = viewport.intersection(scrollFrame)
-                } else {
-                    frame = target.frame
-                }
+                } else { frame = target.frame }
                 if fullyVisible { geometry.append("target=\(frame), visibleContent=\(viewport)") }
                 if !frame.isEmpty, frame.midX.isFinite, frame.midY.isFinite {
                     let contained = fullyVisible ? viewport.contains(frame)

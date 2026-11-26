@@ -320,13 +320,16 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                     category: UIContentSizeCategory, in app: XCUIApplication,
                                     weight: UIFont.Weight? = nil,
                                     scrolling: Bool = true) throws -> CGRect {
+        var readyState: (any XCUIElementSnapshot)?
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            guard let state = try? element.snapshot(), let value = state.value as? String else { return false }
-            return RecordedTextLayout.frame(from: value, probe: probe) != nil
+            guard let state = try? element.snapshot(), let value = state.value as? String,
+                  RecordedTextLayout.frame(from: value, probe: probe) != nil else { return false }
+            readyState = state
+            return true
         }, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
                        "The opted-in app must publish actual Text layout for \(probe)")
-        let state = try element.snapshot()
+        let state = try XCTUnwrap(readyState, "Expected the successful, current readiness snapshot")
         XCTAssertEqual(state.elementType, .button)
         XCTAssertEqual(state.label, expected)
         XCTAssertTrue(element.isHittable)
@@ -393,60 +396,14 @@ final class StudioAppAccessibilityUITests: XCTestCase {
     /// Independently check the actual containing scroll surface, not merely the
     /// shared helper's screen inset. Native Forms/Lists may use either container.
     private func contentViewport(for state: any XCUIElementSnapshot, in app: XCUIApplication) -> CGRect {
-        let key = state.identifier.isEmpty ? state.label : state.identifier
-        let containers = [app.scrollViews.containing(state.elementType, identifier: key).firstMatch,
-                          app.collectionViews.containing(state.elementType, identifier: key).firstMatch,
-                          app.tables.containing(state.elementType, identifier: key).firstMatch]
-        var viewport = CGRect.null
-        for container in containers where container.exists {
-            let frame = container.frame.intersection(app.frame)
-            if !frame.isEmpty { viewport = frame; break }
-        }
-        XCTAssertFalse(viewport.isNull, "Expected a real scroll container for \(state.label)")
-        // Scope obscuring navigation to the target's actual ancestors. A
-        // covered Projects large-title bar is lower than the New project bar
-        // but cannot obscure content in that foreground sheet.
-        let navigationBars = app.otherElements.containing(state.elementType, identifier: key)
-            .children(matching: .navigationBar).allElementsBoundByIndex
-        // Keep this independent check fresh after reveal. Each bar contributes
-        // its identifier and frame from one actual snapshot.
-        guard let navigationStates = try? navigationBars.map({ try $0.snapshot() }) else {
-            XCTFail("Could not snapshot owning navigation bars for \(state.label)")
+        do {
+            // This is a new observation after reveal, not its cached geometry.
+            // Identity and ancestor matching fail closed on an ambiguous tree.
+            return try StudioViewportObservation(in: app, matching: state).viewport
+        } catch {
+            XCTFail("Could not independently capture visible bounds for \(state.label): \(error)")
             return .null
         }
-        let navigationIdentifiers = Set(navigationStates.map { $0.identifier })
-        let navigationBottom = navigationStates.map { $0.frame }
-            .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
-            .map(\.maxY).max()
-        if let navigationBottom {
-            let bottom = viewport.maxY
-            viewport.origin.y = max(viewport.minY, navigationBottom)
-            viewport.size.height = max(0, bottom - viewport.minY)
-        }
-        let keyboard = app.keyboards.firstMatch
-        if keyboard.exists {
-            let inputViews = app.otherElements.matching(NSPredicate(
-                format: "identifier IN %@", ["inputView", "SystemInputAssistantView"]))
-            let frames = [keyboard.frame] + inputViews.allElementsBoundByIndex.map(\.frame)
-            if let top = frames.filter({ !$0.isEmpty && $0.minY.isFinite && $0.intersects(viewport) })
-                .map(\.minY).min() {
-                viewport.size.height = max(0, min(viewport.maxY, top) - viewport.minY)
-            }
-        }
-        let fixedControls = app.buttons.matching(NSPredicate(
-            format: "identifier IN %@", ["undo", "projectLibraryDone"]))
-        for control in fixedControls.allElementsBoundByIndex where control.isHittable {
-            guard let controlState = try? control.snapshot() else {
-                XCTFail("Could not snapshot a hittable fixed control")
-                return .null
-            }
-            let owners = app.otherElements.containing(.button, identifier: controlState.identifier)
-                .children(matching: .navigationBar)
-                .matching(NSPredicate(format: "identifier IN %@", Array(navigationIdentifiers)))
-            guard owners.firstMatch.exists else { continue }
-            viewport.size.height = max(0, min(viewport.maxY, controlState.frame.minY) - viewport.minY)
-        }
-        return viewport
     }
 
     private func assertContained(_ frame: CGRect, inside viewport: CGRect) {

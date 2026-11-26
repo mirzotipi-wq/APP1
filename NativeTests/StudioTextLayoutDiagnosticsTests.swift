@@ -234,7 +234,12 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
 
         private var button: some View {
             Button {} label: {
-                title.frame(width: 300, height: 100)
+                // Use a common pixel-aligned origin for the two independent
+                // observers. Centering an odd-pixel Text inside an even-pixel
+                // action produces a half-pixel SwiftUI layout origin, whereas
+                // UIKit snaps a represented view's placement to a pixel.
+                // The title keeps its actual intrinsic fractional size.
+                title.frame(width: 300, height: 100, alignment: .topLeading)
                     .background(NativeViewObserver(onView: onControlView)
                         .allowsHitTesting(false).accessibilityHidden(true))
             }
@@ -274,6 +279,21 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
         func updateUIView(_ uiView: UIView, context: Context) {
             uiView.contentScaleFactor = context.environment.displayScale
             onView(uiView)
+        }
+
+        func sizeThatFits(_ proposal: ProposedViewSize, uiView: UIView,
+                          context: Context) -> CGSize? {
+            // This empty view observes its background proposal; it has no
+            // content whose default UIKit fitting size should replace it.
+            // The default bridge rounded a 41⅔ × 20⅓ pt Text to 42 × 20 pt
+            // in the actual 3× run, falsely failing both font-fit and exact
+            // geometry checks. Preserve the proposed size without assigning
+            // UIKit's frame/bounds, which SwiftUI owns.
+            guard let width = proposal.width, let height = proposal.height,
+                  width.isFinite, height.isFinite, width >= 0, height >= 0 else {
+                return nil
+            }
+            return CGSize(width: width, height: height)
         }
     }
 }

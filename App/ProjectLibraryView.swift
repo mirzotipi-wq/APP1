@@ -494,12 +494,62 @@ struct ProjectLibraryRowPresentation: Identifiable {
     }
 }
 
+/// A rejected paste keeps its error even when the native field restores the
+/// preceding text. Save and keyboard Return must validate the same draft.
+struct ProjectNameDraft {
+    private let initialDisplay: String
+    let requiresNewName: Bool
+    private(set) var text: String
+    private(set) var rejectedOversizedInput = false
+
+    init(initial: String) {
+        let bounded = StudioDisplayName.display(initial)
+        initialDisplay = bounded
+        requiresNewName = bounded != initial
+        text = bounded
+    }
+
+    var canSubmit: Bool { (try? submittedName()) != nil }
+
+    /// Returns true only for a distinct, bounded edit. A restoration callback
+    /// with unchanged text must not clear a preceding rejected-input state.
+    @discardableResult
+    mutating func update(_ next: String) throws -> Bool {
+        guard next.unicodeScalars.prefix(StudioDisplayName.maximumScalars + 1).count <= StudioDisplayName.maximumScalars else {
+            rejectedOversizedInput = true
+            throw StudioDisplayName.NameError.tooLong
+        }
+        guard next != text else { return false }
+        text = next
+        rejectedOversizedInput = false
+        return true
+    }
+
+    mutating func clear() {
+        text = ""
+        rejectedOversizedInput = false
+    }
+
+    func submittedName() throws -> String {
+        guard !rejectedOversizedInput else { throw StudioDisplayName.NameError.tooLong }
+        let normalized = try StudioDisplayName.newInput(text)
+        guard !requiresNewName || normalized != initialDisplay else { throw DraftError.replacementRequired }
+        return normalized
+    }
+
+    private enum DraftError: LocalizedError {
+        case replacementRequired
+
+        var errorDescription: String? {
+            "Enter a new name, or cancel to keep the complete saved name."
+        }
+    }
+}
+
 private struct ProjectNameEditor: View {
     let title: String
     let onSubmit: (String) throws -> Task<Void, Error>
-    private let initialDisplay: String
-    private let requiresNewName: Bool
-    @State private var name: String
+    @State private var draft: ProjectNameDraft
     @State private var errorMessage: String?
     @State private var isSubmitting = false
     @Environment(\.dismiss) private var dismiss
@@ -509,10 +559,7 @@ private struct ProjectNameEditor: View {
     init(title: String, initial: String, onSubmit: @escaping (String) throws -> Task<Void, Error>) {
         self.title = title
         self.onSubmit = onSubmit
-        let bounded = StudioDisplayName.display(initial)
-        self.initialDisplay = bounded
-        self.requiresNewName = bounded != initial
-        _name = State(initialValue: bounded)
+        _draft = State(initialValue: ProjectNameDraft(initial: initial))
     }
 
     var body: some View {
@@ -525,9 +572,9 @@ private struct ProjectNameEditor: View {
                             accessibility: .init(label: "Name", identifier: "projectNameInput"),
                             returnKeyType: .done) { submit() }
                             .disabled(isSubmitting)
-                        if !name.isEmpty {
+                        if !draft.text.isEmpty {
                             Button {
-                                name = ""
+                                draft.clear()
                                 errorMessage = nil
                                 focused = true
                             } label: {
@@ -539,7 +586,7 @@ private struct ProjectNameEditor: View {
                             .accessibilityIdentifier("clearProjectName")
                         }
                     }
-                    if requiresNewName {
+                    if draft.requiresNewName {
                         Text("A shortened version of the name is shown. Enter a new name to save it. Cancelling keeps the complete original saved name.")
                             .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                             .accessibilityIdentifier("shortenedProjectNameNotice")
@@ -582,8 +629,7 @@ private struct ProjectNameEditor: View {
     }
 
     private var canSubmit: Bool {
-        !isSubmitting && (try? StudioDisplayName.newInput(name)) != nil &&
-            (!requiresNewName || name != initialDisplay)
+        !isSubmitting && draft.canSubmit
     }
 
     /// Form content grows and scrolls at accessibility text sizes, including
@@ -617,12 +663,8 @@ private struct ProjectNameEditor: View {
 
     private func submit() {
         guard !isSubmitting else { return }
-        guard !requiresNewName || name != initialDisplay else {
-            errorMessage = "Enter a new name, or cancel to keep the complete saved name."
-            return
-        }
         do {
-            let normalized = try StudioDisplayName.newInput(name)
+            let normalized = try draft.submittedName()
             let task = try onSubmit(normalized) // Reserves before a second submit can enqueue.
             isSubmitting = true
             focused = false
@@ -637,14 +679,10 @@ private struct ProjectNameEditor: View {
     /// Reject an oversized paste explicitly rather than rendering it or silently
     /// shortening the user's new name. Empty and incomplete drafts remain editable.
     private var boundedDraft: Binding<String> {
-        Binding(get: { name }, set: { next in
-            guard next.unicodeScalars.prefix(StudioDisplayName.maximumScalars + 1).count <= StudioDisplayName.maximumScalars else {
-                errorMessage = StudioDisplayName.NameError.tooLong.localizedDescription
-                return
-            }
-            guard next != name else { return }
-            name = next
-            errorMessage = nil
+        Binding(get: { draft.text }, set: { next in
+            do {
+                if try draft.update(next) { errorMessage = nil }
+            } catch { errorMessage = error.localizedDescription }
         })
     }
 }

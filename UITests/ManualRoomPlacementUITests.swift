@@ -14,8 +14,15 @@ final class ManualRoomPlacementUITests: XCTestCase {
                       "Room placement must be a primary visible workflow action without scrolling")
         open.tap()
         XCTAssertTrue(app.buttons["closeRoomPlacement"].waitForExistence(timeout: 15), "Room sheet must actually open")
-        let status = app.descendants(matching: .any)["roomPlacementStatus"].firstMatch
-        let allInside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label CONTAINS %@", "All 5 center positions inside room"), object: status)
+        // The shipped combined status is an Other. One typed snapshot checks
+        // its identity and actual value; separate all-descendant existence and
+        // label queries exhausted the retained c118 initial observation wait.
+        let status = app.otherElements["roomPlacementStatus"]
+        let allInside = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let observed = try? status.snapshot() else { return false }
+            return observed.identifier == "roomPlacementStatus" &&
+                observed.label.contains("All 5 center positions inside room")
+        }, object: nil)
         let insideResult = XCTWaiter.wait(for: [allInside], timeout: 15)
         if insideResult != .completed { recordRoomFailure(in: app) }
         XCTAssertEqual(insideResult, .completed)
