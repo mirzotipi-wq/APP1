@@ -37,3 +37,27 @@ diagnostics, not replacements for native execution or changes to acceptance gate
 Only this feature branch is pushed. Merge with newer main changes under the campaign
 integration owner; retain original failures and exact source/test provenance.
 Lane 03 reports its evidence without promoting canonical milestones.
+
+## Received owner notes
+
+The published lane 01 `INTERFACES.md` keeps asynchronous feature ownership with
+presentation/project/revision identities. Lane 03's preview does not mutate the
+scene or adopt a feature result into editing history; its public scene/subject
+call remains unchanged.
+
+Lane 02 `CONSUMER-REQUESTS.md` identifies possible subnormal per-cell candela
+underflow in Study sampling. Review this separately from ordinary-range image
+behavior. Any correction must preserve GPU sample semantics and unsupported masks;
+no meter change is copied into Study without its own evidence.
+
+Lane 04 `OWNER_REQUESTS.md` at `9d8bb0b` reports a host Float32 silhouette mismatch
+at width 24 and focal length 161.27198111190464 mm for an unlit sphere. Its initial
+reference is a C++ Double transcription. Lane 03 will supply a shipped Swift
+reference probe during fixture synchronization. Width-aware eligibility belongs
+to lane 04. The note confirms existing preview task-cancellation guards; adding
+controlled completion tests is a coverage improvement, not proof of a current
+stale-frame bug.
+
+Lanes 02 and 04 also identify later main's native CGFloat correction `b0d25ee`.
+It is outside this lane's source ownership and remains for integration. A native
+failure on the fallback baseline must retain that exact provenance.

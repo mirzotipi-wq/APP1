@@ -1,0 +1,931 @@
+Building for production...
+[0/9] Write sources
+[2/9] Write swift-version-53207EA598036987.txt
+[4/10] Compiling LightingCore ARPlacementLayout.swift
+[5/11] Compiling LightingCoreTests CameraFramingTests.swift
+/home/agent/keyfill03-7f4b/repo/Tests/LightingCoreTests/LightOutputBoundaryTests.swift:103:54: warning: '1e-320' underflows and loses precision during conversion to 'Double'
+101 | 
+102 |     func testAlreadyAchievedSubnormalTargetPreservesExactSourceDespiteInverseRounding() throws {
+103 |         let (source, scene) = fixture(candela: 499 * 1e-320)
+    |                                                      `- warning: '1e-320' underflows and loses precision during conversion to 'Double'
+104 |         let target = try XCTUnwrap(StudioPhotometry.illuminance(for: source, in: scene))
+105 |         XCTAssertGreaterThan(target, 0)
+[5/11] /home/agent/keyfill03-7f4b/builds/baseline-package/x86_64-unknown-linux-gnu/release/LightingCorePackageDiscoveredTests.derived/all-discovered-tests.swift
+[6/11] Write sources
+[8/12] Compiling LightingCorePackageDiscoveredTests LightingCoreTests.swift
+[8/12] /home/agent/keyfill03-7f4b/builds/baseline-package/x86_64-unknown-linux-gnu/release/LightingCorePackageTests.derived/runner.swift
+[9/12] Write sources
+[11/13] Compiling LightingCorePackageTests runner.swift
+[11/13] Write Objects.LinkFileList
+[12/13] Linking LightingCorePackageTests.xctest
+Build complete! (50.45s)
+Test Suite 'All tests' started at 2026-11-26 04:04:58.228
+Test Suite 'release.xctest' started at 2026-11-26 04:04:58.237
+Test Suite 'CameraFramingTests' started at 2026-11-26 04:04:58.237
+Test Case 'CameraFramingTests.testFocalLengthAndDistanceChangeFrameLinearly' started at 2026-11-26 04:04:58.237
+Test Case 'CameraFramingTests.testFocalLengthAndDistanceChangeFrameLinearly' passed (0.001 seconds)
+Test Case 'CameraFramingTests.testFullFrameFieldOfViewAndCoverage' started at 2026-11-26 04:04:58.238
+Test Case 'CameraFramingTests.testFullFrameFieldOfViewAndCoverage' passed (0.101 seconds)
+Test Case 'CameraFramingTests.testInvalidLensAndCoincidentOrNearCamera' started at 2026-11-26 04:04:58.339
+Test Case 'CameraFramingTests.testInvalidLensAndCoincidentOrNearCamera' passed (0.0 seconds)
+Test Case 'CameraFramingTests.testLensAndPosePersist' started at 2026-11-26 04:04:58.339
+Test Case 'CameraFramingTests.testLensAndPosePersist' passed (0.003 seconds)
+Test Case 'CameraFramingTests.testProjectionCenterEdgesAndBehind' started at 2026-11-26 04:04:58.341
+Test Case 'CameraFramingTests.testProjectionCenterEdgesAndBehind' passed (0.0 seconds)
+Test Case 'CameraFramingTests.testRotatedAndVerticalCameraConventions' started at 2026-11-26 04:04:58.342
+Test Case 'CameraFramingTests.testRotatedAndVerticalCameraConventions' passed (0.0 seconds)
+Test Case 'CameraFramingTests.testSchema2MigratesOpticsAndDefaultLens' started at 2026-11-26 04:04:58.342
+Test Case 'CameraFramingTests.testSchema2MigratesOpticsAndDefaultLens' passed (0.101 seconds)
+Test Suite 'CameraFramingTests' passed at 2026-11-26 04:04:58.443
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.206 (0.206) seconds
+Test Suite 'ColorimetryTests' started at 2026-11-26 04:04:58.443
+Test Case 'ColorimetryTests.testBlackAndUnsupportedGeometryAreDistinct' started at 2026-11-26 04:04:58.443
+Test Case 'ColorimetryTests.testBlackAndUnsupportedGeometryAreDistinct' passed (0.101 seconds)
+Test Case 'ColorimetryTests.testDefaultPortraitHasUsableMeterAndBalanceDoesNotChangeLux' started at 2026-11-26 04:04:58.543
+Test Case 'ColorimetryTests.testDefaultPortraitHasUsableMeterAndBalanceDoesNotChangeLux' passed (0.0 seconds)
+Test Case 'ColorimetryTests.testExtremeValidSettingsStayInDisplayGamut' started at 2026-11-26 04:04:58.544
+Test Case 'ColorimetryTests.testExtremeValidSettingsStayInDisplayGamut' passed (0.001 seconds)
+Test Case 'ColorimetryTests.testMatchedWhiteBalanceNeutralizesGrayCard' started at 2026-11-26 04:04:58.545
+Test Case 'ColorimetryTests.testMatchedWhiteBalanceNeutralizesGrayCard' passed (0.0 seconds)
+Test Case 'ColorimetryTests.testPlanckianChromaticityAgainstPublishedReference' started at 2026-11-26 04:04:58.545
+2856 K approximate chromaticity: 0.44623356243897605, 0.408660536585054
+6500 K approximate chromaticity: 0.31341916244577267, 0.3238982606849196
+Test Case 'ColorimetryTests.testPlanckianChromaticityAgainstPublishedReference' passed (0.0 seconds)
+Test Case 'ColorimetryTests.testPreviewSettingsMigrationAndRoundTrip' started at 2026-11-26 04:04:58.545
+Test Case 'ColorimetryTests.testPreviewSettingsMigrationAndRoundTrip' passed (0.001 seconds)
+Test Case 'ColorimetryTests.testRejectInvalidSceneRatherThanSummingDuplicateOrExcessLights' started at 2026-11-26 04:04:58.546
+Test Case 'ColorimetryTests.testRejectInvalidSceneRatherThanSummingDuplicateOrExcessLights' passed (0.0 seconds)
+Test Case 'ColorimetryTests.testSceneLinearAdditivityAndExposureStops' started at 2026-11-26 04:04:58.546
+Test Case 'ColorimetryTests.testSceneLinearAdditivityAndExposureStops' passed (0.0 seconds)
+Test Case 'ColorimetryTests.testWarmCoolAndBalance' started at 2026-11-26 04:04:58.546
+Test Case 'ColorimetryTests.testWarmCoolAndBalance' passed (0.0 seconds)
+Test Suite 'ColorimetryTests' passed at 2026-11-26 04:04:58.546
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.103 (0.103) seconds
+Test Suite 'DevelopmentGeometryTests' started at 2026-11-26 04:04:58.546
+Test Case 'DevelopmentGeometryTests.testARQuarterTurnKeepsAuthoredHeightAndOneToOneDistances' started at 2026-11-26 04:04:58.546
+Test Case 'DevelopmentGeometryTests.testARQuarterTurnKeepsAuthoredHeightAndOneToOneDistances' passed (0.0 seconds)
+Test Case 'DevelopmentGeometryTests.testMeasuredHeightContactOverhangAndUnknownCeilingIncludeFaceCorners' started at 2026-11-26 04:04:58.546
+Test Case 'DevelopmentGeometryTests.testMeasuredHeightContactOverhangAndUnknownCeilingIncludeFaceCorners' passed (0.0 seconds)
+Test Case 'DevelopmentGeometryTests.testSchemaFivePreservesRoomAndRollAndReadsLegacyFour' started at 2026-11-26 04:04:58.546
+Test Case 'DevelopmentGeometryTests.testSchemaFivePreservesRoomAndRollAndReadsLegacyFour' passed (0.001 seconds)
+Test Case 'DevelopmentGeometryTests.testTransformsPreserveRolledDownwardFaceCornerSets' started at 2026-11-26 04:04:58.547
+Test Case 'DevelopmentGeometryTests.testTransformsPreserveRolledDownwardFaceCornerSets' passed (0.0 seconds)
+Test Suite 'DevelopmentGeometryTests' passed at 2026-11-26 04:04:58.547
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ExactNumericReadoutTests' started at 2026-11-26 04:04:58.547
+Test Case 'ExactNumericReadoutTests.testAcceptedFineDecimalsRetainTheirActualReadout' started at 2026-11-26 04:04:58.547
+Test Case 'ExactNumericReadoutTests.testAcceptedFineDecimalsRetainTheirActualReadout' passed (0.002 seconds)
+Test Case 'ExactNumericReadoutTests.testDeterministicFiniteBitPatternsRoundTripWithoutMutatingScene' started at 2026-11-26 04:04:58.549
+Test Case 'ExactNumericReadoutTests.testDeterministicFiniteBitPatternsRoundTripWithoutMutatingScene' passed (0.01 seconds)
+Test Case 'ExactNumericReadoutTests.testExactDecimalDraftsKeepParserBoundsAndLocale' started at 2026-11-26 04:04:58.559
+Test Case 'ExactNumericReadoutTests.testExactDecimalDraftsKeepParserBoundsAndLocale' passed (0.001 seconds)
+Test Case 'ExactNumericReadoutTests.testExtremeFiniteReadoutsUseBoundedRoundTripNotation' started at 2026-11-26 04:04:58.560
+Test Case 'ExactNumericReadoutTests.testExtremeFiniteReadoutsUseBoundedRoundTripNotation' passed (0.101 seconds)
+Test Case 'ExactNumericReadoutTests.testLocalizedDigitsRetainExactFiniteValuesAndSignedZero' started at 2026-11-26 04:04:58.660
+Test Case 'ExactNumericReadoutTests.testLocalizedDigitsRetainExactFiniteValuesAndSignedZero' passed (0.003 seconds)
+Test Case 'ExactNumericReadoutTests.testUnrepresentableDraftIsExplicitWithoutBroadeningInputGrammar' started at 2026-11-26 04:04:58.663
+Test Case 'ExactNumericReadoutTests.testUnrepresentableDraftIsExplicitWithoutBroadeningInputGrammar' passed (0.0 seconds)
+Test Suite 'ExactNumericReadoutTests' passed at 2026-11-26 04:04:58.663
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.116 (0.116) seconds
+Test Suite 'GrazingStudyContinuityTests' started at 2026-11-26 04:04:58.663
+Test Case 'GrazingStudyContinuityTests.testClippedAreaWeightsAndWorkAreBounded' started at 2026-11-26 04:04:58.663
+Test Case 'GrazingStudyContinuityTests.testClippedAreaWeightsAndWorkAreBounded' passed (0.001 seconds)
+Test Case 'GrazingStudyContinuityTests.testDarkTangentEmissionBackfaceAndNearFieldRemainDistinct' started at 2026-11-26 04:04:58.664
+Test Case 'GrazingStudyContinuityTests.testDarkTangentEmissionBackfaceAndNearFieldRemainDistinct' passed (0.001 seconds)
+Test Case 'GrazingStudyContinuityTests.testFullFaceRetainsOriginalMidpointValuesAndSampleCount' started at 2026-11-26 04:04:58.665
+Test Case 'GrazingStudyContinuityTests.testFullFaceRetainsOriginalMidpointValuesAndSampleCount' passed (0.0 seconds)
+Test Case 'GrazingStudyContinuityTests.testHeldOutOffCenterAndSignedSlopeCasesMeetAreaTolerance' started at 2026-11-26 04:04:58.665
+Test Case 'GrazingStudyContinuityTests.testHeldOutOffCenterAndSignedSlopeCasesMeetAreaTolerance' passed (0.002 seconds)
+Test Case 'GrazingStudyContinuityTests.testMovingClipAndColumnTopologyRemainContinuous' started at 2026-11-26 04:04:58.667
+Test Case 'GrazingStudyContinuityTests.testMovingClipAndColumnTopologyRemainContinuous' passed (0.006 seconds)
+Test Case 'GrazingStudyContinuityTests.testNarrowPositiveStripsAndCornersRetainAccuracy' started at 2026-11-26 04:04:58.673
+Test Case 'GrazingStudyContinuityTests.testNarrowPositiveStripsAndCornersRetainAccuracy' passed (0.001 seconds)
+Test Case 'GrazingStudyContinuityTests.testPackedAreaMetadataStaysAlignedAcrossMixedSources' started at 2026-11-26 04:04:58.674
+Test Case 'GrazingStudyContinuityTests.testPackedAreaMetadataStaysAlignedAcrossMixedSources' passed (0.0 seconds)
+Test Case 'GrazingStudyContinuityTests.testRemappedSamplesRetainVisibilityMaterialAndGeometricHemisphere' started at 2026-11-26 04:04:58.675
+Test Case 'GrazingStudyContinuityTests.testRemappedSamplesRetainVisibilityMaterialAndGeometricHemisphere' passed (0.101 seconds)
+Test Case 'GrazingStudyContinuityTests.testRetainedInternalCellCounterexampleIsContinuous' started at 2026-11-26 04:04:58.775
+Test Case 'GrazingStudyContinuityTests.testRetainedInternalCellCounterexampleIsContinuous' passed (0.001 seconds)
+Test Suite 'GrazingStudyContinuityTests' passed at 2026-11-26 04:04:58.777
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.113 (0.113) seconds
+Test Suite 'GuidedAssumptionTests' started at 2026-11-26 04:04:58.777
+Test Case 'GuidedAssumptionTests.testChosenNumericBasisMatchesActualCameraRelativeGeometryAndLighting' started at 2026-11-26 04:04:58.777
+Test Case 'GuidedAssumptionTests.testChosenNumericBasisMatchesActualCameraRelativeGeometryAndLighting' passed (0.104 seconds)
+Test Case 'GuidedAssumptionTests.testExplicitMinimalFillAndNoVisibleRimRemainDifferentFromUnobservedCues' started at 2026-11-26 04:04:58.880
+Test Case 'GuidedAssumptionTests.testExplicitMinimalFillAndNoVisibleRimRemainDifferentFromUnobservedCues' passed (0.0 seconds)
+Test Case 'GuidedAssumptionTests.testProvenanceRetainsEveryCategoricalAnswerWithoutPromotingDefaultsToObservations' started at 2026-11-26 04:04:58.881
+Test Case 'GuidedAssumptionTests.testProvenanceRetainsEveryCategoricalAnswerWithoutPromotingDefaultsToObservations' passed (0.009 seconds)
+Test Case 'GuidedAssumptionTests.testUnknownCuesRemainUnknownInBothDifferentStartingRigs' started at 2026-11-26 04:04:58.890
+Test Case 'GuidedAssumptionTests.testUnknownCuesRemainUnknownInBothDifferentStartingRigs' passed (0.001 seconds)
+Test Suite 'GuidedAssumptionTests' passed at 2026-11-26 04:04:58.891
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.114 (0.114) seconds
+Test Suite 'GuidedLightingTests' started at 2026-11-26 04:04:58.891
+Test Case 'GuidedLightingTests.testAllObservationCombinationsAreValidAndPreserveCameraAndSubject' started at 2026-11-26 04:04:58.891
+Test Case 'GuidedLightingTests.testAllObservationCombinationsAreValidAndPreserveCameraAndSubject' passed (0.033 seconds)
+Test Case 'GuidedLightingTests.testCameraRelativeDirectionWithRotatedCamera' started at 2026-11-26 04:04:58.924
+Test Case 'GuidedLightingTests.testCameraRelativeDirectionWithRotatedCamera' passed (0.0 seconds)
+Test Case 'GuidedLightingTests.testDegenerateAndOutOfBoundsGeometryAbstain' started at 2026-11-26 04:04:58.924
+Test Case 'GuidedLightingTests.testDegenerateAndOutOfBoundsGeometryAbstain' passed (0.1 seconds)
+Test Case 'GuidedLightingTests.testSoftAlternativesMatchAssumedLuxAndAngularSize' started at 2026-11-26 04:04:59.025
+Test Case 'GuidedLightingTests.testSoftAlternativesMatchAssumedLuxAndAngularSize' passed (0.0 seconds)
+Test Case 'GuidedLightingTests.testUncertainSoftnessAndFillProduceDifferentExplicitAlternatives' started at 2026-11-26 04:04:59.025
+Test Case 'GuidedLightingTests.testUncertainSoftnessAndFillProduceDifferentExplicitAlternatives' passed (0.0 seconds)
+Test Case 'GuidedLightingTests.testUnknownDirectionAbstains' started at 2026-11-26 04:04:59.025
+Test Case 'GuidedLightingTests.testUnknownDirectionAbstains' passed (0.0 seconds)
+Test Suite 'GuidedLightingTests' passed at 2026-11-26 04:04:59.025
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.135 (0.135) seconds
+Test Suite 'LightOutputBoundaryTests' started at 2026-11-26 04:04:59.025
+Test Case 'LightOutputBoundaryTests.testAlreadyAchievedSubnormalTargetPreservesExactSourceDespiteInverseRounding' started at 2026-11-26 04:04:59.025
+Test Case 'LightOutputBoundaryTests.testAlreadyAchievedSubnormalTargetPreservesExactSourceDespiteInverseRounding' passed (0.101 seconds)
+Test Case 'LightOutputBoundaryTests.testAlreadyExactMaximumSettingIsPreserved' started at 2026-11-26 04:04:59.126
+Test Case 'LightOutputBoundaryTests.testAlreadyExactMaximumSettingIsPreserved' passed (0.0 seconds)
+Test Case 'LightOutputBoundaryTests.testAnyLuxAboveActualMaximumIsRejectedAcrossEmitterKinds' started at 2026-11-26 04:04:59.126
+Test Case 'LightOutputBoundaryTests.testAnyLuxAboveActualMaximumIsRejectedAcrossEmitterKinds' passed (0.001 seconds)
+Test Case 'LightOutputBoundaryTests.testLowerOutputReachesExactlyAchievableMaximumDespiteInverseRounding' started at 2026-11-26 04:04:59.127
+Test Case 'LightOutputBoundaryTests.testLowerOutputReachesExactlyAchievableMaximumDespiteInverseRounding' passed (0.0 seconds)
+Test Case 'LightOutputBoundaryTests.testOffSourceCanReachMaximum' started at 2026-11-26 04:04:59.127
+Test Case 'LightOutputBoundaryTests.testOffSourceCanReachMaximum' passed (0.0 seconds)
+Test Case 'LightOutputBoundaryTests.testOrdinaryInteriorTargetRetainsRequiredAccuracy' started at 2026-11-26 04:04:59.128
+Test Case 'LightOutputBoundaryTests.testOrdinaryInteriorTargetRetainsRequiredAccuracy' passed (0.0 seconds)
+Test Case 'LightOutputBoundaryTests.testTargetImmediatelyBelowMaximumRemainsAchievable' started at 2026-11-26 04:04:59.128
+Test Case 'LightOutputBoundaryTests.testTargetImmediatelyBelowMaximumRemainsAchievable' passed (0.0 seconds)
+Test Case 'LightOutputBoundaryTests.testUnachievableSubnormalTargetStillRejectsIntegrationUnderflow' started at 2026-11-26 04:04:59.128
+Test Case 'LightOutputBoundaryTests.testUnachievableSubnormalTargetStillRejectsIntegrationUnderflow' passed (0.0 seconds)
+Test Case 'LightOutputBoundaryTests.testZeroStillTurnsOffSourceWithoutSupportedGeometry' started at 2026-11-26 04:04:59.128
+Test Case 'LightOutputBoundaryTests.testZeroStillTurnsOffSourceWithoutSupportedGeometry' passed (0.0 seconds)
+Test Suite 'LightOutputBoundaryTests' passed at 2026-11-26 04:04:59.129
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.103 (0.103) seconds
+Test Suite 'LightingPlanTests' started at 2026-11-26 04:04:59.129
+Test Case 'LightingPlanTests.testAdaptiveParameterFormattingRetainsPrecisionWithoutFalseNegativeZero' started at 2026-11-26 04:04:59.129
+Test Case 'LightingPlanTests.testAdaptiveParameterFormattingRetainsPrecisionWithoutFalseNegativeZero' passed (0.001 seconds)
+Test Case 'LightingPlanTests.testCoincidentSourcesKeepActualAnchorsAndDistinctNumberedLabels' started at 2026-11-26 04:04:59.129
+Test Case 'LightingPlanTests.testCoincidentSourcesKeepActualAnchorsAndDistinctNumberedLabels' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testDiagramUsesUniformScaleAndPositiveZDown' started at 2026-11-26 04:04:59.130
+Test Case 'LightingPlanTests.testDiagramUsesUniformScaleAndPositiveZDown' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testEquipmentRowsPreserveSceneValuesAndAimSemantics' started at 2026-11-26 04:04:59.130
+Test Case 'LightingPlanTests.testEquipmentRowsPreserveSceneValuesAndAimSemantics' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testExtremeCoordinatesAndModifierFootprintFitBothPapers' started at 2026-11-26 04:04:59.130
+Test Case 'LightingPlanTests.testExtremeCoordinatesAndModifierFootprintFitBothPapers' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testFixedPrecisionAndNegativeZero' started at 2026-11-26 04:04:59.131
+Test Case 'LightingPlanTests.testFixedPrecisionAndNegativeZero' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testGridSpacingIsBoundedAndUnitCorrect' started at 2026-11-26 04:04:59.131
+Test Case 'LightingPlanTests.testGridSpacingIsBoundedAndUnitCorrect' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testInvalidSceneAndUndefinedAimAreNotPresentedAsValid' started at 2026-11-26 04:04:59.131
+Test Case 'LightingPlanTests.testInvalidSceneAndUndefinedAimAreNotPresentedAsValid' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testInvisibleReportNamesHaveContextWithoutRenamingEditableData' started at 2026-11-26 04:04:59.131
+Test Case 'LightingPlanTests.testInvisibleReportNamesHaveContextWithoutRenamingEditableData' passed (0.003 seconds)
+Test Case 'LightingPlanTests.testManualAimAndRotatedModifierAreProjectedFromWorldCoordinates' started at 2026-11-26 04:04:59.134
+Test Case 'LightingPlanTests.testManualAimAndRotatedModifierAreProjectedFromWorldCoordinates' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testPaginationIncludesEveryLightExactlyOnceAndEmptyScene' started at 2026-11-26 04:04:59.134
+Test Case 'LightingPlanTests.testPaginationIncludesEveryLightExactlyOnceAndEmptyScene' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testPrecisePDFModelAndPlainTextShareTheSameValidatedParameters' started at 2026-11-26 04:04:59.134
+Test Case 'LightingPlanTests.testPrecisePDFModelAndPlainTextShareTheSameValidatedParameters' passed (0.118 seconds)
+Test Case 'LightingPlanTests.testUnicodeAndControlCharactersAreSafelyBounded' started at 2026-11-26 04:04:59.252
+Test Case 'LightingPlanTests.testUnicodeAndControlCharactersAreSafelyBounded' passed (0.0 seconds)
+Test Case 'LightingPlanTests.testUnitConversionAndStableFormatting' started at 2026-11-26 04:04:59.252
+Test Case 'LightingPlanTests.testUnitConversionAndStableFormatting' passed (0.003 seconds)
+Test Suite 'LightingPlanTests' passed at 2026-11-26 04:04:59.255
+	 Executed 14 tests, with 0 failures (0 unexpected) in 0.126 (0.126) seconds
+Test Suite 'LightingProjectDocumentTests' started at 2026-11-26 04:04:59.255
+Test Case 'LightingProjectDocumentTests.testEditableRoundTripPreservesPreciseSettingsWithoutLibraryOrPhotoMetadata' started at 2026-11-26 04:04:59.255
+Test Case 'LightingProjectDocumentTests.testEditableRoundTripPreservesPreciseSettingsWithoutLibraryOrPhotoMetadata' passed (0.001 seconds)
+Test Case 'LightingProjectDocumentTests.testExactReadLimitAcceptsValidJSONButOneAdditionalByteDoesNot' started at 2026-11-26 04:04:59.256
+Test Case 'LightingProjectDocumentTests.testExactReadLimitAcceptsValidJSONButOneAdditionalByteDoesNot' passed (0.024 seconds)
+Test Case 'LightingProjectDocumentTests.testInvalidNamesScenesDuplicateLightsAndFutureSceneSchemasCannotImport' started at 2026-11-26 04:04:59.280
+Test Case 'LightingProjectDocumentTests.testInvalidNamesScenesDuplicateLightsAndFutureSceneSchemasCannotImport' passed (0.008 seconds)
+Test Case 'LightingProjectDocumentTests.testMalformedMissingAndUnexpectedEnvelopeFieldsAreRejected' started at 2026-11-26 04:04:59.289
+Test Case 'LightingProjectDocumentTests.testMalformedMissingAndUnexpectedEnvelopeFieldsAreRejected' passed (0.003 seconds)
+Test Case 'LightingProjectDocumentTests.testOlderSceneMigratesAndLegacyNameRemainsComplete' started at 2026-11-26 04:04:59.292
+Test Case 'LightingProjectDocumentTests.testOlderSceneMigratesAndLegacyNameRemainsComplete' passed (0.001 seconds)
+Test Case 'LightingProjectDocumentTests.testOversizedDataRejectedBeforeDecodeAndEncodedSizeIsBounded' started at 2026-11-26 04:04:59.293
+Test Case 'LightingProjectDocumentTests.testOversizedDataRejectedBeforeDecodeAndEncodedSizeIsBounded' passed (0.444 seconds)
+Test Case 'LightingProjectDocumentTests.testUnsupportedEnvelopeVersionsAreRejectedBeforeSceneInterpretation' started at 2026-11-26 04:04:59.737
+Test Case 'LightingProjectDocumentTests.testUnsupportedEnvelopeVersionsAreRejectedBeforeSceneInterpretation' passed (0.001 seconds)
+Test Suite 'LightingProjectDocumentTests' passed at 2026-11-26 04:04:59.738
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.483 (0.483) seconds
+Test Suite 'PhotometryInvariantTests' started at 2026-11-26 04:04:59.738
+Test Case 'PhotometryInvariantTests.testGeometricallySimilarFiniteSourcesFollowInverseAreaScaling' started at 2026-11-26 04:04:59.738
+Test Case 'PhotometryInvariantTests.testGeometricallySimilarFiniteSourcesFollowInverseAreaScaling' passed (0.0 seconds)
+Test Case 'PhotometryInvariantTests.testMixedStudioRigKeepsMeterAndStudyValuesAfterYawAndTranslation' started at 2026-11-26 04:04:59.739
+Test Case 'PhotometryInvariantTests.testMixedStudioRigKeepsMeterAndStudyValuesAfterYawAndTranslation' passed (0.001 seconds)
+Test Case 'PhotometryInvariantTests.testOffNormalDielectricResponseIsReciprocalAfterIncidenceNormalization' started at 2026-11-26 04:04:59.739
+Test Case 'PhotometryInvariantTests.testOffNormalDielectricResponseIsReciprocalAfterIncidenceNormalization' passed (0.001 seconds)
+Test Case 'PhotometryInvariantTests.testPointAndClippedRectangleAreInvariantUnderRigidCoordinateChanges' started at 2026-11-26 04:04:59.740
+Test Case 'PhotometryInvariantTests.testPointAndClippedRectangleAreInvariantUnderRigidCoordinateChanges' passed (0.0 seconds)
+Test Suite 'PhotometryInvariantTests' passed at 2026-11-26 04:04:59.740
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'PortraitHeadMeshTests' started at 2026-11-26 04:04:59.740
+Test Case 'PortraitHeadMeshTests.testBVHMatchesIndependentOracleAcrossExteriorViewsAndMisses' started at 2026-11-26 04:04:59.740
+BVH independent oracle: 210 exterior rays, 76 hits and 134 misses
+Test Case 'PortraitHeadMeshTests.testBVHMatchesIndependentOracleAcrossExteriorViewsAndMisses' passed (0.034 seconds)
+Test Case 'PortraitHeadMeshTests.testCoincidentSilhouetteFacesKeepExactSegmentEndpoints' started at 2026-11-26 04:04:59.774
+Test Case 'PortraitHeadMeshTests.testCoincidentSilhouetteFacesKeepExactSegmentEndpoints' passed (0.0 seconds)
+Test Case 'PortraitHeadMeshTests.testExactSilhouetteVertexRendersWithoutUnsupportedPixels' started at 2026-11-26 04:04:59.775
+Test Case 'PortraitHeadMeshTests.testExactSilhouetteVertexRendersWithoutUnsupportedPixels' passed (0.001 seconds)
+Test Case 'PortraitHeadMeshTests.testFiniteSegmentsStopAtTheLightAndUseHalfOpenIntervals' started at 2026-11-26 04:04:59.775
+Test Case 'PortraitHeadMeshTests.testFiniteSegmentsStopAtTheLightAndUseHalfOpenIntervals' passed (0.002 seconds)
+Test Case 'PortraitHeadMeshTests.testInteriorOriginsReturnNearestExitWithOutwardUnitNormals' started at 2026-11-26 04:04:59.778
+Test Case 'PortraitHeadMeshTests.testInteriorOriginsReturnNearestExitWithOutwardUnitNormals' passed (0.001 seconds)
+Test Case 'PortraitHeadMeshTests.testSeamPolesSharedEdgesAndNearGrazingRaysMatchOracle' started at 2026-11-26 04:04:59.778
+BVH independent oracle: 63 seam, pole, shared-edge and grazing rays
+Test Case 'PortraitHeadMeshTests.testSeamPolesSharedEdgesAndNearGrazingRaysMatchOracle' passed (0.003 seconds)
+Test Suite 'PortraitHeadMeshTests' passed at 2026-11-26 04:04:59.782
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.041 (0.041) seconds
+Test Suite 'PortraitStudyTests' started at 2026-11-26 04:04:59.782
+Test Case 'PortraitStudyTests.testContinuousHeadSurfaceIsSymmetricAndHasIntegratedFacialRelief' started at 2026-11-26 04:04:59.782
+Test Case 'PortraitStudyTests.testContinuousHeadSurfaceIsSymmetricAndHasIntegratedFacialRelief' passed (0.0 seconds)
+Test Case 'PortraitStudyTests.testFullResolutionObliqueAreaLitPortraitHasNoInvalidSilhouettePixels' started at 2026-11-26 04:04:59.782
+Test Case 'PortraitStudyTests.testFullResolutionObliqueAreaLitPortraitHasNoInvalidSilhouettePixels' passed (0.237 seconds)
+Test Case 'PortraitStudyTests.testInvalidCameraNearFieldAndCancellationAreHonest' started at 2026-11-26 04:05:00.019
+Test Case 'PortraitStudyTests.testInvalidCameraNearFieldAndCancellationAreHonest' passed (0.009 seconds)
+Test Case 'PortraitStudyTests.testNearestHeadAndClothingSurfacesHaveAnalyticOutwardNormals' started at 2026-11-26 04:05:00.028
+Test Case 'PortraitStudyTests.testNearestHeadAndClothingSurfacesHaveAnalyticOutwardNormals' passed (0.0 seconds)
+Test Case 'PortraitStudyTests.testShadowSegmentsStopAtActualLightAndRespectGeometry' started at 2026-11-26 04:05:00.028
+Test Case 'PortraitStudyTests.testShadowSegmentsStopAtActualLightAndRespectGeometry' passed (0.0 seconds)
+Test Case 'PortraitStudyTests.testStudyIsDeterministicAndRespondsToRealLightingAndExposure' started at 2026-11-26 04:05:00.028
+Test Case 'PortraitStudyTests.testStudyIsDeterministicAndRespondsToRealLightingAndExposure' passed (0.009 seconds)
+Test Case 'PortraitStudyTests.testTranslationAndPhysicalCameraFraming' started at 2026-11-26 04:05:00.037
+Test Case 'PortraitStudyTests.testTranslationAndPhysicalCameraFraming' passed (0.012 seconds)
+Test Suite 'PortraitStudyTests' passed at 2026-11-26 04:05:00.050
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.267 (0.267) seconds
+Test Suite 'PrecisionDraftBoundTests' started at 2026-11-26 04:05:00.050
+Test Case 'PrecisionDraftBoundTests.testAllInitialEditableFormatsFitWithoutChangingTheirExactValue' started at 2026-11-26 04:05:00.050
+Test Case 'PrecisionDraftBoundTests.testAllInitialEditableFormatsFitWithoutChangingTheirExactValue' passed (0.002 seconds)
+Test Case 'PrecisionDraftBoundTests.testCombiningScalarPasteCannotBypassByteLimitAsOneCharacter' started at 2026-11-26 04:05:00.052
+Test Case 'PrecisionDraftBoundTests.testCombiningScalarPasteCannotBypassByteLimitAsOneCharacter' passed (0.003 seconds)
+Test Case 'PrecisionDraftBoundTests.testEmptyAndIntermediateEditsStayEditableWithoutRelaxingParsing' started at 2026-11-26 04:05:00.055
+Test Case 'PrecisionDraftBoundTests.testEmptyAndIntermediateEditsStayEditableWithoutRelaxingParsing' passed (0.0 seconds)
+Test Case 'PrecisionDraftBoundTests.testExistingParserLimitsStillApplyAfterBoundedDraftAdmission' started at 2026-11-26 04:05:00.055
+Test Case 'PrecisionDraftBoundTests.testExistingParserLimitsStillApplyAfterBoundedDraftAdmission' passed (0.0 seconds)
+Test Case 'PrecisionDraftBoundTests.testLocalizedDigitsUseUTF8BytesRatherThanCharacterCount' started at 2026-11-26 04:05:00.055
+Test Case 'PrecisionDraftBoundTests.testLocalizedDigitsUseUTF8BytesRatherThanCharacterCount' passed (0.0 seconds)
+Test Case 'PrecisionDraftBoundTests.testRawByteBoundaryPreservesExistingPaddedDecimalAllowance' started at 2026-11-26 04:05:00.056
+Test Case 'PrecisionDraftBoundTests.testRawByteBoundaryPreservesExistingPaddedDecimalAllowance' passed (0.0 seconds)
+Test Suite 'PrecisionDraftBoundTests' passed at 2026-11-26 04:05:00.056
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.006 (0.006) seconds
+Test Suite 'ProjectDocumentAdversarialTests' started at 2026-11-26 04:05:00.056
+Test Case 'ProjectDocumentAdversarialTests.testDecodedCopyCannotOverwriteConcurrentChangesAndCanBeImportedAfterReload' started at 2026-11-26 04:05:00.056
+Test Case 'ProjectDocumentAdversarialTests.testDecodedCopyCannotOverwriteConcurrentChangesAndCanBeImportedAfterReload' passed (0.009 seconds)
+Test Case 'ProjectDocumentAdversarialTests.testFullLibraryRejectsDecodedCopyWithoutChangingMemoryOrSavedBytes' started at 2026-11-26 04:05:00.065
+Test Case 'ProjectDocumentAdversarialTests.testFullLibraryRejectsDecodedCopyWithoutChangingMemoryOrSavedBytes' passed (0.003 seconds)
+Test Case 'ProjectDocumentAdversarialTests.testIndividuallyValidCopyCannotGrowLibraryPastItsSeparateByteLimit' started at 2026-11-26 04:05:00.069
+Test Case 'ProjectDocumentAdversarialTests.testIndividuallyValidCopyCannotGrowLibraryPastItsSeparateByteLimit' passed (1.641 seconds)
+Test Case 'ProjectDocumentAdversarialTests.testInvalidEncodingUnpairedSurrogatesAndExtraRootsCannotImport' started at 2026-11-26 04:05:01.710
+Test Case 'ProjectDocumentAdversarialTests.testInvalidEncodingUnpairedSurrogatesAndExtraRootsCannotImport' passed (0.001 seconds)
+Test Case 'ProjectDocumentAdversarialTests.testRawNumericOverflowAndNonFiniteTokensCannotBecomeSceneValues' started at 2026-11-26 04:05:01.711
+Test Case 'ProjectDocumentAdversarialTests.testRawNumericOverflowAndNonFiniteTokensCannotBecomeSceneValues' passed (0.001 seconds)
+Test Case 'ProjectDocumentAdversarialTests.testSchemaRequiresAnIntegerValueWithoutInventingAnIntegerSpellingRule' started at 2026-11-26 04:05:01.711
+Test Case 'ProjectDocumentAdversarialTests.testSchemaRequiresAnIntegerValueWithoutInventingAnIntegerSpellingRule' passed (0.0 seconds)
+Test Suite 'ProjectDocumentAdversarialTests' passed at 2026-11-26 04:05:01.712
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.656 (1.656) seconds
+Test Suite 'ProjectDocumentEnvelopeIntegrityTests' started at 2026-11-26 04:05:01.712
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testDuplicateEnvelopeValuesAreRejectedInEitherOrder' started at 2026-11-26 04:05:01.712
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testDuplicateEnvelopeValuesAreRejectedInEitherOrder' passed (0.001 seconds)
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testEscapedEquivalentKeysCannotHideDuplicates' started at 2026-11-26 04:05:01.712
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testEscapedEquivalentKeysCannotHideDuplicates' passed (0.001 seconds)
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testEscapedUniqueKeysAndStructuralCharactersInValuesStayReadable' started at 2026-11-26 04:05:01.713
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testEscapedUniqueKeysAndStructuralCharactersInValuesStayReadable' passed (0.001 seconds)
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testExistingUnicodeEncodingsKeepUniqueKeysAndRejectDuplicateKeys' started at 2026-11-26 04:05:01.714
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testExistingUnicodeEncodingsKeepUniqueKeysAndRejectDuplicateKeys' passed (0.001 seconds)
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testLargeValidNameAndBoundaryWhitespaceDoNotProduceFalseKeys' started at 2026-11-26 04:05:01.715
+Test Case 'ProjectDocumentEnvelopeIntegrityTests.testLargeValidNameAndBoundaryWhitespaceDoNotProduceFalseKeys' passed (0.059 seconds)
+Test Suite 'ProjectDocumentEnvelopeIntegrityTests' passed at 2026-11-26 04:05:01.774
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.062 (0.062) seconds
+Test Suite 'ProjectDocumentNestedIntegrityTests' started at 2026-11-26 04:05:01.774
+Test Case 'ProjectDocumentNestedIntegrityTests.testAmbiguousSceneLightPositionAndOpticsFieldsCannotImport' started at 2026-11-26 04:05:01.774
+Test Case 'ProjectDocumentNestedIntegrityTests.testAmbiguousSceneLightPositionAndOpticsFieldsCannotImport' passed (0.001 seconds)
+Test Case 'ProjectDocumentNestedIntegrityTests.testDecodedKeyBytesPreserveUnicodeDistinctionAndEscapeEquivalence' started at 2026-11-26 04:05:01.775
+Test Case 'ProjectDocumentNestedIntegrityTests.testDecodedKeyBytesPreserveUnicodeDistinctionAndEscapeEquivalence' passed (0.101 seconds)
+Test Case 'ProjectDocumentNestedIntegrityTests.testEscapedEquivalentNestedKeysAndUnknownObjectsCannotHideDuplicates' started at 2026-11-26 04:05:01.877
+Test Case 'ProjectDocumentNestedIntegrityTests.testEscapedEquivalentNestedKeysAndUnknownObjectsCannotHideDuplicates' passed (0.001 seconds)
+Test Case 'ProjectDocumentNestedIntegrityTests.testIterativeStateHandlesDeepAndWideUnknownObjects' started at 2026-11-26 04:05:01.877
+Test Case 'ProjectDocumentNestedIntegrityTests.testIterativeStateHandlesDeepAndWideUnknownObjects' passed (0.015 seconds)
+Test Case 'ProjectDocumentNestedIntegrityTests.testNestedDuplicatesAreRejectedAcrossSupportedUnicodeEncodings' started at 2026-11-26 04:05:01.892
+Test Case 'ProjectDocumentNestedIntegrityTests.testNestedDuplicatesAreRejectedAcrossSupportedUnicodeEncodings' passed (0.001 seconds)
+Test Case 'ProjectDocumentNestedIntegrityTests.testSiblingObjectsArraysAndQuotedStructuralCharactersRemainValid' started at 2026-11-26 04:05:01.894
+Test Case 'ProjectDocumentNestedIntegrityTests.testSiblingObjectsArraysAndQuotedStructuralCharactersRemainValid' passed (0.001 seconds)
+Test Suite 'ProjectDocumentNestedIntegrityTests' passed at 2026-11-26 04:05:01.894
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.12 (0.12) seconds
+Test Suite 'ProjectLibraryTests' started at 2026-11-26 04:05:01.894
+Test Case 'ProjectLibraryTests.testArchivedDeletionFreesCapacityAndStaleDeletionCannotOverwrite' started at 2026-11-26 04:05:01.894
+Test Case 'ProjectLibraryTests.testArchivedDeletionFreesCapacityAndStaleDeletionCannotOverwrite' passed (0.015 seconds)
+Test Case 'ProjectLibraryTests.testCapacityIsBoundedIncludingArchivedProjects' started at 2026-11-26 04:05:01.909
+Test Case 'ProjectLibraryTests.testCapacityIsBoundedIncludingArchivedProjects' passed (0.001 seconds)
+Test Case 'ProjectLibraryTests.testConcurrentEditsFromSameSnapshotAllowExactlyOneWriter' started at 2026-11-26 04:05:01.910
+Test Case 'ProjectLibraryTests.testConcurrentEditsFromSameSnapshotAllowExactlyOneWriter' passed (0.004 seconds)
+Test Case 'ProjectLibraryTests.testConcurrentFirstSavesAllowExactlyOneWriter' started at 2026-11-26 04:05:01.914
+Test Case 'ProjectLibraryTests.testConcurrentFirstSavesAllowExactlyOneWriter' passed (0.003 seconds)
+Test Case 'ProjectLibraryTests.testConcurrentLegacyMigrationReturnsOneStableIdentity' started at 2026-11-26 04:05:01.917
+Test Case 'ProjectLibraryTests.testConcurrentLegacyMigrationReturnsOneStableIdentity' passed (0.003 seconds)
+Test Case 'ProjectLibraryTests.testConcurrentRecoveryCopiesPreserveAllRecords' started at 2026-11-26 04:05:01.919
+Test Case 'ProjectLibraryTests.testConcurrentRecoveryCopiesPreserveAllRecords' passed (0.015 seconds)
+Test Case 'ProjectLibraryTests.testCorruptLibraryNeverFallsBackToLegacyOrOverwrites' started at 2026-11-26 04:05:01.935
+Test Case 'ProjectLibraryTests.testCorruptLibraryNeverFallsBackToLegacyOrOverwrites' passed (0.001 seconds)
+Test Case 'ProjectLibraryTests.testDuplicateArchiveRestorePreserveSceneAndActiveIdentity' started at 2026-11-26 04:05:01.935
+Test Case 'ProjectLibraryTests.testDuplicateArchiveRestorePreserveSceneAndActiveIdentity' passed (0.001 seconds)
+Test Case 'ProjectLibraryTests.testFirstSaveAndIndependentProjectsRoundTrip' started at 2026-11-26 04:05:01.936
+Test Case 'ProjectLibraryTests.testFirstSaveAndIndependentProjectsRoundTrip' passed (0.003 seconds)
+Test Case 'ProjectLibraryTests.testInvalidMetadataAndFutureSchemaAreRejected' started at 2026-11-26 04:05:01.939
+Test Case 'ProjectLibraryTests.testInvalidMetadataAndFutureSchemaAreRejected' passed (0.008 seconds)
+Test Case 'ProjectLibraryTests.testInvalidNamesIDsAndScenesLeaveLibraryUnchanged' started at 2026-11-26 04:05:01.947
+Test Case 'ProjectLibraryTests.testInvalidNamesIDsAndScenesLeaveLibraryUnchanged' passed (0.001 seconds)
+Test Case 'ProjectLibraryTests.testLegacyMigrationIsIdempotentAndPreservesOriginalBytes' started at 2026-11-26 04:05:01.948
+Test Case 'ProjectLibraryTests.testLegacyMigrationIsIdempotentAndPreservesOriginalBytes' passed (0.005 seconds)
+Test Case 'ProjectLibraryTests.testMalformedLegacyNeverCreatesLibrary' started at 2026-11-26 04:05:01.953
+Test Case 'ProjectLibraryTests.testMalformedLegacyNeverCreatesLibrary' passed (0.001 seconds)
+Test Case 'ProjectLibraryTests.testOnlyArchivedProjectsCanBeDeletedAndOtherRecordsSurviveReopen' started at 2026-11-26 04:05:01.954
+Test Case 'ProjectLibraryTests.testOnlyArchivedProjectsCanBeDeletedAndOtherRecordsSurviveReopen' passed (0.004 seconds)
+Test Case 'ProjectLibraryTests.testOversizedLibraryAndNonregularPathRemainProtected' started at 2026-11-26 04:05:01.958
+Test Case 'ProjectLibraryTests.testOversizedLibraryAndNonregularPathRemainProtected' passed (0.016 seconds)
+Test Case 'ProjectLibraryTests.testRecoveryCopyAtCapacityAndInvalidInputsLeaveBytesUnchanged' started at 2026-11-26 04:05:01.974
+Test Case 'ProjectLibraryTests.testRecoveryCopyAtCapacityAndInvalidInputsLeaveBytesUnchanged' passed (0.017 seconds)
+Test Case 'ProjectLibraryTests.testRecoveryCopyPreservesNewerOriginalAndOtherProjects' started at 2026-11-26 04:05:01.991
+Test Case 'ProjectLibraryTests.testRecoveryCopyPreservesNewerOriginalAndOtherProjects' passed (0.003 seconds)
+Test Case 'ProjectLibraryTests.testRecoveryCopyRefusesMissingOrCorruptLibrary' started at 2026-11-26 04:05:01.994
+Test Case 'ProjectLibraryTests.testRecoveryCopyRefusesMissingOrCorruptLibrary' passed (0.001 seconds)
+Test Case 'ProjectLibraryTests.testStaleSnapshotDoesNotOverwriteAnotherWindow' started at 2026-11-26 04:05:01.996
+Test Case 'ProjectLibraryTests.testStaleSnapshotDoesNotOverwriteAnotherWindow' passed (0.001 seconds)
+Test Suite 'ProjectLibraryTests' passed at 2026-11-26 04:05:01.997
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'ProjectRecoveryCapacityTests' started at 2026-11-26 04:05:01.997
+Test Case 'ProjectRecoveryCapacityTests.testActiveAndUnarchivedRecordsCannotBeUsedAsReplacement' started at 2026-11-26 04:05:01.997
+Test Case 'ProjectRecoveryCapacityTests.testActiveAndUnarchivedRecordsCannotBeUsedAsReplacement' passed (0.014 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testAvailableCapacityNeverRemovesEvenAnActiveSelectedRecord' started at 2026-11-26 04:05:02.012
+Test Case 'ProjectRecoveryCapacityTests.testAvailableCapacityNeverRemovesEvenAnActiveSelectedRecord' passed (0.001 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testCapacityFreedAfterSelectionKeepsConfirmedArchiveAndEveryLatestRecord' started at 2026-11-26 04:05:02.013
+Test Case 'ProjectRecoveryCapacityTests.testCapacityFreedAfterSelectionKeepsConfirmedArchiveAndEveryLatestRecord' passed (0.016 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testChangedRestoredAndRemovedCandidatesLeaveSavedBytesUnchanged' started at 2026-11-26 04:05:02.029
+Test Case 'ProjectRecoveryCapacityTests.testChangedRestoredAndRemovedCandidatesLeaveSavedBytesUnchanged' passed (0.05 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testConcurrentConfirmedReplacementsAllowOneWinnerWithoutDeletingOtherProjects' started at 2026-11-26 04:05:02.079
+Test Case 'ProjectRecoveryCapacityTests.testConcurrentConfirmedReplacementsAllowOneWinnerWithoutDeletingOtherProjects' passed (0.034 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testConfirmedArchiveReplacementRecoversFullLibraryAndPreservesNewerUnrelatedEdits' started at 2026-11-26 04:05:02.113
+Test Case 'ProjectRecoveryCapacityTests.testConfirmedArchiveReplacementRecoversFullLibraryAndPreservesNewerUnrelatedEdits' passed (0.014 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testInvalidRecoveryInputPreservesCandidateAndSavedBytes' started at 2026-11-26 04:05:02.128
+Test Case 'ProjectRecoveryCapacityTests.testInvalidRecoveryInputPreservesCandidateAndSavedBytes' passed (0.006 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testMissingOrCorruptLibraryCannotTriggerReplacementOrLegacyMigration' started at 2026-11-26 04:05:02.133
+Test Case 'ProjectRecoveryCapacityTests.testMissingOrCorruptLibraryCannotTriggerReplacementOrLegacyMigration' passed (0.001 seconds)
+Test Case 'ProjectRecoveryCapacityTests.testOversizedRecoveryEncodingDoesNotRemoveArchiveOrChangeSavedBytes' started at 2026-11-26 04:05:02.134
+Test Case 'ProjectRecoveryCapacityTests.testOversizedRecoveryEncodingDoesNotRemoveArchiveOrChangeSavedBytes' passed (1.042 seconds)
+Test Suite 'ProjectRecoveryCapacityTests' passed at 2026-11-26 04:05:03.176
+	 Executed 9 tests, with 0 failures (0 unexpected) in 1.179 (1.179) seconds
+Test Suite 'PrototypeTests' started at 2026-11-26 04:05:03.177
+Test Case 'PrototypeTests.testInvalidEditPreservesSavedData' started at 2026-11-26 04:05:03.177
+Test Case 'PrototypeTests.testInvalidEditPreservesSavedData' passed (0.002 seconds)
+Test Case 'PrototypeTests.testRecipesAreValidAndRoundTrip' started at 2026-11-26 04:05:03.179
+Test Case 'PrototypeTests.testRecipesAreValidAndRoundTrip' passed (0.001 seconds)
+Test Case 'PrototypeTests.testSaveEditReopenAndCorruptionProtection' started at 2026-11-26 04:05:03.179
+Test Case 'PrototypeTests.testSaveEditReopenAndCorruptionProtection' passed (0.001 seconds)
+Test Suite 'PrototypeTests' passed at 2026-11-26 04:05:03.180
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+Test Suite 'ReferencePNGTests' started at 2026-11-26 04:05:03.180
+Test Case 'ReferencePNGTests.testMalformedAndTrailingChunksRejected' started at 2026-11-26 04:05:03.180
+Test Case 'ReferencePNGTests.testMalformedAndTrailingChunksRejected' passed (0.0 seconds)
+Test Case 'ReferencePNGTests.testPrivateAncillaryChunksRemovedAndColorPreserved' started at 2026-11-26 04:05:03.180
+Test Case 'ReferencePNGTests.testPrivateAncillaryChunksRemovedAndColorPreserved' passed (0.001 seconds)
+Test Case 'ReferencePNGTests.testUnknownCriticalAndInputLimitRejected' started at 2026-11-26 04:05:03.181
+Test Case 'ReferencePNGTests.testUnknownCriticalAndInputLimitRejected' passed (0.0 seconds)
+Test Suite 'ReferencePNGTests' passed at 2026-11-26 04:05:03.181
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ReferenceStudyTests' started at 2026-11-26 04:05:03.181
+Test Case 'ReferenceStudyTests.testAreaConvergenceAcrossRotatedReceivers' started at 2026-11-26 04:05:03.181
+Study 8x8 vs 32x32, 9 unoccluded fixtures, max relative error: 0.0032798081798638967
+Test Case 'ReferenceStudyTests.testAreaConvergenceAcrossRotatedReceivers' passed (0.001 seconds)
+Test Case 'ReferenceStudyTests.testDeterministicImageAndDarkScene' started at 2026-11-26 04:05:03.182
+Test Case 'ReferenceStudyTests.testDeterministicImageAndDarkScene' passed (0.001 seconds)
+Test Case 'ReferenceStudyTests.testDirectionalAndRectangleAdapterAgreeWithExistingPhotometry' started at 2026-11-26 04:05:03.183
+Test Case 'ReferenceStudyTests.testDirectionalAndRectangleAdapterAgreeWithExistingPhotometry' passed (0.001 seconds)
+Test Case 'ReferenceStudyTests.testGGXNormalIncidenceAndRoughness' started at 2026-11-26 04:05:03.183
+Test Case 'ReferenceStudyTests.testGGXNormalIncidenceAndRoughness' passed (0.0 seconds)
+Test Case 'ReferenceStudyTests.testInvalidNearFieldDegenerateAndSurfaceInputs' started at 2026-11-26 04:05:03.183
+Test Case 'ReferenceStudyTests.testInvalidNearFieldDegenerateAndSurfaceInputs' passed (0.0 seconds)
+Test Case 'ReferenceStudyTests.testLambertianSignalMatchesAnalyticLuxAndCard' started at 2026-11-26 04:05:03.183
+Test Case 'ReferenceStudyTests.testLambertianSignalMatchesAnalyticLuxAndCard' passed (0.0 seconds)
+Test Case 'ReferenceStudyTests.testNearFieldPixelsAreDiagnosticNotBlack' started at 2026-11-26 04:05:03.184
+Test Case 'ReferenceStudyTests.testNearFieldPixelsAreDiagnosticNotBlack' passed (0.002 seconds)
+Test Case 'ReferenceStudyTests.testRendererCancellationAndBounds' started at 2026-11-26 04:05:03.185
+Test Case 'ReferenceStudyTests.testRendererCancellationAndBounds' passed (0.0 seconds)
+Test Case 'ReferenceStudyTests.testSphereOcclusionAndFiniteSourcePenumbra' started at 2026-11-26 04:05:03.186
+Soft shadow fixture visible fraction: 0.742030795936865
+Test Case 'ReferenceStudyTests.testSphereOcclusionAndFiniteSourcePenumbra' passed (0.0 seconds)
+Test Suite 'ReferenceStudyTests' passed at 2026-11-26 04:05:03.186
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'ReferenceTonalSummaryTests' started at 2026-11-26 04:05:03.186
+Test Case 'ReferenceTonalSummaryTests.testLinearLightInterpolationAndThresholds' started at 2026-11-26 04:05:03.186
+Test Case 'ReferenceTonalSummaryTests.testLinearLightInterpolationAndThresholds' passed (0.0 seconds)
+Test Case 'ReferenceTonalSummaryTests.testMalformedOversizedAndAllTransparentSamplesAbstain' started at 2026-11-26 04:05:03.186
+Test Case 'ReferenceTonalSummaryTests.testMalformedOversizedAndAllTransparentSamplesAbstain' passed (0.0 seconds)
+Test Case 'ReferenceTonalSummaryTests.testNeutralGrayAndOpaqueOnly' started at 2026-11-26 04:05:03.186
+Test Case 'ReferenceTonalSummaryTests.testNeutralGrayAndOpaqueOnly' passed (0.0 seconds)
+Test Case 'ReferenceTonalSummaryTests.testOrderInvariantAndBounded' started at 2026-11-26 04:05:03.186
+Test Case 'ReferenceTonalSummaryTests.testOrderInvariantAndBounded' passed (0.0 seconds)
+Test Case 'ReferenceTonalSummaryTests.testPrimaryColorsUseLinearRec709LuminanceNotRGBMean' started at 2026-11-26 04:05:03.186
+Test Case 'ReferenceTonalSummaryTests.testPrimaryColorsUseLinearRec709LuminanceNotRGBMean' passed (0.0 seconds)
+Test Suite 'ReferenceTonalSummaryTests' passed at 2026-11-26 04:05:03.186
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+Test Suite 'RoomCardinalRollContactTests' started at 2026-11-26 04:05:03.186
+Test Case 'RoomCardinalRollContactTests.testAnglesAdjacentToCardinalRollsKeepTheirNonzeroComponents' started at 2026-11-26 04:05:03.186
+Test Case 'RoomCardinalRollContactTests.testAnglesAdjacentToCardinalRollsKeepTheirNonzeroComponents' passed (0.0 seconds)
+Test Case 'RoomCardinalRollContactTests.testCardinalRollKeepsExactFloorAndCeilingContactForHorizontalAimDirections' started at 2026-11-26 04:05:03.186
+Test Case 'RoomCardinalRollContactTests.testCardinalRollKeepsExactFloorAndCeilingContactForHorizontalAimDirections' passed (0.001 seconds)
+Test Case 'RoomCardinalRollContactTests.testCardinalRollKeepsExactWallContactForBothVerticalAimDirections' started at 2026-11-26 04:05:03.187
+Test Case 'RoomCardinalRollContactTests.testCardinalRollKeepsExactWallContactForBothVerticalAimDirections' passed (0.001 seconds)
+Test Case 'RoomCardinalRollContactTests.testCardinalRollStillRejectsOneRepresentableStepOfWallOverhang' started at 2026-11-26 04:05:03.188
+Test Case 'RoomCardinalRollContactTests.testCardinalRollStillRejectsOneRepresentableStepOfWallOverhang' passed (0.0 seconds)
+Test Case 'RoomCardinalRollContactTests.testNoncardinalRollRetainsObliqueFaceGeometry' started at 2026-11-26 04:05:03.188
+Test Case 'RoomCardinalRollContactTests.testNoncardinalRollRetainsObliqueFaceGeometry' passed (0.0 seconds)
+Test Suite 'RoomCardinalRollContactTests' passed at 2026-11-26 04:05:03.188
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'RoomModifierFootprintTests' started at 2026-11-26 04:05:03.188
+Test Case 'RoomModifierFootprintTests.testCenterInsideDoesNotHideCrossingModifier' started at 2026-11-26 04:05:03.188
+Test Case 'RoomModifierFootprintTests.testCenterInsideDoesNotHideCrossingModifier' passed (0.0 seconds)
+Test Case 'RoomModifierFootprintTests.testDefaultPortraitExactModifierCrossesWhileAllCentersRemainInside' started at 2026-11-26 04:05:03.188
+Test Case 'RoomModifierFootprintTests.testDefaultPortraitExactModifierCrossesWhileAllCentersRemainInside' passed (0.101 seconds)
+Test Case 'RoomModifierFootprintTests.testDegenerateAimIsUnavailableRatherThanClear' started at 2026-11-26 04:05:03.288
+Test Case 'RoomModifierFootprintTests.testDegenerateAimIsUnavailableRatherThanClear' passed (0.1 seconds)
+Test Case 'RoomModifierFootprintTests.testNonRectangularEmittersHaveNoClaimedFootprint' started at 2026-11-26 04:05:03.389
+Test Case 'RoomModifierFootprintTests.testNonRectangularEmittersHaveNoClaimedFootprint' passed (0.0 seconds)
+Test Case 'RoomModifierFootprintTests.testQuarterTurnChangesWallButPreservesOverhang' started at 2026-11-26 04:05:03.389
+Test Case 'RoomModifierFootprintTests.testQuarterTurnChangesWallButPreservesOverhang' passed (0.0 seconds)
+Test Case 'RoomModifierFootprintTests.testSubMillimeterOverhangIsNotDisplayedAsZero' started at 2026-11-26 04:05:03.389
+Test Case 'RoomModifierFootprintTests.testSubMillimeterOverhangIsNotDisplayedAsZero' passed (0.001 seconds)
+Test Case 'RoomModifierFootprintTests.testVerticalAimProjectsBothDimensionsAndExactWallContact' started at 2026-11-26 04:05:03.391
+Test Case 'RoomModifierFootprintTests.testVerticalAimProjectsBothDimensionsAndExactWallContact' passed (0.0 seconds)
+Test Case 'RoomModifierFootprintTests.testWorldTranslationPreservesProjectedCorners' started at 2026-11-26 04:05:03.391
+Test Case 'RoomModifierFootprintTests.testWorldTranslationPreservesProjectedCorners' passed (0.0 seconds)
+Test Suite 'RoomModifierFootprintTests' passed at 2026-11-26 04:05:03.391
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.203 (0.203) seconds
+Test Suite 'RoomPlacementTests' started at 2026-11-26 04:05:03.391
+Test Case 'RoomPlacementTests.testArbitraryWorldTranslationDoesNotChangeRoomCoordinates' started at 2026-11-26 04:05:03.391
+Test Case 'RoomPlacementTests.testArbitraryWorldTranslationDoesNotChangeRoomCoordinates' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testCardinalMappingPreservesTinyWallCrossingsAndSmallSubjectOffsets' started at 2026-11-26 04:05:03.391
+Test Case 'RoomPlacementTests.testCardinalMappingPreservesTinyWallCrossingsAndSmallSubjectOffsets' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testDefaultPortraitFitsAndPreservesHeightAndDistance' started at 2026-11-26 04:05:03.392
+Test Case 'RoomPlacementTests.testDefaultPortraitFitsAndPreservesHeightAndDistance' passed (0.101 seconds)
+Test Case 'RoomPlacementTests.testMeasurementInputAcceptsExactLocalizedValuesAndRejectsInvalidText' started at 2026-11-26 04:05:03.492
+Test Case 'RoomPlacementTests.testMeasurementInputAcceptsExactLocalizedValuesAndRejectsInvalidText' passed (0.101 seconds)
+Test Case 'RoomPlacementTests.testOutsideCoordinatesRemainSignedAndNotClamped' started at 2026-11-26 04:05:03.593
+Test Case 'RoomPlacementTests.testOutsideCoordinatesRemainSignedAndNotClamped' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testQuarterTurnAndHalfTurnRotateWithoutScaling' started at 2026-11-26 04:05:03.593
+Test Case 'RoomPlacementTests.testQuarterTurnAndHalfTurnRotateWithoutScaling' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testRejectsInvalidRoomAndScene' started at 2026-11-26 04:05:03.593
+Test Case 'RoomPlacementTests.testRejectsInvalidRoomAndScene' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testResizeRangesPreserveSubjectWithoutSilentRelocation' started at 2026-11-26 04:05:03.594
+Test Case 'RoomPlacementTests.testResizeRangesPreserveSubjectWithoutSilentRelocation' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testRoomInputSupportsLocalDigitsWithoutGroupingOrSigns' started at 2026-11-26 04:05:03.594
+Test Case 'RoomPlacementTests.testRoomInputSupportsLocalDigitsWithoutGroupingOrSigns' passed (0.0 seconds)
+Test Case 'RoomPlacementTests.testSignedRoomDisplayDoesNotRoundRealCrossingToZero' started at 2026-11-26 04:05:03.594
+Test Case 'RoomPlacementTests.testSignedRoomDisplayDoesNotRoundRealCrossingToZero' passed (0.0 seconds)
+Test Suite 'RoomPlacementTests' passed at 2026-11-26 04:05:03.595
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.203 (0.203) seconds
+Test Suite 'RoomPlacementTextTests' started at 2026-11-26 04:05:03.595
+Test Case 'RoomPlacementTextTests.testDegenerateAimRemainsUnavailableAndIsNotReportedAsClear' started at 2026-11-26 04:05:03.595
+Test Case 'RoomPlacementTextTests.testDegenerateAimRemainsUnavailableAndIsNotReportedAsClear' passed (0.001 seconds)
+Test Case 'RoomPlacementTextTests.testLocaleAppliesToMeasurementsAndRotationWithoutChangingGeometry' started at 2026-11-26 04:05:03.595
+Test Case 'RoomPlacementTextTests.testLocaleAppliesToMeasurementsAndRotationWithoutChangingGeometry' passed (0.001 seconds)
+Test Case 'RoomPlacementTextTests.testNamesStayBoundedAndNumberedWithoutChangingLegacyValues' started at 2026-11-26 04:05:03.596
+Test Case 'RoomPlacementTextTests.testNamesStayBoundedAndNumberedWithoutChangingLegacyValues' passed (0.018 seconds)
+Test Case 'RoomPlacementTextTests.testQuarterTurnExportsActualRoomCoordinatesAndDoesNotMutateInputs' started at 2026-11-26 04:05:03.614
+Test Case 'RoomPlacementTextTests.testQuarterTurnExportsActualRoomCoordinatesAndDoesNotMutateInputs' passed (0.0 seconds)
+Test Case 'RoomPlacementTextTests.testTinyOutsideCenterAndModifierOverhangNeverBecomeZeroOrClear' started at 2026-11-26 04:05:03.614
+Test Case 'RoomPlacementTextTests.testTinyOutsideCenterAndModifierOverhangNeverBecomeZeroOrClear' passed (0.0 seconds)
+Test Suite 'RoomPlacementTextTests' passed at 2026-11-26 04:05:03.615
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.02 (0.02) seconds
+Test Suite 'RoomRotationTests' started at 2026-11-26 04:05:03.615
+Test Case 'RoomRotationTests.testFiniteLargeDeltasNormalizeAndInvalidInputsDoNotMutateRoom' started at 2026-11-26 04:05:03.615
+Test Case 'RoomRotationTests.testFiniteLargeDeltasNormalizeAndInvalidInputsDoNotMutateRoom' passed (0.0 seconds)
+Test Case 'RoomRotationTests.testHalfTurnIsRelativeAtArbitraryAnglesAndBoundaries' started at 2026-11-26 04:05:03.615
+Test Case 'RoomRotationTests.testHalfTurnIsRelativeAtArbitraryAnglesAndBoundaries' passed (0.0 seconds)
+Test Case 'RoomRotationTests.testRelativeRotationPreservesSignedBoundaryAndDistanceGeometry' started at 2026-11-26 04:05:03.615
+Test Case 'RoomRotationTests.testRelativeRotationPreservesSignedBoundaryAndDistanceGeometry' passed (0.0 seconds)
+Test Case 'RoomRotationTests.testTwoHalfTurnsPreserveActualPlacementAndModifierProjection' started at 2026-11-26 04:05:03.615
+Test Case 'RoomRotationTests.testTwoHalfTurnsPreserveActualPlacementAndModifierProjection' passed (0.0 seconds)
+Test Suite 'RoomRotationTests' passed at 2026-11-26 04:05:03.615
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'SceneArrangementTests' started at 2026-11-26 04:05:03.615
+Test Case 'SceneArrangementTests.testArrangementRetainsTinyTermsOnBothSidesOfBoundaryHalfULP' started at 2026-11-26 04:05:03.615
+Test Case 'SceneArrangementTests.testArrangementRetainsTinyTermsOnBothSidesOfBoundaryHalfULP' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testCameraHeightAndStoredAimTranslationRoundFromOriginalCoordinates' started at 2026-11-26 04:05:03.616
+Test Case 'SceneArrangementTests.testCameraHeightAndStoredAimTranslationRoundFromOriginalCoordinates' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testFractionalCardinalAndMirrorArrangementsRespectTheFinalBoundary' started at 2026-11-26 04:05:03.616
+Test Case 'SceneArrangementTests.testFractionalCardinalAndMirrorArrangementsRespectTheFinalBoundary' passed (0.001 seconds)
+Test Case 'SceneArrangementTests.testGeneralRotationAndMirrorPreserveOverheadRectangleCorners' started at 2026-11-26 04:05:03.617
+Test Case 'SceneArrangementTests.testGeneralRotationAndMirrorPreserveOverheadRectangleCorners' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testInvalidFinalLightCameraAimOrSubjectRejectsTheWholeArrangement' started at 2026-11-26 04:05:03.617
+Test Case 'SceneArrangementTests.testInvalidFinalLightCameraAimOrSubjectRejectsTheWholeArrangement' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testInvalidSourceCannotBeRepairedByAnArrangement' started at 2026-11-26 04:05:03.617
+Test Case 'SceneArrangementTests.testInvalidSourceCannotBeRepairedByAnArrangement' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testMirrorCanBringAnIntermediateRotationBackInsideWithoutTranslation' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testMirrorCanBringAnIntermediateRotationBackInsideWithoutTranslation' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testMirroringStillRequiresAHorizontalCameraDirection' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testMirroringStillRequiresAHorizontalCameraDirection' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testNonfiniteTransformInputsAreRejected' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testNonfiniteTransformInputsAreRejected' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testOverheadRectangleKeepsItsFaceWhenIntermediateFramesAreOutsideBounds' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testOverheadRectangleKeepsItsFaceWhenIntermediateFramesAreOutsideBounds' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testQuarterTurnsAndDiagonalMirrorsKeepExactBoundaryCoordinates' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testQuarterTurnsAndDiagonalMirrorsKeepExactBoundaryCoordinates' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testRotationCanLeaveBoundsBeforeMovingToTheFinalSubject' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testRotationCanLeaveBoundsBeforeMovingToTheFinalSubject' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testRotationThenMirrorPreservesCameraAimsIdentityAndRoomContext' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testRotationThenMirrorPreservesCameraAimsIdentityAndRoomContext' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testSubnormalProductsRoundOnceThroughRotationAndGeneralMirror' started at 2026-11-26 04:05:03.618
+Test Case 'SceneArrangementTests.testSubnormalProductsRoundOnceThroughRotationAndGeneralMirror' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testTranslatingFirstWouldAlsoRejectAValidFinalArrangement' started at 2026-11-26 04:05:03.619
+Test Case 'SceneArrangementTests.testTranslatingFirstWouldAlsoRejectAValidFinalArrangement' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testUnderflowFallbackBoundsTheFullFiniteDestinationRange' started at 2026-11-26 04:05:03.619
+Test Case 'SceneArrangementTests.testUnderflowFallbackBoundsTheFullFiniteDestinationRange' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testUnderflowFallbackRoundsSubnormalTiesAndCarriesIntoTheNormalRange' started at 2026-11-26 04:05:03.619
+Test Case 'SceneArrangementTests.testUnderflowFallbackRoundsSubnormalTiesAndCarriesIntoTheNormalRange' passed (0.0 seconds)
+Test Case 'SceneArrangementTests.testUnderflowedProductTailChoosesTheCorrectSideOfTheSceneBoundary' started at 2026-11-26 04:05:03.620
+Test Case 'SceneArrangementTests.testUnderflowedProductTailChoosesTheCorrectSideOfTheSceneBoundary' passed (0.0 seconds)
+Test Suite 'SceneArrangementTests' passed at 2026-11-26 04:05:03.620
+	 Executed 18 tests, with 0 failures (0 unexpected) in 0.004 (0.004) seconds
+Test Suite 'SceneEditHistoryTests' started at 2026-11-26 04:05:03.620
+Test Case 'SceneEditHistoryTests.testActiveSettingsRestoreOriginalOptionalBytesAndKeepRedo' started at 2026-11-26 04:05:03.620
+Test Case 'SceneEditHistoryTests.testActiveSettingsRestoreOriginalOptionalBytesAndKeepRedo' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testContinuousChangesMakeOneUndoEntryAndRepeatedBeginKeepsOriginal' started at 2026-11-26 04:05:03.620
+Test Case 'SceneEditHistoryTests.testContinuousChangesMakeOneUndoEntryAndRepeatedBeginKeepsOriginal' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testDifferentLightOwnersCommitSeparateStepsWithoutExplicitClose' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testDifferentLightOwnersCommitSeparateStepsWithoutExplicitClose' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testDiscreteCommandDuringGesturePreservesBothUndoSteps' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testDiscreteCommandDuringGesturePreservesBothUndoSteps' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testHistoryRetainsOnlySixtyNewestEntriesAndSupportsSmallerLimits' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testHistoryRetainsOnlySixtyNewestEntriesAndSupportsSmallerLimits' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testLateEndFromAnotherControlDoesNotCloseNewGesture' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testLateEndFromAnotherControlDoesNotCloseNewGesture' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testOptionalRepresentationRestorationDoesNotOutliveItsTransaction' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testOptionalRepresentationRestorationDoesNotOutliveItsTransaction' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testOwnedAndLegacyEditsKeepExplicitForceCloseSemantics' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testOwnedAndLegacyEditsKeepExplicitForceCloseSemantics' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testOwnerChangesRespectHistoryLimitAndLateEndsKeepRedo' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testOwnerChangesRespectHistoryLimitAndLateEndsKeepRedo' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testPreviousProjectEndCannotCloseSameLightFieldInAnotherProject' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testPreviousProjectEndCannotCloseSameLightFieldInAnotherProject' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testRedoClosesGestureAndDropsOldBranchOnlyIfSceneChanged' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testRedoClosesGestureAndDropsOldBranchOnlyIfSceneChanged' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testRepeatedBeginFromSameOwnerKeepsTheOriginalScene' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testRepeatedBeginFromSameOwnerKeepsTheOriginalScene' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testResetClearsBothDirectionsAndPendingTransaction' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testResetClearsBothDirectionsAndPendingTransaction' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testRestoringOptionalRollUsesLightIdentityAndKeepsOtherChanges' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testRestoringOptionalRollUsesLightIdentityAndKeepsOtherChanges' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testReturningOnePreviewValueKeepsAnotherSettingChangeUndoable' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testReturningOnePreviewValueKeepsAnotherSettingChangeUndoable' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testUnchangedAndCancelledGesturesPreserveRedo' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testUnchangedAndCancelledGesturesPreserveRedo' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testUndoDuringFirstGestureWorksWithoutPriorCommands' started at 2026-11-26 04:05:03.621
+Test Case 'SceneEditHistoryTests.testUndoDuringFirstGestureWorksWithoutPriorCommands' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testUndoDuringGestureAndLateEndDoNotDestroyRedo' started at 2026-11-26 04:05:03.622
+Test Case 'SceneEditHistoryTests.testUndoDuringGestureAndLateEndDoNotDestroyRedo' passed (0.0 seconds)
+Test Case 'SceneEditHistoryTests.testUnmatchedEndPreservesNewOwnerRollbackAndRedo' started at 2026-11-26 04:05:03.622
+Test Case 'SceneEditHistoryTests.testUnmatchedEndPreservesNewOwnerRollbackAndRedo' passed (0.0 seconds)
+Test Suite 'SceneEditHistoryTests' passed at 2026-11-26 04:05:03.622
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'SceneFileStoreTests' started at 2026-11-26 04:05:03.622
+Test Case 'SceneFileStoreTests.testDirectoryAtProjectPathIsNotMissing' started at 2026-11-26 04:05:03.622
+Test Case 'SceneFileStoreTests.testDirectoryAtProjectPathIsNotMissing' passed (0.001 seconds)
+Test Case 'SceneFileStoreTests.testExactlyMaximumSizeValidJSONLoads' started at 2026-11-26 04:05:03.622
+Test Case 'SceneFileStoreTests.testExactlyMaximumSizeValidJSONLoads' passed (0.002 seconds)
+Test Case 'SceneFileStoreTests.testMissingParentAllowsFirstSave' started at 2026-11-26 04:05:03.624
+Test Case 'SceneFileStoreTests.testMissingParentAllowsFirstSave' passed (0.0 seconds)
+Test Case 'SceneFileStoreTests.testOversizedFileRemainsUnchanged' started at 2026-11-26 04:05:03.624
+Test Case 'SceneFileStoreTests.testOversizedFileRemainsUnchanged' passed (0.001 seconds)
+Test Case 'SceneFileStoreTests.testSymbolicLinkIsNotAcceptedOrOverwritten' started at 2026-11-26 04:05:03.625
+Test Case 'SceneFileStoreTests.testSymbolicLinkIsNotAcceptedOrOverwritten' passed (0.0 seconds)
+Test Suite 'SceneFileStoreTests' passed at 2026-11-26 04:05:03.625
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.004 (0.004) seconds
+Test Suite 'SceneLightCreationTests' started at 2026-11-26 04:05:03.625
+Test Case 'SceneLightCreationTests.testBoundaryCapacityAndDuplicateIdentityFailWithoutChangingSource' started at 2026-11-26 04:05:03.625
+Test Case 'SceneLightCreationTests.testBoundaryCapacityAndDuplicateIdentityFailWithoutChangingSource' passed (0.0 seconds)
+Test Case 'SceneLightCreationTests.testCameraAzimuthDeterminesSubjectRelativePlacement' started at 2026-11-26 04:05:03.626
+Test Case 'SceneLightCreationTests.testCameraAzimuthDeterminesSubjectRelativePlacement' passed (0.0 seconds)
+Test Case 'SceneLightCreationTests.testDefaultPortraitPlacementAndUniqueNamePreserveExistingRig' started at 2026-11-26 04:05:03.626
+Test Case 'SceneLightCreationTests.testDefaultPortraitPlacementAndUniqueNamePreserveExistingRig' passed (0.0 seconds)
+Test Case 'SceneLightCreationTests.testOneHistoryCommandRestoresCompleteSceneAndExactIdentity' started at 2026-11-26 04:05:03.626
+Test Case 'SceneLightCreationTests.testOneHistoryCommandRestoresCompleteSceneAndExactIdentity' passed (0.0 seconds)
+Test Case 'SceneLightCreationTests.testTranslatedRigCreatesLightBesideTranslatedSubject' started at 2026-11-26 04:05:03.626
+Test Case 'SceneLightCreationTests.testTranslatedRigCreatesLightBesideTranslatedSubject' passed (0.0 seconds)
+Test Case 'SceneLightCreationTests.testVerticalAndCoincidentCameraUseDefinedHorizontalFallback' started at 2026-11-26 04:05:03.626
+Test Case 'SceneLightCreationTests.testVerticalAndCoincidentCameraUseDefinedHorizontalFallback' passed (0.0 seconds)
+Test Suite 'SceneLightCreationTests' passed at 2026-11-26 04:05:03.626
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'SceneMirrorBoundaryTests' started at 2026-11-26 04:05:03.626
+Test Case 'SceneMirrorBoundaryTests.testAxisReflectionPreservesTheUnchangedCoordinateExactly' started at 2026-11-26 04:05:03.626
+Test Case 'SceneMirrorBoundaryTests.testAxisReflectionPreservesTheUnchangedCoordinateExactly' passed (0.1 seconds)
+Test Case 'SceneMirrorBoundaryTests.testDiagonalPreservesValuesImmediatelyInsideEitherBoundary' started at 2026-11-26 04:05:03.727
+Test Case 'SceneMirrorBoundaryTests.testDiagonalPreservesValuesImmediatelyInsideEitherBoundary' passed (0.101 seconds)
+Test Case 'SceneMirrorBoundaryTests.testGenericReflectionAcceptsValidBoundaryPositionsAndStoredAims' started at 2026-11-26 04:05:03.827
+Test Case 'SceneMirrorBoundaryTests.testGenericReflectionAcceptsValidBoundaryPositionsAndStoredAims' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testGenericReflectionRejectsOutsidePositionsAndStoredAimsAtomically' started at 2026-11-26 04:05:03.828
+Test Case 'SceneMirrorBoundaryTests.testGenericReflectionRejectsOutsidePositionsAndStoredAimsAtomically' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testNearbyCameraDirectionsKeepStrictOutsideRejection' started at 2026-11-26 04:05:03.828
+Test Case 'SceneMirrorBoundaryTests.testNearbyCameraDirectionsKeepStrictOutsideRejection' passed (0.101 seconds)
+Test Case 'SceneMirrorBoundaryTests.testNegativeDiagonalReflectsBoundaryPositionsAndAimsWithoutCancellation' started at 2026-11-26 04:05:03.929
+Test Case 'SceneMirrorBoundaryTests.testNegativeDiagonalReflectsBoundaryPositionsAndAimsWithoutCancellation' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testPositiveDiagonalSwapsBoundaryPositionsAndAimsWithoutCancellation' started at 2026-11-26 04:05:03.929
+Test Case 'SceneMirrorBoundaryTests.testPositiveDiagonalSwapsBoundaryPositionsAndAimsWithoutCancellation' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testTranslatedAxesAcceptBoundaryAndRejectTheNextOutsideValue' started at 2026-11-26 04:05:03.929
+Test Case 'SceneMirrorBoundaryTests.testTranslatedAxesAcceptBoundaryAndRejectTheNextOutsideValue' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalPivotDoesNotAcquireRoundingFromItsWorldOffset' started at 2026-11-26 04:05:03.929
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalPivotDoesNotAcquireRoundingFromItsWorldOffset' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalRejectsOneStepOutsideForPositionsAndStoredAimsAtomically' started at 2026-11-26 04:05:03.929
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalRejectsOneStepOutsideForPositionsAndStoredAimsAtomically' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalRejectsTinyTermBeyondBoundaryHalfULP' started at 2026-11-26 04:05:03.930
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalRejectsTinyTermBeyondBoundaryHalfULP' passed (0.0 seconds)
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalRoundsBothSidesOfHalfULPForPositionsAndAims' started at 2026-11-26 04:05:03.930
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalRoundsBothSidesOfHalfULPForPositionsAndAims' passed (0.133 seconds)
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalsAcceptBothExactBoundariesForPositionsAndAims' started at 2026-11-26 04:05:04.064
+Test Case 'SceneMirrorBoundaryTests.testTranslatedDiagonalsAcceptBothExactBoundariesForPositionsAndAims' passed (0.002 seconds)
+Test Suite 'SceneMirrorBoundaryTests' passed at 2026-11-26 04:05:04.067
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.439 (0.439) seconds
+Test Suite 'SceneTests' started at 2026-11-26 04:05:04.067
+Test Case 'SceneTests.testDistance' started at 2026-11-26 04:05:04.067
+Test Case 'SceneTests.testDistance' passed (0.0 seconds)
+Test Case 'SceneTests.testInvalidPhotometry' started at 2026-11-26 04:05:04.067
+Test Case 'SceneTests.testInvalidPhotometry' passed (0.0 seconds)
+Test Case 'SceneTests.testInverseSquare' started at 2026-11-26 04:05:04.067
+Test Case 'SceneTests.testInverseSquare' passed (0.0 seconds)
+Test Case 'SceneTests.testLightCountBoundaryAcrossSchemas' started at 2026-11-26 04:05:04.067
+Test Case 'SceneTests.testLightCountBoundaryAcrossSchemas' passed (0.0 seconds)
+Test Case 'SceneTests.testPortraitRoundTrip' started at 2026-11-26 04:05:04.067
+Test Case 'SceneTests.testPortraitRoundTrip' passed (0.002 seconds)
+Test Case 'SceneTests.testRejectDuplicateIDs' started at 2026-11-26 04:05:04.069
+Test Case 'SceneTests.testRejectDuplicateIDs' passed (0.0 seconds)
+Test Case 'SceneTests.testRejectInvalidLight' started at 2026-11-26 04:05:04.069
+Test Case 'SceneTests.testRejectInvalidLight' passed (0.101 seconds)
+Test Case 'SceneTests.testRejectOversizedAndMalformedData' started at 2026-11-26 04:05:04.170
+Test Case 'SceneTests.testRejectOversizedAndMalformedData' passed (0.005 seconds)
+Test Case 'SceneTests.testRejectUnknownSchema' started at 2026-11-26 04:05:04.175
+Test Case 'SceneTests.testRejectUnknownSchema' passed (0.0 seconds)
+Test Suite 'SceneTests' passed at 2026-11-26 04:05:04.175
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.109 (0.109) seconds
+Test Suite 'SceneTransformTests' started at 2026-11-26 04:05:04.175
+Test Case 'SceneTransformTests.testQuarterTurnAtTranslatedBoundaryPreservesPositionsAndAims' started at 2026-11-26 04:05:04.175
+Test Case 'SceneTransformTests.testQuarterTurnAtTranslatedBoundaryPreservesPositionsAndAims' passed (0.0 seconds)
+Test Case 'SceneTransformTests.testQuarterTurnRejectsTheNextOutsidePositionOrAimAtomically' started at 2026-11-26 04:05:04.176
+Test Case 'SceneTransformTests.testQuarterTurnRejectsTheNextOutsidePositionOrAimAtomically' passed (0.0 seconds)
+Test Case 'SceneTransformTests.testZeroAndFullTurnsPreserveAllPositionBits' started at 2026-11-26 04:05:04.176
+Test Case 'SceneTransformTests.testZeroAndFullTurnsPreserveAllPositionBits' passed (0.0 seconds)
+Test Suite 'SceneTransformTests' passed at 2026-11-26 04:05:04.176
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'StudioAccessibleValueTests' started at 2026-11-26 04:05:04.176
+Test Case 'StudioAccessibleValueTests.testCurrentReadoutsPreservePrecisionBeyondSliderIncrements' started at 2026-11-26 04:05:04.176
+Test Case 'StudioAccessibleValueTests.testCurrentReadoutsPreservePrecisionBeyondSliderIncrements' passed (0.002 seconds)
+Test Case 'StudioAccessibleValueTests.testFormattingDoesNotMutateStoredValuesOrAddGrouping' started at 2026-11-26 04:05:04.178
+Test Case 'StudioAccessibleValueTests.testFormattingDoesNotMutateStoredValuesOrAddGrouping' passed (0.0 seconds)
+Test Case 'StudioAccessibleValueTests.testFrenchDecimalSeparatorAndUngroupedLargeValue' started at 2026-11-26 04:05:04.178
+Test Case 'StudioAccessibleValueTests.testFrenchDecimalSeparatorAndUngroupedLargeValue' passed (0.101 seconds)
+Test Case 'StudioAccessibleValueTests.testLocalizedReadoutsRetainTheSameNumericValue' started at 2026-11-26 04:05:04.279
+Test Case 'StudioAccessibleValueTests.testLocalizedReadoutsRetainTheSameNumericValue' passed (0.002 seconds)
+Test Suite 'StudioAccessibleValueTests' passed at 2026-11-26 04:05:04.280
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.104 (0.104) seconds
+Test Suite 'StudioDisplayNameTests' started at 2026-11-26 04:05:04.280
+Test Case 'StudioDisplayNameTests.testBrailleBlankAloneCannotSupplyVisibleNameContent' started at 2026-11-26 04:05:04.281
+Test Case 'StudioDisplayNameTests.testBrailleBlankAloneCannotSupplyVisibleNameContent' passed (0.001 seconds)
+Test Case 'StudioDisplayNameTests.testBrailleSpacingIsPreservedAndLegacyBlankNameRoundTripsUnchanged' started at 2026-11-26 04:05:04.281
+Test Case 'StudioDisplayNameTests.testBrailleSpacingIsPreservedAndLegacyBlankNameRoundTripsUnchanged' passed (0.001 seconds)
+Test Case 'StudioDisplayNameTests.testContextualLabelsPreserveVisibleNamesAndBoundTheirFallbacks' started at 2026-11-26 04:05:04.282
+Test Case 'StudioDisplayNameTests.testContextualLabelsPreserveVisibleNamesAndBoundTheirFallbacks' passed (0.001 seconds)
+Test Case 'StudioDisplayNameTests.testControlsAndExplicitBidiFormattingDoNotReachLabels' started at 2026-11-26 04:05:04.283
+Test Case 'StudioDisplayNameTests.testControlsAndExplicitBidiFormattingDoNotReachLabels' passed (0.0 seconds)
+Test Case 'StudioDisplayNameTests.testExactLimitsAndEllipsisStayWithinAllBounds' started at 2026-11-26 04:05:04.283
+Test Case 'StudioDisplayNameTests.testExactLimitsAndEllipsisStayWithinAllBounds' passed (0.002 seconds)
+Test Case 'StudioDisplayNameTests.testInvisibleCharactersWithinVisibleScriptsAndEmojiArePreserved' started at 2026-11-26 04:05:04.285
+Test Case 'StudioDisplayNameTests.testInvisibleCharactersWithinVisibleScriptsAndEmojiArePreserved' passed (0.0 seconds)
+Test Case 'StudioDisplayNameTests.testInvisibleLegacyNamesRemainStoredButSelectTheVisibleIdentityFallback' started at 2026-11-26 04:05:04.286
+Test Case 'StudioDisplayNameTests.testInvisibleLegacyNamesRemainStoredButSelectTheVisibleIdentityFallback' passed (0.001 seconds)
+Test Case 'StudioDisplayNameTests.testJoinedInternationalNamesSurviveActualLibraryCreationAndRoundTrip' started at 2026-11-26 04:05:04.287
+Test Case 'StudioDisplayNameTests.testJoinedInternationalNamesSurviveActualLibraryCreationAndRoundTrip' passed (0.101 seconds)
+Test Case 'StudioDisplayNameTests.testNewNamesNeedContentBeyondInvisibleFormattingCharacters' started at 2026-11-26 04:05:04.388
+Test Case 'StudioDisplayNameTests.testNewNamesNeedContentBeyondInvisibleFormattingCharacters' passed (0.0 seconds)
+Test Case 'StudioDisplayNameTests.testOrdinaryInternationalNamesAndJoinedEmojiArePreserved' started at 2026-11-26 04:05:04.388
+Test Case 'StudioDisplayNameTests.testOrdinaryInternationalNamesAndJoinedEmojiArePreserved' passed (0.0 seconds)
+Test Case 'StudioDisplayNameTests.testPathologicalSingleGraphemeIsBoundedWithoutChangingLegacyData' started at 2026-11-26 04:05:04.389
+Test Case 'StudioDisplayNameTests.testPathologicalSingleGraphemeIsBoundedWithoutChangingLegacyData' passed (0.014 seconds)
+Test Case 'StudioDisplayNameTests.testRequestedLimitsAreClampedAndDoNotSplitOrdinaryGraphemes' started at 2026-11-26 04:05:04.402
+Test Case 'StudioDisplayNameTests.testRequestedLimitsAreClampedAndDoNotSplitOrdinaryGraphemes' passed (0.0 seconds)
+Test Case 'StudioDisplayNameTests.testScalarCutoffNeverPublishesAPartialJoinedEmojiAfterLeadingTrim' started at 2026-11-26 04:05:04.403
+Test Case 'StudioDisplayNameTests.testScalarCutoffNeverPublishesAPartialJoinedEmojiAfterLeadingTrim' passed (0.003 seconds)
+Test Suite 'StudioDisplayNameTests' passed at 2026-11-26 04:05:04.405
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.125 (0.125) seconds
+Test Suite 'StudioNumericInputTests' started at 2026-11-26 04:05:04.405
+Test Case 'StudioNumericInputTests.testDomainBoundariesAreRejectedNotClamped' started at 2026-11-26 04:05:04.405
+Test Case 'StudioNumericInputTests.testDomainBoundariesAreRejectedNotClamped' passed (0.0 seconds)
+Test Case 'StudioNumericInputTests.testExactCameraOpticsAndMeterValuesSurviveSceneRoundTrip' started at 2026-11-26 04:05:04.406
+Test Case 'StudioNumericInputTests.testExactCameraOpticsAndMeterValuesSurviveSceneRoundTrip' passed (0.0 seconds)
+Test Case 'StudioNumericInputTests.testInspectorDomainMatchesModelAtBoundsAndRejectsOutside' started at 2026-11-26 04:05:04.406
+Test Case 'StudioNumericInputTests.testInspectorDomainMatchesModelAtBoundsAndRejectsOutside' passed (0.0 seconds)
+Test Case 'StudioNumericInputTests.testLocaleDecimalSeparatorsAndDecimalDigits' started at 2026-11-26 04:05:04.406
+Test Case 'StudioNumericInputTests.testLocaleDecimalSeparatorsAndDecimalDigits' passed (0.0 seconds)
+Test Case 'StudioNumericInputTests.testMalformedAndNonfiniteInputRejected' started at 2026-11-26 04:05:04.406
+Test Case 'StudioNumericInputTests.testMalformedAndNonfiniteInputRejected' passed (0.0 seconds)
+Test Case 'StudioNumericInputTests.testSignedExactValuesDoNotSnapToSliderSteps' started at 2026-11-26 04:05:04.406
+Test Case 'StudioNumericInputTests.testSignedExactValuesDoNotSnapToSliderSteps' passed (0.0 seconds)
+Test Case 'StudioNumericInputTests.testSliderBoundsPreserveValidImportedValues' started at 2026-11-26 04:05:04.406
+Test Case 'StudioNumericInputTests.testSliderBoundsPreserveValidImportedValues' passed (0.0 seconds)
+Test Suite 'StudioNumericInputTests' passed at 2026-11-26 04:05:04.407
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'StudioOpticsTests' started at 2026-11-26 04:05:04.407
+Test Case 'StudioOpticsTests.testDirectionalCosineAndAimAway' started at 2026-11-26 04:05:04.407
+Test Case 'StudioOpticsTests.testDirectionalCosineAndAimAway' passed (0.0 seconds)
+Test Case 'StudioOpticsTests.testFrameOrthonormalIncludingVertical' started at 2026-11-26 04:05:04.407
+Test Case 'StudioOpticsTests.testFrameOrthonormalIncludingVertical' passed (0.0 seconds)
+Test Case 'StudioOpticsTests.testLegacyDocumentMigratesWithoutLosingIDsOrSettings' started at 2026-11-26 04:05:04.407
+Test Case 'StudioOpticsTests.testLegacyDocumentMigratesWithoutLosingIDsOrSettings' passed (0.0 seconds)
+Test Case 'StudioOpticsTests.testOpticsPersistAcrossSaveAndReopen' started at 2026-11-26 04:05:04.407
+Test Case 'StudioOpticsTests.testOpticsPersistAcrossSaveAndReopen' passed (0.002 seconds)
+Test Case 'StudioOpticsTests.testPointReceiverTracksCameraAndBackface' started at 2026-11-26 04:05:04.409
+Test Case 'StudioOpticsTests.testPointReceiverTracksCameraAndBackface' passed (0.0 seconds)
+Test Case 'StudioOpticsTests.testRectangleMatchesIndependentAnalyticAndRotatedScene' started at 2026-11-26 04:05:04.409
+Test Case 'StudioOpticsTests.testRectangleMatchesIndependentAnalyticAndRotatedScene' passed (0.0 seconds)
+Test Case 'StudioOpticsTests.testRectangleNearPlaneAbstainsAndDimensionsChangeEstimate' started at 2026-11-26 04:05:04.409
+Test Case 'StudioOpticsTests.testRectangleNearPlaneAbstainsAndDimensionsChangeEstimate' passed (0.0 seconds)
+Test Case 'StudioOpticsTests.testRejectInvalidOpticsAndMislabeledVersion' started at 2026-11-26 04:05:04.409
+Test Case 'StudioOpticsTests.testRejectInvalidOpticsAndMislabeledVersion' passed (0.0 seconds)
+Test Suite 'StudioOpticsTests' passed at 2026-11-26 04:05:04.410
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+Test Suite 'StudioPlanLabelLayoutTests' started at 2026-11-26 04:05:04.410
+Test Case 'StudioPlanLabelLayoutTests.testCapturedRecoveryCollisionIsRemovedWithoutMovingEquipment' started at 2026-11-26 04:05:04.410
+Test Case 'StudioPlanLabelLayoutTests.testCapturedRecoveryCollisionIsRemovedWithoutMovingEquipment' passed (0.001 seconds)
+Test Case 'StudioPlanLabelLayoutTests.testCoincidentMarkersRemainCoincidentAndSelectedCaptionHasPriority' started at 2026-11-26 04:05:04.410
+Test Case 'StudioPlanLabelLayoutTests.testCoincidentMarkersRemainCoincidentAndSelectedCaptionHasPriority' passed (0.0 seconds)
+Test Case 'StudioPlanLabelLayoutTests.testInvalidGeometryAndUnboundedMarkerCountsAreRejected' started at 2026-11-26 04:05:04.410
+Test Case 'StudioPlanLabelLayoutTests.testInvalidGeometryAndUnboundedMarkerCountsAreRejected' passed (0.0 seconds)
+Test Case 'StudioPlanLabelLayoutTests.testNarrowAndLargeTextLayoutsNeverOverlapOrMoveAnchors' started at 2026-11-26 04:05:04.411
+Test Case 'StudioPlanLabelLayoutTests.testNarrowAndLargeTextLayoutsNeverOverlapOrMoveAnchors' passed (0.004 seconds)
+Test Case 'StudioPlanLabelLayoutTests.testOversizedCaptionIsOmittedInsteadOfShrunkOrClipped' started at 2026-11-26 04:05:04.414
+Test Case 'StudioPlanLabelLayoutTests.testOversizedCaptionIsOmittedInsteadOfShrunkOrClipped' passed (0.0 seconds)
+Test Case 'StudioPlanLabelLayoutTests.testZeroMarkersAndTinyViewportAreFiniteAndExplicit' started at 2026-11-26 04:05:04.414
+Test Case 'StudioPlanLabelLayoutTests.testZeroMarkersAndTinyViewportAreFiniteAndExplicit' passed (0.0 seconds)
+Test Suite 'StudioPlanLabelLayoutTests' passed at 2026-11-26 04:05:04.414
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'StudioSceneBoundsTests' started at 2026-11-26 04:05:04.414
+Test Case 'StudioSceneBoundsTests.testDegenerateModifierReportsUnavailableWithoutLosingItsCenter' started at 2026-11-26 04:05:04.414
+Test Case 'StudioSceneBoundsTests.testDegenerateModifierReportsUnavailableWithoutLosingItsCenter' passed (0.101 seconds)
+Test Case 'StudioSceneBoundsTests.testEmptyCoincidentRigHasFiniteCenteredMinimumSpan' started at 2026-11-26 04:05:04.515
+Test Case 'StudioSceneBoundsTests.testEmptyCoincidentRigHasFiniteCenteredMinimumSpan' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testExtremeValidCentersRetainDerivedCornersBeyondAuthoringLimit' started at 2026-11-26 04:05:04.515
+Test Case 'StudioSceneBoundsTests.testExtremeValidCentersRetainDerivedCornersBeyondAuthoringLimit' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testGridHonorsRequestedLimitAndRejectsUnrepresentableSpansWithoutTrapping' started at 2026-11-26 04:05:04.515
+Test Case 'StudioSceneBoundsTests.testGridHonorsRequestedLimitAndRejectsUnrepresentableSpansWithoutTrapping' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testGridStaysBoundedImmediatelyAbovePaddingThresholdAndInNarrowView' started at 2026-11-26 04:05:04.516
+Test Case 'StudioSceneBoundsTests.testGridStaysBoundedImmediatelyAbovePaddingThresholdAndInNarrowView' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testGridUsesOneMeterForPortraitAndKeepsWorldAlignmentWhenTranslated' started at 2026-11-26 04:05:04.516
+Test Case 'StudioSceneBoundsTests.testGridUsesOneMeterForPortraitAndKeepsWorldAlignmentWhenTranslated' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testInvalidSceneAndViewportInputsAreRejected' started at 2026-11-26 04:05:04.516
+Test Case 'StudioSceneBoundsTests.testInvalidSceneAndViewportInputsAreRejected' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testManualAimTargetsParticipateOnlyWhenVisible' started at 2026-11-26 04:05:04.516
+Test Case 'StudioSceneBoundsTests.testManualAimTargetsParticipateOnlyWhenVisible' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testRectangularFaceCornersFitWithConsistentPadding' started at 2026-11-26 04:05:04.516
+Test Case 'StudioSceneBoundsTests.testRectangularFaceCornersFitWithConsistentPadding' passed (0.0 seconds)
+Test Case 'StudioSceneBoundsTests.testTranslatedRigRetainsScaleAndProjectedLayout' started at 2026-11-26 04:05:04.516
+Test Case 'StudioSceneBoundsTests.testTranslatedRigRetainsScaleAndProjectedLayout' passed (0.0 seconds)
+Test Suite 'StudioSceneBoundsTests' passed at 2026-11-26 04:05:04.517
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'StudyCancellationTests' started at 2026-11-26 04:05:04.517
+Test Case 'StudyCancellationTests.testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork' started at 2026-11-26 04:05:04.517
+Test Case 'StudyCancellationTests.testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork' passed (0.0 seconds)
+Test Case 'StudyCancellationTests.testCancellationAtFinalCheckpointCannotPublishCompletedFrame' started at 2026-11-26 04:05:04.517
+Test Case 'StudyCancellationTests.testCancellationAtFinalCheckpointCannotPublishCompletedFrame' passed (0.001 seconds)
+Test Case 'StudyCancellationTests.testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations' started at 2026-11-26 04:05:04.518
+Test Case 'StudyCancellationTests.testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations' passed (0.0 seconds)
+Test Case 'StudyCancellationTests.testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled' started at 2026-11-26 04:05:04.518
+Test Case 'StudyCancellationTests.testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled' passed (0.001 seconds)
+Test Suite 'StudyCancellationTests' passed at 2026-11-26 04:05:04.519
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'StudyComputeInputTests' started at 2026-11-26 04:05:04.519
+Test Case 'StudyComputeInputTests.testComputeOutputFlagsAndBounds' started at 2026-11-26 04:05:04.519
+Test Case 'StudyComputeInputTests.testComputeOutputFlagsAndBounds' passed (0.0 seconds)
+Test Case 'StudyComputeInputTests.testPackedInputUsesAlignedRowsAndSharedPhotometricSamples' started at 2026-11-26 04:05:04.519
+Test Case 'StudyComputeInputTests.testPackedInputUsesAlignedRowsAndSharedPhotometricSamples' passed (0.0 seconds)
+Test Case 'StudyComputeInputTests.testSharedValidationAndInactiveLights' started at 2026-11-26 04:05:04.519
+Test Case 'StudyComputeInputTests.testSharedValidationAndInactiveLights' passed (0.0 seconds)
+Test Case 'StudyComputeInputTests.testSubjectTranslationPreservesPackedGeometry' started at 2026-11-26 04:05:04.520
+Test Case 'StudyComputeInputTests.testSubjectTranslationPreservesPackedGeometry' passed (0.001 seconds)
+Test Suite 'StudyComputeInputTests' passed at 2026-11-26 04:05:04.520
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'StudyEmitterFacingTests' started at 2026-11-26 04:05:04.520
+Test Case 'StudyEmitterFacingTests.testBackFacingRectanglesRemainDarkAcrossAimRollAndWorldTranslation' started at 2026-11-26 04:05:04.520
+Test Case 'StudyEmitterFacingTests.testBackFacingRectanglesRemainDarkAcrossAimRollAndWorldTranslation' passed (0.0 seconds)
+Test Case 'StudyEmitterFacingTests.testBackFacingRenderStillObservesPixelCancellation' started at 2026-11-26 04:05:04.520
+Test Case 'StudyEmitterFacingTests.testBackFacingRenderStillObservesPixelCancellation' passed (0.0 seconds)
+Test Case 'StudyEmitterFacingTests.testBackFacingSourcesCannotBypassNearFieldErrorsInMixedRig' started at 2026-11-26 04:05:04.521
+Test Case 'StudyEmitterFacingTests.testBackFacingSourcesCannotBypassNearFieldErrorsInMixedRig' passed (0.0 seconds)
+Test Case 'StudyEmitterFacingTests.testCoplanarAndSmallDepthReceiversRetainOriginalMidpointResult' started at 2026-11-26 04:05:04.521
+Test Case 'StudyEmitterFacingTests.testCoplanarAndSmallDepthReceiversRetainOriginalMidpointResult' passed (0.0 seconds)
+Test Case 'StudyEmitterFacingTests.testFrontFacingAndNarrowGrazingReceiversKeepPositiveLight' started at 2026-11-26 04:05:04.521
+Test Case 'StudyEmitterFacingTests.testFrontFacingAndNarrowGrazingReceiversKeepPositiveLight' passed (0.101 seconds)
+Test Case 'StudyEmitterFacingTests.testSkippingBackFacingAreaPreservesFollowingPointAndAreaContributions' started at 2026-11-26 04:05:04.622
+Test Case 'StudyEmitterFacingTests.testSkippingBackFacingAreaPreservesFollowingPointAndAreaContributions' passed (0.001 seconds)
+Test Suite 'StudyEmitterFacingTests' passed at 2026-11-26 04:05:04.623
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'StudyFloat32EligibilityTests' started at 2026-11-26 04:05:04.623
+Test Case 'StudyFloat32EligibilityTests.testCameraFrustumKeepsInvisiblePanelRegionsOutOfTheGuard' started at 2026-11-26 04:05:04.623
+Test Case 'StudyFloat32EligibilityTests.testCameraFrustumKeepsInvisiblePanelRegionsOutOfTheGuard' passed (0.1 seconds)
+Test Case 'StudyFloat32EligibilityTests.testMeasuredMicrometerCutoffRegressionsAndBothSidesOfBoundaryRouteToCPU' started at 2026-11-26 04:05:04.723
+Test Case 'StudyFloat32EligibilityTests.testMeasuredMicrometerCutoffRegressionsAndBothSidesOfBoundaryRouteToCPU' passed (0.001 seconds)
+Test Case 'StudyFloat32EligibilityTests.testOrdinaryStartupFixturesStayEligibleAndUnsupportedFixtureRoutesToCPU' started at 2026-11-26 04:05:04.724
+Test Case 'StudyFloat32EligibilityTests.testOrdinaryStartupFixturesStayEligibleAndUnsupportedFixtureRoutesToCPU' passed (0.0 seconds)
+Test Case 'StudyFloat32EligibilityTests.testRectanglesUseTheirActualFaceAndSizeDependentNearFieldGuard' started at 2026-11-26 04:05:04.724
+Test Case 'StudyFloat32EligibilityTests.testRectanglesUseTheirActualFaceAndSizeDependentNearFieldGuard' passed (0.0 seconds)
+Test Case 'StudyFloat32EligibilityTests.testRelativeTwentyMeterDomainAndLargeWorldTranslationsArePreserved' started at 2026-11-26 04:05:04.724
+Test Case 'StudyFloat32EligibilityTests.testRelativeTwentyMeterDomainAndLargeWorldTranslationsArePreserved' passed (0.0 seconds)
+Test Case 'StudyFloat32EligibilityTests.testVisiblePanelGuardAccountsForTiltedEmitterExtentAndInvalidAim' started at 2026-11-26 04:05:04.724
+Test Case 'StudyFloat32EligibilityTests.testVisiblePanelGuardAccountsForTiltedEmitterExtentAndInvalidAim' passed (0.0 seconds)
+Test Suite 'StudyFloat32EligibilityTests' passed at 2026-11-26 04:05:04.725
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'StudyFrameCacheTests' started at 2026-11-26 04:05:04.725
+Test Case 'StudyFrameCacheTests.testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts' started at 2026-11-26 04:05:04.725
+Test Case 'StudyFrameCacheTests.testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts' passed (0.001 seconds)
+Test Case 'StudyFrameCacheTests.testEntryLimitBoundsZeroCostValues' started at 2026-11-26 04:05:04.726
+Test Case 'StudyFrameCacheTests.testEntryLimitBoundsZeroCostValues' passed (0.001 seconds)
+Test Case 'StudyFrameCacheTests.testEquivalentNonHashableKeysReplaceAndFindTheSameEntry' started at 2026-11-26 04:05:04.726
+Test Case 'StudyFrameCacheTests.testEquivalentNonHashableKeysReplaceAndFindTheSameEntry' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testHitPromotesRecencyAndMissDoesNotProtectOldestEntry' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testHitPromotesRecencyAndMissDoesNotProtectOldestEntry' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes' started at 2026-11-26 04:05:04.727
+Test Case 'StudyFrameCacheTests.testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testReplacementChargesNewCostsOnlyAndBecomesMostRecent' started at 2026-11-26 04:05:04.728
+Test Case 'StudyFrameCacheTests.testReplacementChargesNewCostsOnlyAndBecomesMostRecent' passed (0.0 seconds)
+Test Case 'StudyFrameCacheTests.testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency' started at 2026-11-26 04:05:04.728
+Test Case 'StudyFrameCacheTests.testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency' passed (0.1 seconds)
+Test Suite 'StudyFrameCacheTests' passed at 2026-11-26 04:05:04.828
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.103 (0.103) seconds
+Test Suite 'StudyParityMetricsTests' started at 2026-11-26 04:05:04.828
+Test Case 'StudyParityMetricsTests.testCPURenderersRetainTheirUnsupportedPixelMasks' started at 2026-11-26 04:05:04.828
+Test Case 'StudyParityMetricsTests.testCPURenderersRetainTheirUnsupportedPixelMasks' passed (0.004 seconds)
+Test Case 'StudyParityMetricsTests.testDisplayRGBAWithNonopaqueAlphaIsRejected' started at 2026-11-26 04:05:04.832
+Test Case 'StudyParityMetricsTests.testDisplayRGBAWithNonopaqueAlphaIsRejected' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testEquallyTruncatedAndExtendedBuffersAreRejected' started at 2026-11-26 04:05:04.832
+Test Case 'StudyParityMetricsTests.testEquallyTruncatedAndExtendedBuffersAreRejected' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testIdenticalImagesAndExplicitMasksPass' started at 2026-11-26 04:05:04.833
+Test Case 'StudyParityMetricsTests.testIdenticalImagesAndExplicitMasksPass' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testMissingMalformedAndInconsistentMasksAreRejected' started at 2026-11-26 04:05:04.833
+Test Case 'StudyParityMetricsTests.testMissingMalformedAndInconsistentMasksAreRejected' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testNonpositiveOverflowingAndDifferentDimensionsAreRejected' started at 2026-11-26 04:05:04.833
+Test Case 'StudyParityMetricsTests.testNonpositiveOverflowingAndDifferentDimensionsAreRejected' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testOpaqueMagentaCannotHideSwappedInvalidFlags' started at 2026-11-26 04:05:04.833
+Test Case 'StudyParityMetricsTests.testOpaqueMagentaCannotHideSwappedInvalidFlags' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testSparseMaximumRGBErrorRemainsDiagnostic' started at 2026-11-26 04:05:04.833
+Test Case 'StudyParityMetricsTests.testSparseMaximumRGBErrorRemainsDiagnostic' passed (0.0 seconds)
+Test Case 'StudyParityMetricsTests.testSwappedInvalidPixelsFailDespitePassingAggregateRGBLimits' started at 2026-11-26 04:05:04.833
+Test Case 'StudyParityMetricsTests.testSwappedInvalidPixelsFailDespitePassingAggregateRGBLimits' passed (0.0 seconds)
+Test Suite 'StudyParityMetricsTests' passed at 2026-11-26 04:05:04.834
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'SurfacePhotometryTests' started at 2026-11-26 04:05:04.834
+Test Case 'SurfacePhotometryTests.testDirectionNormalizesAndRejectsInvalid' started at 2026-11-26 04:05:04.834
+Test Case 'SurfacePhotometryTests.testDirectionNormalizesAndRejectsInvalid' passed (0.0 seconds)
+Test Case 'SurfacePhotometryTests.testFarFieldAndIntensityScaling' started at 2026-11-26 04:05:04.834
+Test Case 'SurfacePhotometryTests.testFarFieldAndIntensityScaling' passed (0.1 seconds)
+Test Case 'SurfacePhotometryTests.testGrazingCornerAndSingleBoundaryVertexRemainPhysicallyConsistent' started at 2026-11-26 04:05:04.934
+Grazing corner cut 0.6 m: actual 1.8821458448778798 lx, reference 1.8821458452128712 lx, relative error 1.7798374596233513e-10
+Grazing corner cut 0.79 m: actual 0.00012630964555215244 lx, reference 0.0001263096455522049 lx, relative error 4.154503396702975e-13
+Grazing corner cut 0.799 m: actual 1.2289461851570823e-07 lx, reference 1.2289461851568804e-07 lx, relative error 1.643395136420604e-13
+Grazing corner cut 0.79999 m: actual 1.225259851916436e-13 lx, reference 1.2252598519258684e-13 lx, relative error 7.698370669870734e-12
+Test Case 'SurfacePhotometryTests.testGrazingCornerAndSingleBoundaryVertexRemainPhysicallyConsistent' passed (0.001 seconds)
+Test Case 'SurfacePhotometryTests.testGrazingStripDoesNotDisappearBetweenMidpointSamples' started at 2026-11-26 04:05:04.935
+Grazing strip cut 0.45 m: actual 1.4589925586052157 lx, reference 1.4589925588055537 lx, relative error 1.3731253612477816e-10
+Grazing strip cut 0.48 m: actual 0.20856348150096382 lx, reference 0.2085634815302207 lx, relative error 1.4027803183003052e-10
+Grazing strip cut 0.499 m: actual 0.00048664642096451474 lx, reference 0.0004866464210327955 lx, relative error 1.4030880131341468e-10
+Grazing strip cut 0.49999 m: actual 4.8492374775812255e-08 lx, reference 4.8492374783183897e-08 lx, relative error 1.5201651282557512e-10
+Test Case 'SurfacePhotometryTests.testGrazingStripDoesNotDisappearBetweenMidpointSamples' passed (0.101 seconds)
+Test Case 'SurfacePhotometryTests.testPartialFullTransitionRemainsSmallAtMinimumSupportedDepth' started at 2026-11-26 04:05:05.036
+Test Case 'SurfacePhotometryTests.testPartialFullTransitionRemainsSmallAtMinimumSupportedDepth' passed (0.0 seconds)
+Test Case 'SurfacePhotometryTests.testPointCosineAndInverseSquare' started at 2026-11-26 04:05:05.036
+Test Case 'SurfacePhotometryTests.testPointCosineAndInverseSquare' passed (0.0 seconds)
+Test Case 'SurfacePhotometryTests.testRectangleBackfaceNearPlaneAndInvalidGeometry' started at 2026-11-26 04:05:05.036
+Test Case 'SurfacePhotometryTests.testRectangleBackfaceNearPlaneAndInvalidGeometry' passed (0.0 seconds)
+Test Case 'SurfacePhotometryTests.testRectangleMatchesAnalyticParallelFixtures' started at 2026-11-26 04:05:05.036
+Parallel fixture 1.0x1.0 @ 0.25m relative error: 0.00015083684656456845
+Parallel fixture 1.0x0.6 @ 0.5m relative error: 0.00023334691793906986
+Parallel fixture 1.0x0.6 @ 1.0m relative error: 0.00014041634016277415
+Parallel fixture 0.3x1.5 @ 0.4m relative error: 0.00011957380197518265
+Parallel fixture 2.0x0.5 @ 1.0m relative error: 0.0001574893439048179
+Parallel fixture 0.05x0.05 @ 2.0m relative error: 2.0336586014498254e-07
+Test Case 'SurfacePhotometryTests.testRectangleMatchesAnalyticParallelFixtures' passed (0.0 seconds)
+Test Case 'SurfacePhotometryTests.testRectangleMatchesIndependentOffAxisNumericalReference' started at 2026-11-26 04:05:05.037
+Offset fixture (0.4,0.2,0.5) angle 0.2 relative error: 0.00017649163172442342
+Offset fixture (-0.3,0.1,0.25) angle -0.7 relative error: 3.6647430776775185e-06
+Offset fixture (1.2,-0.4,1.5) angle 0.8 relative error: 7.961056584598076e-06
+Offset fixture (0.0,0.1,0.5) angle 1.5 relative error: 2.7489768795466098e-05
+Test Case 'SurfacePhotometryTests.testRectangleMatchesIndependentOffAxisNumericalReference' passed (0.001 seconds)
+Test Suite 'SurfacePhotometryTests' passed at 2026-11-26 04:05:05.037
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.203 (0.203) seconds
+Test Suite 'release.xctest' passed at 2026-11-26 04:05:05.037
+	 Executed 366 tests, with 0 failures (0 unexpected) in 6.791 (6.791) seconds
+Test Suite 'All tests' passed at 2026-11-26 04:05:05.038
+	 Executed 366 tests, with 0 failures (0 unexpected) in 6.791 (6.791) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.2.1 (c9d57c83568b06d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

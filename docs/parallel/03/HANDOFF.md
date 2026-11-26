@@ -9,7 +9,7 @@ No lane 20 baseline was published in the initial remote branch inventory.
 Later main changes are preserved for lane 20 integration. Canonical status, CI,
 shared composition, photometry and GPU/cache implementation remain with their owners.
 
-Baseline Linux Swift 6.2.1 Debug suite: 366 tests, zero failures. All twelve
+Baseline Linux Swift 6.2.1 suites: 366 Debug and 366 Release tests, zero failures. All twelve
 unchanged image configurations render with zero unsupported pixels; original
 PPMs, PNG conversions, scene JSONs, manifest and source hashes are retained in
 `evidence/`. Root inspected `evidence/original-contact.png`.
@@ -21,8 +21,9 @@ and distance 0.00004999790731633365 m. The shipped BVH and visibility test both 
 it. `grazing-original.json` preserves the actual Swift result; no correction has
 yet been applied at this checkpoint.
 
-Wave 1 is running with real fresh contexts; its live ledger explicitly distinguishes
-created workers from unspawned assignments. The execution plan is ten acceptance
+Wave 1 completed all ten real fresh contexts; its final ledger contains actual
+IDs, reports, hashes and clean private-worktree receipts. Wave 2 is building the
+independent probes and source-specific test patches. The execution plan is ten acceptance
 leaders plus nine distinct specialists per leader, with at most two children active
 alongside root and leader. The root integrator is not included in the count.
 
