@@ -2,6 +2,9 @@
 
 ## Delivery status
 
+**Implementation and the 100-worker packet are delivered. Corrected-observer
+native validation remains open; this is not a complete M02/M03 acceptance.**
+
 Lane 03 has corrected grazing mesh intersections, clipped-camera handling, tiny
 emitter integration and preview publication. The twelve ordinary synthetic
 fixtures retain their original scene and image bytes. Portable CPU evidence
@@ -20,7 +23,12 @@ eight strict precision cases and the unchanged bounded benchmark checks.
 Native job **140080474886** has passed its macOS prerequisites and both unsigned
 Debug/native-bundle and Release app builds. Its native test step is still
 reported in progress; finalized method accounting and its full job log are
-unavailable at this checkpoint. See the
+unavailable at this checkpoint. At 13:38:55 EST on 2026-11-26, the step metadata
+had remained active for 31 minutes 4 seconds despite the configured 18-minute
+step timeout. Both log-download attempts returned BlobNotFound, and no connected
+live browser was available. The cause and actual method counts are unknown;
+165 is discovery only. The [pending execution receipt](evidence/ci-native-dbbc-pending.json)
+records exact metadata and the lane-19 follow-up. See the
 [core receipt](evidence/ci-core-dbbc.json) and
 [Apple build receipt](evidence/ci-apple-build-dbbc.json). W100 accepted the
 exact observer source after 47 review checks, with its runtime/AX limits retained
@@ -305,6 +313,28 @@ failure lines independently. Route snapshot/runner investigation to **19**, with
 **01** copied for the incomplete first user-flow gate. Keep its original artifacts
 and leave the UI gate failed.
 
+### Corrected-source app accessibility run failed on a shared Plan caption
+
+Source-dbbc job **140080474938** executed its one selected method and failed:
+one start, zero passes, one failed method, zero skips/unstarted methods. At
+`StudioAppAccessibilityUITests.swift:357`, the reachability helper forwarded an
+assertion from `StudioContentReachability.swift:207`: the `planSelectedLight`
+StaticText was not visibly reachable. The preceding diagnostic was
+`AX viewport capture failed: missingTarget` after selecting Fill in the Default
+Plan workflow. The app declaration is in `App/StudioView.swift:536`.
+
+The test had not selected Study; no failed ReferenceStudyPreview assertion was
+observed. Later Default checks, all AXXXL workflow checks and cross-size growth
+assertions were not reached. This is an actual required reachability failure;
+its root cause is not established, and missingTarget does not establish glyph
+clipping or a screenshot/encoding failure. The initial simulator postflight
+failure and successful recovery are also preserved. Route the Plan caption to
+**01**, and the viewport capture/matching evidence to **19**. The
+[exact source/method receipt](evidence/ci-ui-app-accessibility-dbbc.json) and
+[lossless complete log](evidence/ci-ui-app-accessibility-dbbc.log.gz) retain the
+original failure. W99 reused the same context; root independently verified
+archive/receipt hashes and failure lines.
+
 ### Earlier source-342 UI execution failed before the selected methods started
 
 The finalized studio-optics job 140042273238 in run 45857561126 has **zero
@@ -453,8 +483,8 @@ requests, not acknowledgments or completed work by the receiving owners.
 | --- | --- |
 | **02 — photometry/color** | Review the scoped per-emitter restoration against the positive-tiny consumer request, using NUMERICS and the 166-check Swift before/after evidence. Agree the positive per-cell Float-subnormal/zero routing policy with 04; CPU repair alone does not settle that GPU policy. The inspected 02 head was b5c1f008446f8b33f3ee97f8fefe6675058ef347. |
 | **04 — GPU/cache** | Integrate the current engine and paired supports(scene,width:) helper at the exact identities below, passing the actual requested width. Establish integrated backend behavior and preserve lane 03 tiny-output/preallocation-cancellation fixes. Keep the separate width-24 silhouette counterexample and unchanged thresholds. Resolve the open 02 tiny-Float policy in owned eligibility/fallback code. W057 is addressed by lane 03 activation/ticket logic; its synthetic hosted test retains the native status above. |
-| **01 — shared composition/UI** | Keep the entry point and full render-request semantics when wiring the preview. Investigate the two retained project-library UI failures with their original attachments; no root cause is asserted here. Decide any light-name byte bound or admitted-scene optimization in shared validation without bypassing full validation. |
-| **19 — CI/tooling** | Investigate the corrected-source dbbc screenshot-acquisition failure with its original artifacts (10 starts / 9 passes / 1 failed method). Preserve the separate source-342 runner initialization failure (zero starts / ten unstarted methods) and boot/host/xcresult artifacts. Preserve the failed source-342 initial observer and exact 165-method accounting; the corrected pixel observer requires its own source-bound native run, with hosted adoption and actual Metal execution distinguished. Review source-36 missing compact-artifact dependencies and the lane-04 host-parser concern. No unstarted or cancelled method is a pass. |
+| **01 — shared composition/UI** | Keep the entry point and full render-request semantics when wiring the preview. Investigate source-dbbc Plan selected-light reachability and the two retained source-36 project-library UI failures with original attachments; no root cause is asserted here. Decide any light-name byte bound or admitted-scene optimization in shared validation without bypassing full validation. |
+| **19 — CI/tooling** | Investigate the corrected-source dbbc screenshot-acquisition failure with its original artifacts (10 starts / 9 passes / 1 failed method). Preserve the separate source-342 runner initialization failure (zero starts / ten unstarted methods) and boot/host/xcresult artifacts. Preserve the failed source-342 initial observer and exact 165-method accounting; the corrected pixel observer requires its own source-bound native run, with hosted adoption and actual Metal execution distinguished. Review source-dbbc AX viewport missingTarget evidence, source-36 missing compact-artifact dependencies and the lane-04 host-parser concern. No unstarted or cancelled method is a pass. |
 | **20 — integration** | Use the completed worker ledger and retained evidence to integrate lane 03 with the owners' paired changes, preserving original failures/fixtures/masks and exact source IDs. Complete final artifact verification, obtain the pending corrected native result and outstanding UI execution evidence and verify remote preservation. Evaluate M02 before M03 under the governing contract; worker accounting and lane CPU/native successes do not settle required UI work or release gates. |
 
 The current inspected lane 04 source is pinned by [W97's consumer receipt](workers/wave10-evidence/W97-consumer.json).
@@ -500,9 +530,11 @@ coordinator checkpoints do not establish unmeasured token-budget compliance.
 The final independent frozen-packet check completed 1,028 checks with zero
 failures and reproduced the 100-worker aggregate bytes. Its immutable review
 snapshot predates the finalized native failure; later evidence is retained
-separately without rewriting worker reports. Remaining work is Apple execution
-of the test-only pixel observer, successful initialized execution of required
-UI methods, paired owner integration and final remote preservation. The current zero-start studio-optics failure and earlier
+separately without rewriting worker reports. Remaining work is a terminal result and exact method accounting for the
+corrected hosted observer job, resolution of required UI failures/incomplete
+flows, paired owner integration and subsequent acceptance by lane 20. The
+current native cause and actual execution counts remain unknown; source review
+and build success are not a substitute for that result. The current zero-start studio-optics failure and earlier
 source-36 failures remain retained. Later source changes require a fresh
 affected-gate decision; historical passes keep their original source identities.
 
@@ -523,3 +555,15 @@ with original paths retained as symlinks; all 1,773 repository-file hashes match
 before and after. No source/evidence was discarded. The failed zero-byte receipt
 and [recovery record](evidence/final-stage-storage-recovery.json) are retained.
 These events are storage limitations, not failed renderer or native assertions.
+
+### Closing verification boundary
+
+All ordinary scene/image hashes, the final CPU source manifest and all 100
+primary report hashes have been independently reconciled; no executable source
+changed after dbbc. Original failed native observers, camera/geometry/numeric
+witnesses, UI failures and failed storage/accounting attempts remain retained.
+The last known native metadata and unavailable-log observations are recorded in
+`evidence/ci-native-dbbc-pending.json`. A terminal log is required before deciding
+whether there is an owned observer/preview defect or a runner/shutdown issue.
+The private W100 tree is intentionally retained for that unresolved follow-up;
+W01–W99 cleanup occurred only after remote preservation checks.

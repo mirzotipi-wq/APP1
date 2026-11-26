@@ -90,3 +90,34 @@ from that timeout. The first method's save/relaunch remains incomplete. Full log
 and strict accounting are retained in `evidence/ci-ui-studio-optics-dbbc.json`
 and its lossless `.log.gz` archive. Keep this distinct from source 342's zero-start
 runner failure. W99's followup reused the same actual runtime; worker count stays 100.
+
+## Unresolved corrected-source native execution
+
+**19:** At 13:38:55 EST on 2026-11-26, source-dbbc job 140080474886 still reported
+Run native unit tests in progress, 31 minutes 4 seconds after its recorded start,
+despite an 18-minute step timeout. Two log fetches returned BlobNotFound and no
+connected live browser was available. Debug/native-bundle and Release builds
+passed; 165 methods are discovered, but actual execution counts and cause are
+unknown. Preserve original job/xcresult/host/boot evidence, establish terminal
+accounting and investigate the delay. A selective retry is appropriate only
+after the job becomes eligible and the evidence warrants it. No current pass
+or test-observer/renderer/runner cause is inferred. If the terminal log shows
+an owned preview/observer defect, route it back to 03 with the original failure.
+See `evidence/ci-native-dbbc-pending.json`. CI and thresholds remain unchanged.
+
+## Corrected-source shared Plan accessibility failure
+
+**01, with 19 copied:** Job `140080474938` at dbbc executed its one selected
+accessibility method and failed (one start, zero passes, one failure, no skips
+or unstarted methods). At `StudioAppAccessibilityUITests.swift:357`, the
+reachability helper reported the `planSelectedLight` StaticText was not visibly
+reachable after Default-size Plan Fill selection; the viewport diagnostic was
+`missingTarget`. The declaration is `App/StudioView.swift:536`. The test had not
+selected Study, and no ReferenceStudyPreview assertion failed. Later Default,
+all AXXXL and cross-size assertions were not reached. Investigate shared element
+availability/reachability and viewport snapshot/matching with original artifacts;
+root cause, clipping, screenshot-acquisition and encoding claims are unsupported.
+Full source/method accounting and lossless raw log are in
+`evidence/ci-ui-app-accessibility-dbbc.json` and `.log.gz`. Initial simulator
+postflight failure and successful recovery are retained separately. W99 reused
+its existing runtime; the count remains 100 workers.
