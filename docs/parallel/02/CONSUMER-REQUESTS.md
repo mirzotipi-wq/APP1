@@ -38,3 +38,27 @@ execution environment became unavailable; review during the remaining solver/
 consumer waves. The returned assessment is retained in
 reports/w02/w02r08/recovered-handoff.md; original local probe files were not
 verified recovered remotely.
+
+## Resumed lane 01 contract inspection
+
+Inspected lane 01 commit `966c9c21adbb685d82127e7f88981b74daf47e3d`,
+`docs/parallel/01/INTERFACES.md` and its handoff. Both lanes retain baseline
+f150f98. Its target-lux admission requires the exact light UUID and snapshot,
+plus live presentation/generation/revision ownership. Lane 02 returns a new
+valid light, preserving identity and all non-output fields; source and scene
+remain unchanged. No new signature/schema is needed. Native route admission
+is still pending in lane 01; this is compatibility review, not an acknowledgement
+or claim that the route integration has shipped.
+
+W03R06 found that constant numeric-kernel work must not be generalized to the
+whole `StudioLight.isValid` wrapper: trimming/counting arbitrary names depends
+on input bytes, and an 80-grapheme bound is not a byte bound. Lane 01 already
+plans typed scalar commands that avoid revalidating unchanged imported names.
+Retain complete validation for imported/adopted scenes and consider an explicit
+byte bound only in the schema/validation owner's change. No Scene.swift edit here.
+
+Current-source CI45819324337 simulator and app-accessibility jobs fail the same
+inherited ambiguous `.greatestFiniteMagnitude` test compilation; original excerpts
+are retained under evidence/ci-current-139909706814-failure-excerpts.log and
+ci-current-139909706998-failure-excerpts.log. Core remains successful. Later-main
+CGFloat correction remains an integration dependency, not a lane02 code fix.

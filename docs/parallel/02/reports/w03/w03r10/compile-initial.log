@@ -1,0 +1,23 @@
+/tmp/keyfill02-r2-workers/w03r10/private-output/probe.swift:17:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+15 | // Receiver-to-source d=(7,-7,11)/4; emitter aim e=(-1,3,-1);
+16 | // receiver normal raw n=(3,1,2). These integer dot products are independent.
+17 | let rSquared = (7.0 * 7 + (-7.0) * (-7) + 11.0 * 11) / 16
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+18 | let emitterRawSquared = (-1.0) * (-1) + 3.0 * 3 + (-1.0) * (-1)
+19 | let receiverRawSquared = 3.0 * 3 + 1.0 * 1 + 2.0 * 2
+
+/tmp/keyfill02-r2-workers/w03r10/private-output/probe.swift:20:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+18 | let emitterRawSquared = (-1.0) * (-1) + 3.0 * 3 + (-1.0) * (-1)
+19 | let receiverRawSquared = 3.0 * 3 + 1.0 * 1 + 2.0 * 2
+20 | let emitterDotToReceiver = ((-1.0) * (-7) + 3.0 * 7 + (-1.0) * (-11)) / 4
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+21 | let receiverDotToSource = (3.0 * 7 + 1.0 * (-7) + 2.0 * 11) / 4
+22 | let emitterCosine = emitterDotToReceiver / sqrt(emitterRawSquared * rSquared)
+
+/tmp/keyfill02-r2-workers/w03r10/private-output/probe.swift:21:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+19 | let receiverRawSquared = 3.0 * 3 + 1.0 * 1 + 2.0 * 2
+20 | let emitterDotToReceiver = ((-1.0) * (-7) + 3.0 * 7 + (-1.0) * (-11)) / 4
+21 | let receiverDotToSource = (3.0 * 7 + 1.0 * (-7) + 2.0 * 11) / 4
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+22 | let emitterCosine = emitterDotToReceiver / sqrt(emitterRawSquared * rSquared)
+23 | let receiverCosine = receiverDotToSource / sqrt(receiverRawSquared * rSquared)

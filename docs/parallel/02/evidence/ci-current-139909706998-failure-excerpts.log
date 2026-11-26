@@ -1,0 +1,16 @@
+2026-11-26T12:53:07.3455430Z [36;1m[ "$(uname -m)" = "$EXPECTED_RUNNER_ARCH" ] || { echo "::error::Expected the configured $EXPECTED_RUNNER_ARCH runner"; exit 1; }[0m
+2026-11-26T12:53:07.3458780Z [36;1m[ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }[0m
+2026-11-26T12:55:28.1234640Z /Users/runner/work/APP1/APP1/UITests/StudioAppAccessibilityUITests.swift:95:38: error: ambiguous use of 'greatestFiniteMagnitude'
+2026-11-26T12:55:28.1236590Z                 with: CGSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude),
+2026-11-26T12:55:28.1238840Z CoreFoundation.CGFloat.greatestFiniteMagnitude:2:19: note: found this candidate in module 'CoreFoundation'
+2026-11-26T12:55:28.1240580Z public static var greatestFiniteMagnitude: CGFloat { get }}
+2026-11-26T12:55:28.1242240Z Swift.Double.greatestFiniteMagnitude:2:30: note: found this candidate in module 'Swift'
+2026-11-26T12:55:28.1243610Z @inlinable public static var greatestFiniteMagnitude: Double { get }}
+2026-11-26T12:55:28.1758080Z ** TEST BUILD FAILED **
+2026-11-26T12:55:28.1758580Z The following build commands failed:
+2026-11-26T12:55:28.4762880Z [36;1m        status = "success" if result.returncode == 0 else "failed"[0m
+2026-11-26T12:55:28.4764750Z [36;1m    except subprocess.TimeoutExpired as error:[0m
+2026-11-26T12:55:28.4769040Z [36;1m    except OSError as error:[0m
+2026-11-26T12:55:28.7489470Z [36;1m    printf 'archive_failed=true\n' >> "$GITHUB_OUTPUT"[0m
+2026-11-26T12:55:28.7490690Z [36;1m    echo "::error::XCTest archive failed; preserve the original bundle separately"[0m
+2026-11-26T12:55:28.7495000Z [36;1m  echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"[0m

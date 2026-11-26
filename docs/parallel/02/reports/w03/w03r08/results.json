@@ -1,0 +1,71 @@
+{
+  "check": "Unsupported receiver orientation through meter and target editing",
+  "revision": "1b286885cb803ba17e159713651515ab119e17f1",
+  "kind": "static source audit; no compilation or UI execution",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Coincident receiver/camera yields nil normal before point sampling",
+      "passed": true,
+      "references": [
+        "SurfacePhotometry.swift:9-15",
+        "StudioOptics.swift:100-118"
+      ]
+    },
+    {
+      "name": "Supported nonpositive incidence is clamped to exact zero",
+      "passed": true,
+      "references": [
+        "SurfacePhotometry.swift:92-98"
+      ]
+    },
+    {
+      "name": "Meter has separate numeric and textual unavailable branches",
+      "passed": true,
+      "references": [
+        "StudioView.swift:989-1004"
+      ]
+    },
+    {
+      "name": "Compact exact zero and positive sub-resolution values remain distinct",
+      "passed": true,
+      "references": [
+        "StudioMeterReadout.swift:9-29"
+      ]
+    },
+    {
+      "name": "Target positive unsupported sample throws human-readable geometry error",
+      "passed": true,
+      "references": [
+        "LightOutputAdjustment.swift:15-16",
+        "LightOutputAdjustment.swift:50-54"
+      ]
+    },
+    {
+      "name": "Target zero turns source off before sampling",
+      "passed": true,
+      "references": [
+        "LightOutputAdjustment.swift:42-54"
+      ]
+    },
+    {
+      "name": "Target editor surfaces caught error as a text-bearing label",
+      "passed": true,
+      "references": [
+        "LightTargetLuxView.swift:56-60",
+        "LightTargetLuxView.swift:112-125"
+      ]
+    },
+    {
+      "name": "Target editor omits current row when unavailable; does not substitute zero",
+      "passed": true,
+      "references": [
+        "LightTargetLuxView.swift:30-38",
+        "LightTargetLuxView.swift:63-70",
+        "LightTargetLuxView.swift:86-90"
+      ]
+    }
+  ],
+  "observation": "No explicit current-unavailable row in target editor before Apply; positive Apply shows generic geometry error. No orientation-specific reason is carried by Double?.",
+  "limits": "Source structure only; no UI layout, VoiceOver, device, physical calibration, privacy-system audit, or numerical-gate claim."
+}

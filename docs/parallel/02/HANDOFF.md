@@ -1,6 +1,6 @@
-# Lane 02 handoff — campaign resumed
+# Lane 02 handoff — campaign active
 
-Execution is restored. Waves 01 and 02 now have 20 completed fresh contexts; wave 03 is active. See [RESUMPTION.md](RESUMPTION.md) and [worker-ledger.json](worker-ledger.json) for current counts. The interruption record below is historical and will be replaced by the final delivery handoff. Code source remains 58b3ca4.
+Waves 01–03 have 30 completed fresh contexts. Wave 04 is active. The new independent directional double-cosine regression passed its targeted package test. See [worker-ledger.json](worker-ledger.json) and [RESUMPTION.md](RESUMPTION.md). Production remains identical to58b3ca4. The interruption record below is historical, retained until final handoff.
 
 # Lane 02 handoff — corrections published; campaign interrupted
 

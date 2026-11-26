@@ -1,0 +1,378 @@
+{
+  "formula": "E = I/r^2 * max(0, cos_receiver) * (max(0, cos_emitter) for directional, otherwise 1)",
+  "distance_unit": "m",
+  "intensity_unit": "cd",
+  "output_unit": "lux",
+  "cases": [
+    {
+      "name": "point_front",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": 100.0
+    },
+    {
+      "name": "point_receiver_60",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        1.7320508075688772,
+        0.0,
+        1.0
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 0.5,
+      "emitter_cos": 1.0,
+      "expected_lux": 50.0
+    },
+    {
+      "name": "point_near_grazing",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        1.999899997499875,
+        0.0,
+        0.02
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 0.01,
+      "emitter_cos": 1.0,
+      "expected_lux": 1.0
+    },
+    {
+      "name": "point_distance_4m",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        4
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": 25.0
+    },
+    {
+      "name": "point_max_candela",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        0.5
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": null,
+      "candela": 100000,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": 400000.0
+    },
+    {
+      "name": "point_zero_candela",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": null,
+      "candela": 0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": 0.0
+    },
+    {
+      "name": "point_receiver_tangent",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        2.0,
+        0.0,
+        0
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 0,
+      "emitter_cos": 1.0,
+      "expected_lux": 0.0
+    },
+    {
+      "name": "point_receiver_back",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        -2
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": -1,
+      "emitter_cos": 1.0,
+      "expected_lux": 0.0
+    },
+    {
+      "name": "directional_front",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": 100.0
+    },
+    {
+      "name": "directional_emitter_60",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": [
+        0.8660254037844386,
+        0.0,
+        1.5
+      ],
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 0.5,
+      "expected_lux": 50.0
+    },
+    {
+      "name": "directional_both_60",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        1.7320508075688772,
+        0.0,
+        1.0
+      ],
+      "aim": [
+        0.8660254037844386,
+        0.0,
+        1.5
+      ],
+      "candela": 400.0,
+      "receiver_cos": 0.5,
+      "emitter_cos": 0.5,
+      "expected_lux": 25.0
+    },
+    {
+      "name": "directional_near_grazing",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        1.999899997499875,
+        0.0,
+        0.02
+      ],
+      "aim": [
+        0.9682458365518543,
+        0.0,
+        1.75
+      ],
+      "candela": 400.0,
+      "receiver_cos": 0.01,
+      "emitter_cos": 0.25,
+      "expected_lux": 0.25
+    },
+    {
+      "name": "directional_emitter_back",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        3.0
+      ],
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": -1,
+      "expected_lux": 0.0
+    },
+    {
+      "name": "directional_emitter_tangent",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": [
+        1.0,
+        0.0,
+        2.0
+      ],
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 0,
+      "expected_lux": 0.0
+    },
+    {
+      "name": "unsupported_under_5cm",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        0.049
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": null
+    },
+    {
+      "name": "unsupported_camera_coincident",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "aim": null,
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": null
+    },
+    {
+      "name": "unsupported_directional_aim",
+      "kind": "directional",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "candela": 400.0,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": null
+    },
+    {
+      "name": "unsupported_candela",
+      "kind": "point",
+      "source": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "aim": null,
+      "candela": 100001,
+      "receiver_cos": 1.0,
+      "emitter_cos": 1.0,
+      "expected_lux": null
+    }
+  ]
+}

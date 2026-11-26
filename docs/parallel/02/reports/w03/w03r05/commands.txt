@@ -1,0 +1,10 @@
+Worktree: /tmp/keyfill02-r2-workers/w03r05
+Baseline: git status --short --branch; git rev-parse HEAD
+Snapshot metadata: cat /tmp/keyfill02-r2-snapshots/v1/READY
+Compiler: /tmp/keyfill02-r2-toolchain/usr/bin/swift --version
+Probe command (workdir as above):
+python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w03r05 /tmp/keyfill02-r2-workers/w03r05/private-output/probe.swift v1
+Helper compiler invocation:
+flock /tmp/keyfill02-r2-build.lock /tmp/keyfill02-r2-toolchain/usr/bin/swiftc -I /tmp/keyfill02-r2-snapshots/v1/Modules /tmp/keyfill02-r2-workers/w03r05/private-output/probe.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a -o /tmp/keyfill02-r2-workers/w03r05/private-output/probe
+Helper runtime invocation:
+/tmp/keyfill02-r2-workers/w03r05/private-output/probe

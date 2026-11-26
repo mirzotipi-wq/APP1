@@ -1,0 +1,297 @@
+Revision: 1b286885cb803ba17e159713651515ab119e17f1
+Inspection only. No build, probe or device test.
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/StudioOptics.swift
+Result: exit 0; numbered source excerpts follow.
+
+Sources/LightingCore/StudioOptics.swift:97-137
+97: /// Estimates illuminance at the subject's center on a plane facing the scene camera.
+98: /// This is a diagnostic sample, not exposure or the brightness of a rendered face.
+99: public enum StudioPhotometry {
+100:     public static func receiverNormal(in scene: LightingScene) -> UnitDirection? {
+101:         guard scene.subject.isValid, scene.camera.isValid else { return nil }
+102:         return UnitDirection(x: scene.camera.x - scene.subject.x,
+103:                              y: scene.camera.y - scene.subject.y,
+104:                              z: scene.camera.z - scene.subject.z)
+105:     }
+106: 
+107:     public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
+108:         guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
+109:         return EmitterFrame(source: light.position, target: light.target(subject: subject),
+110:                             rollDegrees: light.effectiveOptics.effectiveRollDegrees)
+111:     }
+112: 
+113:     public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {
+114:         guard light.isValid, let normal = receiverNormal(in: scene) else { return nil }
+115:         let optics = light.effectiveOptics
+116:         switch optics.kind {
+117:         case .point:
+118:             return Photometry.pointIlluminance(candela: light.candela, source: light.position,
+119:                                               receiver: scene.subject, receiverNormal: normal)
+120:         case .directional:
+121:             // Ideal one-sided cosine emitter. Not a hard-edged spotlight or a measured beam.
+122:             guard let frame = frame(for: light, subject: scene.subject),
+123:                   let ray = UnitDirection(x: scene.subject.x - light.position.x,
+124:                                           y: scene.subject.y - light.position.y,
+125:                                           z: scene.subject.z - light.position.z),
+126:                   let lux = Photometry.pointIlluminance(candela: light.candela, source: light.position,
+127:                                                         receiver: scene.subject, receiverNormal: normal) else { return nil }
+128:             let n = frame.normal
+129:             let emission = min(1, max(0, n.x * ray.x + n.y * ray.y + n.z * ray.z))
+130:             return lux * emission
+131:         case .rectangle:
+132:             guard let frame = frame(for: light, subject: scene.subject),
+133:                   let emitter = LambertianRectangle(center: light.position, right: frame.right, up: frame.up,
+134:                                                       widthMeters: optics.widthMeters, heightMeters: optics.heightMeters,
+135:                                                       onAxisCandela: light.candela) else { return nil }
+136:             return Photometry.rectangularIlluminance(emitter: emitter, receiver: scene.subject, receiverNormal: normal)
+137:         }
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/LightOutputAdjustment.swift
+Result: exit 0; numbered source excerpts follow.
+
+Sources/LightingCore/LightOutputAdjustment.swift:24-32
+24: /// This is a model calculation, not a measured lamp setting or image exposure.
+25: /// Other lights, occlusion, reflections and real modifier losses are excluded.
+26: public enum LightOutputAdjustment {
+27:     /// Returns a valid light with only its candela changed. The source and scene
+28:     /// remain unchanged, and the light need not already belong to the scene.
+29:     /// Positive targets require a supported, nonzero contribution at one candela.
+30:     /// Zero explicitly turns the source off without requiring a photometric sample.
+31:     /// Invalid inputs and unrepresentable outputs throw; values are never clamped.
+32:     public static func light(_ source: StudioLight, targetingLux targetLux: Double,
+
+Sources/LightingCore/LightOutputAdjustment.swift:48-53
+48:         // Using a unit source also supports increasing a currently off light;
+49:         // scaling its existing zero contribution would be undefined.
+50:         adjusted.candela = 1
+51:         guard let unitLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+52:               unitLux.isFinite, unitLux > 0 else {
+53:             throw LightOutputAdjustmentError.unsupportedGeometry
+
+Sources/LightingCore/LightOutputAdjustment.swift:59-63
+59:         var maximum = source
+60:         maximum.candela = 100_000
+61:         guard maximum.isValid,
+62:               let maximumLux = StudioPhotometry.illuminance(for: maximum, in: scene),
+63:               maximumLux.isFinite, maximumLux > 0, targetLux <= maximumLux else {
+
+Sources/LightingCore/LightOutputAdjustment.swift:90-95
+90:         guard let achievedLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+91:               achievedLux.isFinite, achievedLux > 0,
+92:               abs(achievedLux / targetLux - 1) <= 1e-9 else {
+93:             throw LightOutputAdjustmentError.outputOutOfRange
+94:         }
+95:         return adjusted
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/Colorimetry.swift
+Result: exit 0; numbered source excerpts follow.
+
+Sources/LightingCore/Colorimetry.swift:157-179
+157: /// Camera-facing neutral test card. Uses summed direct illuminance and an ideal spectrally flat
+158: /// 18% diffuse reflectance. No occlusion, bounce, actual materials or camera response.
+159: /// 1000 lx is an explicit relative-exposure reference; the result is a display preview, not EV100.
+160: public struct NeutralCardPreview: Equatable, Sendable {
+161:     public let totalLux: Double
+162:     public let incidentXYZ: RelativeXYZ
+163:     public let display: DisplayRGB
+164: 
+165:     public init?(scene: LightingScene) {
+166:         guard (try? scene.validated()) != nil, StudioPhotometry.receiverNormal(in: scene) != nil else { return nil }
+167:         var xyz = SIMD3<Double>.zero
+168:         var totalLux = 0.0
+169:         for light in scene.lights {
+170:             guard light.isValid else { return nil }
+171:             if light.candela == 0 { continue }
+172:             guard let lux = StudioPhotometry.illuminance(for: light, in: scene),
+173:                   let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { return nil }
+174:             totalLux += lux; xyz += color.vector * lux
+175:         }
+176:         let signal = RelativeXYZ(xyz * (0.18 / 1000))
+177:         guard let display = PreviewColorimetry.display(signal, settings: scene.effectivePreviewSettings) else { return nil }
+178:         self.totalLux = totalLux; self.incidentXYZ = RelativeXYZ(xyz); self.display = display
+179:     }
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:App/LightTargetLuxView.swift
+Result: exit 0; numbered source excerpts follow.
+
+App/LightTargetLuxView.swift:30-32
+30:                     if let current = StudioPhotometry.illuminance(for: light, in: scene) {
+31:                         LabeledContent("Current ideal illuminance",
+32:                                        value: StudioNumericInput.formattedValue(current, unit: "lx", locale: locale))
+
+App/LightTargetLuxView.swift:44-52
+44:                     if let value = target, let adjusted = try? LightOutputAdjustment.light(light, targetingLux: value, in: scene) {
+45:                         LabeledContent("Required intensity",
+46:                             value: StudioNumericInput.formattedValue(adjusted.candela, unit: "cd", locale: locale))
+47:                     }
+48:                 }
+49:                 Section {
+50:                     Text("The calculation uses this light alone on the ideal camera-facing plane at the subject center. It does not measure skin exposure, camera settings or a real fixture. Other lights are unchanged.")
+51:                         .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
+52:                     Text("A target of zero switches this source off. If the requested output exceeds the model's limits or the light cannot illuminate the plane, change the target or geometry.")
+
+App/LightTargetLuxView.swift:108-115
+108:     private func apply() {
+109:         guard !didApply, !rejectedOversizedDraft, let target else { return }
+110:         do {
+111:             let adjusted = try LightOutputAdjustment.light(light, targetingLux: target, in: scene)
+112:             // Set before the callback so reentrant or queued taps cannot
+113:             // create duplicate scene/history mutations during dismissal.
+114:             didApply = true
+115:             onApply(adjusted)
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:App/StudioView.swift
+Result: exit 0; numbered source excerpts follow.
+
+App/StudioView.swift:989-1003
+989:             VStack(alignment: .leading, spacing: 5) {
+990:                 Text("CAMERA-FACING PLANE · IDEAL").font(.caption2.weight(.medium)).foregroundStyle(StudioPalette.secondaryText)
+991:                 if let lux = StudioPhotometry.illuminance(for: light, in: scene) {
+992:                     Text(StudioMeterReadout.lux(lux, locale: locale))
+993:                         .font(.system(.title2, design: .monospaced).weight(.semibold))
+994:                         .accessibilityLabel("Ideal illuminance")
+995:                         .accessibilityValue(StudioNumericInput.formattedValue(lux, unit: "lx", locale: locale))
+996:                         .accessibilityIdentifier("idealLux")
+997:                     Text("Direct incident light at the subject center. Rim lights may read zero on this plane.")
+998:                         .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+999:                 } else {
+1000:                     Label("Estimate unavailable", systemImage: "exclamationmark.triangle")
+1001:                         .font(.subheadline.weight(.semibold)).accessibilityIdentifier("idealLux")
+1002:                     Text("Check the aim and separation of the emitter, subject and camera. Near-field geometry can fall outside the model.")
+1003:                         .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+
+App/StudioView.swift:1209-1214
+1209:     }
+1210: 
+1211:     private var exportText: String? {
+1212:         (try? LightingPlan(scene: scene, title: projectName, units: displayUnits))?.plainText
+1213:     }
+1214:     private func remember(_ previous: LightingScene) {
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/LightingPlan.swift
+Result: exit 0; numbered source excerpts follow.
+
+Sources/LightingCore/LightingPlan.swift:109-139
+109:     public let name: String
+110:     public let position: Position
+111:     public let kind: EmitterKind
+112:     public let candela: Double
+113:     public let kelvin: Double
+114:     public let subjectDistance: Double
+115:     public let aimTarget: Position?
+116:     public let followsSubject: Bool
+117:     public let aimIsValid: Bool
+118:     public let widthMeters: Double?
+119:     public let heightMeters: Double?
+120:     /// Only rectangular emitters have a reported roll. Nil preserves the
+121:     /// legacy settings line; an explicitly entered zero remains visible.
+122:     public let rollDegrees: Double?
+123: 
+124:     public func settings(units: PlanUnits) -> String {
+125:         var output = "\(PlanUnits.parameterNumber(candela, minimumDecimals: 1)) cd · \(PlanUnits.parameterNumber(kelvin)) K"
+126:         if let widthMeters, let heightMeters {
+127:             output += " · \(units.parameterDistance(widthMeters)) × \(units.parameterDistance(heightMeters))"
+128:         }
+129:         if let rollDegrees { output += " · Roll \(PlanUnits.parameterNumber(rollDegrees))°" }
+130:         return output
+131:     }
+132:     public func placement(units: PlanUnits) -> String {
+133:         "XYZ \(units.parameterCoordinates(position)) · Subject distance \(units.distance(subjectDistance))"
+134:     }
+135:     public func aim(units: PlanUnits) -> String {
+136:         guard let aimTarget else { return "Omnidirectional ideal source · no aiming direction" }
+137:         guard aimIsValid else { return "Aim undefined: target coincides with source" }
+138:         return "Aim \(units.parameterCoordinates(aimTarget)) · \(followsSubject ? "follows subject" : "manual target")"
+139:     }
+
+Sources/LightingCore/LightingPlan.swift:211-228
+211:     public init(scene: LightingScene, title: String, units: PlanUnits = .metric, paper: PlanPaper = .letter) throws {
+212:         let scene = try scene.validated()
+213:         self.scene = scene; self.units = units; self.paper = paper
+214:         let safe = Self.printable(title)
+215:         self.title = safe.isEmpty ? "Portrait setup" : safe
+216:         self.lights = scene.lights.enumerated().map { index, light in
+217:             let optics = light.effectiveOptics
+218:             let name = Self.printable(light.name)
+219:             return PlanLight(number: index + 1, name: name.isEmpty ? "Light \(index + 1)" : name, position: light.position,
+220:                              kind: optics.kind, candela: light.candela, kelvin: light.kelvin,
+221:                              subjectDistance: light.position.distance(to: scene.subject),
+222:                              aimTarget: optics.kind.isAimed ? light.target(subject: scene.subject) : nil,
+223:                              followsSubject: optics.kind.isAimed && optics.aimTarget == nil,
+224:                              aimIsValid: !optics.kind.isAimed || StudioPhotometry.frame(for: light, subject: scene.subject) != nil,
+225:                              widthMeters: optics.kind == .rectangle ? optics.widthMeters : nil,
+226:                              heightMeters: optics.kind == .rectangle ? optics.heightMeters : nil,
+227:                              rollDegrees: optics.kind == .rectangle && (optics.rollDegrees != nil || optics.effectiveRollDegrees != 0)
+228:                                 ? optics.effectiveRollDegrees : nil)
+
+Sources/LightingCore/LightingPlan.swift:293-318
+293:     public var cameraSettings: String {
+294:         "\(PlanUnits.parameterNumber(scene.effectiveCameraLens.focalLengthMillimeters)) mm · 36 × 24 mm sensor · \(units.distance(scene.camera.distance(to: scene.subject))) to subject"
+295:     }
+296:     public var previewSettings: String {
+297:         let settings = scene.effectivePreviewSettings
+298:         return "\(PlanUnits.parameterNumber(settings.whiteBalanceKelvin)) K balance · \(PlanUnits.parameterNumber(settings.exposureStops, minimumDecimals: 2)) relative stops"
+299:     }
+300: 
+301:     /// Same validated snapshot, settings and aim semantics used by the vector PDF.
+302:     /// Deliberately excludes reference images, paths and other project data.
+303:     public var plainText: String {
+304:         let header = ["Key & Fill: \(title) lighting plan",
+305:                       "Coordinates: XYZ in \(units.symbol); Y is elevation.",
+306:                       "Subject: \(units.parameterCoordinates(scene.subject))",
+307:                       "Camera: \(units.parameterCoordinates(scene.camera)); \(cameraSettings)",
+308:                       "Test card: \(previewSettings)"]
+309:         let entries = lights.map { light in
+310:             "\(light.number). \(light.name): \(light.kind.title) · \(light.settings(units: units)) · \(light.placement(units: units)) · \(light.aim(units: units))"
+311:         }
+312:         let precision = roomPlacement == nil
+313:             ? "Entered settings and converted coordinates rounded to six fractional digits; derived distances to two."
+314:             : "Entered settings and converted coordinates rounded to six fractional digits; equipment subject distances to two. Room distances retain up to six fractional digits, with bounds for smaller nonzero values."
+315:         var lines = header + entries + [precision,
+316:                                        "Ideal source parameters; not calibrated photometry. No reference images included."]
+317:         if let roomPlacementText { lines += ["", roomPlacementText] }
+318:         return lines.joined(separator: "\n")
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:App/LightingPlanExportView.swift
+Result: exit 0; numbered source excerpts follow.
+
+App/LightingPlanExportView.swift:22-25
+22:     var body: some View {
+23:         Button {
+24:             snapshot = .init(name: title, scene: scene, textSettings: textSettings)
+25:         } label: {
+
+App/LightingPlanExportView.swift:90-96
+90:                 }
+91:             }
+92:         case .pdf:
+93:             LightingPlanExportView(scene: snapshot.scene, title: snapshot.name)
+94:         case .editableCopy:
+95:             ProjectBackupView(name: snapshot.name, scene: snapshot.scene)
+96:         }
+
+Command: git show 1b286885cb803ba17e159713651515ab119e17f1:App/LightingPlanPDF.swift
+Result: exit 0; numbered source excerpts follow.
+
+App/LightingPlanPDF.swift:95-99
+95:         text("SUBJECT   \(plan.units.parameterCoordinates(plan.scene.subject))", x: 40, y: 605, width: width, height: 18, size: 11, weight: .semibold)
+96:         text("CAMERA    \(plan.units.parameterCoordinates(plan.scene.camera))", x: 40, y: 626, width: width, height: 18, size: 11, weight: .semibold)
+97:         text(plan.cameraSettings, x: 40, y: 647, width: width, height: 18, size: 10.5, color: muted)
+98:         text(plan.previewSettings, x: 40, y: 668, width: width, height: 18, size: 10.5, color: muted)
+99:         text("Planning geometry only. Output in cd is ideal luminous intensity, not electrical watts or a measured fixture profile. Camera framing and exposure are ideal/relative. No reference images are embedded.", x: 40, y: 692, width: width, height: 38, size: 9.5, color: muted)
+
+App/LightingPlanPDF.swift:109-112
+109:             text(light.name, x: x, y: y, width: rowWidth, height: 35, size: 15, minimum: 11, weight: .semibold)
+110:             text(light.kind.title + " · " + light.settings(units: plan.units), x: x, y: y + 37, width: rowWidth, height: 22, size: 10.5, minimum: 9)
+111:             text(light.placement(units: plan.units), x: x, y: y + 59, width: rowWidth, height: 20, size: 10.5, minimum: 9, color: muted)
+112:             text(light.aim(units: plan.units), x: x, y: y + 80, width: rowWidth, height: 20, size: 10.5, minimum: 9, color: light.aimIsValid ? muted : amber)
+
+Command: git grep -n -E receiverNormal|illuminance|[Ll]ux 1b286885cb803ba17e159713651515ab119e17f1 -- Sources/LightingCore/LightingPlan.swift
+Result: exit 1; no matches
+
+Command: git grep -n -E receiverNormal|illuminance|[Ll]ux 1b286885cb803ba17e159713651515ab119e17f1 -- App/LightingPlanPDF.swift
+Result: exit 1; no matches
+
+Contracts read: AGENTS.md; docs/ARCHITECTURE.md (Coordinates and color; Export); docs/QUALITY.md (photometry: point <=1%, area <=5%).
+Initial git status --short: empty (clean).

@@ -1,0 +1,263 @@
+
+1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/SurfacePhotometry.swift
+3: /// A finite, normalized direction. Scene positions remain in meters.
+4: public struct UnitDirection: Equatable, Sendable {
+5:     public let x: Double
+6:     public let y: Double
+7:     public let z: Double
+8: 
+9:     public init?(x: Double, y: Double, z: Double) {
+10:         guard x.isFinite, y.isFinite, z.isFinite else { return nil }
+11:         let scale = max(abs(x), max(abs(y), abs(z)))
+12:         guard scale > 0 else { return nil }
+13:         let a = x / scale, b = y / scale, c = z / scale
+14:         let length = (a * a + b * b + c * c).squareRoot()
+15:         self.x = a / length; self.y = b / length; self.z = c / length
+16:     }
+17: 
+18:     fileprivate var vector: SIMD3<Double> { .init(x, y, z) }
+87: 
+88: extension Photometry {
+89:     /// Ideal isotropic point source incident on an oriented surface, in lux.
+90:     /// Intensity is the candela in the receiver's direction; no occlusion.
+91:     /// Returns nil for invalid input or distances below 5 cm.
+92:     public static func pointIlluminance(candela: Double, source: Position, receiver: Position,
+93:                                         receiverNormal: UnitDirection) -> Double? {
+94:         guard source.isValid, receiver.isValid else { return nil }
+95:         let delta = vector(source) - vector(receiver)
+96:         let distance = dot(delta, delta).squareRoot()
+97:         guard let normalLux = normalIlluminance(candela: candela, distanceMeters: distance) else { return nil }
+98:         return normalLux * min(1, max(0, dot(delta / distance, receiverNormal.vector)))
+99:     }
+
+1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/StudioOptics.swift
+97: /// Estimates illuminance at the subject's center on a plane facing the scene camera.
+98: /// This is a diagnostic sample, not exposure or the brightness of a rendered face.
+99: public enum StudioPhotometry {
+100:     public static func receiverNormal(in scene: LightingScene) -> UnitDirection? {
+101:         guard scene.subject.isValid, scene.camera.isValid else { return nil }
+102:         return UnitDirection(x: scene.camera.x - scene.subject.x,
+103:                              y: scene.camera.y - scene.subject.y,
+104:                              z: scene.camera.z - scene.subject.z)
+105:     }
+106: 
+107:     public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
+108:         guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
+109:         return EmitterFrame(source: light.position, target: light.target(subject: subject),
+110:                             rollDegrees: light.effectiveOptics.effectiveRollDegrees)
+111:     }
+112: 
+113:     public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {
+114:         guard light.isValid, let normal = receiverNormal(in: scene) else { return nil }
+115:         let optics = light.effectiveOptics
+116:         switch optics.kind {
+117:         case .point:
+118:             return Photometry.pointIlluminance(candela: light.candela, source: light.position,
+119:                                               receiver: scene.subject, receiverNormal: normal)
+120:         case .directional:
+121:             // Ideal one-sided cosine emitter. Not a hard-edged spotlight or a measured beam.
+122:             guard let frame = frame(for: light, subject: scene.subject),
+123:                   let ray = UnitDirection(x: scene.subject.x - light.position.x,
+124:                                           y: scene.subject.y - light.position.y,
+125:                                           z: scene.subject.z - light.position.z),
+126:                   let lux = Photometry.pointIlluminance(candela: light.candela, source: light.position,
+127:                                                         receiver: scene.subject, receiverNormal: normal) else { return nil }
+128:             let n = frame.normal
+129:             let emission = min(1, max(0, n.x * ray.x + n.y * ray.y + n.z * ray.z))
+130:             return lux * emission
+131:         case .rectangle:
+132:             guard let frame = frame(for: light, subject: scene.subject),
+133:                   let emitter = LambertianRectangle(center: light.position, right: frame.right, up: frame.up,
+134:                                                       widthMeters: optics.widthMeters, heightMeters: optics.heightMeters,
+135:                                                       onAxisCandela: light.candela) else { return nil }
+136:             return Photometry.rectangularIlluminance(emitter: emitter, receiver: scene.subject, receiverNormal: normal)
+137:         }
+
+1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/LightOutputAdjustment.swift
+3: public enum LightOutputAdjustmentError: Error, Equatable, Sendable, LocalizedError {
+4:     case invalidTargetLux
+5:     case invalidLight
+6:     case unsupportedGeometry
+7:     case outputOutOfRange
+8: 
+9:     public var errorDescription: String? {
+10:         switch self {
+11:         case .invalidTargetLux:
+12:             return "Enter a finite target illuminance of zero lux or more."
+13:         case .invalidLight:
+14:             return "The light's settings must be valid before adjusting its output."
+15:         case .unsupportedGeometry:
+16:             return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
+17:         case .outputOutOfRange:
+18:             return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
+19:         }
+20:     }
+28:     /// remain unchanged, and the light need not already belong to the scene.
+29:     /// Positive targets require a supported, nonzero contribution at one candela.
+30:     /// Zero explicitly turns the source off without requiring a photometric sample.
+31:     /// Invalid inputs and unrepresentable outputs throw; values are never clamped.
+32:     public static func light(_ source: StudioLight, targetingLux targetLux: Double,
+33:                              in scene: LightingScene) throws -> StudioLight {
+34:         guard targetLux.isFinite, targetLux >= 0 else {
+35:             throw LightOutputAdjustmentError.invalidTargetLux
+36:         }
+37:         guard source.isValid else { throw LightOutputAdjustmentError.invalidLight }
+38:         guard let scene = try? scene.validated() else {
+39:             throw LightOutputAdjustmentError.unsupportedGeometry
+40:         }
+41: 
+42:         var adjusted = source
+43:         if targetLux == 0 {
+44:             adjusted.candela = 0
+45:             return adjusted
+46:         }
+47: 
+48:         // Using a unit source also supports increasing a currently off light;
+49:         // scaling its existing zero contribution would be undefined.
+50:         adjusted.candela = 1
+51:         guard let unitLux = StudioPhotometry.illuminance(for: adjusted, in: scene),
+52:               unitLux.isFinite, unitLux > 0 else {
+53:             throw LightOutputAdjustmentError.unsupportedGeometry
+54:         }
+55: 
+
+1b286885cb803ba17e159713651515ab119e17f1:App/StudioView.swift
+973:                     Button("Set ideal lux", systemImage: "sun.max", action: sceneAction {
+974:                         guard scene.lights.contains(light) else { return }
+975:                         luxTarget = LuxTarget(light: light, scene: scene, generation: libraryOperation.generation)
+976:                     })
+977:                 } label: {
+978:                     Image(systemName: "ellipsis.circle").frame(width: 44, height: 44)
+979:                 }
+980:                 .accessibilityLabel("Light actions")
+981:                 .accessibilityIdentifier("lightActions")
+989:             VStack(alignment: .leading, spacing: 5) {
+990:                 Text("CAMERA-FACING PLANE · IDEAL").font(.caption2.weight(.medium)).foregroundStyle(StudioPalette.secondaryText)
+991:                 if let lux = StudioPhotometry.illuminance(for: light, in: scene) {
+992:                     Text(StudioMeterReadout.lux(lux, locale: locale))
+993:                         .font(.system(.title2, design: .monospaced).weight(.semibold))
+994:                         .accessibilityLabel("Ideal illuminance")
+995:                         .accessibilityValue(StudioNumericInput.formattedValue(lux, unit: "lx", locale: locale))
+996:                         .accessibilityIdentifier("idealLux")
+997:                     Text("Direct incident light at the subject center. Rim lights may read zero on this plane.")
+998:                         .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+999:                 } else {
+1000:                     Label("Estimate unavailable", systemImage: "exclamationmark.triangle")
+1001:                         .font(.subheadline.weight(.semibold)).accessibilityIdentifier("idealLux")
+1002:                     Text("Check the aim and separation of the emitter, subject and camera. Near-field geometry can fall outside the model.")
+1003:                         .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+1004:                 }
+1005:             }.frame(maxWidth: .infinity, alignment: .leading).padding(12)
+1006:                 .background(StudioPalette.selection.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+
+1b286885cb803ba17e159713651515ab119e17f1:App/StudioMeterReadout.swift
+1: import Foundation
+2: 
+3: /// Compact readouts keep sub-resolution light distinct from an exact zero.
+4: enum StudioMeterReadout {
+5:     static func candela(_ value: Double, locale: Locale) -> String {
+6:         formattedValue(value, unit: "cd", fractionDigits: 0, quantum: 1, locale: locale)
+7:     }
+8: 
+9:     static func lux(_ value: Double, locale: Locale) -> String {
+10:         formattedValue(value, unit: "lx", fractionDigits: 1, quantum: 0.1, locale: locale)
+11:     }
+12: 
+13:     private static func formattedValue(_ value: Double, unit: String, fractionDigits: Int,
+14:                                        quantum: Double, locale: Locale) -> String {
+15:         guard value.isFinite, value >= 0 else {
+16:             return String(localized: "Unavailable", locale: locale)
+17:         }
+18:         let style = FloatingPointFormatStyle<Double>.number
+19:             .precision(.fractionLength(fractionDigits))
+20:             .grouping(.never)
+21:             .locale(locale)
+22:         if value > 0, value < quantum {
+23:             return "<\(quantum.formatted(style)) \(unit)"
+24:         }
+25:         // Normalize negative zero so the zero readout has no misleading sign.
+26:         let displayValue = value == 0 ? 0.0 : value
+27:         return "\(displayValue.formatted(style)) \(unit)"
+28:     }
+29: }
+
+1b286885cb803ba17e159713651515ab119e17f1:App/LightTargetLuxView.swift
+27:                 Section("Target contribution") {
+28:                     Text(StudioDisplayName.label(light.name, fallback: "Selected light"))
+29:                         .font(.headline)
+30:                     if let current = StudioPhotometry.illuminance(for: light, in: scene) {
+31:                         LabeledContent("Current ideal illuminance",
+32:                                        value: StudioNumericInput.formattedValue(current, unit: "lx", locale: locale))
+33:                     }
+34:                     HStack {
+35:                         StudioTextField("Desired lux", text: boundedDraft, isFocused: $inputFocused,
+36:                             accessibility: .init(label: "Desired illuminance in lux", identifier: "targetLuxInput",
+37:                                 hint: "Enter zero to switch this light off."), keyboardType: .decimalPad)
+38:                         Text("lx").foregroundStyle(StudioPalette.secondaryText)
+39:                     }
+40:                     if !draft.isEmpty && target == nil {
+41:                         Text("Enter zero or a positive decimal number using up to 32 characters.")
+42:                             .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
+43:                     }
+44:                     if let value = target, let adjusted = try? LightOutputAdjustment.light(light, targetingLux: value, in: scene) {
+45:                         LabeledContent("Required intensity",
+46:                             value: StudioNumericInput.formattedValue(adjusted.candela, unit: "cd", locale: locale))
+47:                     }
+48:                 }
+49:                 Section {
+50:                     Text("The calculation uses this light alone on the ideal camera-facing plane at the subject center. It does not measure skin exposure, camera settings or a real fixture. Other lights are unchanged.")
+51:                         .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
+52:                     Text("A target of zero switches this source off. If the requested output exceeds the model's limits or the light cannot illuminate the plane, change the target or geometry.")
+53:                         .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
+54:                 }
+55:                 if let error {
+56:                     Section {
+57:                         Label(error, systemImage: "exclamationmark.triangle")
+58:                             .accessibilityIdentifier("targetLuxError")
+59:                     }
+60:                 }
+61:                 Section {
+62:                     Button { apply() } label: {
+63:                         Text("Apply to light")
+64:                             .fixedSize(horizontal: false, vertical: true)
+65:                             .frame(minWidth: 44, minHeight: 44)
+66:                             .contentShape(Rectangle())
+67:                     }
+68:                         .disabled(target == nil || rejectedOversizedDraft || didApply)
+69:                         .accessibilityIdentifier("applyTargetLux")
+70:                 }
+71:             }
+72:             .navigationTitle("Set ideal lux")
+86:                 }
+87:             }
+88:         }
+89:         .tint(StudioPalette.action)
+90:     }
+112:             // Set before the callback so reentrant or queued taps cannot
+113:             // create duplicate scene/history mutations during dismissal.
+114:             didApply = true
+115:             onApply(adjusted)
+116:             dismiss()
+117:         } catch {
+118:             self.error = error.localizedDescription
+119:         }
+120:     }
+121: }
+
+1b286885cb803ba17e159713651515ab119e17f1:Sources/LightingCore/StudioNumericInput.swift
+22:     /// characters. Localization changes symbols, never the numeric precision.
+23:     public static func formattedValue(_ value: Double, unit: String = "",
+24:                                       locale: Locale = .current) -> String {
+25:         guard value.isFinite else { return unit.isEmpty ? "Unavailable" : "Unavailable " + unit }
+26:         let source = decimalText(value, omitLeadingZeroWhenNeeded: false) ?? String(value)
+27:         let integerStyle = IntegerFormatStyle<Int>.number.grouping(.never).locale(locale)
+28:         let digits = (0...9).map { $0.formatted(integerStyle) }
+29:         let minus = (-1).formatted(integerStyle).replacingOccurrences(of: digits[1], with: "")
+30:         let number = source.map { character -> String in
+31:             if let digit = character.wholeNumberValue { return digits[digit] }
+32:             if character == "." { return locale.decimalSeparator ?? "." }
+33:             if character == "-" { return minus }
+34:             return String(character)
+35:         }.joined()
+36:         return unit.isEmpty ? number : number + " " + unit
+37:     }

@@ -1,0 +1,18 @@
+Working directory: /tmp/keyfill02-r2-workers/w03r08
+Immutable source revision: 1b286885cb803ba17e159713651515ab119e17f1
+
+git status --short
+cat /tmp/keyfill02-r2-brief.md
+cat AGENTS.md docs/QUALITY.md docs/ARCHITECTURE.md
+sed -n '37,49p' docs/parallel/02/WAVE-TASKS.md
+python3 private-output/source_check.py > private-output/execution.log
+
+The reproducible source check invokes git show REV:PATH for each of the seven
+paths declared in source_check.py. It saves their exact SHA-256 hashes in
+source-manifest.json and numbered bounded excerpts in source-excerpts.txt.
+It writes results.json and independent scalar expectations to
+scalar-references.json. No Swift runtime or UI is executed.
+
+cat private-output/execution.log
+git rev-parse HEAD
+git status --short

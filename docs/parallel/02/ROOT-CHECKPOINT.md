@@ -55,3 +55,30 @@ Simulator build failed existing UITests/StudioAppAccessibilityUITests.swift:95
 ambiguous greatestFiniteMagnitude from f150; this is main's b0d25ee fix and is
 outside lane02ownership. Original failure excerpts retained, no AppleUI pass.
 Current source changes require their own validation; no automatic carryforward.
+
+## Restored-execution checkpoint
+
+Verified remote47de6afe6afe24a7822f4276950f70bd3db9f57d preserves completed
+wave02. There are26completed actual contexts and29created (wave03R07–09
+active); six-of-ten wave03 checkpoint is persisted. No planned worker is counted.
+Root schedules wave03 directly; future R01 acceptance workers may coordinate
+nine children, max two active, to keep four total contexts and bounded root
+context. All remain fresh and isolated. Coordinator helper writes only its own
+private ledger, root harvests into the campaign ledger. Exact token accounting
+is unavailable; working targets and60% role checkpoints are operational limits.
+
+Restored repo/tmp/keyfill02-r2, toolchain/tmp/keyfill02-r2-toolchain, private
+build/tmp/keyfill02-r2-build, immutablev1 module/tmp/keyfill02-r2-snapshots/v1
+(source1b28688, same production as58b3). Worker trees/tmp/keyfill02-r2-workers.
+Helpers/tmp/keyfill02-r2-{state,harvest,team-record,probe,publish}.py. Build/probe
+lock/tmp/keyfill02-r2-build.lock. At latest measurement/tmp2.3GiBfree and RAM
+3.7GiBavailable; packagejobs1. No shared/other-lane cleanup.
+
+One reviewed directional regression integrated (actual24lx from independent
+1250/25*(3/5)*(4/5)); targeted package XCTest passed1/1. Production unchanged.
+Official8-temperature CIE1nm comparison is now complete, max Euclideanxy error
+0.01539329771842178 at1000K; old component-based maxima are historical.
+Current source CIcore374Debug/374Release passes; simulator/app-accessibility
+failed inherited ambiguity in UITests. Original excerpts retained.
+Lane01 contract966c9c21 inspected; no signature/schema change required; route
+admission remains lane01's pending work. Consumer requests updated.
