@@ -1,5 +1,9 @@
 # Key & Fill lane 04 parity and precision evidence
 
+> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
+
+> **Post-campaign evidence update:** source7 native job140034909086 recorded178 passing methods and exact accounting, including all four added tests, actual Metal6/8 and19 CPU payload observations. The18-minute command timeout and unfinalized XCTest export make the job a failure. Native-only retry140103955982 was queued at18:29:38 UTC; no retry result is inferred. Owner03's original hosted AX observer has since failed, and its corrected pixel observer remains Apple-unverified. Earlier queued/unrun statements below are retained historical observations. See [HANDOFF](HANDOFF.md), [CI_MANIFEST](CI_MANIFEST.json) and [OWNER_REQUESTS](OWNER_REQUESTS.md).
+
 ## Scope and reading rules
 
 Updated by the same worker 074 after the initial wave 8 freeze against input `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, baseline `f150f98e35dd735927075aac4d2f8b02295c6a67`. The authoritative role packet is blob `7e17185f497cc4f85d54b44b87b0128e2b01d60c`; table schema is blob `a10154e1b24b0428df4abbd92af62a9044d688d4`. This document extracts retained execution; it does not report a new test run.
@@ -245,3 +249,30 @@ The read-only owner refresh at **2026-11-26 16:35:58 UTC** found lane 03 at `92d
 Lane 04's tested preview still has the earlier shortcut; the owner 03 remedy is not integrated here. The earlier owner-status paragraphs describe the wave 8 freeze and the historical w057 proposal. The current remaining work is **integration and execution**, rather than absence of a remedy in owner 03 source. The hosted assertions observe accessibility/current-status/backend/warning state; pipeline tests separately observe converted bytes and the source assigns a single paired Frame. Independent inspection of displayed CGImage bytes is a bounded coverage limit, not a newly demonstrated defect or additional mandatory gate.
 
 Owner 03's CPU oracle also changed tiny-output integration/packing construction (blob `82e54a53f3d32d745aee1edfa297086504fb81ec`). It retains the six-parameter/three-sample/three-area float4 layout and original sample-intensity meaning. These tables execute lane 04's older oracle, so they do not establish parity of the combined revision. Lane 20 must retain lane 04's engine, width-aware eligibility and guarded shared header while integrating owner 03's oracle/consumer/test, then repeat the relevant CPU, host, native parity and adoption checks. The immutable owner comparison is blob `55bb057aecbca8210673c3f2ae85b8323bff86fb`; retained owner evidence is blob `405b9246dfc00cee189229424ed9d9fbb7bf4e7b`.
+
+## Source7 actual Metal assertions inside the failed native attempt
+
+Source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, run45854806270, attempt1/native job140034909086 executed all178 methods:178 starts/178 passes,29 cache methods,zero failures/skips. The following14 rows are actual simulator Metal outputs from the completed methods. They retain the existing mean≤1, >4 outlier fraction≤0.005 and exact-mask acceptance; strict8 additionally requires max≤1. The post-test command timed out at18minutes and the XCTest bundle was not finalized, so **the job and finalized-export gate failed**. The standalone178-method accounting step succeeded; the inline post-xcodebuild Metal guard was not reached. These per-method observations do not establish a successful native job or finalized attachments. [Raw log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json).
+
+| Matrix | Fixture | Grid | Emitted mean channel error | Max | Emitted >4 fraction | Mask basis | Invalid/mismatch counts | Raw line |
+|---|---|---|---:|---:|---:|---|---|---:|
+| Canonical6 | hard | 96×64 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5640 |
+| Canonical6 | soft | 96×64 | 5.425347222222222e-05 | 1 | 0.0 | Exact equality asserted | NR | 5644 |
+| Canonical6 | warm-rotated | 96×64 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5645 |
+| Canonical6 | dark | 96×64 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5646 |
+| Canonical6 | near-field | 96×64 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5647 |
+| Canonical6 | translated | 96×64 | 5.425347222222222e-05 | 1 | 0.0 | Exact equality asserted | NR | 5648 |
+| Strict8 | area-camera-19.0-lens-85 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5499 |
+| Strict8 | area-camera-19.0-lens-200 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5500 |
+| Strict8 | area-camera-19.999999-lens-85 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5501 |
+| Strict8 | area-camera-19.999999-lens-200 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5502 |
+| Strict8 | area-camera-20.0-lens-85 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5503 |
+| Strict8 | area-camera-20.0-lens-200 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5504 |
+| Strict8 | world-translation-77 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5505 |
+| Strict8 | world-translation--77 | 192×128 | 0.0 | 0 | 0.0 | Exact equality asserted | NR | 5506 |
+
+Native invalid and mismatch counts remain **NR** because they were not printed. Canonical `invalid match true` alone establishes count equality; exact masks follow from the containing passing `metrics.passes` assertions. Strict rows additionally have passing exact Data equality and max≤1 assertions. These validation methods dispatch actual Metal through the fixture entry point and do not establish production eligibility for every fixture. The33-probe generator still selects8 strict cases; no result is invented for the other25.
+
+All14 current emitted metric values match the separately retained source6 native emissions. This is a numerical comparison, not a performance improvement claim or a replacement for source6's normal command/finalized-bundle evidence. Native-only retry2/job140103955982 uses the same source/gates and was queued at18:29:38 UTC. Its outcome must be recorded separately. [Retry receipt](evidence/ci/wave07-native-attempt2-initial.json).
+
+The final owner refresh at18:14:50 UTC pins03 head `6f93f95c817d2bd230ae93554dea25a174a437f8`: preview/oracle unchanged, original hosted AX observer failed at source342, current pixel-observer correction pending Apple verification. It removes AX badge/warning assertions. Older03 renderer/header/eligibility still differ from04; combined parity/adoption gates remain open. [Refresh receipt](evidence/w097/final-owner-refresh-receipts.json).

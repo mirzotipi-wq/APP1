@@ -1,5 +1,9 @@
 # Owner integration snapshot — 26 November 2026
 
+> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
+
+> **Latest owner evidence:** the18:14:50 UTC refresh pins03 head6f93f95c817d2bd230ae93554dea25a174a437f8. Preview/oracle are unchanged. Original hosted AX observation failed at source342 before scene switches; the current pixel-observer correction remains Apple-unverified and removes AX badge/warning assertions. Older03 engine/header/eligibility still require deliberate integration with04. The history below is retained; [OWNER_REQUESTS](OWNER_REQUESTS.md) and [the refresh receipt](evidence/w097/final-owner-refresh-receipts.json) give the current scope.
+
 This is a read-only compatibility inspection at 14:08 UTC, not an acknowledgment from another lane and not a merge of their changes. Lane04 remains based on the campaign f150f98 plus the existing main dependency already recorded.
 
 | Lane | Observed branch revision | Relevant finding |

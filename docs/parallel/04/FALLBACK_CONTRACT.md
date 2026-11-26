@@ -1,5 +1,9 @@
 # Study fallback and frame-adoption contract
 
+> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
+
+> **Post-campaign evidence update:** source7 native job140034909086 recorded178 passing methods and exact accounting, including all four added tests, actual Metal6/8 and19 CPU payload observations. The18-minute command timeout and unfinalized XCTest export make the job a failure. Native-only retry140103955982 was queued at18:29:38 UTC; no retry result is inferred. Owner03's original hosted AX observer has since failed, and its corrected pixel observer remains Apple-unverified. Earlier queued/unrun statements below are retained historical observations. See [HANDOFF](HANDOFF.md), [CI_MANIFEST](CI_MANIFEST.json) and [OWNER_REQUESTS](OWNER_REQUESTS.md).
+
 ## Scope and authority
 
 This document describes the implementation at source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, read from documentation input `53d7302931ccaadd7a2ad29c55fd94a695c5997e`. Campaign baseline is `f150f98e35dd735927075aac4d2f8b02295c6a67`. It adds no source change, test result or release acceptance. The shipped Double CPU renderer remains the numerical reference. [Code acceptance](../../acceptance/m02-m03-code.md), [parity tables](PARITY_TABLES.md) and [fixture reproducibility](PRECISION_REPRODUCIBILITY.md) retain the unchanged gates and execution provenance.

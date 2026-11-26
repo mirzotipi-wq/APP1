@@ -1,5 +1,9 @@
 # Precision fixture reproducibility
 
+> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
+
+> **Post-campaign evidence update:** source7 native job140034909086 recorded178 passing methods and exact accounting, including all four added tests, actual Metal6/8 and19 CPU payload observations. The18-minute command timeout and unfinalized XCTest export make the job a failure. Native-only retry140103955982 was queued at18:29:38 UTC; no retry result is inferred. Owner03's original hosted AX observer has since failed, and its corrected pixel observer remains Apple-unverified. Earlier queued/unrun statements below are retained historical observations. See [HANDOFF](HANDOFF.md), [CI_MANIFEST](CI_MANIFEST.json) and [OWNER_REQUESTS](OWNER_REQUESTS.md).
+
 This catalog freezes constructors and evidence at input `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`. It adds no tests, harness, tolerances or runtime result. [precision-fixtures.json](precision-fixtures.json) contains exact expressions, Git blob identities, selected source blocks, recorded commands and evidence IDs. [PARITY_TABLES.md](PARITY_TABLES.md) owns the detailed per-case numerical tables.
 
 ## Evidence and execution boundary
@@ -109,3 +113,19 @@ The read-only owner refresh at **2026-11-26 16:35:58 UTC** found lane 03 at `92d
 Lane 04's tested preview still has the earlier shortcut; the owner 03 remedy is not integrated here. The earlier owner-status paragraphs describe the wave 8 freeze and the historical w057 proposal. The current remaining work is **integration and execution**, rather than absence of a remedy in owner 03 source. The hosted assertions observe accessibility/current-status/backend/warning state; pipeline tests separately observe converted bytes and the source assigns a single paired Frame. Independent inspection of displayed CGImage bytes is a bounded coverage limit, not a newly demonstrated defect or additional mandatory gate.
 
 Owner 03's CPU oracle also changed tiny-output integration/packing construction (blob `82e54a53f3d32d745aee1edfa297086504fb81ec`). It retains the six-parameter/three-sample/three-area float4 layout and original sample-intensity meaning. These tables execute lane 04's older oracle, so they do not establish parity of the combined revision. Lane 20 must retain lane 04's engine, width-aware eligibility and guarded shared header while integrating owner 03's oracle/consumer/test, then repeat the relevant CPU, host, native parity and adoption checks. The immutable owner comparison is blob `55bb057aecbca8210673c3f2ae85b8323bff86fb`; retained owner evidence is blob `405b9246dfc00cee189229424ed9d9fbb7bf4e7b`.
+
+## Post-campaign current-source execution and failed finalization
+
+Source7 `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, native job140034909086 in run45854806270 attempt1, compiled the Debug app/native bundle and Release app and executed178 methods, including29 cache methods and all4 additions. Every method has one start/one pass;0 failures/skips/duplicates/omissions. Actual Metal canonical6/strict8 assertions and19 actual CPU payload rows are retained. The command reached the18-minute workflow limit after tests passed; the result bundle lacked finalization and export failed. The standalone accounting step passed. The inline Metal guard after xcodebuild was not reached; a source echo is not an executed guard. Warm-up also exited1. [Raw log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json), [complete manifest](CI_MANIFEST.json).
+
+Exact recorded test invocation for that simulator execution:
+
+~~~sh
+/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO "-only-testing:KeyAndFillTests" test-without-building
+~~~
+
+The18-minute limit belongs to unchanged workflow blob `55e68ee810a4dbe72cd8bd5c4aba295958f80d7c`, outside that command line. The recorded simulator UUID and runner paths describe this execution; they are not portable device identifiers. Job outcome is **failure**, not a normal test-command completion. Source6's successful command/export remains separately pinned. Release native execution, physical-device behavior and memory/latency instrumentation remain unperformed.
+
+One native-only retry was accepted on the same source: attempt2 job140103955982, queued at18:29:38 UTC. No source, test inventory, threshold, timeout or harness change accompanied it. [Request](evidence/ci/wave07-native-retry-request.json), [initial retry state](evidence/ci/wave07-native-attempt2-initial.json). The API's copied core/UI attempt envelopes are not new executions.
+
+Owner03's final retained head is `6f93f95c817d2bd230ae93554dea25a174a437f8`. Preview/oracle are unchanged from the prior refresh. Its original hosted AX observer compiled/executed at source342 and failed before scene switching; its corrected pixel observer `f65004c8b7ca86248a163c80b9d7a3c02dabf20e` remains Apple-unverified and removes AX badge/warning assertions. Hook-only before/fail and combined03/20 gates remain open. These changes alter no fixture constructor or lane04 source hash in this catalog. [Owner refresh](evidence/w097/final-owner-refresh-receipts.json).

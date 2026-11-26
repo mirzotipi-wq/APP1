@@ -1,0 +1,81 @@
+# Owner requests — lane 04 final wave
+
+> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
+
+## Scope and retained owner state
+
+This handoff is updated from documentation checkpoint `789a00e12dade890d9168cda802029db1e507366`, product/test source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, and campaign baseline `f150f98e35dd735927075aac4d2f8b02295c6a67`. The prior canonical document is preserved as [OWNER_REQUESTS.before-native7.md](evidence/root/OWNER_REQUESTS.before-native7.md); earlier requests and the w057 proposal remain historical.
+
+The latest bounded owner refresh, **2026-11-26 18:14:50 UTC**, pins owner02 at unchanged `b5c1f008446f8b33f3ee97f8fefe6675058ef347` and owner03 at `6f93f95c817d2bd230ae93554dea25a174a437f8`. Owner03's preview `999b590b7eaad2bed75d417690856004300568b2` and oracle `82e54a53f3d32d745aee1edfa297086504fb81ec` are unchanged from the16:35 refresh. Its hosted test changed from `c514f15cf000538f56d7653b7b30d85d451442ad` to `f65004c8b7ca86248a163c80b9d7a3c02dabf20e`.
+
+The retained owner03 source342 receipt reports successful Debug app/native-bundle and Release app builds, **165 native methods started,164 passed,one failed,zero skipped**. The original hosted method failed its first AX positive control before scene switches; no production preview defect is inferred from that observer failure. The corrected test uses a pixel observer and remains Apple-unverified in the inspected owned receipts. It no longer asserts AX backend badges or warning labels. Hook-only original before/fail and combined03/20 execution remain open. These are pinned reads, not live owner-CI polling, acknowledgment or a merged pass. [Final refresh receipt](evidence/w097/final-owner-refresh-receipts.json), [refresh report](evidence/w097/final-owner-refresh-report.md), [owner failure receipt][owner-failure], [current owned handoff][owner-handoff].
+
+## Precise owner routes
+
+| Owner | Requested action and boundary | Evidence required for closure |
+| --- | --- | --- |
+| **02 — photometry/color** | Review combined numerical behavior with03/04. Coordinate sample order, color, camera-basis and area metadata changes before integration. Retain the separate positive-tiny-output Float32 quantization policy request as an owner decision; the reviewed source comparison established no new eligible-frame RGB/mask mismatch. | Combined-revision CPU, canonical-six and strict-eight results at the existing thresholds. A source-level policy concern is not a measured failure. |
+| **03 — CPU oracle/preview** | Supply the existing ticket/reconsultation remedy, current pixel-observer test correction and tiny-output oracle work to20. Preserve guarded adoption and paired image/backend/warning/error behavior. The preview/oracle implementation is unchanged in the latest refresh. | Apple compile and runtime of the current corrected hosted test, plus the hook-only before/fail comparison and existing pipeline checks. Preserve the original AX-observer failure separately. The corrected pixel test supplies no AX badge/warning assertion coverage. |
+| **01 — shared composition** | Retain ordinary scene/subject call sites and shared scene admission. Any schema byte bound or validated-scene optimization belongs here; cache-name omission must not bypass full validation. Preserve the inherited native UI measurement correction and unrelated composition work. | Source compatibility of the combined app and relevant shared workflow checks. Global state is not promoted by lane04 evidence. |
+| **19 — harness/CI** | Diagnose source69 native command startup/finalization: all178 methods passed, but the18-minute command gate timed out and the result bundle did not finalize. One unchanged native-only retry is pending. Retain normal command completion, finalization, discovery and exact terminal accounting. Separately validate host fixture metadata at the parser boundary. | Exact source, command, toolchain, method inventory, failed and successful attempt receipts, normal command result and finalized artifact. Metadata negatives/UBSan where available must preserve masks and thresholds. Accounting success alone does not establish a passing native job. |
+| **20 — integration** | Combine03 oracle/consumer/test with04 engine, width-aware eligibility and guarded header. Resolve overlapping files deliberately; do not replace04 implementations wholesale with older02/03 copies. Preserve imported upstream fixes and original evidence. | Rerun affected CPU, host, actual-Metal, lifecycle/cache and adoption gates on the actual combined revision. Own final global milestone decisions and publication; root alone integrates this lane. |
+
+These are requests and responsibilities, not messages sent to other owners. [Owner integration history](OWNER_INTEGRATION.md) retains earlier observations without converting them into acknowledgments.
+
+## API compatibility and unchanged lane04 contracts
+
+| Surface | Compatibility contract |
+| --- | --- |
+| Engine construction | `StudyRenderEngine()` remains valid; `shared` uses the ordinary initializer and real default-device Metal construction. Optional `cancellationRequested` is additive and ORed with task cancellation. |
+| Rendering | `render(scene:width:subject:)` retains width192 and sphere defaults, returns `StudyRenderedFrame` and preserves throwing behavior. External actor callers await it; the actor method itself has no suspension. |
+| Eligibility | Both `MetalStudyRenderer.supports(scene)` and `StudyFloat32Eligibility.supports(scene)` retain the width192 compatibility overload. Production rendering uses `supports(scene,width:)` with its actual grid; merge engine and helper together. |
+| Backend injection | The factory initializer is opt-in. It must return a fresh backend for exclusive actor use. Synchronous methods alone do not enforce exclusive ownership; the seam does not turn ordinary app rendering into a mock. |
+| Preview | `ReferenceStudyPreview(scene:subject:)` remains the ordinary call shape. Owner03's optional internal `renderStudy` closure defaults to `StudyRenderEngine.shared`; source compatibility still needs the combined Apple build. |
+| CPU/packed ABI | Lane04 leaves `ReferenceStudy.swift`, `ReferenceStudy.metal` and packed row meaning unchanged. Parameters remain six float4 rows; each sample and area uses three float4 rows, stride16 bytes. Sample position/candela, emitting normal/presence and XYZ/zero-or-one-based area tag keep their meanings. |
+
+The Double CPU renderer remains authoritative. Exact invalid-mask equality is required; canonical-six mean RGB-channel error stays ≤1 and fraction of channels with error>4 stays ≤0.005; strict-eight additionally requires maximum channel error≤1. Per-engine cache bounds remain four frames,262144 RGBA bytes and65536 mask bytes; mannequin CPU width remains≤144. A per-request CPU route does not by itself mean permanent downgrade. Generic injected `CancellationError` currently enters catch-all downgrade; production backend cancellation uses `StudyError.cancelled`. [Engine](../../../App/MetalStudyRenderer.swift), [eligibility](../../../Sources/LightingCore/StudyFloat32Eligibility.swift), [fallback contract](FALLBACK_CONTRACT.md), [code acceptance](../../acceptance/m02-m03-code.md).
+
+Owner03's oracle `82e54a53f3d32d745aee1edfa297086504fb81ec` differs from lane04's `0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad`: tiny-output unit-intensity integration restores emitter output once; packing restores per-sample candela before Float conversion. This changes construction arithmetic, while six/three/three row layout and intensity meaning remain. Very small values can still become Float32 zero. Its early CPU setup cancellation check also changes. Lane04's previous oracle results therefore cannot establish combined parity. Owner20 must retain these lane04 blobs while resolving the merge:
+
+| Required lane04 implementation | Git blob |
+| --- | --- |
+| `App/MetalStudyRenderer.swift` | `8c1acd852d85cd99671feaba883db1808bbb5e68` |
+| `Sources/LightingCore/StudyFloat32Eligibility.swift` | `e9764da10eabbffbad6ceee8999977cf31deb197` |
+| `App/StudyKernel.h` | `f60258402a96f58b62607d5cefec5e41c7ec4137` |
+
+Owner02/03 retain older renderer/header implementations. The newer04 header guards dimensions, sample/area counts, grid and finite integer area tags before conversion; these are validation changes, not ABI changes. [Source manifest](evidence/root/final-source-hashes.json), [owner comparison](evidence/w083/source-review.v1.json).
+
+## Preview adoption and remaining verification
+
+The lane04 sequence remains source-reachable: A displays Metal; B confirms permanent backend failure and is cancelled; returning to A can reuse a view-held frame without consulting the now-CPU engine. Engine cache eviction cannot revoke UI-held copies. This is an adoption/current-status gap; the evidence does not establish corrupt pixels or engine-cache leakage.
+
+Owner03 preview `999b590b7eaad2bed75d417690856004300568b2` requires request **and** active-ticket identity and removes the successful-frame shortcut. Each request that proceeds through debounce reconsults the engine. Cancellation/generation checks surround rendering and conversion, and one Frame assignment pairs image/backend/warning state. Retained pixels remain previous/updating or paused until the new ticket is adopted. That source is unchanged in the final refresh. [Current preview][owner-preview].
+
+The original hosted test `c514f15cf000538f56d7653b7b30d85d451442ad` executed at source `342e3280e3eb077d55e122c8bfb88b4062b431ed`, run45857561126/native job140042273149. Its first positive AX control timed out with `identifiers=[]`; two assertion failures belong to one failed method. The A→B→A transition assertions were never reached. The owner receipt records164 other passes,zero skips and all ten existing pipeline methods passing. This is a failed hosted observer run, not a pass, a completed before/fail comparison or evidence of a production preview defect. The refresh read the committed terminal receipt and handoff, not the compressed raw archive. [Failure receipt][owner-failure].
+
+The current test `f65004c8b7ca86248a163c80b9d7a3c02dabf20e` at pinned head `6f93f95c817d2bd230ae93554dea25a174a437f8` replaces the AX hierarchy observer with public UIKit `drawHierarchy` center-pixel sampling. It expects gray32 for initial and held A, then gray160 for the replacement, with alpha255 and RGB tolerance2. It retains one host, two A calls, one B call, a synthetic renderer and explicit continuations. It **does not retain AX status/backend-badge/warning assertions**. The held-frame pixel sample is one checkpoint; it establishes neither continuous visibility nor drained B cancellation. [Current hosted source][owner-hosted].
+
+The corrected observer is source-only evidence here. The owned handoff names corrected-test source `dbbc264fde91bfb04a1e82fbebdf2f8d5792d761`, run45868801497/native job140080474886 as queued in its retained snapshot; this lane did not poll that run. Current Apple compile/runtime and original hook-only before/fail remain unverified. Synthetic hosted output does not execute real Metal or cause a real engine failure; separate lane04 engine tests cover those transitions. Paired Frame storage and existing pipeline checks remain distinct from hosted AX observation.
+
+The [historical w057 proposal](evidence/w057/owner-proposal.md) and [patch](evidence/w057/owner-preview-adoption.patch) stay unapplied/uncompiled history at their original target. Use the newer owner03 source for integration, preserve the original failure and corrected observer as separate revisions, and rerun combined gates. No new mandatory displayed-pixel or AX test gate is invented by this review.
+
+## Harness metadata recommendation and evidence limits
+
+The current [host parser](../../../scripts/verify-kernel-host.cpp) checks finite input floats, bounded dimensions, row counts, sample/area count agreement, reference length and exact invalid-mask outcomes. It does not independently validate grid/tag semantics or every contiguous area group before dispatch. The guarded04 header already rejects an invalid grid and nonfinite/nonintegral/out-of-range area tags before the relevant casts. The older request must not be read as proof that current04 still performs those unchecked conversions.
+
+Owner19 should reject malformed metadata at the parser boundary: require grid8; require every sample tag to be integer zero or a valid one-based area index; validate that each rectangle consumes a complete contiguous64-sample group with consistent area metadata and sufficient rows. Retain truncated/trailing-input checks and test negative, nonintegral, huge, out-of-range and inconsistent-group cases under a suitable sanitizer. This is a harness-validation recommendation; no UBSan execution or demonstrated production-packer defect is claimed. Production `StudyComputeInput` remains immutable and validated.
+
+For combined verification, retain Debug/Release core tests; canonical-six and strict-eight host checks; actual simulator Metal parity/precision and raw-metadata dispatch; lifecycle/cache/error-ordering tests; and03's pipeline/hosted adoption checks with complete native accounting. The strict generator emits33 fixtures but selects8; it supplies no pass for the25 unselected probes.
+
+Source6 run45848953002/native140012314020 remains the normal completed174-method native job with finalized export. Source7 `69eb9c5`, run45854806270/native140034909086, recorded **178 starts and178 passes,29 cache methods,zero failures/skips**, actual simulator Metal6/8 and19 CPU payload rows. Both app builds and standalone method accounting passed. The command then exceeded18 minutes and the bundle remained unfinalized; job and export failed. The post-xcodebuild inline Metal guard was not reached; its echoed source is not execution. Warm-up diagnostic exit1 is also retained. [Actual failed-attempt log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json).
+
+Root requested one rerun of only that native job, preserving all first-attempt evidence at commit `789a00e12dade890d9168cda802029db1e507366`. Retry job140103955982, same run/source, was queued at18:29:38 UTC. Source, thresholds, test inventory,18-minute gate and shared configuration are unchanged. Other failed workflow outcomes remain retained; no whole-workflow success is claimed. API attempt2 envelopes for completed core/UI outcomes are not credited as new executions. [Retry request](evidence/ci/wave07-native-retry-request.json), [initial retry receipt](evidence/ci/wave07-native-attempt2-initial.json), [CI manifest](CI_MANIFEST.json), [parity tables](PARITY_TABLES.md), [precision reproducibility](PRECISION_REPRODUCIBILITY.md).
+
+The bounded owner refresh used pinned Git reads and did not poll owner CI, execute locally, send external owner messages or change owner source/configuration. Root separately monitors this lane's native job and publishes its documentation. Physical worker/result paths remain uncreated. CPU payload counters, weak-object/mock tests, host math, simulator Metal and unmeasured driver/RSS quantities remain separate. [Handoff](HANDOFF.md), [resource results](RESOURCE_RESULTS.md).
+
+[owner-preview]: https://github.com/mirzotipi-wq/APP1/blob/6f93f95c817d2bd230ae93554dea25a174a437f8/App/ReferenceStudyPreview.swift
+[owner-hosted]: https://github.com/mirzotipi-wq/APP1/blob/6f93f95c817d2bd230ae93554dea25a174a437f8/NativeTests/StudyPreviewAdoptionTests.swift
+[owner-inputs]: https://github.com/mirzotipi-wq/APP1/blob/6f93f95c817d2bd230ae93554dea25a174a437f8/docs/parallel/03/evidence/preview-adoption-inputs.json
+
+[owner-handoff]: https://github.com/mirzotipi-wq/APP1/blob/6f93f95c817d2bd230ae93554dea25a174a437f8/docs/parallel/03/HANDOFF.md
+[owner-failure]: https://github.com/mirzotipi-wq/APP1/blob/6f93f95c817d2bd230ae93554dea25a174a437f8/docs/parallel/03/evidence/ci-native-342-failure.json
