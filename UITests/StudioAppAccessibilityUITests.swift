@@ -92,7 +92,8 @@ final class StudioAppAccessibilityUITests: XCTestCase {
             // glyph box at accessibility sizes. Measure the same font without
             // wrapping; keep the separate width-constrained minimum-fit check.
             let singleLine = (title as NSString).boundingRect(
-                with: CGSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude),
+                with: CGSize(width: CGFloat.greatestFiniteMagnitude,
+                             height: CGFloat.greatestFiniteMagnitude),
                 options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
             let scale = UIScreen.main.scale
             XCTAssertLessThanOrEqual((frame.height * scale).rounded(), ceil(singleLine.height * scale),

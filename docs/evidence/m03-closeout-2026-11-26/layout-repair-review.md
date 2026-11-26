@@ -1,6 +1,6 @@
 # Reviewed layout and fixture repair
 
-This follow-up responds to actual source `9faebc529ff434feef8995d0a565d2ee04e98c13` evidence in [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392). It is a prepared source change at this checkpoint; fresh Apple execution and original screenshot review remain required.
+This follow-up responds to actual source `9faebc529ff434feef8995d0a565d2ee04e98c13` evidence in [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392). The five-file change is published as [`f150f98`](https://github.com/mirzotipi-wq/APP1/commit/f150f98e35dd735927075aac4d2f8b02295c6a67) and is executing in [run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256); fresh Apple execution and original screenshot review remain required.
 
 ## Observed failures and decisions
 
