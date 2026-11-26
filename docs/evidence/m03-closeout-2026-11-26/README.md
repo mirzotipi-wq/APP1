@@ -26,6 +26,10 @@ Integrated source **`9faebc529ff434feef8995d0a565d2ee04e98c13`** is published on
 
 These are Linux results, not Apple runtime passes. [The input manifest](source-manifest.json) records 197 committed source inputs; [local results](integrated-local/summary.json) distinguish working-source execution from the separately reviewed workflow-only retention change. Earlier 365-test evidence in `boundary-corrections` is a prior local checkpoint; final 366-test results include the cardinal regression.
 
+## Current portable CI
+
+The integrated [core job](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392/job/139828554548) passed all 366 Debug, 366 Release and 100 tooling tests. Independent review verified both original artifact digests, all twelve image bytes against the retained reviewed originals, all six kernel/eight precision fixtures, every benchmark percentile and all twelve cancellation outcomes. Actual ext4 EFBIG, before/after-rename interruption and rename-EIO evidence preserves the required bytes and identities. The [current receipt](source-9fa-core/report.json) identifies the host, exact source and raw evidence. Root separately recomputed both archive hashes and all twelve image comparisons. This refreshes M02 code acceptance; Apple native/UI acceptance remains pending.
+
 ## Required integrated execution
 
 [The exact inventory](required-execution.json) requires **154 native methods, 35 UI methods and 26 original PNGs**. Every required method must have exactly one ordered start/pass pair, with no failures, skips, duplicates or omissions. The ten optics methods are ten repeatability runs of the shared width-editing workflow, not ten different optical operations. The original 24 Default/AXXXL screenshots remain required; two Camera-selection states are added. Each image must be recovered, hash-verified and actually reviewed. The two opt-in platform-audit methods remain separate.

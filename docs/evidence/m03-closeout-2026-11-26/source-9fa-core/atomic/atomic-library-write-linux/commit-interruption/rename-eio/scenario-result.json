@@ -1,0 +1,188 @@
+{
+  "checks": {
+    "activeIdentityPreserved": true,
+    "actualSaveThrew": true,
+    "exactExpectedBytesPreserved": true,
+    "exactTargetRenameWitnessed": true,
+    "freshProcessReopenSucceeded": true,
+    "ownedGroupCleaned": true,
+    "priorCompleteSnapshotPreserved": true,
+    "unrelatedRecordsPreserved": true,
+    "unrestrictedControlCandidateReopened": true,
+    "unrestrictedControlExactCandidateBytes": true,
+    "unrestrictedSetupAndControlSucceeded": true,
+    "witnessedRenameReturnedEIO": true
+  },
+  "directory": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+  "files": {
+    "after.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    },
+    "candidate.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "control/projects.json": {
+      "bytes": 242569,
+      "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+    },
+    "library/projects.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    },
+    "prior.json": {
+      "bytes": 3900,
+      "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+    }
+  },
+  "injection": {
+    "arguments": [
+      "/tmp/atomic-library-write-build-ysyflcuu/atomic-library-write-probe",
+      "save",
+      "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+    ],
+    "elapsedSeconds": 0.032,
+    "environmentOverrides": {
+      "KF_COMMIT_MODE": "rename-eio",
+      "KF_COMMIT_TARGET": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+      "KF_COMMIT_WITNESS_FD": "4",
+      "LD_PRELOAD": "/proc/self/fd/5"
+    },
+    "events": [
+      {
+        "api": "renameat",
+        "destinationArgument": "projects.json",
+        "destinationDirFD": 3,
+        "hit": 1,
+        "hookState": "rejected",
+        "mode": "rename-eio",
+        "pid": 3297,
+        "realRenameCalled": false,
+        "realReturnCode": null,
+        "returnedErrno": 5,
+        "schemaVersion": 1,
+        "sourceArgument": ".dat.nosyncCE1.RSw2ex",
+        "sourceDirFD": 3,
+        "targetMatched": true,
+        "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json"
+      }
+    ],
+    "finalReturnCode": 0,
+    "hookCount": 1,
+    "hookWitnessed": true,
+    "interposerPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/probe-library-commit-interposer.so",
+    "mode": "rename-eio",
+    "observed": {
+      "errorChain": [
+        {
+          "code": 512,
+          "description": "The operation could not be completed. (NSCocoaErrorDomain error 512.)",
+          "domain": "NSCocoaErrorDomain"
+        }
+      ],
+      "phase": "save",
+      "posixErrnoImmediatelyAfterSave": 5,
+      "posixErrnoResetBeforeSave": true,
+      "status": "save_threw",
+      "writeAttempted": true
+    },
+    "ownedGroupCleanupComplete": true,
+    "processGroupID": 3297,
+    "returnCode": 0,
+    "status": "observed",
+    "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json"
+  },
+  "mode": "rename-eio",
+  "phases": [
+    {
+      "arguments": [
+        "/tmp/atomic-library-write-build-ysyflcuu/atomic-library-write-probe",
+        "setup",
+        "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+      ],
+      "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "candidateBytes": 242569,
+        "candidateProjects": 64,
+        "candidateValidated": true,
+        "fileLimitBytes": 32768,
+        "fixtureByteCeiling": 1048576,
+        "initialReopenMatchesPrior": true,
+        "libraryByteLimit": 8388608,
+        "phase": "setup",
+        "priorBytes": 3900,
+        "priorProjects": 3,
+        "status": "setup_complete"
+      },
+      "processGroupID": 3295,
+      "returnCode": 0,
+      "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/setup.stderr.log",
+      "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/setup.stdout.log",
+      "timeoutSeconds": 30
+    },
+    {
+      "arguments": [
+        "/tmp/atomic-library-write-build-ysyflcuu/atomic-library-write-probe",
+        "control",
+        "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+      ],
+      "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "phase": "control",
+        "saveReturnedNormally": true,
+        "status": "control_saved"
+      },
+      "processGroupID": 3296,
+      "returnCode": 0,
+      "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control.stderr.log",
+      "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control.stdout.log",
+      "timeoutSeconds": 30
+    },
+    {
+      "arguments": [
+        "/tmp/atomic-library-write-build-ysyflcuu/atomic-library-write-probe",
+        "verify",
+        "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+      ],
+      "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+      "elapsedSeconds": 0.033,
+      "observed": {
+        "activeIdentityPreserved": true,
+        "controlCandidateReopened": true,
+        "controlExactCandidateBytes": true,
+        "phase": "verify",
+        "priorCompleteSnapshotPreserved": true,
+        "priorExactBytesPreserved": true,
+        "status": "verification_complete",
+        "unrelatedProjectIDs": [
+          "00000001-0000-4000-8000-000000000002",
+          "00000001-0000-4000-8000-000000000001"
+        ],
+        "unrelatedRecordsPreserved": true
+      },
+      "processGroupID": 3298,
+      "returnCode": 0,
+      "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/verify.stderr.log",
+      "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/verify.stdout.log",
+      "timeoutSeconds": 30
+    }
+  ],
+  "saveErrorObservation": {
+    "errorChain": [
+      {
+        "code": 512,
+        "description": "The operation could not be completed. (NSCocoaErrorDomain error 512.)",
+        "domain": "NSCocoaErrorDomain"
+      }
+    ],
+    "phase": "save",
+    "posixErrnoImmediatelyAfterSave": 5,
+    "posixErrnoResetBeforeSave": true,
+    "status": "save_threw",
+    "writeAttempted": true
+  },
+  "status": "passed"
+}
