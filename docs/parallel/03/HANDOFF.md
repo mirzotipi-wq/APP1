@@ -5,12 +5,22 @@
 Lane 03 has corrected grazing mesh intersections, clipped-camera handling, tiny
 emitter integration and preview publication. The twelve ordinary synthetic
 fixtures retain their original scene and image bytes. Portable CPU evidence
-passes for executable source **342e3280e3eb077d55e122c8bfb88b4062b431ed**.
-Its Apple Debug build-for-testing also passed. The current studio-optics UI
-run failed before any selected method started; native execution remains a
-separate status below.
+passes again at corrected-test source **dbbc264fde91bfb04a1e82fbebdf2f8d5792d761**.
+The production source remains identical to **342e3280e3eb077d55e122c8bfb88b4062b431ed**.
+Its Apple Debug/Release builds passed; a new native run is required for the
+test-only observer correction. The retained studio-optics UI failure occurred
+before any selected method started.
 
 <!-- CURRENT_NATIVE_STATUS_BEGIN -->
+**Current corrected-test source: dbbc264fde91bfb04a1e82fbebdf2f8d5792d761.**
+Run **45868801497** passed portable core job **140078568188**: 391 Debug and
+391 standard Release tests with zero failures, six required host parity cases,
+eight strict precision cases and the unchanged bounded benchmark checks.
+Native job **140080474886** is queued at this checkpoint. See the
+[source-bound core receipt](evidence/ci-core-dbbc.json). W100 accepted the
+exact observer source after 47 review checks, with its runtime/AX limits retained
+in the [review receipt](workers/wave10-evidence/W100-observer-correction-review.json).
+
 **Source-342 native status: FAILED; test-only observer correction awaiting execution.**
 Run **45857561126**, native job **140042273149**, completed with **165 methods
 started, 164 passed, one failed, zero skipped and zero unstarted**. Both unsigned
@@ -65,6 +75,7 @@ photographic calibration, manual VoiceOver session or completed platform audit.
 | Item | Identity and meaning |
 | --- | --- |
 | Lane branch | finish/03-cpu-study-mannequin |
+| Current observer-corrected source | dbbc264fde91bfb04a1e82fbebdf2f8d5792d761; portable gates passed, new native execution pending |
 | Last executed production source | 342e3280e3eb077d55e122c8bfb88b4062b431ed; current test-only observer is identified by hash below |
 | Documentation input for this rewrite | 92dc7a69c0032141ee49de0b96940fccab83a33e; later documentation does not create a new executed source result |
 | CPU implementation checkpoint | db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5 |
@@ -254,7 +265,8 @@ synthetic renderer images do not supply those native accessibility results.
 | Baseline portable core | 366 Debug and 366 Release tests, zero failures; [baseline receipt](evidence/baseline.json). |
 | Final CPU local checks | 391 Debug and 391 optimized per-file Release tests, zero failures on Swift 6.2.1/Linux. Release disabled whole-module optimization and used one compiler process after failed ordinary builds; [commands and failures](evidence/wave05-test-inputs.json). |
 | Standard CPU CI at db7 | 391 Debug / 0 in 13.45 s and 391 standard Release / 0 in 5.679 s; run 45839289363, core job 139979301968; [receipt](evidence/ci-core-db7.json). |
-| Current source-342 portable CI | **391 Debug / 0 in 13.234 s; 391 standard Release / 0 in 5.368 s.** Six exact-mask host parity and eight strict precision cases pass; run 45857561126, core job 140039890668; [receipt](evidence/ci-core-342.json) and [raw log](evidence/ci-core-342.log). This core job does not typecheck UIKit/SwiftUI or execute the hosted test. |
+| Corrected-test source-dbbc portable CI | **391 Debug / 0 in 9.965 s; 391 standard Release / 0 in 5.695 s.** Six exact-mask host parity and eight strict precision cases pass; run 45868801497, core job 140078568188; [receipt](evidence/ci-core-dbbc.json) and [lossless full log](evidence/ci-core-dbbc.log.gz). This job does not execute UIKit or the hosted test. |
+| Earlier source-342 portable CI | **391 Debug / 0 in 13.234 s; 391 standard Release / 0 in 5.368 s.** Six exact-mask host parity and eight strict precision cases pass; run 45857561126, core job 140039890668; [receipt](evidence/ci-core-342.json) and [raw log](evidence/ci-core-342.log). This core job does not typecheck UIKit/SwiftUI or execute the hosted test. |
 | Portable publication seam | The original ten-method run had one failed method/two assertions; corrected ten-method run had zero failures. Exact production pipeline and XCTest source were used in a temporary Linux package; [original receipt](evidence/preview-cancelled-begin-original-inputs.json), [original log](evidence/preview-cancelled-begin-original.log), [corrected log](evidence/preview-cancelled-begin-corrected.log). |
 | Earlier Apple source ace9f2e | 163 native methods / 0, including nine pipeline methods, unsigned Debug/Release app builds and six actual simulator Metal fixtures. This predates later depth/tiny/paused/pre-cancelled changes; [receipt](evidence/ci-native-ace9.json). |
 | Earlier fully passing Apple native suite at 36ed6a1 | Unsigned Debug app/native bundle and Release app builds passed; 391 portable macOS tests and **164 native methods / 0** passed, including all ten pipeline methods. Final accounting has no native skips, duplicates or omissions. Six actual simulator Metal fixtures passed with maximum channel error 1 and exact masks; [receipt](evidence/ci-native-36.json), [raw log](evidence/ci-native-36.log). |
@@ -467,3 +479,21 @@ of the test-only pixel observer, successful initialized execution of required
 UI methods, paired owner integration and final remote preservation. The current zero-start studio-optics failure and earlier
 source-36 failures remain retained. Later source changes require a fresh
 affected-gate decision; historical passes keep their original source identities.
+
+## Final preservation follow-up
+
+Commit **dbbc264fde91bfb04a1e82fbebdf2f8d5792d761**, tree
+**5257147354ce8568cf4400b13e898d17f9da4cf7**, was independently verified by
+remote branch lookup and fetched Git objects. W91 verified all 146 accepted
+files, including 100 primary reports, 38 frozen-manifest files and both late
+W100 receipts, before removing W91–W99 private trees. W95's two untracked
+assigned reports matched published bytes exactly; W100's tree remains available.
+The [cleanup receipt](evidence/wave10-preservation-cleanup.json) and
+[root byte audit](evidence/final-root-preservation-dbbc.json) preserve the checks.
+
+Shared-volume ENOSPC interrupted final staging and one recovery receipt write.
+The lane repository and root-owned build outputs were moved to private tmpfs,
+with original paths retained as symlinks; all 1,773 repository-file hashes matched
+before and after. No source/evidence was discarded. The failed zero-byte receipt
+and [recovery record](evidence/final-stage-storage-recovery.json) are retained.
+These events are storage limitations, not failed renderer or native assertions.

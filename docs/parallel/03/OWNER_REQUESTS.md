@@ -57,3 +57,17 @@ The latest inspected lane 04 head is `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`,
 Source36's library/reference UI job `139992156791` failed two ProjectLibraryUITests methods: the bounded entry waiter for “Keep”, and the forwarded normal-action assertion for the library Done control. All seven project-library methods ran, with two failures; both ReferenceComparisonUITests methods passed. The retained log identifies the Done control correctly but does not separately identify which final enabled/hittable predicate failed. Route the original attachments and UI behavior to **01**; this lane has not changed that UI or asserted a root cause.
 
 The dependent Default and AXXXL visual jobs failed because the cancelled app-accessibility shard produced no `ui-app-accessibility-evidence-compact` artifact. Route artifact dependency/accounting review to **19**. Neither visual job completed an image review. `evidence/ci-ui-failures-36.json` and three byte-exact raw logs preserve the results. Source36's successful 164-method native suite remains valid, but the whole UI/global M03 gate did not pass. Later source workflows must establish their own results.
+
+## Corrected hosted observer checkpoint
+
+Lane 03 commit `dbbc264fde91bfb04a1e82fbebdf2f8d5792d761` changes only the hosted
+observer among executable sources since 342. Production preview 9ba776 and the
+ten pipeline-test bodies a68a38 remain exact. W100 accepted its public UIKit
+pixel observation after 47 checks; this is not a badge/AX/VoiceOver runtime claim.
+Run 45868801497 core job 140078568188 passed 391 Debug/391 standard Release,
+six host parity/eight strict precision cases and bounded benchmark checks.
+Native job 140080474886 remains queued at this checkpoint. The original 342
+failed AX positive control and all 165-method accounting remain preserved.
+All 100 primary reports and accepted artifacts are remotely preserved at dbbc;
+W91–W99 were cleaned only after independent blob checks. No owner implementation
+or CI configuration changed in this checkpoint.
