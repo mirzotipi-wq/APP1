@@ -1,0 +1,312 @@
+{
+  "schema": 1,
+  "worker": "073",
+  "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "method": "StudyPrecisionMatrixTests/testMetalMatchesCPUForEightRequiredPrecisionFixtures",
+  "native": {
+    "path": "NativeTests/StudyPrecisionMatrixTests.swift",
+    "blobSha": "e101657aeea929186b0059df6963ee33d17769a5",
+    "lines": {
+      "method": 8,
+      "width": 13,
+      "base": 15,
+      "areaConstructors": [
+        19,
+        26
+      ],
+      "translationConstructors": [
+        30,
+        44
+      ],
+      "normalizationAndLimits": [
+        47,
+        54
+      ],
+      "renderAndAssertions": [
+        56,
+        66
+      ]
+    }
+  },
+  "script": {
+    "path": "scripts/precision-boundary.swift",
+    "blobSha": "a8260cc021ea45aab5d1649ed8283e36a807e0ae",
+    "lines": {
+      "areaConstructors": [
+        15,
+        22
+      ],
+      "translationConstructors": [
+        73,
+        87
+      ],
+      "normalizationAndLimits": [
+        90,
+        97
+      ]
+    },
+    "scope": "Selected six area-camera and two world-translation fixtures; not every numerical probe emitted by this script."
+  },
+  "base": {
+    "expression": "StudyValidationFixtures.all().first { $0.name == \"soft\" }!.scene",
+    "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+    "blobSha": "555677e7baf0931b6c629b635f617a9cc2356800"
+  },
+  "exactTextComparisons": {
+    "area": {
+      "equal": true,
+      "sourceText": "        for distance in [19.0, 19.999999, 20.0] {\n            for focal in [85.0, 200.0] {\n                var scene = base\n                scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance)\n                scene.cameraLens = .init(focalLengthMillimeters: focal)\n                fixtures.append((\"area-camera-\\(distance)-lens-\\(Int(focal))\", scene))\n            }\n        }"
+    },
+    "translation": {
+      "equal": true,
+      "sourceText": "        for offset in [SIMD3<Double>(77, 70, 75), SIMD3<Double>(-77, -70, -75)] {\n            var scene = fixtures[5].1\n            func move(_ p: Position) -> Position {\n                .init(x: p.x + offset.x, y: p.y + offset.y, z: p.z + offset.z)\n            }\n            scene.subject = move(scene.subject)\n            scene.camera = move(scene.camera)\n            for index in scene.lights.indices {\n                scene.lights[index].position = move(scene.lights[index].position)\n                if let aim = scene.lights[index].optics?.aimTarget {\n                    scene.lights[index].optics?.aimTarget = move(aim)\n                }\n            }\n            fixtures.append((\"world-translation-\\(Int(offset.x))\", scene))\n        }"
+    },
+    "normalizationAndLimits": {
+      "equal": true,
+      "sourceText": "        for (name, inputScene) in fixtures {\n            var scene = try inputScene.validated()\n            for index in scene.lights.indices {\n                scene.lights[index].id = UUID(uuidString: String(format: \"00000000-0000-4000-8000-%012d\", index + 1))!\n            }\n            let cameraDistance = scene.camera.distance(to: scene.subject)\n            let lightDistance = scene.lights.map { $0.position.distance(to: scene.subject) }.max() ?? 0\n            guard cameraDistance <= 20, lightDistance <= 20 else { throw StudyError.invalidScene }"
+    }
+  },
+  "cases": [
+    {
+      "name": "area-camera-19.0-lens-85",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "19.0",
+      "focalLiteral": "85.0",
+      "constructor": "scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance); scene.cameraLens = .init(focalLengthMillimeters: focal)",
+      "offset": null
+    },
+    {
+      "name": "area-camera-19.0-lens-200",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "19.0",
+      "focalLiteral": "200.0",
+      "constructor": "scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance); scene.cameraLens = .init(focalLengthMillimeters: focal)",
+      "offset": null
+    },
+    {
+      "name": "area-camera-19.999999-lens-85",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "19.999999",
+      "focalLiteral": "85.0",
+      "constructor": "scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance); scene.cameraLens = .init(focalLengthMillimeters: focal)",
+      "offset": null
+    },
+    {
+      "name": "area-camera-19.999999-lens-200",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "19.999999",
+      "focalLiteral": "200.0",
+      "constructor": "scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance); scene.cameraLens = .init(focalLengthMillimeters: focal)",
+      "offset": null
+    },
+    {
+      "name": "area-camera-20.0-lens-85",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "20.0",
+      "focalLiteral": "85.0",
+      "constructor": "scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance); scene.cameraLens = .init(focalLengthMillimeters: focal)",
+      "offset": null
+    },
+    {
+      "name": "area-camera-20.0-lens-200",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "20.0",
+      "focalLiteral": "200.0",
+      "constructor": "scene.camera = .init(x: scene.subject.x, y: scene.subject.y, z: scene.subject.z + distance); scene.cameraLens = .init(focalLengthMillimeters: focal)",
+      "offset": null
+    },
+    {
+      "name": "world-translation-77",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "20.0",
+      "focalLiteral": "200.0",
+      "seedExpression": "fixtures[5].1",
+      "offset": [
+        77,
+        70,
+        75
+      ],
+      "movedFields": [
+        "subject",
+        "camera",
+        "every light position",
+        "each present optics.aimTarget"
+      ]
+    },
+    {
+      "name": "world-translation--77",
+      "width": 192,
+      "height": 128,
+      "distanceLiteral": "20.0",
+      "focalLiteral": "200.0",
+      "seedExpression": "fixtures[5].1",
+      "offset": [
+        -77,
+        -70,
+        -75
+      ],
+      "movedFields": [
+        "subject",
+        "camera",
+        "every light position",
+        "each present optics.aimTarget"
+      ]
+    }
+  ],
+  "assertions": [
+    {
+      "expression": "XCTAssertEqual(fixtures.count, 8)",
+      "nativeLine": 46
+    },
+    {
+      "expression": "XCTUnwrap(StudyParityMetrics(reference: reference, candidate: candidate))",
+      "nativeLines": [
+        60,
+        61
+      ],
+      "meaning": "Reject malformed image dimensions, data or unsupported-mask/count consistency."
+    },
+    {
+      "expression": "XCTAssertTrue(metrics.passes)",
+      "nativeLine": 63,
+      "meaning": "Requires equal unsupported counts AND exact mask Data equality; mean RGB-channel error <=1 and fraction of channels with error >4 <=0.005."
+    },
+    {
+      "expression": "XCTAssertLessThanOrEqual(metrics.maximumChannelError, 1)",
+      "nativeLine": 64
+    },
+    {
+      "expression": "XCTAssertEqual(candidate.unsupportedPixelMask, reference.unsupportedPixelMask)",
+      "nativeLines": [
+        65,
+        66
+      ],
+      "meaning": "Every invalid pixel position must match; no zero-unsupported requirement."
+    }
+  ],
+  "limits": {
+    "width": "192, height192*2/3=128; constructor requires 24...192 divisible by3.",
+    "normalization": "Validated scene then UUID(uuidString: String(format: \"00000000-0000-4000-8000-%012d\", index + 1))!",
+    "relativeGuard": "cameraDistance <=20 and maximum distance of all lights from subject <=20; the validation path also applies the <=20-meter camera/all-lights limit.",
+    "coordinates": {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blobSha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "cameraLines": [
+        423,
+        434
+      ],
+      "sampleLines": [
+        270,
+        282
+      ],
+      "floatConversionLines": [
+        548,
+        550
+      ],
+      "meaning": "Subtract subject center from camera/sample/area positions in SIMD3<Double> before pack converts components to Float. Absolute translated world coordinates are not the <=20-meter support rule."
+    }
+  },
+  "boundary": {
+    "path": "App/MetalStudyRenderer.swift",
+    "blobSha": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+    "validationLines": [
+      67,
+      79
+    ],
+    "productionRenderLines": [
+      53,
+      65
+    ],
+    "startupValidationLines": [
+      121,
+      135
+    ],
+    "meaning": "renderValidationFixture bypasses the production StudyFloat32Eligibility.supports decision, retains relative-distance and StudyComputeInput validation, and dispatches actual Metal compute; it cannot satisfy the test by returning CPU fallback output. Runtime startup validation also uses this internal path for parity fixtures; published user frames use gated render.",
+    "productionEligibilityForEachStrictCase": "Not asserted or established by this matrix; a validation-bypass pass is not evidence that supports(scene,width) is true.",
+    "canonicalNearField": "Canonical near-field is rendered directly for actual Metal parity but is routed to CPU by normal production eligibility; do not infer production Metal routing from the canonical native pass."
+  },
+  "canonical": {
+    "method": "StudyRendererTests/testMetalMatchesCPUOnAvailableDevice",
+    "path": "NativeTests/StudyRendererTests.swift",
+    "blobSha": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+    "lines": [
+      8,
+      21
+    ],
+    "width": 96,
+    "height": 64,
+    "assertion": "XCTAssertTrue(metrics.passes)",
+    "maximumChannelLimit": null,
+    "printedMaskMetric": "Prints invalidCountMatches, not numeric mismatch count or unsupported count. Passing metrics.passes establishes exact mask equality."
+  },
+  "skipSemantics": "No device throws XCTSkip; a skipped method is not a pass. Native exact equality may be established by assertions without a numeric mismatch count being printed; do not substitute host unsupported counts into native observations.",
+  "source6Comparison": {
+    "source6": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "input": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+    "source6Blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "inputBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "originalMethods": [
+      "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+      "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+      "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+      "testEveryRenderingControlKeepsDistinctCacheIdentity",
+      "testSubjectAndResolutionDoNotShareFrames",
+      "testBustCachePreservesExistingMaximumWidthClamping",
+      "testInvalidMetadataCannotReuseAValidatedFrame",
+      "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+      "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+      "testCancelledTaskCannotReturnCachedFrame",
+      "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+      "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+      "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+      "testPrecisionDomainFallbackPreservesValidatedBackend",
+      "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+      "testStartupFinalCancellationLeavesInitializationRetryable",
+      "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+      "testStartupPrecisionDomainFallbackRemainsRetryable",
+      "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+      "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+      "testRealCPUCacheResourcesForFourSmallFrames",
+      "testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive"
+    ],
+    "originalMethodCount": 25,
+    "inputMethodCount": 29,
+    "addedMethods": [
+      "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+    ],
+    "removedMethods": [],
+    "commonPrefixCharacters": 51899,
+    "commonSuffixCharacters": 2,
+    "oldChangedText": "",
+    "oldLastTestStart": 47802,
+    "newAddedTextStart": "    // These additional cases use the existing scripted backend for lifecycle\n    // evidence only. Synthetic compute frames are not actual Metal output.\n    func testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame() async throws {\n        // Exercise both catch paths that confirm failure while the cache already\n        // holds CPU pixels. The broader startup failure matrix remains above.\n        let failures: [ComputeOutcome] = [.metal(.parity), .study(.invalidComputeOutput)]\n        for stage in [ComputeStage.factory, .validation] {\n            for failure in failures {\n                let budget = CancellationBudget()\n    ",
+    "blobAndPathOldEqual": true,
+    "blobAndPathNewEqual": true,
+    "rendererUnchanged": true,
+    "precisionUnchanged": true,
+    "originalMethodsUnchanged": true,
+    "allOriginalContentPreserved": true,
+    "proof": "Original source6 content equals input prefix through UTF-16 position51899 followed by unchanged final '}\\n'; oldChangedText is empty. Four methods inserted before class closing brace. This is source comparison, not execution.",
+    "nonRuntimeScope": "Added methods use the scripted lifecycle backend; no GPU pixel parity evidence is inferred."
+  },
+  "rootStatusAtCloseout": "Native6 job140012314020 remains pending/running. Source7 additions uncompiled/unrun in this review. Historical source88279ba actual Metal6/8 is retained execution; current unchanged-source carry-forward is not current execution.",
+  "consumerAdoption03_20": "Open; no UI pass.",
+  "crossReferences": {
+    "sourceHashes": "source-hashes.json",
+    "inputs": "inputs.json",
+    "workingContext": "working-context.md"
+  }
+}

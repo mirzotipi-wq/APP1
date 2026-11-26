@@ -1,0 +1,662 @@
+{
+  "schema": 1,
+  "worker": "w075",
+  "role": "wave08 deterministic lifecycle evidence review",
+  "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "baselineRevision": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "runId": 45848953002,
+  "nativeJobId": 140012314020,
+  "coreJobId": 140009926092,
+  "nativeCommand": "/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" test-without-building",
+  "environment": {
+    "host": "Darwin x86_64 hosted runner",
+    "xcode": "26.6 (17F113)",
+    "swift": "6.3.3",
+    "simulator": "iPhone 17 Pro, iOS 26.5",
+    "nativeConfiguration": "Debug",
+    "releaseEvidence": "Successful unsigned Release build only; no Release native test execution claimed"
+  },
+  "sourceIdentity": {
+    "enginePath": "App/MetalStudyRenderer.swift",
+    "engineBlob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+    "engineUTF8IdenticalAtTestedAndInputRevision": true,
+    "cacheComparison": {
+      "source6Blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "source7Blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "source6Length": 51901,
+      "source7Length": 63457,
+      "exactOriginalPrefix": true,
+      "source6ClosingSuffix": "\n}\n",
+      "source7EndsWithOriginalClosingSuffix": true,
+      "source6Methods": [
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testSubjectAndResolutionDoNotShareFrames",
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "testRealCPUCacheResourcesForFourSmallFrames",
+        "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive"
+      ],
+      "newMethods": [
+        "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+        "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+        "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+        "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+      ]
+    },
+    "rendererTestsUnchangedBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+    "precisionTestsUnchangedBlob": "e101657aeea929186b0059df6963ee33d17769a5"
+  },
+  "independentlyParsedAccounting": {
+    "nativeTerminalEvents": 174,
+    "uniqueMethods": 174,
+    "passed": 174,
+    "failed": 0,
+    "skipped": 0,
+    "source6CacheMethods": 25,
+    "source6CachePasses": 25,
+    "studyRendererMethods": 12,
+    "precisionMatrixMethods": 1,
+    "methodAccountingLogLine": 5709,
+    "finalizedXCTestExport": "success per supplied terminal metadata and retained successful job export/upload",
+    "methodAccountingRaw": "2026-11-26T15:58:45.1041810Z Verified 174 unit methods: one start and one pass each; no failures, skips, duplicates or omissions."
+  },
+  "lifecycleMethods": [
+    {
+      "method": "StudyRenderCacheTests/testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 265,
+      "status": "passed",
+      "nativeLogLine": 5514,
+      "seconds": 0.013,
+      "evidenceKind": "Real Swift CPU rendering plus deterministic cancellation predicate",
+      "assertedScope": "Cancellation at entry or before cache lookup throws StudyError.cancelled; previously completed bust frame remains reusable.",
+      "sourceScenarioAccounting": {
+        "boundaries": [
+          1,
+          2
+        ],
+        "count": 2
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledTaskCannotReturnCachedFrame",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 279,
+      "status": "passed",
+      "nativeLogLine": 5522,
+      "seconds": 0.014,
+      "evidenceKind": "Real Swift task cancellation and real CPU cached bust",
+      "assertedScope": "Self-cancelled Task cannot return a completed cached frame even with additional predicate false."
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 295,
+      "status": "passed",
+      "nativeLogLine": 5517,
+      "seconds": 0.053,
+      "evidenceKind": "Real Swift CPU bust rendering",
+      "assertedScope": "Mid-render and measured final engine checkpoint cancellation prevent return/admission; a subsequent bounded probe remains cold before successful render and reuse.",
+      "sourceScenarioAccounting": {
+        "boundaries": [
+          "check 8",
+          "measured final completedChecks"
+        ],
+        "count": 2
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 708,
+      "status": "passed",
+      "nativeLogLine": 5520,
+      "seconds": 0.143,
+      "evidenceKind": "Real Swift CPU bust rendering and deterministic cancellation",
+      "assertedScope": "Cancelled hit of A in full A/B/C/D LRU cannot promote A; inserting E evicts A and preserves B/C/D/E.",
+      "sourceScenarioAccounting": {
+        "boundaries": [
+          1,
+          2
+        ],
+        "count": 2
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 454,
+      "status": "passed",
+      "nativeLogLine": 5524,
+      "seconds": 0.238,
+      "evidenceKind": "Scripted compute backend failure plus real Swift CPU bust and sphere fallback",
+      "assertedScope": "Each failure callback also sets cancellation. Engine selects CPU, evicts prior synthetic Metal frame, preserves real CPU frame, releases mock object, publishes/adopts no failed frame, and later uncached/old-key requests use CPU.",
+      "sourceScenarioAccounting": {
+        "outcomes": [
+          "MetalStudyError.command",
+          "MetalStudyError.allocation",
+          "StudyError.invalidComputeOutput"
+        ],
+        "cancel": true,
+        "count": 3
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 494,
+      "status": "passed",
+      "nativeLogLine": 5542,
+      "seconds": 0.004,
+      "evidenceKind": "Scripted compute backend; synthetic compute frames",
+      "assertedScope": "Thrown StudyError.cancelled or successful render callback followed by cancellation retains backend and completed cache; interrupted key requires new render.",
+      "sourceScenarioAccounting": {
+        "outcomes": [
+          "StudyError.cancelled",
+          "success plus cancellation predicate"
+        ],
+        "count": 2
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testPrecisionDomainFallbackPreservesValidatedBackend",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 523,
+      "status": "passed",
+      "nativeLogLine": 5546,
+      "seconds": 0.021,
+      "evidenceKind": "Scripted precisionDomain failure plus real Swift CPU fallback",
+      "assertedScope": "Without cancellation, fallback is CPU oracle output; with cancellation, no fallback frame enters cache. Original synthetic Metal frame and backend survive, and a fresh eligible key invokes same backend.",
+      "sourceScenarioAccounting": {
+        "cancel": [
+          false,
+          true
+        ],
+        "count": 2
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 559,
+      "status": "passed",
+      "nativeLogLine": 5590,
+      "seconds": 0.01,
+      "evidenceKind": "Scripted factory/validation errors",
+      "assertedScope": "Exact StudyError propagates with empty cache; retry constructs/validates a fresh mock backend and returns synthetic Metal-labelled frame.",
+      "sourceScenarioAccounting": {
+        "stages": [
+          "factory",
+          "validation"
+        ],
+        "errors": [
+          "cancelled",
+          "invalidScene",
+          "invalidCamera",
+          "invalidResolution",
+          "invalidEmitter",
+          "invalidSurface"
+        ],
+        "count": 12
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testStartupFinalCancellationLeavesInitializationRetryable",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 581,
+      "status": "passed",
+      "nativeLogLine": 5585,
+      "seconds": 0.005,
+      "evidenceKind": "Scripted successful validation plus deterministic cancellation",
+      "assertedScope": "Post-validation cancellation leaves startup retryable, cache empty and render count zero; released initial mock is replaced by fresh successful backend.",
+      "sourceScenarioAccounting": {
+        "count": 1
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 600,
+      "status": "passed",
+      "nativeLogLine": 5528,
+      "seconds": 0.688,
+      "evidenceKind": "Scripted factory/validation failure plus real Swift CPU fallback",
+      "assertedScope": "Confirmed failure permanently selects CPU before concurrent cancellation check. Cancelled request leaves empty cache; noncancelled request returns real CPU; fresh key remains CPU without factory retry.",
+      "sourceScenarioAccounting": {
+        "stages": [
+          "factory",
+          "validation"
+        ],
+        "outcomes": [
+          "MetalStudyError.unavailable",
+          "MetalStudyError.allocation",
+          "MetalStudyError.command",
+          "MetalStudyError.parity",
+          "StudyError.invalidComputeOutput"
+        ],
+        "cancel": [
+          false,
+          true
+        ],
+        "count": 20
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testStartupPrecisionDomainFallbackRemainsRetryable",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 638,
+      "status": "passed",
+      "nativeLogLine": 5587,
+      "seconds": 0.037,
+      "evidenceKind": "Scripted factory/validation precisionDomain plus real CPU fallback",
+      "assertedScope": "Request-only precision fallback does not permanently select CPU; cancelled request leaves cache empty; fresh eligible key retries factory/validation successfully.",
+      "sourceScenarioAccounting": {
+        "stages": [
+          "factory",
+          "validation"
+        ],
+        "cancel": [
+          false,
+          true
+        ],
+        "count": 4
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRenderCacheTests/testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 668,
+      "status": "passed",
+      "nativeLogLine": 5534,
+      "seconds": 0.018,
+      "evidenceKind": "Scripted backend counters plus real CPU requests",
+      "assertedScope": "Bust, far geometry, invalid inputs and entry-cancelled requests leave factory unused; subsequent eligible sphere starts backend once; later CPU route does not invalidate it."
+    },
+    {
+      "method": "StudyRenderCacheTests/testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+      "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "declarationLine": 955,
+      "status": "passed",
+      "nativeLogLine": 5536,
+      "seconds": 0.17,
+      "evidenceKind": "Weak observation of scripted Swift backend object plus real CPU fallback",
+      "assertedScope": "Observer control cannot retain object. Failure releases mock backend while actor remains usable, preserves CPU cache and permanently selects CPU. Does not measure Metal resource release.",
+      "sourceScenarioAccounting": {
+        "outcomes": [
+          "MetalStudyError.command",
+          "MetalStudyError.allocation",
+          "StudyError.invalidComputeOutput"
+        ],
+        "cancel": [
+          false,
+          true
+        ],
+        "count": 6
+      },
+      "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+    },
+    {
+      "method": "StudyRendererTests/testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRendererTests.swift",
+      "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "declarationLine": 94,
+      "status": "passed",
+      "nativeLogLine": 5602,
+      "seconds": 1.199,
+      "evidenceKind": "Production renderer; deterministic CPU-phase startup cancellation; actual simulator Metal on retry",
+      "assertedScope": "Cancellation interrupts initial CPU-oracle validation phase before submitted GPU work. Same engine retries actual validation/render and returns Metal with passing parity. No GPU in-flight cancellation measurement."
+    },
+    {
+      "method": "StudyRendererTests/testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRendererTests.swift",
+      "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "declarationLine": 118,
+      "status": "passed",
+      "nativeLogLine": 5598,
+      "seconds": 0.105,
+      "evidenceKind": "Actual Swift task cancellation; engine entry check",
+      "assertedScope": "Self-cancelled Task throws StudyError.cancelled despite false additional predicate; no Metal dispatch is required."
+    },
+    {
+      "method": "StudyRendererTests/testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRendererTests.swift",
+      "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "declarationLine": 54,
+      "status": "passed",
+      "nativeLogLine": 5641,
+      "seconds": 1.383,
+      "evidenceKind": "Actual simulator Metal initial render plus real CPU fallback and Metal cache reuse",
+      "assertedScope": "Initial normal render returns Metal; near-field request returns exact CPU oracle pixels; returning normal key returns original Metal-labelled image. Final request is a cache hit, not proof of a new Metal dispatch."
+    },
+    {
+      "method": "StudyRendererTests/testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "sourcePath": "NativeTests/StudyRendererTests.swift",
+      "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "declarationLine": 132,
+      "status": "passed",
+      "nativeLogLine": 5619,
+      "seconds": 1.657,
+      "evidenceKind": "Real Swift CPU precision route followed by actual simulator Metal",
+      "assertedScope": "Width-24 silhouette routes CPU; later eligible width-48 portrait on same engine initializes Metal and passes parity."
+    }
+  ],
+  "allSource6CacheTerminalEvents": [
+    {
+      "method": "StudyRenderCacheTests/testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+      "status": "passed",
+      "nativeLogLine": 5583,
+      "seconds": 0.035
+    },
+    {
+      "method": "StudyRenderCacheTests/testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+      "status": "passed",
+      "nativeLogLine": 5530,
+      "seconds": 0.058
+    },
+    {
+      "method": "StudyRenderCacheTests/testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+      "status": "passed",
+      "nativeLogLine": 5544,
+      "seconds": 0.083
+    },
+    {
+      "method": "StudyRenderCacheTests/testEveryRenderingControlKeepsDistinctCacheIdentity",
+      "status": "passed",
+      "nativeLogLine": 5532,
+      "seconds": 0.249
+    },
+    {
+      "method": "StudyRenderCacheTests/testSubjectAndResolutionDoNotShareFrames",
+      "status": "passed",
+      "nativeLogLine": 5592,
+      "seconds": 0.017
+    },
+    {
+      "method": "StudyRenderCacheTests/testBustCachePreservesExistingMaximumWidthClamping",
+      "status": "passed",
+      "nativeLogLine": 5512,
+      "seconds": 1.794
+    },
+    {
+      "method": "StudyRenderCacheTests/testInvalidMetadataCannotReuseAValidatedFrame",
+      "status": "passed",
+      "nativeLogLine": 5538,
+      "seconds": 0.013
+    },
+    {
+      "method": "StudyRenderCacheTests/testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+      "status": "passed",
+      "nativeLogLine": 5540,
+      "seconds": 0.014
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+      "status": "passed",
+      "nativeLogLine": 5514,
+      "seconds": 0.013
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledTaskCannotReturnCachedFrame",
+      "status": "passed",
+      "nativeLogLine": 5522,
+      "seconds": 0.014
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+      "status": "passed",
+      "nativeLogLine": 5517,
+      "seconds": 0.053
+    },
+    {
+      "method": "StudyRenderCacheTests/testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+      "status": "passed",
+      "nativeLogLine": 5524,
+      "seconds": 0.238
+    },
+    {
+      "method": "StudyRenderCacheTests/testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+      "status": "passed",
+      "nativeLogLine": 5542,
+      "seconds": 0.004
+    },
+    {
+      "method": "StudyRenderCacheTests/testPrecisionDomainFallbackPreservesValidatedBackend",
+      "status": "passed",
+      "nativeLogLine": 5546,
+      "seconds": 0.021
+    },
+    {
+      "method": "StudyRenderCacheTests/testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+      "status": "passed",
+      "nativeLogLine": 5590,
+      "seconds": 0.01
+    },
+    {
+      "method": "StudyRenderCacheTests/testStartupFinalCancellationLeavesInitializationRetryable",
+      "status": "passed",
+      "nativeLogLine": 5585,
+      "seconds": 0.005
+    },
+    {
+      "method": "StudyRenderCacheTests/testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+      "status": "passed",
+      "nativeLogLine": 5528,
+      "seconds": 0.688
+    },
+    {
+      "method": "StudyRenderCacheTests/testStartupPrecisionDomainFallbackRemainsRetryable",
+      "status": "passed",
+      "nativeLogLine": 5587,
+      "seconds": 0.037
+    },
+    {
+      "method": "StudyRenderCacheTests/testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+      "status": "passed",
+      "nativeLogLine": 5534,
+      "seconds": 0.018
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+      "status": "passed",
+      "nativeLogLine": 5520,
+      "seconds": 0.143
+    },
+    {
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+      "status": "passed",
+      "nativeLogLine": 5565,
+      "seconds": 0.044
+    },
+    {
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "status": "passed",
+      "nativeLogLine": 5557,
+      "seconds": 2.92
+    },
+    {
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "status": "passed",
+      "nativeLogLine": 5572,
+      "seconds": 0.1
+    },
+    {
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "status": "passed",
+      "nativeLogLine": 5581,
+      "seconds": 1.819
+    },
+    {
+      "method": "StudyRenderCacheTests/testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+      "status": "passed",
+      "nativeLogLine": 5536,
+      "seconds": 0.17
+    }
+  ],
+  "source7OnlyMethods": [
+    {
+      "method": "StudyRenderCacheTests/testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "sourceRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "sourceBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "status": "execution pending; not validated by source6",
+      "declaredEvidenceKind": "Scripted lifecycle tests; synthetic compute images and real CPU setup/fallback",
+      "source6TerminalEventPresent": false
+    },
+    {
+      "method": "StudyRenderCacheTests/testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "sourceRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "sourceBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "status": "execution pending; not validated by source6",
+      "declaredEvidenceKind": "Scripted lifecycle tests; synthetic compute images and real CPU setup/fallback",
+      "source6TerminalEventPresent": false
+    },
+    {
+      "method": "StudyRenderCacheTests/testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "sourceRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "sourceBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "status": "execution pending; not validated by source6",
+      "declaredEvidenceKind": "Scripted lifecycle tests; synthetic compute images and real CPU setup/fallback",
+      "source6TerminalEventPresent": false
+    },
+    {
+      "method": "StudyRenderCacheTests/testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames",
+      "sourceRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "sourceBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "status": "execution pending; not validated by source6",
+      "declaredEvidenceKind": "Scripted lifecycle tests; synthetic compute images and real CPU setup/fallback",
+      "source6TerminalEventPresent": false
+    }
+  ],
+  "portableCancellation": {
+    "sourcePath": "Tests/LightingCoreTests/StudyCancellationTests.swift",
+    "sourceBlob": "0e79b2f8d92614b5c208ef79300b1b5b0386dd72",
+    "sourceRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "debugAndReleasePassed": true,
+    "events": [
+      {
+        "line": 982,
+        "text": "2026-11-26T15:26:59.1459342Z Test Case 'StudyCancellationTests.testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork' passed (0.0 seconds)"
+      },
+      {
+        "line": 984,
+        "text": "2026-11-26T15:26:59.1461634Z Test Case 'StudyCancellationTests.testCancellationAtFinalCheckpointCannotPublishCompletedFrame' passed (0.002 seconds)"
+      },
+      {
+        "line": 986,
+        "text": "2026-11-26T15:26:59.1464007Z Test Case 'StudyCancellationTests.testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations' passed (0.0 seconds)"
+      },
+      {
+        "line": 988,
+        "text": "2026-11-26T15:26:59.1466457Z Test Case 'StudyCancellationTests.testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled' passed (0.005 seconds)"
+      },
+      {
+        "line": 1938,
+        "text": "2026-11-26T15:27:39.6654110Z Test Case 'StudyCancellationTests.testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork' passed (0.0 seconds)"
+      },
+      {
+        "line": 1940,
+        "text": "2026-11-26T15:27:39.6655513Z Test Case 'StudyCancellationTests.testCancellationAtFinalCheckpointCannotPublishCompletedFrame' passed (0.0 seconds)"
+      },
+      {
+        "line": 1942,
+        "text": "2026-11-26T15:27:39.6657397Z Test Case 'StudyCancellationTests.testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations' passed (0.0 seconds)"
+      },
+      {
+        "line": 1944,
+        "text": "2026-11-26T15:27:39.6659196Z Test Case 'StudyCancellationTests.testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled' passed (0.101 seconds)"
+      }
+    ],
+    "interpretation": "The two checkpoint tests model pixel evaluation order in pure Swift. The other two execute actual CPU sphere/mannequin rendering. Eight-evaluation bound is CPU/checkpoint evidence, not GPU cancellation latency."
+  },
+  "resourceContext": {
+    "observedRows": 19,
+    "allWithinBounds": true,
+    "dataKind": "Actual Swift CPU engine cache payload counters; excludes caller-held frames, process RSS and driver memory"
+  },
+  "limits": [
+    "All failure-plus-cancellation matrices inject errors and cancellation deterministically in the same callback; they are not observed GPU command failures or timing races.",
+    "Production throws StudyError.cancelled. A generic injected Swift CancellationError would follow catch-all downgrade logic, but this is an injection-only source-review limitation with no corresponding production failure or runtime result.",
+    "The source7 concurrent request task-group method is execution pending; source6 methods do not execute that new concurrency test.",
+    "No physical-device, process RSS, driver-memory or GPU cancellation latency measurements are established.",
+    "Owner03/20 UI-held-frame reactivation dependency remains open per scoped handoff; these engine tests do not execute return-to-A through UI-held frame without an engine call. Proposal under evidence/w057 is not integrated or validated by this evidence.",
+    "Historical native source88279ba0ee0262ea6c880580c8a85b56342abbff (160 methods), older source5bf9da747f947e9f5ed2e0836abb3ba726800307 (154 methods), f150 baseline build failure, and cancelled native5 remain distinct from this source6 execution."
+  ],
+  "rawEvidence": {
+    "nativeLog": {
+      "path": "docs/parallel/04/evidence/ci/wave06-native-140012314020.log",
+      "blob": "48500c2b0d1ef8ed6ac2bae8e0a12e4f7e07614d"
+    },
+    "nativeMetadata": {
+      "path": "docs/parallel/04/evidence/ci/wave06-native-140012314020.json",
+      "blob": "006f0a8f6546adb58e09b9a3942f3d624a842ac3"
+    },
+    "coreLog": {
+      "path": "docs/parallel/04/evidence/ci/wave06-core-140009926092.log",
+      "blob": "b99b8d092e34a136b6e00e14e4b8e83b1ecd98e8"
+    },
+    "coreMetadata": {
+      "path": "docs/parallel/04/evidence/ci/wave06-core-140009926092.json",
+      "blob": "8d53d8b3bafdb8a9b5f079a583390be7ee827ae2"
+    }
+  },
+  "procedure": "Read exact immutable Git objects and parse retained CI in memory; no shell, local test, SDK probe, CI poll/rerun, ref, commit, product or test mutation."
+}

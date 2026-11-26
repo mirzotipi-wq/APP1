@@ -1,0 +1,13 @@
+# w076 — resource and lifetime review
+
+The retained source6 run provides **19 observed cache-resource rows**, comprising 15 per-request readings and four summaries. Independent extraction from the raw native log exactly matches the supplied parsed receipt, including row order, dimensions, counts and byte totals. Every observation satisfies four entries, 262,144 RGBA bytes and 65,536 mask bytes. The [observed table](CACHE_RESOURCES.md) retains every reading and its method provenance.
+
+Final count/RGBA/mask tuples are small bust **(4, 6,144, 1,536)**, maximum bust **(4, 221,184, 55,296)**, maximum sphere **(2, 196,608, 49,152)** and mixed subjects **(3, 208,896, 52,224)**. These are actor payload counters after real CPU rendering. Maximum bust requests at width 192 produce width 144. The sphere fixtures deliberately use a camera outside Metal eligibility. Returned-image dimensions and payload lengths cross-check accounting; cache probes additionally verify eviction and retained images.
+
+Raw XCTest events establish 174 unique native methods passed, including all 25 retained cache methods, with zero failures or skips. Native runtime execution was Debug; Release was build-only. Both builds, required-method accounting and finalized XCTest export succeeded. The portable job passed 379 methods in each configuration, including all 16 cache methods and four weak-lifetime regressions in both Debug and Release.
+
+The portable lifetime tests observe pure Swift values. The native weak observer test passes six injected failure/cancellation combinations and proves release of a scripted backend while the same engine remains alive. It preserves completed CPU frames and permanently removes Metal-tagged cached frames after confirmed failure. Cancelled or failed attempted frames are not admitted; a separately completed CPU fallback can be retained. No GPU-deallocation claim follows from scripted instance release.
+
+Requested Metal-buffer lengths are source arithmetic, documented separately from observations. Process RSS, allocator overhead, driver memory, caller-held frames and GPU cancellation latency remain unmeasured. A submitted command is awaited before output access; this source behavior supplies no measured release latency.
+
+The engine/core sources match the input revision. Source7 preserves the 25 methods and appends four whose results remain pending in this packet. The owner03/20 UI-held-frame adoption dependency remains open and is not engine-cache leakage. [Provenance](source-command-receipt.json) retains exact revisions, commands, corrected blob read, raw evidence references and artifact digests. No new execution, CI polling, source changes or local paths were created.

@@ -1,0 +1,589 @@
+{
+  "schema": 1,
+  "worker": "w077",
+  "role": "wave08 consumer-integration review",
+  "repository": "mirzotipi-wq/APP1",
+  "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "baselineRevision": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "integrationOwner": "Root only; finish/04-metal-cache",
+  "conclusions": {
+    "productionValidationBypassPublication": "Not present in reviewed default production call chain.",
+    "strictFixtureEligibility": "Not established for all strict8 by validation bypass parity.",
+    "consumerAdoption03_20": "Open; source-confirmed status/adoption mismatch. No UI pass.",
+    "historicalPixels": "The scenario does not itself establish invalid historical A pixels.",
+    "engineCache": "No demonstrated engine-cache leakage; selectCPU purges internal Metal entries.",
+    "testsRunByWorker": []
+  },
+  "sourceTrace": [
+    {
+      "id": "validation-is-not-publication",
+      "path": "App/MetalStudyRenderer.swift",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "lines": [
+        21,
+        24,
+        67,
+        79,
+        121,
+        135
+      ],
+      "finding": "StudyComputeBackend declares only validate and render. renderValidationFixture is a concrete-renderer internal path; validate returns Void and uses local CPU/candidate images only. No startup candidate enters frameCache."
+    },
+    {
+      "id": "normal-gates",
+      "path": "App/MetalStudyRenderer.swift",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "lines": [
+        53,
+        65,
+        224,
+        287
+      ],
+      "finding": "Engine computes width-specific supportsMetal before unchecked initialization and before normal render. Production Metal renderer constructs StudyComputeInput then checks supports again. Unsupported valid requests reach CPU renderer with .cpu provenance."
+    },
+    {
+      "id": "cache-and-downgrade",
+      "path": "App/MetalStudyRenderer.swift",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "lines": [
+        227,
+        242,
+        254,
+        287,
+        290,
+        303
+      ],
+      "finding": "Cache lookup is cancellation guarded. Bust, Metal and sphere CPU admission follow final checks. selectCPU changes state and removes Metal frames before the subsequent cancellation check. Precision-domain catches do not selectCPU; ordinary StudyError.cancelled propagates. Existing CPU cache entries survive downgrade."
+    },
+    {
+      "id": "strict-isolation",
+      "path": "NativeTests/StudyPrecisionMatrixTests.swift",
+      "blob": "e101657aeea929186b0059df6963ee33d17769a5",
+      "lines": [
+        8,
+        15,
+        47,
+        66
+      ],
+      "finding": "Local MetalStudyRenderer is separate from StudyRenderEngine. Width192 strict8 dispatches renderValidationFixture directly and asserts parity plus max<=1 and exact mask equality. It does not assert supports(scene,width) for those cases."
+    },
+    {
+      "id": "canonical-grids",
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "lines": [
+        8,
+        21,
+        54,
+        72
+      ],
+      "finding": "Actual canonical parity uses width96 validation bypass. Normal near-field engine render uses width48 and equals CPU oracle. Initial and final normal requests share an unchanged key, so final Metal label is cached reuse."
+    },
+    {
+      "id": "default-eligibility-grid",
+      "path": "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+      "blob": "381ded6219d80c9a4a8e99cd0c76b59f0fd2683c",
+      "lines": [
+        16,
+        24
+      ],
+      "finding": "Canonical eligibility regression uses supports(scene), whose default width is192; near-field is rejected. Do not generalize grid-specific claims."
+    },
+    {
+      "id": "clearance-and-disabled-light",
+      "path": "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+      "blob": "381ded6219d80c9a4a8e99cd0c76b59f0fd2683c",
+      "lines": [
+        200,
+        219,
+        237,
+        268
+      ],
+      "finding": "Disabled21m source stays eligible at24/27/192 and packs no samples/areas; CPU24 equals no-light control. Exact camera-clearance equality is rejected by both CPU and compute constructors as invalidCamera. Nonaxial vertical test is routing evidence, not measured Float32 error."
+    },
+    {
+      "id": "production-versus-validation-distance",
+      "paths": [
+        "Sources/LightingCore/StudyFloat32Eligibility.swift",
+        "App/MetalStudyRenderer.swift"
+      ],
+      "blobs": [
+        "e9764da10eabbffbad6ceee8999977cf31deb197",
+        "8c1acd852d85cd99671feaba883db1808bbb5e68"
+      ],
+      "lines": [
+        [
+          16,
+          30
+        ],
+        [
+          71,
+          78
+        ]
+      ],
+      "finding": "Production excludes zero-candela lights from the20m distance guard; validation checks all lights. Thus the disabled21m fixture would throw precisionDomain in validation. This is a source calculation, not observed dispatch."
+    },
+    {
+      "id": "same-camera-contract",
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "lines": [
+        423,
+        435,
+        447,
+        455,
+        482,
+        485
+      ],
+      "finding": "StudyComputeInput and CPU reference share StudySetup. Both exact clearance predicates use strict greater-than; failure is invalidCamera and no successful fallback frame."
+    },
+    {
+      "id": "cpu-cancellation-versus-gpu",
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "lines": [
+        94,
+        116,
+        132,
+        156
+      ],
+      "finding": "Startup-cancel probe interrupts first CPU validation before submission then retries actual Metal. Silhouette width24 CPU-first route permits later width48 portrait Metal initialization on same engine."
+    },
+    {
+      "id": "scripted-lifecycle",
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "lines": [
+        454,
+        557
+      ],
+      "finding": "Confirmed failure+cancel removes synthetic Metal and preserves real CPU; old key later yields CPU oracle. Ordinary cancellation retains backend/completed cache. precisionDomain handles both cancellation states and then renders fresh exposureStops2 key through same mock backend, while retaining original Metal-labelled cache."
+    },
+    {
+      "id": "preview-current-status",
+      "path": "App/ReferenceStudyPreview.swift",
+      "blob": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+      "lines": [
+        36,
+        41,
+        50,
+        75,
+        109,
+        133
+      ],
+      "finding": "Frame holds image/backend; isCurrent depends only on request equality. The local return at113 precedes engine call116. Cancellation catch125-126 leaves previous A intact. On returnA, image/status can be shown as current without consulting engine after B's downgrade."
+    }
+  ],
+  "runtime": {
+    "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "runId": 45848953002,
+    "jobId": 140012314020,
+    "source6EngineIdenticalToInput": true,
+    "rawBlob": "48500c2b0d1ef8ed6ac2bae8e0a12e4f7e07614d",
+    "metadataBlob": "006f0a8f6546adb58e09b9a3942f3d624a842ac3",
+    "independentlyParsed": {
+      "terminalEvents": 174,
+      "uniqueMethods": 174,
+      "passed": 174,
+      "failed": 0,
+      "skipped": 0,
+      "cacheMethods": 25
+    },
+    "configuration": "Debug runtime; Release build-only",
+    "lifecycleReceiptBlob": "d6faa63085d6d565cc44d8c4ed901adbb4eb12ea",
+    "relevantMethods": [
+      {
+        "method": "StudyRenderCacheTests/testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+        "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+        "declarationLine": 454,
+        "status": "passed",
+        "nativeLogLine": 5524,
+        "seconds": 0.238,
+        "evidenceKind": "Scripted compute backend failure plus real Swift CPU bust and sphere fallback",
+        "assertedScope": "Each failure callback also sets cancellation. Engine selects CPU, evicts prior synthetic Metal frame, preserves real CPU frame, releases mock object, publishes/adopts no failed frame, and later uncached/old-key requests use CPU.",
+        "sourceScenarioAccounting": {
+          "outcomes": [
+            "MetalStudyError.command",
+            "MetalStudyError.allocation",
+            "StudyError.invalidComputeOutput"
+          ],
+          "cancel": true,
+          "count": 3
+        },
+        "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+      },
+      {
+        "method": "StudyRenderCacheTests/testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+        "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+        "declarationLine": 494,
+        "status": "passed",
+        "nativeLogLine": 5542,
+        "seconds": 0.004,
+        "evidenceKind": "Scripted compute backend; synthetic compute frames",
+        "assertedScope": "Thrown StudyError.cancelled or successful render callback followed by cancellation retains backend and completed cache; interrupted key requires new render.",
+        "sourceScenarioAccounting": {
+          "outcomes": [
+            "StudyError.cancelled",
+            "success plus cancellation predicate"
+          ],
+          "count": 2
+        },
+        "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+      },
+      {
+        "method": "StudyRenderCacheTests/testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+        "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+        "declarationLine": 523,
+        "status": "passed",
+        "nativeLogLine": 5546,
+        "seconds": 0.021,
+        "evidenceKind": "Scripted precisionDomain failure plus real Swift CPU fallback",
+        "assertedScope": "Without cancellation, fallback is CPU oracle output; with cancellation, no fallback frame enters cache. Original synthetic Metal frame and backend survive, and a fresh eligible key invokes same backend.",
+        "sourceScenarioAccounting": {
+          "cancel": [
+            false,
+            true
+          ],
+          "count": 2
+        },
+        "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+      },
+      {
+        "method": "StudyRenderCacheTests/testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+        "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+        "declarationLine": 638,
+        "status": "passed",
+        "nativeLogLine": 5587,
+        "seconds": 0.037,
+        "evidenceKind": "Scripted factory/validation precisionDomain plus real CPU fallback",
+        "assertedScope": "Request-only precision fallback does not permanently select CPU; cancelled request leaves cache empty; fresh eligible key retries factory/validation successfully.",
+        "sourceScenarioAccounting": {
+          "stages": [
+            "factory",
+            "validation"
+          ],
+          "cancel": [
+            false,
+            true
+          ],
+          "count": 4
+        },
+        "scenarioEvidence": "Subcases inferred from unchanged source loops and the passing method; individual subcase results are not separately printed."
+      },
+      {
+        "method": "StudyRenderCacheTests/testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRenderCacheTests.swift",
+        "sourceBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+        "declarationLine": 668,
+        "status": "passed",
+        "nativeLogLine": 5534,
+        "seconds": 0.018,
+        "evidenceKind": "Scripted backend counters plus real CPU requests",
+        "assertedScope": "Bust, far geometry, invalid inputs and entry-cancelled requests leave factory unused; subsequent eligible sphere starts backend once; later CPU route does not invalidate it."
+      },
+      {
+        "method": "StudyRendererTests/testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRendererTests.swift",
+        "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+        "declarationLine": 94,
+        "status": "passed",
+        "nativeLogLine": 5602,
+        "seconds": 1.199,
+        "evidenceKind": "Production renderer; deterministic CPU-phase startup cancellation; actual simulator Metal on retry",
+        "assertedScope": "Cancellation interrupts initial CPU-oracle validation phase before submitted GPU work. Same engine retries actual validation/render and returns Metal with passing parity. No GPU in-flight cancellation measurement."
+      },
+      {
+        "method": "StudyRendererTests/testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRendererTests.swift",
+        "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+        "declarationLine": 54,
+        "status": "passed",
+        "nativeLogLine": 5641,
+        "seconds": 1.383,
+        "evidenceKind": "Actual simulator Metal initial render plus real CPU fallback and Metal cache reuse",
+        "assertedScope": "Initial normal render returns Metal; near-field request returns exact CPU oracle pixels; returning normal key returns original Metal-labelled image. Final request is a cache hit, not proof of a new Metal dispatch."
+      },
+      {
+        "method": "StudyRendererTests/testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal",
+        "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+        "sourcePath": "NativeTests/StudyRendererTests.swift",
+        "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+        "declarationLine": 132,
+        "status": "passed",
+        "nativeLogLine": 5619,
+        "seconds": 1.657,
+        "evidenceKind": "Real Swift CPU precision route followed by actual simulator Metal",
+        "assertedScope": "Width-24 silhouette routes CPU; later eligible width-48 portrait on same engine initializes Metal and passes parity."
+      }
+    ],
+    "relevantRawLines": [
+      {
+        "line": 5497,
+        "text": "2026-11-26T15:55:15.3276570Z Metal precision area-camera-19.0-lens-85: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5498,
+        "text": "2026-11-26T15:55:15.4283250Z Metal precision area-camera-19.0-lens-200: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5499,
+        "text": "2026-11-26T15:55:15.5287270Z Metal precision area-camera-19.999999-lens-85: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5500,
+        "text": "2026-11-26T15:55:15.6286630Z Metal precision area-camera-19.999999-lens-200: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5501,
+        "text": "2026-11-26T15:55:15.7290330Z Metal precision area-camera-20.0-lens-85: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5502,
+        "text": "2026-11-26T15:55:15.8290960Z Metal precision area-camera-20.0-lens-200: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5503,
+        "text": "2026-11-26T15:55:15.9292880Z Metal precision world-translation-77: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5504,
+        "text": "2026-11-26T15:55:16.0474300Z Metal precision world-translation--77: mean 0.0, max 0, outliers 0.0, mask true"
+      },
+      {
+        "line": 5505,
+        "text": "2026-11-26T15:55:16.1484560Z Test Case '-[KeyAndFillTests.StudyPrecisionMatrixTests testMetalMatchesCPUForEightRequiredPrecisionFixtures]' passed (8.871 seconds)."
+      },
+      {
+        "line": 5506,
+        "text": "2026-11-26T15:55:16.2492070Z Test Suite 'StudyPrecisionMatrixTests' passed at 2026-11-26 15:55:15.621."
+      },
+      {
+        "line": 5524,
+        "text": "2026-11-26T15:55:18.7242680Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation]' passed (0.238 seconds)."
+      },
+      {
+        "line": 5534,
+        "text": "2026-11-26T15:55:19.7449830Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testFactoryIsDeferredUntilEligibleUncachedSphereRequest]' passed (0.018 seconds)."
+      },
+      {
+        "line": 5542,
+        "text": "2026-11-26T15:55:20.4580160Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testOrdinaryComputeCancellationRetainsBackendAndCompletedCache]' passed (0.004 seconds)."
+      },
+      {
+        "line": 5546,
+        "text": "2026-11-26T15:55:20.8628220Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testPrecisionDomainFallbackPreservesValidatedBackend]' passed (0.021 seconds)."
+      },
+      {
+        "line": 5587,
+        "text": "2026-11-26T15:55:24.5487740Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupPrecisionDomainFallbackRemainsRetryable]' passed (0.037 seconds)."
+      },
+      {
+        "line": 5598,
+        "text": "2026-11-26T15:55:24.8991550Z Test Case '-[KeyAndFillTests.StudyRendererTests testAdditionalCancellationPredicateCannotSuppressTaskCancellation]' passed (0.105 seconds)."
+      },
+      {
+        "line": 5602,
+        "text": "2026-11-26T15:55:25.5450140Z Test Case '-[KeyAndFillTests.StudyRendererTests testCancelledInitialParityValidationCanRetryMetalOnSameEngine]' passed (1.199 seconds)."
+      },
+      {
+        "line": 5604,
+        "text": "2026-11-26T15:55:25.7109330Z Test Case '-[KeyAndFillTests.StudyRendererTests testEngineInvalidWidthsPreserveResolutionError]' passed (0.004 seconds)."
+      },
+      {
+        "line": 5606,
+        "text": "2026-11-26T15:55:25.9215150Z Test Case '-[KeyAndFillTests.StudyRendererTests testEngineMannequinUsesCPUAndPublishesDistinctFrame]' passed (0.303 seconds)."
+      },
+      {
+        "line": 5611,
+        "text": "2026-11-26T15:55:27.5973590Z Test Case '-[KeyAndFillTests.StudyRendererTests testEnginePublishesRealFrameWithEitherBackend]' passed (1.605 seconds)."
+      },
+      {
+        "line": 5613,
+        "text": "2026-11-26T15:55:27.7991950Z Test Case '-[KeyAndFillTests.StudyRendererTests testEngineUsesCPUForFarGeometry]' passed (0.005 seconds)."
+      },
+      {
+        "line": 5619,
+        "text": "2026-11-26T15:55:29.2006950Z Test Case '-[KeyAndFillTests.StudyRendererTests testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal]' passed (1.657 seconds)."
+      },
+      {
+        "line": 5621,
+        "text": "2026-11-26T15:55:29.4022080Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalInvalidCameraPreservesConstructorErrorBeforePrecisionRouting]' passed (0.005 seconds)."
+      },
+      {
+        "line": 5623,
+        "text": "2026-11-26T15:55:29.6056560Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalInvalidWidthsPreserveResolutionErrorBeforePrecisionRouting]' passed (0.009 seconds)."
+      },
+      {
+        "line": 5625,
+        "text": "2026-11-26T15:55:29.8062720Z Metal hard: mean 0.0, max 0, outliers 0.0, invalid match true"
+      },
+      {
+        "line": 5628,
+        "text": "2026-11-26T15:55:31.0096690Z Metal soft: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true"
+      },
+      {
+        "line": 5629,
+        "text": "2026-11-26T15:55:32.4174230Z Metal warm-rotated: mean 0.0, max 0, outliers 0.0, invalid match true"
+      },
+      {
+        "line": 5630,
+        "text": "2026-11-26T15:55:32.5178150Z Metal dark: mean 0.0, max 0, outliers 0.0, invalid match true"
+      },
+      {
+        "line": 5631,
+        "text": "2026-11-26T15:55:32.6182360Z Metal near-field: mean 0.0, max 0, outliers 0.0, invalid match true"
+      },
+      {
+        "line": 5632,
+        "text": "2026-11-26T15:55:34.3356250Z Metal translated: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true"
+      },
+      {
+        "line": 5633,
+        "text": "2026-11-26T15:55:34.4452900Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalMatchesCPUOnAvailableDevice]' passed (5.170 seconds)."
+      },
+      {
+        "line": 5635,
+        "text": "2026-11-26T15:55:34.6462800Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalRawDispatchRejectsInvalidPackedMetadata]' passed (0.203 seconds)."
+      },
+      {
+        "line": 5641,
+        "text": "2026-11-26T15:55:35.9091580Z Test Case '-[KeyAndFillTests.StudyRendererTests testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal]' passed (1.383 seconds)."
+      },
+      {
+        "line": 5642,
+        "text": "2026-11-26T15:55:36.0213760Z Test Suite 'StudyRendererTests' passed at 2026-11-26 15:55:35.882."
+      },
+      {
+        "line": 5709,
+        "text": "2026-11-26T15:58:45.1041810Z Verified 174 unit methods: one start and one pass each; no failures, skips, duplicates or omissions."
+      }
+    ],
+    "claimsNotMade": [
+      "GPU cancellation latency",
+      "real GPU command failure/cancellation race",
+      "all strict fixtures production-eligible",
+      "numerical mask mismatch count from a boolean",
+      "UI consumer adoption pass",
+      "device performance",
+      "physical calibration",
+      "RSS or driver memory"
+    ]
+  },
+  "source7": {
+    "comparison": {
+      "source6": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "source7": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "source6MethodCount": 25,
+      "source7MethodCount": 29,
+      "originalContentPreserved": true,
+      "newMethods": [
+        "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+        "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+        "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+        "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+      ]
+    },
+    "nativeRun": 45854806270,
+    "nativeJob": 140034909086,
+    "status": "Queued per parent update; four appended native methods execution pending.",
+    "laterCoreUpdate": {
+      "authority": "Parent /root/w071 message, not independently fetched; root records separately from frozen evidence.",
+      "run": 45854806270,
+      "job": 140031989526,
+      "result": "379 Debug +379 Release and host6/8 passed per parent.",
+      "rawBlob": "dc763b62d72322edade2cb45f585de78b2017336",
+      "metadataBlob": "6d2c5720b89e657c29803299113b522597cb3491"
+    },
+    "workerCIPolls": [],
+    "workerCIReruns": [],
+    "frozenTablesModified": false
+  },
+  "consumerDependency": {
+    "owners": [
+      "03",
+      "20"
+    ],
+    "status": "Unresolved",
+    "sequence": [
+      "A returns Metal and is displayed.",
+      "B confirms permanent engine downgrade and cancellation prevents B adoption.",
+      "ReturnA matches UI-held frame, returns before engine consultation and presents stored Metal status as current."
+    ],
+    "currentPreview": {
+      "revision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+      "isCurrentLine": 52,
+      "backendLine": 62,
+      "localReturnLine": 113,
+      "engineCallLine": 116,
+      "cancellationCatchLines": [
+        125,
+        126
+      ]
+    },
+    "proposal": {
+      "documentBlob": "09606380b33963b718b0f4cf125f242886059129",
+      "patchBlob": "85e6d2da8789ef0d0f3a2393f65d64da8b3d7789",
+      "textComparison": {
+        "targetBlob": "c96d5cb7a41143867efca160b309d71bfa993c96",
+        "targetRevision": "8ce5e464253144deccb39d838faef70f05e0c38c",
+        "currentBlob": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+        "currentRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+        "checks": [
+          {
+            "oldStart": 72,
+            "oldCount": 7,
+            "targetExactAtLine": true,
+            "currentExactAtLine": false,
+            "currentContainsOldHunk": false
+          },
+          {
+            "oldStart": 101,
+            "oldCount": 6,
+            "targetExactAtLine": true,
+            "currentExactAtLine": false,
+            "currentContainsOldHunk": true
+          },
+          {
+            "oldStart": 116,
+            "oldCount": 7,
+            "targetExactAtLine": true,
+            "currentExactAtLine": false,
+            "currentContainsOldHunk": false
+          },
+          {
+            "oldStart": 195,
+            "oldCount": 23,
+            "targetExactAtLine": true,
+            "currentExactAtLine": false,
+            "currentContainsOldHunk": false
+          }
+        ],
+        "interpretation": "In-memory hunk text comparison only; no git apply, compiler, hosted regression, UI validation, owner acknowledgment or patch application."
+      },
+      "status": "Unapplied, uncompiled, unrun, unacknowledged. No current-revision applicability or consumer fix inferred."
+    },
+    "ownerAcceptance": [
+      "Reconcile proposal against exact owner current revision before applying it.",
+      "Keep one mounted view identity through A/Metal -> B confirmed downgrade plus cancelled delivery -> A.",
+      "Require second A engine invocation while retaining historical image with previous/updating status and no current backend/warning.",
+      "Adopt returned CPU image and CPU status together only through current guarded completion.",
+      "Confirm cancelled B cannot publish; ordinary cancellation without confirmed failure can still reuse engine-cached Metal; precision-only fallback preserves later eligible Metal.",
+      "Include hosted consumer evidence; pipeline-only cancellation test does not prove engine consultation or actual current-status presentation."
+    ],
+    "limitation": "No continuous broadcast of engine backend changes to every mounted preview is established by proposed subsequent-activation fix."
+  },
+  "method": "Pinned GitHub object reads, in-memory text/regex comparisons, immutable UTF-8 documentation blobs only. No local execution or source edits.",
+  "injectionLimitation": "A generic Swift CancellationError from an injected backend would follow catch-all downgrade. Production cancellation emits StudyError.cancelled; no corresponding production failure or runtime result is claimed."
+}
