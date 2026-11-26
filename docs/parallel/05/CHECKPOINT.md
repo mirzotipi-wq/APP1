@@ -1,4 +1,10 @@
-# Lane 05 coordinator checkpoint
+# Lane 05 checkpoint history
+
+## Final verified state
+
+All100actual fresh contexts are complete across ten waves. Source60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a passed185native/39spatial, both native builds and core366Debug/366Release/100tooling. The final wave's47manifest entries and all retained report hashes passed root verification. HANDOFF.md and FINAL_VERIFICATION.json record the completed lane and exact evidence. Current broader UI failures and remaining composition/device acceptance are explicit; no milestone promotion is made.
+
+The entries below are chronological snapshots and retain their original pending states. The final handoff and source-specific receipts supersede those earlier observations.
 
 ## Source and recovery
 

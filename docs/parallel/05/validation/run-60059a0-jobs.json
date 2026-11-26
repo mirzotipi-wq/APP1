@@ -1,7 +1,7 @@
 {
   "source": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
   "run_id": 45851365897,
-  "observed_utc": "2026-11-26 16:56:48 UTC",
+  "observed_utc": "2026-11-26 17:16:30 UTC",
   "jobs": [
     {
       "id": 140020330561,
@@ -366,8 +366,8 @@
     {
       "id": 140022794629,
       "name": "ui (library-reference)",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "failure",
       "run_id": 45851365897,
       "logs_url": null,
       "steps": [
@@ -427,57 +427,63 @@
         },
         {
           "name": "Run selected native UI shard",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "failure",
           "number": 10
         },
         {
           "name": "Verify required UI method accounting",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "failure",
           "number": 11
         },
         {
           "name": "Capture host conditions after UI tests",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "number": 12
         },
         {
           "name": "Export studio slider unified log",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "skipped",
           "number": 13
         },
         {
           "name": "Export finalized XCTest result bundle and genuine attachments",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "failure",
           "number": 14
         },
         {
           "name": "Upload original XCTest bundle after archive failure",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "skipped",
           "number": 15
         },
         {
           "name": "Upload native result and test evidence",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "number": 16
         },
         {
           "name": "Upload compact native attachments",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "number": 17
         },
         {
           "name": "Post Run actions/checkout@v4",
-          "status": "pending",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "number": 34
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 35
         }
       ]
     },
@@ -732,12 +738,121 @@
     {
       "id": 140022794958,
       "name": "ui (room-precision)",
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null,
       "run_id": 45851365897,
       "logs_url": null,
-      "steps": null
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Record Apple toolchain and exact revision",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify Metal compiler component",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Generate project",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Select available iPhone simulator",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Build native UI test bundle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Warm selected iPhone simulator (diagnostic)",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 8
+        },
+        {
+          "name": "Capture host conditions before UI tests",
+          "status": "pending",
+          "conclusion": null,
+          "number": 9
+        },
+        {
+          "name": "Run selected native UI shard",
+          "status": "pending",
+          "conclusion": null,
+          "number": 10
+        },
+        {
+          "name": "Verify required UI method accounting",
+          "status": "pending",
+          "conclusion": null,
+          "number": 11
+        },
+        {
+          "name": "Capture host conditions after UI tests",
+          "status": "pending",
+          "conclusion": null,
+          "number": 12
+        },
+        {
+          "name": "Export studio slider unified log",
+          "status": "pending",
+          "conclusion": null,
+          "number": 13
+        },
+        {
+          "name": "Export finalized XCTest result bundle and genuine attachments",
+          "status": "pending",
+          "conclusion": null,
+          "number": 14
+        },
+        {
+          "name": "Upload original XCTest bundle after archive failure",
+          "status": "pending",
+          "conclusion": null,
+          "number": 15
+        },
+        {
+          "name": "Upload native result and test evidence",
+          "status": "pending",
+          "conclusion": null,
+          "number": 16
+        },
+        {
+          "name": "Upload compact native attachments",
+          "status": "pending",
+          "conclusion": null,
+          "number": 17
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "pending",
+          "conclusion": null,
+          "number": 34
+        }
+      ]
     }
   ],
-  "interpretation": "Source-specific native185/39 and core passed. UI export and accessibility failures remain; incomplete jobs are not passes. No milestone promotion."
+  "interpretation": "Final lane05 handoff cutoff: core/native succeeded; export/library/optics/accessibility failed; room precision is not yet terminal. Native185/39 independently verified. No overall CI or milestone pass."
 }

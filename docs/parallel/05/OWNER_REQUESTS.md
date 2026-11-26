@@ -36,7 +36,7 @@ The source-specific receipts in `validation/` distinguish successful native spat
 | `68c83cca` | 171 / 25 | Optics failed before UI runner initialization with AX notification timeout. App accessibility failed reaching Plan light-Key. Room precision failed draft/spoken-value checks. Library/export were cancelled. |
 | `9725fb1` | 176 / 30 | Library and optics UI shards passed. App accessibility failed at its line-263 wait. Room/export were cancelled by the successor. |
 | `4e694bc` | 184 / 38 | Optics, room and export UI shards passed. Library, accessibility and visual review were cancelled by the successor after native execution completed. |
-| `60059a0` | 185 / 39 passed | Core 366 Debug / 366 Release / 100 tooling and both native builds passed. Export, optics and app-accessibility UI shards failed; see current receipts and timestamped job dispositions. |
+| `60059a0` | 185 / 39 passed | Core 366 Debug / 366 Release / 100 tooling and both native builds passed. Export, library/reference, optics and app-accessibility UI shards failed; see current receipts and timestamped job dispositions. |
 
 Failed and cancelled jobs are not viewport passes. Their product or harness causes are not assigned without evidence. Original failure logs, final dispositions and attachment inventories remain in this directory. No assertions are skipped or relaxed.
 
@@ -55,3 +55,5 @@ RealityKit runtime/device behavior, delivered native gestures, manual VoiceOver 
 Source60059 export job140022794554 passed9/10 methods and failed reopening the format chooser after undo at LightingPlanExportUITests.swift:163. Its full evidence upload timed out; the compact archive succeeded. The existing full-app3D/Fit smoke method passed and its original capture is preserved separately.
 
 App-accessibility job140022794912 failed the openMeter reachability check at StudioAppAccessibilityUITests.swift:340. Source inspection places that call in the Plan workflow before any3D/Camera stage. The recorded target moved through12 scroll attempts but remained partly above the visible content bounds. This describes the observation; it does not assign a product or harness cause. Composition, accessibility and CI owners should investigate with the retained logs; no assertions were relaxed or skipped.
+
+Late final observation: library/reference passed3methods, failed1large-library save-status check at source456, left1started method unfinished and4unstarted, and hit its32-minute step timeout without a finalized bundle. Room precision remains in progress at the final cutoff. These are owner follow-ups, not viewport or full-workflow passes; see the current job snapshot and ui-library-reference-60059a0 receipts.

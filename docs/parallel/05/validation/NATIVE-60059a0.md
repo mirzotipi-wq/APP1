@@ -70,3 +70,5 @@ The export failure waits for the format chooser when reopening after undo. The a
 RealityKit source compilation and arithmetic tests do not establish RealityKit runtime rendering. Direct SceneKit tests, the full-app Fit action and original captures remain distinct from delivered orbit/pan/pinch, first-save viewport retention, physical-device testing, manual VoiceOver, measured frame rate, thermal behavior or ARC/GPU deallocation.
 
 Later observation: the optics UI shard also failed. Repeatability03 timed out on startup status, Repeatability05 timed out querying emitterKind, and the step reached its40-minute timeout without a finalized XCTest bundle. Its exact raw log, accounting and triage are preserved as ui-studio-optics-60059a0*. No viewport cause is established.
+
+Final handoff cutoff: library/reference also failed (3passed,1failed,1unfinished,4unstarted), with a large-library save-status wait and32-minute step timeout. Room precision remains in progress. These later statuses do not change the successful native185/39 execution or the earlier sealed worker observations. See run-60059a0-jobs.json for the exact timestamp.
