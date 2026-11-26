@@ -112,6 +112,37 @@ jobs:
                          "archiveFile": filename, "bytes": size, "sha256": digest.hexdigest()}
               receipts.append(receipt)
               print("KEYFILL_PRESERVED " + json.dumps(receipt), flush=True)
+              # Read only bounded, explicitly named host diagnostics from the
+              # already SHA-verified original ZIP. Never extract archive paths.
+              if item["name"].endswith("-evidence"):
+                  import base64, zipfile
+                  from pathlib import PurePosixPath
+                  allowed = {"ui-host-before-tests.log", "ui-host-after-tests.log", "simulator-boot.log"}
+                  with zipfile.ZipFile(root / filename) as archive:
+                      entries = archive.infolist()
+                      if len(entries) > 20000:
+                          raise SystemExit("Oversized diagnostic archive index")
+                      selected_logs = [entry for entry in entries if
+                          PurePosixPath(entry.filename).name in allowed or
+                          ("simulator-startup" in PurePosixPath(entry.filename).parts and
+                           PurePosixPath(entry.filename).suffix == ".json")]
+                      if len(selected_logs) > 12:
+                          raise SystemExit("Too many host diagnostic files")
+                      diagnostic_bytes = 0
+                      for entry in selected_logs:
+                          if entry.is_dir() or entry.file_size > 256 * 1024:
+                              raise SystemExit("Oversized host diagnostic")
+                          with archive.open(entry) as stream:
+                              data = stream.read(256 * 1024 + 1)
+                          diagnostic_bytes += len(data)
+                          if len(data) != entry.file_size or diagnostic_bytes > 1024 * 1024:
+                              raise SystemExit("Host diagnostic size mismatch or total exceeded")
+                          print("KEYFILL_HOST " + json.dumps({
+                              "artifactId": item["id"], "originalRunId": run_id,
+                              "sourceRevision": revision, "path": entry.filename,
+                              "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                              "encoding": "base64", "data": base64.b64encode(data).decode("ascii")
+                          }), flush=True)
           (root / "receipt.json").write_text(json.dumps({
               "schema": 1, "repository": repository, "originalRunId": run_id,
               "sourceRevision": revision, "archives": receipts,
