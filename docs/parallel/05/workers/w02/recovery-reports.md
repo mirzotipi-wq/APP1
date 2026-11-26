@@ -1,0 +1,165 @@
+# Wave02 — recovered report blocks
+
+These are recovered report blocks, not the original deleted files. Exactly ten actual fresh contexts completed: the acceptance lead and nine children. All used fork_turns:none; root is not counted. Resources completed its blocked review in the same context; concurrency reused its context only to recover completed evidence.
+
+The SHA-256 values bind the exact UTF-8 text inside each report block, including its final LF. They do not identify the deleted original files. Input revisions and evidence limits remain source-specific.
+
+## acceptance
+
+- Worker: `/root/w02_acceptance`
+- Fork mode: `none`
+- Reviewed input: `ca3e9c0ffcdde2c9cff69a2bef562bf0333aeee9`
+- Report SHA-256: `adbcdc2a3d9b218957d5e534a6d386681a07094af286ceb841ea26023c5bc418`
+
+```text
+Inventory at ca3: nine portable SpatialViewportState methods and seventeen SceneKit methods (five emitter, three preview, nine interaction). NativeTests contains no StudioEntityGraph or RealityStudioPreview references. StudioViewportGeometryTests concerns accessibility layout, not spatial transforms.
+
+SpatialEmitterGeometryTests:49–153 covers front planes, roll, point centers, off-state and coincidence; expected axes mostly reuse Core. SpatialInteractionTests:107–141 and SpatialPreviewTests:93–118 inspect camera forward/lens/FOV. SpatialViewportStateTests:143–168 independently projects declared AABB corners, which does not prove actual mesh containment.
+
+Root reports eight helper passes at published 68c83 and nine at local ca3; this worker reran neither. Seventeen SceneKit declarations are not execution evidence. Native run 45817222487 belongs to published input and requires source reconciliation. No RealityKit runtime, physical calibration or device pass claimed.
+```
+
+## geometry
+
+- Worker: `/root/w02_acceptance/geometry`
+- Fork mode: `none`
+- Reviewed input: `ca3e9c0ffcdde2c9cff69a2bef562bf0333aeee9`
+- Report SHA-256: `f945646e24b14fbf90c9f7faf8b83d90f27b73a8569646877ce07eb21d455022`
+
+```text
+No blocking basis, roll or camera-sign defect found. StudioOptics.swift:50–93 establishes right × up = normal: +Z gives +X/+Y; −Z gives −X/+Y; +Y gives +X/−Z; −Y gives +X/+Z. Positive 90° roll moves right toward prior up. Manual aim uses target−source; coincidence returns no frame.
+
+Executed independent Python witnesses: six cardinal normals × six rolls, explicit expected bases plus Rodrigues rotation; 36 cases, maximum vector error 0 and determinant +1 within 1e−12. Oblique delta (3,4,5), coincidence and default sensor corner also checked. These are transcribed equations, not Swift/native execution.
+
+CameraFraming.swift:33–54 and adapter conversions preserve local −Z forward. Found selected RealityKit target sphere exceeds center-only bounds by 0.0275 m (StudioEntityGraph.swift:302–303; StudioSceneBounds.swift:21). No clipping demonstrated. Native emitter tests reuse Core basis; vertical camera tests do not independently prove image-axis signs.
+```
+
+## interfaces
+
+- Worker: `/root/w02_acceptance/interfaces`
+- Fork mode: `none`
+- Reviewed input: `ca3e9c0ffcdde2c9cff69a2bef562bf0333aeee9`
+- Report SHA-256: `b7706712fc3475fdb9beeb0abe343b3ab68e19829977ea34478443027e42bee8`
+
+```text
+Core/App ownership and default meter/−Z conventions agree. Core intentionally owns authored centers and emitter corners; App owns visible housings, outlines, busts, cameras and stands. World-floor stands intentionally prevent vertical translation invariance.
+
+Concrete bounds mismatch: subject (0,1.5,0), camera (0,1.5,3), directional source (0,2,0), explicit target (1,2,0). SpatialViewportBounds.maximum.x = 1.0, but selected RealityKit target sphere reaches 1.0275. StudioEntityGraph.swift:172,227,292–308 uses radius-0.5 sphere scaled 0.055; SpatialViewportGeometry.swift:24–58 supplies no target radius. Existing 12% Fit margin means clipping was not demonstrated.
+
+Repair belongs in App; Core's center-only contract should remain unchanged. Inspected equipment envelopes otherwise agree. Declared-bound corner projection cannot independently establish every actual mesh's containment. Source review only; no builds/tests/native execution.
+```
+
+## implementation
+
+- Worker: `/root/w02_acceptance/implementation`
+- Fork mode: `none`
+- Reviewed input: `ca3e9c0ffcdde2c9cff69a2bef562bf0333aeee9`
+- Report SHA-256: `d4a23112bd215defa84a0646a78de91a7db88fa4c3c63bf0ada892d40ddf5241`
+
+```text
+No confirmed emitter-front, point-center, meter-scale or camera-handedness defect. StudioEntityGraph.swift:171–174,258–277 uses unit resources: point center stays authored; diffuser front −0.003 + 0.006/2 = 0. SpatialPreview.swift:380–383,410–440 preserves point centers and offsets aimed housing by negative half-depth, placing its +Z front at the authored position.
+
+Core right/up/normal columns upload directly; RealityKit emission composes a 180° local-Y rotation, while SceneKit flips right and normal. Both preserve handedness. Camera bodies follow Core target/up; lens centers extend 0.11 m and 0.12 m along local −Z (Graph:47–53,90–95; SceneKit:322–338).
+
+Coverage gaps: no direct StudioEntityGraph test references; SceneKit camera-body regression checks all forward components but only lens Y for one vertical pose (SpatialInteractionTests:128–140). Add translated oblique cases, all lens coordinates and right/up checks. Source consistency only; no builds/tests/native acceptance.
+```
+
+## concurrency
+
+- Worker: `/root/w02_acceptance/concurrency`
+- Fork mode: `none`
+- Reviewed input: `ca3e9c0ffcdde2c9cff69a2bef562bf0333aeee9`
+- Report SHA-256: `0a1af5179fdc3fc8b6dd17b22167f3cfee97b403a4d64fe8f5c95a47e018b6a6`
+
+```text
+No confirmed blocker. Coordinators/graph are main-actor isolated, with synchronous update/gesture/detach paths (RealityStudioPreview.swift:59–112; StudioEntityGraph.swift:8; SpatialPreview.swift:8–43).
+
+RealityKit consumes incremental gestures against current orbit state, so an old gesture-start pose cannot overwrite an intervening Fit. Geometry updates preserve navigation; ID-set changes cancel gestures (RealityStudioPreview.swift:189–205,228–270). Callback refresh, current membership checks, invalidation and detach reject stale selections (154–225,273–279; StudioEntityGraph.swift:69–77,100–115).
+
+SceneKit refreshes callbacks before its early return and updates transactionally while preserving user pose (SpatialPreview.swift:204–287). Current framing and −Z conventions appear coherent.
+
+Existing tests exercise stale hits, callback refresh, invalidation, detach and camera recovery; pose preservation uses a synthetic camera. Live recognizer continuity across Fit/layout/transforms or detach/re-entry remains untested. No builds/tests; native run status is parent-supplied, not a pass. Full substance recovered in the same context without new source reads.
+```
+
+## resources
+
+- Worker: `/root/w02_acceptance/resources`
+- Fork mode: `none`
+- Reviewed input: `68c83cca75f9ef8fd41fe6a33358b00e0790c45a`
+- Report SHA-256: `a82de0314f6e79e44e723b50dfeba441750451d06b68ce88185f4e15cfa7c44f`
+
+```text
+No concrete stale scale/orientation/material/collision/outline defect found. RealityKit invalidates on optics changes, resets orientation, switches point/housing visibility and overwrites dimensions/outline positions (StudioEntityGraph.swift:253–279). Unit collisions remain attached to resized bodies (173–185); materials, point/spot components and every outline edge refresh (309–360).
+
+SceneKit replaces fixture/outline geometry and resets indicator scale on kind/dimension changes (SpatialPreview.swift:371–400). Source type/orientation, fixture pose and diffuse/emission materials refresh (411–446), preventing accumulated offsets.
+
+RealityKit front plane remains −0.003 + 0.006/2 = 0; SceneKit offsets by negative half current depth. Viewport bounds derive current optics/frame and use world axes for undefined aim.
+
+Three GitHub source fetches; no builds/tests/writes. Original ca3 attempt failed before source inspection during environment loss. This completed same-context followup reviewed published 68c83 only. No native pass.
+```
+
+## interactions
+
+- Worker: `/root/w02_acceptance/interactions`
+- Fork mode: `none`
+- Reviewed input: `68c83cca75f9ef8fd41fe6a33358b00e0790c45a`
+- Report SHA-256: `49475a86d4ba728cb68f9e445950aa8b3d9367c8e2b8144ddaf6f37b82baf00d`
+
+```text
+Independent JavaScript pinhole witness used target (3,−2,5), distance 7, yaw/pitch (0,0), (0.56,0.36), (π/2,−0.6), (−2.8,1.2); viewports 390×844 and 844×390; drags (10,0)/(0,10). Derived F=normalize(target−camera), R=normalize(F×worldUp), U=R×F independently.
+
+All 16 pan cases reproduced the requested screen drag; maximum error 2.85×10⁻¹⁴ points. Scale 0.01598256819 m/point in both orientations; vertical FOV 87.871294284°/48°. All 16 orbit cases moved a foreground probe in the dragged axis's positive direction while target stayed centered.
+
+Core camera basis error ≤2.49×10⁻¹⁶; R×U=−F, consistent with forward −Z. Sources: SpatialViewportGeometry.swift:91–127; RealityStudioPreview.swift:122–127,228–261; StudioOptics.swift:58–71; CameraFraming.swift:46–54,71–79.
+
+Reviewed published 68c83, not ca3. No filesystem/build/test reruns. Witness does not verify native projection, gesture delivery, Float upload, clamp boundaries or SceneKit fallback.
+```
+
+## accessibility_privacy
+
+- Worker: `/root/w02_acceptance/accessibility_privacy`
+- Fork mode: `none`
+- Reviewed input: `68c83cca75f9ef8fd41fe6a33358b00e0790c45a`
+- Report SHA-256: `248bcc6a96c742b960aca82f51707ed7b651156beaf9ac013bcc022a6435d2ae`
+
+```text
+Unavailable aimed frames suppress illumination and stale aim markers (StudioEntityGraph.swift:117–121,292–308,335–337; SpatialPreview.swift:411–427,443–446). Nonblocking UX gap: equipment rows lack explicit aim status; inspector supplies generic “Estimate unavailable” and check-aim/separation guidance (StudioView.swift:926–948,999–1003). Default fixture orientation remains visible. Specific cause text requires verified Core classification.
+
+Both renderer trees are hidden from accessibility; actual equipment buttons provide ≥52-point rows and selected traits. Numeric inspector controls expose named/unit values; Fit has ≥44-point height/hint. Source wiring does not demonstrate VoiceOver or Dynamic Type behavior.
+
+Undefined camera framing provides recovery text (StudioView.swift:722–738; SpatialPreview.swift:223–229,496–520). “Illustrative lighting,” seven-light cap and ideal-estimate/calibration distinctions are explicit.
+
+No capture/upload/network/telemetry/logging appeared in three complete viewport files. RealityKit uses nonAR and disables automatic session configuration (RealityStudioPreview.swift:70–72). Not app-wide privacy acceptance. Published 68c83 source review only; no native/accessibility/device execution.
+```
+
+## platform_performance
+
+- Worker: `/root/w02_acceptance/platform_performance`
+- Fork mode: `none`
+- Reviewed input: `68c83cca75f9ef8fd41fe6a33358b00e0790c45a`
+- Report SHA-256: `313ebf2bed4751ef052582f381ff3f242bed2153699d8d680bbfb0e7b617869d`
+
+```text
+Minor Float-boundary gap: verticalFieldOfView validates Double <180, then RealityStudioPreview.swift:233 narrows to Float. JavaScript evaluation at width 0.00001, height 1000 yields 179.99999742623143; Math.fround gives 180. Validate narrowed value or use a representable upper bound. Pathological positive-size input; no ordinary-layout/native failure demonstrated.
+
+Published 68c83 farDistance remains max(400, distance + 400); successor correction was not reviewed or credited. Navigation otherwise stays Double until upload; SceneKit converts explicitly. StudioEntityGraph.swift:292–308 guards Float-space segment length before normalization; intensity/attenuation inputs are bounded.
+
+x86 simulator selects SceneKit before RealityKit coordinator construction, but RealityKit declarations still require Apple SDK compilation. No definite API mismatch found; setters, look-at overloads, delegate isolation and component mutations remain SDK-unverified.
+
+Shared resources, persistent entities, seven shaded lights and change-sensitive updates are visible safeguards, not measured performance. Four source fetches; no builds/tests/timing/memory/device evidence.
+```
+
+## independent_review
+
+- Worker: `/root/w02_acceptance/independent_review`
+- Fork mode: `none`
+- Reviewed input: `9218740173e718efe928ee18dfe5da844c2f2179`
+- Report SHA-256: `60a365f9cd7eb26c6780a6efe7a90596ab849021f4987f47458032c9e75ab45b`
+
+```text
+Attempted reproduction did not falsify the target-sphere fix: source (0,2,0), aim (1,2,0) requires maximum x 1.0275; helper now expands all six sides by shared radius 0.0275. RealityKit's radius-0.5 mesh uses twice that constant as scale. Bounds include valid-frame markers even when native short-segment visibility hides them, conservatively. New test detects prior omission (SpatialViewportGeometry.swift; StudioEntityGraph.swift; SpatialViewportStateTests.swift).
+
+Far witness: target (300,300,−300), authored corner (−100,−100,100), camera back (1,1,−1)/√3, distance 0.45 gives axial depth 400√3+0.45 ≈693.2703, below 750.45. Points are collinear, so test's Euclidean distance is valid. With 4 m housing, radius √(2×2.03²+0.15²)≈2.875; triangle inequality bounds depth below distance+695.696. ±100 validation was directly read; 4 m cap is prior parent-supplied review, not independently reread.
+
+No blocking counterexample within premises. New sphere test checks +X only; Fit projects declared bounds, not native vertices. No execution. Nine-test pass belongs to ca3; new runner signal-9 termination after module compilation establishes neither ten-test nor native success. Actual review SHA is 9218740.
+```
