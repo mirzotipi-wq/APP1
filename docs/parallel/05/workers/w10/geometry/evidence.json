@@ -1,0 +1,151 @@
+{
+  "reviewer": "/root/w10_acceptance/geometry",
+  "production_source": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+  "documentation_parent": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+  "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "preceding_native_source": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+  "execution": {
+    "performed": [
+      "Pinned git show/grep/tree/diff inspection",
+      "Python standard-library receipt parsing, arithmetic counting, and SHA256 hashing"
+    ],
+    "not_performed": [
+      "Builds",
+      "Installs",
+      "Swift or native execution",
+      "Portable witness execution",
+      "Live CI or owner-branch checks"
+    ],
+    "integration_checkout_mutated": false,
+    "source_changes_requested": false
+  },
+  "source_sha256": {
+    "App/SpatialViewportGeometry.swift": "465edc50d458fcfca860d3ecfdbb0887721150c89692e2a6184afb43fc4c3d94",
+    "App/SpatialPreview.swift": "f7d90394a449c859a0fdebd98e7b11b0a5dad942d971d6a1d3a24474c9f0a585",
+    "App/StudioEntityGraph.swift": "a969106d321096bd2a573c1b0ddbb6b3c70192dfd86a792ec1a8a249089a783b",
+    "App/RealityStudioPreview.swift": "3a95ef21338a212765f9ff13692adebf5d116b3779e9d4bc93d085134714ac07",
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+    "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+    "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+    "NativeTests/SpatialEmitterGeometryTests.swift": "537f91ff41b0ce69cb3aea882fa8b3d62e99fc5b4d71fa58838d973bc26b2318",
+    "NativeTests/SpatialPreviewTests.swift": "639fa05b1a09e54a4c5bf0b883e3ee1c4f5e0bf877b89d1979410ac4a655e150",
+    "NativeTests/SpatialViewportStateTests.swift": "7a15a02aec47fce75cc87d3a69cb563453a2786352c4042d958fb8925ba3fc0b",
+    "NativeTests/SpatialInteractionTests.swift": "824b5484048a65d80b753f354213f955bff2c40d2d92581976cfea9722174c7c",
+    "NativeTests/SpatialAimRecoveryTests.swift": "17a4a59ed520298a0143fe3d6ccc1589f36af3414fcf51bf81d9c1ad491e16a0"
+  },
+  "document_sha256": {
+    "AGENTS.md": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+    "docs/ARCHITECTURE.md": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a",
+    "docs/DESIGN.md": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117",
+    "docs/acceptance/m02-m03-code.md": "829fb77720eca498dcefdb8945b62383e9d7e748cf54fa86b7b53c55d0573ba4",
+    "docs/parallel/05/HANDOFF.md": "fe1f47680b6c956e36fe489a43aa822c23478b0a315ded59b42141ad99c751db",
+    "docs/parallel/05/GEOMETRY_COMPARISONS.md": "738e4bc4c956fc7469a503982cb8720960a15a886e8195fdba1968943cfd2dbf",
+    "docs/parallel/05/validation/NATIVE-4e694bc.md": "f6b2029c8342f68de49bda60031ffd90a2afea62852d3f45314bf2a5609fa206",
+    "docs/parallel/05/validation/CI-60059a0-progress.json": "1a1253634729b741b34f081a8752695a53287d42dbfb97a08ecf9dfb3d4fc4a8",
+    "docs/parallel/05/validation/float-projection-review/scalar_projection_check.json": "53db4f3f05da094d3d1557ff567eb6af422f1a5700844f42f4c310ecb662666b",
+    "docs/parallel/05/workers/w08/implementation/portable_geometry_witness.py": "96cda16eed0d150b1494a903b88fc450859f1c71b544731491e183414988c348",
+    "docs/parallel/05/workers/w08/implementation/portable_geometry_witness.json": "d5c4a9f64b59ef329cf35985309a8906aaabf7c3cb111258902b039f2a65128b"
+  },
+  "core_contract_files_equal_to_baseline": {
+    "Sources/LightingCore/Scene.swift": true,
+    "Sources/LightingCore/StudioOptics.swift": true,
+    "Sources/LightingCore/CameraFraming.swift": true,
+    "Sources/LightingCore/StudioSceneBounds.swift": true
+  },
+  "findings": [
+    {
+      "topic": "SI, bases and roll",
+      "disposition": "No defect demonstrated",
+      "anchors": [
+        "Sources/LightingCore/StudioOptics.swift: EmitterFrame and StudioPhotometry.frame",
+        "Sources/LightingCore/CameraFraming.swift: CameraFraming.init",
+        "App/SpatialPreview.swift: orient",
+        "App/StudioEntityGraph.swift: StudioLampEntity.update"
+      ],
+      "inspection": "Authored XYZ is uploaded without axis swapping or unit scaling. Both emitters consume right/up/normal columns. SceneKit flips right and normal for negative-Z source emission; RealityKit emission child rotates pi about Y. Cardinal vertical recovery test has independent fixed axes."
+    },
+    {
+      "topic": "Front planes and full rectangle",
+      "disposition": "No false claim demonstrated",
+      "anchors": [
+        "App/SpatialPreview.swift: updateContent",
+        "App/StudioEntityGraph.swift: StudioLampEntity.update",
+        "NativeTests/SpatialEmitterGeometryTests.swift"
+      ],
+      "inspection": "Defined SceneKit boxes translate by negative half-depth; RealityKit diffuser center -0.003 plus half-depth 0.003 gives local front zero. Rectangle face scales to full authored width/height; directional styling retains inset. Undefined aim is explicitly outside the defined-front-plane case. Chamfer is not proof of ideal flat-face tessellated corners. Stated area reductions agree with dimensions: 1-(1.188*0.688)/(1.2*0.7) approximately 2.697142857 percent; 1-(0.038*0.038)/(0.05*0.05) = 42.24 percent."
+    },
+    {
+      "topic": "Represented bounds and Fit",
+      "disposition": "No omitted display primitive demonstrated",
+      "anchors": [
+        "App/SpatialViewportGeometry.swift: SpatialViewportBounds.init and SpatialOrbitState.fit",
+        "App/StudioEntityGraph.swift: primitive dimensions",
+        "App/SpatialPreview.swift: updateContent and fitOrbit"
+      ],
+      "inspection": "App envelopes add bust, camera/lens, point, full housing/outline, floor-anchored stand base, and aim target radius 0.0275. Housing endpoint margins and target volume also conservatively enclose the thin aim segment. Floor/grid excluded. Fit sphere uses max(0.8,radius)/sin(24 degrees)*1.12; validated-world radius stays below distance clamp. Source bounds and native Float transforms are distinct evidence."
+    },
+    {
+      "topic": "Outward Float upload",
+      "disposition": "Source correction matches documented algorithm",
+      "anchors": [
+        "App/SpatialViewportGeometry.swift: verticalFieldOfView",
+        "App/RealityStudioPreview.swift: layout(size:)",
+        "NativeTests/SpatialViewportStateTests.swift: testFloatProjectionDoesNotNarrowTheSmallerViewportAxis"
+      ],
+      "inspection": "Width>=height returns exactly representable 48. Tall layout chooses nearest Float, then nextUp only if Double(nearest)<ideal; enclosing>=180 is rejected. Returned Double roundtrips that Float at actual upload. Regression declares six accepted and two rejected layouts. Extreme 0.0001x3000 old scalar projection is about 14.054-degree half-angle against a 20.535-degree camera-marker direction; correction rejects it. No native matrix or RealityKit execution was inspected for this corrected source."
+    }
+  ],
+  "native_projected_point_accounting": {
+    "SpatialPreviewTests.testTranslatedRigAndModifierFitActualSceneKitProjection": {
+      "bounds_corners": 8,
+      "layouts": 2,
+      "projection_checks": 16
+    },
+    "SpatialInteractionTests.testCoincidentSoftboxAndHighStandFitActualNarrowProjection": {
+      "housing_samples_plus_stand_point": 5,
+      "layouts": 2,
+      "projection_checks": 10
+    },
+    "total_projection_checks": 26,
+    "limit": "Counts point evaluations across declared layouts; not 26 layouts, all vertices, or RealityKit runtime."
+  },
+  "portable_receipt_inspection": {
+    "path": "docs/parallel/05/workers/w08/implementation/portable_geometry_witness.json",
+    "input_source": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+    "fixture_count_declared": 15,
+    "fixtures_counted": 15,
+    "primitive_instances_counted": 760,
+    "layout_count": 4,
+    "pose_count": 4,
+    "cases_per_model_counted": 240,
+    "cases_per_model_declared": 240,
+    "models": [
+      "Ideal geometry and ideal Double FOV",
+      "Ideal geometry with nearest Float degree angle only"
+    ],
+    "recorded_failures": [],
+    "minimum_recorded_plane_clearance_m": 0.3217824835672149,
+    "limit": "Preserved wave-08 model receipt, not rerun here. Core transforms are modeled; no native quaternion/matrix construction, Float trigonometry, tessellation, culling, rasterization, or gesture execution."
+  },
+  "acceptance_boundary": {
+    "historical_cutoff_utc": "2026-11-26T16:23:18Z",
+    "native_current_source": "185 native / 39 spatial inventory; execution pending at pinned cutoff",
+    "preceding_source": "184 native / 38 spatial passed in source-specific receipt; not transferred",
+    "root_supplied_later_observation": "Acceptance lead says root observed native job in_progress at 2026-11-26T16:30:01Z; no completed native receipt supplied. Append any newer result separately.",
+    "owner_dependencies": [
+      "Acceptance owner: exact-source native method receipt",
+      "Lane 01: integrate presentation identity source 5ccfbaae821a32d88c12ed8b3abf1600aef25753 and verify hosted retention/replacement",
+      "Lane 06: Core geometry ownership remains unchanged",
+      "Supported RealityKit runtime/device execution remains separate"
+    ],
+    "history": "Four executor interruptions and wave-01 summary-only recovery retained explicitly.",
+    "no_claims": [
+      "ARC/GPU deallocation",
+      "Renderer-thread atomicity",
+      "FPS/device performance",
+      "Manual accessibility acceptance",
+      "Photometric calibration"
+    ]
+  }
+}

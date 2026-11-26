@@ -1,0 +1,248 @@
+{
+  "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "source": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+  "documentation_parent": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+  "execution_scope": "Python text enumeration, pinned git show/diff/tree/object inspection only; no native execution",
+  "inventory_rule": "\\bfunc\\s+(test\\w*)\\s*\\( in NativeTests/**/*.swift; matches repository accounting",
+  "inventory_parser_correction": "First anchored pattern omitted four @MainActor func declarations in LightingPlanPDFTests; corrected before final evidence",
+  "native_baseline": 154,
+  "native_current": 185,
+  "native_current_per_file": {
+    "NativeTests/BoundedFileReaderTests.swift": 13,
+    "NativeTests/LightingPlanPDFTests.swift": 4,
+    "NativeTests/ProjectDocumentIOTests.swift": 9,
+    "NativeTests/ProjectLibraryPresentationTests.swift": 9,
+    "NativeTests/ProjectNameEditorTests.swift": 4,
+    "NativeTests/ProjectStoreOperationTests.swift": 16,
+    "NativeTests/ReferencePhotoTests.swift": 7,
+    "NativeTests/RoomRotationReadoutTests.swift": 3,
+    "NativeTests/SpatialAimRecoveryTests.swift": 1,
+    "NativeTests/SpatialEmitterGeometryTests.swift": 5,
+    "NativeTests/SpatialEntityUpdateTests.swift": 3,
+    "NativeTests/SpatialInteractionTests.swift": 9,
+    "NativeTests/SpatialNavigationRecoveryTests.swift": 4,
+    "NativeTests/SpatialPreviewTests.swift": 3,
+    "NativeTests/SpatialSelectionLifetimeTests.swift": 3,
+    "NativeTests/SpatialViewportStateTests.swift": 11,
+    "NativeTests/StudioPaletteTests.swift": 5,
+    "NativeTests/StudioSliderEditingTests.swift": 8,
+    "NativeTests/StudioSliderTrackingTests.swift": 19,
+    "NativeTests/StudioTextFieldTests.swift": 17,
+    "NativeTests/StudioTextLayoutDiagnosticsTests.swift": 3,
+    "NativeTests/StudioTrackingSliderTests.swift": 3,
+    "NativeTests/StudioViewportGeometryTests.swift": 8,
+    "NativeTests/StudyRenderCacheTests.swift": 11,
+    "NativeTests/StudyRendererTests.swift": 7
+  },
+  "spatial_baseline": 8,
+  "spatial_current": 39,
+  "spatial_added": 31,
+  "spatial_removed": [],
+  "arithmetic_state_methods": 11,
+  "direct_scenekit_methods": 28,
+  "spatial_methods": {
+    "NativeTests/SpatialAimRecoveryTests.swift": [
+      "testCoincidentAimRecoversRetainedLampAtTranslatedVerticalPose"
+    ],
+    "NativeTests/SpatialEmitterGeometryTests.swift": [
+      "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+      "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+      "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+      "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+      "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection"
+    ],
+    "NativeTests/SpatialEntityUpdateTests.swift": [
+      "testKindTransitionsReplaceShapeWithoutReplacingLiveLampNodes",
+      "testRectangleResizingReplacesGeometryWhilePoseAndOutputEditsReuseIt",
+      "testStandThresholdDetachesHitsAndReattachesTheSameCylinder"
+    ],
+    "NativeTests/SpatialInteractionTests.swift": [
+      "testMetadataOutputAndSelectionKeepLiveNodesAndRefreshCallback",
+      "testRemovedAndReintroducedUUIDCannotReuseOldHitObject",
+      "testInvalidSceneDiscardsHitIdentitiesAndRecoversWithoutOldGeometry",
+      "testDisablingAndDismantlingRejectsSelectionAndReleasesGeometry",
+      "testUndefinedCameraHidesPriorViewAndRecoversAuthoredLens",
+      "testCameraBodyAndLensFollowTheAuthoredNegativeZConvention",
+      "testRepeatedUpdatesKeepBoundedNodeCountAndLiveFixtureIdentity",
+      "testCoincidentSoftboxAndHighStandFitActualNarrowProjection",
+      "testCaptureRealSceneKitOrdinaryAndCrowdedViewports"
+    ],
+    "NativeTests/SpatialNavigationRecoveryTests.swift": [
+      "testInvalidOrbitTransitionRecoversFromAuthoredCameraWithUnchangedFitRequest",
+      "testInvalidOrbitTransitionRecoversFromUndefinedCameraWithUnchangedFitRequest",
+      "testInvalidOrbitScenePreservesUserCameraAndTargetWithoutFitRequest",
+      "testInitialValidEmptyOrbitEnablesInteraction"
+    ],
+    "NativeTests/SpatialPreviewTests.swift": [
+      "testTranslatedRigAndModifierFitActualSceneKitProjection",
+      "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+      "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical"
+    ],
+    "NativeTests/SpatialSelectionLifetimeTests.swift": [
+      "testIdenticalSceneRefreshesAndClearsCallbackWithoutReplacingEquipmentOrOrbit",
+      "testDeletionDetachesAllRetainedEquipmentBeforeTheSameUUIDReturns",
+      "testInvalidSceneDetachesAllRetainedEquipmentBeforeRecovery"
+    ],
+    "NativeTests/SpatialViewportStateTests.swift": [
+      "testCoincidentAimBoundsIncludeTheVisibleFourMeterHousing",
+      "testHorizontalWorldTranslationPreservesFitScaleAndRelativePose",
+      "testFitIncludesHighStandBasesAndExtremeSparseAndCrowdedRigs",
+      "testNonGeometricEditsDoNotChangeViewportBounds",
+      "testInvalidSceneIsRejectedBeforeBoundsConstruction",
+      "testAimTargetSphereIsContainedBeyondItsAuthoredCenter",
+      "testPanUsesTheSmallerViewportAxisAndDoesNotChangeCameraDistance",
+      "testInvalidGestureSamplesCannotPoisonNavigation",
+      "testFloatProjectionDoesNotNarrowTheSmallerViewportAxis",
+      "testGestureLimitsAndFitRecoveryRemainFinite",
+      "testFarClippingEnclosesTheAuthoredWorldAfterExtremePanAndOrbit"
+    ]
+  },
+  "app_changed": 4,
+  "native_test_changed": 7,
+  "reviewed_files": [
+    {
+      "path": "App/RealityStudioPreview.swift",
+      "source_blob": "e4f763a15408c623912bbcdcd9b4296ec8418ae1",
+      "documentation_parent_blob": "e4f763a15408c623912bbcdcd9b4296ec8418ae1",
+      "source_sha256": "3a95ef21338a212765f9ff13692adebf5d116b3779e9d4bc93d085134714ac07",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "App/SpatialPreview.swift",
+      "source_blob": "c2dd825e406c505ded8291120bc4121f7bf35b79",
+      "documentation_parent_blob": "c2dd825e406c505ded8291120bc4121f7bf35b79",
+      "source_sha256": "f7d90394a449c859a0fdebd98e7b11b0a5dad942d971d6a1d3a24474c9f0a585",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "App/SpatialViewportGeometry.swift",
+      "source_blob": "24dcaf5223113c7daa6cfd0bab1ffce291fe81c0",
+      "documentation_parent_blob": "24dcaf5223113c7daa6cfd0bab1ffce291fe81c0",
+      "source_sha256": "465edc50d458fcfca860d3ecfdbb0887721150c89692e2a6184afb43fc4c3d94",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "App/StudioEntityGraph.swift",
+      "source_blob": "35723305af3242e24c63e14196def45022d0519c",
+      "documentation_parent_blob": "35723305af3242e24c63e14196def45022d0519c",
+      "source_sha256": "a969106d321096bd2a573c1b0ddbb6b3c70192dfd86a792ec1a8a249089a783b",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialAimRecoveryTests.swift",
+      "source_blob": "6fe6d784ed999ca193bea7cac1d946d2486dfa9d",
+      "documentation_parent_blob": "6fe6d784ed999ca193bea7cac1d946d2486dfa9d",
+      "source_sha256": "17a4a59ed520298a0143fe3d6ccc1589f36af3414fcf51bf81d9c1ad491e16a0",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialEntityUpdateTests.swift",
+      "source_blob": "e20b1c1550e5a0a7797d7ebe0d6a3ba5c6eea802",
+      "documentation_parent_blob": "e20b1c1550e5a0a7797d7ebe0d6a3ba5c6eea802",
+      "source_sha256": "23c0415de68fe2a0d300ae70f0c8fdd686e27b96d828d01c14ce7601356d1cd2",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialInteractionTests.swift",
+      "source_blob": "f34510a9349f66f72e2a1684883dfd2b84fc3a00",
+      "documentation_parent_blob": "f34510a9349f66f72e2a1684883dfd2b84fc3a00",
+      "source_sha256": "824b5484048a65d80b753f354213f955bff2c40d2d92581976cfea9722174c7c",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialNavigationRecoveryTests.swift",
+      "source_blob": "b3077e5f6c3d10e129dce4af78e71550419ed25a",
+      "documentation_parent_blob": "b3077e5f6c3d10e129dce4af78e71550419ed25a",
+      "source_sha256": "fda09865e8e15476789f5ae20a3770002d88f5003677335ead59f11cdb9ebd51",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialPreviewTests.swift",
+      "source_blob": "2995b5bb80cd873009ae8efd6302ad50e6b03543",
+      "documentation_parent_blob": "2995b5bb80cd873009ae8efd6302ad50e6b03543",
+      "source_sha256": "639fa05b1a09e54a4c5bf0b883e3ee1c4f5e0bf877b89d1979410ac4a655e150",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialSelectionLifetimeTests.swift",
+      "source_blob": "dcd46df3662461dc6ea3ec9a52c6a12fd1ad2635",
+      "documentation_parent_blob": "dcd46df3662461dc6ea3ec9a52c6a12fd1ad2635",
+      "source_sha256": "865039692d90744ebb8e23a4fe34c5cf6fb71ed1eb825a93394f8544d4080c27",
+      "bytes_equal_at_documentation_parent": true
+    },
+    {
+      "path": "NativeTests/SpatialViewportStateTests.swift",
+      "source_blob": "63e8a903b2febff1d9058434d62ccf1778f4c357",
+      "documentation_parent_blob": "63e8a903b2febff1d9058434d62ccf1778f4c357",
+      "source_sha256": "7a15a02aec47fce75cc87d3a69cb563453a2786352c4042d958fb8925ba3fc0b",
+      "bytes_equal_at_documentation_parent": true
+    }
+  ],
+  "source_to_documentation_parent_changed_path_count": 74,
+  "source_to_documentation_parent_non_lane_documentation_changes": [],
+  "later_checkpoints": [
+    {
+      "commit": "1a5446d5d3cf9356bc8f09b2803a401d6fab2586",
+      "non_lane_documentation_changes": []
+    },
+    {
+      "commit": "a1ceb834629d27dc6e79b164fd5996c0bf44992c",
+      "non_lane_documentation_changes": []
+    },
+    {
+      "commit": "b1a6ac172bd07ed27bb303876fadac2a0e2364d6",
+      "non_lane_documentation_changes": []
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "non_lane_documentation_changes": []
+    }
+  ],
+  "diff_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "inspection_disposition": "No new concrete defect demonstrated in the four App/seven native-test diff; no source edits requested",
+  "review_anchors": {
+    "App/SpatialPreview.swift": [
+      "50-93 interaction/gesture refresh",
+      "95-163 detach/current-hit membership",
+      "204-272 invalid/mode recovery and fit state",
+      "311-462 incremental equipment updates"
+    ],
+    "App/RealityStudioPreview.swift": [
+      "154-205 interaction/render/current-scene gates",
+      "208-245 teardown and native projection upload",
+      "247-299 gestures"
+    ],
+    "App/StudioEntityGraph.swift": [
+      "69-136 invalid-scene clearing and owned hit ancestry",
+      "249-345 geometry, source/selection caching and rectangle face dimensions"
+    ],
+    "App/SpatialViewportGeometry.swift": [
+      "12-64 represented equipment bounds",
+      "87-151 finite navigation and projection"
+    ],
+    "App/StudioView.swift": [
+      "506-511 inherited generation-keyed viewport; lane01 identity integration outstanding"
+    ]
+  },
+  "evidence_cutoffs": {
+    "pinned_CI_progress_observed_utc": "2026-11-26T16:23:18Z",
+    "pinned_native_job": 140022794410,
+    "pinned_native_state": "in_progress; native step pending",
+    "root_supplied_at_assignment": "native job 140022794410 remains running; current export UI 9 passed/1 failed, no viewport cause established",
+    "preceding_source": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+    "preceding_result_not_transferred": "184 native/38 spatial passed"
+  },
+  "owner_dependency": "Integrate lane01 source 5ccfbaae821a32d88c12ed8b3abf1600aef25753 and verify first-save viewport retention plus replacement with overlapping UUIDs",
+  "limits": [
+    "Four recovered executor outages retained",
+    "Wave01 original reports lost; summary-only recovery retained",
+    "No deallocation or renderer-thread atomicity claim",
+    "No FPS/device or manual-accessibility acceptance claim",
+    "No measured token compliance claim",
+    "RealityKit runtime and delivered gestures unexecuted in this review"
+  ]
+}
