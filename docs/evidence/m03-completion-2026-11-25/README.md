@@ -2,7 +2,7 @@
 
 **Scope:** M02, then M03, under [m02-m03-code-v2](../../acceptance/m02-m03-code.md).
 **Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
-**Current status:** M02 remains complete. M03 is active pending the remaining required UI results, resolution of the current large-library relaunch failure, and the original two-size screenshot review.
+**Current status:** M02 remains complete. M03 is active pending the remaining required UI results, resolution of the current large-library and studio/export failures, and the original two-size screenshot review.
 
 The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/commit/75e827f2ee3f99798d619aff62f3a5188b509428). [Full verification run 45751931160](https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160) is in progress. This checkpoint records only completed observations; it does not promote M03.
 
@@ -35,10 +35,14 @@ The native simulator warm-up itself reported a recovery-preflight timeout. That 
 | Room and precision | All 5 passed, including the formerly failed resize workflow |
 | Studio optics | All 10 passed |
 | Library and reference | 8 of 9 passed; large-library relaunch readiness failed |
-| Studio and export | Still running |
+| Studio and export | 6 of 10 passed; four failures retained |
 | App accessibility | Still running |
 
 The current [library log](validation/source-75e827f/library-reference/job.log) proves that create/duplicate/rename/switch/relaunch now passed. Its different large-library method loaded, edited, saved and browsed successfully, then failed at relaunch readiness. The [original screenshot, hierarchy and receipt](validation/source-75e827f/library-reference/original-capture-review.json) show the new process still displaying Opening projects with disabled actions. No source root cause has been demonstrated; this failure is not renamed a successful workflow. Remaining required checks continue.
+
+The [studio/export receipt](validation/source-75e827f/studio-export/verification.json) records all ten methods started: six passed and four failed. The failed boundaries were initial export-control readiness, the PDF Close control's AX query, the AR status AX query after successful Settings/3D work, and the following app launch failing to terminate the prior process. The [five original diagnostic captures](validation/source-75e827f/studio-export/original-capture-review.json) were independently byte/hash checked; root viewed both PNGs. The three text files contain query chains only and establish no product cause. The warm-up and pre-UI host diagnostic also failed; those observations do not turn failed required tests into passes.
+
+Both full/compact failure archives were SHA-256 verified and preserved in independent Actions runs before any retry: [library receipt](validation/source-75e827f/archive-preservation/library.json) and [studio/export receipt](validation/source-75e827f/archive-preservation/studio-export.json). The original failed results remain intact. The preservation workflow uses a cooperative 480-second transfer check and a hard 12-minute job timeout; it does not promise a strict 480-second overall deadline.
 
 ## First repaired-source run: retained failures
 
@@ -73,11 +77,11 @@ Two production edge cases found by independent workers were corrected:
 - A binding read that synchronously retires or replaces a slider session cannot reopen the retired history owner. Two native regression methods were added.
 - U+2800 alone does not count as visible name content. Embedded Braille spacing remains intact; legacy stored names and identities are preserved while labels use a readable fallback. Two core methods and existing native presentation fixtures cover this policy.
 
-The required current inventories remain **134 native methods and 35 UI methods**. All 134 native methods have passed. Of the 24 UI methods completed so far, 23 passed and one failed; the remaining 11 methods and the original Default/AXXXL image review are pending at this checkpoint.
+The required current inventories remain **134 native methods and 35 UI methods**. All 134 native methods have passed. Of the 34 UI methods completed so far, 29 passed and five failed; the remaining app-accessibility method and the original Default/AXXXL image review are pending at this checkpoint.
 
 ## Review and provenance
 
-The owner requested 100 distinct agents. Three worker slots plus the integration lead are available, so the work runs in batches. [The initial six reports](workers/initial-six-reports.json) and [the 75-completion checkpoint ledger](workers/checkpoint-75-ledger.json) preserve actual returned work. The [matching report aggregate](workers/checkpoint-75-reports.json) contains real source/log reviews and their stated limits. Followups reuse their original context and never increase the distinct-agent count. Remaining contexts continue; the final ledger will reconcile all 100 once complete.
+The owner requested 100 distinct agents. All 100 have been created in available batches: six initial specialist workers, one coordinator and its 93 unique children. The [initial six reports](workers/initial-six-reports.json), [93-child checkpoint ledger](workers/checkpoint-93-ledger.json) and [matching report aggregate](workers/checkpoint-93-reports.json) preserve actual assignments and returned work. All 99 specialist initial assignments are complete; the coordinator remains active. Worker 100's native evidence review is complete and its UI/image followup is pending. Followups reuse the same context and never increase the count. Source-only reviews do not establish runtime passes.
 
 The local executor became unavailable during an additional local Swift check. That unfinished check has no claimed result. Integration continued through authenticated GitHub Git operations and actual CI. A bounded, read-only [evidence review workflow](../../../.github/workflows/review-xctest-evidence.yml) verifies original run/artifact source before exposing selected original screenshot/hierarchy bytes. A temporary diagnostic branch kept the previous main run intact; the normal iOS source-push trigger was restored before publishing the current source.
 

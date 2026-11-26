@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "product": "Key & Fill",
+  "release": "1.0",
+  "milestones": [
+    {
+      "id": "M01",
+      "name": "Foundation and reproducible iOS build",
+      "depends": [],
+      "gates": [
+        "core_tests",
+        "native_build",
+        "persistence_smoke"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "M02",
+      "name": "Photometry and interactive 3D studio",
+      "depends": [
+        "M01"
+      ],
+      "gates": [
+        "photometry",
+        "rendering",
+        "performance"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "M03",
+      "name": "Professional editing and project library",
+      "depends": [
+        "M02"
+      ],
+      "gates": [
+        "editing",
+        "accessibility",
+        "persistence"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "M04",
+      "name": "Reference analysis and comparison",
+      "depends": [
+        "M03"
+      ],
+      "gates": [
+        "inference",
+        "reference_privacy"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M05",
+      "name": "AR placement and export",
+      "depends": [
+        "M03",
+        "M04"
+      ],
+      "gates": [
+        "ar_device",
+        "export"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M06",
+      "name": "Entitlements and product validation",
+      "depends": [
+        "M05"
+      ],
+      "gates": [
+        "commerce",
+        "customer_validation",
+        "privacy"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M07",
+      "name": "Release candidate",
+      "depends": [
+        "M06"
+      ],
+      "gates": [
+        "regression",
+        "device_matrix",
+        "release_review",
+        "owner_approval"
+      ],
+      "status": "pending"
+    }
+  ],
+  "lastCycle": {
+    "date": "2026-11-25",
+    "baseRevision": "fd73004ddcb1b01e53e29d03bed093fb24b8a75a",
+    "sourceRevision": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+    "destinationBranch": "main",
+    "status": "M02 accepted; independently reviewed M03 test corrections published, full 132-native/35-UI rerun underway",
+    "requestedDistinctWorkers": 100,
+    "completedDistinctWorkers": 99,
+    "createdDistinctWorkers": 100,
+    "concurrentWorkerSlots": 3,
+    "workerLedger": "docs/evidence/m03-final-2026-11-25/worker-ledger.json",
+    "report": "docs/evidence/m03-final-2026-11-25/README.md",
+    "candidateRevision": "5d8b065ec935faa2d85671725cd9b20adc1b035f",
+    "candidateWorkflow": "https://github.com/mirzotipi-wq/APP1/actions/runs/45720754048",
+    "m02Acceptance": "docs/evidence/m02-m03-code-2026-11-25/m02-acceptance.md",
+    "priorCycle": "agents/history/2026-11-25-before-m03-final-state.json",
+    "remainingRequiredWork": [
+      "Resolve actual native frame and preset-label expectation failures, then verify all 132 native and 35 required UI methods",
+      "Review actual default/largest-text screenshots",
+      "Complete 100 distinct agent assignments",
+      "Publish M03 acceptance and final CI results"
+    ],
+    "physicalValidationClaimed": false
+  },
+  "activeRequest": {
+    "date": "2026-11-25",
+    "scope": "M02 then M03; m02-m03-code-v2",
+    "ownerAuthorization": "Remove requirements depending on unavailable outside factors; implement code, repair CI, commit and push to main.",
+    "acceptanceContract": "docs/acceptance/m02-m03-code.md",
+    "requestedWorkers": 100,
+    "workerLedger": "docs/evidence/m03-final-2026-11-25/worker-ledger.json",
+    "physicalValidationClaimed": false
+  }
+}

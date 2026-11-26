@@ -1,5 +1,15 @@
 # Current handoff
 
+## Current runtime checkpoint — source 75e827f
+
+M02 is complete under `m02-m03-code-v2`. M03 remains active. The [current completion packet](../docs/evidence/m03-completion-2026-11-25/README.md) records 359 Debug and 359 Release package tests, 92 tooling tests, 134 native methods, all three actual Metal methods, both unsigned simulator builds, 116 contrast pairs, and actual Linux/macOS fault probes passed. All 190 non-documentation inputs on main remain identical to tested source `75e827f`.
+
+In [run 45751931160](https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160), room/precision passed 5/5 and optics passed 10/10; library/reference passed 8/9 and studio/export passed 6/10. App accessibility and the original 24-image review are pending. The original full/compact failed archives have independently verified backups; failed logs and diagnostic PNG/text are retained. No product root cause has been established for the current readiness/query stalls. Inspect host evidence and isolate the remaining failures while preserving every required method, assertion and unsuccessful observation.
+
+Exactly 100 real worker contexts were created: six initial specialists, coordinator 007 and 93 children. The 99 specialist initial assignments are complete. Coordinator 007 and worker 100's UI/image followup remain part of the current work. Complete required evidence, then update the final ledger and M03 state together. M04–M07 remain pending.
+
+## Historical handoff retained below
+
 ## Active completion pass — 25 November 2026
 
 The current pass starts from `916ecb9284747e91cb3840c4776c634d798f1a51`.
