@@ -150,8 +150,10 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
         let textView = try XCTUnwrap(nativeTextView)
         let controlView = try XCTUnwrap(nativeControlView)
         XCTAssertFalse(textView === controlView)
-        let nativeText = liveScreenFrame(of: textView, in: host.view, window: window)
-        let nativeControl = liveScreenFrame(of: controlView, in: host.view, window: window)
+        let nativeText = liveScreenFrame(of: textView, in: host.view, window: window,
+                                         screen: scene.screen, role: "Text")
+        let nativeControl = liveScreenFrame(of: controlView, in: host.view, window: window,
+                                            screen: scene.screen, role: "control")
         print("Hosted Text probe LIVE: enabled=\(enabled), category=\(category), " +
               "frames=\(frames), textBounds=\(textView.bounds), nativeText=\(nativeText), " +
               "controlBounds=\(controlView.bounds), nativeControl=\(nativeControl), " +
@@ -161,11 +163,25 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
     }
 
     private func liveScreenFrame(of view: UIView, in host: UIView, window: UIWindow,
+                                 screen: UIScreen, role: String,
                                  file: StaticString = #filePath, line: UInt = #line) -> CGRect {
         XCTAssertTrue(view.window === window, "Sample the expected attached window", file: file, line: line)
         XCTAssertTrue(view.isDescendant(of: host), "Sample the actual hosted fixture", file: file, line: line)
+        XCTAssertTrue(window.windowScene?.screen === screen, file: file, line: line)
         XCTAssertTrue(StudioTextLayoutDiagnostics.valid(view.bounds), file: file, line: line)
-        let frame = UIAccessibility.convertToScreenCoordinates(view.bounds, in: view)
+        // The actual attached-view run still returned local bounds through
+        // UIAccessibility conversion. Convert through the real view/window
+        // hierarchy and then the scene's screen coordinate space instead.
+        let windowFrame = view.convert(view.bounds, to: window)
+        let frame = window.convert(windowFrame, to: screen.coordinateSpace)
+        print("Native direct \(role) conversion: bounds=\(view.bounds), viewFrame=\(view.frame), " +
+              "center=\(view.center), transform=\(view.transform), layerTransform=\(view.layer.transform), " +
+              "viewScale=\(view.contentScaleFactor), traitScale=\(view.traitCollection.displayScale), " +
+              "hostBounds=\(host.bounds), hostFrame=\(host.frame), hostTransform=\(host.transform), " +
+              "windowBounds=\(window.bounds), windowFrame=\(window.frame), windowTransform=\(window.transform), " +
+              "screenBounds=\(screen.coordinateSpace.bounds), screenScale=\(screen.scale), " +
+              "convertedWindowFrame=\(windowFrame), convertedScreenFrame=\(frame)")
+        XCTAssertTrue(StudioTextLayoutDiagnostics.valid(windowFrame), file: file, line: line)
         XCTAssertTrue(StudioTextLayoutDiagnostics.valid(frame), file: file, line: line)
         return frame
     }
