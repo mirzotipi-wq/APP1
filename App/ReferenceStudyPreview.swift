@@ -24,8 +24,10 @@ struct StudyPreviewOutput: Sendable {
 
     /// Begin even when reusing a completed frame: an A → B → A switch must
     /// invalidate B without requiring another render of the cached A image.
+    /// A cancelled caller gets an unused ticket without superseding live work.
     func begin() -> UUID {
         let ticket = UUID()
+        guard !Task.isCancelled else { return ticket }
         current = ticket
         return ticket
     }
@@ -117,7 +119,8 @@ struct StudyPreviewOutput: Sendable {
                     let isCurrent = frame.request == request
                     if let image = frame.image {
                         let width = min(geometry.size.width, geometry.size.height * 1.5)
-                        let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). Updating light study."
+                        let updateStatus = activeRequest == nil ? "Light study paused" : "Updating light study"
+                        let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). \(updateStatus)."
                         Image(image, scale: 1, orientation: .up, label: Text(label))
                             .resizable().interpolation(.medium)
                             .frame(width: width, height: width / 1.5)
@@ -140,17 +143,23 @@ struct StudyPreviewOutput: Sendable {
                                 .accessibilityIdentifier("studyWarning")
                         }
                         if !isCurrent {
-                            ProgressView("Updating light study")
-                                .controlSize(.small)
+                            Group {
+                                if activeRequest == nil {
+                                    Text("Light study paused")
+                                } else {
+                                    ProgressView("Updating light study")
+                                        .controlSize(.small)
+                                }
+                            }
                                 .font(.caption.weight(.medium))
                                 .tint(.white).foregroundStyle(.white)
                                 .padding(8)
                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
                                 .padding(8)
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                                .accessibilityLabel("Updating light study")
+                                .accessibilityLabel(updateStatus)
                                 .accessibilityValue("Showing the previous scene")
-                                .accessibilityIdentifier("studyUpdating")
+                                .accessibilityIdentifier(activeRequest == nil ? "studyPaused" : "studyUpdating")
                         }
                     } else {
                         ScrollView {
@@ -173,6 +182,11 @@ struct StudyPreviewOutput: Sendable {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityIdentifier("studyUnavailable")
                     }
+                } else if activeRequest == nil {
+                    Text("Light study paused")
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityIdentifier("studyPaused")
                 } else {
                     ProgressView("Rendering light study")
                         .tint(.white).foregroundStyle(.white)
@@ -183,6 +197,7 @@ struct StudyPreviewOutput: Sendable {
         }
         .onDisappear { pipeline.invalidate() }
         .task(id: work) {
+            guard !Task.isCancelled else { return }
             let ticket = pipeline.begin()
             guard let snapshot = activeRequest else { return }
             // A quick switch back to a completed request can reuse its pixels.

@@ -1,0 +1,54 @@
+diff --git a/App/ReferenceStudyPreview.swift b/App/ReferenceStudyPreview.swift
+index 4b1e283..604e391 100644
+--- a/App/ReferenceStudyPreview.swift
++++ b/App/ReferenceStudyPreview.swift
+@@ -117,7 +117,8 @@ struct StudyPreviewOutput: Sendable {
+                     let isCurrent = frame.request == request
+                     if let image = frame.image {
+                         let width = min(geometry.size.width, geometry.size.height * 1.5)
+-                        let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). Updating light study."
++                        let updateStatus = activeRequest == nil ? "Light study paused" : "Updating light study"
++                        let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). \(updateStatus)."
+                         Image(image, scale: 1, orientation: .up, label: Text(label))
+                             .resizable().interpolation(.medium)
+                             .frame(width: width, height: width / 1.5)
+@@ -140,17 +141,23 @@ struct StudyPreviewOutput: Sendable {
+                                 .accessibilityIdentifier("studyWarning")
+                         }
+                         if !isCurrent {
+-                            ProgressView("Updating light study")
+-                                .controlSize(.small)
++                            Group {
++                                if activeRequest == nil {
++                                    Text("Light study paused")
++                                } else {
++                                    ProgressView("Updating light study")
++                                        .controlSize(.small)
++                                }
++                            }
+                                 .font(.caption.weight(.medium))
+                                 .tint(.white).foregroundStyle(.white)
+                                 .padding(8)
+                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
+                                 .padding(8)
+                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+-                                .accessibilityLabel("Updating light study")
++                                .accessibilityLabel(updateStatus)
+                                 .accessibilityValue("Showing the previous scene")
+-                                .accessibilityIdentifier("studyUpdating")
++                                .accessibilityIdentifier(activeRequest == nil ? "studyPaused" : "studyUpdating")
+                         }
+                     } else {
+                         ScrollView {
+@@ -173,6 +180,11 @@ struct StudyPreviewOutput: Sendable {
+                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                         .accessibilityIdentifier("studyUnavailable")
+                     }
++                } else if activeRequest == nil {
++                    Text("Light study paused")
++                        .foregroundStyle(.white)
++                        .frame(maxWidth: .infinity, maxHeight: .infinity)
++                        .accessibilityIdentifier("studyPaused")
+                 } else {
+                     ProgressView("Rendering light study")
+                         .tint(.white).foregroundStyle(.white)

@@ -1,0 +1,132 @@
+{
+  "runtime_id": "/root/wave06/w54_implementation",
+  "input_sha": "74f7584b4e474c752ec0939add6b7522ba98094f",
+  "worktree": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+  "private_output": "/tmp/keyfill03-7f4b/builds/W54-implementation",
+  "source_path": "App/ReferenceStudyPreview.swift",
+  "baseline_source_sha256": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+  "patched_source_sha256": "cbed7ca5aab555ff9ed4b4e306054a50382ee99dfb8481380a08f7e16bcc9376",
+  "native_test_sha256": "4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79",
+  "patch_sha256": "2fbf52d65654796f5f89d285f34cfe7c8d967551f5b62907c9c7309cfaba4341",
+  "patch_path": "/tmp/keyfill03-7f4b/builds/W54-implementation/W54-paused-preview.patch",
+  "root_patch_path": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave06-evidence/W54-paused-preview.patch",
+  "source_byte_checks_only_not_runtime_tests": {
+    "pipeline_prefix_byte_identical": true,
+    "request_work_image_label_and_frame_definitions_byte_identical": true,
+    "lifecycle_task_debounce_renderer_and_conversion_byte_identical": true,
+    "matching_error_and_retry_ui_byte_identical": true,
+    "current_backend_and_unsupported_warning_ui_byte_identical": true,
+    "existing_native_tests_byte_identical": true,
+    "existing_native_test_method_count": 9
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "74f7584b4e474c752ec0939add6b7522ba98094f\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "App/ReferenceStudyPreview.swift\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--",
+        "App/ReferenceStudyPreview.swift",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "diff --git a/App/ReferenceStudyPreview.swift b/App/ReferenceStudyPreview.swift\nindex 4b1e283..604e391 100644\n--- a/App/ReferenceStudyPreview.swift\n+++ b/App/ReferenceStudyPreview.swift\n@@ -117,7 +117,8 @@ struct StudyPreviewOutput: Sendable {\n                     let isCurrent = frame.request == request\n                     if let image = frame.image {\n                         let width = min(geometry.size.width, geometry.size.height * 1.5)\n-                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). Updating light study.\"\n+                        let updateStatus = activeRequest == nil ? \"Light study paused\" : \"Updating light study\"\n+                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). \\(updateStatus).\"\n                         Image(image, scale: 1, orientation: .up, label: Text(label))\n                             .resizable().interpolation(.medium)\n                             .frame(width: width, height: width / 1.5)\n@@ -140,17 +141,23 @@ struct StudyPreviewOutput: Sendable {\n                                 .accessibilityIdentifier(\"studyWarning\")\n                         }\n                         if !isCurrent {\n-                            ProgressView(\"Updating light study\")\n-                                .controlSize(.small)\n+                            Group {\n+                                if activeRequest == nil {\n+                                    Text(\"Light study paused\")\n+                                } else {\n+                                    ProgressView(\"Updating light study\")\n+                                        .controlSize(.small)\n+                                }\n+                            }\n                                 .font(.caption.weight(.medium))\n                                 .tint(.white).foregroundStyle(.white)\n                                 .padding(8)\n                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))\n                                 .padding(8)\n                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)\n-                                .accessibilityLabel(\"Updating light study\")\n+                                .accessibilityLabel(updateStatus)\n                                 .accessibilityValue(\"Showing the previous scene\")\n-                                .accessibilityIdentifier(\"studyUpdating\")\n+                                .accessibilityIdentifier(activeRequest == nil ? \"studyPaused\" : \"studyUpdating\")\n                         }\n                     } else {\n                         ScrollView {\n@@ -173,6 +180,11 @@ struct StudyPreviewOutput: Sendable {\n                         .frame(maxWidth: .infinity, maxHeight: .infinity)\n                         .accessibilityIdentifier(\"studyUnavailable\")\n                     }\n+                } else if activeRequest == nil {\n+                    Text(\"Light study paused\")\n+                        .foregroundStyle(.white)\n+                        .frame(maxWidth: .infinity, maxHeight: .infinity)\n+                        .accessibilityIdentifier(\"studyPaused\")\n                 } else {\n                     ProgressView(\"Rendering light study\")\n                         .tint(.white).foregroundStyle(.white)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/tmp/keyfill03-7f4b/builds/W54-implementation/W54-paused-preview.patch"
+      ],
+      "cwd": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": " M App/ReferenceStudyPreview.swift\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "uname",
+        "-a"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "Linux 6e77ed83c607 6.18.57 #1 SMP Tue Oct 20 21:56:04 UTC 2026 x86_64 GNU/Linux\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "df",
+        "-h",
+        "/tmp",
+        "/workspace/scratch/7f4be4bbb2d6"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "Filesystem      Size  Used Avail Use% Mounted on\ntmpfs           4.9G  3.7G  1.3G  76% /tmp\n/dev/vdb         20G   19G   51M 100% /workspace\n",
+      "stderr": ""
+    }
+  ],
+  "earlier_observed_errors": [
+    {
+      "command": "Read W52 report with cwd=/tmp/keyfill03-7f4b/repo",
+      "outcome": "exec_command rejected: No such file or directory. Retried successfully at /workspace/scratch/7f4be4bbb2d6/APP1-lane03."
+    },
+    {
+      "command": "uname -a && df -h /tmp /workspace/scratch/7f4be4bbb2d6 && command -v swift && command -v xcodebuild",
+      "exit_code": 1,
+      "outcome": "uname and df printed; swift unavailable on default PATH, so following xcodebuild lookup not reached."
+    },
+    {
+      "command": "ls /workspace/scratch/13a77d3f98df/toolchain/usr/bin/swift /usr/bin/xcodebuild /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild",
+      "exit_code": 2,
+      "outcome": "Linux Swift executable exists; both listed xcodebuild locations absent."
+    }
+  ],
+  "execution_limits": "No Swift or SwiftUI compilation, native/host test, visual audit, heavy build, commit or push. Existing nine pipeline tests preserved but unrun. Native checks are delegated to parent/root after sequential integration. Token counter unavailable."
+}
