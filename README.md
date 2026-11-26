@@ -46,11 +46,13 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-M02 is complete under the code acceptance contract. The reviewed layout and fixture corrections are published at `f150f98e35dd735927075aac4d2f8b02295c6a67` and are running in [run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256). Required execution is **154 native methods, 35 UI methods and 28 original Default/AXXXL layout captures**. The ten optics methods repeat the same editing workflow. M03 remains active until all required results and image review pass.
+M02 is complete under the code acceptance contract. The reviewed layout and fixture corrections are published at `b0d25eece01a3edb4c46e89cd487105d4d5a8cdd` and are running in [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966). Required execution is **154 native methods, 35 UI methods and 28 original Default/AXXXL layout captures**. The ten optics methods repeat the same editing workflow. M03 remains active until all required results and image review pass.
 
 The [closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) records exactly 100 completed worker contexts, Unicode and history boundaries, room precision, camera selection/slider contrast, native measurement/focus fixtures and CI ownership/retention repairs. Fresh f150 CI independently verified 366 Debug, 366 Release and 100 tooling tests, twelve original render matches, the numerical and benchmark matrices, and actual ext4 write-failure/interruption probes. Local tmpfs observations remain separately retained; Apple runtime execution remains required.
 
 The preceding 9fa run passed all 366 Debug/366 Release/100 tooling checks, 153/154 native methods and 34/35 UI methods. The native fixture containment and largest-text caption assertions failed; recovered original images also identified a cramped Scene/Meter header. These failures and the preceding 02797 outcomes remain in the packet. The new repair keeps every minimum-fit, containment, growth and hit-target requirement and adds two header captures.
+
+The f150 Apple build exposed ambiguous `greatestFiniteMagnitude` type inference in the new UI measurement. The explicit `CGFloat` correction is published; no native/UI method ran on that failed build. Fresh complete execution remains required.
 
 Code changes run the full development workflow. Documentation-only evidence updates run project-state validation and do not cancel unchanged simulator work.
 

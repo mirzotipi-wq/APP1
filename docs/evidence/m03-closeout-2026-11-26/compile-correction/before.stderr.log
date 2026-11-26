@@ -1,0 +1,17 @@
+<stdin>:2:35: error: ambiguous use of 'greatestFiniteMagnitude'
+1 | import Foundation
+2 | let measuredSize = CGSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude)
+  |                                   `- error: ambiguous use of 'greatestFiniteMagnitude'
+3 | 
+
+Foundation.CGFloat.greatestFiniteMagnitude:2:19: note: found this candidate in module 'Foundation'
+1 | struct CGFloat {
+2 | public static var greatestFiniteMagnitude: CGFloat { get }}
+  |                   `- note: found this candidate in module 'Foundation'
+3 | 
+
+Swift.Double.greatestFiniteMagnitude:2:30: note: found this candidate in module 'Swift'
+1 | struct Double {
+2 | @inlinable public static var greatestFiniteMagnitude: Double { get }}
+  |                              `- note: found this candidate in module 'Swift'
+3 | 

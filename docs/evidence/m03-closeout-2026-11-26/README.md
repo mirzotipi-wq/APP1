@@ -1,6 +1,6 @@
 # M02/M03 closeout — 26 November 2026
 
-Integrated source **`f150f98e35dd735927075aac4d2f8b02295c6a67`** is published on `main` and is being validated in [run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256). M02 remains accepted under `m02-m03-code-v2`; M03 remains active until all required native/UI execution and original screenshot review succeed. This packet starts from `e4c8b10b6f853c72cae7752d7ec897e75e6d0531`.
+Integrated source **`b0d25eece01a3edb4c46e89cd487105d4d5a8cdd`** is published on `main` and is being validated in [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966). M02 remains accepted under `m02-m03-code-v2`; M03 remains active until all required native/UI execution and original screenshot review succeed. This packet starts from `e4c8b10b6f853c72cae7752d7ec897e75e6d0531`.
 
 ## Reviewed implementation
 
@@ -33,6 +33,12 @@ The [fresh f150 core job](https://github.com/mirzotipi-wq/APP1/actions/runs/4580
 The [current receipt](source-f150-core/report.json) records Ubuntu 24.04.5, AMD EPYC 7763, Swift 6.4.2, Python 3.12.3, exact source hashes and raw evidence. Root separately checked both archive hashes, all twelve image/scene comparisons, every ordered Debug/Release method pair and all twelve timed workload percentiles. This refreshes M02 code acceptance directly on the repaired source. Apple native/UI acceptance remains pending.
 
 The [preceding 9fa core receipt](source-9fa-core/report.json) remains historical evidence from its distinct Xeon/Swift 6.4.3 host. The unchanged-source justification supported continued acceptance while the new job ran; no earlier host metadata is reassigned to f150.
+
+## Explicit measurement type correction
+
+The f150 Apple test-bundle build failed because `CGSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude)` has ambiguous overload inference. [The original native build outcome](source-f150-native/native-execution-summary.json) records zero of 154 methods started; [UI execution likewise never began](source-f150-ui/ui-execution-summary.json): four jobs failed the common compilation and the library job was cancelled during its build. Its never-started selected-test step remains pending in the terminal API; the unavailable cancelled-job log is explicitly recorded. No screenshot or native method is passed by that failed build.
+
+The corrected source names both values as `CGFloat.greatestFiniteMagnitude`. Worker 093 independently reviewed the exact diff. [A minimal Linux Foundation compiler witness](compile-correction/result.json) fails before and type-checks after; it is not an Apple runtime pass. The original measurement, fonts, rounding and assertions are unchanged. Only one UI test file differs from f150, preserving accepted M02 inputs. Fresh native/UI commands and all 28 originals remain required.
 
 ## Retained 9fa Apple findings and published repair
 

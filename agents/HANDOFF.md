@@ -2,7 +2,9 @@
 
 ## Current closeout — 26 November 2026
 
-M02 remains accepted under `m02-m03-code-v2`. Integrated source `f150f98e35dd735927075aac4d2f8b02295c6a67` is published on `main`; [run 45805136256](https://github.com/mirzotipi-wq/APP1/actions/runs/45805136256) must complete 154 native and 35 required UI methods plus 28 original Default/AXXXL captures. The original 26 captures remain, with Workspace-header added at both sizes. M03 stays active until commands, exact method accounting, finalized results and actual image review pass.
+M02 remains accepted under `m02-m03-code-v2`. Integrated source `b0d25eece01a3edb4c46e89cd487105d4d5a8cdd` is published on `main`; [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966) must complete 154 native and 35 required UI methods plus 28 original Default/AXXXL captures. The original 26 captures remain, with Workspace-header added at both sizes. M03 stays active until commands, exact method accounting, finalized results and actual image review pass.
+
+The f150 test-bundle build failed an ambiguous `greatestFiniteMagnitude` expression before native/UI execution. Its passed portable evidence remains valid; zero native/UI methods are claimed. Both measurement bounds now explicitly use `CGFloat`, with unchanged predicates and a before-fail/after-pass local compiler witness. Fresh full execution remains required.
 
 The preceding 9fa run is terminal: core 366/366 Debug and Release plus 100 tooling passed; native 153/154 and UI 34/35 passed. Raw fixture-boundary containment and the largest-text selected-caption minimum failed; original images also show a narrow Scene/Meter header. The reviewed repair gives the header adaptive rows, adds actual interline spacing to the caption and name-save action, and moves fixture Text one point inside its control after both observers. Thresholds and all prior captures remain intact. [The closeout packet](../docs/evidence/m03-closeout-2026-11-26/README.md) retains original outcomes and images.
 
