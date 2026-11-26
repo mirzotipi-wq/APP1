@@ -1,15 +1,75 @@
-import SwiftUI
-import CoreGraphics
 import Foundation
 import LightingCore
+#if canImport(SwiftUI) && canImport(CoreGraphics)
+import SwiftUI
+import CoreGraphics
+#endif
+
+/// The publication seam has no dependency on a GPU or on image conversion.
+/// Tests can finish a noncooperative renderer after a newer request has won.
+struct StudyPreviewOutput: Sendable {
+    let image: StudyImage
+    let backendLabel: String
+}
+
+@MainActor final class StudyPreviewPipeline<DisplayImage> {
+    struct Completion {
+        let image: DisplayImage?
+        let unsupportedPixels: Int
+        let backendLabel: String?
+        let message: String?
+    }
+
+    private var current: UUID?
+
+    /// Begin even when reusing a completed frame: an A → B → A switch must
+    /// invalidate B without requiring another render of the cached A image.
+    func begin() -> UUID {
+        let ticket = UUID()
+        current = ticket
+        return ticket
+    }
+
+    func invalidate() { current = nil }
+
+    func load(ticket: UUID,
+              render: () async throws -> StudyPreviewOutput,
+              convert: (StudyImage) -> DisplayImage?,
+              publish: (Completion) -> Void) async {
+        guard current == ticket, !Task.isCancelled else { return }
+        do {
+            let output = try await render()
+            guard current == ticket, !Task.isCancelled else { return }
+            let image = convert(output.image)
+            guard current == ticket, !Task.isCancelled else { return }
+            publish(.init(image: image, unsupportedPixels: image == nil ? 0 : output.image.unsupportedPixels,
+                          backendLabel: image == nil ? nil : output.backendLabel,
+                          message: image == nil ? "The rendered image could not be displayed." : nil))
+        } catch {
+            guard current == ticket, !Task.isCancelled, !(error is CancellationError),
+                  (error as? StudyError) != .cancelled else { return }
+            let message: String
+            switch error as? StudyError {
+            case .invalidCamera: message = "Move the camera above the panel and away from the subject."
+            case .invalidEmitter: message = "Check the aiming direction of each active light."
+            default: message = "Check the camera, light positions, and preview settings."
+            }
+            publish(.init(image: nil, unsupportedPixels: 0, backendLabel: nil, message: message))
+        }
+    }
+}
+
+#if canImport(SwiftUI) && canImport(CoreGraphics)
 
 /// The bounded direct-light study is deliberately distinct from the illustrative
 /// SceneKit views. A serialized worker validates Metal against CPU before use.
-struct ReferenceStudyPreview: View {
+@MainActor struct ReferenceStudyPreview: View {
     let scene: LightingScene
     var subject: StudySubject = .sphere
     @Environment(\.scenePhase) private var scenePhase
     @State private var frame: Frame?
+    @State private var attempt = UUID()
+    @State private var pipeline = StudyPreviewPipeline<CGImage>()
 
     private struct Request: Equatable {
         let scene: LightingScene
@@ -29,6 +89,11 @@ struct ReferenceStudyPreview: View {
     // Changing to nil cancels in-flight work while inactive; foregrounding
     // starts the latest scene/subject request without discarding a valid frame.
     private var activeRequest: Request? { scenePhase == .active ? request : nil }
+    private struct Work: Equatable {
+        let request: Request?
+        let attempt: UUID
+    }
+    private var work: Work { .init(request: activeRequest, attempt: attempt) }
     private var imageLabel: String {
         subject == .sphere ? "Rendered neutral sphere and panel" : "Rendered neutral mannequin bust"
     }
@@ -37,7 +102,7 @@ struct ReferenceStudyPreview: View {
         let request: Request
         let image: CGImage?
         let unsupportedPixels: Int
-        let backend: StudyBackend?
+        let backendLabel: String?
         let message: String?
     }
 
@@ -59,8 +124,8 @@ struct ReferenceStudyPreview: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .accessibilityLabel(label)
                             .accessibilityIdentifier(isCurrent ? "studyPreview" : "studyPreviousPreview")
-                        if isCurrent, let backend = frame.backend {
-                            Text(backend.rawValue).font(.caption2.monospaced())
+                        if isCurrent, let backendLabel = frame.backendLabel {
+                            Text(backendLabel).font(.caption2.monospaced())
                                 .foregroundStyle(.white.opacity(0.8))
                                 .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))
                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
@@ -88,13 +153,23 @@ struct ReferenceStudyPreview: View {
                                 .accessibilityIdentifier("studyUpdating")
                         }
                     } else {
-                        VStack(spacing: 8) {
-                            Image(systemName: "exclamationmark.triangle").font(.title2)
-                            Text("Study unavailable").font(.headline)
-                            Text(frame.message ?? "Check camera and lighting geometry.").font(.caption)
+                        ScrollView {
+                            VStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle").font(.title2)
+                                    .accessibilityHidden(true)
+                                Text("Study unavailable").font(.headline)
+                                Text(frame.message ?? "Check camera and lighting geometry.").font(.caption)
+                                Button { attempt = UUID() } label: {
+                                    Text("Retry light study").frame(minHeight: 44)
+                                }
+                                    .buttonStyle(.bordered)
+                                    .accessibilityIdentifier("studyRetry")
+                            }
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.white).padding(24)
+                            .frame(maxWidth: .infinity)
                         }
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.white).padding(24)
+                        .defaultScrollAnchor(.center)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityIdentifier("studyUnavailable")
                     }
@@ -106,31 +181,23 @@ struct ReferenceStudyPreview: View {
                 }
             }
         }
-        .task(id: activeRequest) {
+        .onDisappear { pipeline.invalidate() }
+        .task(id: work) {
+            let ticket = pipeline.begin()
             guard let snapshot = activeRequest else { return }
             // A quick switch back to a completed request can reuse its pixels.
             // Failed frames remain retryable when this view appears again.
             if let frame, frame.request == snapshot, frame.image != nil { return }
+            // A new attempt shows loading, not an obsolete failure. Retrying
+            // never edits the scene or changes its cache identity.
+            if frame?.request == snapshot { frame = nil }
             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
-            do {
+            await pipeline.load(ticket: ticket, render: {
                 let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)
-                guard !Task.isCancelled else { return }
-                let study = rendered.image
-                let image = Self.makeImage(study)
-                guard !Task.isCancelled else { return }
-                frame = Frame(request: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,
-                              backend: rendered.backend,
-                              message: image == nil ? "The rendered image could not be displayed." : nil)
-            } catch {
-                guard !Task.isCancelled, !(error is CancellationError),
-                      (error as? StudyError) != .cancelled else { return }
-                let message: String
-                switch error as? StudyError {
-                case .invalidCamera: message = "Move the camera above the panel and away from the subject."
-                case .invalidEmitter: message = "Check the aiming direction of each active light."
-                default: message = "Check the camera, light positions, and preview settings."
-                }
-                frame = Frame(request: snapshot, image: nil, unsupportedPixels: 0, backend: nil, message: message)
+                return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)
+            }, convert: Self.makeImage) { completion in
+                frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,
+                              backendLabel: completion.backendLabel, message: completion.message)
             }
         }
     }
@@ -145,3 +212,4 @@ struct ReferenceStudyPreview: View {
                        provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
     }
 }
+#endif
