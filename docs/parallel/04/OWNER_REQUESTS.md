@@ -1,5 +1,11 @@
 # Owner routes — lane04
 
+## Lane 03/20: confirm engine policy before reusing a reinstated preview
+
+Worker 057 confirmed a source-level A→B→A sequence in the current owner preview at `finish/03-cpu-study-mannequin` head `8ce5e464253144deccb39d838faef70f05e0c38c` (preview blob `c96d5cb7a41143867efca160b309d71bfa993c96`). After A displays a Metal frame, B can confirm a backend failure and be cancelled. The engine correctly evicts Metal entries, but returning to A can take the view-local successful-frame shortcut without consulting the now-CPU engine. The old pixels may remain valid; this is a subsequent-request adoption and status-policy gap, not evidence of corrupt pixels or engine-cache leakage.
+
+Lane 03 owns the correction and hosted regression; lane 20 owns integration. The [unapplied patch](evidence/w057/owner-preview-adoption.patch) and [exact regression proposal](evidence/w057/owner-proposal.md) target that inspected owner revision. They reconsult the engine for each activation, retain previous pixels during revalidation, and require a new pipeline ticket before presenting a frame/backend as current. Keep ordinary cancellation and precision-only fallback distinct from permanent downgrade. Verify existing automatic native test discovery/accounting; no shared build or harness change is currently required. This proposal is uncompiled and unrun, with no owner acknowledgment or merge claimed.
+
 ## Lane03 (CPU oracle and preview)
 
 CPU equations and packed row layout remain unchanged. Confirmed host-shared-kernel silhouette discrepancy: width24, focal161.27198111190464mm, subject(0,1.5,0), camera(0,1.5,3), no lights. Two pixels exceed fraction(error>4)<=0.005; the local reference is a C++ Double transcription, not a Swift run. The width-aware conservative eligibility guard is now implemented for review. The legacy supports(scene) overload forwards width192; supports(scene,width:) receives the actual production grid. The oracle equations, packed rows and channel thresholds remain unchanged.

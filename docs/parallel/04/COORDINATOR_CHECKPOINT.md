@@ -1,30 +1,36 @@
-# Lane 04 coordinator checkpoint — five waves complete
+# Lane 04 coordinator checkpoint — 60 of 100 workers complete
 
-Campaign baseline: `f150f98e35dd735927075aac4d2f8b02295c6a67`. Wave 5 input: `88279ba0ee0262ea6c880580c8a85b56342abbff`. Only `finish/04-metal-cache` may be updated. The unchanged upstream native-build correction remains separately identified in ENVIRONMENT_RECOVERY.md.
+Campaign baseline: `f150f98e35dd735927075aac4d2f8b02295c6a67`. Wave 6 input: `5934f291b8e78e378a96ec3e4d294521c79839d0`. Only `finish/04-metal-cache` is authorized for publication.
 
-## Actual work and preserved source
+## Worker and source checkpoint
 
-Fifty distinct fresh contexts completed five waves of ten. Each wave has one acceptance worker and nine role-specific workers; at most two children ran alongside the root and wave scheduler. The ledger records exact returned agent IDs. Planned worktrees, recoveries and same-ID follow-ups are not additional workers. Brief/report/context limits are workflow targets; the platform does not expose enforceable live token counters.
+Sixty distinct fresh contexts completed six waves of ten. Each wave retained all ten required roles, with at most two active children beside root and the wave lead. Exact canonical IDs, source inputs, reports and same-ID follow-ups are recorded in worker-ledger.json and the per-wave ledgers. Context/token budgets remain workflow targets rather than platform-enforced counters. Planned paths and recovery attempts are never counted as workers.
 
-Final wave 5 source blobs:
+No cache implementation defect was established in wave 6. The core cache retains its existing LRU, exact-key and separate byte-budget behavior. Four new core tests check reference lifetime during rejected replacement, admitted replacement, byte eviction and selective invalidation; all twelve original methods remain intact.
 
-- `App/MetalStudyRenderer.swift`: `8c1acd852d85cd99671feaba883db1808bbb5e68`.
-- `NativeTests/StudyRenderCacheTests.swift`: `2af764b51023dc66a9cc0070d8d49f5bd7de334e`.
+Six new native methods cover cancelled-hit recency, four actual-CPU cache populations and weak backend ownership after failure. All nineteen original methods remain intact. The candidates expect fifteen per-request resource observations and four final summaries from live actor counters; these are unexecuted expectations until CI runs the new tests.
 
-Confirmed backend failures now select CPU and evict Metal entries before observing simultaneous cancellation. Ordinary cancellation and scene errors propagate; precision-domain fallback remains per request. The original initializer is preserved, with a separate required-factory overload for deterministic lifecycle tests. Production remains actor-confined, without an unchecked Sendable claim. The injection contract requires a fresh backend for exclusive actor use.
+Final test blobs:
 
-Cancellation reaches Metal packing, allocation, submission and completion checks. Submitted commands complete before buffers are released; command failure is inspected before cancellation. Per-frame autorelease pools bound temporary Objective-C ownership. Cache admission follows the final cooperative cancellation check; consumers still guard latest-result adoption after awaiting the engine.
+- Core cache tests: `af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de`.
+- Native cache tests: `6e811837c87ff3a8a0d8c87c4b0f877c752aae89`.
 
-## Verification and limits
+## Executed evidence now preserved
 
-The final independent review found no concrete source blocker. Pre-interruption scope checks found 184 protected files unchanged. The original eleven cache tests remain byte-preserved; eight new methods define 45 scripted lifecycle configurations. Native declaration accounting increased from 160 to 168; declarations are not executed tests. Root also passed scoped whitespace and existing shard-assignment checks before the interruption.
+Wave 4 revision `88279ba0ee0262ea6c880580c8a85b56342abbff` has actual hosted iOS-simulator Metal evidence: job 139973865345 / run 45837392344 passed both simulator build configurations and all 160 native tests, with no skips. Finalized XCTest export and required method accounting passed. The raw metadata method passed its 37 malformed dispatches and two controls. All eight strict Metal precision cases had mean/max/outlier error zero and exact masks. Six canonical Metal cases had a maximum channel error of one, zero outliers and exact masks. Exact rows, raw logs and artifact digests/expiry are in evidence/ci/wave04-native-139973865345.json and its raw log.
 
-At the preceding wave 4 revision, Linux CI job 139971277479 / run 45837392344 passed 375 Debug and 375 Release core tests, six shared-kernel parity cases and eight strict precision cases. All masks matched; six-case maximum RGB error was 1 with zero outlier fraction; strict maximum was 0. Raw logs, parsed rows and optimized CPU host timings are preserved under evidence/ci/. The Apple job 139973865345 is in progress at checkpoint assembly; its results cannot certify the later wave 5 renderer changes. Baseline actual Metal evidence remains separately pinned to 5bf9da7. No native execution of the wave 5 changes is yet claimed.
+Wave 5 revision `5934f291b8e78e378a96ec3e4d294521c79839d0` passed Linux job 139997195555 / run 45844671107: 375 Debug and 375 Release tests, six shared-kernel parity cases and eight strict host precision cases. This is not Apple type checking or runtime execution of its new engine lifecycle tests. Its native job was queued at checkpoint assembly. The new wave 6 tests also await execution.
 
-Four frames, 262144 RGBA bytes and 65536 mask bytes remain the cache limits. The bust remains CPU-only at width 144 maximum, and the untouched CPU renderer retains its eight-further-pixel cancellation bound. Numerical thresholds, fixtures, CPU oracle and packed ABI remain unchanged. Payload/buffer arithmetic is not process or driver memory measurement.
+Four frames, 262144 RGBA bytes and 65536 mask bytes remain fixed limits. Bust rendering remains CPU-only at width 144 maximum; the unchanged CPU pixel loop retains its eight-further-evaluation cancellation bound. CPU authority, packed ABI, fixture definitions and numerical thresholds are unchanged. Cache counters and requested buffer sizes are not RSS, allocator capacity or driver-memory measurements.
 
-## Environment and next work
+## Remaining consumer integration dependency
 
-The fourth execution interruption occurred during review, with no wave 5 Swift build. Frozen code, completed reports and CI evidence were already durable Git blobs. Later reviewers used exact Git snapshots with their unavailable physical worktrees clearly identified. Final local object reconciliation is pending recovery; no unavailable command is counted as successful. Root can assemble the immutable checkpoint through Git objects while preserving earlier raw evidence.
+Worker 057 independently confirmed the preview's A→B→A reuse sequence at lane 03 head `8ce5e464253144deccb39d838faef70f05e0c38c`: after B confirms downgrade plus cancellation, returning to A may reuse a UI-held frame without consulting the now-CPU engine. Old pixels may remain valid; the issue is aligning subsequent adoption/current status with the permanent backend decision, not engine-cache leakage.
 
-Wave 6 will test LRU recency under cancellation, weak-reference lifetimes and actual cache payload counters. Wave 7 will fill remaining startup/concurrent-request coverage without duplicating the wave 5 matrix. Waves 8–10 will finalize parity/precision/resource evidence, recovery challenges and the lane handoff. Owner routes remain in OWNER_REQUESTS.md and OWNER_INTEGRATION.md; no external acknowledgment is claimed.
+The unapplied owner patch and exact hosted regression proposal are preserved under evidence/w057/. Lane 03 owns implementation and execution; lane 20 owns combined integration. No owner acknowledgment, UI edit, compilation or hosted pass is claimed. Existing automatic native discovery should account for the eventual method without a shared harness change.
+
+## Execution limits and next steps
+
+The execution environment remained unavailable throughout wave 6. Workers used separate immutable source snapshots and content-addressed Git blobs; no physical worktrees, local commands, builds or native measurements ran. Local reconstruction/verification remains pending; no cleanup of unavailable work is attempted. Earlier failed/interrupted attempts and original candidates remain preserved.
+
+Wave 7 fills remaining startup, concurrent-request and scene-error coverage without duplicating the matrices already added. Waves 8–10 consolidate exact parity/precision/resource evidence, challenge recovery and finalize HANDOFF.md. The unresolved UI-owner dependency remains explicit. Global milestone/release state is unchanged.

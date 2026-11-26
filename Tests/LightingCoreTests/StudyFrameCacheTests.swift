@@ -201,4 +201,126 @@ final class StudyFrameCacheTests: XCTestCase {
         XCTAssertEqual(cache.value(for: Key(scene: 1, width: 48)), "new width")
         XCTAssertNil(cache.value(for: Key(scene: 2, width: 24)))
     }
+
+    func testOversizedReplacementRetainsOriginalLifetimeAndRecency() {
+        for (pixels, masks) in [(3, 1), (1, 3)] {
+            var cache = LifetimeCache(maximumCount: 2, maximumPixelBytes: 2,
+                                      maximumMaskBytes: 2)
+            let oldest = insertObservedValue(into: &cache, for: 1)
+            let newest = insertObservedValue(into: &cache, for: 2)
+            let rejected = insertObservedValue(into: &cache, for: 1, pixelBytes: pixels,
+                                               maskBytes: masks, expectedAdmission: false)
+            withExtendedLifetime(cache) {
+                XCTAssertNotNil(oldest.value, "A rejected replacement must retain the original")
+                XCTAssertNotNil(newest.value)
+                XCTAssertNil(rejected.value, "A rejected value must not be retained")
+            }
+
+            // A lookup would promote key 1; a retained cache copy would keep it alive.
+            // Observe weak references alone before the next admission tests its LRU position.
+            let third = insertObservedValue(into: &cache, for: 3)
+            withExtendedLifetime(cache) {
+                XCTAssertNil(oldest.value, "A rejected replacement must not promote the original")
+                XCTAssertNotNil(newest.value)
+                XCTAssertNotNil(third.value)
+            }
+        }
+    }
+
+    func testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement() {
+        var cache = LifetimeCache(maximumCount: 2, maximumPixelBytes: 2,
+                                  maximumMaskBytes: 2)
+        let original = insertObservedValue(into: &cache, for: 1)
+        let other = insertObservedValue(into: &cache, for: 2)
+        let replacement = insertObservedValue(into: &cache, for: 1)
+        withExtendedLifetime(cache) {
+            XCTAssertNil(original.value, "The replaced value must be released")
+            XCTAssertNotNil(other.value, "Replacement must preserve an unrelated entry")
+            XCTAssertNotNil(replacement.value)
+        }
+
+        let newest = insertObservedValue(into: &cache, for: 3)
+        withExtendedLifetime(cache) {
+            XCTAssertNil(other.value)
+            XCTAssertNotNil(replacement.value, "The replacement must become most recent")
+            XCTAssertNotNil(newest.value)
+        }
+    }
+
+    func testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors() {
+        for (pixels, masks) in [(3, 1), (1, 3)] {
+            var cache = LifetimeCache(maximumCount: 4, maximumPixelBytes: 4,
+                                      maximumMaskBytes: 4)
+            let oldest = insertObservedValue(into: &cache, for: 1)
+            let second = insertObservedValue(into: &cache, for: 2)
+            let survivor = insertObservedValue(into: &cache, for: 3)
+            let admitted = insertObservedValue(into: &cache, for: 4, pixelBytes: pixels,
+                                               maskBytes: masks)
+            withExtendedLifetime(cache) {
+                XCTAssertNil(oldest.value)
+                XCTAssertNil(second.value, "Every entry removed for a byte budget must be released")
+                XCTAssertNotNil(survivor.value)
+                XCTAssertNotNil(admitted.value)
+            }
+        }
+    }
+
+    func testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors() {
+        var cache = LifetimeCache(maximumCount: 4, maximumPixelBytes: 4,
+                                  maximumMaskBytes: 4)
+        let firstCPU = insertObservedValue(into: &cache, for: 1)
+        let firstMetal = insertObservedValue(into: &cache, for: 2, isMetal: true)
+        let secondCPU = insertObservedValue(into: &cache, for: 3)
+        let secondMetal = insertObservedValue(into: &cache, for: 4, isMetal: true)
+
+        cache.removeAll { $0.isMetal }
+        withExtendedLifetime(cache) {
+            XCTAssertNil(firstMetal.value)
+            XCTAssertNil(secondMetal.value)
+            XCTAssertNotNil(firstCPU.value)
+            XCTAssertNotNil(secondCPU.value)
+        }
+
+        cache.removeAll { _ in false }
+        withExtendedLifetime(cache) {
+            XCTAssertNotNil(firstCPU.value, "A nonmatching invalidation must retain survivors")
+            XCTAssertNotNil(secondCPU.value)
+        }
+
+        cache.removeAll { _ in true }
+        XCTAssertNil(firstCPU.value)
+        XCTAssertNil(secondCPU.value)
+        XCTAssertEqual(cache.count, 0)
+    }
+
+    private typealias LifetimeCache = StudyFrameCache<Int, LifetimeValue>
+
+    private final class LifetimeValue: Sendable {
+        let isMetal: Bool
+
+        init(isMetal: Bool) {
+            self.isMetal = isMetal
+        }
+    }
+
+    private final class WeakValue {
+        weak var value: LifetimeValue?
+
+        init(_ value: LifetimeValue) {
+            self.value = value
+        }
+    }
+
+    // The factory returns only a weak observer. Its temporary strong reference
+    // ends before the caller checks lifetime; no closure captures the value.
+    private func insertObservedValue(into cache: inout LifetimeCache, for key: Int,
+                                     isMetal: Bool = false, pixelBytes: Int = 1,
+                                     maskBytes: Int = 1, expectedAdmission: Bool = true,
+                                     file: StaticString = #filePath, line: UInt = #line) -> WeakValue {
+        let value = LifetimeValue(isMetal: isMetal)
+        let observer = WeakValue(value)
+        XCTAssertEqual(cache.insert(value, for: key, pixelBytes: pixelBytes, maskBytes: maskBytes),
+                       expectedAdmission, file: file, line: line)
+        return observer
+    }
 }

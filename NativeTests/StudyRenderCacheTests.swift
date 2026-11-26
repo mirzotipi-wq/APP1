@@ -704,4 +704,325 @@ final class StudyRenderCacheTests: XCTestCase {
         XCTAssertEqual(script.counts.validation, 1)
         XCTAssertEqual(script.counts.render, 2)
     }
+
+    func testCancelledHitLeavesFullCacheEvictionOrderUnchanged() async throws {
+        // Each cancellation boundary starts with a fresh full LRU: A, B, C, D.
+        // A cancelled lookup of A must not promote it ahead of inserting E.
+        for check in [1, 2] {
+            let budget = CancellationBudget()
+            let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+            let original = portraitScene()
+            let scenes = (0..<5).map { exposure in
+                var scene = original
+                scene.previewSettings?.exposureStops = Double(exposure)
+                return scene
+            }
+            var frames: [StudyRenderedFrame] = []
+            for scene in scenes.prefix(4) {
+                frames.append(try await engine.render(scene: scene, width: 24, subject: .bust))
+            }
+            await assertCacheUsage(engine, images: frames.map(\.image))
+
+            budget.reset(cancelAt: check)
+            await assertCancelled(engine, scene: scenes[0])
+            XCTAssertEqual(budget.checkCount, check)
+            await assertCacheUsage(engine, images: frames.map(\.image))
+            budget.reset()
+            let newest = try await engine.render(scene: scenes[4], width: 24, subject: .bust)
+            let survivors = Array(frames.dropFirst()) + [newest]
+            await assertCacheUsage(engine, images: survivors.map(\.image))
+
+            // Probe eviction before any successful hit can change the order.
+            // A promote-before-cancel bug retains A and evicts B instead.
+            budget.reset(cancelAt: 8)
+            await assertCancelled(engine, scene: scenes[0])
+            for index in 1...4 {
+                let reused = try await cachedFrame(engine, budget: budget, scene: scenes[index])
+                XCTAssertEqual(reused.image, survivors[index - 1].image)
+                XCTAssertEqual(reused.backend, .cpu)
+            }
+            await assertCacheUsage(engine, images: survivors.map(\.image))
+        }
+    }
+
+    private struct CacheResourceMeasurement: Encodable {
+        struct Dimensions: Encodable {
+            let width: Int
+            let height: Int
+        }
+
+        let fixture: String
+        let dimensions: [Dimensions]
+        let count: Int
+        let pixelBytes: Int
+        let maskBytes: Int
+    }
+
+    private func assertCPUResourceFrame(_ frame: StudyRenderedFrame, width: Int, height: Int,
+                                        file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(frame.backend, .cpu, file: file, line: line)
+        XCTAssertEqual(frame.image.width, width, file: file, line: line)
+        XCTAssertEqual(frame.image.height, height, file: file, line: line)
+        XCTAssertEqual(frame.image.rgba.count, width * height * 4, file: file, line: line)
+        XCTAssertEqual(frame.image.unsupportedPixelMask.count, width * height, file: file, line: line)
+    }
+
+    /// The logged counters come from the actor after real CPU rendering.
+    /// Returned images independently cross-check its retained payload accounting.
+    /// These bytes exclude caller-held image copies, allocator overhead, Metal
+    /// driver resources and process RSS. Fixtures and dimensions contain no names.
+    private func recordCacheResources(_ engine: StudyRenderEngine, fixture: String,
+                                      retained: [StudyRenderedFrame], expectedCount: Int,
+                                      expectedPixelBytes: Int, expectedMaskBytes: Int,
+                                      file: StaticString = #filePath, line: UInt = #line) async throws {
+        let usage = await engine.cacheUsage
+        let row = CacheResourceMeasurement(fixture: fixture,
+            dimensions: retained.map {
+                CacheResourceMeasurement.Dimensions(width: $0.image.width, height: $0.image.height)
+            }, count: usage.count, pixelBytes: usage.pixelBytes, maskBytes: usage.maskBytes)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        let json = String(decoding: try encoder.encode(row), as: UTF8.self)
+        print("KEYFILL_CACHE_RESOURCES \(json)")
+
+        XCTAssertEqual(usage.count, expectedCount, file: file, line: line)
+        XCTAssertEqual(usage.pixelBytes, expectedPixelBytes, file: file, line: line)
+        XCTAssertEqual(usage.maskBytes, expectedMaskBytes, file: file, line: line)
+        XCTAssertEqual(usage.count, retained.count, file: file, line: line)
+        XCTAssertEqual(usage.pixelBytes, retained.reduce(0) { $0 + $1.image.rgba.count },
+                       file: file, line: line)
+        XCTAssertEqual(usage.maskBytes, retained.reduce(0) { $0 + $1.image.unsupportedPixelMask.count },
+                       file: file, line: line)
+        XCTAssertLessThanOrEqual(usage.count, 4, file: file, line: line)
+        XCTAssertLessThanOrEqual(usage.pixelBytes, 262_144, file: file, line: line)
+        XCTAssertLessThanOrEqual(usage.maskBytes, 65_536, file: file, line: line)
+    }
+
+    func testRealCPUCacheResourcesForFourSmallFrames() async throws {
+        let budget = CancellationBudget()
+        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+        let original = portraitScene()
+        let scenes = (0..<4).map { exposure in
+            var scene = original
+            scene.previewSettings?.exposureStops = Double(exposure)
+            return scene
+        }
+        var frames: [StudyRenderedFrame] = []
+        for scene in scenes {
+            let frame = try await engine.render(scene: scene, width: 24, subject: .bust)
+            assertCPUResourceFrame(frame, width: 24, height: 16)
+            frames.append(frame)
+            let step = frames.count
+            try await recordCacheResources(engine, fixture: "small-bust-step-\(step)", retained: frames,
+                expectedCount: step, expectedPixelBytes: 1_536 * step, expectedMaskBytes: 384 * step)
+        }
+        try await recordCacheResources(engine, fixture: "small-bust", retained: frames,
+            expectedCount: 4, expectedPixelBytes: 6_144, expectedMaskBytes: 1_536)
+        // All four entries fit; every lookup must succeed without CPU work.
+        for index in scenes.indices {
+            let reused = try await cachedFrame(engine, budget: budget, scene: scenes[index])
+            XCTAssertEqual(reused.image, frames[index].image)
+        }
+    }
+
+    func testRealCPUCacheResourcesForFourMaximumBustFrames() async throws {
+        let budget = CancellationBudget()
+        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+        let original = portraitScene()
+        let scenes = (0..<4).map { exposure in
+            var scene = original
+            scene.previewSettings?.exposureStops = Double(exposure)
+            return scene
+        }
+        var frames: [StudyRenderedFrame] = []
+        for scene in scenes {
+            // The requested sphere-size width must still clamp to 144 for busts.
+            let frame = try await engine.render(scene: scene, width: 192, subject: .bust)
+            assertCPUResourceFrame(frame, width: 144, height: 96)
+            frames.append(frame)
+            let step = frames.count
+            try await recordCacheResources(engine, fixture: "maximum-bust-step-\(step)", retained: frames,
+                expectedCount: step, expectedPixelBytes: 55_296 * step, expectedMaskBytes: 13_824 * step)
+        }
+        try await recordCacheResources(engine, fixture: "maximum-bust", retained: frames,
+            expectedCount: 4, expectedPixelBytes: 221_184, expectedMaskBytes: 55_296)
+        for index in scenes.indices {
+            let reused = try await cachedFrame(engine, budget: budget, scene: scenes[index], width: 144)
+            XCTAssertEqual(reused.image, frames[index].image)
+        }
+    }
+
+    func testRealCPUCacheResourcesForMaximumSpheresEvictOldest() async throws {
+        let budget = CancellationBudget()
+        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+        var original = LightingScene.portrait()
+        original.camera.z = 25
+        original.previewSettings = .init()
+        // Stay outside Metal's precision domain on every host.
+        XCTAssertFalse(MetalStudyRenderer.supports(original, width: 192))
+        let scenes = (0..<3).map { exposure in
+            var scene = original
+            scene.previewSettings?.exposureStops = Double(exposure)
+            return scene
+        }
+        var frames: [StudyRenderedFrame] = []
+        for scene in scenes {
+            let frame = try await engine.render(scene: scene, width: 192, subject: .sphere)
+            assertCPUResourceFrame(frame, width: 192, height: 128)
+            frames.append(frame)
+            let step = frames.count
+            let retainedCount = min(step, 2)
+            try await recordCacheResources(engine, fixture: "maximum-sphere-step-\(step)",
+                retained: Array(frames.suffix(2)), expectedCount: retainedCount,
+                expectedPixelBytes: 98_304 * retainedCount, expectedMaskBytes: 24_576 * retainedCount)
+        }
+        let retained = Array(frames.suffix(2))
+        try await recordCacheResources(engine, fixture: "maximum-sphere", retained: retained,
+            expectedCount: 2, expectedPixelBytes: 196_608, expectedMaskBytes: 49_152)
+        budget.reset(cancelAt: 8)
+        await assertCancelled(engine, scene: scenes[0], width: 192, subject: .sphere)
+        for index in 1...2 {
+            let reused = try await cachedFrame(engine, budget: budget, scene: scenes[index],
+                                               width: 192, subject: .sphere)
+            XCTAssertEqual(reused.image, frames[index].image)
+        }
+        await assertCacheUsage(engine, images: retained.map(\.image))
+    }
+
+    func testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust() async throws {
+        let budget = CancellationBudget()
+        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+        let original = portraitScene()
+        let bustScenes = (0..<3).map { exposure in
+            var scene = original
+            scene.previewSettings?.exposureStops = Double(exposure)
+            return scene
+        }
+        var bustFrames: [StudyRenderedFrame] = []
+        for scene in bustScenes {
+            let frame = try await engine.render(scene: scene, width: 144, subject: .bust)
+            assertCPUResourceFrame(frame, width: 144, height: 96)
+            bustFrames.append(frame)
+            let step = bustFrames.count
+            try await recordCacheResources(engine, fixture: "mixed-bust-sphere-step-\(step)",
+                retained: bustFrames, expectedCount: step,
+                expectedPixelBytes: 55_296 * step, expectedMaskBytes: 13_824 * step)
+        }
+        var sphereScene = LightingScene.portrait()
+        sphereScene.camera.z = 25
+        XCTAssertFalse(MetalStudyRenderer.supports(sphereScene, width: 192))
+        let sphere = try await engine.render(scene: sphereScene, width: 192, subject: .sphere)
+        assertCPUResourceFrame(sphere, width: 192, height: 128)
+        let retained = Array(bustFrames.suffix(2)) + [sphere]
+        try await recordCacheResources(engine, fixture: "mixed-bust-sphere-step-4", retained: retained,
+            expectedCount: 3, expectedPixelBytes: 208_896, expectedMaskBytes: 52_224)
+        try await recordCacheResources(engine, fixture: "mixed-bust-sphere", retained: retained,
+            expectedCount: 3, expectedPixelBytes: 208_896, expectedMaskBytes: 52_224)
+        // Three busts plus the sphere exceed both byte budgets. One bust alone
+        // must be evicted, even though the entry-count limit would allow four.
+        budget.reset(cancelAt: 8)
+        await assertCancelled(engine, scene: bustScenes[0], width: 144)
+        for index in 1...2 {
+            let reused = try await cachedFrame(engine, budget: budget, scene: bustScenes[index], width: 144)
+            XCTAssertEqual(reused.image, bustFrames[index].image)
+        }
+        let reusedSphere = try await cachedFrame(engine, budget: budget, scene: sphereScene,
+                                                  width: 192, subject: .sphere)
+        XCTAssertEqual(reusedSphere.image, sphere.image)
+        await assertCacheUsage(engine, images: retained.map(\.image))
+    }
+
+    /// This observer cannot extend the backend's lifetime. The lock protects
+    /// weak storage across the test executor and actor; no backend method is
+    /// called outside the actor, and the getter returns only a Boolean.
+    private final class WeakComputeBackendObserver: @unchecked Sendable {
+        private let lock = NSLock()
+        private weak var backend: ScriptedComputeBackend?
+
+        func observe(_ value: ScriptedComputeBackend) {
+            lock.lock()
+            backend = value
+            lock.unlock()
+        }
+
+        var isAlive: Bool {
+            lock.lock()
+            defer { lock.unlock() }
+            return backend != nil
+        }
+    }
+
+    func testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive() async throws {
+        // First falsify accidental ownership by the observer itself. The test
+        // explicitly drops its only strong reference before checking the weak one.
+        let controlScript = ComputeScript(budget: CancellationBudget())
+        let controlObserver = WeakComputeBackendObserver()
+        var controlBackend: ScriptedComputeBackend? = ScriptedComputeBackend(script: controlScript)
+        controlObserver.observe(controlBackend!)
+        withExtendedLifetime(controlBackend) {
+            XCTAssertTrue(controlObserver.isAlive)
+        }
+        controlBackend = nil
+        XCTAssertFalse(controlObserver.isAlive)
+        XCTAssertEqual(controlScript.counts.releases, 1)
+
+        let failures: [ComputeOutcome] = [.metal(.command), .metal(.allocation), .study(.invalidComputeOutput)]
+        for failure in failures {
+            for cancel in [false, true] {
+                let budget = CancellationBudget()
+                let script = ComputeScript(budget: budget)
+                let observer = WeakComputeBackendObserver()
+                // Only script and observer are captured. The backend is created
+                // inside this factory; its local reference ends on return.
+                let engine = StudyRenderEngine(cancellationRequested: { budget.requested() },
+                    makeComputeBackend: {
+                        try script.run(.factory)
+                        let backend = ScriptedComputeBackend(script: script)
+                        observer.observe(backend)
+                        return backend
+                    })
+                let cpuScene = portraitScene()
+                let cpu = try await engine.render(scene: cpuScene, width: 24, subject: .bust)
+                let original = computeScene()
+                let compute = try await engine.render(scene: original, width: 48)
+                XCTAssertEqual(compute.backend, .metal)
+                XCTAssertTrue(observer.isAlive, "The live actor must own its validated backend")
+                XCTAssertEqual(script.counts.releases, 0)
+                await assertCacheUsage(engine, images: [cpu.image, compute.image])
+
+                var failed = original
+                failed.previewSettings?.exposureStops = 1
+                script.set(.render, to: ComputeStep(failure, cancel: cancel))
+                var retainedImages = [cpu.image]
+                if cancel {
+                    await assertCancelled(engine, scene: failed, width: 48, subject: .sphere)
+                } else {
+                    let fallback = try await engine.render(scene: failed, width: 48)
+                    XCTAssertEqual(fallback.backend, .cpu)
+                    XCTAssertEqual(fallback.image, try ReferenceStudyRenderer.render(scene: failed, width: 48))
+                    retainedImages.append(fallback.image)
+                }
+                // Await has unwound the render callback and all temporary strong
+                // backend references. Keep using the same engine below, proving
+                // release follows downgrade rather than actor destruction.
+                XCTAssertFalse(observer.isAlive)
+                XCTAssertEqual(script.counts.releases, 1)
+                await assertCacheUsage(engine, images: retainedImages)
+                let preserved = try await cachedFrame(engine, budget: budget, scene: cpuScene)
+                XCTAssertEqual(preserved.backend, .cpu)
+                XCTAssertEqual(preserved.image, cpu.image)
+
+                var fresh = original
+                fresh.previewSettings?.exposureStops = 2
+                let next = try await engine.render(scene: fresh, width: 48)
+                XCTAssertEqual(next.backend, .cpu)
+                XCTAssertFalse(observer.isAlive)
+                XCTAssertEqual(script.counts.factory, 1)
+                XCTAssertEqual(script.counts.validation, 1)
+                XCTAssertEqual(script.counts.render, 2)
+                XCTAssertEqual(script.counts.releases, 1)
+            }
+        }
+    }
+
 }

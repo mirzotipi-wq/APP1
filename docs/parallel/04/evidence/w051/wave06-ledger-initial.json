@@ -1,0 +1,336 @@
+{
+  "schema": 1,
+  "wave": 6,
+  "lane": "04-metal-cache",
+  "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "campaign_baseline": "f150f98",
+  "packet_blob_sha": "2d556afeca3be2fe717b6cfb23d793431264b34e",
+  "packet_input_sha_was_null": true,
+  "input_authority": "root wave06 launch brief",
+  "coordinator": "/root/w051",
+  "integration_authority": "/root",
+  "branch": "finish/04-metal-cache",
+  "environment": "execution unavailable after fourth interruption; no physical wave06 worktrees created",
+  "max_active_children": 2,
+  "expected_workers": 10,
+  "expected_fresh_children": 9,
+  "actual_context_count": 3,
+  "frozen_acceptance": {
+    "cache_frames": 4,
+    "pixel_bytes": 262144,
+    "mask_bytes": 65536,
+    "parity_mean_rgb": 1,
+    "parity_fraction_error_gt4": 0.005,
+    "precision_max_channel_error": 1,
+    "cpu_bust_max_width": 144,
+    "cpu_cancel_max_further_pixels": 8,
+    "exact_masks": true,
+    "cpu_authoritative": true,
+    "failed_cancelled_frames_excluded": true,
+    "downgrade_purges_metal_preserves_cpu": true
+  },
+  "workers": [
+    {
+      "number": 51,
+      "role": "acceptance",
+      "task": "Acceptance worker 051: coordinate nine fresh workers 052–060 with at most two active children. Freeze four-entry, 262144 RGBA-byte, 65536 mask-byte bounds and exact cache identity. Start 054 core test writer and 055 native test writer; 060 reviews last. Do not rewrite a correct cache.",
+      "canonical_id": "/root/w051",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w51",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w51",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "active",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 52,
+      "role": "invariants",
+      "task": "Inspect LRU replacement, rejection and selective removal, including Int.max and zero costs. Find a concrete counterexample or report the bounded checks that passed. No product edit or redundant tests.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w52",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w52",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 53,
+      "role": "interface",
+      "task": "Review exact scene identity, subject and clamped widths. Validation must precede name stripping. Identify any incompatible frame surviving backend failure. No UI edits.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w53",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w53",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 54,
+      "role": "implementation",
+      "task": "Own only Tests/LightingCoreTests/StudyFrameCacheTests.swift. Add focused weak-reference lifetime regressions: rejected oversized replacement retains the old value and order; successful replacement, eviction and selective invalidation release precisely the removed values. Preserve existing tests. Do not duplicate arithmetic or alter the cache without a demonstrated defect.",
+      "canonical_id": "/root/w051/w054",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w54",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w54",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "active",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 55,
+      "role": "concurrency",
+      "task": "Own only NativeTests/StudyRenderCacheTests.swift. Add a cancelled-hit full-LRU regression. Measure actual engine cache payload with real CPU rendering for small, maximum and mixed sphere/bust frames using cacheUsage. Print compact KEYFILL_CACHE_RESOURCES JSON rows with dimensions/count/pixelBytes/maskBytes and assert budgets plus expected eviction. Prove failed injected backend release through a weak observer whose factory does not capture it strongly. Preserve prior tests. These measure actor ownership and payload, not GPU driver memory or RSS. No Swift build. Include four 24×16 frames (6144/1536 bytes), four 144×96 bust frames (221184/55296), three 192×128 sphere requests retaining two (196608/49152), and three 144×96 bust requests followed by one 192×128 sphere request retaining two busts plus the sphere (208896/52224). These are expected payload values to assert, not measured results until CI executes.",
+      "canonical_id": "/root/w051/w055",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w55",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w55",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "active",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 56,
+      "role": "resource-lifetime",
+      "task": "Review retained references: cache payload, image copies, persistent pipeline, per-command buffers and driver memory. Verify weak tests truly drop external references. Report a precise remedy for any defect; no edits.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w56",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w56",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 57,
+      "role": "consumer-integration",
+      "task": "Check consumer reuse after undo/reopen, display-name edits and subject switches, and CPU backend labels following precision fallback or downgrade. Preview belongs to 03; report only newly relevant gaps.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w57",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w57",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 58,
+      "role": "accessibility-privacy",
+      "task": "Audit stripped display names, bounded key metadata and measurement privacy. New logs must contain generic fixtures, dimensions and counts; no reference photos or user names. No edits.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w58",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w58",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 59,
+      "role": "platform-performance",
+      "task": "Verify requested buffer algebra from the packer: 96 parameter +36864 sample +576 area +98304 output bytes =135840, plus 8 dimension bytes. Verify cache payload examples. Separate source-derived bounds from observed native measurements. No Swift builds.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w59",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w59",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 60,
+      "role": "independent-review",
+      "task": "LAST independent review of new core/native tests and any justified cache change. Ensure assertions detect cancelled recency mutation, incorrect real payload counters and unintended retention. Separate executed checks from CI-pending tests.",
+      "canonical_id": null,
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w60",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w60",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "queued",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    }
+  ],
+  "startup_read_manifest": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    }
+  ]
+}

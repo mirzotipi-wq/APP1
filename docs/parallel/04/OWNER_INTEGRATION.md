@@ -14,3 +14,11 @@ The width-aware eligibility API keeps the legacy supports(scene) overload (width
 Integration gates for20/19: rerun Debug/Release core tests, six canonical host/Metal parity cases, all eight strict host/Metal precision cases, complete native method inventory without skips, and lifecycle/cache tests after combining02/03 source. Do not substitute this branch's earlier matrix results for tests of the merged source.
 
 The accompanying lane03-reference-study.diff records the inspected CPU cancellation change. GitHub compare evidence was read for both pinned branch SHAs; no owner acknowledgment is inferred.
+
+## Later consumer inspection
+
+Worker 057 confirmed a source-level A→B→A sequence in the current owner preview at `finish/03-cpu-study-mannequin` head `8ce5e464253144deccb39d838faef70f05e0c38c` (preview blob `c96d5cb7a41143867efca160b309d71bfa993c96`). After A displays a Metal frame, B can confirm a backend failure and be cancelled. The engine correctly evicts Metal entries, but returning to A can take the view-local successful-frame shortcut without consulting the now-CPU engine. The old pixels may remain valid; this is a subsequent-request adoption and status-policy gap, not evidence of corrupt pixels or engine-cache leakage.
+
+Lane 03 owns the correction and hosted regression; lane 20 owns integration. The [unapplied patch](evidence/w057/owner-preview-adoption.patch) and [exact regression proposal](evidence/w057/owner-proposal.md) target that inspected owner revision. They reconsult the engine for each activation, retain previous pixels during revalidation, and require a new pipeline ticket before presenting a frame/backend as current. Keep ordinary cancellation and precision-only fallback distinct from permanent downgrade. Verify existing automatic native test discovery/accounting; no shared build or harness change is currently required. This proposal is uncompiled and unrun, with no owner acknowledgment or merge claimed.
+
+The earlier packed-input/oracle comparison remains pinned to its stated heads; this later inspection updates the preview dependency only. Recompare all owner source changes and rerun the complete matrices after lane20 combines them.

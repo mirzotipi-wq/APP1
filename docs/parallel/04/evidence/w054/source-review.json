@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "worker": "w054",
+  "canonical_agent_id": "/root/w051/w054",
+  "wave": 6,
+  "lane": "04-metal-cache",
+  "role": "implementation/core-cache lifetime test writer",
+  "repository": "mirzotipi-wq/APP1",
+  "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "campaign_baseline": "f150f98",
+  "packet_blob_sha": "2d556afeca3be2fe717b6cfb23d793431264b34e",
+  "packet_input_sha": null,
+  "input_sha_authority": "Parent wave-launch brief",
+  "workspace": {
+    "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w054",
+    "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w054",
+    "physical_paths_created_or_used": false,
+    "actual": "GitHub immutable file snapshots and candidate UTF-8 text in isolated functions session state",
+    "execution_environment": "Unavailable by authoritative brief; no exec_command probe attempted"
+  },
+  "startup_reads": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "input_blob_sha": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84",
+      "output_blob_sha": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "action": "Appended four lifetime tests and private fixtures; all twelve original tests preserved verbatim"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "input_blob_sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "action": "Read only; no demonstrated defect"
+    }
+  ],
+  "actual_checks": [
+    {
+      "kind": "source inspection",
+      "result": "The admission guard precedes replacement removal; successful replacement, budget eviction and selective removal all reach the same remove(at:) path"
+    },
+    {
+      "kind": "JavaScript source-structure checks",
+      "result": {
+        "allOriginalSourcePreserved": true,
+        "originalTests": 12,
+        "candidateTests": 16,
+        "addedTests": [
+          "testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+          "testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+          "testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+          "testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors"
+        ],
+        "uniqueTestNames": true,
+        "observedValueIsWeak": true,
+        "lifetimeTestsDoNotLookupOrSnapshotCache": true,
+        "lifetimeValueUsesCheckedSendable": true,
+        "noArithmeticAssertionsAdded": true,
+        "sourceChars": 16887,
+        "status": "JavaScript source checks only; Swift compilation and execution unavailable"
+      }
+    },
+    {
+      "kind": "GitHub blob UTF-8 roundtrip",
+      "blob_sha": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "result": "Content exactly equals authored candidate text; not local Git hash-object verification"
+    },
+    {
+      "kind": "ownership review",
+      "result": "Immutable final Sendable values; helper returns only a weak observer; no escaping value capture, lookup, or retained cache copy spans mutation; withExtendedLifetime encloses observations only"
+    }
+  ],
+  "authored_tests": [
+    {
+      "name": "testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+      "assertions": "Both independently oversized costs reject; rejected object releases; old/current objects stay alive; following admission releases the old LRU and preserves the other/new objects"
+    },
+    {
+      "name": "testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+      "assertions": "Replacement releases original while preserving unrelated/new values; next insertion releases the unrelated older value"
+    },
+    {
+      "name": "testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+      "assertions": "Pixel and mask budget cases each release both evicted objects, preserve the surviving entry and admitted value"
+    },
+    {
+      "name": "testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors",
+      "assertions": "Two Metal-tagged fixtures release; two CPU-tagged fixtures survive selective and nonmatching invalidation; clearing releases both survivors"
+    }
+  ],
+  "test_execution": {
+    "status": "CI-pending; authored only",
+    "swift_compilation": false,
+    "swift_test_execution": false,
+    "mock_backend_execution": false,
+    "host_shared_kernel": false,
+    "simulator_metal": false,
+    "physical_device": false
+  },
+  "unavailable_checks": [
+    "Local git status, branch, HEAD, and recent commit inspection",
+    "python3 scripts/agent_cycle.py check",
+    "python3 scripts/agent_cycle.py next",
+    "Local git hash-object verification and root reconstruction",
+    "Swift Debug/Release compilation and test execution",
+    "Apple simulator/device builds and tests"
+  ],
+  "assumptions": [
+    "Swift ARC weak references to these pure Swift class fixtures are observable after the synchronous helper returns",
+    "Parent/root will schedule independent review and integrated CI",
+    "Generic fixture labels represent invalidation selection only, not real renderer or GPU allocations"
+  ],
+  "frozen_acceptance_unchanged": {
+    "cpu_authoritative": true,
+    "exact_invalid_masks": true,
+    "parity": {
+      "fixtures": 6,
+      "mean_rgb_error_max": 1,
+      "fraction_error_over_4_max": 0.005
+    },
+    "precision": {
+      "fixtures": 8,
+      "max_channel_error": 1
+    },
+    "cache": {
+      "frames_max": 4,
+      "rgba_bytes_max": 262144,
+      "mask_bytes_max": 65536
+    },
+    "cancelled_and_failed_frames_excluded": true,
+    "downgrade_purges_metal_preserves_cpu": true,
+    "bust_cpu_width_max": 144,
+    "cancellation_further_pixel_evaluations_max": 8
+  },
+  "risks": [
+    "Swift tests remain uncompiled and unexecuted; JavaScript checks establish source preservation only",
+    "Lifetime assertions address cache value ownership, not driver memory, RSS, Metal execution, or real frame payload accounting"
+  ],
+  "next_executable_checks": [
+    {
+      "command": "swift test --filter StudyFrameCacheTests",
+      "where": "Root-approved capable CI/executor after reconstruction",
+      "status": "Not run"
+    },
+    {
+      "command": "swift test -c release --filter StudyFrameCacheTests",
+      "where": "Root-approved capable CI/executor after reconstruction",
+      "status": "Not run"
+    },
+    {
+      "action": "Independent review plus root reconstruction/hash verification",
+      "status": "Pending"
+    }
+  ],
+  "refs_commits_build_configuration_or_protected_files_written": false
+}

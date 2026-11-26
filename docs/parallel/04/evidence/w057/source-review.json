@@ -1,0 +1,810 @@
+{
+  "schema": 1,
+  "canonical_id": "/root/w051/w057",
+  "role": "consumer-integration reviewer",
+  "wave": 6,
+  "lane": "04",
+  "campaign": "f150f98",
+  "repository": "mirzotipi-wq/APP1",
+  "input": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "distinct_worker_count": 1,
+  "children": 0,
+  "authorization": "Parent brief overrides stale main work scope and packet null input; reports/evidence blobs only. Root integrates finish/04-metal-cache.",
+  "planned_paths": [
+    "/tmp/keyfill04-2987b1ee980d/workers/w057",
+    "/tmp/keyfill04-2987b1ee980d/results/w057"
+  ],
+  "actual_isolation": "Immutable Git source snapshots in functions session store. No local filesystem paths created or inspected.",
+  "executed": [
+    "Git tool name discovery",
+    "Exact input fetches of all mandatory documents, owner note and three review files",
+    "Manual source falsification of consumer cache reuse and backend labels",
+    "Read-only pinned lane03 preview comparison; no owner-source merge",
+    "Parent-requested bounded current-owner check: resolve branch once with fetch_commit, then fetch preview at returned immutable SHA"
+  ],
+  "unrun": [
+    "Local status/HEAD/history",
+    "agent_cycle check",
+    "agent_cycle next",
+    "hash-object",
+    "Swift builds",
+    "Native test execution",
+    "UI tests and image/accessibility review",
+    "Portable host kernel execution",
+    "Actual simulator Metal",
+    "Physical device validation"
+  ],
+  "source_blobs": {
+    "AGENTS.md": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+    "agents/OPERATING_PROTOCOL.md": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+    "agents/HANDOFF.md": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+    "agents/state.json": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+    "docs/PRODUCT.md": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+    "docs/ARCHITECTURE.md": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+    "docs/ROADMAP.md": "3e7dd3525c070e76838e20ef5e6529f534130639",
+    "docs/QUALITY.md": "203c646d5cef679495eee2c30fed8dddf900317c",
+    "docs/DESIGN.md": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+    "docs/acceptance/m02-m03-code.md": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+    "docs/parallel/04/OWNER_INTEGRATION.md": "ed00018714f0618b91fc0d6fe976dbfbb93d7bfb",
+    "App/MetalStudyRenderer.swift": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+    "App/ReferenceStudyPreview.swift": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+    "NativeTests/StudyRenderCacheTests.swift": "2af764b51023dc66a9cc0070d8d49f5bd7de334e"
+  },
+  "input_native_test_blob": "2af764b51023dc66a9cc0070d8d49f5bd7de334e",
+  "separately_reported_native_candidate": {
+    "sha": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "status": "CI-pending per parent brief; not part of frozen source fetch or executed by worker"
+  },
+  "static_observations": [
+    {
+      "topic": "Undo/reopen",
+      "references": [
+        "App/MetalStudyRenderer.swift:162-186,224-234",
+        "NativeTests/StudyRenderCacheTests.swift:63-81"
+      ],
+      "conclusion": "Exact validated scene-value cache identity permits reinstatement and decoded reopen with persisted IDs; test assertions distinguish hit from render via cancellation budget. Source-only."
+    },
+    {
+      "topic": "Display names",
+      "references": [
+        "App/MetalStudyRenderer.swift:167-179",
+        "NativeTests/StudyRenderCacheTests.swift:208-240"
+      ],
+      "conclusion": "Validation precedes stripping names from engine cache keys. Valid name edits reuse pixels; invalid metadata cannot hit. Preview full request equality can cause a fresh task but engine reuse is retained."
+    },
+    {
+      "topic": "Subject switch",
+      "references": [
+        "App/MetalStudyRenderer.swift:162-186,228-242",
+        "App/ReferenceStudyPreview.swift:49-51",
+        "NativeTests/StudyRenderCacheTests.swift:183-206"
+      ],
+      "conclusion": "Subject participates in cache key, bust width is bounded, preview does not display previous subject as current."
+    },
+    {
+      "topic": "Precision fallback",
+      "references": [
+        "App/MetalStudyRenderer.swift:267-287",
+        "NativeTests/StudyRenderCacheTests.swift:523-557,638-665"
+      ],
+      "conclusion": "Precision-domain fallback retains backend eligibility for later requests, returns a CPU-tagged frame, and preview stores returned backend. Source contains coverage; unrun."
+    },
+    {
+      "topic": "Confirmed downgrade",
+      "references": [
+        "App/MetalStudyRenderer.swift:272-294",
+        "NativeTests/StudyRenderCacheTests.swift:454-491"
+      ],
+      "conclusion": "Engine confirms failure before cancellation, permanently selects CPU and removes only Metal cache entries. Native source retries old key through engine and asserts CPU. It does not exercise preview local early return."
+    }
+  ],
+  "finding": {
+    "id": "w057-preview-local-reuse-after-downgrade",
+    "owner": "03 preview owner via20 integration",
+    "status": "Concrete source-level conditional path; runtime reproduction unrun",
+    "trace": [
+      "A has completed successfully on Metal and remains in preview Frame.",
+      "Edit B begins an uncached compute render. Undo back to A cancels B while the compute command reports command/allocation/invalidComputeOutput failure.",
+      "Engine handles confirmed failure with selectCPU(), purging engine-held Metal entries; cancellation then prevents CPU publication for B.",
+      "Preview's cancelled B handler leaves frame A unchanged.",
+      "A task encounters matching non-nil frame and returns before engine lookup; frame.request == request marks A current and displays stored Metal badge.",
+      "A's original image provenance remains truthful historical Metal output. No corrupt pixels, CPU relabeling or newly returned stale engine cache frame is alleged. The gap is consumer adoption of a current-labelled old Metal frame after engine downgrade."
+    ],
+    "code": {
+      "preview_current": [
+        {
+          "line": 47,
+          "text": "                Color.black"
+        },
+        {
+          "line": 48,
+          "text": "                // A previous scene may remain visible while it updates, but a"
+        },
+        {
+          "line": 49,
+          "text": "                // different subject or an old error must never stand in for it."
+        },
+        {
+          "line": 50,
+          "text": "                if let frame,"
+        },
+        {
+          "line": 51,
+          "text": "                   frame.request == request || (frame.image != nil && frame.request.subject == subject) {"
+        },
+        {
+          "line": 52,
+          "text": "                    let isCurrent = frame.request == request"
+        },
+        {
+          "line": 53,
+          "text": "                    if let image = frame.image {"
+        },
+        {
+          "line": 54,
+          "text": "                        let width = min(geometry.size.width, geometry.size.height * 1.5)"
+        },
+        {
+          "line": 55,
+          "text": "                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). Updating light study.\""
+        },
+        {
+          "line": 56,
+          "text": "                        Image(image, scale: 1, orientation: .up, label: Text(label))"
+        },
+        {
+          "line": 57,
+          "text": "                            .resizable().interpolation(.medium)"
+        },
+        {
+          "line": 58,
+          "text": "                            .frame(width: width, height: width / 1.5)"
+        },
+        {
+          "line": 59,
+          "text": "                            .frame(maxWidth: .infinity, maxHeight: .infinity)"
+        },
+        {
+          "line": 60,
+          "text": "                            .accessibilityLabel(label)"
+        },
+        {
+          "line": 61,
+          "text": "                            .accessibilityIdentifier(isCurrent ? \"studyPreview\" : \"studyPreviousPreview\")"
+        },
+        {
+          "line": 62,
+          "text": "                        if isCurrent, let backend = frame.backend {"
+        },
+        {
+          "line": 63,
+          "text": "                            Text(backend.rawValue).font(.caption2.monospaced())"
+        },
+        {
+          "line": 64,
+          "text": "                                .foregroundStyle(.white.opacity(0.8))"
+        },
+        {
+          "line": 65,
+          "text": "                                .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))"
+        },
+        {
+          "line": 66,
+          "text": "                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)"
+        }
+      ],
+      "preview_shortcut_and_cancellation": [
+        {
+          "line": 109,
+          "text": "        .task(id: activeRequest) {"
+        },
+        {
+          "line": 110,
+          "text": "            guard let snapshot = activeRequest else { return }"
+        },
+        {
+          "line": 111,
+          "text": "            // A quick switch back to a completed request can reuse its pixels."
+        },
+        {
+          "line": 112,
+          "text": "            // Failed frames remain retryable when this view appears again."
+        },
+        {
+          "line": 113,
+          "text": "            if let frame, frame.request == snapshot, frame.image != nil { return }"
+        },
+        {
+          "line": 114,
+          "text": "            do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }"
+        },
+        {
+          "line": 115,
+          "text": "            do {"
+        },
+        {
+          "line": 116,
+          "text": "                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)"
+        },
+        {
+          "line": 117,
+          "text": "                guard !Task.isCancelled else { return }"
+        },
+        {
+          "line": 118,
+          "text": "                let study = rendered.image"
+        },
+        {
+          "line": 119,
+          "text": "                let image = Self.makeImage(study)"
+        },
+        {
+          "line": 120,
+          "text": "                guard !Task.isCancelled else { return }"
+        },
+        {
+          "line": 121,
+          "text": "                frame = Frame(request: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,"
+        },
+        {
+          "line": 122,
+          "text": "                              backend: rendered.backend,"
+        },
+        {
+          "line": 123,
+          "text": "                              message: image == nil ? \"The rendered image could not be displayed.\" : nil)"
+        },
+        {
+          "line": 124,
+          "text": "            } catch {"
+        },
+        {
+          "line": 125,
+          "text": "                guard !Task.isCancelled, !(error is CancellationError),"
+        },
+        {
+          "line": 126,
+          "text": "                      (error as? StudyError) != .cancelled else { return }"
+        },
+        {
+          "line": 127,
+          "text": "                let message: String"
+        },
+        {
+          "line": 128,
+          "text": "                switch error as? StudyError {"
+        },
+        {
+          "line": 129,
+          "text": "                case .invalidCamera: message = \"Move the camera above the panel and away from the subject.\""
+        },
+        {
+          "line": 130,
+          "text": "                case .invalidEmitter: message = \"Check the aiming direction of each active light.\""
+        },
+        {
+          "line": 131,
+          "text": "                default: message = \"Check the camera, light positions, and preview settings.\""
+        },
+        {
+          "line": 132,
+          "text": "                }"
+        },
+        {
+          "line": 133,
+          "text": "                frame = Frame(request: snapshot, image: nil, unsupportedPixels: 0, backend: nil, message: message)"
+        }
+      ],
+      "engine_failure_and_purge": [
+        {
+          "line": 267,
+          "text": "        if case .metal(let renderer) = state, supportsMetal {"
+        },
+        {
+          "line": 268,
+          "text": "            do {"
+        },
+        {
+          "line": 269,
+          "text": "                let image = try renderer.render(scene: scene, width: width, isCancelled: isCancelled)"
+        },
+        {
+          "line": 270,
+          "text": "                guard !isCancelled() else { throw StudyError.cancelled }"
+        },
+        {
+          "line": 271,
+          "text": "                return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)"
+        },
+        {
+          "line": 272,
+          "text": "            } catch let error as StudyError {"
+        },
+        {
+          "line": 273,
+          "text": "                // Validation/cancellation is a scene error, not a backend failure."
+        },
+        {
+          "line": 274,
+          "text": "                if error != .invalidComputeOutput { throw error }"
+        },
+        {
+          "line": 275,
+          "text": "                selectCPU()"
+        },
+        {
+          "line": 276,
+          "text": "            } catch MetalStudyError.precisionDomain {"
+        },
+        {
+          "line": 277,
+          "text": "                // Preserve the validated backend for a later eligible request."
+        },
+        {
+          "line": 278,
+          "text": "            } catch {"
+        },
+        {
+          "line": 279,
+          "text": "                selectCPU()"
+        },
+        {
+          "line": 280,
+          "text": "            }"
+        },
+        {
+          "line": 281,
+          "text": "        }"
+        },
+        {
+          "line": 282,
+          "text": "        // In particular, a precision-domain fallback must observe cancellation"
+        },
+        {
+          "line": 283,
+          "text": "        // before the CPU renderer constructs its scene and emitter samples."
+        },
+        {
+          "line": 284,
+          "text": "        guard !isCancelled() else { throw StudyError.cancelled }"
+        },
+        {
+          "line": 285,
+          "text": "        let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)"
+        },
+        {
+          "line": 286,
+          "text": "        guard !isCancelled() else { throw StudyError.cancelled }"
+        },
+        {
+          "line": 287,
+          "text": "        return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)"
+        },
+        {
+          "line": 288,
+          "text": "    }"
+        },
+        {
+          "line": 289,
+          "text": ""
+        },
+        {
+          "line": 290,
+          "text": "    private func selectCPU() {"
+        },
+        {
+          "line": 291,
+          "text": "        state = .cpu"
+        },
+        {
+          "line": 292,
+          "text": "        // A runtime backend failure invalidates its old frames as well. A later"
+        },
+        {
+          "line": 293,
+          "text": "        // hit must not resurrect Metal after the engine has failed closed."
+        },
+        {
+          "line": 294,
+          "text": "        frameCache.removeAll { $0.backend == .metal }"
+        },
+        {
+          "line": 295,
+          "text": "    }"
+        }
+      ],
+      "native_failure_and_retry": [
+        {
+          "line": 454,
+          "text": "    func testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation() async throws {"
+        },
+        {
+          "line": 455,
+          "text": "        let failures: [ComputeOutcome] = [.metal(.command), .metal(.allocation), .study(.invalidComputeOutput)]"
+        },
+        {
+          "line": 456,
+          "text": "        for failure in failures {"
+        },
+        {
+          "line": 457,
+          "text": "            let budget = CancellationBudget()"
+        },
+        {
+          "line": 458,
+          "text": "            let script = ComputeScript(budget: budget)"
+        },
+        {
+          "line": 459,
+          "text": "            let engine = scriptedEngine(budget: budget, script: script)"
+        },
+        {
+          "line": 460,
+          "text": "            let cpuScene = portraitScene()"
+        },
+        {
+          "line": 461,
+          "text": "            let cpu = try await engine.render(scene: cpuScene, width: 24, subject: .bust)"
+        },
+        {
+          "line": 462,
+          "text": "            let original = computeScene()"
+        },
+        {
+          "line": 463,
+          "text": "            let compute = try await engine.render(scene: original, width: 48)"
+        },
+        {
+          "line": 464,
+          "text": "            XCTAssertEqual(compute.backend, .metal)"
+        },
+        {
+          "line": 465,
+          "text": "            await assertCacheUsage(engine, images: [cpu.image, compute.image])"
+        },
+        {
+          "line": 466,
+          "text": ""
+        },
+        {
+          "line": 467,
+          "text": "            var failed = original"
+        },
+        {
+          "line": 468,
+          "text": "            failed.previewSettings?.exposureStops = 1"
+        },
+        {
+          "line": 469,
+          "text": "            script.set(.render, to: ComputeStep(failure, cancel: true))"
+        },
+        {
+          "line": 470,
+          "text": "            await assertCancelled(engine, scene: failed, width: 48, subject: .sphere)"
+        },
+        {
+          "line": 471,
+          "text": "            // After await, the failing callback's local backend reference has"
+        },
+        {
+          "line": 472,
+          "text": "            // unwound. This proves mock object release, not GPU resource release."
+        },
+        {
+          "line": 473,
+          "text": "            XCTAssertEqual(script.counts.releases, 1)"
+        },
+        {
+          "line": 474,
+          "text": "            await assertCacheUsage(engine, images: [cpu.image])"
+        },
+        {
+          "line": 475,
+          "text": "            let preserved = try await cachedFrame(engine, budget: budget, scene: cpuScene)"
+        },
+        {
+          "line": 476,
+          "text": "            XCTAssertEqual(preserved.image, cpu.image)"
+        },
+        {
+          "line": 477,
+          "text": "            XCTAssertEqual(preserved.backend, .cpu)"
+        },
+        {
+          "line": 478,
+          "text": ""
+        },
+        {
+          "line": 479,
+          "text": "            script.set(.render, to: ComputeStep())"
+        },
+        {
+          "line": 480,
+          "text": "            let retried = try await engine.render(scene: failed, width: 48)"
+        },
+        {
+          "line": 481,
+          "text": "            XCTAssertEqual(retried.backend, .cpu)"
+        },
+        {
+          "line": 482,
+          "text": "            XCTAssertEqual(retried.image, try ReferenceStudyRenderer.render(scene: failed, width: 48))"
+        },
+        {
+          "line": 483,
+          "text": "            let oldKey = try await engine.render(scene: original, width: 48)"
+        },
+        {
+          "line": 484,
+          "text": "            XCTAssertEqual(oldKey.backend, .cpu)"
+        },
+        {
+          "line": 485,
+          "text": "            XCTAssertEqual(oldKey.image, try ReferenceStudyRenderer.render(scene: original, width: 48))"
+        },
+        {
+          "line": 486,
+          "text": "            XCTAssertNotEqual(oldKey.image, compute.image)"
+        },
+        {
+          "line": 487,
+          "text": "            XCTAssertEqual(script.counts.factory, 1)"
+        },
+        {
+          "line": 488,
+          "text": "            XCTAssertEqual(script.counts.validation, 1)"
+        },
+        {
+          "line": 489,
+          "text": "            XCTAssertEqual(script.counts.render, 2)"
+        },
+        {
+          "line": 490,
+          "text": "            await assertCacheUsage(engine, images: [cpu.image, retried.image, oldKey.image])"
+        },
+        {
+          "line": 491,
+          "text": "        }"
+        }
+      ]
+    },
+    "pinned_lane03": {
+      "revision": "74f7584b4e474c752ec0939add6b7522ba98094f",
+      "path": "App/ReferenceStudyPreview.swift",
+      "sha": "4b1e283efcb65e890e439c05cacd93fdac293a41",
+      "observation": "Publication ticket begin() precedes the same matching-frame early return. Merging this inspected pinned source alone does not resolve backend invalidation of UI-held A.",
+      "shortcut": [
+        {
+          "line": 186,
+          "text": "            let ticket = pipeline.begin()"
+        },
+        {
+          "line": 190,
+          "text": "            if let frame, frame.request == snapshot, frame.image != nil { return }"
+        },
+        {
+          "line": 196,
+          "text": "                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)"
+        }
+      ],
+      "native_pipeline_tests": "Not fetched or executed; no pass inferred."
+    },
+    "remedy": "03 should consult the engine again when A is reactivated and gate current/backend status on confirmed adoption (or a validated backend generation). Preserve UI-held A as historical/updating until confirmation, then adopt the actual CPU frame after downgrade.20 integrates. Merely removing the early return without gating current status leaves a transient current-labelled stale adoption; do not relabel historical Metal pixels CPU.",
+    "required_regression": "Consumer adoption regression with controlled asynchronous backend: show A Metal, start B, confirm command/allocation/invalidComputeOutput failure while B is cancelled/undo returns to A; assert A remains historical/updating without a current backend badge before revalidation, then require current A equals CPU oracle and labels CPU after engine return. Also retain ordinary cancellation reuse, precision-only fallback, subject isolation and display-name reuse. Mock/adoption evidence must remain distinct from actual Metal execution. Proposed only; no tests edited or run.",
+    "current_lane03": {
+      "branch": "finish/03-cpu-study-mannequin",
+      "resolved_head": "8ce5e464253144deccb39d838faef70f05e0c38c",
+      "path": "App/ReferenceStudyPreview.swift",
+      "sha": "c96d5cb7a41143867efca160b309d71bfa993c96",
+      "disposition": "Still unresolved in exact fetched preview: successful matching frame returns at205 before engine call211; isCurrent derives only from request equality119, badge130-135 uses stored backend.",
+      "current_and_badge": [
+        {
+          "line": 117,
+          "text": "                if let frame,"
+        },
+        {
+          "line": 118,
+          "text": "                   frame.request == request || (frame.image != nil && frame.request.subject == subject) {"
+        },
+        {
+          "line": 119,
+          "text": "                    let isCurrent = frame.request == request"
+        },
+        {
+          "line": 120,
+          "text": "                    if let image = frame.image {"
+        },
+        {
+          "line": 121,
+          "text": "                        let width = min(geometry.size.width, geometry.size.height * 1.5)"
+        },
+        {
+          "line": 122,
+          "text": "                        let updateStatus = activeRequest == nil ? \"Light study paused\" : \"Updating light study\""
+        },
+        {
+          "line": 123,
+          "text": "                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). \\(updateStatus).\""
+        },
+        {
+          "line": 124,
+          "text": "                        Image(image, scale: 1, orientation: .up, label: Text(label))"
+        },
+        {
+          "line": 125,
+          "text": "                            .resizable().interpolation(.medium)"
+        },
+        {
+          "line": 126,
+          "text": "                            .frame(width: width, height: width / 1.5)"
+        },
+        {
+          "line": 127,
+          "text": "                            .frame(maxWidth: .infinity, maxHeight: .infinity)"
+        },
+        {
+          "line": 128,
+          "text": "                            .accessibilityLabel(label)"
+        },
+        {
+          "line": 129,
+          "text": "                            .accessibilityIdentifier(isCurrent ? \"studyPreview\" : \"studyPreviousPreview\")"
+        },
+        {
+          "line": 130,
+          "text": "                        if isCurrent, let backendLabel = frame.backendLabel {"
+        },
+        {
+          "line": 131,
+          "text": "                            Text(backendLabel).font(.caption2.monospaced())"
+        },
+        {
+          "line": 132,
+          "text": "                                .foregroundStyle(.white.opacity(0.8))"
+        },
+        {
+          "line": 133,
+          "text": "                                .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))"
+        },
+        {
+          "line": 134,
+          "text": "                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)"
+        },
+        {
+          "line": 135,
+          "text": "                                .padding(8).accessibilityIdentifier(\"studyBackend\")"
+        },
+        {
+          "line": 136,
+          "text": "                        }"
+        },
+        {
+          "line": 137,
+          "text": "                        if isCurrent, frame.unsupportedPixels > 0 {"
+        },
+        {
+          "line": 138,
+          "text": "                            Label(\"\\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.\","
+        },
+        {
+          "line": 139,
+          "text": "                                  systemImage: \"exclamationmark.triangle.fill\")"
+        },
+        {
+          "line": 140,
+          "text": "                                .font(.caption2.weight(.medium))"
+        },
+        {
+          "line": 141,
+          "text": "                                .foregroundStyle(.white)"
+        },
+        {
+          "line": 142,
+          "text": "                                .padding(8).background(.black.opacity(0.85))"
+        },
+        {
+          "line": 143,
+          "text": "                                .accessibilityIdentifier(\"studyWarning\")"
+        }
+      ],
+      "task_adoption": [
+        {
+          "line": 198,
+          "text": "        .onDisappear { pipeline.invalidate() }"
+        },
+        {
+          "line": 199,
+          "text": "        .task(id: work) {"
+        },
+        {
+          "line": 200,
+          "text": "            guard !Task.isCancelled else { return }"
+        },
+        {
+          "line": 201,
+          "text": "            let ticket = pipeline.begin()"
+        },
+        {
+          "line": 202,
+          "text": "            guard let snapshot = activeRequest else { return }"
+        },
+        {
+          "line": 203,
+          "text": "            // A quick switch back to a completed request can reuse its pixels."
+        },
+        {
+          "line": 204,
+          "text": "            // Failed frames remain retryable when this view appears again."
+        },
+        {
+          "line": 205,
+          "text": "            if let frame, frame.request == snapshot, frame.image != nil { return }"
+        },
+        {
+          "line": 206,
+          "text": "            // A new attempt shows loading, not an obsolete failure. Retrying"
+        },
+        {
+          "line": 207,
+          "text": "            // never edits the scene or changes its cache identity."
+        },
+        {
+          "line": 208,
+          "text": "            if frame?.request == snapshot { frame = nil }"
+        },
+        {
+          "line": 209,
+          "text": "            do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }"
+        },
+        {
+          "line": 210,
+          "text": "            await pipeline.load(ticket: ticket, render: {"
+        },
+        {
+          "line": 211,
+          "text": "                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)"
+        },
+        {
+          "line": 212,
+          "text": "                return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)"
+        },
+        {
+          "line": 213,
+          "text": "            }, convert: Self.makeImage) { completion in"
+        },
+        {
+          "line": 214,
+          "text": "                frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,"
+        },
+        {
+          "line": 215,
+          "text": "                              backendLabel: completion.backendLabel, message: completion.message)"
+        },
+        {
+          "line": 216,
+          "text": "            }"
+        }
+      ],
+      "temporal_scope": "Single branch resolution, then exact-ref fetch; not a claim about subsequent branch changes.",
+      "owner_acknowledgment": false,
+      "source_edits": false
+    }
+  },
+  "frozen_contract": {
+    "cpu": "authoritative, exact masks",
+    "parity": "6 cases: mean RGB <=1, fraction(error>4)<=0.005",
+    "precision": "8 cases: maximum channel error<=1",
+    "cache": "4 frames,262144 RGBA bytes,65536 mask bytes",
+    "failed_cancelled": "excluded",
+    "downgrade": "purge Metal,preserve CPU",
+    "bust": "CPU width<=144",
+    "cpu_cancellation": "<=8 further pixel evaluations",
+    "claim": "No numerical/runtime gate rerun or newly passed by this source review."
+  },
+  "mutations": "Only report/evidence create_blob requested. No product, UI, native test, state, handoff, build configuration, harness, CPU oracle, branch, ref or commit changes.",
+  "process_deviations": [
+    "One Git tool discovery description was printed unsanitized and included connector account metadata. Metadata is not copied here; subsequent discovery used names/comment-stripped schema.",
+    "An unbounded fetch_commit result was printed and truncated because its commit diff was large. No finding depends on that truncated diff: only the structured resolved SHA was used, followed by a complete exact-ref preview fetch."
+  ],
+  "owner_acknowledgment": "None. Parent/root routing is not an acknowledgment from lane03/20."
+}

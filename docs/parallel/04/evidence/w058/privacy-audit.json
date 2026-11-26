@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "canonicalID": "/root/w051/w058",
+  "role": "accessibility/privacy reviewer",
+  "campaign": "f150f98",
+  "wave": 6,
+  "lane": "04",
+  "base": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "repository": "mirzotipi-wq/APP1",
+  "workerCount": 1,
+  "children": 0,
+  "reviewKind": "One static falsification pass; no runtime or UI review",
+  "plannedScratch": [
+    "/tmp/keyfill04-2987b1ee980d/workers/w058",
+    "/tmp/keyfill04-2987b1ee980d/results/w058"
+  ],
+  "actualScratchUse": false,
+  "mandatoryReads": [
+    {
+      "path": "AGENTS.md",
+      "blob": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "result": "read exact input"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "result": "read exact input"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "result": "read exact input"
+    },
+    {
+      "path": "agents/state.json",
+      "blob": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "result": "read exact input"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "result": "read exact input"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "result": "read exact input"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "result": "read exact input"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "result": "read exact input"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "result": "read exact input"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "result": "read exact input"
+    }
+  ],
+  "sourceReads": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6"
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "blob": "7d2c50105bda390ca49cdaa75711380cc5047ae7"
+    },
+    {
+      "path": "Sources/LightingCore/Colorimetry.swift",
+      "blob": "4816fdad5bb50f74bdb951a4d1a4bd189393e3f7"
+    },
+    {
+      "path": "Sources/LightingCore/RoomPlacement.swift",
+      "blob": "643ab930ef9053f27759e2e67fe35dd92c6947c2"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blob": "0731ab93a924572ccacd3dd66e334a85dc7c06e7"
+    }
+  ],
+  "domainDiscovery": {
+    "initialPath": "Sources/LightingCore/LightingScene.swift",
+    "initialResult": "404",
+    "resolvedPath": "Sources/LightingCore/Scene.swift",
+    "treeRef": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+    "treeTruncated": false
+  },
+  "candidates": [
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "baseBlob": "2af764b51023dc66a9cc0070d8d49f5bd7de334e",
+      "candidateBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "baseCount": 19,
+      "candidateCount": 25,
+      "added": [
+        "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "testRealCPUCacheResourcesForFourSmallFrames",
+        "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive"
+      ],
+      "removed": []
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "baseBlob": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84",
+      "candidateBlob": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "baseCount": 12,
+      "candidateCount": 16,
+      "added": [
+        "testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+        "testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+        "testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+        "testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors"
+      ],
+      "removed": []
+    }
+  ],
+  "falsificationTargets": [
+    {
+      "target": "User display names retained by cache keys",
+      "result": "No concrete defect found",
+      "evidence": "Engine CacheKey.init validates before lookup, maps all lights and assigns copy.name = empty string. A maximum of 12 validated lights remains. Existing source regression uses a synthetic combining-mark name; no user input is logged.",
+      "engineLines": [
+        162,
+        185
+      ],
+      "nativeLines": [
+        208,
+        239
+      ]
+    },
+    {
+      "target": "Unbounded nested cache metadata",
+      "result": "No concrete defect found",
+      "evidence": "LightingScene has positions, optional lens/settings/room, schema and lights. LightOptics, CameraLens, PreviewSettings and ManualRoom contain scalars, UUIDs, fixed enums or optional scalar/position values; no photo data, arbitrary collections or other user strings are stored. Four-entry limit bounds retained snapshots. Payload counters do not claim to include key/allocator/driver storage."
+    },
+    {
+      "target": "Names or reference images enter measurement output",
+      "result": "No concrete defect found",
+      "nativeLines": [
+        748,
+        798
+      ],
+      "schema": {
+        "fixture": "String from literals plus bounded test step",
+        "dimensions": "array of width:Int,height:Int from synthetic rendered frames",
+        "count": "Int from actor.cacheUsage",
+        "pixelBytes": "Int from actor.cacheUsage",
+        "maskBytes": "Int from actor.cacheUsage"
+      },
+      "sink": "print KEYFILL_CACHE_RESOURCES plus sorted-key JSONEncoder output",
+      "evidence": "No scene, light UUID/name, image bytes, paths or reference photo object is encoded. All nine helper call sites are inside four synthetic CPU-render tests. Core candidate has no explicit logging sink."
+    }
+  ],
+  "plannedRows": {
+    "actualEmittedRows": null,
+    "execution": "unrun",
+    "stepRows": 15,
+    "summaryRows": 4,
+    "totalRows": 19,
+    "fixtures": [
+      {
+        "prefix": "small-bust",
+        "stepRows": 4,
+        "summaryRows": 1,
+        "dimensions": [
+          24,
+          16
+        ],
+        "summary": {
+          "count": 4,
+          "pixelBytes": 6144,
+          "maskBytes": 1536
+        }
+      },
+      {
+        "prefix": "maximum-bust",
+        "stepRows": 4,
+        "summaryRows": 1,
+        "dimensions": [
+          144,
+          96
+        ],
+        "summary": {
+          "count": 4,
+          "pixelBytes": 221184,
+          "maskBytes": 55296
+        }
+      },
+      {
+        "prefix": "maximum-sphere",
+        "stepRows": 3,
+        "summaryRows": 1,
+        "dimensions": [
+          192,
+          128
+        ],
+        "summary": {
+          "count": 2,
+          "pixelBytes": 196608,
+          "maskBytes": 49152
+        }
+      },
+      {
+        "prefix": "mixed-bust-sphere",
+        "stepRows": 4,
+        "summaryRows": 1,
+        "dimensions": [
+          [
+            144,
+            96
+          ],
+          [
+            144,
+            96
+          ],
+          [
+            192,
+            128
+          ]
+        ],
+        "summary": {
+          "count": 3,
+          "pixelBytes": 208896,
+          "maskBytes": 52224
+        }
+      }
+    ]
+  },
+  "actualChecks": [
+    "Immutable Git file/blob reads",
+    "Read and traced cache-key and nested domain schemas",
+    "Read measurement schema and every fixture call site",
+    "Static baseline/candidate method-name comparison: native 19 to 25; core 12 to 16; no removed methods",
+    "No source/test/UI changes; no duplicate tests added"
+  ],
+  "unrun": [
+    "status/HEAD/history",
+    "agent_cycle.py check/next",
+    "hash-object",
+    "build or runtime execution",
+    "host shared-kernel checks",
+    "mock lifecycle execution",
+    "simulator Metal execution",
+    "physical-device execution",
+    "runtime accessibility and UI appearance"
+  ],
+  "frozenAcceptance": "Unchanged: CPU authoritative and exact invalid masks; six parity meanRGB<=1 and fraction(error>4)<=0.005; eight precision max channel<=1; four frames/262144 RGBA/65536 masks; failed/cancelled exclusion; downgrade purges Metal and preserves CPU; bust CPU<=144; cancellation<=8 extra pixels.",
+  "findings": [],
+  "limitation": "A printed row precedes assertions and does not itself prove a passing method. Planned CPU payload counters exclude caller copies, allocator overhead, Metal resources and process RSS. Static review establishes no runtime accessibility or device privacy acceptance.",
+  "nextAction": "Root may integrate report/evidence only. When execution becomes available, run the reviewed candidate methods and retain terminal outcomes plus actual 19 rows; keep CPU, mock, shared-kernel, simulator Metal and device claims distinct."
+}

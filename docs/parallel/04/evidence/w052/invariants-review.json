@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "canonical_agent_id": "/root/w051/w052",
+  "worker": "w052",
+  "role": "invariants",
+  "campaign": "f150f98",
+  "wave": 6,
+  "lane": "04",
+  "distinct_worker_count": 1,
+  "children_created": 0,
+  "repository": "mirzotipi-wq/APP1",
+  "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "integration_branch_from_assignment": "finish/04-metal-cache",
+  "branch_observed": false,
+  "packet_blob": "2d556afeca3be2fe717b6cfb23d793431264b34e",
+  "packet_null_input_sha_override": "Exact input SHA supplied by wave-launch brief.",
+  "planned_snapshot": "/tmp/keyfill04-2987b1ee980d/workers/w052",
+  "planned_result_directory": "/tmp/keyfill04-2987b1ee980d/results/w052",
+  "actual_snapshot": "Exact-ref GitHub file responses and immutable blob responses held in isolated w052 functions session state; no local directory or worktree created.",
+  "scope": "One bounded falsification review of StudyFrameCache LRU replacement/rejection/selective removal, Int.max and zero costs. No source or test edits.",
+  "reads": [
+    {
+      "path": "AGENTS.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "status": "fetched and read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "status": "fetched and read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "status": "fetched and read"
+    },
+    {
+      "path": "agents/state.json",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "status": "fetched and read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "status": "fetched and read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "status": "fetched and read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "status": "fetched and read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "status": "fetched and read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "status": "fetched and read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "status": "fetched and read"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "status": "fetched and read"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "blob_sha": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84",
+      "status": "fetched and read"
+    }
+  ],
+  "candidate_test_blob": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+  "executed_checks": [
+    {
+      "execution_kind": "JavaScript text comparison only; no Swift execution and no cache model execution",
+      "baseline_method_count": 12,
+      "candidate_method_count": 16,
+      "baseline_body_is_exact_candidate_prefix": true,
+      "added_methods": [
+        "testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+        "testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+        "testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+        "testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors"
+      ],
+      "source_line_count": 84,
+      "source_anchors": [
+        {
+          "line": 52,
+          "text": "guard pixelBytes >= 0, pixelBytes <= maximumPixelBytes,"
+        },
+        {
+          "line": 55,
+          "text": "if let index = entries.firstIndex(where: { $0.key == key }) {"
+        },
+        {
+          "line": 58,
+          "text": "while !entries.isEmpty &&"
+        },
+        {
+          "line": 60,
+          "text": "self.pixelBytes > maximumPixelBytes - pixelBytes ||"
+        },
+        {
+          "line": 61,
+          "text": "self.maskBytes > maximumMaskBytes - maskBytes) {"
+        },
+        {
+          "line": 65,
+          "text": "entries.append(Entry(key: key, value: value, pixelBytes: pixelBytes, maskBytes: maskBytes))"
+        },
+        {
+          "line": 66,
+          "text": "self.pixelBytes += pixelBytes"
+        },
+        {
+          "line": 67,
+          "text": "self.maskBytes += maskBytes"
+        },
+        {
+          "line": 74,
+          "text": "for index in entries.indices.reversed() where shouldBeRemoved(entries[index].value) {"
+        },
+        {
+          "line": 81,
+          "text": "pixelBytes -= entry.pixelBytes"
+        },
+        {
+          "line": 82,
+          "text": "maskBytes -= entry.maskBytes"
+        }
+      ]
+    }
+  ],
+  "source_review_obligations": [
+    {
+      "id": "rejection",
+      "lines": "52-56",
+      "finding": "All nonnegative/individual-budget guards run before any remove or recency mutation. Int.min and oversized costs return false without touching the original entry."
+    },
+    {
+      "id": "replacement",
+      "lines": "55-67",
+      "finding": "An admitted matching entry is removed with both old costs before other eviction. Surviving entries retain order; the replacement is appended newest. No stale charge remains."
+    },
+    {
+      "id": "overflow",
+      "lines": "52-67",
+      "finding": "For each budget B>0 and accepted cost c in [0,B], B-c is representable. Eviction ensures current total <= B-c, so total+c <= B <= Int.max. Removed costs cannot exceed nonnegative summed totals. This is a source-derived inductive argument, not Swift execution."
+    },
+    {
+      "id": "zero_cost_and_count",
+      "lines": "27-32,58-67",
+      "finding": "Count>=maximumCount independently triggers eviction even when both new costs are zero. Positive maximumCount plus pre-append eviction ensures count stays bounded. No initial capacity reservation exists."
+    },
+    {
+      "id": "selective_removal",
+      "lines": "73-83",
+      "finding": "Descending indices remain valid as entries are removed. Survivors keep their relative LRU order and both counters decrease only by removed entries' costs. None/all predicates leave unchanged/empty states respectively."
+    },
+    {
+      "id": "observation_and_lifetime",
+      "finding": "New candidate weak observers are the only returned references from the insertion helper. No value(for:) hit or retained cache copy intervenes before LRU eviction assertions. withExtendedLifetime scopes are synchronous and finish before following mutations. This source review does not establish actual ARC release behavior."
+    }
+  ],
+  "findings": {
+    "concrete_counterexample_found": false,
+    "conclusion": "No source defect identified within this bounded pass; retain cache implementation."
+  },
+  "acceptance_unchanged": {
+    "cpu_authoritative": true,
+    "exact_invalid_masks": true,
+    "parity_fixture_count": 6,
+    "mean_rgb_error_max": 1,
+    "fraction_error_over_4_max": 0.005,
+    "precision_fixture_count": 8,
+    "maximum_channel_error": 1,
+    "maximum_cached_frames": 4,
+    "maximum_rgba_bytes": 262144,
+    "maximum_mask_bytes": 65536,
+    "cancelled_and_failed_excluded": true,
+    "downgrade": "purge Metal frames; preserve CPU frames",
+    "bust_cpu_width_max": 144,
+    "cancellation_extra_pixel_evaluations_max": 8,
+    "validation_status": "Frozen constraints only; not executed by this pass."
+  },
+  "unavailable_or_unrun": [
+    "Repository status/current branch/HEAD/history inspection",
+    "agent_cycle.py check and next",
+    "hash-object",
+    "Swift builds, compilation and runtime tests",
+    "Cache model execution",
+    "ARC lifetime runtime validation",
+    "Host shared-kernel, injected mocks, simulator Metal and physical-device execution"
+  ],
+  "mutations": "Only immutable evidence/report blobs. No refs, trees, commits, source, tests, global state, handoff, build configuration, canonical harness, CPU oracle or UI changes.",
+  "operational_deviation": "Initial schema-discovery filtering unintentionally printed account-list metadata. All repository calls used only the link_id explicitly supplied by the assignment; no alternative account was selected.",
+  "next_action": "Root may integrate the independently reviewed lifetime-test candidate, retaining all existing tests. Run the affected Swift tests in an available authorized toolchain and keep runtime acceptance pending until actual results exist."
+}
