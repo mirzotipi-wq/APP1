@@ -652,3 +652,101 @@ jobs:
             artifacts/native-attachments/*.pdf
             artifacts/studio-slider-trace*
           if-no-files-found: warn
+
+  # Retain the original artifact and expose bounded copies for remote review
+  # when an editor cannot unpack the ZIP locally. This is evidence transport;
+  # native/UI assertions and finalized-result checks remain required above.
+  visual-review:
+    name: visual review (${{ matrix.text_size }})
+    needs: ui
+    if: ${{ always() && needs.ui.result != 'cancelled' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        text_size: [Default, AXXXL]
+    steps:
+      - name: Download original app accessibility attachments
+        uses: actions/download-artifact@v4
+        with:
+          name: ui-app-accessibility-evidence-compact
+          path: review-artifacts
+      - name: Expose original screenshots with exact provenance
+        env:
+          REVIEW_TEXT_SIZE: ${{ matrix.text_size }}
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, os, re
+          from pathlib import Path
+          
+          root = Path("review-artifacts").resolve()
+          category = os.environ["REVIEW_TEXT_SIZE"]
+          if category not in {"Default", "AXXXL"}:
+              raise SystemExit("Unknown text-size review category")
+          manifests = list(root.rglob("manifest.json"))
+          if len(manifests) != 1:
+              raise SystemExit("Exactly one original attachment manifest is required")
+          manifest = json.loads(manifests[0].read_text())
+          if not isinstance(manifest, list):
+              raise SystemExit("Unexpected XCTest attachment manifest")
+          suffixes = [
+              "Plan-choices", "Plan-selection", "Inspector",
+              "Precision-instructions", "Precision-keyboard", "Meter-preset-selection",
+              "Library-unsaved", "Library-saved", "Project-name-field-keyboard",
+              "Project-name-save-keyboard", "Project-name-cancel-keyboard", "Library-done",
+          ]
+          wanted = {category + "-" + suffix for suffix in suffixes}
+          selected = {}
+          for result in manifest:
+              for attachment in result.get("attachments", []):
+                  human = attachment.get("suggestedHumanReadableName", "")
+                  matches = [name for name in wanted if human.startswith(name + "_") and human.endswith(".png")]
+                  if not matches:
+                      continue
+                  name = matches[0]
+                  filename = attachment.get("exportedFileName", "")
+                  if not re.fullmatch(r"[A-Fa-f0-9-]+\.png", filename):
+                      raise SystemExit("Unexpected exported screenshot filename")
+                  if name in selected:
+                      raise SystemExit("Duplicate screenshot capture: " + name)
+                  candidates = list(root.rglob(filename))
+                  if len(candidates) != 1:
+                      raise SystemExit("Missing or ambiguous screenshot: " + filename)
+                  path = candidates[0]
+                  if path.is_symlink() or not path.resolve().is_relative_to(root):
+                      raise SystemExit("Screenshot escaped artifact directory")
+                  selected[name] = (path, attachment)
+          
+          total = 0
+          for name in sorted(selected):
+              path, attachment = selected[name]
+              with path.open("rb") as source:
+                  data = source.read(1024 * 1024 + 1)
+              if len(data) > 1024 * 1024 or not data.startswith(b"\x89PNG\r\n\x1a\n"):
+                  raise SystemExit("Screenshot is oversized or not an original PNG")
+              total += len(data)
+              if total > 8 * 1024 * 1024:
+                  raise SystemExit("Visual review payload exceeds its bound")
+              encoded = base64.b64encode(data).decode("ascii")
+              chunks = [encoded[index:index + 24000] for index in range(0, len(encoded), 24000)]
+              metadata = {
+                  "type": "image", "name": name, "sourceRevision": os.environ["GITHUB_SHA"],
+                  "file": path.name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                  "chunks": len(chunks), "deviceName": attachment.get("deviceName"),
+                  "captureTimestamp": attachment.get("timestamp"),
+              }
+              print("KEYFILL_REVIEW " + json.dumps(metadata), flush=True)
+              for index, chunk in enumerate(chunks):
+                  print("KEYFILL_REVIEW " + json.dumps({
+                      "type": "chunk", "name": name, "index": index, "data": chunk,
+                  }), flush=True)
+          missing = sorted(wanted - set(selected))
+          print("KEYFILL_REVIEW " + json.dumps({
+              "type": "summary", "sourceRevision": os.environ["GITHUB_SHA"],
+              "category": category, "images": len(selected), "bytes": total, "missing": missing,
+          }), flush=True)
+          if missing:
+              raise SystemExit("Required visual captures missing: " + ", ".join(missing))
+          PY
