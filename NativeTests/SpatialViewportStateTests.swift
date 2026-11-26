@@ -121,6 +121,26 @@ final class SpatialViewportStateTests: XCTestCase {
                      "A Double angle rounding to Float 180 must not reach RealityKit")
     }
 
+    func testFloatProjectionDoesNotNarrowTheSmallerViewportAxis() throws {
+        for (width, height) in [(360.0, 240.0), (120.0, 600.0), (600.0, 120.0),
+                                (1.0, 1000.0), (0.0003, 3000.0), (0.0002, 3000.0)] {
+            let ideal = width >= height ? 48 :
+                2 * atan(tan(24 * Double.pi / 180) * height / width) * 180 / Double.pi
+            let accepted = try XCTUnwrap(SpatialOrbitState.verticalFieldOfView(width: width, height: height))
+            let uploaded = Float(accepted)
+            XCTAssertEqual(accepted, Double(uploaded))
+            XCTAssertGreaterThanOrEqual(accepted, ideal)
+            XCTAssertLessThanOrEqual(uploaded, Float(ideal).nextUp)
+            let verticalHalfTangent = tan(Double(uploaded) * .pi / 360)
+            let smallerAxisHalfTangent = verticalHalfTangent * min(1, width / height)
+            XCTAssertGreaterThanOrEqual(smallerAxisHalfTangent, tan(24 * .pi / 180) - 1e-12)
+        }
+        // Nearest Float is still below 180 here, but its horizontal half-angle
+        // would be only about 14 degrees. Outward rounding must reject it.
+        XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0.0001, height: 3000))
+        XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0.00001, height: 1000))
+    }
+
     func testGestureLimitsAndFitRecoveryRemainFinite() throws {
         var orbit = SpatialOrbitState()
         orbit.orbit(horizontal: .greatestFiniteMagnitude, vertical: .greatestFiniteMagnitude)

@@ -112,10 +112,14 @@ struct SpatialOrbitState: Equatable, Sendable {
         if width >= height { return fieldOfViewDegrees }
         let halfTangent = tan(fieldOfViewDegrees * .pi / 360) * (height / width)
         let result = 2 * atan(halfTangent) * 180 / .pi
-        // RealityKit stores the angle as Float. A finite Double just below
-        // 180 can round to a singular native projection; reject that layout.
-        guard result.isFinite, Float(result).isFinite, Float(result) < 180 else { return nil }
-        return result
+        // RealityKit stores the angle as Float. Round outward so upload cannot
+        // narrow the smaller-axis field of view, especially near 180 degrees.
+        // Reject layouts whose enclosing native angle would be singular.
+        guard result.isFinite, Float(result).isFinite else { return nil }
+        let nearest = Float(result)
+        let enclosing = Double(nearest) < result ? nearest.nextUp : nearest
+        guard enclosing < 180 else { return nil }
+        return Double(enclosing)
     }
 
     mutating func orbit(horizontal: Double, vertical: Double) {
