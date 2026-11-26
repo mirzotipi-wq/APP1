@@ -160,7 +160,9 @@ regenerated real evidence in their original contexts. All ten wave04 roles
 eventually completed. Its63 recorded artifact hashes matched verified remote
 3889f09 before only those ten completed owned worktrees were removed; the
 shared SDK was retained. Wave01 preservation/cleanup was verified earlier.
-Historical losses and failed attempts remain documented.
+Historical losses and failed attempts remain documented. Wave02R08 retains
+its returned assessment from the first outage; its original local probe/log
+files were not recovered. That report does not claim original raw-file recovery.
 
 Wave05 closure:
 
