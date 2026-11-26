@@ -2,9 +2,9 @@
 
 ## Current closeout — 26 November 2026
 
-M02 remains accepted, with unchanged source/fixture hashes independently checked. M03 repairs are published at `02797d359f699a90e72c7629d3dba2ba7de04b95`. Full [run 45785778015](https://github.com/mirzotipi-wq/APP1/actions/runs/45785778015) must execute **150 native and 35 required UI methods**, retaining the 24 actual default/AXXXL captures. No pending method is a pass.
+M02 remains accepted under `m02-m03-code-v2`. Integrated source `9faebc529ff434feef8995d0a565d2ee04e98c13` is published on `main`; [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392) must complete 154 native and 35 required UI methods plus26 original Default/AXXXL captures. The original 24 captures remain; Camera selection adds one at each text size. M03 stays active until required runtime outcomes and actual image review pass.
 
-See [the closeout packet](../docs/evidence/m03-closeout-2026-11-26/README.md) for the naming safeguards, fractional native observer correction, snapshot-based viewport verification, typed room-status observation, local tests and retained baseline failures. The new 100-context campaign is recorded in its worker ledger. Finish runtime evidence and actual image review before promoting M03. Leave M04–M07 pending. Documentation-only pushes do not cancel the integrated source run.
+All100 actual worker contexts completed their assignments; the ledger separates each initial assignment and followup without extra credit. Final local366 Debug/366 Release/100 tooling tests and actual Linux tmpfs write/interruption probes pass. See [the closeout packet](../docs/evidence/m03-closeout-2026-11-26/README.md) for exact changes, hashes and retained02797 failures. Do not transfer earlier-source runtime passes. Leave M04–M07 pending; no physical calibration, device performance or manual VoiceOver acceptance is claimed.
 
 The prior handoff is retained below for revision-specific history.
 
@@ -23,7 +23,7 @@ The other reviewed corrections and new hosted-State regression are described in 
 
 ## Retained runtime checkpoint — 26 November UTC
 
-The full [cd5 run45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) is terminal and failed. Portable tests passed359 Debug/359 Release and92 tooling checks; unsigned builds, macOS tests, actual Metal methods,116 contrast pairs and actual persistence probes passed. Required native tests passed135/137. Required UI accounting is **33 passed,1 failed,1 incomplete out of35**. The app-accessibility method exhausted its45-minute outer step during the largest-size flow after all12 Default capture emissions. It produced no terminal method event or finalized result; zero original current PNGs were recovered. Thirteen capture emissions are not13 retained screenshots.
+The full [cd5 run45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) is terminal and failed. Portable tests passed 359 Debug/359 Release and92 tooling checks; unsigned builds, macOS tests, actual Metal methods,116 contrast pairs and actual persistence probes passed. Required native tests passed135/137. Required UI accounting is **33 passed,1 failed,1 incomplete out of35**. The app-accessibility method exhausted its45-minute outer step during the largest-size flow after all12 Default capture emissions. It produced no terminal method event or finalized result; zero original current PNGs were recovered. Thirteen capture emissions are not13 retained screenshots.
 
 The focused [03cfd3c run45768421649](https://github.com/mirzotipi-wq/APP1/actions/runs/45768421649) also failed:135/137 native and7/9 library tests passed. Retaining live native views disproved stale callback data as the sole geometry cause: the public accessibility conversion still returned local-origin frames. All three size fixtures reached. Actual external Done/Cancel/Save Button checks passed. Original library screenshots show a focused name field containing onlyK after one Keep request, and a later fully loaded studio after a distinct initial-launch readiness timeout. Neither later observation passes the original failed expectation.
 

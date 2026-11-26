@@ -1,0 +1,162 @@
+{
+  "attempts": [
+    {
+      "deadlineElapsedSeconds": 287.5000000000001,
+      "failure": {
+        "message": "Owned command cleanup failed: attempt-1-bootstatus",
+        "type": "VerificationFailure"
+      },
+      "finishedElapsedSeconds": 389.0902350130001,
+      "initialState": "Shutdown",
+      "number": 1,
+      "startedElapsedSeconds": 2.1538762080000424,
+      "status": "failed"
+    }
+  ],
+  "budgetSeconds": 580.0,
+  "cleanupReserveSeconds": 5.0,
+  "commands": [
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "list",
+        "devices",
+        "available",
+        "-j"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 10186,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 10186,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 20.07985376900001,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 2.02780368599997,
+      "name": "preflight",
+      "processGroupID": 10186,
+      "returnCode": 0,
+      "startedElapsedSeconds": 0.07986710400007269,
+      "status": "exited",
+      "stderrPath": "01-preflight.stderr.log",
+      "stdoutPath": "01-preflight.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "boot",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 10227,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 10227,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 287.5000000000001,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 10.207228267000005,
+      "name": "attempt-1-boot",
+      "processGroupID": 10227,
+      "returnCode": 0,
+      "startedElapsedSeconds": 2.155200478999973,
+      "status": "exited",
+      "stderrPath": "02-attempt-1-boot.stderr.log",
+      "stdoutPath": "02-attempt-1-boot.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "bootstatus",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "-b"
+      ],
+      "cleanup": {
+        "directChildReaped": false,
+        "processGroupID": 10549,
+        "reapError": {
+          "message": "Command '['/usr/bin/xcrun', 'simctl', 'bootstatus', '12FCFD0F-7FCF-463F-A605-132A7E18B5D5', '-b']' timed out after 2.0 seconds",
+          "type": "TimeoutExpired"
+        },
+        "signal": "SIGKILL",
+        "signalSent": true
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": false,
+          "processGroupID": 10549,
+          "reapError": {
+            "message": "Command '['/usr/bin/xcrun', 'simctl', 'bootstatus', '12FCFD0F-7FCF-463F-A605-132A7E18B5D5', '-b']' timed out after 2.0 seconds",
+            "type": "TimeoutExpired"
+          },
+          "signal": "SIGKILL",
+          "signalSent": true
+        }
+      ],
+      "deadlineElapsedSeconds": 287.5000000000001,
+      "deadlineExceeded": true,
+      "finishedElapsedSeconds": 305.25768588099993,
+      "name": "attempt-1-bootstatus",
+      "processGroupID": 10549,
+      "startedElapsedSeconds": 10.34294498600002,
+      "status": "timed_out",
+      "stderrPath": "03-attempt-1-bootstatus.stderr.log",
+      "stdoutPath": "03-attempt-1-bootstatus.stdout.log"
+    }
+  ],
+  "elapsedSeconds": 403.35394259199995,
+  "exitCode": 1,
+  "expectedDevice": {
+    "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "udid": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+  },
+  "failure": {
+    "message": "Owned command cleanup failed: attempt-1-bootstatus",
+    "type": "VerificationFailure"
+  },
+  "inventories": [
+    {
+      "command": "preflight",
+      "device": {
+        "dataPath": "/Users/runner/Library/Developer/CoreSimulator/Devices/12FCFD0F-7FCF-463F-A605-132A7E18B5D5/data",
+        "dataPathSize": 18362368,
+        "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+        "isAvailable": true,
+        "logPath": "/Users/runner/Library/Logs/CoreSimulator/12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "name": "iPhone 17 Pro",
+        "state": "Shutdown",
+        "udid": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      },
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+    }
+  ],
+  "maximumAttempts": 2,
+  "recoveryEnvironment": {
+    "GITHUB_ACTIONS": "true",
+    "RUNNER_ENVIRONMENT": "github-hosted"
+  },
+  "schema": 1,
+  "startedAtUTC": "2026-11-26T09:02:57.501455+00:00",
+  "status": "failed",
+  "xcrun": "/usr/bin/xcrun"
+}

@@ -46,11 +46,11 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-M02 is complete under the code acceptance contract. M03 repairs are published at `02797d359f699a90e72c7629d3dba2ba7de04b95` and are being validated in [run 45785778015](https://github.com/mirzotipi-wq/APP1/actions/runs/45785778015). The required inventory is 150 native methods, 35 UI workflows and 24 original default/AXXXL layout captures. M03 remains active until their required results and image review pass.
+M02 is complete under the code acceptance contract. The integrated editing and CI corrections are published at `9faebc529ff434feef8995d0a565d2ee04e98c13` and are running in [run 45796521392](https://github.com/mirzotipi-wq/APP1/actions/runs/45796521392). Required execution is **154 native methods, 35 UI methods and 26 original Default/AXXXL layout captures**. The ten optics methods repeat the same editing workflow. M03 remains active until all required results and image review pass.
 
-The current [closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) records rejected-paste and legacy-name safeguards, corrected independent text measurement, efficient accessibility snapshot traversal, local tests and the actual 100-worker campaign. Local checks passed 359 Debug tests, 359 Release tests, 92 tooling tests and eight viewport geometry regressions. Local Linux evidence does not establish Apple runtime acceptance.
+The [closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) records exactly 100 completed worker contexts, Unicode and history boundaries, room precision, camera selection/slider contrast, native measurement/focus fixtures and CI ownership/retention repairs. Final local checks passed 366 Debug, 366 Release and 100 tooling tests. Actual atomic-write and interruption probes passed on the local Linux tmpfs host; Apple runtime execution remains separately required.
 
-The [preceding completion packet](docs/evidence/m03-completion-2026-11-25/README.md) retains earlier source revisions, original artifacts and failures. The superseded c118 run passed portable verification and library/reference UI but failed two native observer methods and the room's initial status observation; unfinished methods remain unverified.
+The preceding 02797 run passed core, 5 room/precision, 10 optics and 9 library/reference UI methods. Studio/export passed 9/10 and failed its saved-status wait after relaunch. Native execution passed 148/150; the accessibility job failed before its one method began. Original failures and unfinished outcomes remain in the packet and are not passes for the integrated source.
 
 Code changes run the full development workflow. Documentation-only evidence updates run project-state validation and do not cancel unchanged simulator work.
 

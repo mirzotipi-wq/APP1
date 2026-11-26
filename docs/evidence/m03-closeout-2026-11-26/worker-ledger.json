@@ -7,11 +7,14 @@
   "coordinator": {
     "number": 7,
     "agent": "/root/a007_worker_coordinator",
-    "status": "active"
+    "status": "completed",
+    "assignment": "Coordinate exactly 93 real additional workers numbered 008\u2013100, retain actual findings and bounded authorized follow-ups, and validate the final ledger of 100 contexts.",
+    "finding": "All 93 child contexts completed; six initial workers plus the coordinator plus 93 children equal 100 unique completed workers. No additional contexts were created; follow-ups retain their original identities.",
+    "verification": "Final JSON number/name/status/count checks, Markdown100-row consistency and scoped git diff --check completed. Initial six attributed to integration lead; runtime and milestone acceptance remain separately owned by integration lead."
   },
   "requestedChildren": 93,
-  "createdChildren": 19,
-  "completedChildren": 17,
+  "createdChildren": 93,
+  "completedChildren": 93,
   "workers": [
     {
       "number": 8,
@@ -186,18 +189,798 @@
       "agent": "/root/a007_worker_coordinator/a025_png_export",
       "assignment": "Synthetic PNG encoder dimensions, pixel bounds and deterministic output",
       "paths": "Sources/LightingCore/ReferencePNG.swift; Tests/LightingCoreTests/ReferencePNGTests.swift",
-      "status": "running"
+      "status": "completed",
+      "finding": "PNG chunk filter checks pass",
+      "detail": "Clarified scope: ReferencePNG is a metadata chunk filter, ImageIO caller bounds and redraws image. Size/length arithmetic, critical chunks, CRC preservation and caller dimension checks reviewed.",
+      "verification": "Swift stdin six assertions passed including negative limits, huge chunk length, missing chunks, CRC preservation and idempotence. No ImageIO execution."
     },
     {
       "number": 26,
       "agent": "/root/a007_worker_coordinator/a026_fixture_matrix",
       "assignment": "Twelve synthetic fixture definitions preserve original six and validity",
       "paths": "scripts/render-study-fixtures.swift; docs/acceptance/m02-m03-code.md",
-      "status": "running"
+      "status": "completed",
+      "finding": "Twelve-fixture evidence consistent",
+      "detail": "Twelve unique scenes preserve original six names; all 12 retained scene JSONs and P6 lengths parse; recomputed ten image comparison counts match manifest. Script rejects invalid buffers/masks/unsupported output.",
+      "verification": "Python retained-artifact parse/hash/count checks; script/contract review. No rendering rerun; original-six historical pixel retention qualified."
+    },
+    {
+      "number": 27,
+      "agent": "/root/a007_worker_coordinator/a027_benchmark_matrix",
+      "assignment": "Benchmark samples and percentile calculations preserve required workloads",
+      "paths": "scripts/benchmark-study.swift",
+      "status": "completed",
+      "finding": "Benchmark evidence recomputed consistently",
+      "detail": "Exact 8 frame/12 cancellation/4 visibility workloads; all 24 p50/p95 calculations independently matched seven raw samples. Warmups excluded, optimized invocation confirmed, bytes/masks compared and prior frame hashes agree.",
+      "verification": "Source/log review and Python retained JSON percentile/identity checks; no benchmark rerun or device claim."
+    },
+    {
+      "number": 28,
+      "agent": "/root/a007_worker_coordinator/a028_kernel_sampling",
+      "assignment": "Shared Metal kernel sample indexing and finite-emitter consistency",
+      "paths": "App/StudyKernel.h; App/ReferenceStudy.metal",
+      "status": "completed",
+      "finding": "No shared kernel defect; C++ syntax passes",
+      "detail": "Pixel/sample/rectangle indexing follows bounded packed contracts; convex clipped square fits eight vertices; directional and rectangular sample math matches CPU; unsupported magenta alpha and finite RGB paths reviewed.",
+      "verification": "C++17 -Wall -Wextra -pedantic syntax-only host harness exit0 plus source contract tracing; no GPU execution."
+    },
+    {
+      "number": 29,
+      "agent": "/root/a007_worker_coordinator/a029_kernel_harness",
+      "assignment": "Host Float32/Swift parity harness unsupported-mask and channel checks",
+      "paths": "scripts/verify-kernel-host.cpp; scripts/prepare-kernel-fixtures.swift",
+      "status": "completed",
+      "finding": "No generated-fixture verification blocker",
+      "detail": "Header dimensions,buffer lengths,exact invalid masks,RGB statistics and strict precision flag consistent. Optional finite out-of-range grid\u2192uint malformed-fixture hardening; no generated/app defect or false pass demonstrated.",
+      "verification": "Source/CI review; sanitizer unavailable because clang++ absent; no runtime claim."
+    },
+    {
+      "number": 30,
+      "agent": "/root/a007_worker_coordinator/a030_reality_selection",
+      "assignment": "RealityKit selection, stale UUID actions and coordinator lifecycle",
+      "paths": "App/RealityStudioPreview.swift",
+      "status": "completed",
+      "finding": "No RealityKit lifecycle/selection defect",
+      "detail": "Current graph UUID membership plus parent generation guards protect selection;detach clears callbacks/gestures/anchors;incremental pan/orbit/pinch and Intel compile-time fallback coherent.",
+      "verification": "Source review only at df7c3b7; no Apple execution."
+    },
+    {
+      "number": 31,
+      "agent": "/root/a007_worker_coordinator/a031_ci_required_jobs",
+      "assignment": "Read-only exact CI pending run and concurrency queue diagnosis",
+      "paths": ".github/workflows/ios-prototype.yml; GitHub runs 45785778015 and 45778673562",
+      "status": "completed",
+      "finding": "CI queue held by stale superseded job finalization",
+      "detail": "At 08:51Z old app-access job remained in_progress despite Complete job ending 08:49:29; tests cancelled 08:45. Both exact workflows share main concurrency group and cancellation enabled. No config defect; sent safe cancellation escalation recommendation to root.",
+      "verification": "Read-only public GitHub run/job API and exact workflow versions, official GitHub concurrency/cancel docs. No cancellation or mutation.",
+      "disposition": "Root reported old run finalized naturally; current run began; no workflow change or cancellation performed."
+    },
+    {
+      "number": 32,
+      "agent": "/root/a007_worker_coordinator/a032_scenekit_geometry",
+      "assignment": "SceneKit emitter geometry roll, camera FOV and fallback selection",
+      "paths": "App/SpatialPreview.swift; NativeTests/SpatialEmitterGeometryTests.swift",
+      "status": "completed",
+      "finding": "No validated-scene SceneKit defect",
+      "detail": "Rolled basis/negative-Z emission, emitting-plane depth offset, physical vertical FOV, aspect and orbit fitting consistent. Bypassed-invalid-scene adapter hardening remains hypothetical; callers validate.",
+      "verification": "Source/native tests and unchanged-source diff from 02797d3 reviewed; state check passed. No Apple execution."
+    },
+    {
+      "number": 33,
+      "agent": "/root/a007_worker_coordinator/a033_plan_labels",
+      "assignment": "Plan label placement bounded geometry and overlap response",
+      "paths": "Sources/LightingCore/StudioPlanLabelLayout.swift; Tests/LightingCoreTests/StudioPlanLabelLayoutTests.swift",
+      "status": "completed",
+      "finding": "No bounded Plan label defect",
+      "detail": "Selected priority,index determinism and bounded 14-marker/71-candidate search intact. Extreme finite intermediate overflow rejected before returned geometry.",
+      "verification": "Actual source Swift stdin tested 36 dimension combinations through Double maximum with 14 coincident markers; deterministic finite contained nonoverlapping outputs; exit0."
+    },
+    {
+      "number": 34,
+      "agent": "/root/a007_worker_coordinator/a034_scene_bounds",
+      "assignment": "Studio bounds, fit and clipping for extreme valid rigs",
+      "paths": "Sources/LightingCore/StudioSceneBounds.swift; Tests/LightingCoreTests/StudioSceneBoundsTests.swift",
+      "status": "completed",
+      "finding": "No scene bounds defect",
+      "detail": "Validated positions and rolled rectangle corners, deterministic vertical aims, subject/camera/target inclusion, aspect fit and bounded grid checks coherent. Different stand/floor margins match renderer contracts.",
+      "verification": "Source, ten tests and orbit adapters reviewed; state checks passed. No Swift or Apple rendering execution."
+    },
+    {
+      "number": 35,
+      "agent": "/root/a007_worker_coordinator/a035_output_adjustment",
+      "assignment": "Target output inverse model boundary and error handling",
+      "paths": "Sources/LightingCore/LightOutputAdjustment.swift; Tests/LightingCoreTests/LightOutputBoundaryTests.swift",
+      "status": "completed",
+      "finding": "Confirmed P3 achieved-subnormal target-lux rejection",
+      "detail": "Rectangle 0.1x0.1 at z3, candela499*1e-320, exact current lux5.56496e-319 is rejected after valid inverse roundtrip. Exact-source fallback only covers invalid inverse; reported to root, no source change.",
+      "verification": "Actual four implementation files with unrelated metadata stubs via Swift stdin reproduced outputOutOfRange; source and Python probe.",
+      "disposition": "Worker038 proved supplied values are not directly enterable through bounded numeric UI; root retains explicit P3 LightingCore/import-only followup, avoiding unnecessary authoritative-source restart."
+    },
+    {
+      "number": 36,
+      "agent": "/root/a007_worker_coordinator/a036_light_creation",
+      "assignment": "Light creation unique IDs, naming collisions and maximum count",
+      "paths": "Sources/LightingCore/SceneLightCreation.swift; Tests/LightingCoreTests/SceneLightCreationTests.swift",
+      "status": "completed",
+      "finding": "No light creation defect",
+      "detail": "Validation/count/UUID uniqueness, first unused Light N names,bounded camera-relative offset and duplication preservation consistent; caller replace history and selection repair reviewed.",
+      "verification": "Static source/callers/state checks. swift --skip-build unavailable on PATH, no test execution claimed."
+    },
+    {
+      "number": 37,
+      "agent": "/root/a007_worker_coordinator/a037_recipe_integrity",
+      "assignment": "Recipe application valid defaults, IDs and deterministic undo inputs",
+      "paths": "Sources/LightingCore/LightingRecipe.swift; Sources/LightingCore/StudioOptics.swift",
+      "status": "completed",
+      "finding": "No recipe integrity defect",
+      "detail": "Four valid labeled recipes, fresh UUIDs, meter-space camera-relative placement and validate-before-adoption preserve undo and generation identity. Direct applyingTo regression coverage absent but no malfunction shown.",
+      "verification": "Source/caller/history/tests review and state validation; no runtime execution."
+    },
+    {
+      "number": 38,
+      "agent": "/root/a007_worker_coordinator/a038_numeric_parser",
+      "assignment": "Localized numeric input parser bounded precision and ambiguous separators",
+      "paths": "Sources/LightingCore/StudioNumericInput.swift; Tests/LightingCoreTests/StudioNumericInputTests.swift",
+      "status": "completed",
+      "finding": "No parser defect; P3 direct-entry unreachable",
+      "detail": "Actual editableText/parse reject supplied source4.989944e-318 and target5.56496e-319. Numeric grammar permits32 chars,96 content bytes,256 raw bytes and no exponents;minimum directly expressible positive decimal1e-31. Target UI seeds unrepresentable lux as empty.",
+      "verification": "Actual StudioNumericInput.swift through Swift stdin; source/tests/UI review. No suites/files."
+    },
+    {
+      "number": 39,
+      "agent": "/root/a007_worker_coordinator/a039_numeric_roundtrip",
+      "assignment": "Exact display readout roundtrip <=1e-9 and SI conversions",
+      "paths": "Sources/LightingCore/StudioNumericInput.swift; Tests/LightingCoreTests/ExactNumericReadoutTests.swift",
+      "status": "completed",
+      "finding": "Numeric readout and SI probes pass",
+      "detail": "10137 readout checks across11 locales and finite bit patterns reconstructed values;20018 metric/imperial checks max SI error1.4210854715202004e-14m,below1e-9. Unit/editor identity guards and exact endpoint preservation reviewed.",
+      "verification": "Two actual-source Swift stdin probes,zero failures; native unit-switch behavior source-reviewed only."
+    },
+    {
+      "number": 40,
+      "agent": "/root/a007_worker_coordinator/a040_display_names",
+      "assignment": "Unicode display-name bounds, controls and distinct stored identity",
+      "paths": "Sources/LightingCore/StudioDisplayName.swift; Tests/LightingCoreTests/StudioDisplayNameTests.swift",
+      "status": "completed",
+      "finding": "Confirmed incomplete legacy-name grapheme at scalar cap",
+      "detail": "One leading space plus46 family emoji (323scalars) produces320-scalar label ending incomplete family plus ellipsis;prefix-before-trim permits split original grapheme. Stored name intact; new input rejects this size; reported to root.",
+      "verification": "Node initial reproduction then actual production Swift stdin confirmed suffix U+1F469 U+200D U+1F469 U+200D U+2026. Same context followup,not extra worker."
+    },
+    {
+      "number": 41,
+      "agent": "/root/a007_worker_coordinator/a041_edit_history",
+      "assignment": "Undo transaction coalescing, cancellation and history limits",
+      "paths": "Sources/LightingCore/SceneEditHistory.swift; Tests/LightingCoreTests/SceneEditHistoryTests.swift",
+      "status": "completed",
+      "finding": "History state probe passed; no defect",
+      "detail": "Transaction ownership,no-op/cancel redo preservation,branch invalidation,limits and full snapshot restore consistent.",
+      "verification": "Production history code with minimal Equatable scene stand-in via Swift stdin passed12 preconditions; source/tests reviewed;not actual package suite."
+    },
+    {
+      "number": 42,
+      "agent": "/root/a007_worker_coordinator/a042_slider_tracking",
+      "assignment": "Generation guard, synchronous reentrancy and stale slider sessions",
+      "paths": "App/StudioSliderTracking.swift; NativeTests/StudioSliderTrackingTests.swift",
+      "status": "completed",
+      "finding": "No slider session reentrancy defect",
+      "detail": "Sequence/token guards survive previous-end callback replacement,read retirement,owner reassertion and final-write reentrancy;no-op samples do not reopen history. Relevant negative regressions reviewed.",
+      "verification": "Tracking,editing,native callsite source and tests inspected; no native execution."
+    },
+    {
+      "number": 43,
+      "agent": "/root/a007_worker_coordinator/a043_slider_editing",
+      "assignment": "Slider gesture begin/end/cancel no-op history and value rollback",
+      "paths": "App/StudioSliderEditing.swift; NativeTests/StudioSliderEditingTests.swift",
+      "status": "completed",
+      "finding": "No slider edit lifecycle defect",
+      "detail": "Nonfinite/no-op samples rejected before history;begin-before-write preserves snapshot;bounds retain imported values;owner/session guards isolate obsolete ends;cancel semantics and redo preservation consistent.",
+      "verification": "Eight native tests and production caller/history source reviewed; state checks passed; native runtime unrun."
+    },
+    {
+      "number": 44,
+      "agent": "/root/a007_worker_coordinator/a044_slider_accessibility",
+      "assignment": "Native UISlider incremental accessibility bounds and precise underlying values",
+      "paths": "App/StudioSlider.swift; NativeTests/StudioTrackingSliderTests.swift",
+      "status": "completed",
+      "finding": "No native slider accessibility defect",
+      "detail": "Double model remains separate from Float display;increment/decrement respects bounds/imported values;disabled/invalid controls do not mutate;semantic font and44pt target paths reviewed.",
+      "verification": "Native tests/source/caller review; no VoiceOver or rendered Dynamic Type execution."
+    },
+    {
+      "number": 45,
+      "agent": "/root/a007_worker_coordinator/a045_textfield_composition",
+      "assignment": "Native text-field composition/selection and rejected paste restore",
+      "paths": "App/StudioTextField.swift; NativeTests/StudioTextFieldTests.swift",
+      "status": "completed",
+      "finding": "Canonical-equivalent text can bypass scalar-bound binding",
+      "detail": "publish/restore String equality is canonical, so changed scalar representation can skip bounded setter. Coordinator confirmed80-character input320scalars equals decomposed400scalars; reported to root for exact-representation synchronization.",
+      "verification": "Source review plus coordinator actual Swift equality probe exit0; no Apple native execution. Worker own swift PATH attempt failed before probe."
+    },
+    {
+      "number": 46,
+      "agent": "/root/a007_worker_coordinator/a046_textfield_callbacks",
+      "assignment": "Independent review of exact scalar synchronization and current Unicode/solver repair diffs",
+      "paths": "App/StudioTextField.swift; Sources/LightingCore/StudioDisplayName.swift; Sources/LightingCore/LightOutputAdjustment.swift; relevant tests",
+      "status": "completed",
+      "finding": "Five raw representation comparisons need repair",
+      "detail": "configure external/model;publish current/model,replacement/current,text/accepted;replaceDisplayedText text/replacement all use canonical equality. Late external events and changed identity also affected;root notified. New regression tests present,implementation not yet changed at review.",
+      "verification": "Actual Swift320-vs400 scalar equality probe and source/diff audit; scalar-sensitive test oracle advised;no UIKit execution."
+    },
+    {
+      "number": 47,
+      "agent": "/root/a007_worker_coordinator/a047_precision_drafts",
+      "assignment": "Exact value editor rejection guard, Apply/Return and cancel history",
+      "paths": "App/PrecisionValueButton.swift; Tests/LightingCoreTests/PrecisionDraftBoundTests.swift",
+      "status": "completed",
+      "finding": "No precision draft latch defect",
+      "detail": "Oversize error survives duplicate echoes;Apply/Return share guards;external value/SI/locale/range changes invalidate editor;cancel/equivalent edits avoid writes;unit identity rejects stale callbacks.",
+      "verification": "Source,portable bounds tests,native bridge tests and state checks reviewed;actual private SwiftUI editor runtime unrun."
+    },
+    {
+      "number": 48,
+      "agent": "/root/a007_worker_coordinator/a048_distance_precision",
+      "assignment": "Distance units conversions and exact edited value preservation",
+      "paths": "App/DistanceValueButton.swift; Tests/LightingCoreTests/StudioAccessibleValueTests.swift",
+      "status": "completed",
+      "finding": "No distance edit conversion defect",
+      "detail": "Captured units/editor identity,finite bounds,exact SI endpoints and unchanged-value preservation protect signed zero/history;captured underlying bits reject stale edits. Imperial/UI unit-switch coverage absent,not a defect.",
+      "verification": "Distance/precision/StudioView source and portable/UI coverage review; no native execution."
+    },
+    {
+      "number": 49,
+      "agent": "/root/a007_worker_coordinator/a049_subject_inspector",
+      "assignment": "Subject controls bounds, stable undo lifecycle and accessibility",
+      "paths": "App/SubjectInspector.swift",
+      "status": "completed",
+      "finding": "No subject inspector source defect",
+      "detail": "Expanded quick bounds retain imported positions;exact entry uses full coordinate limits;generation/field owner isolates transactions;presets retain other axes;semantic labels and adaptive layout found. Direct inspector native/UI coverage absent.",
+      "verification": "Inspector,precision,distance and StudioView binding source reviewed; no native execution."
+    },
+    {
+      "number": 50,
+      "agent": "/root/a007_worker_coordinator/a050_camera_inspector",
+      "assignment": "Camera position/rotation controls preserve optics and exact undo",
+      "paths": "App/CameraInspector.swift",
+      "status": "completed",
+      "finding": "No camera inspector source defect",
+      "detail": "SI conversions/exact endpoints,full-frame FOV and subject-centered negative-Z aim consistent;generation and field owners protect undo;44pt controls and adaptive preset grid reviewed.",
+      "verification": "Inspector/bindings/history/geometry/native adapter and relevant UI tests read; no runtime execution."
+    },
+    {
+      "number": 51,
+      "agent": "/root/a007_worker_coordinator/a051_optics_inspector",
+      "assignment": "Lens and exposure editing exact readouts and accessibility labels",
+      "paths": "App/OpticsInspector.swift; Tests/LightingCoreTests/StudioOpticsTests.swift",
+      "status": "completed",
+      "finding": "No optics inspector defect",
+      "detail": "Emitter changes preserve aim/dimensions/roll;manual target guards follow mode;dimension/roll/lens/exposure ranges align with domain;exact input and generation-qualified transactions preserve values and undo.",
+      "verification": "Inspector,domain tests,precision and StudioView bindings source review only; no native execution."
+    },
+    {
+      "number": 52,
+      "agent": "/root/a007_worker_coordinator/a052_card_inspector",
+      "assignment": "Neutral card meter editing bounded controls and non-color cues",
+      "paths": "App/NeutralCardInspector.swift",
+      "status": "completed",
+      "finding": "Optional preview default representation creates no-op history",
+      "detail": "Starting nil previewSettings,gesture0\u2192.25\u21920 materializes explicit defaults;raw scene inequality commits undo and clears redo. Same white-balance issue;root notified and requested broader optional metadata review.",
+      "verification": "Production inspector/binding/history source trace and state checks;no native reproduction yet."
+    },
+    {
+      "number": 53,
+      "agent": "/root/a007_worker_coordinator/a053_arrangement_editor",
+      "assignment": "Scene arrangement transforms atomic undo and stable selection",
+      "paths": "App/SceneArrangementView.swift; Tests/LightingCoreTests/SceneArrangementTests.swift",
+      "status": "completed",
+      "finding": "No scene arrangement defect",
+      "detail": "Local copied scene applies rotate/reflect/translate then final validation;IDs/aims/roll/settings preserved;source+generation guards reject stale apply;one replacement history entry and stable selection.",
+      "verification": "Source and existing transform/arrangement/UI coverage review;no runtime tests."
+    },
+    {
+      "number": 54,
+      "agent": "/root/a007_worker_coordinator/a054_optional_noop",
+      "assignment": "Investigate optional preview/lens/optics metadata no-op undo representation and bounded repair",
+      "paths": "App/StudioView.swift; Sources/LightingCore/SceneEditHistory.swift; App/StudioSliderTracking.swift",
+      "status": "completed",
+      "finding": "Optional edit representation scope and repair mapped",
+      "detail": "Preview,lens,outer optics and nested nil roll become explicit after out-and-back. Recommend active original snapshot helper,restore equivalent original representation only,preserve UUID/unrelated fields and nil-follow aim semantics.",
+      "verification": "Source call-path/history review; production slider regression design with preexisting redo; no runtime executed."
+    },
+    {
+      "number": 55,
+      "agent": "/root/a007_worker_coordinator/a055_keyboard_regressions",
+      "assignment": "Independent review of exact UTF16 bridge repair and representation-sensitive regressions",
+      "paths": "App/StudioTextField.swift; NativeTests/StudioTextFieldTests.swift",
+      "status": "completed",
+      "finding": "Exact UTF16 bridge repair independently accepted pending native run",
+      "detail": "All five synchronization sites use sameNativeText; exact array oracles validate320\u2192400 scalar rejection and external/configuration/identity changes. IME and lifecycle semantics retained. Selection-position strengthening suggested.",
+      "verification": "Actual working diff/source reviewed;git diff --check passed;native tests unrun."
+    },
+    {
+      "number": 56,
+      "agent": "/root/a007_worker_coordinator/a056_core_repairs",
+      "assignment": "Independent actual Unicode display and exact target-lux repair diff review",
+      "paths": "Sources/LightingCore/StudioDisplayName.swift; Sources/LightingCore/LightOutputAdjustment.swift; related portable regressions",
+      "status": "completed",
+      "finding": "Actual display and solver repairs accepted pending integrated checks",
+      "detail": "Bounded prefix drop-before-trim preserves complete graphemes and ellipsis. Actual Swift probes fail six leading offsets on HEAD and pass offsets0\u201314 on fix,plus50000-mark/boundary cases. Exact lux fallback follows all validation/max checks.",
+      "verification": "Actual source diff and independent Swift display probes;solver regression source reviewed,not rerun by worker."
+    },
+    {
+      "number": 57,
+      "agent": "/root/a007_worker_coordinator/a057_library_domain",
+      "assignment": "Project library commands stale snapshot and active identity invariants",
+      "paths": "Sources/LightingCore/ProjectLibrary.swift; Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "status": "completed",
+      "finding": "Public domain API validation hardening opportunity",
+      "detail": "Synthesized-decoded invalid library can be mutated before validated();current file-store/app boundaries explicitly validate. No app reachability/data loss demonstrated,so not a milestone blocker.",
+      "verification": "Static domain/store/tests review;no execution of malformed-command reproduction."
+    },
+    {
+      "number": 58,
+      "agent": "/root/a007_worker_coordinator/a058_optional_helper_review",
+      "assignment": "Independent active-edit optional representation helper and production wiring review",
+      "paths": "Sources/LightingCore/SceneEditHistory.swift; App/StudioView.swift; portable/native regression tests",
+      "status": "completed",
+      "finding": "Active optional representation repair accepted pending execution",
+      "detail": "Helper active-only,full effective preview/lens equality,UUID optics mapping,nested roll and nil/manual aim distinction preserve real changes. Three bindings wired;native tracked writer uses helper with redo. Suggest isolated manual-aim-only test.",
+      "verification": "Actual helper/bindings/core/native diff reviewed;git diff --check passed;tests not executed by reviewer."
+    },
+    {
+      "number": 59,
+      "agent": "/root/a007_worker_coordinator/a059_scene_codec",
+      "assignment": "Versioned scene v1-v5 migration validates unknown or malformed nested fields",
+      "paths": "Sources/LightingCore/SceneCodec.swift; Tests/LightingCoreTests/PrototypeTests.swift",
+      "status": "completed",
+      "finding": "No scene codec/migration boundary defect",
+      "detail": "V1\u2013V5 upgrade preserves IDs/optional values;schema-dependent fields and invalid scalars reject;1MiB codec/store reads bounded;external document decoder rejects duplicate escaped-equivalent nested keys.",
+      "verification": "Codec,validation,migration,store and integrity test source plus state checks;no Swift execution."
+    },
+    {
+      "number": 60,
+      "agent": "/root/a007_worker_coordinator/a060_atomic_store",
+      "assignment": "Atomic replacement write failure prior bytes and temporary cleanup",
+      "paths": "Sources/LightingCore/SceneFileStore.swift; Tests/LightingCoreTests/SceneFileStoreTests.swift",
+      "status": "completed",
+      "finding": "No legacy single-scene store defect",
+      "detail": "Existing malformed/oversized/nonregular paths reject before atomic save;encoding and bounded reads enforce1MiB;production use is legacy migration loading. Actual filesystem fault cleanup not established by these inspected tests.",
+      "verification": "Legacy store,codec,callsite and tests source review;no destructive probe or execution."
+    },
+    {
+      "number": 61,
+      "agent": "/root/a007_worker_coordinator/a061_store_concurrency",
+      "assignment": "Store lock coverage stale compare-and-replace versus legacy migration",
+      "paths": "Sources/LightingCore/ProjectLibrary.swift; Tests/LightingCoreTests/ProjectLibraryTests.swift; Sources/LightingCore/SceneFileStore.swift",
+      "status": "completed",
+      "finding": "No in-process library concurrency defect",
+      "detail": "Correct contract in ProjectLibraryFileStore:static NSLock spans load/migration/full-snapshot comparison/recovery/atomic replacement across instances;unlocked internal loader avoids recursion. External writers explicitly outside contract.",
+      "verification": "Actual store/callers and three12-instance concurrency regressions source reviewed;not executed."
+    },
+    {
+      "number": 62,
+      "agent": "/root/a007_worker_coordinator/a062_project_store",
+      "assignment": "Store actor operation reservations and exact snapshot adoption",
+      "paths": "App/ProjectStore.swift; NativeTests/ProjectStoreOperationTests.swift",
+      "status": "completed",
+      "finding": "No actor/store reservation race found",
+      "detail": "Actor synchronous transaction plus process lock protects compare/write;UI reserves before tasks and guards generations;imports recheck dirty/cancel/capacity;committed receipts preserve newer scene edits and release own reservation.",
+      "verification": "Store/operation/UI/domain sources and native tests reviewed;state check/next passed;no native execution."
+    },
+    {
+      "number": 63,
+      "agent": "/root/a007_worker_coordinator/a063_library_operations",
+      "assignment": "Library operation error paths retain IDs and newer edits",
+      "paths": "App/ProjectLibraryOperation.swift; NativeTests/ProjectStoreOperationTests.swift",
+      "status": "completed",
+      "finding": "No operation receipt/adoption defect",
+      "detail": "Value-captured commands,reservations and request-specific finish prevent stale completions;adoption checks generation/current identity;successful save preserves newer edits as dirty;errors never adopt false success.",
+      "verification": "Operation/store/UI callers and native regression source reviewed at df7c3b7;no execution."
+    },
+    {
+      "number": 64,
+      "agent": "/root/a007_worker_coordinator/a064_library_import",
+      "assignment": "Library import cancellation and post-dismiss stale completion",
+      "paths": "App/ProjectLibraryView.swift",
+      "status": "completed",
+      "finding": "No import cancellation/adoption defect",
+      "detail": "Read generation changes before cancel;post-read/defer identities protect newer imports;dirty/capacity/busy rechecked;parent reserves before commit and reconciles successful writes;security scope/deferred cancellation handled.",
+      "verification": "Library/import/store/operation source and native tests reviewed;external picker lifecycle not runtime-validated."
+    },
+    {
+      "number": 65,
+      "agent": "/root/a007_worker_coordinator/a065_library_deletion",
+      "assignment": "Library archive/delete confirmation identity and unsaved protections",
+      "paths": "App/ProjectLibraryView.swift",
+      "status": "completed",
+      "finding": "No archive/delete stale confirmation defect",
+      "detail": "Unsaved and active-record guards in UI/domain;confirmation compares complete retained record;parent reservation/generation guards and full-snapshot atomic persistence preserve unrelated records and prior bytes on rejection.",
+      "verification": "UI/domain/store/operation source and existing negative regression source inspected;no execution."
+    },
+    {
+      "number": 66,
+      "agent": "/root/a007_worker_coordinator/a066_library_identity",
+      "assignment": "Search and shortened/colliding names retain globally unique presentation IDs",
+      "paths": "App/ProjectLibraryView.swift; NativeTests/ProjectLibraryPresentationTests.swift",
+      "status": "completed",
+      "finding": "Confirmed visually identical names miss disambiguation",
+      "detail": "Studio and Studio+space+ZWJ are both accepted;comparison keys after ignorable removal differ only trailing space and identifiers both nil. Trim post-filter comparison key;stored/display names must stay intact. Root notified.",
+      "verification": "Worker static review;coordinator executed actual name and presentation source with minimal project metadata:both accepted,identifiers nil,Swift exit0."
+    },
+    {
+      "number": 67,
+      "agent": "/root/a007_worker_coordinator/a067_library_thumbnails",
+      "assignment": "Saved-rig thumbnail content derives from correct immutable project",
+      "paths": "App/ProjectLibraryThumbnail.swift",
+      "status": "completed",
+      "finding": "No saved-rig thumbnail defect",
+      "detail": "Row supplies saved project scene,UUID identities computed before filtering;thumbnail caps12 lights/48 corners,validates sanitized source and excludes room notes;empty/camera coincidence fallback finite;decorative image not AX/hit target.",
+      "verification": "Thumbnail/caller/bounds/test source reviewed;no rendering or native execution."
+    },
+    {
+      "number": 68,
+      "agent": "/root/a007_worker_coordinator/a068_document_io",
+      "assignment": "Editable import scoped resources and validate-before-adoption",
+      "paths": "App/ProjectDocumentIO.swift; NativeTests/ProjectDocumentIOTests.swift",
+      "status": "completed",
+      "finding": "No scoped document I/O defect",
+      "detail": "Security scope spans coordinated materialization/read/decode and balances via defer;accessor URL and descriptor checks bound race exposure;cancellation reaches detached worker/coordinator;8MiB+1 bounded validated document precedes adoption.",
+      "verification": "I/O,reader,decoder,import callsite and native tests source review;state checks passed;native execution unrun."
+    },
+    {
+      "number": 69,
+      "agent": "/root/a007_worker_coordinator/a069_bounded_reads",
+      "assignment": "File read size, regular-file and truncation invariants",
+      "paths": "App/BoundedFileReader.swift; NativeTests/BoundedFileReaderTests.swift",
+      "status": "completed",
+      "finding": "No bounded file reader defect",
+      "detail": "NOFOLLOW/NONBLOCK plus descriptor fstat reject nonregular replacements;0<=limit<Int.max makes sentinel arithmetic safe;short reads loop/errors discard partial data;cancellation checkpoints and defer close cover exits.",
+      "verification": "Reader,callers,native tests source review;fault-injected read/descriptor-count coverage absent,not a demonstrated defect;no runtime."
+    },
+    {
+      "number": 70,
+      "agent": "/root/a007_worker_coordinator/a070_document_envelope",
+      "assignment": "Document envelope integrity and unknown version reject semantics",
+      "paths": "Sources/LightingCore/LightingProjectDocument.swift; Tests/LightingCoreTests/ProjectDocumentEnvelopeIntegrityTests.swift",
+      "status": "completed",
+      "finding": "No document envelope defect",
+      "detail": "Strict root metadata/version precede scene interpretation;decoded duplicate-key scanner includes escaped keys and ignored nested objects;valid old scenes migrate;import creates new project ID after validation.",
+      "verification": "Envelope/scanner/adversarial tests and app boundary source reviewed;swift PATH probe unavailable,no execution."
+    },
+    {
+      "number": 71,
+      "agent": "/root/a007_worker_coordinator/a071_document_nested",
+      "assignment": "Nested project import identity/scene tampering validation",
+      "paths": "Sources/LightingCore/LightingProjectDocument.swift; Tests/LightingCoreTests/ProjectDocumentNestedIntegrityTests.swift",
+      "status": "completed",
+      "finding": "No nested document import defect",
+      "detail": "Object-local duplicate detection covers escaped keys and arrays;UTF16/32 normalization,typed numeric decoding and version-specific scene validation retain bounds;unknown nested metadata policy explicit.",
+      "verification": "Source and nested/adversarial/envelope tests reviewed;no execution."
+    },
+    {
+      "number": 72,
+      "agent": "/root/a007_worker_coordinator/a072_identity_repair",
+      "assignment": "Independent invisible-boundary project-name disambiguation repair and regression review",
+      "paths": "App/ProjectLibraryView.swift; NativeTests/ProjectLibraryPresentationTests.swift",
+      "status": "completed",
+      "finding": "Project-name disambiguation repair accepted",
+      "detail": "Post-ignorable trim groups all five visually identical names;regression checks exact displayed scalars,unchanged project values/IDs and distinct labels;global UUID expansion and routing intact.",
+      "verification": "Actual diff/source review and diff-check;root before/after logs read(new failure then9passes),not independent native execution."
+    },
+    {
+      "number": 73,
+      "agent": "/root/a007_worker_coordinator/a073_backup_ui",
+      "assignment": "Backup export failure/cancellation no accidental mutation",
+      "paths": "App/ProjectBackupView.swift",
+      "status": "completed",
+      "finding": "No project backup flow defect",
+      "detail": "Stable snapshot captures current scene/name;prepare validates and bounds document;cancel stops worker before publication;encoded envelope excludes photos/library/history;success status only exporter success;no model mutation.",
+      "verification": "Source/export/import tests inspected;native system provider behavior not executed."
+    },
+    {
+      "number": 74,
+      "agent": "/root/a007_worker_coordinator/a074_room_editor",
+      "assignment": "Manual room text entry clear/rejected commit and persistence semantics",
+      "paths": "App/ManualRoomPlacementView.swift; UITests/ManualRoomPlacementUITests.swift",
+      "status": "completed",
+      "finding": "No manual-room editing source defect",
+      "detail": "Oversize latch/Return/Set/Clear coherent;equivalent SI drafts and current identities guarded;default planning measurements explicitly committed;presentation generation/non-room snapshot protect writes;outside status uses committed geometry.",
+      "verification": "View/input/history and UI tests inspected;Undo restoration/paste/stale end-to-end gaps not defects;no Apple execution."
+    },
+    {
+      "number": 75,
+      "agent": "/root/a007_worker_coordinator/a075_ui_startup_failure",
+      "assignment": "Diagnose observed unstarted AX initialization and failed simulator startup;bounded fresh-host recovery",
+      "paths": "/tmp/app1-818a-02797-accessibility; .github/workflows/ios-prototype.yml; scripts/boot_simulator.py",
+      "status": "completed",
+      "finding": "Observed accessibility failure is unstarted unhealthy host",
+      "detail": "Code18 AX timeout before method;empty attachments;boot warmup failed after403.354s with unreaped child. Startup helper correctly stops. Preserve attempt and use at most one fresh hosted job retry,unchanged assertions;no in-host retry.",
+      "verification": "Read actual logs,accounting,manifest,report and CI/helper. No retry or source mutation."
+    },
+    {
+      "number": 76,
+      "agent": "/root/a007_worker_coordinator/a076_room_rotation",
+      "assignment": "Cardinal room rotations exact readout and float boundary behavior",
+      "paths": "Sources/LightingCore/RoomPlacement.swift; NativeTests/RoomRotationReadoutTests.swift",
+      "status": "completed",
+      "finding": "Cardinal identity mapping loses tiny negative overhang",
+      "detail": "Scene subject.x=room.subjectX=3,p.x=-1e-16 maps through p.x-3+3 to0,masking negative wall coordinate. Valid direct input;existing tiny-overhang tests use zero origin. Root notified;physical magnitude negligible but stated invariant edge.",
+      "verification": "Source trace plus Python binary64 arithmetic;no Swift production reproduction or native execution by worker."
+    },
+    {
+      "number": 77,
+      "agent": "/root/a007_worker_coordinator/a077_preferences",
+      "assignment": "Units and reduced-motion preferences update actual studio behavior",
+      "paths": "App/StudioPreferences.swift; App/StudioSettingsView.swift; App/StudioView.swift",
+      "status": "completed",
+      "finding": "No units/reduced-motion preference defect",
+      "detail": "Shared keys/store across settings/inspectors/room;unit identity and Apply guards retire stale drafts;only explicit scroll animation honors reduced motion;SceneKit disables implicit animation;settings isolated from scene/history.",
+      "verification": "Source and existing Settings/Feet UI coverage reviewed;no runtime execution."
+    },
+    {
+      "number": 78,
+      "agent": "/root/a007_worker_coordinator/a078_palette",
+      "assignment": "Declared app contrast pairs match actual control surfaces and traits",
+      "paths": "App/StudioPalette.swift; NativeTests/StudioPaletteTests.swift",
+      "status": "completed",
+      "finding": "Camera preset cue missing;slider/high-contrast coverage gaps",
+      "detail": "Camera selected focal preset only changes color background/AX trait,no visible symbol. Actual slider tertiaryLabel max track absent from contrast pairs;ratio unmeasured. Tests force normal accessibilityContrast. Root notified with distinctions.",
+      "verification": "Palette/tests/control surfaces source review;no native contrast measurement."
+    },
+    {
+      "number": 79,
+      "agent": "/root/a007_worker_coordinator/a079_probe_gating",
+      "assignment": "Text layout diagnostics gated to test/debug and preserve normal semantics",
+      "paths": "App/StudioTextLayoutDiagnostics.swift; NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "status": "completed",
+      "finding": "No diagnostic gating/transport defect",
+      "detail": "DEBUG plus explicit launch/env gating,release no-op modifiers,actual intrinsic Text measurements before padding,finite bounded tagged transport and change-only preference updates reviewed.",
+      "verification": "Source/hosted-test/UI consumers and state check reviewed;no Apple execution."
+    },
+    {
+      "number": 80,
+      "agent": "/root/a007_worker_coordinator/a080_cardinal_precision",
+      "assignment": "Assess compensated cardinal three-term room transforms preserving tiny point/room offset",
+      "paths": "Sources/LightingCore/RoomPlacement.swift; cardinal/rotation tests",
+      "status": "completed",
+      "finding": "Compensated three-term cardinal addition required; identity-only guard misses representable negative overhang.",
+      "detail": "Actual Swift stdin probes: point -1e-16, origin 3, room offset 3 loses the negative overhang using ordinary relative addition; reversing order loses offset 1e-16 when point=origin=3. Point -5e-16, origin 3, offset 3.nextUp defeats identity-only shortcut, returning zero instead of -5.591079014993742e-17. Recommended TwoSum(point,-origin), TwoSum(relative,offset), translated+(relativeError+translationError), using signed original axis coordinates. Root notified; no edits or universal exactness claim.",
+      "verification": "Read AGENTS and RoomPlacement; bounded actual Swift stdin numerical probes. No full suite/build or Apple execution."
+    },
+    {
+      "number": 81,
+      "agent": "/root/a007_worker_coordinator/a081_entity_graph",
+      "assignment": "Entity graph coordinate mapping and update identity reuse",
+      "paths": "App/StudioEntityGraph.swift",
+      "status": "completed",
+      "finding": "No concrete entity-graph identity, selection, orientation, or bounded geometry defect found.",
+      "detail": "Stable UUID roots reused and removed-map entries cleared; hit tests resolve through actual ancestry and current scene checks; selection updates independently; degenerate/short aim clears cached geometry. Shared emitter frame includes roll and one negative-Z compensation. Invalid/duplicate/>12-light scenes rejected before graph mutation, then valid scene forces reconcile. Fixed 42 grid lines, 12 outline segments per lamp, at most 7 authored shading sources.",
+      "verification": "Read-only source review of App/StudioEntityGraph.swift and related bounds/caller guards at df7c3b7 working tree. No execution, edits or builds."
+    },
+    {
+      "number": 82,
+      "agent": "/root/a007_worker_coordinator/a082_native_font_fit",
+      "assignment": "Analyze actual native CI one-ULP body-fit failure and physical-pixel measurement correction without tolerance",
+      "paths": "/tmp/app1-818a-02797-native/native-tests.log; NativeTests/StudioTextLayoutDiagnosticsTests.swift; UITests/StudioAppAccessibilityUITests.swift",
+      "status": "completed",
+      "finding": "Physical-pixel width normalization avoids one-ULP UIFont measurement input discrepancy; no tolerance required.",
+      "detail": "Actual CI enabled raw width41.66666666666666 versus native41.666666666666664 differs by one ULP; both125px at3x and heights61px. Swift arithmetic confirms rounded(width*scale)/scale equals native exactly. Recommend normalization at native fitsBodyText and both UI UIFont sites, retaining transported frames, exact pixel equality, upward required-height rounding, observed-height rounding, and8pt negative. Apple rerun still required to confirm UIKit wrapping.",
+      "verification": "Read actual native CI log lines517\u2013531, native/UI UIFont sites and diagnostics; actual bounded Swift stdin arithmetic probe. No UIKit execution or edits."
+    },
+    {
+      "number": 83,
+      "agent": "/root/a007_worker_coordinator/a083_native_focus_fixture",
+      "assignment": "Analyze actual rapid Keep native first-responder failure and isolated inputView fixture preserving real focus assertion",
+      "paths": "/tmp/app1-818a-02797-native/native-tests.log; NativeTests/StudioTextFieldTests.swift; App/StudioTextField.swift",
+      "status": "completed",
+      "finding": "Hosted rapid Keep failure warrants isolated test inputView before initial focus; cause remains unproven.",
+      "detail": "Actual tested02797 log shows keyboard XPC interruption, each K/Ke/Kee/Keep native edit focused=true with exact text/model/writes, then only final responder assertion fails; second Clear/Keep passes; duration113.419s. Recommend test-only deferred initial focus action after mounted field receives custom inputView, maintaining real isFirstResponder and all edit/selection/write assertions; never repair focus mid-cycle or alter production dismissal. Preserve prior key window/teardown and Apple rerun requirement.",
+      "verification": "Read actual log465\u2013494 and native test/current production focus lifecycle. No tests, Apple runtime, source edits or proof that XPC interruption caused assertion."
+    },
+    {
+      "number": 84,
+      "agent": "/root/a007_worker_coordinator/a084_camera_slider_contrast",
+      "assignment": "Review actual camera preset non-color cue and opaque enabled slider contrast repair including normal/high trait matrix",
+      "paths": "App/CameraInspector.swift; App/StudioPalette.swift; App/StudioSlider.swift; related native/UI assertions",
+      "status": "completed",
+      "finding": "Camera non-color cue and opaque slider contrast repair accepted at source level; largest-camera-layout coverage remains limited.",
+      "detail": "Camera stable preset IDs match history owners; selected glyph/trait derive from focal binding and survive undo without separate state.44pt minimum, growing text and existing5/2-column layouts retained. Actual remaining track resolves opaque palette color using slider traits; native pairs preserve3:1/4.5:1 across light/dark,base/elevated,normal/high. Camera panel largest-text layout not exercised by current app accessibility walk; precision test no text-size launch. Root notified of gap; no runtime claim.",
+      "verification": "Scoped current uncommitted git diff against df7c3b7, AGENTS and source/native/UI assertions. No tests, builds, edits or runtime verification."
+    },
+    {
+      "number": 85,
+      "agent": "/root/a007_worker_coordinator/a085_interruption_probes",
+      "assignment": "Atomic write filesystem provenance and before/after rename interruption no-loss checks",
+      "paths": "scripts/run_atomic_library_write_probe.py; scripts/probe_library_commit_interruption.py; scripts/probe-library-commit-interposer.c",
+      "status": "completed",
+      "finding": "Wrapper SIGTERM exits without owned-child forwarding/reaping; inspected atomic no-loss/provenance checks otherwise sound.",
+      "detail": "run_atomic_library_write_probe.py starts compiler/probes with start_new_session, but no SIGTERM handler; timeout/BaseException cleanup cannot run on default terminating signal. Separately grouped child may remain; nested commit driver cancellation handler receives no signal. Recommend bounded owned-child cancellation handling with TERM grace and reaping. Filesystem and SDK receipts are observed/fail-closed; before/after hook classification, exact bytes/snapshots/IDs, unrelated record preservation and missing-tool failure inspected. Root notified.",
+      "verification": "Read-only control-flow review of wrapper, interruption driver/interposer and referenced Swift verification. No executed cancellation repro, edits, builds or live fault probes.",
+      "reviewStatus": "completed",
+      "followUpAssignment": "Parent-authorized same-context implementation of wrapper SIGTERM/owned-child cleanup and focused Python tests only; no commit/push.",
+      "followUpStatus": "completed",
+      "followUpOutcome": "Implemented bounded SIGTERM/SIGINT handling preserving exact signal status, inherited ignores/masks, owned-group TERM grace/KILL/reap, registration safety and repeated cancellation. Initial25 focused tests passed;090 then independently exposed timeout-handler entry gap. Added deterministic sys.settrace regression that failed baseline with surviving child, then nested wait+TimeoutExpired inside outer BaseException ownership guard. Final26 focused cancellation/SDK/filesystem tests pass2.629s; scoped diff --check clean. Only wrapper and new cancellation test file changed, no persistence probes, builds or commits."
+    },
+    {
+      "number": 86,
+      "agent": "/root/a007_worker_coordinator/a086_ledger_validation",
+      "assignment": "Agent state check structural versus truth boundary and dependencies; native method accounting completeness",
+      "paths": "scripts/agent_cycle.py; scripts/tests/test_agent_cycle.py; scripts/native_test_shards.py",
+      "status": "completed",
+      "finding": "Executed bare test() inventory omission can falsely verify selected methods while omitted test is unstarted.",
+      "detail": "Discovery uses test\\w+ and omits func test(). Temporary fixture containing testKnown() and test() inventories only testKnown; a one-start/one-pass log for testKnown verifies as success. Recommend matching bare test and regression asserting missing-execution rejection. Other state dependency completion and current-vs-historical evidence gates separate structural validation from runtime truth.",
+      "verification": "Actual Python -B temporary-root fixture reproduction, plus7 named unittest cases for dependency/historical/accounting categories, all passed. No whole suites, builds or repository edits during review.",
+      "reviewStatus": "completed",
+      "followUpAssignment": "Parent-authorized same-context bare test() inventory repair and focused native-shard Python tests only; no commit/push.",
+      "followUpStatus": "completed",
+      "followUpOutcome": "Implemented test\\w* in inventory and unsupported UI-container guard, plus meaningful bare test() discovery/unstarted rejection/ordered success and unsupported-container regressions. Both affected regressions failed baseline;6 focused tests pass after. Only scripts/native_test_shards.py and scripts/tests/test_native_test_shards.py changed; scoped git diff --check passed; no commits, Apple execution or historical evidence changes."
+    },
+    {
+      "number": 87,
+      "agent": "/root/a007_worker_coordinator/a087_optics_coverage",
+      "assignment": "Ten optical editing UI methods cover actual persistence/undo operations",
+      "paths": "UITests/StudioOpticsUITests.swift",
+      "status": "completed",
+      "finding": "Ten optics UI methods repeat one meaningful rectangle-width workflow; distinct aim/roll/optics-draft coverage is absent here.",
+      "detail": "All10 methods invoke same width routine; correctly waits for changed value/finished transaction, verifies undo originalwidth retaining rectangle, redo editedwidth, Saved locally then relaunch samewidth/type. No manufactured wait success found. This file does not exercise manual/follow aim, height,roll,invalid opticaldrafts or stablelightUUID; precisionfile separately covers exactwidth and modifierwallcrossing only. Current opticalbinding validates and captures light/project identity, preserving optionals. Root notified of coverage limit, not asserted production defect.",
+      "verification": "Read-only optics UI, reachability, precision and App optics/history bindings with nl/sed/rg. No Apple execution, builds, tests or edits."
+    },
+    {
+      "number": 88,
+      "agent": "/root/a007_worker_coordinator/a088_library_ui_coverage",
+      "assignment": "Library UI mutation/relaunch/recovery assertions preserve actual outcome",
+      "paths": "UITests/ProjectLibraryUITests.swift",
+      "status": "completed",
+      "finding": "Library UI workflows assert real mutation and relaunch results; collision/draft and archive relaunch coverage is limited.",
+      "detail": "Seven workflows check created/renamed rows, activeproject switching, confirmeddeletion/recovery/cancelledreplacement and savedlight persistence through relaunch. Helpers fail closed on snapshot/wait errors, continueAfterFailure=false, no successmanufacturing. Source actions capture UUID; both Save/Return call rejected/stale-name guard; nativecollisionprefix tests cover current repair. UIfile uses uniquenames and does not exercise collisionrouting/rejecteddraftcallbacks or independently archive/restore persistence after relaunch; limits are not demonstrated productdefects.",
+      "verification": "Read-only UI/source/presentation test inspection using cat/sed/rg and current git status/log. No tests/builds or Apple runtime execution."
+    },
+    {
+      "number": 89,
+      "agent": "/root/a007_worker_coordinator/a089_bare_test_review",
+      "assignment": "Independent review of bare test() inventory fix and fail-closed regression semantics",
+      "paths": "scripts/native_test_shards.py; scripts/tests/test_native_test_shards.py",
+      "status": "completed",
+      "finding": "Independent bare test() inventory patch review accepted; fail-closed event accounting and selector boundaries retained.",
+      "detail": "Six selected Python tests pass;12 bounded regex cases show only bare test declaration newly matched, not calls/properties/helpers/prefunc/punctuation/generic syntax. Existing suffixed identifiers and native/UI target rules unchanged. Regression checks absent test() as unstarted/failed and ordered starts/passes for both methods before success. Existing textual-regex comment/string limitations not changed.",
+      "verification": "Actual scoped git diff/sed review, six selected python -B unittest cases and12-case standalone regex probe; no source edits, full suite/build or XCTest execution."
+    },
+    {
+      "number": 90,
+      "agent": "/root/a007_worker_coordinator/a090_cancellation_review",
+      "assignment": "Independent review of wrapper owned-process cancellation fix and bounded no-orphan regression",
+      "paths": "scripts/run_atomic_library_write_probe.py; scripts/tests/test_atomic_library_probe_cancellation.py",
+      "status": "completed",
+      "finding": "Independent cancellation review exposed timeout-entry orphan gap, then accepted corrected outer guard after exact repro replay.",
+      "detail": "SIGTERM injected by sys.settrace at first TimeoutExpired handler statement observation[timedOut]=True escapes sibling BaseException cleanup before stop_owned_group masks signals. Wrapper exits-SIGTERM while ownedchild survives os.kill(pid,0); safe fixture cleanup then reaped child. Recommend outer cleanup guard enclosing timeout handler and deterministic regression before cleanup begins. Existing tests check actual process disappearance before safety cleanup, so they do not hide failure. Root notified;085 reactivated.",
+      "verification": "Actual diff review,6 cancellation tests passed2.048s, deterministic harmless inline Python child-survival repro with completed cleanup. No repository edits, compiler/build or live persistence probes.",
+      "reviewStatus": "completed",
+      "followUpAssignment": "Independently re-review085 outer ownership-guard repair and replay timeout-entry cancellation regression.",
+      "followUpStatus": "completed",
+      "followUpOutcome": "Accepted corrected outer cleanup guard enclosing wait and TimeoutExpired handler.7 independent cancellation tests pass2.677s. Replayed original sys.settrace SIGTERM-at-timedOut-assignment repro: wrapper exactly-SIGTERM, child gone before safety cleanup. New regression verifies unblocked injection, childidentity and disappearance. Ordinary timeout failure receipts/TERMgrace/SIGKILL/reaping preserved; scoped diff --check clean. Linux-only verification, no repository edits/persistenceprobes/commits."
+    },
+    {
+      "number": 91,
+      "agent": "/root/a007_worker_coordinator/a091_area_photometry",
+      "assignment": "Finite rectangular source integration, grazing domain and roll",
+      "paths": "Sources/LightingCore/SurfacePhotometry.swift; Tests/LightingCoreTests/SurfacePhotometryTests.swift",
+      "status": "completed",
+      "finding": "No concrete supported-input rectangular photometry defect found; accepted numerical model retained.",
+      "detail": "Validated finite bounded dimensions/intensity/positions and orthogonal basis; conservative near-plane gate precedes zero/backface handling;1024sample normalization and clipped receiver-incidence Duffy integration inspected. Shared emitter frame passes rolled right/up convention. Existing independent centered/off-axis references and grazing/tangent/transition/backface/domain/scaling tests reviewed. Constructor boundary/zero/rotated-grazing enumeration incomplete, but no established defect or calibration requirement.",
+      "verification": "Read-only rg/cat/sed review of SurfacePhotometry, tests, EmitterFrame/StudioPhotometry connection and complementary roll tests. No builds, tests or source edits."
+    },
+    {
+      "number": 92,
+      "agent": "/root/a007_worker_coordinator/a092_scene_transforms",
+      "assignment": "Review actual compensated cardinal room transform repair and scene mirror/yaw coordinate invariants",
+      "paths": "Sources/LightingCore/RoomPlacement.swift; Tests/LightingCoreTests/RoomPlacementTests.swift; Sources/LightingCore/SceneTransform.swift",
+      "status": "completed",
+      "finding": "Actual compensated cardinal repair accepted with72 independent arithmetic cases; underflowed noncardinal yaw scope nuance documented.",
+      "detail": "All72 Swift cases exact, axes/aliases agree existing yaw convention. Negative residuals/contact/tinyoffset and containment/outsideCount meaningful; finite position/room bounds avoid intermediate overflow. Ordinary noncardinal expression unchanged, but s==0/c==0 dispatch includes yaw5e-324 whose radians underflow0, favorably changing old0 to-1e-16. Root notified to avoid literal all-noncardinal-unchanged claim or use explicit cardinal switch. Center/near-boundary tests do not establish far-wall or corner-construction universal exactness.",
+      "verification": "Actual scoped git diff/read-only source review and bounded stdin Swift72-combination probe with zero mismatches. No builds, .build writes, Apple run or rerun of root28 tests."
+    },
+    {
+      "number": 93,
+      "agent": "/root/a007_worker_coordinator/a093_native_fixture_review",
+      "assignment": "Review actual physical-pixel UIFont measurement and isolated native inputView focus fixture repair",
+      "paths": "NativeTests/StudioTextLayoutDiagnosticsTests.swift; NativeTests/StudioTextFieldTests.swift; UITests/StudioAppAccessibilityUITests.swift",
+      "status": "completed",
+      "finding": "Actual UIFont pixel-width and isolated inputView focus fixture repairs accepted pending Apple execution.",
+      "detail": "All3 sites normalize only width passed to boundingRect; ceil requiredheight and rounded observedheight remain strict. TransportCGRect equality, pixelgeometry equality, containment and8pt negative intact; adjacentULP positives/onepixelshort negative meaningful. Local UIInputView installed before sole explicit initial requestFocus; both cycles retain genuine responder/nativeidentity/window/model/write/selection assertions, no midcycle repair. Cleanup clears closures/binding/fields, removeswindow and restoresprior keywindow. Cannot establish real keyboardservice reliability or native runtime pass.",
+      "verification": "Read-only actual diff and surrounding native/UI code review; no builds, tests or Apple execution."
+    },
+    {
+      "number": 94,
+      "agent": "/root/a007_worker_coordinator/a094_artifact_retention",
+      "assignment": "XCTest artifact export retains failed/incomplete originals and actual PNGs",
+      "paths": ".github/workflows/ios-prototype.yml",
+      "status": "completed",
+      "finding": "Conditional original-result retention gap if ditto archive creation fails; required execution/accounting gates otherwise fail closed.",
+      "detail": "Both inlineexport blocks use set-e and ditto, then attachments; always uploader includes ZIP but no raw xcresultfallback. Archivefailure can therefore stop export and leave originalbundle unretained/incompleteZIP. Root notified to consider conditional rawfallback while retaining exportfailure. Finalization, exact methodaccounting, requiredteststeps and manifestPNG/provenance/duplicates/missingcapture checks inspected as failclosed; diagnostic continue-on-error does not grant acceptance. No actual currentartifactloss or cryptographic ZIPsidecar claim.",
+      "verification": "Read-only rg/sed review of workflow inlineexport/visualreview, nativeaccounting and simulatorstartup. No tests/builds/network actions or source edits.",
+      "reviewStatus": "completed",
+      "followUpAssignment": "Parent-authorized bounded workflow-only raw xcresult fallback for ZIP archive failure, preserving required export failure; no commits.",
+      "followUpStatus": "completed",
+      "followUpOutcome": "Implemented workflow-only failure-specific raw xcresult uploads. Each exporter catches only dittofailure, writes archive_failed output, exits same nonzero; separate always+failedoutcome+explicitoutput uploads native/UI rawbundles with hiddenfiles and requiredpresence. Normaluploads/accounting/finalization/26capturelist unchanged. YAML and both bash-n checks, identicalexporters, conditionassertions anddiffcheck pass. Six temp actualscript branches preserve original hashes: archivefailure37 finalized/incomplete,success0,missing/incomplete1,attachmentfailure42. No GitHub/macOS execution or commits."
+    },
+    {
+      "number": 95,
+      "agent": "/root/a007_worker_coordinator/a095_recovery_capacity",
+      "assignment": "Full-library recovery exact reviewed snapshot and selected record retention",
+      "paths": "App/RecoveryCapacityView.swift; Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift",
+      "status": "completed",
+      "finding": "No reachable recovery-capacity snapshot, identity, or durable replacement defect found.",
+      "detail": "Alert captures complete selectedproject/UUID; presentations built fromwholelibrary beforearchivefilter. Underlock reread/validate, allrecords countcapacity; openedcapacity appendswithoutdeletion, fullcapacity requires reviewedrecord completeequality and archived/inactive. Local remove/insert then encode/sizecheck andsingleatomicwrite; capturedscene/generation and synchronous operationreservation protect editing. Cancel/error leaveseditor and refreshescandidates. Focused candidate/concurrency/failure tests inspected.",
+      "verification": "Read-only source/test review plus actual agent_cycle.py check and next: structure valid; M03 gates still outstanding, explicitly not runtime truth. No tests/builds/Apple execution or edits."
+    },
+    {
+      "number": 96,
+      "agent": "/root/a007_worker_coordinator/a096_library_migration",
+      "assignment": "Legacy library migration idempotency and malformed state preservation",
+      "paths": "Sources/LightingCore/ProjectLibrary.swift; Tests/LightingCoreTests/ProjectLibraryTests.swift; Sources/LightingCore/SceneFileStore.swift",
+      "status": "completed",
+      "finding": "No supported reachable legacy library migration/idempotency or malformed-state preservation defect found.",
+      "detail": "Static transactionlock serializes inprocess readers/writers; existing projects.json decodedfirst, migration onlywhenabsent, firstUUID persisted/reused. Expectednil firstsave cannot overwrite existinglegacy migration: currentvalidatedsnapshot comparison rejectsstale. Invalidexistinglibrary neverfallsthroughlegacy; unreadable/nonregular/oversized/invalidlegacy propagatefailure andlegacybytes neverwritten. Version/capacity/IDs/activescene validatedbeforepersist. Focused repeated/concurrent migration/save and malformed/path testassertions inspected.",
+      "verification": "Read-only source/test line inspection, no builds/tests/edits or runtimeacceptance claim. Recoverycapacity intentionally excluded."
+    },
+    {
+      "number": 97,
+      "agent": "/root/a007_worker_coordinator/a097_camera_accessibility",
+      "assignment": "Review actual required Camera default/AXXXL preset text and glyph capture expansion without losing original checks",
+      "paths": "UITests/StudioAppAccessibilityUITests.swift; .github/workflows/ios-prototype.yml; App/CameraInspector.swift",
+      "status": "completed",
+      "finding": "Required Camera default/AXXXL accessibility expansion accepted;26 capture selectors retain all original24.",
+      "detail": "Actual production/test IDs and labels align; both sizes inspect5presetframes/focalreadout and>=25% growth for50preset/readout.50\u219285 checks bothvalues and oldcheckmark absence,undo50 restores. Fresh snapshots/viewport failure checks remain; capture comparison24\u219226 withzero removals/no name mismatch, originalPNG/provenance/duplicate/missingcapture gates intact. Does not establish everycameraheading/positioncontrol or runtimeglyph exposure.",
+      "verification": "Actual scoped git diff/rg/sed review, clean scoped diff --check, Python capture-selector comparison. No Apple execution, fullsuite/build or edits.",
+      "reviewStatus": "completed",
+      "followUpAssignment": "Independent review of094 workflow-only archive-failure raw bundle fallback and unchanged26 capture requirements.",
+      "followUpStatus": "completed",
+      "followUpOutcome": "Accepted094 workflow-only retention patch. Independent YAML parse, perjob stepID uniqueness, identical exporter scripts, both bash-n checks, original/current capture comparison and scoped diff --check pass. Required export preserves exact nonzero ditto status; fallback requires own failedoutcome andexplicitarchivefailure, includeshiddenfiles/erroronmissingrawbundle; native/UI namesdistinct andmatrixshards isolated.26captures retain original24. Branchfixture results remain attributed094; no actual Actions/Apple execution."
+    },
+    {
+      "number": 98,
+      "agent": "/root/a007_worker_coordinator/a098_studio_selection",
+      "assignment": "Studio selected light identity across delete/undo/replace/library switch",
+      "paths": "App/StudioView.swift",
+      "status": "completed",
+      "finding": "No confirmed selection/history identity defect found across add/delete/undo/replace/project generation guards.",
+      "detail": "Add/duplicate selectnewUUID; undo/redo retainvalidselection and deterministically fallbackfirstornil. Delayed3D/Plan/list callbacks validate capturedgeneration/currentUUID; scalar/optics bindingsresolve UUID notcurrentindex, deletedIDs cannotwrite. Editowners includegeneration/project/light/control; Plan drags also checkselection. Selectioncloses activegesture but noindependenthistory; unchangedgesturepreservesredo. Tests substantiateowner/generation guards but nofullStudioView lifecycle sequence execution.",
+      "verification": "Read-only git/rg/sed review of StudioView, history/design and focusednative/core tests. No execution/builds/edits; asyncadoption andoptionalrestoration delegated099."
+    },
+    {
+      "number": 99,
+      "agent": "/root/a007_worker_coordinator/a099_final_diff_review",
+      "assignment": "Final integrated edit/history diff and asynchronous studio save/adoption identity safety",
+      "paths": "App/StudioView.swift; App/ProjectLibraryOperation.swift; Sources/LightingCore/SceneEditHistory.swift",
+      "status": "completed",
+      "finding": "No escaped integrated edit/history or asynchronous save/adoption identity defect found.",
+      "detail": "Requests capture scene/projectID/operationID/generation, adoption validates current pendingidentity/generation; Save retains newer currentScene while saved records committedscene. Switch/recovery/reload/firstsave invalidate stale editors; import checks token/cancellation before parentreservation. Optionalrestoration only effectiveequal startvalues and UUIDmatching preserves manualaim,dimensions,order,newlights andredo. Names/scenes fail before reservation/historymutation. Scoped diff --check clean.",
+      "verification": "Actual scoped diff/rg/sed review plus added history and existing nativeoperation tests. No execution/builds/edits or proof of native callbacktiming."
+    },
+    {
+      "number": 100,
+      "agent": "/root/a007_worker_coordinator/a100_final_evidence_review",
+      "assignment": "Final campaign evidence integrity, exact worker counts and unperformed runtime separation",
+      "paths": "docs/evidence/m03-closeout-2026-11-26; agents/state.json",
+      "status": "completed",
+      "finding": "Final pre-integration ledger audit passed:100 unique actual contexts and honest97-complete snapshot; historical failed/unstarted outcomes preserved.",
+      "detail": "Actual read-only JSON validation found100 unique numbers/names covering1\u2013100,93actualchildren/93separateplannedassignments,91childrencomplete atreview; coordinatoractive and094/100running expected. Markdown100rows matchedstatuses; samecontextfollowups notdoublecounted. Historical02797native148pass/2failof150 andappaccess0pass/1unstarted remainfailed. Source/portable/runtime separation andcode-onlyscope explicit; state M02complete/M03active. Root must later reconcile currentSourceRevision/CI metadata to integratedsource and actualexecution.",
+      "verification": "Executed inline Python structural/name/status/count/table checks and read actual retainedaccounting/state/evidence. No writes/builds/tests/newcontexts; structural validation doesnot itself establish runtime acceptance."
     }
   ],
   "scope": "Focused source reviews; runtime tests and milestone acceptance recorded separately by root. Followups do not add distinct workers.",
   "plannedAssignments": [
+    {
+      "number": 8,
+      "shortName": "m02_manifest",
+      "assignment": "Verify retained M02 source hashes against current source",
+      "paths": "Initial source/evidence review"
+    },
+    {
+      "number": 9,
+      "shortName": "name_review",
+      "assignment": "Independent review of rejected project-name input guard and native regressions",
+      "paths": "Initial source/evidence review"
+    },
     {
       "number": 10,
       "shortName": "native_observer",
@@ -326,9 +1109,9 @@
     },
     {
       "number": 31,
-      "shortName": "entity_graph",
-      "assignment": "Entity graph coordinate mapping and update identity reuse",
-      "paths": "App/StudioEntityGraph.swift"
+      "shortName": "ci_required_jobs",
+      "assignment": "Read-only exact CI pending run and concurrency queue diagnosis",
+      "paths": ".github/workflows/ios-prototype.yml; GitHub runs 45785778015 and 45778673562"
     },
     {
       "number": 32,
@@ -417,8 +1200,8 @@
     {
       "number": 46,
       "shortName": "textfield_callbacks",
-      "assignment": "Text-field identity disposal, live bindings and rapid sequential edits",
-      "paths": "App/StudioTextField.swift; NativeTests/StudioTextFieldTests.swift"
+      "assignment": "Independent review of exact scalar synchronization and current Unicode/solver repair diffs",
+      "paths": "App/StudioTextField.swift; Sources/LightingCore/StudioDisplayName.swift; Sources/LightingCore/LightOutputAdjustment.swift; relevant tests"
     },
     {
       "number": 47,
@@ -464,21 +1247,21 @@
     },
     {
       "number": 54,
-      "shortName": "target_lux_editor",
-      "assignment": "Failed target-lux proposal cannot apply stale prior input",
-      "paths": "App/LightTargetLuxView.swift"
+      "shortName": "optional_noop",
+      "assignment": "Investigate optional preview/lens/optics metadata no-op undo representation and bounded repair",
+      "paths": "App/StudioView.swift; Sources/LightingCore/SceneEditHistory.swift; App/StudioSliderTracking.swift"
     },
     {
       "number": 55,
-      "shortName": "studio_selection",
-      "assignment": "Studio selected light identity across delete/undo/replace/library switch",
-      "paths": "App/StudioView.swift"
+      "shortName": "keyboard_regressions",
+      "assignment": "Independent review of exact UTF16 bridge repair and representation-sensitive regressions",
+      "paths": "App/StudioTextField.swift; NativeTests/StudioTextFieldTests.swift"
     },
     {
       "number": 56,
-      "shortName": "studio_adoption",
-      "assignment": "Studio asynchronous save/adoption snapshots preserve in-flight newer edits",
-      "paths": "App/StudioView.swift; App/ProjectLibraryOperation.swift"
+      "shortName": "core_repairs",
+      "assignment": "Independent actual Unicode display and exact target-lux repair diff review",
+      "paths": "Sources/LightingCore/StudioDisplayName.swift; Sources/LightingCore/LightOutputAdjustment.swift; related portable regressions"
     },
     {
       "number": 57,
@@ -488,9 +1271,9 @@
     },
     {
       "number": 58,
-      "shortName": "library_migration",
-      "assignment": "Legacy library migration idempotency and malformed state preservation",
-      "paths": "Sources/LightingCore/SceneFileStore.swift; Tests/LightingCoreTests/SceneFileStoreTests.swift"
+      "shortName": "optional_helper_review",
+      "assignment": "Independent active-edit optional representation helper and production wiring review",
+      "paths": "Sources/LightingCore/SceneEditHistory.swift; App/StudioView.swift; portable/native regression tests"
     },
     {
       "number": 59,
@@ -508,7 +1291,7 @@
       "number": 61,
       "shortName": "store_concurrency",
       "assignment": "Store lock coverage stale compare-and-replace versus legacy migration",
-      "paths": "Sources/LightingCore/SceneFileStore.swift; Tests/LightingCoreTests/SceneFileStoreTests.swift"
+      "paths": "Sources/LightingCore/ProjectLibrary.swift; Tests/LightingCoreTests/ProjectLibraryTests.swift; Sources/LightingCore/SceneFileStore.swift"
     },
     {
       "number": 62,
@@ -572,9 +1355,9 @@
     },
     {
       "number": 72,
-      "shortName": "recovery_capacity",
-      "assignment": "Full-library recovery exact reviewed snapshot and selected record retention",
-      "paths": "App/RecoveryCapacityView.swift; Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
+      "shortName": "identity_repair",
+      "assignment": "Independent invisible-boundary project-name disambiguation repair and regression review",
+      "paths": "App/ProjectLibraryView.swift; NativeTests/ProjectLibraryPresentationTests.swift"
     },
     {
       "number": 73,
@@ -590,9 +1373,9 @@
     },
     {
       "number": 75,
-      "shortName": "room_footprint",
-      "assignment": "Room measured limits and rectangular modifier footprint boundary",
-      "paths": "Sources/LightingCore/RoomPlacement.swift; Tests/LightingCoreTests/RoomModifierFootprintTests.swift"
+      "shortName": "ui_startup_failure",
+      "assignment": "Diagnose observed unstarted AX initialization and failed simulator startup;bounded fresh-host recovery",
+      "paths": "/tmp/app1-818a-02797-accessibility; .github/workflows/ios-prototype.yml; scripts/boot_simulator.py"
     },
     {
       "number": 76,
@@ -620,45 +1403,45 @@
     },
     {
       "number": 80,
-      "shortName": "method_accounting",
-      "assignment": "Required native/UI method accounting fail-closed incomplete/duplicate logs",
-      "paths": "scripts/native_test_shards.py; scripts/tests/test_native_test_shards.py"
+      "shortName": "cardinal_precision",
+      "assignment": "Assess compensated cardinal three-term room transforms preserving tiny point/room offset",
+      "paths": "Sources/LightingCore/RoomPlacement.swift; cardinal/rotation tests"
     },
     {
       "number": 81,
-      "shortName": "ci_required_jobs",
-      "assignment": "CI required jobs, shell failure propagation and unaffected source evidence",
-      "paths": " .github/workflows/ios-prototype.yml"
+      "shortName": "entity_graph",
+      "assignment": "Entity graph coordinate mapping and update identity reuse",
+      "paths": "App/StudioEntityGraph.swift"
     },
     {
       "number": 82,
-      "shortName": "artifact_retention",
-      "assignment": "XCTest artifact export retains failed/incomplete originals and actual PNGs",
-      "paths": ".github/workflows/ios-prototype.yml"
+      "shortName": "native_font_fit",
+      "assignment": "Analyze actual native CI one-ULP body-fit failure and physical-pixel measurement correction without tolerance",
+      "paths": "/tmp/app1-818a-02797-native/native-tests.log; NativeTests/StudioTextLayoutDiagnosticsTests.swift; UITests/StudioAppAccessibilityUITests.swift"
     },
     {
       "number": 83,
-      "shortName": "simulator_boot",
-      "assignment": "Bounded simulator startup deadlines and process cleanup",
-      "paths": "scripts/boot_simulator.py; scripts/tests/test_boot_simulator.py"
+      "shortName": "native_focus_fixture",
+      "assignment": "Analyze actual rapid Keep native first-responder failure and isolated inputView fixture preserving real focus assertion",
+      "paths": "/tmp/app1-818a-02797-native/native-tests.log; NativeTests/StudioTextFieldTests.swift; App/StudioTextField.swift"
     },
     {
       "number": 84,
-      "shortName": "filesystem_probes",
-      "assignment": "Atomic write fault probe honest filesystem provenance and EFBIG checks",
-      "paths": "scripts/run_atomic_library_write_probe.py; scripts/probe_atomic_library_write.py"
+      "shortName": "camera_slider_contrast",
+      "assignment": "Review actual camera preset non-color cue and opaque enabled slider contrast repair including normal/high trait matrix",
+      "paths": "App/CameraInspector.swift; App/StudioPalette.swift; App/StudioSlider.swift; related native/UI assertions"
     },
     {
       "number": 85,
       "shortName": "interruption_probes",
-      "assignment": "Before/after rename interruption checks no-loss and exact IDs",
-      "paths": "scripts/probe_library_commit_interruption.py; scripts/probe-library-commit-interposer.c"
+      "assignment": "Atomic write filesystem provenance and before/after rename interruption no-loss checks",
+      "paths": "scripts/run_atomic_library_write_probe.py; scripts/probe_library_commit_interruption.py; scripts/probe-library-commit-interposer.c"
     },
     {
       "number": 86,
       "shortName": "ledger_validation",
-      "assignment": "Agent state check structural versus truth boundary and dependencies",
-      "paths": "scripts/agent_cycle.py; scripts/tests/test_agent_cycle.py"
+      "assignment": "Agent state check structural versus truth boundary and dependencies; native method accounting completeness",
+      "paths": "scripts/agent_cycle.py; scripts/tests/test_agent_cycle.py; scripts/native_test_shards.py"
     },
     {
       "number": 87,
@@ -674,15 +1457,15 @@
     },
     {
       "number": 89,
-      "shortName": "precision_ui_coverage",
-      "assignment": "Precision/room UI checks preserve exact drafts without manufacturing success",
-      "paths": "UITests/PrecisionEditingUITests.swift; UITests/ManualRoomPlacementUITests.swift"
+      "shortName": "bare_test_review",
+      "assignment": "Independent review of bare test() inventory fix and fail-closed regression semantics",
+      "paths": "scripts/native_test_shards.py; scripts/tests/test_native_test_shards.py"
     },
     {
       "number": 90,
-      "shortName": "accessibility_coverage",
-      "assignment": "App accessibility default/largest comparison and retained image coverage",
-      "paths": "UITests/StudioAppAccessibilityUITests.swift"
+      "shortName": "cancellation_review",
+      "assignment": "Independent review of wrapper owned-process cancellation fix and bounded no-orphan regression",
+      "paths": "scripts/run_atomic_library_write_probe.py; scripts/tests/test_atomic_library_probe_cancellation.py"
     },
     {
       "number": 91,
@@ -693,50 +1476,50 @@
     {
       "number": 92,
       "shortName": "scene_transforms",
-      "assignment": "Mirror and yaw transforms preserve valid light geometry and inverses",
-      "paths": "Sources/LightingCore/SceneTransform.swift; Tests/LightingCoreTests/SceneMirrorBoundaryTests.swift"
+      "assignment": "Review actual compensated cardinal room transform repair and scene mirror/yaw coordinate invariants",
+      "paths": "Sources/LightingCore/RoomPlacement.swift; Tests/LightingCoreTests/RoomPlacementTests.swift; Sources/LightingCore/SceneTransform.swift"
     },
     {
       "number": 93,
-      "shortName": "source_provenance",
-      "assignment": "Current exact source/test manifests and docs-only CI carry-forward validity",
-      "paths": "agents/state.json; agents/evidence.json; .github/workflows/ios-prototype.yml"
+      "shortName": "native_fixture_review",
+      "assignment": "Review actual physical-pixel UIFont measurement and isolated native inputView focus fixture repair",
+      "paths": "NativeTests/StudioTextLayoutDiagnosticsTests.swift; NativeTests/StudioTextFieldTests.swift; UITests/StudioAppAccessibilityUITests.swift"
     },
     {
       "number": 94,
-      "shortName": "scope_honesty",
-      "assignment": "M02/M03 completion language versus external validation and later phases",
-      "paths": "docs/acceptance/m02-m03-code.md; docs/QUALITY.md; docs/ROADMAP.md"
+      "shortName": "artifact_retention",
+      "assignment": "XCTest artifact export retains failed/incomplete originals and actual PNGs",
+      "paths": ".github/workflows/ios-prototype.yml"
     },
     {
       "number": 95,
-      "shortName": "name_boundary_review",
-      "assignment": "Final project-name input guard and Unicode limit independent adversarial review",
-      "paths": "App/ProjectLibraryView.swift; NativeTests/ProjectNameEditorTests.swift"
+      "shortName": "recovery_capacity",
+      "assignment": "Full-library recovery exact reviewed snapshot and selected record retention",
+      "paths": "App/RecoveryCapacityView.swift; Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift"
     },
     {
       "number": 96,
-      "shortName": "native_operations",
-      "assignment": "Native persistence/operation tests meaningful rejection/failure invariants",
-      "paths": "NativeTests/ProjectStoreOperationTests.swift; NativeTests/ProjectDocumentIOTests.swift"
+      "shortName": "library_migration",
+      "assignment": "Legacy library migration idempotency and malformed state preservation",
+      "paths": "Sources/LightingCore/ProjectLibrary.swift; Tests/LightingCoreTests/ProjectLibraryTests.swift; Sources/LightingCore/SceneFileStore.swift"
     },
     {
       "number": 97,
-      "shortName": "essential_labels",
-      "assignment": "Essential Plan/library/inspector labels non-color selection and growing targets",
-      "paths": "App/StudioPlanMarkers.swift; App/ProjectLibraryView.swift; App/StudioSlider.swift"
+      "shortName": "camera_accessibility",
+      "assignment": "Review actual required Camera default/AXXXL preset text and glyph capture expansion without losing original checks",
+      "paths": "UITests/StudioAppAccessibilityUITests.swift; .github/workflows/ios-prototype.yml; App/CameraInspector.swift"
     },
     {
       "number": 98,
-      "shortName": "keyboard_regressions",
-      "assignment": "Rapid hosted-state typing and keyboard focus regression preserve real input",
-      "paths": "NativeTests/StudioTextFieldTests.swift; UITests/StudioContentReachability.swift"
+      "shortName": "studio_selection",
+      "assignment": "Studio selected light identity across delete/undo/replace/library switch",
+      "paths": "App/StudioView.swift"
     },
     {
       "number": 99,
       "shortName": "final_diff_review",
-      "assignment": "Independent review of integrated closeout code diff and remaining regressions",
-      "paths": "git diff e4c8b10 -- App NativeTests UITests scripts .github"
+      "assignment": "Final integrated edit/history diff and asynchronous studio save/adoption identity safety",
+      "paths": "App/StudioView.swift; App/ProjectLibraryOperation.swift; Sources/LightingCore/SceneEditHistory.swift"
     },
     {
       "number": 100,
@@ -795,8 +1578,14 @@
       "verification": "Completion and result reported by integration lead; original child report available in session."
     }
   ],
-  "currentSourceRevision": "02797d359f699a90e72c7629d3dba2ba7de04b95",
-  "currentWorkflowRun": 45785778015,
-  "createdDistinctWorkers": 26,
-  "completedDistinctWorkers": 23
+  "currentSourceRevision": "9faebc529ff434feef8995d0a565d2ee04e98c13",
+  "currentWorkflowRun": 45796521392,
+  "createdDistinctWorkers": 100,
+  "completedDistinctWorkers": 100,
+  "completionScope": "The initial campaign of 100 workers performing source reviews and bounded repairs is complete. This record does not substitute for integration, authoritative CI execution, or milestone acceptance.",
+  "sourceRevisionMeaning": "The integration lead published the reviewed source batch to main as 9faebc529ff434feef8995d0a565d2ee04e98c13 and verified tree 6a89caa16c08cdece42542cd8bce035fbf3d3f27 against the reviewed local commit. The new authoritative workflow 45796521392 was pending at campaign handoff; review completion does not assert runtime acceptance. Previous 02797 workflow outcomes remain preserved.",
+  "previousWorkflowSourceRevision": "02797d359f699a90e72c7629d3dba2ba7de04b95",
+  "previousWorkflowRun": 45785778015,
+  "integratedSourceTree": "6a89caa16c08cdece42542cd8bce035fbf3d3f27",
+  "workflowStatusAtCampaignHandoff": "pending, as reported by the integration lead"
 }
