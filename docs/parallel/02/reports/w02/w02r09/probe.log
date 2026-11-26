@@ -1,0 +1,19 @@
+W02R09 source=1b286885cb803ba17e159713651515ab119e17f1 snapshot=v1 platform=x86_64-unknown-linux-gnu swift=6.0.3 module=Debug probe=swiftc_without_O
+OS Debian GNU/Linux 13 (trixie)
+METHOD one batch per path; 100 calls each; no warmup; DispatchTime monotonic batch clock; result-array append overhead included; setup and validation excluded
+SUPPORTED_DOMAIN finite position coordinates [-100,100] m; candela [0,100000]; point distance >=0.05 m; rectangle dimensions [0.05,4] m; rectangle abs(plane_depth)>=max(0.05,longest_side/4); normalized finite receiver normals
+INPUT path=point source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(0.0,0.0,1.0) normal=(0.0,0.0,-1.0) candela=1000 kelvin=5600
+DOMAIN path=point distance_m=2 minimum_distance_m=0.05
+INPUT path=directional source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(0.0,0.0,1.0) normal=(0.0,0.0,-1.0) candela=1000 kelvin=5600
+DOMAIN path=directional aim_m=(1,0,1) emission_cosine=0.7071067811865475 distance_m=2 minimum_distance_m=0.05
+INPUT path=full_rectangle source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(0.0,0.0,1.0) normal=(0.0,0.0,-1.0) candela=1000 kelvin=5600
+DOMAIN path=full_rectangle width_m=1 height_m=1 emitter_normal=(0.0,0.0,1.0) depth_m=2.0 minimum_depth_m=0.25 corner_incidence_m=[2.0, 2.0, 2.0, 2.0] branch=32x32_midpoint
+INPUT path=clipped_rectangle source_m=(0,0,0) receiver_m=(0,0,2) camera_m=(1.0,0.0,2.0) normal=(1.0,0.0,0.0) candela=1000 kelvin=5600
+DOMAIN path=clipped_rectangle width_m=1 height_m=1 emitter_normal=(0.0,0.0,1.0) depth_m=2.0 minimum_depth_m=0.25 corner_incidence_m=[-0.5, 0.5, 0.5, -0.5] branch=clipped_half_face_2_triangles_288_nodes
+RESULT path=point calls=100 finite_nonnegative=100 total_ns=345118 mean_ns_per_call=3451.18 min_lux=250.0 max_lux=250.0 checksum_lux=25000.0
+REFERENCE path=point analytic_lux=250.0 relative_error=0.0
+RESULT path=directional calls=100 finite_nonnegative=100 total_ns=697738 mean_ns_per_call=6977.38 min_lux=176.77669529663686 max_lux=176.77669529663686 checksum_lux=17677.669529663723
+REFERENCE path=directional analytic_lux=176.77669529663686 relative_error=0.0
+RESULT path=full_rectangle calls=100 finite_nonnegative=100 total_ns=29459310 mean_ns_per_call=294593.1 min_lux=230.85282958801525 max_lux=230.85282958801525 checksum_lux=23085.282958801563
+RESULT path=clipped_rectangle calls=100 finite_nonnegative=100 total_ns=10657117 mean_ns_per_call=106571.17 min_lux=14.141865396693397 max_lux=14.141865396693397 checksum_lux=1414.1865396693427
+PASS calls=400 finite_nonnegative=400; no performance threshold applied; existing 1% point/5% area requirements unchanged

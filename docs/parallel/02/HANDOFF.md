@@ -1,3 +1,7 @@
+# Lane 02 handoff — campaign resumed
+
+Execution is restored. Waves 01 and 02 now have 20 completed fresh contexts; wave 03 is active. See [RESUMPTION.md](RESUMPTION.md) and [worker-ledger.json](worker-ledger.json) for current counts. The interruption record below is historical and will be replaced by the final delivery handoff. Code source remains 58b3ca4.
+
 # Lane 02 handoff — corrections published; campaign interrupted
 
 ## Status

@@ -5,11 +5,11 @@
   "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
   "code_revision": "58b3ca43943e18d0fc7800189b08365f424d9c9e",
   "requested_contexts": 100,
-  "actual_created_contexts": 18,
-  "completed_role_assignments": 18,
-  "not_created_contexts": 82,
-  "status": "incomplete_execution_environment_unavailable",
-  "reason": "Execution host reported unavailable after exec-server transport disconnect and45-second recovery timeout. No uncreated worker is counted.",
+  "actual_created_contexts": 23,
+  "completed_role_assignments": 20,
+  "not_created_contexts": 77,
+  "status": "active_resumed",
+  "reason": "Execution restored; previous outage evidence retained in prior commits.",
   "waves": [
     {
       "wave": 1,
@@ -21,16 +21,16 @@
     {
       "wave": 2,
       "requested": 10,
-      "created": 8,
-      "completed": 8,
-      "status": "interrupted"
+      "created": 10,
+      "completed": 10,
+      "status": "complete"
     },
     {
       "wave": 3,
       "requested": 10,
-      "created": 0,
+      "created": 3,
       "completed": 0,
-      "status": "not_started"
+      "status": "active"
     },
     {
       "wave": 4,
@@ -82,11 +82,11 @@
       "status": "not_started"
     }
   ],
-  "fresh_contexts": "All18initial contexts were spawned with fork_turns:none. Followups reused identities and do not add counts.",
-  "concurrency": "Four slots including root. Executed waves used root plus acceptance/coordinator plus at most two children.",
+  "fresh_contexts": "All 23 initial role contexts were fork_turns:none; reused followups do not increase counts.",
+  "concurrency": "Four contexts including root; resumed waves scheduled directly with at most3concurrent workers.",
   "budgets": "Briefs targeted<=2000tokens, working budgets12000per worker/24000root, reports<=800tokens; exact working-token consumption was not instrumented. These targets did not alter platform limits.",
   "storage": "Every created context received a detached sparse worktree and private-output directory. Wave01 reports/hashes were verified in remote5579b4f before its10owned worktrees were removed. Remaining local artifacts could not be inspected after outage.",
-  "next": "Finish W02R09 platform/performance and W02R10 independent CIE reference, then eight further waves. Restore execution capability and private worktrees first.",
+  "next": "Continue exact next uncompleted wave/role; no planned identity counted.",
   "workers": [
     {
       "wave": 1,
@@ -504,6 +504,98 @@
       ],
       "artifact_sha256": {},
       "recovery_note": "Original local report/probe/output were reported saved before outage but not verified remote. This artifact preserves the returned tool report, not an invented original file."
+    },
+    {
+      "wave": 2,
+      "worker": "W02R09",
+      "agent_id": "/root/resume_w02r09",
+      "task": "W02R09 platform/performance: bounded assignment in WAVE-TASKS.md",
+      "status": "completed",
+      "input_sha": "1b286885cb803ba17e159713651515ab119e17f1",
+      "worktree": "/tmp/keyfill02-r2-workers/w02r09",
+      "artifact": "w02r09/report.md",
+      "artifacts": [
+        "w02r09/commands.txt",
+        "w02r09/compile.log",
+        "w02r09/probe.log",
+        "w02r09/probe.swift",
+        "w02r09/report.md",
+        "w02r09/scalar-results.json"
+      ],
+      "artifact_sha256": {
+        "w02r09/commands.txt": "ffc2fe6031fcf0315c036146ed2c9e59f8e32480489a8790af415aeaf52b6b16",
+        "w02r09/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "w02r09/probe.log": "9177a31253f8ea0bb5373e469d9d8258682e67dfb5d995108a322cc7edece80f",
+        "w02r09/probe.swift": "60b748ae7b515d3bf448db9202796f1c0846bc54e9c260ebb7943192c24f0e27",
+        "w02r09/report.md": "f6892e7f9d02c73559d8294e3aa78e8370bd287c8624803dfa099bf7ee7a45d0",
+        "w02r09/scalar-results.json": "faf2ed08c59e50328eb9be046e8d7cdd8cba1ae9949b4d8f55d6f1be67b29fba"
+      },
+      "outcome": "# W02R09 \u2014 photometric path timing"
+    },
+    {
+      "wave": 2,
+      "worker": "W02R10",
+      "agent_id": "/root/resume_w02r10",
+      "task": "W02R10 independent verification: bounded assignment in WAVE-TASKS.md",
+      "status": "completed",
+      "input_sha": "1b286885cb803ba17e159713651515ab119e17f1",
+      "worktree": "/tmp/keyfill02-r2-workers/w02r10",
+      "artifact": "w02r10/report.md",
+      "artifacts": [
+        "w02r10/ATTRIBUTION.md",
+        "w02r10/compile.log",
+        "w02r10/probe.log",
+        "w02r10/probe.swift",
+        "w02r10/provenance.json",
+        "w02r10/reference.py",
+        "w02r10/report.md",
+        "w02r10/run.log",
+        "w02r10/table.csv",
+        "w02r10/table.json"
+      ],
+      "artifact_sha256": {
+        "w02r10/ATTRIBUTION.md": "89614a4ef8bb2dc9ce1c998b1dfb310cf7de2bdd8bd0e9cbce786c9075905dd4",
+        "w02r10/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "w02r10/probe.log": "f9665973fbf1cce10d2271204d095448e7230c63e9ee216da68ed90563fa5eae",
+        "w02r10/probe.swift": "df9224eba3e9e7d5d6a8a30d5b992d94f25abc10450aacc6a9e9b4a5ef8d39d4",
+        "w02r10/provenance.json": "39715feeae364d2ab1dfc6856ad8a5f4184fa282223bb092a127645c74c7618d",
+        "w02r10/reference.py": "0043f83dee53412c5e80e670a4dccbd81cb6617078a7dd91ed098174894e584e",
+        "w02r10/report.md": "fc88393a6a32cb725b9b77e3bb1d1d89ad7f6e5bc45f6ec80dfca59d3996f70c",
+        "w02r10/run.log": "ef3e893d63c351b4c4764dd7913c3cb300d5e15221629715206d17b86d0910b4",
+        "w02r10/table.csv": "e33f00ba8f1089ff35100f32d0ec7e74d9455ab735e94f6b4e95e392e7cc0f68",
+        "w02r10/table.json": "9bfed231955d27d4f78ef575333ae6dff024a57d5274f593ffee951000aba5ef"
+      },
+      "outcome": "# W02R10 \u2014 independent CIE/Planck reference"
+    },
+    {
+      "wave": 3,
+      "worker": "W03R01",
+      "agent_id": "/root/w03r01",
+      "task": "W03R01 acceptance: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "1b286885cb803ba17e159713651515ab119e17f1",
+      "worktree": "/tmp/keyfill02-r2-workers/w03r01",
+      "artifact": "w03r01/report.md"
+    },
+    {
+      "wave": 3,
+      "worker": "W03R02",
+      "agent_id": "/root/w03r02",
+      "task": "W03R02 invariants: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "1b286885cb803ba17e159713651515ab119e17f1",
+      "worktree": "/tmp/keyfill02-r2-workers/w03r02",
+      "artifact": "w03r02/report.md"
+    },
+    {
+      "wave": 3,
+      "worker": "W03R03",
+      "agent_id": "/root/w03r03",
+      "task": "W03R03 interfaces: bounded assignment in WAVE-TASKS.md",
+      "status": "running",
+      "input_sha": "1b286885cb803ba17e159713651515ab119e17f1",
+      "worktree": "/tmp/keyfill02-r2-workers/w03r03",
+      "artifact": "w03r03/report.md"
     }
   ]
 }

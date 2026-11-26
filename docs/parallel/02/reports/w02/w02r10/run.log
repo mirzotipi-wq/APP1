@@ -1,0 +1,31 @@
+W02R10 executed 2026-11-26, working directory /tmp/keyfill02-r2-workers/w02r10
+
+1. Command:
+python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w02r10 /tmp/keyfill02-r2-workers/w02r10/private-output/probe.swift v1
+Exit: 0
+Compiler stdout/stderr: compile.log (empty; no diagnostics)
+Probe stdout: probe.log (eight actual Swift API results, JSON)
+
+The supplied helper invokes:
+flock /tmp/keyfill02-r2-build.lock /tmp/keyfill02-r2-toolchain/usr/bin/swiftc -I /tmp/keyfill02-r2-snapshots/v1/Modules /tmp/keyfill02-r2-workers/w02r10/private-output/probe.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a -o /tmp/keyfill02-r2-workers/w02r10/private-output/probe
+Then executes /tmp/keyfill02-r2-workers/w02r10/private-output/probe.
+
+2. Command:
+python3 private-output/reference.py
+Exit: 0
+Outputs: table.csv and table.json
+Both pinned hashes matched for the downloaded official CIE CSV (24021 bytes, 471 rows).
+Eight finite Swift XYZ/xy results, each with Y=1, were compared.
+Maximum absolute delta x: 0.010832779699108008
+Maximum absolute delta y: 0.01093638416655901
+Maximum Euclidean xy difference: 0.01539329771842178 at 1000 K
+Diagnostic component maximum norms:
+  radiation_constant: 7.931405107091043e-11
+  wavelength_crop: 0.00012483398691870486
+  analytic_observer: 0.01535349613572291
+  five_nm_step: 6.7473697630304785e-06
+  swift_arithmetic: 2.7755575615628914e-16
+
+No package build, production edit, test-suite execution, or device check was performed by this worker.
+To rerun after relocating this evidence, pass reference.py --swift-output PATH/probe.log --output-dir PATH.
+An optional --cie-data PATH accepts the exact official CSV locally and verifies both hashes.

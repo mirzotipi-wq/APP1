@@ -1,10 +1,10 @@
 # Bounded remaining worker packets
 
-Each wave has exactly10 fresh contexts: R01 acceptance/coordination plus nine
-children R02–R10. Max2 children concurrently. Each child performs ONE concrete
+Each wave has exactly 10 fresh contexts. On resumption root directly schedules
+at most three workers concurrently, without nested coordinators. Each worker performs ONE concrete
 check below, records commands, input SHA, result and artifact, then returns.
 Do not expand into broad audits. Prefer <=300-word reports (hard cap800 tokens).
-Each own worktree/private-output via /tmp/keyfill02-worker-setup.py. No worker
+Each has an isolated worktree/private-output via tools/prepare_worker.py. No worker
 pushes or removes worktrees. Root owns source integration. No template report
 counts as execution. Checkpoint after6 complete. Store reports and ledger under
 docs/parallel/02/reports/wNN. Briefs below2000 tokens; working target12000 maximum
@@ -12,7 +12,7 @@ or platform limit. No model overrides. Do not reread historical handoff volumes;
 read relevant contract and source. A real conclusion of no defect is acceptable.
 
 Use a frozen published commit as input. For Swift probes use
-`python3 /tmp/keyfill02-probe.py WORKTREE WORKTREE/private-output/probe.swift`.
+`python3 /tmp/keyfill02-r2-probe.py WORKTREE WORKTREE/private-output/probe.swift v1`.
 This compiles against a frozen, separately built LightingCore module; output is
 private, compilation serializes through flock. It executes real production Swift.
 Record snapshot revision reported by root, not the worker HEAD when different.
