@@ -13,6 +13,16 @@ import LightingCore
 final class StudioSession {
     typealias Executor = @Sendable (ProjectLibraryRequest) async throws -> ProjectLibrary?
 
+    /// The Plan gesture uses cumulative translation, so its origin and scale
+    /// must remain fixed until that exact gesture ends.
+    struct PlanDrag: Equatable {
+        let lightID: UUID
+        let generation: UUID
+        let scene: LightingScene
+        let pointsPerMeter: Double
+        let owner: String
+    }
+
     private(set) var editor: StudioEditorState
     private(set) var library: ProjectLibrary?
     private(set) var saved: LightingScene?
@@ -21,6 +31,7 @@ final class StudioSession {
     private(set) var saveBlocked = false
     private(set) var saveConflict = false
     private(set) var workspaceResetID = UUID()
+    private(set) var planDrag: PlanDrag?
     var message: String?
     var showRecoveryCapacity = false
 
@@ -59,13 +70,19 @@ final class StudioSession {
     @discardableResult
     func select(_ id: UUID?, from generation: UUID) -> Bool {
         guard allowsMutation(from: generation) else { return false }
-        return editor.select(id)
+        let changed = editor.select(id)
+        if changed { planDrag = nil }
+        return changed
     }
 
     @discardableResult
     func replace(_ next: LightingScene, from generation: UUID) -> Bool {
         guard allowsMutation(from: generation) else { return false }
-        do { return try editor.replace(with: next) }
+        do {
+            let changed = try editor.replace(with: next)
+            if changed { planDrag = nil }
+            return changed
+        }
         catch {
             message = "The proposed setup contains unsupported values. Your current setup has been kept."
             return false
@@ -83,6 +100,7 @@ final class StudioSession {
         guard generation == self.generation else { return }
         if editing {
             guard allowsMutation(from: generation) else { return }
+            if let drag = planDrag, drag.owner != owner { finishPlanDrag() }
             editor.beginEditing(owner: owner)
         } else {
             editor.endEditing(owner: owner)
@@ -90,6 +108,42 @@ final class StudioSession {
     }
 
     func endEditing(owner: String? = nil) { editor.endEditing(owner: owner) }
+
+    @discardableResult
+    func dragLight(_ id: UUID, translationX: Double, translationZ: Double,
+                   scale: Double, from generation: UUID) -> Bool {
+        guard allowsMutation(from: generation), selection == id,
+              scene.lights.contains(where: { $0.id == id }),
+              scale.isFinite, scale > 0,
+              translationX.isFinite, translationZ.isFinite else { return false }
+        if planDrag == nil {
+            let owner = editOwner("plan.\(id.uuidString)")
+            editor.beginEditing(owner: owner)
+            planDrag = PlanDrag(lightID: id, generation: generation, scene: scene,
+                                pointsPerMeter: scale, owner: owner)
+        }
+        guard let drag = planDrag, drag.lightID == id, drag.generation == generation,
+              let source = drag.scene.lights.first(where: { $0.id == id }),
+              let index = scene.lights.firstIndex(where: { $0.id == id }) else { return false }
+        let range = Position.coordinateRange
+        var position = source.position
+        position.x = min(range.upperBound, max(range.lowerBound,
+            source.position.x + translationX / drag.pointsPerMeter))
+        position.z = min(range.upperBound, max(range.lowerBound,
+            source.position.z + translationZ / drag.pointsPerMeter))
+        guard position.isValid else { return false }
+        var candidate = scene
+        candidate.lights[index].position = position
+        return update(candidate, from: generation)
+    }
+
+    func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {
+        guard let drag = planDrag,
+              lightID == nil || lightID == drag.lightID,
+              generation == nil || generation == drag.generation else { return }
+        if drag.generation == self.generation { editor.endEditing(owner: drag.owner) }
+        planDrag = nil
+    }
 
     @discardableResult
     func undo(from generation: UUID) -> Bool {
@@ -104,7 +158,10 @@ final class StudioSession {
     }
 
     func editOwner(_ control: String) -> String {
-        "\(generation.uuidString).\(library?.activeID.uuidString ?? "draft").\(control)"
+        // First save changes storage identity, but the same document's pending
+        // numeric drafts and focus must keep their SwiftUI control identity.
+        // Each callback still checks the separately captured generation.
+        "\(workspaceResetID.uuidString).\(control)"
     }
 
     func applyLibrary(_ command: ProjectLibraryCommand, from generation: UUID) throws -> Task<Void, Error> {
@@ -123,6 +180,7 @@ final class StudioSession {
         }
         let request = try libraryOperation.reserve(operation, library: library, scene: scene, from: generation)
         editor.endEditing()
+        planDrag = nil
         let task = Task { @MainActor [self] in
             defer {
                 if operationTaskID == request.id {

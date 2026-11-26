@@ -18,7 +18,6 @@ struct StudioView: View {
     @State private var lightNameInputTooLong = false
     @State private var showRenameLight = false
     @State private var renameGeneration: UUID?
-    @State private var planDrag: PlanDrag?
     @State private var luxTarget: LuxTarget?
     @State private var showARPlacement = false
     @State private var showSettings = false
@@ -58,17 +57,10 @@ struct StudioView: View {
     private var loaded: Bool { session.loaded }
     private var saveBlocked: Bool { session.saveBlocked }
     private var saveConflict: Bool { session.saveConflict }
+    private var planDrag: StudioSession.PlanDrag? { session.planDrag }
     private var message: String? {
         get { session.message }
         nonmutating set { session.message = newValue }
-    }
-
-    private struct PlanDrag {
-        let lightID: UUID
-        let generation: UUID
-        let scene: LightingScene
-        let pointsPerMeter: Double
-        let owner: String
     }
 
     private struct LuxTarget: Identifiable {
@@ -1400,36 +1392,12 @@ struct StudioView: View {
     }
 
     private func dragLight(_ id: UUID, translation: CGSize, scale: Double, generation: UUID) {
-        guard libraryOperation.allowsSceneMutation(from: generation), selected == id,
-              scale.isFinite, scale > 0,
-              translation.width.isFinite, translation.height.isFinite else { return }
-        if planDrag == nil {
-            let owner = editOwner("plan.\(id.uuidString)")
-            planDrag = PlanDrag(lightID: id, generation: generation, scene: scene,
-                                pointsPerMeter: scale, owner: owner)
-            session.editChanged(true, owner: owner, from: generation)
-        }
-        guard let drag = planDrag, drag.lightID == id, drag.generation == generation,
-              let source = drag.scene.lights.first(where: { $0.id == id }),
-              let index = scene.lights.firstIndex(where: { $0.id == id }) else { return }
-        let range = Position.coordinateRange
-        var position = source.position
-        position.x = min(range.upperBound, max(range.lowerBound,
-            source.position.x + Double(translation.width) / drag.pointsPerMeter))
-        position.z = min(range.upperBound, max(range.lowerBound,
-            source.position.z + Double(translation.height) / drag.pointsPerMeter))
-        guard position.isValid else { return }
-        scene.lights[index].position = position
+        session.dragLight(id, translationX: Double(translation.width),
+                          translationZ: Double(translation.height), scale: scale, from: generation)
     }
 
     private func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {
-        guard let drag = planDrag,
-              lightID == nil || lightID == drag.lightID,
-              generation == nil || generation == drag.generation else { return }
-        if drag.generation == libraryOperation.generation {
-            session.endEditing(owner: drag.owner)
-        }
-        planDrag = nil
+        session.finishPlanDrag(lightID: lightID, generation: generation)
     }
     private func load(from generation: UUID) {
         guard !libraryOperation.isBusy else { return }
@@ -1442,18 +1410,12 @@ struct StudioView: View {
     }
 
     private func applyLibrary(_ command: ProjectLibraryCommand, from generation: UUID) throws -> Task<Void, Error> {
-        let task = try session.applyLibrary(command, from: generation)
-        planDrag = nil
-        return task
+        try session.applyLibrary(command, from: generation)
     }
 
     private func beginLibraryOperation(_ operation: ProjectLibraryOperation,
                                        from generation: UUID) throws -> Task<Void, Error> {
-        let task = try session.beginLibraryOperation(operation, from: generation)
-        // Reservation succeeded and the session closed the history group. A
-        // rejected old callback must never clear a newer cumulative Plan drag.
-        planDrag = nil
-        return task
+        try session.beginLibraryOperation(operation, from: generation)
     }
 
     private func saveConflictCopy(from generation: UUID) {

@@ -48,21 +48,58 @@ final class StudioSessionTests: XCTestCase {
         try await session.beginLibraryOperation(.save, from: stale).value
         let current = session.generation
         XCTAssertNotEqual(current, stale)
-        session.editChanged(true, owner: "current-drag", from: current)
-        var moved = session.scene
-        moved.lights[0].position.x += 0.1
-        XCTAssertTrue(session.update(moved, from: current))
+        let lightID = scene.lights[0].id
+        XCTAssertTrue(session.dragLight(lightID, translationX: 20, translationZ: 0,
+                                        scale: 100, from: current))
         let editor = session.editor
+        let drag = session.planDrag
         XCTAssertThrowsError(try session.beginLibraryOperation(.save, from: stale)) {
             XCTAssertEqual($0 as? ProjectLibraryOperationState.OperationError, .staleEditor)
         }
         XCTAssertEqual(session.editor, editor)
+        XCTAssertEqual(session.planDrag, drag)
         XCTAssertTrue(session.history.isEditing)
-        moved.lights[0].position.x += 0.1
-        XCTAssertTrue(session.update(moved, from: current))
-        session.endEditing(owner: "current-drag")
+        XCTAssertTrue(session.dragLight(lightID, translationX: 40, translationZ: 0,
+                                        scale: 999, from: current))
+        XCTAssertEqual(session.scene.lights[0].position.x,
+                       scene.lights[0].position.x + 0.4, accuracy: 1e-12,
+                       "Cumulative translation keeps its original origin and scale")
+        session.finishPlanDrag(lightID: lightID, generation: current)
+        XCTAssertNil(session.planDrag)
         XCTAssertTrue(session.undo(from: current))
         XCTAssertEqual(session.scene, scene)
+    }
+
+    func testAcceptedSaveEndsPlanGestureAndLateEndCannotCloseNewGeneration() async throws {
+        let session = StudioSession(execute: { request in
+            if case .load = request.operation { return nil }
+            return try ProjectLibrary(name: "Saved", scene: request.scene)
+        })
+        try await open(session)
+        let original = session.scene
+        let id = original.lights[0].id
+        let oldGeneration = session.generation
+        XCTAssertTrue(session.dragLight(id, translationX: 20, translationZ: -10,
+                                        scale: 100, from: oldGeneration))
+        let savedScene = session.scene
+        let save = try session.beginLibraryOperation(.save, from: oldGeneration)
+        XCTAssertNil(session.planDrag)
+        XCTAssertFalse(session.history.isEditing)
+        try await save.value
+        XCTAssertEqual(session.saved, savedScene)
+        let generation = session.generation
+        XCTAssertNotEqual(generation, oldGeneration)
+        XCTAssertTrue(session.dragLight(id, translationX: 10, translationZ: 0,
+                                        scale: 100, from: generation))
+        let currentDrag = session.planDrag
+        session.finishPlanDrag(lightID: id, generation: oldGeneration)
+        XCTAssertEqual(session.planDrag, currentDrag)
+        XCTAssertTrue(session.history.isEditing)
+        session.finishPlanDrag(lightID: id, generation: generation)
+        XCTAssertTrue(session.undo(from: generation))
+        XCTAssertEqual(session.scene, savedScene)
+        XCTAssertTrue(session.undo(from: generation))
+        XCTAssertEqual(session.scene, original)
     }
 
     func testFirstSaveKeepsSelectionAndHistoryAndReleasesTask() async throws {
@@ -76,16 +113,19 @@ final class StudioSessionTests: XCTestCase {
         edited.lights[0].candela = 1500
         session.replace(edited, from: session.generation)
         let reset = session.workspaceResetID
+        let controlOwner = session.editOwner("camera.position")
         let generation = session.generation
         try await session.beginLibraryOperation(.save, from: generation).value
         XCTAssertEqual(session.saved, edited)
         XCTAssertEqual(session.selection, original.lights[2].id)
         XCTAssertNotEqual(session.generation, generation)
         XCTAssertEqual(session.workspaceResetID, reset)
+        XCTAssertEqual(session.editOwner("camera.position"), controlOwner)
         XCTAssertNil(session.operationTask)
         XCTAssertFalse(session.isBusy)
         XCTAssertTrue(session.undo(from: session.generation))
         XCTAssertEqual(session.scene, original)
+        XCTAssertEqual(session.editOwner("camera.position"), controlOwner)
         XCTAssertNotEqual(session.saved, session.scene)
     }
 
@@ -197,14 +237,17 @@ final class StudioSessionTests: XCTestCase {
         try await session.beginLibraryOperation(.save, from: session.generation).value
         let generation = session.generation
         let reset = session.workspaceResetID
+        let controlOwner = session.editOwner("camera.position")
         let id = try XCTUnwrap(session.library?.activeID)
         try await session.applyLibrary(.rename(id, name: "Renamed"), from: generation).value
         XCTAssertEqual(session.generation, generation)
         XCTAssertEqual(session.workspaceResetID, reset)
+        XCTAssertEqual(session.editOwner("camera.position"), controlOwner)
         XCTAssertTrue(session.history.canUndo)
         try await session.applyLibrary(.create(name: "Next", scene: .portrait()), from: generation).value
         XCTAssertNotEqual(session.generation, generation)
         XCTAssertNotEqual(session.workspaceResetID, reset)
+        XCTAssertNotEqual(session.editOwner("camera.position"), controlOwner)
         XCTAssertFalse(session.history.canUndo)
         XCTAssertEqual(session.selection, session.scene.lights.first?.id)
         XCTAssertEqual(session.saved, session.scene)

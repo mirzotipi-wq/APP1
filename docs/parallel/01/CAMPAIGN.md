@@ -36,3 +36,11 @@ Main's source run [45807031966](https://github.com/mirzotipi-wq/APP1/actions/run
 ## Resource and verification limits
 
 Linux/Debian 13 host; no Apple SDK/Xcode is available locally. Initial `/workspace` volume had about 106 MiB free, so this lane uses `/tmp/keyfill-01-e08d`. Other work is left intact. A private portable Swift toolchain is being prepared separately; report actual results when available. Apple compilation, native UI execution, physical AR/StoreKit and device behavior remain unverified unless exact branch-source CI evidence is recovered. No prior pass transfers automatically to changed composition.
+
+## Restored environment checkpoint
+
+The initial environment was replaced. Current work uses `/tmp/keyfill-01-recovered`;
+source and reports were preserved remotely and revalidated after restoration.
+Two complete waves now account for 20 actual contexts. A full fresh Debug run
+passed 392 tests, followed by nine affected session tests after the control
+identity fix. See HANDOFF.md for exact source-specific evidence and remaining work.

@@ -98,3 +98,17 @@ Room/AR callbacks report acceptance, not whether a mutation occurred. A valid
 unchanged proposal returns true after admission, while the editor's mutation Bool
 can be false. Selection-only changes and valid no-ops do not retire a scene
 revision. Check, validate/apply and advance a receipt synchronously on the owner.
+
+## Control and gesture lifetime
+
+`StudioSession.editOwner` derives ordinary control identity from the document's
+workspace reset token and the stable field/light identifier. First save and scene
+revisions do not remount controls. Project switch/reload does; mutation callbacks
+still capture and check their own storage generation. Plan translation is
+cumulative against a session-owned frozen scene/scale. Reservation failure leaves
+that state and its undo group intact; accepted reservation closes them together.
+
+Reference's current Void Apply callback consumes its local session before parent
+admission. A future owner-provided acceptance callback must preserve the draft on
+rejection. Until available, native reference draft preservation remains a stated
+integration limitation, distinct from scene-result rejection.
