@@ -1,8 +1,6 @@
 # Precision fixture reproducibility
 
-> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
-
-> **Post-campaign evidence update:** source7 native job140034909086 recorded178 passing methods and exact accounting, including all four added tests, actual Metal6/8 and19 CPU payload observations. The18-minute command timeout and unfinalized XCTest export make the job a failure. Native-only retry140103955982 was queued at18:29:38 UTC; no retry result is inferred. Owner03's original hosted AX observer has since failed, and its corrected pixel observer remains Apple-unverified. Earlier queued/unrun statements below are retained historical observations. See [HANDOFF](HANDOFF.md), [CI_MANIFEST](CI_MANIFEST.json) and [OWNER_REQUESTS](OWNER_REQUESTS.md).
+> **Final evidence:** unchanged source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014` passed native retry2/job140103955982: **178 unique method passes, all 29 cache methods, actual simulator Metal 6/8 and 19 CPU payload observations**. The native command, inline Metal guard, required accounting and finalized XCTest export all passed. The failed first attempt remains retained. The whole workflow still reports failure because of retained UI outcomes. Owner03's corrected observer compiled; its job reports failure with unavailable terminal logs, so its actual method/runtime result remains unknown. Combined owner integration remains open. Earlier queue and compile-pending statements below are historical snapshots, superseded by this final record. [Native retry receipt](evidence/ci/wave07-native-140103955982.json), [owner03 terminal observation](evidence/owners/03-corrected-terminal-observation.json), [HANDOFF](HANDOFF.md).
 
 This catalog freezes constructors and evidence at input `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`. It adds no tests, harness, tolerances or runtime result. [precision-fixtures.json](precision-fixtures.json) contains exact expressions, Git blob identities, selected source blocks, recorded commands and evidence IDs. [PARITY_TABLES.md](PARITY_TABLES.md) owns the detailed per-case numerical tables.
 
@@ -116,7 +114,7 @@ Owner 03's CPU oracle also changed tiny-output integration/packing construction 
 
 ## Post-campaign current-source execution and failed finalization
 
-Source7 `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, native job140034909086 in run45854806270 attempt1, compiled the Debug app/native bundle and Release app and executed178 methods, including29 cache methods and all4 additions. Every method has one start/one pass;0 failures/skips/duplicates/omissions. Actual Metal canonical6/strict8 assertions and19 actual CPU payload rows are retained. The command reached the18-minute workflow limit after tests passed; the result bundle lacked finalization and export failed. The standalone accounting step passed. The inline Metal guard after xcodebuild was not reached; a source echo is not an executed guard. Warm-up also exited1. [Raw log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json), [complete manifest](CI_MANIFEST.json).
+Source7 `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, native job140034909086 in run45854806270 attempt1, compiled the Debug app/native bundle and Release app and executed178 methods, including 29 cache methods and all4 additions. Every method has one start/one pass;0 failures/skips/duplicates/omissions. Actual Metal canonical6/strict8 assertions and19 actual CPU payload rows are retained. The command reached the18-minute workflow limit after tests passed; the result bundle lacked finalization and export failed. The standalone accounting step passed. The inline Metal guard after xcodebuild was not reached; a source echo is not an executed guard. Warm-up also exited1. [Raw log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json), [complete manifest](CI_MANIFEST.json).
 
 Exact recorded test invocation for that simulator execution:
 
@@ -129,3 +127,18 @@ The18-minute limit belongs to unchanged workflow blob `55e68ee810a4dbe72cd8bd5c4
 One native-only retry was accepted on the same source: attempt2 job140103955982, queued at18:29:38 UTC. No source, test inventory, threshold, timeout or harness change accompanied it. [Request](evidence/ci/wave07-native-retry-request.json), [initial retry state](evidence/ci/wave07-native-attempt2-initial.json). The API's copied core/UI attempt envelopes are not new executions.
 
 Owner03's final retained head is `6f93f95c817d2bd230ae93554dea25a174a437f8`. Preview/oracle are unchanged from the prior refresh. Its original hosted AX observer compiled/executed at source342 and failed before scene switching; its corrected pixel observer `f65004c8b7ca86248a163c80b9d7a3c02dabf20e` remains Apple-unverified and removes AX badge/warning assertions. Hook-only before/fail and combined03/20 gates remain open. These changes alter no fixture constructor or lane04 source hash in this catalog. [Owner refresh](evidence/w097/final-owner-refresh-receipts.json).
+
+
+## Final source and successful native retry
+
+The single unchanged retry of source69eb9c5 completed successfully as run45854806270/attempt2/job140103955982. It compiled Debug app/native tests and the Release app, executed 178 Debug native methods including 29 cache methods with no failure/skip/duplicate/omission, passed the actual inline Metal guard and standalone accounting, and finalized/exported the XCTest bundle. MacOS portable execution separately passed 379 tests. Release-native execution was not performed. The full workflow retains failure from other UI outcomes.
+
+The exact observed command is:
+
+```sh
+/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO "-only-testing:KeyAndFillTests" test-without-building
+```
+
+[Raw log](evidence/ci/wave07-native-140103955982.log), [metadata](evidence/ci/wave07-native-140103955982.json), [artifacts](evidence/ci/wave07-attempt2-artifacts.json). The 14 actual Metal metric rows and 19 CPU resource payload rows exactly match the failed first attempt. Native1's178 method passes,18-minute command timeout and unfinalized result remain preserved; the retry changed no source, workflow, threshold, inventory or timeout. Suite execution/wall durations are test-run measurements, not GPU benchmarks.
+
+Owner03's corrected observer now has successful Apple builds. Its aggregate job reports failure, but raw terminal logs are unavailable and stale step metadata cannot establish actual method counts or the corrected test outcome. The [root observation](evidence/owners/03-corrected-terminal-observation.json) supersedes earlier compile-pending statements without inferring a failed method, no execution or a combined owner pass.

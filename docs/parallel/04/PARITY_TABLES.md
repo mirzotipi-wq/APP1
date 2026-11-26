@@ -1,8 +1,6 @@
 # Key & Fill lane 04 parity and precision evidence
 
-> **Root retry observation — 2026-11-26 18:54 UTC:** unchanged native-only attempt2/job140103955982 started at18:51:21 UTC on macos-26-intel and is running the macOS package/toolchain checks. Native test execution, normal command completion and finalized export remain unverified. The queued receipts below are earlier snapshots. [Running-job receipt](evidence/ci/wave07-native-attempt2-running.json).
-
-> **Post-campaign evidence update:** source7 native job140034909086 recorded178 passing methods and exact accounting, including all four added tests, actual Metal6/8 and19 CPU payload observations. The18-minute command timeout and unfinalized XCTest export make the job a failure. Native-only retry140103955982 was queued at18:29:38 UTC; no retry result is inferred. Owner03's original hosted AX observer has since failed, and its corrected pixel observer remains Apple-unverified. Earlier queued/unrun statements below are retained historical observations. See [HANDOFF](HANDOFF.md), [CI_MANIFEST](CI_MANIFEST.json) and [OWNER_REQUESTS](OWNER_REQUESTS.md).
+> **Final evidence:** unchanged source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014` passed native retry2/job140103955982: **178 unique method passes, all 29 cache methods, actual simulator Metal 6/8 and 19 CPU payload observations**. The native command, inline Metal guard, required accounting and finalized XCTest export all passed. The failed first attempt remains retained. The whole workflow still reports failure because of retained UI outcomes. Owner03's corrected observer compiled; its job reports failure with unavailable terminal logs, so its actual method/runtime result remains unknown. Combined owner integration remains open. Earlier queue and compile-pending statements below are historical snapshots, superseded by this final record. [Native retry receipt](evidence/ci/wave07-native-140103955982.json), [owner03 terminal observation](evidence/owners/03-corrected-terminal-observation.json), [HANDOFF](HANDOFF.md).
 
 ## Scope and reading rules
 
@@ -252,7 +250,7 @@ Owner 03's CPU oracle also changed tiny-output integration/packing construction 
 
 ## Source7 actual Metal assertions inside the failed native attempt
 
-Source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, run45854806270, attempt1/native job140034909086 executed all178 methods:178 starts/178 passes,29 cache methods,zero failures/skips. The following14 rows are actual simulator Metal outputs from the completed methods. They retain the existing mean≤1, >4 outlier fraction≤0.005 and exact-mask acceptance; strict8 additionally requires max≤1. The post-test command timed out at18minutes and the XCTest bundle was not finalized, so **the job and finalized-export gate failed**. The standalone178-method accounting step succeeded; the inline post-xcodebuild Metal guard was not reached. These per-method observations do not establish a successful native job or finalized attachments. [Raw log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json).
+Source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, run45854806270, attempt1/native job140034909086 executed all 178 methods:178 starts/178 passes,29 cache methods,zero failures/skips. The following14 rows are actual simulator Metal outputs from the completed methods. They retain the existing mean≤1, >4 outlier fraction≤0.005 and exact-mask acceptance; strict8 additionally requires max≤1. The post-test command timed out at18minutes and the XCTest bundle was not finalized, so **the job and finalized-export gate failed**. The standalone178-method accounting step succeeded; the inline post-xcodebuild Metal guard was not reached. These per-method observations do not establish a successful native job or finalized attachments. [Raw log](evidence/ci/wave07-native-140034909086.log), [metadata](evidence/ci/wave07-native-140034909086.json).
 
 | Matrix | Fixture | Grid | Emitted mean channel error | Max | Emitted >4 fraction | Mask basis | Invalid/mismatch counts | Raw line |
 |---|---|---|---:|---:|---:|---|---|---:|
@@ -276,3 +274,27 @@ Native invalid and mismatch counts remain **NR** because they were not printed. 
 All14 current emitted metric values match the separately retained source6 native emissions. This is a numerical comparison, not a performance improvement claim or a replacement for source6's normal command/finalized-bundle evidence. Native-only retry2/job140103955982 uses the same source/gates and was queued at18:29:38 UTC. Its outcome must be recorded separately. [Retry receipt](evidence/ci/wave07-native-attempt2-initial.json).
 
 The final owner refresh at18:14:50 UTC pins03 head `6f93f95c817d2bd230ae93554dea25a174a437f8`: preview/oracle unchanged, original hosted AX observer failed at source342, current pixel-observer correction pending Apple verification. It removes AX badge/warning assertions. Older03 renderer/header/eligibility still differ from04; combined parity/adoption gates remain open. [Refresh receipt](evidence/w097/final-owner-refresh-receipts.json).
+
+
+## Final-source native retry2 — successful command and finalized result
+
+Source69eb9c5, run45854806270/attempt2, native job140103955982. These are **actual simulator Metal** results from the completed Debug native job. All 14 emitted values match attempt1; its failed aggregate result remains separate. Native invalid-pixel totals and numerical mismatch counts were not printed and are not borrowed from host fixtures. Exact mask equality is established by the passing native assertions, not by an invalid-count print alone.
+
+| Fixture | Size | Mean RGB channel error | Maximum channel error | Fraction with error >4 | Mask evidence | Raw line |
+|---|---:|---:|---:|---:|---|---:|
+| area-camera-19.0-lens-85 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5466 |
+| area-camera-19.0-lens-200 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5467 |
+| area-camera-19.999999-lens-85 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5468 |
+| area-camera-19.999999-lens-200 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5469 |
+| area-camera-20.0-lens-85 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5470 |
+| area-camera-20.0-lens-200 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5471 |
+| world-translation-77 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5472 |
+| world-translation--77 | 192×128 | 0 | 0 | 0 | exact mask assertion passed | 5473 |
+| hard | 96×64 | 0 | 0 | 0 | exact mask assertion passed | 5609 |
+| soft | 96×64 | 5.425347222222222e-05 | 1 | 0 | exact mask assertion passed | 5613 |
+| warm-rotated | 96×64 | 0 | 0 | 0 | exact mask assertion passed | 5614 |
+| dark | 96×64 | 0 | 0 | 0 | exact mask assertion passed | 5615 |
+| near-field | 96×64 | 0 | 0 | 0 | exact mask assertion passed | 5616 |
+| translated | 96×64 | 5.425347222222222e-05 | 1 | 0 | exact mask assertion passed | 5617 |
+
+[Complete retry raw log](evidence/ci/wave07-native-140103955982.log), [source-bound metadata](evidence/ci/wave07-native-140103955982.json), [artifact receipts](evidence/ci/wave07-attempt2-artifacts.json). The normal command success, executed inline guard and exact178-method accounting appear at raw lines5672,5675 and5684. Finalized export and both full/compact uploads passed. The canonical six retain mean≤1 and outlier fraction≤0.005; the strict eight additionally require maximum≤1. All eight strict rows are zero. Only the selected eight of33 precision fixtures have this matrix execution credit; the other25 are not promoted to passes. No physical-device, Release-native, latency or performance-improvement claim follows.
