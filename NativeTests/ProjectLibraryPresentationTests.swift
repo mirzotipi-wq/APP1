@@ -52,7 +52,7 @@ final class ProjectLibraryPresentationTests: XCTestCase {
             XCTAssertEqual(row.identityValue(), "Project ID \(identifier)")
             XCTAssertTrue(row.matches("unnamed"))
             XCTAssertEqual(row.project, original)
-            XCTAssertEqual(Array(row.project.name.unicodeScalars), Array(name.unicodeScalars))
+            XCTAssertEqual(Array(row.project.name.unicodeScalars), Array(original.name.unicodeScalars))
         }
     }
 
