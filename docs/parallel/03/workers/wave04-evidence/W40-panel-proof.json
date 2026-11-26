@@ -1,0 +1,125 @@
+{
+  "kind": "bounded Python arithmetic/source review; no Swift renderer executed",
+  "input_sha": "ace9f2eba068bc31dd04bb2f1e2028af315d6bdb",
+  "private_path": "/tmp/keyfill03-7f4b/workers/W40-independent-review",
+  "runtime_id": "/root/wave04/independent_review",
+  "candidate_head": "03d5823f59b92b68d634303ef443af49be84a1bf",
+  "candidate_source_sha256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+  "candidate_test_sha256": "73a9e53ecac2cb1017e8d2b324ac83c08114a007e9c6b9c02ae212ae1d685b9a",
+  "pinned_source_sha256": "cdc88507467f31b4e873a8579aa08b954c846dfdb7d2594ed0fc94f51f751db8",
+  "panel_parts": [
+    {
+      "center": "[Decimal('-0.087'), Decimal('0.004'), Decimal('-0.015')]",
+      "radii": "[Decimal('0.015'), Decimal('0.034'), Decimal('0.023')]",
+      "region": "head",
+      "minimum_y_exact_decimal": "-0.030"
+    },
+    {
+      "center": "[Decimal('0.087'), Decimal('0.004'), Decimal('-0.015')]",
+      "radii": "[Decimal('0.015'), Decimal('0.034'), Decimal('0.023')]",
+      "region": "head",
+      "minimum_y_exact_decimal": "-0.030"
+    },
+    {
+      "center": "[Decimal('0'), Decimal('-0.175'), Decimal('-0.016')]",
+      "radii": "[Decimal('0.053'), Decimal('0.095'), Decimal('0.052')]",
+      "region": "head",
+      "minimum_y_exact_decimal": "-0.270"
+    },
+    {
+      "center": "[Decimal('0'), Decimal('-0.360'), Decimal('-0.022')]",
+      "radii": "[Decimal('0.203'), Decimal('0.205'), Decimal('0.108')]",
+      "region": "clothing",
+      "minimum_y_exact_decimal": "-0.565"
+    },
+    {
+      "center": "[Decimal('-0.129'), Decimal('-0.294'), Decimal('-0.020')]",
+      "radii": "[Decimal('0.107'), Decimal('0.086'), Decimal('0.090')]",
+      "region": "clothing",
+      "minimum_y_exact_decimal": "-0.380"
+    },
+    {
+      "center": "[Decimal('0.129'), Decimal('-0.294'), Decimal('-0.020')]",
+      "radii": "[Decimal('0.107'), Decimal('0.086'), Decimal('0.090')]",
+      "region": "clothing",
+      "minimum_y_exact_decimal": "-0.380"
+    }
+  ],
+  "clipped_panel_ray": {
+    "origin": [
+      1.0,
+      -0.5549,
+      0.0
+    ],
+    "subject": [
+      0,
+      0,
+      0
+    ],
+    "focal_mm": 14.0,
+    "width": 24,
+    "height": 16,
+    "pixel": [
+      11,
+      15
+    ],
+    "basis_note": "orthonormal world-up rectilinear construction; renderer not executed",
+    "forward": [
+      -0.8744005136908689,
+      0.4852048450470631,
+      -0.0
+    ],
+    "right": [
+      0.0,
+      0.0,
+      -1.0
+    ],
+    "up": [
+      0.4852048450470631,
+      0.8744005136908689,
+      0.0
+    ],
+    "ray": [
+      -0.9846728277170851,
+      -0.16934760103564936,
+      0.041723043742160626
+    ],
+    "panel_t": 0.05964064408490704,
+    "camera_minimum_t": 0.06419885004374126,
+    "panel_position": [
+      0.9412734783420463,
+      -0.565,
+      0.00248838920196521
+    ]
+  },
+  "exact_boundary": [
+    {
+      "hit_distance": 0.06419885004374125,
+      "minimum": 0.06419885004374126,
+      "candidate_invalid_for_closed_subject": true,
+      "pinned_near_root_retained": false
+    },
+    {
+      "hit_distance": 0.06419885004374126,
+      "minimum": 0.06419885004374126,
+      "candidate_invalid_for_closed_subject": false,
+      "pinned_near_root_retained": true
+    },
+    {
+      "hit_distance": 0.06419885004374128,
+      "minimum": 0.06419885004374126,
+      "candidate_invalid_for_closed_subject": false,
+      "pinned_near_root_retained": true
+    }
+  ],
+  "head_source_snippets": {
+    "Sources/LightingCore/PortraitHeadMesh.swift": "4: /// profile and smooth local facial displacements are synthetic neutral study\n5: /// geometry, not a biometric model or a scan. All dimensions are meters.\n6: struct PortraitHeadMesh: Sendable {\n7:     static let latitudeSegments = 42\n8:     static let longitudeSegments = 64\n9:     private static let lowerY = -0.133\n10:     private static let upperY = 0.143\n11:     private static let profile: [Profile] = [\n12:         .init(y: -0.133, width: 0, front: 0.026, back: 0.026),\n13:         .init(y: -0.123, width: 0.030, front: 0.058, back: -0.008),\n14:         .init(y: -0.105, width: 0.052, front: 0.072, back: -0.035),\n15:         .init(y: -0.080, width: 0.069, front: 0.077, back: -0.052),\n16:         .init(y: -0.049, width: 0.080, front: 0.075, back: -0.075),\n17:         .init(y: -0.015, width: 0.087, front: 0.080, back: -0.094),\n18:         .init(y:  0.020, width: 0.091, front: 0.076, back: -0.105),\n19:         .init(y:  0.052, width: 0.089, front: 0.074, back: -0.104),\n20:         .init(y:  0.083, width: 0.078, front: 0.065, back: -0.093),\n21:         .init(y:  0.108, width: 0.059, front: 0.051, back: -0.071),\n22:         .init(y:  0.130, width: 0.032, front: 0.028, back: -0.043),\n23:         .init(y:  0.143, width: 0, front: -0.005, back: -0.005)\n24:     ]\n25: \n26:     private struct Profile: Sendable {\n27:         let y: Double\n28:         let width: Double\n29:         let front: Double\n87:         let edge2: SIMD3<Double>\n88:         let geometricNormal: SIMD3<Double>\n89:         let twiceArea: Double\n90:         let bounds: Bounds\n91:         let centroid: SIMD3<Double>\n92: \n93:         init?(_ a: Vertex, _ b: Vertex, _ c: Vertex) {\n94:             let e1 = b.position - a.position, e2 = c.position - a.position\n95:             let areaVector = headCross(e1, e2)\n96:             guard headDot(areaVector, areaVector) > 1e-24 else { return nil }\n101:             self.edge1 = e1; self.edge2 = e2\n102:             self.twiceArea = twiceArea\n103:             self.geometricNormal = areaVector / twiceArea\n104:             self.bounds = box\n105:             self.centroid = (a.position + b.position + c.position) / 3\n106:         }\n107: \n108:         /// Two-sided segment intersection. Interpolated outward normals are\n109:         /// independent of triangle winding and continuous across shared edges.\n110:         func intersection(origin: SIMD3<Double>, direction: SIMD3<Double>,\n127:             return (t, u, v)\n128:         }\n129: \n130:         func hit(origin: SIMD3<Double>, direction: SIMD3<Double>,\n131:                  minimum: Double, maximum: Double) -> Hit? {\n132:             guard let (t, u, v) = intersection(origin: origin, direction: direction,\n133:                                                minimum: minimum, maximum: maximum),\n134:                   let normal = headUnit(a.normal * (1 - u - v) + b.normal * u + c.normal * v)\n135:             else { return nil }\n136:             let faceNormal = geometricNormal\n144:     }\n145: \n146:     private struct Node: Sendable {\n147:         let bounds: Bounds\n148:         var first: Int\n149:         var count: Int\n150:         var left = -1\n151:         var right = -1\n152:     }\n153: \n154:     private let triangles: [Triangle]\n155:     private let nodes: [Node]\n156: \n157:     /// One immutable mesh/BVH shared by every study frame. The latitude\n158:     /// mapping clusters samples near the poles to retain the silhouette.\n159:     static let standard = PortraitHeadMesh()\n160: \n161:     static func ringY(_ index: Int) -> Double {\n162:         let t = Double(index) / Double(latitudeSegments)\n163:         return lowerY + (upperY - lowerY) * (1 - cos(.pi * t)) / 2\n164:     }\n165: \n166:     private static func profileValue(_ y: Double, key: KeyPath<Profile, Double>) -> Double {\n167:         if y <= lowerY { return profile[0][keyPath: key] }\n168:         if y >= upperY { return profile[profile.count - 1][keyPath: key] }\n169:         let i = profile.indices.dropLast().first { y <= profile[$0 + 1].y }!\n195:         let width = max(0, profileValue(clampedY, key: \\.width))\n196:         let front = profileValue(clampedY, key: \\.front)\n197:         let back = profileValue(clampedY, key: \\.back)\n198:         let cosine = cos(angle), x = width * sin(angle)\n199:         var z = (front + back) / 2 + (front - back) * cosine / 2\n200:         if cosine > 0 {\n201:             func bump(_ centerX: Double, _ centerY: Double, _ sx: Double, _ sy: Double) -> Double {\n202:                 let dx = (x - centerX) / sx, dy = (clampedY - centerY) / sy\n203:                 return exp(-0.5 * (dx * dx + dy * dy))\n204:             }\n232: \n233:     private init() {\n234:         let columns = Self.longitudeSegments\n235:         let rows = Self.latitudeSegments\n236:         var vertices: [Vertex] = []\n237:         vertices.reserveCapacity((rows + 1) * columns)\n238:         for row in 0...rows {\n239:             for column in 0..<columns {\n240:                 let angle = 2 * Double.pi * Double(column) / Double(columns)\n241:                 vertices.append(Self.vertex(y: Self.ringY(row), angle: angle))\n255:         var hierarchy: [Node] = []\n256:         func build(_ first: Int, _ end: Int) -> Int {\n257:             var box = Bounds(), centers = Bounds()\n258:             for i in first..<end { box.include(mesh[i].bounds); centers.include(mesh[i].centroid) }\n259:             let index = hierarchy.count\n260:             hierarchy.append(.init(bounds: box, first: first, count: end - first))\n261:             if end - first > 8 {\n262:                 let extent = centers.high - centers.low\n263:                 let axis = extent.x >= extent.y && extent.x >= extent.z ? 0 : extent.y >= extent.z ? 1 : 2\n264:                 let sorted = mesh[first..<end].sorted { $0.centroid[axis] < $1.centroid[axis] }\n265:                 mesh.replaceSubrange(first..<end, with: sorted)\n266:                 let middle = (first + end) / 2\n280: \n281:     /// Conservative head exclusion for a camera originating inside the bust.\n282:     /// The renderer also requires a minimum subject distance of 17 cm.\n283:     func containsExclusionBounds(_ point: SIMD3<Double>) -> Bool {\n284:         nodes[0].bounds.contains(point)\n285:     }\n286: \n287:     func hit(origin: SIMD3<Double>, direction: SIMD3<Double>,\n288:              minimum: Double, maximum: Double) -> Hit? {\n289:         var closest: Hit?\n290:         // Incident faces can report the same vertex/edge a few ulps apart.\n291:         // Keep the true minimum distance, but allow a front-facing outward\n292:         // face to supply its normal at that tie. Otherwise an exterior\n293:         // silhouette can select a back face and become an invalid pixel.\n302:         }\n303:         func visit(_ index: Int) {\n304:             let node = nodes[index]\n305:             guard node.bounds.intersects(origin: origin, direction: direction,\n306:                                           minimum: minimum, maximum: searchLimit()) else { return }\n307:             if node.count > 0 {\n308:                 for i in node.first..<(node.first + node.count) {\n309:                     if let hit = triangles[i].hit(origin: origin, direction: direction,\n310:                                                    minimum: minimum, maximum: searchLimit()) {\n311:                         guard let previous = closest else { closest = hit; continue }\n333:                   minimum: Double, maximum: Double) -> Bool {\n334:         func visit(_ index: Int) -> Bool {\n335:             let node = nodes[index]\n336:             guard node.bounds.intersects(origin: origin, direction: direction,\n337:                                           minimum: minimum, maximum: maximum) else { return false }\n338:             if node.count > 0 {\n339:                 return (node.first..<(node.first + node.count)).contains { i in\n340:                     triangles[i].intersection(origin: origin, direction: direction,\n341:                                               minimum: minimum, maximum: maximum) != nil\n342:                 }"
+  },
+  "w32_receipt_sha256": "d34880e91d86a91f9265a267d6e1f06f32e5595493d2111801056530b35c5278",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "limitations": [
+    "No Swift build, renderer, mesh intersection, silhouette-normal transition, or translation-precision runtime check.",
+    "Panel-part exclusion proves the six analytic ellipsoids; mesh source snippets retained separately.",
+    "No independent validation of W32 runtime outcomes; candidate receipt used only for provenance."
+  ]
+}

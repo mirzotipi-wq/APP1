@@ -1,0 +1,214 @@
+COMMAND ['rg', '-l', 'actor StudyRenderEngine|class StudyRenderEngine|struct StudyRenderEngine', 'App', 'Sources'] EXIT 0
+App/MetalStudyRenderer.swift
+
+
+FILE App/MetalStudyRenderer.swift
+103:                 throw MetalStudyError.parity
+104:             }
+105:         }
+106:     }
+107: 
+108:     private func buffer(_ rows: [SIMD4<Float>]) -> MTLBuffer? {
+109:         // Metal requires a valid binding even when the shader's count is zero.
+110:         let storage = rows.isEmpty ? [SIMD4<Float>.zero] : rows
+111:         return storage.withUnsafeBufferPointer { pointer in
+112:             guard let base = pointer.baseAddress else { return nil }
+113:             return device.makeBuffer(bytes: UnsafeRawPointer(base),
+114:                                      length: pointer.count * MemoryLayout<SIMD4<Float>>.stride,
+115:                                      options: .storageModeShared)
+116:         }
+117:     }
+118: }
+119: 
+120: /// Single worker serializes compute submissions and CPU fallbacks. A cancelled
+121: /// request cannot publish a stale frame. GPU commands already submitted are
+122: /// allowed to complete, then discarded; CPU pixel work checks cancellation at most every eight evaluations.
+123: actor StudyRenderEngine {
+124:     static let shared = StudyRenderEngine()
+125:     // Bound both the number of scene snapshots and retained RGBA storage.
+126:     // Four small frames fit; at 192 × 128 the byte limit retains at most two.
+127:     static let maximumCachedFrames = 4
+128:     static let maximumCachedPixelBytes = 256 * 1024
+129:     static let maximumCachedMaskBytes = 64 * 1024
+130: 
+131:     private struct CacheKey: Equatable, Sendable {
+132:         let scene: LightingScene
+133:         let width: Int
+134:         let subject: StudySubject
+135: 
+136:         init?(scene: LightingScene, width: Int, subject: StudySubject) {
+137:             // A hit must never bypass validation of metadata that the renderer
+138:             // otherwise rejects. Leave errors and their ordering to the actual
+139:             // render path when validation fails.
+140:             guard (try? scene.validated()) != nil else { return nil }
+141:             var snapshot = scene
+142:             snapshot.lights = scene.lights.map { light in
+143:                 var copy = light
+144:                 // Display names do not affect pixels. Do not retain arbitrary
+145:                 // Unicode storage: the 80-character limit is not a byte limit.
+146:                 copy.name = ""
+147:                 return copy
+148:             }
+149:             // Retain every other scene value, including complete optics, light
+150:             // order, camera, exposure and room metadata. Equality is exact;
+151:             // there is no hash-only or rounded-coordinate cache identity.
+152:             self.scene = snapshot
+153:             self.width = width
+154:             self.subject = subject
+155:         }
+156:     }
+157: 
+158:     private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
+159:     private var state = State.unchecked
+160:     // Least recently used first. Validated keys contain at most twelve lights
+161:     // and only bounded, fixed-size values after display names are removed.
+162:     private var frameCache = StudyFrameCache<CacheKey, StudyRenderedFrame>(
+163:         maximumCount: StudyRenderEngine.maximumCachedFrames,
+164:         maximumPixelBytes: StudyRenderEngine.maximumCachedPixelBytes,
+165:         maximumMaskBytes: StudyRenderEngine.maximumCachedMaskBytes)
+166:     private let additionalCancellation: @Sendable () -> Bool
+167: 
+168:     /// An additional cooperative cancellation source is useful to callers that
+169:     /// invalidate work independently of a task, and permits deterministic
+170:     /// lifecycle tests. It can never suppress actual task cancellation.
+171:     init(cancellationRequested: @escaping @Sendable () -> Bool = { false }) {
+172:         additionalCancellation = cancellationRequested
+173:     }
+174: 
+175:     func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {
+176:         let additionalCancellation = additionalCancellation
+177:         let isCancelled = { Task.isCancelled || additionalCancellation() }
+178:         guard !isCancelled() else { throw StudyError.cancelled }
+179:         let renderWidth = subject == .bust ? min(width, PortraitStudyRenderer.maximumWidth) : width
+180:         let key = CacheKey(scene: scene, width: renderWidth, subject: subject)
+181:         if let key {
+182:             // Check before the cache promotes a hit. A cancelled request must
+183:             // neither publish pixels nor change the eviction order.
+184:             guard !isCancelled() else { throw StudyError.cancelled }
+185:             if let cached = frameCache.value(for: key) { return cached }
+186:         }
+187:         if subject == .bust {
+188:             // The mannequin has additional geometry. Do not send it
+189:             // to the sphere-only Metal kernel or claim a validated GPU path.
+190:             let image = try PortraitStudyRenderer.render(scene: scene, width: renderWidth,
+191:                                                         isCancelled: isCancelled)
+192:             guard !isCancelled() else { throw StudyError.cancelled }
+193:             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+194:         }
+195:         if case .unchecked = state {
+196:             do {
+197:                 guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
+198:                 let renderer = try MetalStudyRenderer(device: device)
+199:                 try renderer.validate(isCancelled: isCancelled)
+200:                 guard !isCancelled() else { throw StudyError.cancelled }
+201:                 state = .metal(renderer)
+202:             } catch let error as StudyError where error == .cancelled {
+203:                 // Incomplete validation is not a failed backend. Leave the
+204:                 // state unchecked so the next live request can validate it.
+205:                 throw error
+206:             } catch {
+207:                 guard !isCancelled() else { throw StudyError.cancelled }
+208:                 selectCPU()
+209:             }
+210:         }
+211:         guard !isCancelled() else { throw StudyError.cancelled }
+212:         if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
+213:             do {
+214:                 let image = try renderer.render(scene: scene, width: width)
+215:                 guard !isCancelled() else { throw StudyError.cancelled }
+216:                 return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)
+217:             } catch let error as StudyError {
+218:                 // Validation/cancellation is a scene error, not a backend failure.
+219:                 if error != .invalidComputeOutput { throw error }
+220:                 guard !isCancelled() else { throw StudyError.cancelled }
+221:                 selectCPU()
+222:             } catch {
+223:                 guard !isCancelled() else { throw StudyError.cancelled }
+224:                 selectCPU()
+225:             }
+226:         }
+227:         let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
+228:         guard !isCancelled() else { throw StudyError.cancelled }
+229:         return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+230:     }
+231: 
+232:     private func selectCPU() {
+233:         state = .cpu
+234:         // A runtime backend failure invalidates its old frames as well. A later
+235:         // hit must not resurrect Metal after the engine has failed closed.
+236:         frameCache.removeAll { $0.backend == .metal }
+237:     }
+238: 
+239:     /// Only called after the final cooperative cancellation check. There is no
+240:     /// suspension between that check, cache admission and returning the frame.
+241:     private func retain(_ frame: StudyRenderedFrame, for key: CacheKey?) -> StudyRenderedFrame {
+242:         guard let key else { return frame }
+243:         frameCache.insert(frame, for: key, pixelBytes: frame.image.rgba.count,
+244:                           maskBytes: frame.image.unsupportedPixelMask.count)
+245:         return frame
+246:     }
+247: }
+COMMAND ['rg', '-n', 'camera.{0,100}preced|preced.{0,100}camera|clipp|invalidCamera', 'docs/parallel/03/workers/W03-api.md', 'docs/parallel/03', 'README.md', 'docs/ARCHITECTURE.md'] EXIT 0
+docs/parallel/03/workers/W16-resource.md:11:| Width24, camera==subject, callback true, sphere interactive/reference | cancelled, exactly1 poll | invalidCamera, zero polls; expected failure |
+docs/parallel/03/workers/W16-resource.md:14:| Width24, invalid camera, false callback | invalidCamera; poll count unrestricted | Expected pass |
+docs/parallel/03/workers/wave02-artifacts/W16-expected-baseline.json:16:        "error": "invalidCamera",
+docs/parallel/03/workers/wave02-artifacts/W16-expected-baseline.json:30:        "error": "invalidCamera",
+docs/parallel/03/workers/wave02-artifacts/W16-expected-baseline.json:68:        "error": "invalidCamera",
+docs/parallel/03/HANDOFF.md:59:faces exposed by the near plane as invalidCamera. Original width144 overhead
+docs/parallel/03/workers/W19-platform-performance.md:13:Source-derived bounds: validation permits at most twelve lights; point/directional emitters prepare one sample, rectangles 8² interactive or 32² reference. Full and clipped evaluation use at most grid² callbacks per rectangle. Thus maxima are **768 interactive / 12,288 reference** samples; benchmark point3/area3 declarations are 3/192, and crowded area12 is bounded at 768. These are static guard/loop deductions, not executed Swift budget tests.
+docs/parallel/03/workers/wave02-artifacts/W19-benchmark-checks.json:144:    "clipped_rectangles": "at most grid columns times grid rows, so no larger callback budget than full rectangles"
+docs/parallel/03/workers/wave02-artifacts/W19-validate_benchmark.py:108:        'clipped_rectangles': 'at most grid columns times grid rows, so no larger callback budget than full rectangles',
+docs/parallel/03/workers/W13-api.md:10:Controls retain resolution → camera → scene validation → active-emitter preparation precedence. Twelve valid inactive lights and an inactive degenerate-aim emitter are accepted. No cancellation expectations change.
+docs/parallel/03/workers/wave01.json:197:        "Minimal probe: pre-cancelled valid-width invalid-camera request distinguishes sphere invalidCamera/no-poll from portrait cancelled; invalid-resolution zero-poll control."
+docs/parallel/03/workers/W06-resource.md:19:At width 24 with `camera = subject`, table-test both sphere qualities and portrait: callback increments once and returns true; require `.cancelled`, one poll. Current sphere throws `.invalidCamera`, zero polls. Preserve false-callback `.invalidCamera` and invalid-width `.invalidResolution`/zero-poll controls. Initial sphere cancellation belongs after cheap resolution validation, before remaining setup. Valid-scene `{ true }` alone already passes and cannot detect avoided preparation. Existing `StudyCancellationTests.swift:55–95` covers pixel/final checkpoints, not setup ordering.
+docs/parallel/03/workers/wave02.md:15:| Malformed schema/field versions,13lights, duplicate IDs, malformed inactive-light fields; W13 | Width24 and valid camera: sphere interactive/reference, bust and compute reject invalidScene. Valid12-light and inactive-degenerate-aim controls succeed. Resolution → camera → scene → emitter precedence preserved. | **PASS:** all five methods, including16 malformed rows and controls. |
+docs/parallel/03/workers/wave02.md:17:| Pre-cancelled valid-width invalid-camera preparation; W16 | Width24, camera==subject, callback true: all three CPU modes throw cancelled after exactly1 poll. | **FAIL:4 assertions:** sphere interactive/reference instead throw invalidCamera with zero polls; bust meets expected behavior. |
+docs/parallel/03/workers/wave02.md:18:| Invalid-resolution and false-callback controls; W16 | Width23/25 reject invalidResolution before polling even with cancellation; width24 false callback preserves invalidCamera without freezing poll count. Existing eight-pixel/final checkpoints remain. | **PASS:** both new controls and four existing cancellation methods. |
+docs/parallel/03/workers/wave02.md:19:| Independent near-plane hypothesis, root diagnostic | Root authorized follow-up rejection of clipped overhead pose while preserving valid front/side0.18m controls; no blanket0.20m camera-distance rule is assumed. | **OPEN:** original width24/no-light overhead render has322/384 unsupported at0.171m and328/384 at0.18m; overhead0.20+ and all front/side controls are zero. Not covered by W14's four methods. |
+docs/parallel/03/workers/W04-implementation.md:13:Evidence reviewed in `Sources/LightingCore/ReferenceStudy.swift`: material validity/GGX response at lines 24–49; geometry bounds and sphere/panel intervals at 62–93; clipped-area weighting at 120–211; validated sample preparation at 228–265; near-field checks, visibility and accumulation at 285–369; camera/resolution prerequisites and pixel path at 447–458 and 479–533. Validated coordinate/intensity bounds appear in `Sources/LightingCore/Scene.swift:3–16,33–36,62–80`.
+docs/parallel/03/workers/W04-implementation.md:15:Test source cross-checks (not executions): `Tests/LightingCoreTests/ReferenceStudyTests.swift:17–156` covers analytic signal, convergence, sphere penumbra, GGX, invalid inputs and rendering. `Tests/LightingCoreTests/StudyEmitterFacingTests.swift:37–169` covers facing/translation, guards and mixed-source indexing. `Tests/LightingCoreTests/GrazingStudyContinuityTests.swift:64–242` covers clipping continuity, weights, visibility/material preservation and packed alignment. No new failure follows from this bounded review.
+docs/parallel/03/evidence/camera-corrected/result.json:4:    "error" : "invalidCamera",
+docs/parallel/03/evidence/camera-corrected/result.json:5:    "name" : "overhead-clipped"
+docs/parallel/03/recovery/W16-cancellation.patch:52:+                XCTAssertEqual($0 as? StudyError, .invalidCamera, name)
+docs/parallel/03/evidence/camera-original/result.json:5:    "name" : "overhead-clipped",
+docs/parallel/03/evidence/camera-review.json:7:    "docs/parallel/03/evidence/camera-original/overhead-clipped.ppm": "f98b21a4ff044c7399d6ceba3576737f64be9e065cf5fc224ddec00b1a06e6e8",
+docs/parallel/03/evidence/camera-review.json:8:    "docs/parallel/03/evidence/camera-original/overhead-clipped.mask": "c0efbeb46a1f0d87259e8ae073b1409c1193fabb002f659eb05ce229ff3080db",
+docs/parallel/03/evidence/camera-review.json:9:    "docs/parallel/03/evidence/camera-original/overhead-clipped.png": "3b809454d7ee3cd55cd05c56de7bf36880803b3f3c59bafdc61853ab6779d71c",
+docs/parallel/03/evidence/camera-review.json:20:  "correctedClippedCamera": "invalidCamera; no image published",
+docs/parallel/03/evidence/camera-review.json:21:  "testDesignCorrection": "Initial center-ray witness hit a separate neck entry; both initial logs retained. Corrected witness scans actual 24x16 pixel rays and verifies clipped front entry before each outward back exit.",
+docs/parallel/03/evidence/portrait-camera-visual.swift:15:            let name = distance == 0.18 ? "overhead-clipped" : "overhead-clear"
+docs/parallel/03/evidence/wave02-original-probes.log:346:/workspace/scratch/7f4be4bbb2d6/APP1-lane03/Tests/LightingCoreTests/StudyCancellationTests.swift:22: error: StudyCancellationTests.testPrecancelledValidResolutionStopsBeforeInvalidCameraSetup : XCTAssertEqual failed: ("Optional(LightingCore.StudyError.invalidCamera)") is not equal to ("Optional(LightingCore.StudyError.cancelled)") - sphere interactive
+docs/parallel/03/evidence/wave02-original-probes.log:348:/workspace/scratch/7f4be4bbb2d6/APP1-lane03/Tests/LightingCoreTests/StudyCancellationTests.swift:22: error: StudyCancellationTests.testPrecancelledValidResolutionStopsBeforeInvalidCameraSetup : XCTAssertEqual failed: ("Optional(LightingCore.StudyError.invalidCamera)") is not equal to ("Optional(LightingCore.StudyError.cancelled)") - sphere reference
+
+COMMAND ['rg', '-n', 'StudyRenderEngine|invalidCamera|invalidEmitter', 'NativeTests', 'Tests/LightingCoreTests/StudyPreviewPipelineTests.swift'] EXIT 2
+NativeTests/StudyPreviewPipelineTests.swift:72:        old.finish(.failure(StudyError.invalidCamera))
+NativeTests/StudyPreviewPipelineTests.swift:115:        renderer.finish(.failure(StudyError.invalidEmitter))
+NativeTests/StudyPreviewPipelineTests.swift:124:        await pipeline.load(ticket: first, render: { throw StudyError.invalidCamera },
+NativeTests/StudyPreviewPipelineTests.swift:169:            throw StudyError.invalidCamera
+NativeTests/StudyRendererTests.swift:26:        let engine = StudyRenderEngine()
+NativeTests/StudyRendererTests.swift:38:        let engine = StudyRenderEngine()
+NativeTests/StudyRendererTests.swift:49:        let engine = StudyRenderEngine()
+NativeTests/StudyRendererTests.swift:58:        let engine = StudyRenderEngine()
+NativeTests/StudyRendererTests.swift:99:        let engine = StudyRenderEngine(cancellationRequested: { cancellation.requested() })
+NativeTests/StudyRendererTests.swift:119:        let engine = StudyRenderEngine(cancellationRequested: { false })
+NativeTests/StudyRenderCacheTests.swift:44:    private func assertCancelled(_ engine: StudyRenderEngine, scene: LightingScene,
+NativeTests/StudyRenderCacheTests.swift:55:    private func cachedFrame(_ engine: StudyRenderEngine, budget: CancellationBudget,
+NativeTests/StudyRenderCacheTests.swift:65:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:85:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:87:        let scenes = (0...StudyRenderEngine.maximumCachedFrames).map { exposure in
+NativeTests/StudyRenderCacheTests.swift:97:                          StudyRenderEngine.maximumCachedPixelBytes)
+NativeTests/StudyRenderCacheTests.swift:112:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:129:        XCTAssertLessThan(scenes.count, StudyRenderEngine.maximumCachedFrames)
+NativeTests/StudyRenderCacheTests.swift:131:                             StudyRenderEngine.maximumCachedPixelBytes)
+NativeTests/StudyRenderCacheTests.swift:133:                                StudyRenderEngine.maximumCachedPixelBytes)
+NativeTests/StudyRenderCacheTests.swift:145:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:185:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:199:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:210:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:243:        let engine = StudyRenderEngine()
+NativeTests/StudyRenderCacheTests.swift:261:            XCTAssertEqual(error as? StudyError, .invalidCamera)
+NativeTests/StudyRenderCacheTests.swift:267:        let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:280:        let engine = StudyRenderEngine(cancellationRequested: { false })
+NativeTests/StudyRenderCacheTests.swift:298:        let measuringEngine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+NativeTests/StudyRenderCacheTests.swift:306:            let engine = StudyRenderEngine(cancellationRequested: { budget.requested() })
+rg: Tests/LightingCoreTests/StudyPreviewPipelineTests.swift: No such file or directory (os error 2)

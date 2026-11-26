@@ -41,6 +41,23 @@ Root serializes heavy builds and renders; workers must request a build slot.
 Initial workspace disk had only 95 MiB free; temporary memory-backed storage is
 shared and must be monitored. Never remove another task's files.
 
+## Worker metadata storage after wave 3
+
+Creating linked-worktree indexes on the persistent volume exhausted its free
+space during wave4. The source trees themselves fit in `/tmp`. New workers now
+use a private sparse shared clone at `/tmp/keyfill03-7f4b/worker-control` as their
+`git worktree add` origin. Thus both their trees and indexes are temporary; the
+integration checkout and reports remain persistent. It shares immutable objects
+from the integration checkout and has the original GitHub promisor remote for
+missing objects. Root verified a clean W33 tree at the exact requested input.
+Do not count an unused precreated tree as an actual worker. After a runtime reset,
+recreate the control clone and requested trees, recording the interruption.
+
+Only root removes completed workers after the report/source checkpoint is pushed
+and verified. Existing active W31/W32 linked trees retain their original registry
+until their wave is preserved. This storage change introduces no branch or source
+ownership change and does not relax the private-worktree requirement.
+
 Each leader writes `docs/parallel/03/workers/waveNN.json` and `waveNN.md` in the
 integration checkout, exclusively owned for that wave. Record actual runtime ID,
 canonical task path, role, assignment, input SHA, private worktree, output/report,

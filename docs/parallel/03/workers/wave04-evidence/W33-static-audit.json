@@ -1,0 +1,119 @@
+{
+  "worker": "W33-api",
+  "canonical_runtime_id": "/root/wave04/api",
+  "identity_observation": "collaboration.list_agents returned /root/wave04/api running",
+  "input_sha": "ace9f2eba068bc31dd04bb2f1e2028af315d6bdb",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W33-api",
+  "execution": "Python source-order assertions and exact test declaration inventory only; no Swift build/test/runtime execution",
+  "source_order": [
+    {
+      "token": "guard (24...maximumWidth)",
+      "line": 164
+    },
+    {
+      "token": "guard !isCancelled()",
+      "line": 167
+    },
+    {
+      "token": "guard let camera = CameraFraming",
+      "line": 168
+    },
+    {
+      "token": "let lighting = try StudyLighting",
+      "line": 174
+    },
+    {
+      "token": "guard portraitDot(hit.geometricNormal, -ray) >= 0",
+      "line": 205
+    },
+    {
+      "token": "do {",
+      "line": 208
+    },
+    {
+      "token": "let signal = try lighting.evaluate",
+      "line": 210
+    },
+    {
+      "token": "catch StudyError.invalidSurface",
+      "line": 218
+    },
+    {
+      "token": "return .init(width: width",
+      "line": 226
+    }
+  ],
+  "lighting_order": [
+    {
+      "token": "guard (try? scene.validated()) != nil",
+      "line": 233
+    },
+    {
+      "token": "for light in scene.lights where light.candela > 0",
+      "line": 236
+    },
+    {
+      "token": "guard let frame = StudioPhotometry.frame",
+      "line": 243
+    },
+    {
+      "token": "if areaGuards.contains(where:",
+      "line": 301
+    },
+    {
+      "token": "guard r2 >= 0.0025",
+      "line": 307
+    }
+  ],
+  "single_invalidSurface_catch": true,
+  "bust_errors_propagate": true,
+  "inventory": {
+    "Tests/LightingCoreTests/PortraitCameraDepthTests.swift": [
+      "testNearPlaneCannotExposeTheBackOfAClosedMannequin",
+      "testCloseFrontAndSideCamerasAndSafeOverheadViewsRemainSupported",
+      "testClippedCameraWitnessHasAFrontEntryAndABackExit"
+    ],
+    "Tests/LightingCoreTests/PortraitStudyTests.swift": [
+      "testNearestHeadAndClothingSurfacesHaveAnalyticOutwardNormals",
+      "testContinuousHeadSurfaceIsSymmetricAndHasIntegratedFacialRelief",
+      "testShadowSegmentsStopAtActualLightAndRespectGeometry",
+      "testStudyIsDeterministicAndRespondsToRealLightingAndExposure",
+      "testTranslationAndPhysicalCameraFraming",
+      "testFullResolutionObliqueAreaLitPortraitHasNoInvalidSilhouettePixels",
+      "testInvalidCameraNearFieldAndCancellationAreHonest"
+    ],
+    "Tests/LightingCoreTests/StudyCancellationTests.swift": [
+      "testPrecancelledValidResolutionStopsBeforeInvalidCameraSetup",
+      "testInvalidResolutionPrecedesCancellationAndInvalidCameraSetup",
+      "testNoncancelledInvalidCameraPreservesCameraError",
+      "testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork",
+      "testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations",
+      "testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled",
+      "testCancellationAtFinalCheckpointCannotPublishCompletedFrame"
+    ],
+    "Tests/LightingCoreTests/StudyInputBoundaryTests.swift": [
+      "testMalformedSchemasAndLightCollectionsAreRejectedByEveryStudyEntryPoint",
+      "testInactiveLightDataIsValidatedBeforeSamplesAreSkipped",
+      "testResolutionThenCameraErrorsPrecedeMalformedSceneErrors",
+      "testSceneValidationPrecedesActiveEmitterPreparation",
+      "testTwelveValidInactiveLightsAndInactiveDegenerateAimAreAccepted"
+    ]
+  },
+  "test_declarations": 22,
+  "sha256": {
+    "Sources/LightingCore/PortraitStudy.swift": "cdc88507467f31b4e873a8579aa08b954c846dfdb7d2594ed0fc94f51f751db8",
+    "Sources/LightingCore/ReferenceStudy.swift": "86ca1199487d567af8e444e714eabca8252b500bc33b40763d7b258d505977cf",
+    "App/MetalStudyRenderer.swift": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+    "App/ReferenceStudyPreview.swift": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+    "Tests/LightingCoreTests/PortraitCameraDepthTests.swift": "e01f8aa249d2e21943689348e3f196642af4d298fd0662129d119f9fd25f9c1a",
+    "Tests/LightingCoreTests/PortraitStudyTests.swift": "8e81192f21aed2ea69b45ad276b42fcefc4bceb066540625a945c173c2a78cf9",
+    "Tests/LightingCoreTests/StudyCancellationTests.swift": "a6921bd12c2592e171c33077cab8cd781917283575114abc4946f1f6f4fc3d78",
+    "Tests/LightingCoreTests/StudyInputBoundaryTests.swift": "1e5f26a78dca088ee76b45f71951916619c8b30ddf9056d882bc774ea2b895ea"
+  },
+  "limitations": [
+    "String-position assertions complement manual control-flow review; they are not Swift compilation or runtime tests.",
+    "Combined clipped-camera/malformed-light inputs are source predictions; no new runtime counterexample was needed.",
+    "Initial guessed wrapper paths were absent (rg exit 2); actual wrapper recovered via rg -l in App and Sources.",
+    "Broad read output was truncated by tool display; focused retained source slices resolved the relevant branches."
+  ]
+}
