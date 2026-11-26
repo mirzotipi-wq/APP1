@@ -1,0 +1,236 @@
+From 44550b6837656e86f4fa7b588ac4cfe7a9b1c361 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Thu, 26 Nov 2026 05:54:38 -0700
+Subject: [PATCH] test: cover incremental SceneKit lamp transitions
+
+---
+ NativeTests/SpatialEntityUpdateTests.swift | 217 +++++++++++++++++++++
+ 1 file changed, 217 insertions(+)
+ create mode 100644 NativeTests/SpatialEntityUpdateTests.swift
+
+diff --git a/NativeTests/SpatialEntityUpdateTests.swift b/NativeTests/SpatialEntityUpdateTests.swift
+new file mode 100644
+index 0000000..e20b1c1
+--- /dev/null
++++ b/NativeTests/SpatialEntityUpdateTests.swift
+@@ -0,0 +1,217 @@
++import SceneKit
++import XCTest
++import LightingCore
++@testable import KeyAndFill
++
++@MainActor
++final class SpatialEntityUpdateTests: XCTestCase {
++    private struct LampNodes {
++        let fixture: SCNNode
++        let source: SCNNode
++        let indicator: SCNNode
++        let stand: SCNNode
++        let light: SCNLight
++        let cylinder: SCNCylinder
++    }
++
++    private func render(_ scene: LightingScene, selected: UUID)
++        -> (SCNView, SpatialPreview.Coordinator) {
++        let preview = SpatialPreview(scene: scene, selected: selected)
++        let coordinator = preview.makeCoordinator()
++        let view = preview.makeView(coordinator: coordinator)
++        view.frame = CGRect(x: 0, y: 0, width: 360, height: 280)
++        update(scene, selected: selected, view: view, coordinator: coordinator)
++        return (view, coordinator)
++    }
++
++    private func update(_ scene: LightingScene, selected: UUID, view: SCNView,
++                        coordinator: SpatialPreview.Coordinator) {
++        SpatialPreview(scene: scene, selected: selected).updateView(view, coordinator: coordinator)
++        SCNTransaction.flush()
++    }
++
++    private func lampNodes(for id: UUID, in coordinator: SpatialPreview.Coordinator) throws -> LampNodes {
++        let indicator = try XCTUnwrap(coordinator.selectionIndicators[id])
++        let fixture = try XCTUnwrap(indicator.parent)
++        let sources = coordinator.content.childNodes.filter { $0.light?.type == .spot || $0.light?.type == .omni }
++        let stands = coordinator.content.childNodes.filter { $0.geometry is SCNCylinder }
++        XCTAssertEqual(sources.count, 1)
++        XCTAssertEqual(stands.count, 1)
++        let source = try XCTUnwrap(sources.first)
++        let stand = try XCTUnwrap(stands.first)
++        return LampNodes(fixture: fixture, source: source, indicator: indicator, stand: stand,
++                         light: try XCTUnwrap(source.light),
++                         cylinder: try XCTUnwrap(stand.geometry as? SCNCylinder))
++    }
++
++    private func assertLiveIdentity(_ nodes: LampNodes, id: UUID, in coordinator: SpatialPreview.Coordinator,
++                                    standAttached: Bool = true, file: StaticString = #filePath, line: UInt = #line) {
++        XCTAssertTrue(coordinator.selectionIndicators[id] === nodes.indicator, file: file, line: line)
++        XCTAssertTrue(nodes.indicator.parent === nodes.fixture, file: file, line: line)
++        XCTAssertTrue(nodes.fixture.parent === coordinator.content, file: file, line: line)
++        XCTAssertTrue(nodes.source.parent === coordinator.content, file: file, line: line)
++        XCTAssertTrue(nodes.source.light === nodes.light, file: file, line: line)
++        XCTAssertTrue(nodes.stand.geometry === nodes.cylinder, file: file, line: line)
++        XCTAssertFalse(nodes.indicator.isHidden, file: file, line: line)
++        XCTAssertEqual(coordinator.lightID(for: nodes.fixture), id, file: file, line: line)
++        XCTAssertEqual(coordinator.lightID(for: nodes.indicator), id, file: file, line: line)
++        XCTAssertEqual(coordinator.lightID(for: nodes.stand), standAttached ? id : nil, file: file, line: line)
++        XCTAssertEqual(coordinator.lightIDs.count, standAttached ? 2 : 1, file: file, line: line)
++        if standAttached {
++            XCTAssertTrue(nodes.stand.parent === coordinator.content, file: file, line: line)
++        } else {
++            XCTAssertNil(nodes.stand.parent, file: file, line: line)
++        }
++        XCTAssertEqual(coordinator.content.childNodes.filter {
++            $0.light?.type == .spot || $0.light?.type == .omni
++        }.count, 1, file: file, line: line)
++    }
++
++    private func assertPosition(_ actual: SCNVector3, _ expected: Position,
++                                file: StaticString = #filePath, line: UInt = #line) {
++        // Native transforms use Float32, including the housing's local offset.
++        XCTAssertEqual(Double(actual.x), expected.x, accuracy: 2e-5, file: file, line: line)
++        XCTAssertEqual(Double(actual.y), expected.y, accuracy: 2e-5, file: file, line: line)
++        XCTAssertEqual(Double(actual.z), expected.z, accuracy: 2e-5, file: file, line: line)
++    }
++
++    private func assertDirection(_ actual: SCNVector3, _ expected: UnitDirection,
++                                 file: StaticString = #filePath, line: UInt = #line) {
++        XCTAssertEqual(Double(actual.x), expected.x, accuracy: 1e-6, file: file, line: line)
++        XCTAssertEqual(Double(actual.y), expected.y, accuracy: 1e-6, file: file, line: line)
++        XCTAssertEqual(Double(actual.z), expected.z, accuracy: 1e-6, file: file, line: line)
++    }
++
++    private func assertEmittingPlane(_ nodes: LampNodes, light: StudioLight, subject: Position,
++                                     file: StaticString = #filePath, line: UInt = #line) throws {
++        let box = try XCTUnwrap(nodes.fixture.geometry as? SCNBox, file: file, line: line)
++        let frame = try XCTUnwrap(StudioPhotometry.frame(for: light, subject: subject), file: file, line: line)
++        assertPosition(nodes.fixture.convertPosition(SCNVector3(0, 0, Float(box.length) / 2), to: nil),
++                       light.position, file: file, line: line)
++        assertPosition(nodes.source.worldPosition, light.position, file: file, line: line)
++        assertDirection(nodes.fixture.convertVector(SCNVector3(1, 0, 0), to: nil), frame.right, file: file, line: line)
++        assertDirection(nodes.fixture.convertVector(SCNVector3(0, 1, 0), to: nil), frame.up, file: file, line: line)
++        assertDirection(nodes.fixture.convertVector(SCNVector3(0, 0, 1), to: nil), frame.normal, file: file, line: line)
++        assertDirection(nodes.source.convertVector(SCNVector3(0, 0, -1), to: nil), frame.normal, file: file, line: line)
++    }
++
++    func testKindTransitionsReplaceShapeWithoutReplacingLiveLampNodes() throws {
++        let light = StudioLight(name: "Changing modifier", position: .init(x: -1.5, y: 2.1, z: 1.2),
++                                candela: 900, kelvin: 5600, optics: .init(kind: .point))
++        var scene = LightingScene.portrait(); scene.lights = [light]
++        let (view, coordinator) = render(scene, selected: light.id)
++        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
++        let nodes = try lampNodes(for: light.id, in: coordinator)
++        var geometry = try XCTUnwrap(nodes.fixture.geometry)
++        var outline = try XCTUnwrap(nodes.indicator.geometry)
++        let count = coordinator.content.childNodes.count
++        let transitions: [(kind: EmitterKind, source: SCNLight.LightType, boxSize: CGSize?)] = [
++            (.directional, .spot, CGSize(width: 0.22, height: 0.18)),
++            (.rectangle, .spot, CGSize(width: 1.2, height: 0.7)),
++            (.point, .omni, nil)
++        ]
++        for transition in transitions {
++            scene.lights[0].optics = .init(kind: transition.kind, aimTarget: .init(x: 0.4, y: 1.3, z: -0.8),
++                                          widthMeters: 1.2, heightMeters: 0.7, rollDegrees: 37.5)
++            update(scene, selected: light.id, view: view, coordinator: coordinator)
++            assertLiveIdentity(nodes, id: light.id, in: coordinator)
++            XCTAssertEqual(coordinator.content.childNodes.count, count)
++            XCTAssertEqual(nodes.light.type, transition.source)
++            XCTAssertFalse(nodes.fixture.geometry === geometry)
++            XCTAssertFalse(nodes.indicator.geometry === outline)
++            geometry = try XCTUnwrap(nodes.fixture.geometry)
++            outline = try XCTUnwrap(nodes.indicator.geometry)
++            if let size = transition.boxSize {
++                let box = try XCTUnwrap(geometry as? SCNBox)
++                XCTAssertEqual(box.width, size.width, accuracy: 1e-6)
++                XCTAssertEqual(box.height, size.height, accuracy: 1e-6)
++                try assertEmittingPlane(nodes, light: scene.lights[0], subject: scene.subject)
++            } else {
++                XCTAssertEqual(try XCTUnwrap(geometry as? SCNSphere).radius, 0.09, accuracy: 1e-6)
++                assertPosition(nodes.fixture.worldPosition, light.position)
++                assertPosition(nodes.source.worldPosition, light.position)
++            }
++            if transition.kind == .directional {
++                // Stored softbox dimensions do not change a directional housing.
++                scene.lights[0].optics?.widthMeters = 3.2
++                scene.lights[0].optics?.heightMeters = 1.9
++                update(scene, selected: light.id, view: view, coordinator: coordinator)
++                assertLiveIdentity(nodes, id: light.id, in: coordinator)
++                XCTAssertTrue(nodes.fixture.geometry === geometry)
++                XCTAssertTrue(nodes.indicator.geometry === outline)
++                try assertEmittingPlane(nodes, light: scene.lights[0], subject: scene.subject)
++            }
++        }
++    }
++
++    func testRectangleResizingReplacesGeometryWhilePoseAndOutputEditsReuseIt() throws {
++        let light = StudioLight(name: "Softbox", position: .init(x: -2, y: 2.1, z: 1), candela: 900, kelvin: 5600,
++                                optics: .init(kind: .rectangle, widthMeters: 1.2, heightMeters: 0.7))
++        var scene = LightingScene.portrait(); scene.lights = [light]
++        let (view, coordinator) = render(scene, selected: light.id)
++        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
++        let nodes = try lampNodes(for: light.id, in: coordinator)
++        var geometry = try XCTUnwrap(nodes.fixture.geometry)
++        var outline = try XCTUnwrap(nodes.indicator.geometry)
++        // Resize one axis at a time between unchanged-dimension edits. Every
++        // step also changes pose/output, which must not force a shape rebuild.
++        let edits: [(width: Double, height: Double, replacesShape: Bool)] = [
++            (1.2, 0.7, false), (1.8, 0.7, true), (1.8, 1.3, true), (1.8, 1.3, false)
++        ]
++        for (index, edit) in edits.enumerated() {
++            scene.lights[0].name = "Softbox edit \(index)"
++            scene.lights[0].position = .init(x: -2 + Double(index) * 0.2, y: 2.4, z: 1.5)
++            scene.lights[0].candela = index.isMultiple(of: 2) ? 0 : 600
++            scene.lights[0].kelvin = 3200 + Double(index) * 500
++            scene.subject = .init(x: Double(index) * 0.3, y: 1.6, z: -0.5)
++            scene.lights[0].optics = .init(kind: .rectangle, widthMeters: edit.width, heightMeters: edit.height,
++                                          rollDegrees: 25 + Double(index) * 20)
++            update(scene, selected: light.id, view: view, coordinator: coordinator)
++            assertLiveIdentity(nodes, id: light.id, in: coordinator)
++            XCTAssertEqual(nodes.fixture.geometry === geometry, !edit.replacesShape)
++            XCTAssertEqual(nodes.indicator.geometry === outline, !edit.replacesShape)
++            geometry = try XCTUnwrap(nodes.fixture.geometry)
++            outline = try XCTUnwrap(nodes.indicator.geometry)
++            let box = try XCTUnwrap(geometry as? SCNBox)
++            let outlineBox = try XCTUnwrap(outline as? SCNBox)
++            XCTAssertEqual(Double(box.width), edit.width, accuracy: 1e-6)
++            XCTAssertEqual(Double(box.height), edit.height, accuracy: 1e-6)
++            XCTAssertEqual(outlineBox.width, box.width, accuracy: 1e-6)
++            XCTAssertEqual(outlineBox.height, box.height, accuracy: 1e-6)
++            XCTAssertEqual(nodes.light.temperature, CGFloat(scene.lights[0].kelvin))
++            XCTAssertEqual(nodes.light.intensity == 0, scene.lights[0].candela == 0)
++            try assertEmittingPlane(nodes, light: scene.lights[0], subject: scene.subject)
++        }
++    }
++
++    func testStandThresholdDetachesHitsAndReattachesTheSameCylinder() throws {
++        let light = StudioLight(name: "Low fixture", position: .init(x: 2, y: 2, z: -3), candela: 300, kelvin: 5600)
++        var scene = LightingScene.portrait(); scene.lights = [light]
++        let (view, coordinator) = render(scene, selected: light.id)
++        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
++        let nodes = try lampNodes(for: light.id, in: coordinator)
++        let geometry = try XCTUnwrap(nodes.fixture.geometry)
++        let outline = try XCTUnwrap(nodes.indicator.geometry)
++        let count = coordinator.content.childNodes.count
++        let edits: [(height: Double, standAttached: Bool)] = [
++            (0.051, true), (0.05, false), (0.049, false), (1.25, true), (0, false), (2.5, true)
++        ]
++        for (index, edit) in edits.enumerated() {
++            let position = Position(x: 2 + Double(index) * 0.2, y: edit.height, z: -3 + Double(index) * 0.1)
++            scene.lights[0].position = position
++            update(scene, selected: light.id, view: view, coordinator: coordinator)
++            assertLiveIdentity(nodes, id: light.id, in: coordinator, standAttached: edit.standAttached)
++            XCTAssertTrue(nodes.fixture.geometry === geometry)
++            XCTAssertTrue(nodes.indicator.geometry === outline)
++            XCTAssertEqual(coordinator.content.childNodes.count, count - (edit.standAttached ? 0 : 1))
++            assertPosition(nodes.fixture.worldPosition, position)
++            assertPosition(nodes.source.worldPosition, position)
++            if edit.standAttached {
++                XCTAssertEqual(Double(nodes.cylinder.height), edit.height, accuracy: 1e-6)
++                assertPosition(nodes.stand.worldPosition, .init(x: position.x, y: edit.height / 2, z: position.z))
++            } else {
++                XCTAssertNil(coordinator.lightIDs[ObjectIdentifier(nodes.stand)])
++            }
++        }
++    }
++}
+-- 
+2.56.1
+

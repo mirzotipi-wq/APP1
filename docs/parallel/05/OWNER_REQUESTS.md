@@ -6,15 +6,17 @@ The adapters retain existing call sites. Inspection corrected the startup identi
 
 Wave01's retained Plan subject/camera navigation-action observation belongs to lanes07/01; it did not establish wrong-project light selection. Wave02 noted generic unavailable-estimate guidance rather than explicit aim status in equipment rows: a composition/inspector usability request, not a demonstrated geometry or privacy blocker.
 
+Inspected lane 01 checkpoint `966c9c21adbb685d82127e7f88981b74daf47e3d` and its HANDOFF.md on 2026-11-26. Its workspace-reset identity now distinguishes intentional project replacement from routine metadata/save/undo changes; generation admission remains separate. Wave 04 will check viewport compatibility against that exact source. No lane 01 implementation is merged by this lane.
+
 ## Lane 06 — core geometry
 
-`StudioSceneBounds` explicitly excludes stand bases, subject body and housing. Lane 05 must include its own represented equipment in Fit without redefining the core/Plan bounds contract. Viewport-only helpers will consume `StudioSceneBounds`, `EmitterFrame` and `CameraFraming`; no core geometry file is modified. Preserve right-handed meter coordinates, emitter +Z and camera -Z conventions.
+`StudioSceneBounds` explicitly excludes stand bases, subject body and housing. Lane 05 must include its own represented equipment in Fit without redefining the core/Plan bounds contract. Viewport-only helpers will consume `StudioSceneBounds`, `EmitterFrame` and `CameraFraming`; no core geometry file is modified. Preserve right-handed meter coordinates, emitter +Z and camera -Z conventions. A remote-head check on 2026-11-26 found no finish/06 or finish/20 branch; baseline stays the user-specified f150f98 default. These requests are recorded for owner integration, not a claim of owner acknowledgment.
 
 ## Lanes 19/20 — native execution and baseline
 
 The first source checkpoint preserves main9e0e2ba as a merge parent, carrying its existing explicit-CGFloat repair for the baseline's greatestFiniteMagnitude ambiguity. New native methods use the existing inventory; CI/shard files are unchanged.
 
-Run45817222487 at68c83 passed366 Debug/366 Release core tests and100 tooling checks; native test-bundle builds succeeded. Studio-optics job139901927290 failed before UI runner initialization with XCTDaemonErrorDomain Code18: timed out waiting for AX loaded notification. App-accessibility job139901927281 executed and failed at StudioAppAccessibilityUITests.swift:340: scrolling content light-Key was not visibly reachable. Test source remains in Plan mode at that step and has not constructed a spatial viewport. This identifies the exercised path, not the product/harness cause. Full logs are retained in validation/. Lanes01/07/19/20 should reconcile these results with layout/harness work without removing, skipping or relaxing assertions. Native spatial-method execution is tracked separately.
+Run45817222487 at68c83 passed366 Debug/366 Release core tests and100 tooling checks; native test-bundle builds succeeded. Studio-optics job139901927290 failed before UI runner initialization with XCTDaemonErrorDomain Code18: timed out waiting for AX loaded notification. App-accessibility job139901927281 executed and failed at StudioAppAccessibilityUITests.swift:340: scrolling content light-Key was not visibly reachable. Test source remains in Plan mode at that step and has not constructed a spatial viewport. This identifies the exercised path, not the product/harness cause. Full logs are retained in validation/. Lanes01/07/19/20 should reconcile these results with layout/harness work without removing, skipping or relaxing assertions. The simulator job independently passed all 171 native methods, including 25 spatial methods, with zero failures/skips. Genuine SceneKit fallback captures are preserved in captures/. The later source fixes and added tests require their own execution receipt.
 
 ## Evidence boundary
 

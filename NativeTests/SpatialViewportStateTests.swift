@@ -76,6 +76,18 @@ final class SpatialViewportStateTests: XCTestCase {
         XCTAssertThrowsError(try SpatialViewportBounds(scene: scene))
     }
 
+    func testAimTargetSphereIsContainedBeyondItsAuthoredCenter() throws {
+        let light = StudioLight(name: "Aimed", position: .init(x: 0, y: 2, z: 0), candela: 900, kelvin: 5600,
+                                optics: .init(kind: .directional, aimTarget: .init(x: 1, y: 2, z: 0)))
+        let scene = LightingScene(subject: .init(x: 0, y: 1.5, z: 0), camera: .init(x: 0, y: 1.5, z: 3),
+                                  lights: [light])
+        let bounds = try SpatialViewportBounds(scene: scene)
+        // The native marker is a 55 mm diameter sphere; a center-only bound
+        // would stop at x=1 and fail this actual displayed-volume contract.
+        XCTAssertEqual(bounds.maximum.x, 1.0275, accuracy: 1e-12)
+        try assertFits(scene)
+    }
+
     func testPanUsesTheSmallerViewportAxisAndDoesNotChangeCameraDistance() throws {
         var landscape = SpatialOrbitState(), portrait = SpatialOrbitState()
         let before = landscape
@@ -105,6 +117,8 @@ final class SpatialViewportStateTests: XCTestCase {
         XCTAssertEqual(orbit, before)
         XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0, height: 240))
         XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: .infinity, height: 240))
+        XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0.00001, height: 1000),
+                     "A Double angle rounding to Float 180 must not reach RealityKit")
     }
 
     func testGestureLimitsAndFitRecoveryRemainFinite() throws {
@@ -124,6 +138,20 @@ final class SpatialViewportStateTests: XCTestCase {
         orbit.fit(bounds)
         var fresh = SpatialOrbitState(); fresh.fit(bounds)
         XCTAssertEqual(orbit, fresh)
+    }
+
+    func testFarClippingEnclosesTheAuthoredWorldAfterExtremePanAndOrbit() {
+        var orbit = SpatialOrbitState()
+        orbit.pan(horizontal: -100_000, vertical: 100_000, width: 120, height: 600)
+        XCTAssertEqual(orbit.target, .init(x: 300, y: 300, z: -300))
+        let yaw = 3 * Double.pi / 4
+        let pitch = asin(1 / sqrt(3.0))
+        orbit.orbit(horizontal: (orbit.yaw - yaw) / 0.008, vertical: (pitch - orbit.pitch) / 0.008)
+        orbit.zoom(scale: .greatestFiniteMagnitude)
+        let opposite = Position(x: -100, y: -100, z: 100)
+        let depth = orbit.position.distance(to: opposite)
+        XCTAssertGreaterThan(depth, 690)
+        XCTAssertLessThan(depth, orbit.farDistance)
     }
 
     private func assertFits(_ scene: LightingScene, file: StaticString = #filePath, line: UInt = #line) throws {
