@@ -1,0 +1,6 @@
+git rev-parse HEAD
+python3 /tmp/keyfill02/docs/parallel/02/reports/w02/w02r01/acceptance_reference.py
+cp /tmp/keyfill02/docs/parallel/02/reports/w02/w02r01/probe.swift /tmp/keyfill02-workers/w02r01/private-output/probe.swift
+python3 /tmp/keyfill02-probe.py /tmp/keyfill02-workers/w02r01 /tmp/keyfill02-workers/w02r01/private-output/probe.swift
+cp private-output/probe.log /tmp/keyfill02/docs/parallel/02/reports/w02/w02r01/swift-output.json
+python3 /tmp/keyfill02/docs/parallel/02/reports/w02/w02r01/acceptance_reference.py /tmp/keyfill02/docs/parallel/02/reports/w02/w02r01/swift-output.json

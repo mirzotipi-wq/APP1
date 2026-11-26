@@ -1,0 +1,6 @@
+python3 /tmp/keyfill02-probe.py /tmp/keyfill02-workers/w02r02 /tmp/keyfill02-workers/w02r02/private-output/probe.swift
+python3 /tmp/keyfill02-workers/w02r02/private-output/reference.py /tmp/keyfill02-workers/w02r02/private-output/probe.log /tmp/keyfill02-workers/w02r02/private-output/comparison.tsv
+
+# Compiler command executed by the provided wrapper
+flock /tmp/keyfill02-build.lock /tmp/keyfill02-toolchain/usr/bin/swiftc -I /tmp/keyfill02-swift-snapshot/v1/Modules /tmp/keyfill02-workers/w02r02/private-output/probe.swift /tmp/keyfill02-swift-snapshot/v1/libLightingCore.a -o /tmp/keyfill02-workers/w02r02/private-output/probe
+/tmp/keyfill02-workers/w02r02/private-output/probe

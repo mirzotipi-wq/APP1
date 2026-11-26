@@ -1,0 +1,17 @@
+# Working directory: /tmp/keyfill02-workers/w02r03
+cat /tmp/keyfill02/docs/parallel/02/WAVE-TASKS.md
+rg -n 'enum (Photometry|StudioPhotometry|LightOutputAdjustment)|struct (Photometry|StudioPhotometry|LightOutputAdjustment)|class (Photometry|StudioPhotometry|LightOutputAdjustment)' .
+cat Sources/LightingCore/LightOutputAdjustment.swift
+sed -n '1,260p' Sources/LightingCore/Scene.swift
+sed -n '1,300p' Sources/LightingCore/StudioOptics.swift
+sed -n '1,240p' Sources/LightingCore/Photometry.swift
+# Previous read exited 2: absent path. Located actual file below.
+cat /tmp/keyfill02-probe.py
+rg -n 'static func pointIlluminance|static func rectangularIlluminance' Sources/LightingCore
+git rev-parse HEAD
+sed -n '1,175p' Sources/LightingCore/SurfacePhotometry.swift
+mkdir -p /tmp/keyfill02-workers/w02r03/private-output /tmp/keyfill02/docs/parallel/02/reports/w02/w02r03
+# Wrote private-output/probe.swift with apply_patch; retained exact source here.
+python3 /tmp/keyfill02-probe.py /tmp/keyfill02-workers/w02r03 /tmp/keyfill02-workers/w02r03/private-output/probe.swift
+# Wrapper serializes swiftc via flock; uses /tmp/keyfill02-swift-snapshot/v1.
+# Copied probe.swift, probe.log, compile.log to this report directory (no binaries).

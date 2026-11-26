@@ -3,6 +3,27 @@ import XCTest
 @testable import LightingCore
 
 final class PhotometryFiniteBoundaryTests: XCTestCase {
+    func testRollPreservesExactPlaneSeparationWithoutWideningSupportedDomain() throws {
+        for size in [0.05, 0.6, 4.0] {
+            let depth = max(0.05, size / 4)
+            for degrees in [0.0, 1, 37, 90, 179] {
+                let angle = degrees * .pi / 180
+                let emitter = try XCTUnwrap(LambertianRectangle(
+                    center: .init(x: 0, y: 0, z: 0),
+                    right: XCTUnwrap(UnitDirection(x: cos(angle), y: sin(angle), z: 0)),
+                    up: XCTUnwrap(UnitDirection(x: -sin(angle), y: cos(angle), z: 0)),
+                    widthMeters: size, heightMeters: size, onAxisCandela: 1000))
+                let normal = try XCTUnwrap(UnitDirection(x: 0, y: 0, z: -1))
+                let lux = try XCTUnwrap(Photometry.rectangularIlluminance(
+                    emitter: emitter, receiver: .init(x: 0, y: 0, z: depth), receiverNormal: normal))
+                XCTAssertGreaterThan(lux, 0)
+                XCTAssertNil(Photometry.rectangularIlluminance(
+                    emitter: emitter, receiver: .init(x: 0, y: 0, z: depth.nextDown),
+                    receiverNormal: normal), "Strict separation must remain intact at roll \(degrees)")
+            }
+        }
+    }
+
     func testTinyRectangleOutputRetainsRepresentableIlluminance() throws {
         let right = try XCTUnwrap(UnitDirection(x: 1, y: 0, z: 0))
         let up = try XCTUnwrap(UnitDirection(x: 0, y: 1, z: 0))

@@ -46,7 +46,14 @@ public struct LambertianRectangle: Sendable {
         self.widthMeters = widthMeters; self.heightMeters = heightMeters
         self.onAxisCandela = onAxisCandela
         let r = right.vector, u = up.vector
-        normal = .init(r.y * u.z - r.z * u.y, r.z * u.x - r.x * u.z, r.x * u.y - r.y * u.x)
+        // The cross product of two represented unit axes can be slightly
+        // shorter than one after rounding. Depth is a distance, so its normal
+        // must itself be normalized; otherwise rolling a rectangle can reject
+        // an exact minimum-separation receiver. No separation epsilon is used.
+        guard let direction = UnitDirection(x: r.y * u.z - r.z * u.y,
+                                            y: r.z * u.x - r.x * u.z,
+                                            z: r.x * u.y - r.y * u.x) else { return nil }
+        normal = direction.vector
     }
 }
 

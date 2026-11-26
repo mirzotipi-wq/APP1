@@ -1,0 +1,35 @@
+W02R07 commands
+Working directory for every shell command: /tmp/keyfill02-workers/w02r07
+Frozen source and module revision: f75aa2758b4c14714e7517c4c0df4adb9f1a8b9b
+
+EXECUTED CHECK (once; exit 0)
+python3 /tmp/keyfill02-probe.py /tmp/keyfill02-workers/w02r07 /tmp/keyfill02-workers/w02r07/private-output/probe.swift
+
+The helper invoked these subprocesses in order (both exit 0):
+flock /tmp/keyfill02-build.lock /tmp/keyfill02-toolchain/usr/bin/swiftc -I /tmp/keyfill02-swift-snapshot/v1/Modules /tmp/keyfill02-workers/w02r07/private-output/probe.swift /tmp/keyfill02-swift-snapshot/v1/libLightingCore.a -o /tmp/keyfill02-workers/w02r07/private-output/probe
+/tmp/keyfill02-workers/w02r07/private-output/probe
+
+READ-ONLY INSPECTION COMMANDS (exact shell text)
+sed -n '1,260p' /tmp/keyfill02/docs/parallel/02/WAVE-TASKS.md
+git rev-parse HEAD && rg --files -g 'AGENTS.md' -g '*StudioOptics*' -g '*ReferenceStudy*' -g '*Photometry*' -g '*LightingCore*' -g '*Study*' .
+sed -n '1,240p' /tmp/keyfill02-probe.py
+cat AGENTS.md
+sed -n '1,320p' Sources/LightingCore/StudioOptics.swift
+sed -n '1,360p' Sources/LightingCore/ReferenceStudy.swift
+rg -n 'common|W02|Study|meter|grazing|contract' docs/parallel/02/README* docs/parallel/02/*CONTRACT* docs/parallel/02/*.md
+sed -n '360,415p' Sources/LightingCore/ReferenceStudy.swift && sed -n '1,320p' Sources/LightingCore/SurfacePhotometry.swift
+rg -n 'public struct (LightingScene|StudioLight|Position|UnitDirection)|public init\(|static func.*(pointIlluminance|rectangularIlluminance)' Sources/LightingCore/Scene.swift Sources/LightingCore/Photometry.swift Sources/LightingCore/*swift
+sed -n '1,240p' Tests/LightingCoreTests/ReferenceStudyTests.swift && sed -n '1,200p' docs/parallel/02/CAMPAIGN.md && git status --short --branch
+rg --files /tmp/keyfill02-swift-snapshot/v1 /tmp/keyfill02/docs/parallel/02 | head -60
+sed -n '1,190p' Sources/LightingCore/Scene.swift
+cat /tmp/keyfill02-swift-snapshot/v1/provenance.json && /tmp/keyfill02-toolchain/usr/bin/swiftc --version && uname -sm
+rg -n 'func (dot3|normalized3)|isFull|fullRectangleMidpoint|rectangularIlluminance|illuminance\(for|receiverNormal\(in|public func evaluate' Sources/LightingCore/ReferenceStudy.swift Sources/LightingCore/SurfacePhotometry.swift Sources/LightingCore/StudioOptics.swift
+
+Inspection note: the README/CONTRACT globs and guessed Photometry.swift path did not exist; those two rg calls exited 2. Relevant definitions were then read from the actual StudioOptics.swift, SurfacePhotometry.swift, ReferenceStudy.swift, and Scene.swift files. These lookup misses are not execution failures of the probe.
+
+ARTIFACT RECORD
+probe.swift was written with apply_patch; exact source is retained beside this file.
+An executed Python heredoc copied private-output/probe.swift, probe.log and compile.log here, parsed the result, and asserted passed=true and fixture_count=2. It asserted worker HEAD and snapshot provenance source_sha equal the frozen SHA, SHA256-hashed the four inspected sources and matched them against the snapshot manifest, and wrote provenance.json with module, library, helper and artifact hashes. Its only subprocesses were:
+git rev-parse HEAD
+/tmp/keyfill02-toolchain/usr/bin/swiftc --version
+report.md and this command record were written with apply_patch. No package build, installation, production edit, commit or push was performed. The executable remains in the worker private-output directory and was not copied into reports.

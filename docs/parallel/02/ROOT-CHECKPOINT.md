@@ -36,3 +36,22 @@ This is approximation characterization, not equipment calibration.
 Next: finish wave1; wave2 independent fixtures; wave3 point/orientation regressions;
 wave4 rectangle fix; wave5 solver robustness; wave6 color; wave7 consumers;
 wave8 sweeps; wave9 challenge; wave10 deliver. Keep protected thresholds.
+
+## Second root checkpoint
+
+Wave01 complete10/10 and preserved at verified remote5579b4f. All recorded
+artifact hashes checked against remote commit before removing its10owned
+worktrees. Wave02 active. Root independently discovered that raw rectangle
+cross-product normals can be short byoneULP after roll; exact minimum-depth
+receivers then incorrectly returnnil. Current candidate normalizes that cross
+product; strict nextDown separation rejection preserved.26targeted tests pass.
+1504point/rectangle cases pass against independent spherical-edge integration;
+120unexpectednil rows in prior source are retained. Maximum area error0.215683%.
+W02R04 independent rolled-oblique Simpson fixture integrated for full validation.
+
+Remote f75 run45816637769 core job139897956193 passed372Debug+372Release,
+100tooling tests and existing shared-kernel parity checks. macOS core372passed.
+Simulator build failed existing UITests/StudioAppAccessibilityUITests.swift:95
+ambiguous greatestFiniteMagnitude from f150; this is main's b0d25ee fix and is
+outside lane02ownership. Original failure excerpts retained, no AppleUI pass.
+Current source changes require their own validation; no automatic carryforward.
