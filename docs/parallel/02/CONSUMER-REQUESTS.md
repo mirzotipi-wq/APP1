@@ -26,3 +26,15 @@ candela is smaller than Double.leastNonzeroMagnitude. No tolerance was loosened;
 maximum.nextUp rejection, zero-off behavior, source validity and1e-9 forward
 solver acceptance are unchanged. The original failed expectation is retained
 in evidence/candidate-obsolete-underflow-expectation.log.
+
+## Interrupted review follow-up
+
+W02R08 executed a standalone Swift probe of all four error descriptions. All
+are fixed literals without private-value interpolation. It found a clear action
+for invalidTargetLux, and requested more specific recovery steps for invalidLight,
+unsupportedGeometry and outputOutOfRange. This is a source-text finding, not a
+native accessibility audit. No further wording changes were made after the
+execution environment became unavailable; review during the remaining solver/
+consumer waves. The returned assessment is retained in
+reports/w02/w02r08/recovered-handoff.md; original local probe files were not
+verified recovered remotely.

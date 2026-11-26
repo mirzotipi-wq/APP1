@@ -14,7 +14,9 @@ state is owned by lane 20 and is not modified here.
 
 ## Execution
 
-100 actual fresh contexts: ten waves, ten roles per wave. The acceptance worker
+Requested: 100 actual fresh contexts across ten waves, ten roles per wave.
+At the execution-host interruption, 18 actual contexts had completed; 82 were
+not created. See worker-ledger.json and HANDOFF.md for the final session state. The acceptance worker
 also coordinates nine fresh specialists. Root integrates serially. Available
 capacity is four contexts including root: one wave lead and at most two child
 workers. Each receives its own detached sparse worktree and private-output
