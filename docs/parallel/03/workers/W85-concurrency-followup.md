@@ -1,0 +1,11 @@
+# W85 — candidate followup
+
+Same actual worker `/root/wave09/w85_concurrency`; no new worker count. Reviewed W84's private candidate at `/tmp/keyfill03-7f4b/workers/W84-implementation`, based on `a7c93be58a04154748c951b3d485b05300e9692c`. Exact hashes, commands and limits: `wave09-evidence/W85-candidate-review.json`.
+
+**Source verdict: no blocker.** The candidate corrects the W057 subsequent-request adoption/status bypass. Each active work activation consults the engine through the production-default render closure. A retained frame becomes current only when both request and ticket match. Historical A remains previous while its authoritative result is pending, and guarded publication adopts the new image/backend together. The a7 previous-frame unsupported-pixel warning remains visible and accessible. Existing cancellation, conversion and inactive/disappearance guards remain intact.
+
+The regression uses one hosting controller and observable scene holder throughout A→B→A. Explicit continuations hold B and second A; invocation counts require two A calls and one B. Positive controls establish initial Metal/current/warning, held previous/updating with the historical warning and no current badge, then adopted CPU/current status. This targets both skipped lookup and a return-removal-only change lacking ticket currentness; no before/fail execution is claimed.
+
+Accessibility traversal includes actual UIKit views and virtual container elements, hidden filtering, identity deduplication, and finite hierarchy bounds. Waits have deadlines. Cleanup closes the producer, releases held continuations, detaches the host and restores the prior key window. The existing ten-method pipeline test file remains byte-identical (`a68a38ab…`).
+
+**Executed:** source/hash inspection and `git diff --check` (exit 0, no diagnostics). No Swift typecheck, native test, screenshot, baseline failure or Metal execution. Foreground-window availability and UIKit/SwiftUI accessibility exposure remain root-owned native gates. The producer is synthetic policy evidence; actual engine/GPU behavior is not claimed. Original W85 reports remain preserved. Verdict was sent promptly for integration. A report-writer syntax error and corrected retry are recorded in the receipt; neither changed production files.

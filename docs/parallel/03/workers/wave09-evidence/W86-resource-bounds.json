@@ -1,0 +1,81 @@
+{
+  "task": "/root/wave09/w86_resource",
+  "input_head": "a7c93be58a04154748c951b3d485b05300e9692c",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W86-resource",
+  "method": "Read-only source/test inspection and independent Python integer arithmetic; no Swift build/test, render, benchmark, native run or memory measurement.",
+  "input_sha256": {
+    "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "Sources/LightingCore/PortraitHeadMesh.swift": "2f4be2a16daf9758d38bb184e735c9ae130797d01327cf78a1563b783826c637",
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "Sources/LightingCore/RoomPlacement.swift": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+    "App/MetalStudyRenderer.swift": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+    "Tests/LightingCoreTests/StudyFrameCacheTests.swift": "dcb526e78e7c2f0fb75afca5d4022ef0d99efe57e0b7babfea3683204bf89672",
+    "Tests/LightingCoreTests/StudyComputeInputTests.swift": "ac648e699bb29738e390df1aae9d0377a86599a42c880c14fba8990d88264cf6",
+    "Tests/LightingCoreTests/PortraitStudyTests.swift": "8e81192f21aed2ea69b45ad276b42fcefc4bceb066540625a945c173c2a78cf9",
+    "NativeTests/StudyRenderCacheTests.swift": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3"
+  },
+  "inspection_commands": [
+    "cat AGENTS.md && cat docs/parallel/03/WORKER_PROTOCOL.md",
+    "cat agents/OPERATING_PROTOCOL.md && cat docs/acceptance/m02-m03-code.md && git log -3 --oneline",
+    "cat Sources/LightingCore/StudyFrameCache.swift && cat App/MetalStudyRenderer.swift",
+    "sed -n '120,204p' Sources/LightingCore/ReferenceStudy.swift; sed -n '204,293p' Sources/LightingCore/ReferenceStudy.swift; sed -n '392,500p' Sources/LightingCore/ReferenceStudy.swift",
+    "sed -n '159,233p' Sources/LightingCore/PortraitStudy.swift; sed -n '230,279p' Sources/LightingCore/PortraitHeadMesh.swift",
+    "sed -n '72,98p' Tests/LightingCoreTests/StudyFrameCacheTests.swift; sed -n '122,165p' Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+    "rg -n 'func test|name|mask|width|cache' NativeTests/StudyRenderCacheTests.swift | head -80"
+  ],
+  "read_error": "One initial rg of nonexistent NativeTests/MetalStudyTests.swift returned exit 2; located and inspected NativeTests/StudyRenderCacheTests.swift instead.",
+  "arithmetic_probe": {
+    "command": "python3 - <<'PY' (in-session inline arithmetic, input SHA-256, and receipt/report writer)",
+    "resolution_maxima": {
+      "sphere_interactive": {
+        "accepted_width_count": 57,
+        "width": 192,
+        "height": 128,
+        "rgba_bytes": 98304,
+        "mask_bytes": 24576
+      },
+      "sphere_reference": {
+        "accepted_width_count": 25,
+        "width": 96,
+        "height": 64,
+        "rgba_bytes": 24576,
+        "mask_bytes": 6144
+      },
+      "portrait": {
+        "accepted_width_count": 41,
+        "width": 144,
+        "height": 96,
+        "rgba_bytes": 55296,
+        "mask_bytes": 13824
+      }
+    },
+    "subtraction_boundary_comparisons": 104,
+    "two_largest_sphere_frames": {
+      "rgba_bytes": 196608,
+      "mask_bytes": 49152
+    },
+    "sample_upper_bounds": {
+      "interactive": 768,
+      "reference": 12288
+    },
+    "interactive_packed_rows": {
+      "parameters": 6,
+      "samples": 2304,
+      "areas": 36
+    },
+    "geometry_derived_from_fixed_constants": {
+      "vertices": 2752,
+      "triangles_expected": 5248,
+      "binary_nodes_for_expected_triangles": 2047,
+      "levels_including_root": 11
+    },
+    "outcome": "All explicit independent arithmetic assertions held. This is not execution of Swift production code."
+  },
+  "limits": [
+    "Cache counters measure owner-declared logical payload; keys/allocators/COW/render scratch/Metal buffers/caller retention/static mesh are outside this bound.",
+    "Scene.validated() still scans/trims input-dependent Unicode names; 80 graphemes is not a byte bound. Names are stripped before cache retention.",
+    "No new bounded-work or memory defect established by this inspection."
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "canonical_runtime_id": "/root/wave09/w84_implementation",
+  "parent": "/root/wave09",
+  "head": "a7c93be58a04154748c951b3d485b05300e9692c",
+  "tree": "dda4e04f7c732ddad4167ccbda0e5f98a1b9d838",
+  "private_worktree": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+  "status": "completed source review only",
+  "file_sha256": {
+    "App/ReferenceStudyPreview.swift": "612e922e16a900bf69cbc1bf13d9995912db535703a4b0bd85f372de1f1d44a5",
+    "NativeTests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141"
+  },
+  "slice_sha256": {
+    "pipeline_prefix": "53d47ad2a62c54771d0617a0a76802ccccd63c02adaa99a454fd8feca4cf611c",
+    "task_and_conversion_suffix": "8039af58d3007437142e800844ba06643c0e3b4d80e665371cf6679bb605f503"
+  },
+  "checks": {
+    "expected_head": true,
+    "expected_tree": true,
+    "expected_preview_sha256": true,
+    "private_tree_clean": true,
+    "pipeline_bytes_unchanged_since_36": true,
+    "task_and_conversion_bytes_unchanged_since_36": true,
+    "pipeline_tests_bytes_unchanged_since_36": true,
+    "cpu_file_bytes_unchanged_since_db7": true,
+    "all_lighting_core_paths_unchanged_since_db7": true
+  },
+  "source_review_matrix_not_runtime_results": [
+    [
+      "current image, positive count, active or inactive",
+      "Existing studyWarning; no previous warning. Current request is unaffected by activeRequest nil."
+    ],
+    [
+      "same-subject previous image, positive count, active",
+      "Previous-qualified count in image label and single updating VStack."
+    ],
+    [
+      "same-subject previous image, positive count, inactive",
+      "Same count retained; status changes to paused."
+    ],
+    [
+      "same-subject previous image, zero count",
+      "Previous status only; optional map appends empty string."
+    ],
+    [
+      "other-subject frame",
+      "Outer guard rejects it; loading or paused placeholder."
+    ],
+    [
+      "no frame",
+      "Loading or paused placeholder."
+    ],
+    [
+      "current error or conversion failure",
+      "Image nil; unavailable/retry branch. Pipeline zeroes count and backend."
+    ],
+    [
+      "previous error or conversion failure",
+      "Outer guard rejects noncurrent nil-image frame."
+    ]
+  ],
+  "observations": [
+    "Warning count is read only from the retained frame that supplies the image. It cannot come from the new request.",
+    "Current warning/backend and previous status are mutually exclusive in source. No stale move-lights advice/backend is added to the retained previous frame.",
+    "Local Swift standard-library interface declares AdditionPrecedence above TernaryPrecedence; concatenation belongs to the previous-label branch. No Swift compiler executed.",
+    "The visible previous warning shares one VStack/background with updating/paused status. Source introduces no second bottom-leading warning overlay.",
+    "Child caption2 font is explicit inside the parent caption style. Accessibility label override on the status container and repeated count exposure need native semantics review; the Image has its own explicit full previous-count label.",
+    "Image initializer label and accessibilityLabel use the same string. This does not prove actual announcement count, VoiceOver traversal, Dynamic Type fit, or overlay coverage.",
+    "All ten pipeline test methods inspected; none was run. They cover publication/error seams, not actual SwiftUI warning presentation."
+  ],
+  "inspection_shell_commands": [
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "pwd && rg --files -g AGENTS.md -g WORKER_PROTOCOL.md -g '*W74*' -g '*W80*' -g '*m02-m03-code*' -g '*ReferenceStudyPreview*' -g '*Pipeline*' -g '*pipeline*' -g '*architecture*' -g '*design*' -g '*quality*' -g '*W81*'",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "cat AGENTS.md docs/parallel/03/WORKER_PROTOCOL.md docs/parallel/03/workers/W74-implementation.md docs/parallel/03/workers/W74-implementation-followup.md docs/parallel/03/workers/W80-independent-review.md docs/acceptance/m02-m03-code.md",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "git rev-parse HEAD HEAD^{tree} && git status --short && sha256sum App/ReferenceStudyPreview.swift && sed -n '1,280p' App/ReferenceStudyPreview.swift && rg --files docs | rg -i '(architecture|design|quality|w81)'",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "wc -l agents/OPERATING_PROTOCOL.md agents/HANDOFF.md agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md NativeTests/StudyPreviewPipelineTests.swift && cat agents/OPERATING_PROTOCOL.md docs/ARCHITECTURE.md docs/DESIGN.md docs/QUALITY.md && cat docs/parallel/03/workers/wave08-evidence/W74-previous-frame-warning.patch",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "cat NativeTests/StudyPreviewPipelineTests.swift && rg -n 'studyPreviousPreview|studyWarning|studyUpdating|studyPaused|unsupported pixels|Light study paused|Showing the previous' App NativeTests UITests Tests && git log -3 --oneline",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "cat agents/HANDOFF.md agents/state.json docs/PRODUCT.md docs/ROADMAP.md docs/acceptance/m02-m03-code.md && python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "git diff --check 36ed6a1455dee7ca52b55f46d1a47262f5c98cc1 HEAD -- App/ReferenceStudyPreview.swift NativeTests/StudyPreviewPipelineTests.swift && git diff 36ed6a1455dee7ca52b55f46d1a47262f5c98cc1 HEAD -- App/ReferenceStudyPreview.swift NativeTests/StudyPreviewPipelineTests.swift && rg --files Sources | rg 'Study|CPU' && rg --files /workspace/scratch/13a77d3f98df/toolchain/usr/lib/swift | rg 'Swift.swiftmodule/.+\\.swiftinterface$'",
+      "exit": 0
+    },
+    {
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "command": "git diff --name-only db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5 HEAD -- Sources/LightingCore && rg -n -A8 '^precedencegroup (TernaryPrecedence|NilCoalescingPrecedence|ComparisonPrecedence|AdditionPrecedence)|^infix operator \\+ :' /workspace/scratch/13a77d3f98df/toolchain/usr/lib/swift/linux/Swift.swiftmodule/x86_64-unknown-linux-gnu.swiftinterface && rg -n 'struct StudyImage|unsupportedPixels|unsupportedMask|invalidMask' Sources/LightingCore/ReferenceStudy.swift",
+      "exit": 0
+    }
+  ],
+  "check_subprocess_commands": [
+    {
+      "argv": [
+        "git",
+        "show",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:App/ReferenceStudyPreview.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:Sources/LightingCore/ReferenceStudy.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "138371cefbd303b8c716ffe9a40fc3be66e9fa25897ef77e27643ff6308a3bc8",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5",
+        "HEAD",
+        "--",
+        "Sources/LightingCore"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+        "HEAD",
+        "--",
+        "App/ReferenceStudyPreview.swift",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W84-implementation",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": ""
+    }
+  ],
+  "receipt_command": "python3 /workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave09-evidence/W84-source-review.py",
+  "receipt_script_sha256": "35eeb254dee771491454bd7de6309c00bd0b14934613209428631a011f5d7bf1",
+  "limits": [
+    "No native typecheck/build, test execution, render, benchmark, UI/VoiceOver session, model simulation, or physical/device claim.",
+    "No production edits, commits, pushes, or cleanup."
+  ],
+  "recommendation": "No source blocker found. Native compilation and observed SwiftUI semantics/layout remain root-owned pending verification."
+}

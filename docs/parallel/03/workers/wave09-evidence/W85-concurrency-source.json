@@ -1,0 +1,100 @@
+{
+  "worker": "W85-concurrency",
+  "runtime_identity": "/root/wave09/w85_concurrency",
+  "identity_note": "Canonical actual agent identity returned by collaboration.list_agents; no separate opaque ID was exposed.",
+  "reviewed_at_utc": "2026-11-26T16:05:14.369689+00:00",
+  "revision": "a7c93be58a04154748c951b3d485b05300e9692c",
+  "private_worktree": "/tmp/keyfill03-7f4b/workers/W85-concurrency",
+  "private_worktree_status": "",
+  "source_sha256": {
+    "AGENTS.md": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+    "docs/parallel/03/WORKER_PROTOCOL.md": "d982468f35c62f528116c6c82261388f2c2be2480ce11c042547763545612d13",
+    "agents/OPERATING_PROTOCOL.md": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6",
+    "docs/acceptance/m02-m03-code.md": "829fb77720eca498dcefdb8945b62383e9d7e748cf54fa86b7b53c55d0573ba4",
+    "App/ReferenceStudyPreview.swift": "612e922e16a900bf69cbc1bf13d9995912db535703a4b0bd85f372de1f1d44a5",
+    "App/MetalStudyRenderer.swift": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+    "NativeTests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+    "NativeTests/StudyRenderCacheTests.swift": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3",
+    "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "Tests/LightingCoreTests/StudyCancellationTests.swift": "a6921bd12c2592e171c33077cab8cd781917283575114abc4946f1f6f4fc3d78",
+    "Tests/LightingCoreTests/StudyFrameCacheTests.swift": "dcb526e78e7c2f0fb75afca5d4022ef0d99efe57e0b7babfea3683204bf89672"
+  },
+  "commands_executed": [
+    "cat AGENTS.md docs/parallel/03/WORKER_PROTOCOL.md",
+    "git rev-parse HEAD",
+    "git status --short && git branch --show-current && git log -3 --format='%h %s' && cat agents/OPERATING_PROTOCOL.md && sed -n '1,300p' App/ReferenceStudyPreview.swift",
+    "nl -ba App/MetalStudyRenderer.swift | sed -n '120,285p'; nl -ba Sources/LightingCore/StudyFrameCache.swift | sed -n '1,180p'; rg -n -C 2 'cancel|256|64|poll|cache' docs/acceptance/m02-m03-code.md",
+    "nl -ba NativeTests/StudyPreviewPipelineTests.swift | sed -n '1,300p'",
+    "nl -ba NativeTests/StudyRenderCacheTests.swift | sed -n '1,310p'",
+    "nl -ba NativeTests/StudyRenderCacheTests.swift | sed -n '295,390p'; git status --porcelain=v1; git diff --stat",
+    "nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '456,560p'; nl -ba Sources/LightingCore/PortraitStudy.swift | sed -n '154,236p'; nl -ba Tests/LightingCoreTests/StudyCancellationTests.swift | sed -n '1,225p'; sha256sum Sources/LightingCore/ReferenceStudy.swift Sources/LightingCore/PortraitStudy.swift docs/acceptance/m02-m03-code.md",
+    "cat Tests/LightingCoreTests/StudyCancellationTests.swift Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+    "python3 - (report/receipt writer: hashlib SHA256 and git subprocesses; no model or Swift execution)"
+  ],
+  "source_review": [
+    {
+      "scenario": "cancel then noncooperative late completion",
+      "trace": "load awaits render; Task.cancel occurs; render returns success; line44 rejects before conversion. CancellationError and StudyError.cancelled also return silently at lines51-52.",
+      "source": "App/ReferenceStudyPreview.swift:41-59"
+    },
+    {
+      "scenario": "completed A then pending B then cached A",
+      "trace": "A frame remains; B owns ticket B; restarted task for A calls begin before the cached-frame early return; B resumes with a noncurrent ticket and cannot publish.",
+      "source": "App/ReferenceStudyPreview.swift:25-32,41-46,205-211"
+    },
+    {
+      "scenario": "inactive and resumed request",
+      "trace": "activeRequest becomes nil; task identity changes, task begin invalidates the earlier ticket before the nil guard; resume creates a fresh ticket and either reuses matching A or renders latest snapshot. onDisappear invalidates independently.",
+      "source": "App/ReferenceStudyPreview.swift:91-98,204-220",
+      "limit": "Source reasoning relies on SwiftUI task lifecycle semantics; no mounted SwiftUI execution by this worker."
+    },
+    {
+      "scenario": "pre-cancelled begin",
+      "trace": "begin creates an unused UUID and returns before replacing current; load rejects it or cancellation. A live task retains its ticket.",
+      "source": "App/ReferenceStudyPreview.swift:28-32,41"
+    },
+    {
+      "scenario": "conversion invalidation",
+      "trace": "Conversion synchronously invalidates the ticket; line46 rechecks after conversion and suppresses publish.",
+      "source": "App/ReferenceStudyPreview.swift:44-47"
+    },
+    {
+      "scenario": "failed or observed-cancelled rendering",
+      "trace": "Throwing CPU results never reach retain; cancellation observed at the engine final guards throws before retain. A live ordinary failure publishes an error completion with no image/backend, not successful pixels.",
+      "source": "App/MetalStudyRenderer.swift:187-193,214-229; App/ReferenceStudyPreview.swift:51-59"
+    },
+    {
+      "scenario": "poll and cache bounds",
+      "trace": "Pixel countdown resets to eight and is decremented before each guarded pixel; next poll precedes ninth pixel. Both renderers invoke checkpoint before background/unsupported branches. Cache rejects invalid costs and evicts before append under count/pixel/mask limits.",
+      "source": "Sources/LightingCore/ReferenceStudy.swift:482-496,515-551; Sources/LightingCore/PortraitStudy.swift:187-228; Sources/LightingCore/StudyFrameCache.swift:50-68; App/MetalStudyRenderer.swift:127-129",
+      "limit": "Inspection and arithmetic only; no new bound measurement or test execution."
+    }
+  ],
+  "completion_boundary": {
+    "classification": "Unchanged engine completion-linearization limit; no demonstrated prohibited pre-completion cancelled insertion and no new lane03 publication defect.",
+    "concrete_source_schedule": [
+      "Bust pixels finish and PortraitStudyRenderer returns its completed StudyImage (MetalStudyRenderer.swift:190-191).",
+      "Engine final guard observes isCancelled false (line192).",
+      "An external executor requests Task.cancel after that observation but before the next statement.",
+      "Engine calls retain, inserts completed output at lines243-244, then returns it.",
+      "If the preview continuation resumes after cancellation, ReferenceStudyPreview.swift:44 suppresses its publication."
+    ],
+    "interpretation": "No actor suspension between guard and retain prevents actor reentrancy, but does not itself serialize an external cancellation request. If the final successful guard is the completion linearization point, this is cancellation after completion. The source schedule is not evidence of pre-completion cancelled pixel work entering the cache.",
+    "publication_limit": "An analogous external cancellation can race a final MainActor cancellation check; normal begin/invalidate work cannot interleave without suspension. No mounted SwiftUI or native failure was demonstrated.",
+    "native_probe_design_unrun": {
+      "setup": "Measure cancellationRequested invocation count on a fresh 24x16 bust engine using a lock-protected counter, as existing StudyRenderCacheTests does.",
+      "injection": "In a fresh engine callback at the measured final call, invoke withUnsafeCurrentTask { $0?.cancel() }, then return false. Earlier callbacks return false. Run render in its own Task.",
+      "reason": "MetalStudyRenderer.swift:177 evaluates Task.isCancelled before additionalCancellation(). The injected cancellation occurs inside that latter call, after the first read but before the guard returns.",
+      "observe": "Record whether render returns despite Task.isCancelled now true; then issue a new live request with cancellation at callback eight to distinguish a retained frame from cold CPU work.",
+      "limits": "Not executed. Adversarial test-seam behavior after pixels already complete; does not independently prove production failure or choose the completion linearization point."
+    }
+  },
+  "tests_executed_by_worker": [],
+  "builds_renders_benchmarks_executed_by_worker": [],
+  "prior_test_evidence": "The source36 native passes and original pre-cancelled-begin failure were supplied as inherited context only. Neither was claimed as this worker execution. Root owns fresh a7 native validation.",
+  "production_edits": false,
+  "checkpoint": "Qualitative ~60% communicated; exact token counter unavailable.",
+  "disposition": "Specific risk assessed; no further test/build requested. Leave any engine completion-boundary contract decision to root/engine owner."
+}
