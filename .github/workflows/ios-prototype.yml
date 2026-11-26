@@ -1,6 +1,7 @@
 name: iOS Prototype
 on:
   push:
+    branches-ignore: ['m03-evidence-inspection']
     paths-ignore: ['**/*.md', 'docs/**', 'agents/**']
   pull_request:
     paths-ignore: ['**/*.md', 'docs/**', 'agents/**']
@@ -68,6 +69,7 @@ jobs:
           set -euo pipefail
           swiftc -O Sources/LightingCore/*.swift scripts/render-study-fixtures.swift -o "$RUNNER_TEMP/render-study"
           "$RUNNER_TEMP/render-study" study-artifacts | tee study-render.log
+          sha256sum study-artifacts/*.ppm | tee study-image-sha256.txt
       - name: Verify bounded Study performance workloads
         run: |
           set -euo pipefail
@@ -116,6 +118,7 @@ jobs:
             core-tests.log
             core-release-tests.log
             study-render.log
+            study-image-sha256.txt
             study-kernel.log
             study-precision.log
             study-benchmark.json
