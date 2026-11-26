@@ -255,8 +255,14 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
                 // observers. Centering an odd-pixel Text inside an even-pixel
                 // action produces a half-pixel SwiftUI layout origin, whereas
                 // UIKit snaps a represented view's placement to a pixel.
-                // The title keeps its actual intrinsic fractional size.
-                title.frame(width: 300, height: 100, alignment: .topLeading)
+                // Inset the observed Text by an integral point so its raw
+                // transported bounds are strictly inside the control. A flush
+                // edge at x=20 became 19.999999999999996 after SwiftUI's global
+                // conversion, despite exact physical-pixel agreement. The
+                // inset belongs to this fixture, after both text observers;
+                // containment and pixel-equality assertions remain unchanged.
+                title.padding(1)
+                    .frame(width: 300, height: 100, alignment: .topLeading)
                     .background(NativeViewObserver(onView: onControlView)
                         .allowsHitTesting(false).accessibilityHidden(true))
             }

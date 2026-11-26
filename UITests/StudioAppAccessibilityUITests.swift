@@ -31,7 +31,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                                      launchValue: "UICTContentSizeCategoryL", name: "Default")
         let largest = try exerciseEssentialWorkflow(category: .accessibilityExtraExtraExtraLarge,
                                                     launchValue: "UICTContentSizeCategoryAccessibilityXXXL", name: "AXXXL")
-        for key in ["projectStatus", "intensityReadout", "precisionHeading", "cameraFocalLengthReadout", "cameraPreset50", "libraryWarning", "projectNameHeading",
+        for key in ["projectStatus", "workspaceSceneTitle", "workspaceMeterTitle", "intensityReadout", "precisionHeading", "cameraFocalLengthReadout", "cameraPreset50", "libraryWarning", "projectNameHeading",
                     "projectNameSave", "projectNameCancel", "libraryDone"] {
             let before = try XCTUnwrap(standard[key], key)
             let after = try XCTUnwrap(largest[key], key)
@@ -67,6 +67,38 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                  category: category, in: app, weight: .bold)
         measured["projectStatus"] = try text(app.staticTexts["projectStatus"], equals: "Unsaved changes",
                                              style: .caption1, category: category, in: app)
+        let workspaceHeader = app.descendants(matching: .any)["workspaceHeader"].firstMatch
+        revealStudioContent(workspaceHeader, in: app, fullyVisible: true)
+        let headerState = try workspaceHeader.snapshot()
+        assertContained(headerState.frame, inside: contentViewport(for: headerState, in: app))
+        measured["workspaceSceneTitle"] = try text(app.staticTexts["workspaceSceneTitle"], equals: "Scene",
+            style: .headline, category: category, in: app)
+        let headerMeter = app.buttons["openMeter"]
+        try control(headerMeter, label: "Open light meter and test card", in: app)
+        measured["workspaceMeterTitle"] = try recordedButtonText(headerMeter, probe: "workspaceMeterTitle",
+            equals: "Meter", style: .subheadline, category: category, in: app, weight: .medium,
+            accessibilityLabel: "Open light meter and test card")
+        try control(app.buttons["addLightShortcut"], label: "Add light", in: app)
+        let headerTitles: [(key: String, title: String, style: UIFont.TextStyle, weight: UIFont.Weight?)] = [
+            ("workspaceSceneTitle", "Scene", .headline, nil),
+            ("workspaceMeterTitle", "Meter", .subheadline, .medium)
+        ]
+        for (key, title, style, weight) in headerTitles {
+            let frame = try XCTUnwrap(measured[key], key)
+            var font = UIFont.preferredFont(forTextStyle: style,
+                compatibleWith: UITraitCollection(preferredContentSizeCategory: category))
+            if let weight { font = .systemFont(ofSize: font.pointSize, weight: weight) }
+            // Baseline spacing may be smaller than a complete single-line
+            // glyph box at accessibility sizes. Measure the same font without
+            // wrapping; keep the separate width-constrained minimum-fit check.
+            let singleLine = (title as NSString).boundingRect(
+                with: CGSize(width: .greatestFiniteMagnitude, height: .greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
+            let scale = UIScreen.main.scale
+            XCTAssertLessThanOrEqual((frame.height * scale).rounded(), ceil(singleLine.height * scale),
+                "Short workspace titles must remain on one readable line, not narrow letter columns")
+        }
+        capture(name + "-Workspace-header", in: app)
         for title in ["Plan", "3D", "Camera", "Study"] {
             let choice = try control(app.buttons["viewMode-" + title], label: title, in: app)
             XCTAssertEqual(choice.isSelected, title == "Plan",
@@ -361,6 +393,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                     equals expected: String, style: UIFont.TextStyle,
                                     category: UIContentSizeCategory, in app: XCUIApplication,
                                     weight: UIFont.Weight? = nil,
+                                    accessibilityLabel: String? = nil,
                                     scrolling: Bool = true) throws -> CGRect {
         var readyState: (any XCUIElementSnapshot)?
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
@@ -373,7 +406,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                        "The opted-in app must publish actual Text layout for \(probe)")
         let state = try XCTUnwrap(readyState, "Expected the successful, current readiness snapshot")
         XCTAssertEqual(state.elementType, .button)
-        XCTAssertEqual(state.label, expected)
+        XCTAssertEqual(state.label, accessibilityLabel ?? expected)
         XCTAssertTrue(element.isHittable)
         assertStudioMinimumHitTarget(state.frame, label: expected)
         let viewport = scrolling ? contentViewport(for: state, in: app) : app.frame

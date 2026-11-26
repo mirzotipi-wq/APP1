@@ -482,36 +482,7 @@ struct StudioView: View {
     private var workspace: some View {
         let generation = libraryOperation.generation
         return VStack(spacing: 10) {
-            HStack {
-                Label("Scene", systemImage: "viewfinder").font(.headline)
-                Spacer(minLength: 8)
-                Button {
-                    showMeter = true
-                    meterNavigationRequest += 1
-                } label: {
-                    Label("Meter", systemImage: "sun.max")
-                        .font(.subheadline.weight(.medium))
-                        .padding(.horizontal, 8)
-                        .frame(minWidth: 44, minHeight: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(StudioPalette.action)
-                .accessibilityLabel("Open light meter and test card")
-                .accessibilityHint("Opens and scrolls to the meter controls")
-                .accessibilityIdentifier("openMeter")
-                Button(action: sceneAction { addLight() }) {
-                    Image(systemName: "plus")
-                        .font(.headline)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.bordered)
-                .disabled(scene.lights.count >= 12 || !loaded)
-                .accessibilityLabel("Add light")
-                .accessibilityHint("Adds and selects a new light in the setup")
-                .accessibilityIdentifier("addLightShortcut")
-            }
+            workspaceHeader
             viewModeChoices
             VStack(spacing: 0) {
                 if mode == "Plan" {
@@ -559,6 +530,7 @@ struct StudioView: View {
                 if let light = scene.lights.first(where: { $0.id == selected }) {
                     Text("Selected: " + lightDisplayName(light) + " · Drag its marker to move")
                         .font(.caption.weight(.medium))
+                        .lineSpacing(1)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityIdentifier("planSelectedLight")
@@ -608,6 +580,78 @@ struct StudioView: View {
             }
         }.padding(14)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    /// Keep the title above the actions at accessibility sizes. Giving each
+    /// group its own width avoids compressing short words into letter columns.
+    private var workspaceHeader: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
+        return layout {
+            HStack(spacing: 8) {
+                Image(systemName: "viewfinder").accessibilityHidden(true)
+                Text("Scene")
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("workspaceSceneTitle")
+            }
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    workspaceMeterButton
+                    workspaceAddButton
+                }
+                .fixedSize(horizontal: true, vertical: false)
+                VStack(alignment: .leading, spacing: 8) {
+                    workspaceMeterButton
+                    workspaceAddButton
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("workspaceHeader")
+    }
+
+    private var workspaceMeterButton: some View {
+        Button {
+            showMeter = true
+            meterNavigationRequest += 1
+        } label: {
+            Label {
+                Text("Meter")
+                    .font(.subheadline.weight(.medium))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .studioTextLayoutProbe("workspaceMeterTitle")
+            } icon: {
+                Image(systemName: "sun.max")
+                    .font(.subheadline.weight(.medium))
+            }
+            .padding(.horizontal, 8)
+            .frame(minWidth: 44, minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(StudioPalette.action)
+        .accessibilityLabel("Open light meter and test card")
+        .accessibilityHint("Opens and scrolls to the meter controls")
+        .accessibilityIdentifier("openMeter")
+        .studioTextLayoutValue("workspaceMeterTitle")
+    }
+
+    private var workspaceAddButton: some View {
+        Button(action: sceneAction { addLight() }) {
+            Image(systemName: "plus")
+                .font(.headline)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.bordered)
+        .disabled(scene.lights.count >= 12 || !loaded)
+        .accessibilityLabel("Add light")
+        .accessibilityHint("Adds and selects a new light in the setup")
+        .accessibilityIdentifier("addLightShortcut")
     }
 
     private var choiceLayout: AnyLayout {

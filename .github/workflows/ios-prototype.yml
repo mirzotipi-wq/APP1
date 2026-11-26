@@ -732,7 +732,7 @@ jobs:
           if not isinstance(manifest, list):
               raise SystemExit("Unexpected XCTest attachment manifest")
           suffixes = [
-              "Plan-choices", "Plan-selection", "Inspector",
+              "Workspace-header", "Plan-choices", "Plan-selection", "Inspector",
               "Precision-instructions", "Precision-keyboard", "Meter-preset-selection",
               "Camera-preset-selection",
               "Library-unsaved", "Library-saved", "Project-name-field-keyboard",
@@ -740,7 +740,7 @@ jobs:
           ]
           wanted = {category + "-" + suffix for suffix in suffixes}
           # Failure screenshots are diagnostic originals, never substitutes for
-          # the thirteen required captures. Emit them once even if AXXXL failed.
+          # the fourteen required captures. Emit them once even if AXXXL failed.
           allowed = wanted | ({"Accessibility-workflow-failure", "Unreachable-studio-content"}
                               if category == "Default" else set())
           selected = {}

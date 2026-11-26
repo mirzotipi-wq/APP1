@@ -604,6 +604,7 @@ private struct ProjectNameEditor: View {
                 Section {
                     Button { submit() } label: {
                         Text("Save project name").fontWeight(.semibold)
+                            .lineSpacing(2)
                             .fixedSize(horizontal: false, vertical: true)
                             .studioTextLayoutProbe("projectNameSaveTitle")
                             .frame(maxWidth: .infinity, minHeight: 44)
