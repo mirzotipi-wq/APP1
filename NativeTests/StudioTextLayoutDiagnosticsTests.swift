@@ -263,6 +263,7 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
 
         func makeUIView(context: Context) -> UIView {
             let view = UIView()
+            view.contentScaleFactor = context.environment.displayScale
             view.isAccessibilityElement = false
             view.isUserInteractionEnabled = false
             view.backgroundColor = .clear
@@ -271,6 +272,7 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
         }
 
         func updateUIView(_ uiView: UIView, context: Context) {
+            uiView.contentScaleFactor = context.environment.displayScale
             onView(uiView)
         }
     }

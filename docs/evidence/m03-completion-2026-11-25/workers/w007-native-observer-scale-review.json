@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "worker": "w007",
+  "context_path": "/root/w007_review_coordinator",
+  "phase": "Independent native observer display-scale correction review",
+  "status": "complete_source_and_swift_syntax_review",
+  "generated_at_utc": "2026-11-26 07:50:41 UTC",
+  "repository": "mirzotipi-wq/APP1",
+  "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+  "base_source_revision": "6e8179b1795e5e4ba2c01ca50086cd41d1a71ef3",
+  "base_blob_sha": "06b98da41ac77d64bd4129f7bb3d89876a9ebe30",
+  "candidate_blob_sha": "22ccd6a2ffc0078380df71fd8efbb3f6ff6afc9b",
+  "worker038_report_sha": "36d6b6759c92475be3bd751f77c60ea112e633e7",
+  "actual_evidence": {
+    "run_id": 45772992319,
+    "job_id": 139749827206,
+    "native_log_git_blob": "d2354c694e8a0b7968e4c6c9f5ab877a805f289f",
+    "native_log_bytes": 88805,
+    "native_log_sha256": "a2f878e51a1ae406c4f771ee398a8311671f73e6d1605c12d7f9488ce85e85e1",
+    "accounting_git_blob": "861bfa49728df8b3a8cd49778a6e14b034f1ceea",
+    "observed_methods": {
+      "started": 137,
+      "passed": 135,
+      "failed": 2,
+      "assertion_failures": 3
+    },
+    "actual_observation": "All ten observer records have viewScale1 versus traitScale3 and screenScale3, with identity transforms. Direct conversion corrected origin/containment. Default strict pixel equality and two disabled font-fit assertions still fail; AXXXL and8point cases reached without additional assertions."
+  },
+  "source_review": {
+    "exact_diff": "Removing exactly the two contentScaleFactor assignments yields the entire previous06b98 file byte-for-byte.",
+    "makeUIView_assignment": "view.contentScaleFactor = context.environment.displayScale immediately after creating the actual UIView, before onView",
+    "updateUIView_assignment": "uiView.contentScaleFactor = context.environment.displayScale before onView",
+    "scale_origin": "Actual UIViewRepresentable SwiftUI environment; no hardcoded3 or expected-font-derived geometry.",
+    "preserved": [
+      "All three test method bodies and all prior fixture cases",
+      "Strict physical pixel equality",
+      "Default and largest font minimum checks",
+      "Growth threshold and undersized8point negative fixture",
+      "Disabled-layout baseline comparisons",
+      "Live view ownership/window checks and direct coordinate conversion",
+      "Actual scale/frame/transform diagnostics",
+      "No frame,bounds,position,transform or synthetic rectangle adjustment",
+      "No App,UI,workflow or method inventory change"
+    ]
+  },
+  "reasoning": "Correcting the observer's actual display scale addresses a directly observed mismatch between its1x backing scale and the real3x environment. This is a native test fixture correction, not a production geometry change or relaxation. Whether it resolves Default pixel/font-fit failures must be established by execution.",
+  "validation": {
+    "candidate_git_blob_recomputed": "22ccd6a2ffc0078380df71fd8efbb3f6ff6afc9b",
+    "swift_frontend_parse_exit_code": 0,
+    "swift_frontend_parse_output": "",
+    "apple_typecheck_or_runtime": false,
+    "isolated_directory": "/dev/shm/app1-m03-coordinator-review/native-scale"
+  },
+  "findings": [],
+  "disposition": "No concrete source or syntax blocker. Preserve the original6e135/137 failed run and require new strict runtime results. This candidate adds no methods; combining it with the separately reviewed hosted-state test creates the prospective138-method suite.",
+  "new_contexts_created": 0
+}

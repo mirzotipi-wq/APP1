@@ -4,7 +4,13 @@
 **Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
 **Current status:** M02 complete at retained75e evidence; M03 active. The latest required runs failed or remain in progress. No unverified result is promoted.
 
-## Latest runtime checkpoint — 26 November UTC
+## Integrated runtime correction — full validation next
+
+Eight reviewed test/CI files now address observed native fixture, accessibility-query and simulator-observation failures. The latest [6e native run45772992319](https://github.com/mirzotipi-wq/APP1/actions/runs/45772992319) failed135/137 with three assertions: two disabled Default font-fit failures and one Default strict-pixel comparison. Direct coordinate conversion removed the origin/containment failures; AXXXL and the8-point negative fixture executed without further assertion failures. Every observer used scale1 while its actual trait/screen scale was3. The fixture now assigns the real SwiftUI environment display scale to its UIKit observer in make/update; it changes no frame, tolerance, expectation or product geometry.
+
+The other reviewed corrections and new hosted-State regression are described in [the integration note](integrated-runtime-candidate.md). The suite now declares138 native and35 required UI methods. Final Swift syntax,92 tooling tests and shard validation are recorded in [local checks](validation/prepared-full-candidate-local-checks.json); these do not establish Apple runtime acceptance. All eight source hashes, previous failed originals and independent source reviews are retained. Full integrated execution and24 original Default/AXXXL captures remain required; M03 stays active.
+
+## Retained runtime checkpoint — 26 November UTC
 
 The full [cd5 run45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) is terminal and failed. Portable tests passed359 Debug/359 Release and92 tooling checks; unsigned builds, macOS tests, actual Metal methods,116 contrast pairs and actual persistence probes passed. Required native tests passed135/137. Required UI accounting is **33 passed,1 failed,1 incomplete out of35**. The app-accessibility method exhausted its45-minute outer step during the largest-size flow after all12 Default capture emissions. It produced no terminal method event or finalized result; zero original current PNGs were recovered. Thirteen capture emissions are not13 retained screenshots.
 
@@ -12,7 +18,7 @@ The focused [03cfd3c run45768421649](https://github.com/mirzotipi-wq/APP1/action
 
 The focused [19f75af room run45769542620](https://github.com/mirzotipi-wq/APP1/actions/runs/45769542620) passed4/5. The changed exact-modifier precision method passed, but the separate ManualRoom outside-status wait failed. Its later label is correct; its earlier10-second deadline is still failed. The status predicate already queries Other with label-only matching.
 
-A direct UIKit window-to-screen conversion is under actual [137-method native validation at6e8179b](https://github.com/mirzotipi-wq/APP1/actions/runs/45772992319). Reviewed, unrun candidates reduce repeated AX queries, read library readiness from one actual snapshot, and give the two-size accessibility workflow100 minutes while preserving each assertion deadline. Both test-export paths preserve incomplete original xcresult directories before checking finalization. A new real hosted-State K→Ke→Kee→Keep regression will increase the native inventory to138 when integrated; the current137-method run cannot validate it.
+The direct UIKit window-to-screen conversion subsequently failed135/137 at6e8179b as recorded above; it is not pending or passing. Reviewed, unrun candidates reduce repeated AX queries, read library readiness from one actual snapshot, and give the two-size accessibility workflow100 minutes while preserving each assertion deadline. Both test-export paths preserve incomplete original xcresult directories before checking finalization. A new real hosted-State K→Ke→Kee→Keep regression will increase the native inventory to138 when integrated; the current137-method run cannot validate it.
 
 The [terminal checkpoint](validation/terminal-checkpoint-20261126T0734.json) retains exact source/run accounting and candidate hashes. The [141-object report catalog](workers/exact-report-object-catalog.json) preserves original returned reports, including superseded drafts. Exactly100 distinct workers were created;99 initial specialist assignments are complete and007 remains active. M02 remains complete at retained75e evidence; M03 remains active and M04–M07 remain pending. Full integrated execution and24 recovered, hash-verified, actually viewed original Default/AXXXL PNGs remain required.
 

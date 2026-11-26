@@ -95,11 +95,11 @@
   ],
   "lastCycle": {
     "date": "2026-11-25",
-    "observedAtUTC": "2026-11-26T07:34:00Z",
+    "observedAtUTC": "2026-11-26T07:52:00Z",
     "baseRevision": "916ecb9284747e91cb3840c4776c634d798f1a51",
     "sourceRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
     "destinationBranch": "main",
-    "status": "M02 complete at retained75e checkpoint; fullcd5 failed135/137native,33/35UI pass with1failure/1incomplete; focused03cf and19f failed; native6e running; M03 active",
+    "status": "M02 complete; M03 active. Fullcd5 and focused03cf/19f/6e failures retained. Eight-file correction including native observer scale prepared for full138-native/35-UI validation.",
     "requestedDistinctWorkers": 100,
     "createdDistinctWorkers": 100,
     "completedDistinctWorkers": 99,
@@ -112,12 +112,11 @@
     "m02Acceptance": "docs/evidence/m03-completion-2026-11-25/m02-revalidation.md",
     "priorCycle": "agents/history/2026-11-26-before-75e-runtime-checkpoint-state.json",
     "remainingRequiredWork": [
-      "Complete direct-coordinate137-native validation and resolve any actual geometry failures",
-      "Execute the new hosted-State regression and resolve the Keep-to-K typing failure without weakening exact input checks",
-      "Resolve the distinct ManualRoom status deadline failure with actual source/runtime evidence",
-      "Integrate reviewed AX query, library readiness and CI budget/evidence-preservation changes on main; require138native/35UI and the full core/build/Metal/probe matrix",
+      "Run the integrated138-native/35-UI candidate and verify the scale correction plus hosted-State rapid-name regression",
+      "Resolve any remaining exactKeep input, room-status or other actual runtime failures while retaining original assertions",
       "Recover, hash-verify and actually inspect all24 original Default/AXXXL captures",
-      "Complete coordinator007 and the100-context final ledger; promote M03 only after every required gate passes"
+      "Reconcile the complete core/build/actualMetal/probe matrix on the integrated source",
+      "Complete coordinator007 and final100-context ledger; promote M03 only after every required gate passes"
     ],
     "physicalValidationClaimed": false,
     "lastCompletedTestedRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
@@ -151,11 +150,14 @@
       "receipt": "docs/evidence/m03-completion-2026-11-25/validation/terminal-checkpoint-20261126T0734.json"
     },
     "focusedCandidate": {
-      "revision": "6e8179b1795e5e4ba2c01ca50086cd41d1a71ef3",
-      "runId": 45772992319,
-      "status": "in_progress",
+      "sourceRevision": "6e8179b1795e5e4ba2c01ca50086cd41d1a71ef3",
+      "workflowRun": 45772992319,
+      "conclusion": "failure",
       "expectedNative": 137,
-      "newHostedStateRegressionIncluded": false
+      "passed": 135,
+      "failed": 2,
+      "assertionFailures": 3,
+      "receipt": "docs/evidence/m03-completion-2026-11-25/validation/source-6e8179b/execution-summary.json"
     },
     "priorFocusedFailures": [
       {
@@ -188,7 +190,56 @@
         "changedPrecisionMethod": "passed251.155 seconds",
         "distinctFailure": "ManualRoomPlacementUITests.testManualRoomReportsOutOfBoundsAndRecordsRoomEdit failed its10-second outside-label wait after half-turn. Later text says1 of5center positions outside room; later correct state does not pass earlier deadline. Existing query already label-only Other."
       }
-    ]
+    ],
+    "pendingIntegratedCandidate": {
+      "baseCommit": "ae077a5966580947cc77e10f61895440644cc744",
+      "sourceFiles": [
+        {
+          "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+          "sha": "22ccd6a2ffc0078380df71fd8efbb3f6ff6afc9b",
+          "status": "Direct-coordinate predecessor6e failed only3Default fixture assertions; real environment display-scale correction independently reviewed and syntax-parsed, runtime unverified"
+        },
+        {
+          "path": "UITests/PrecisionEditingUITests.swift",
+          "sha": "5a7c67e80164ffd0f883b61d5698d03fbd483a80",
+          "status": "Changed precision method passed251.155 seconds; distinct ManualRoom method failed"
+        },
+        {
+          "path": "UITests/ProjectLibraryUITests.swift",
+          "sha": "734905156d6bf88ff12b0992bbaafa65e05f4b5d",
+          "status": "Normal Button semantics passed in618c70 predecessor; single-snapshot readiness source reviewed, unrun"
+        },
+        {
+          "path": "UITests/StudioContentReachability.swift",
+          "sha": "342485407554ade056f31d479517855b70579895",
+          "status": "Source reviewed, unrun"
+        },
+        {
+          "path": "UITests/StudioAppAccessibilityUITests.swift",
+          "sha": "cf6c51b5bcf0db240c3354507fbaaa2c63e6213b",
+          "status": "Source reviewed, unrun"
+        },
+        {
+          "path": ".github/workflows/ios-prototype.yml",
+          "sha": "05554cbda3d5a452cca86616ff1f5c4f1fa6767f",
+          "status": "YAML,33 Bash blocks and7 Python heredocs reviewed; unrun"
+        },
+        {
+          "path": "NativeTests/StudioTextFieldTests.swift",
+          "sha": "5ef2eacdf9d531c2f1ef0e5f2015629a55211b9d",
+          "status": "New hosted-State rapid-edit regression source reviewed; prospective138th native method, unrun"
+        },
+        {
+          "path": "UITests/ManualRoomPlacementUITests.swift",
+          "sha": "89774835caaa1c44e605a30c3b13238d3dd2dd06",
+          "status": "Source/Swift syntax reviewed predecessor; final comment clarifies bounded headroom;30-second observed-state requirement unrun"
+        }
+      ],
+      "requiredNativeMethods": 138,
+      "requiredUIMethods": 35,
+      "requiredOriginalPNGs": 24,
+      "status": "reviewed_and_locally_parsed_awaiting_full_Apple_execution"
+    }
   },
   "activeRequest": {
     "date": "2026-11-25",
