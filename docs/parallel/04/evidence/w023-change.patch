@@ -1,0 +1,46 @@
+diff --git a/App/MetalStudyRenderer.swift b/App/MetalStudyRenderer.swift
+index a1d60cd..e1c85c1 100644
+--- a/App/MetalStudyRenderer.swift
++++ b/App/MetalStudyRenderer.swift
+@@ -36,11 +36,18 @@ final class MetalStudyRenderer {
+     /// Far-away geometry and potentially ambiguous near-field masks stay on
+     /// the Double-precision oracle. Routing does not invalidate this backend.
+     static func supports(_ scene: LightingScene) -> Bool {
+-        StudyFloat32Eligibility.supports(scene)
++        supports(scene, width: 192)
++    }
++
++    static func supports(_ scene: LightingScene, width: Int) -> Bool {
++        StudyFloat32Eligibility.supports(scene, width: width)
+     }
+ 
+     func render(scene: LightingScene, width: Int) throws -> StudyImage {
+-        guard Self.supports(scene) else { throw MetalStudyError.precisionDomain }
++        // Preserve the compute input's resolution error before the
++        // width-aware precision predicate can reject the request.
++        guard width >= 24, width <= 192, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
++        guard Self.supports(scene, width: width) else { throw MetalStudyError.precisionDomain }
+         return try compute(StudyComputeInput(scene: scene, width: width))
+     }
+ 
+@@ -192,7 +199,10 @@ actor StudyRenderEngine {
+             guard !isCancelled() else { throw StudyError.cancelled }
+             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+         }
+-        if case .unchecked = state {
++        // Eligibility belongs to this request. CPU-only and invalid requests
++        // must not initialize or change an unchecked backend.
++        let supportsMetal = MetalStudyRenderer.supports(scene, width: width)
++        if case .unchecked = state, supportsMetal {
+             do {
+                 guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
+                 let renderer = try MetalStudyRenderer(device: device)
+@@ -209,7 +219,7 @@ actor StudyRenderEngine {
+             }
+         }
+         guard !isCancelled() else { throw StudyError.cancelled }
+-        if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
++        if case .metal(let renderer) = state, supportsMetal {
+             do {
+                 let image = try renderer.render(scene: scene, width: width)
+                 guard !isCancelled() else { throw StudyError.cancelled }

@@ -2,7 +2,9 @@
 
 ## Lane03 (CPU oracle and preview)
 
-CPU equations and packed row layout remain unchanged. Confirmed host-shared-kernel silhouette discrepancy: width24, focal161.27198111190464mm, subject(0,1.5,0), camera(0,1.5,3), no lights. Two pixels exceed fraction(error>4)<=0.005; the local reference is a C++ Double transcription, not a Swift run. A width-aware conservative eligibility guard is planned. Public supports(scene,width:) will preserve source compatibility with a default width. Actual production width must reach eligibility.
+CPU equations and packed row layout remain unchanged. Confirmed host-shared-kernel silhouette discrepancy: width24, focal161.27198111190464mm, subject(0,1.5,0), camera(0,1.5,3), no lights. Two pixels exceed fraction(error>4)<=0.005; the local reference is a C++ Double transcription, not a Swift run. The width-aware conservative eligibility guard is now implemented for review. The legacy supports(scene) overload forwards width192; supports(scene,width:) receives the actual production grid. The oracle equations, packed rows and channel thresholds remain unchanged.
+
+A separate Double camera-basis diagnostic found that EmitterFrame's near-vertical fallback can have forward dot right=9e-13. Lane04 routes the narrow non-axial fallback cone to CPU; exact vertical views retain eligibility. This is an eligibility precondition correction, not a request to change the CPU basis or a measured Metal failure. If02/03 later changes camera orthogonalization, rerun the added core regression and parity matrices.
 
 Keep preview adoption guarded by task cancellation after awaiting engine and immediately before state update; old errors and backend badges must only describe matching requests. Existing implementation has these checks. A valid name-only edit currently causes debounce/Updating despite cache identity stripping names: optional UI request canonicalization belongs to03, must never bypass scene validation. If request equality is changed, add actual latest-result/background/subject-switch regressions.
 

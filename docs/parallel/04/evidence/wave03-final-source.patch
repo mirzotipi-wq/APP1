@@ -1,0 +1,408 @@
+diff --git a/App/MetalStudyRenderer.swift b/App/MetalStudyRenderer.swift
+index a1d60cd..6f72a92 100644
+--- a/App/MetalStudyRenderer.swift
++++ b/App/MetalStudyRenderer.swift
+@@ -36,12 +36,23 @@ final class MetalStudyRenderer {
+     /// Far-away geometry and potentially ambiguous near-field masks stay on
+     /// the Double-precision oracle. Routing does not invalidate this backend.
+     static func supports(_ scene: LightingScene) -> Bool {
+-        StudyFloat32Eligibility.supports(scene)
++        supports(scene, width: 192)
++    }
++
++    static func supports(_ scene: LightingScene, width: Int) -> Bool {
++        StudyFloat32Eligibility.supports(scene, width: width)
+     }
+ 
+     func render(scene: LightingScene, width: Int) throws -> StudyImage {
+-        guard Self.supports(scene) else { throw MetalStudyError.precisionDomain }
+-        return try compute(StudyComputeInput(scene: scene, width: width))
++        // Preserve the compute input's resolution error before the
++        // width-aware precision predicate can reject the request.
++        guard width >= 24, width <= 192, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
++        // Preserve the CPU constructor's scene/camera errors before making
++        // the optional precision routing decision. No GPU resource is made
++        // until both input validation and eligibility have succeeded.
++        let input = try StudyComputeInput(scene: scene, width: width)
++        guard Self.supports(scene, width: width) else { throw MetalStudyError.precisionDomain }
++        return try compute(input)
+     }
+ 
+     /// Internal parity-only path: retain the deliberately unsupported fixture
+@@ -192,7 +203,10 @@ actor StudyRenderEngine {
+             guard !isCancelled() else { throw StudyError.cancelled }
+             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+         }
+-        if case .unchecked = state {
++        // Eligibility belongs to this request. CPU-only and invalid requests
++        // must not initialize or change an unchecked backend.
++        let supportsMetal = MetalStudyRenderer.supports(scene, width: width)
++        if case .unchecked = state, supportsMetal {
+             do {
+                 guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
+                 let renderer = try MetalStudyRenderer(device: device)
+@@ -209,7 +223,7 @@ actor StudyRenderEngine {
+             }
+         }
+         guard !isCancelled() else { throw StudyError.cancelled }
+-        if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
++        if case .metal(let renderer) = state, supportsMetal {
+             do {
+                 let image = try renderer.render(scene: scene, width: width)
+                 guard !isCancelled() else { throw StudyError.cancelled }
+diff --git a/NativeTests/StudyRendererTests.swift b/NativeTests/StudyRendererTests.swift
+index 20519ae..09e83e2 100644
+--- a/NativeTests/StudyRendererTests.swift
++++ b/NativeTests/StudyRendererTests.swift
+@@ -128,4 +128,70 @@ final class StudyRendererTests: XCTestCase {
+             XCTAssertEqual(error as? StudyError, .cancelled)
+         }
+     }
++
++    func testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal() async throws {
++        guard MTLCreateSystemDefaultDevice() != nil else {
++            throw XCTSkip("No Metal device available; silhouette routing and subsequent GPU validation cannot be verified.")
++        }
++        let silhouette = LightingScene(
++            subject: .init(x: 0, y: 1.5, z: 0),
++            camera: .init(x: 0, y: 1.5, z: 3),
++            lights: [],
++            cameraLens: .init(focalLengthMillimeters: 161.27198111190464))
++        XCTAssertFalse(MetalStudyRenderer.supports(silhouette, width: 24))
++
++        let engine = StudyRenderEngine()
++        let fallback = try await engine.render(scene: silhouette, width: 24)
++        XCTAssertEqual(fallback.backend, .cpu)
++        XCTAssertEqual(fallback.image, try ReferenceStudyRenderer.render(scene: silhouette, width: 24))
++
++        // The first request requires CPU; a later eligible scene must still
++        // perform initial Metal validation on this same engine.
++        let normal = LightingScene.portrait()
++        XCTAssertTrue(MetalStudyRenderer.supports(normal, width: 48))
++        let rendered = try await engine.render(scene: normal, width: 48)
++        XCTAssertEqual(rendered.backend, .metal)
++        let reference = try ReferenceStudyRenderer.render(scene: normal, width: 48)
++        XCTAssertTrue(try XCTUnwrap(StudyParityMetrics(reference: reference, candidate: rendered.image)).passes)
++    }
++
++    func testEngineInvalidWidthsPreserveResolutionError() async throws {
++        let engine = StudyRenderEngine()
++        let scene = LightingScene.portrait()
++        for width in [Int.min, 0, 23, 25, 193, 195, Int.max] {
++            do {
++                _ = try await engine.render(scene: scene, width: width)
++                XCTFail("Invalid width \(width) must not return a frame")
++            } catch {
++                XCTAssertEqual(error as? StudyError, .invalidResolution, "Width \(width)")
++            }
++        }
++    }
++
++    func testMetalInvalidCameraPreservesConstructorErrorBeforePrecisionRouting() throws {
++        guard let device = MTLCreateSystemDefaultDevice() else {
++            throw XCTSkip("No Metal device available; direct renderer camera errors cannot be verified.")
++        }
++        let renderer = try MetalStudyRenderer(device: device)
++        for camera in [Position(x: 0, y: 1.2, z: 3), Position(x: 0, y: 1.5, z: 0.25)] {
++            let scene = LightingScene(subject: .init(x: 0, y: 1.5, z: 0), camera: camera, lights: [])
++            XCTAssertThrowsError(try renderer.render(scene: scene, width: 24)) { error in
++                XCTAssertEqual(error as? StudyError, .invalidCamera)
++            }
++        }
++    }
++
++    func testMetalInvalidWidthsPreserveResolutionErrorBeforePrecisionRouting() throws {
++        guard let device = MTLCreateSystemDefaultDevice() else {
++            throw XCTSkip("No Metal device available; direct renderer resolution errors cannot be verified.")
++        }
++        let renderer = try MetalStudyRenderer(device: device)
++        let scene = LightingScene.portrait()
++        for width in [Int.min, 0, 23, 25, 193, 195, Int.max] {
++            XCTAssertThrowsError(try renderer.render(scene: scene, width: width)) { error in
++                XCTAssertEqual(error as? StudyError, .invalidResolution,
++                               "Width \(width) must fail resolution validation before precision routing")
++            }
++        }
++    }
+ }
+diff --git a/Sources/LightingCore/StudyFloat32Eligibility.swift b/Sources/LightingCore/StudyFloat32Eligibility.swift
+index 69a826c..e9764da 100644
+--- a/Sources/LightingCore/StudyFloat32Eligibility.swift
++++ b/Sources/LightingCore/StudyFloat32Eligibility.swift
+@@ -10,11 +10,19 @@ public enum StudyFloat32Eligibility {
+     public static let surfaceMarginMeters = 0.001
+ 
+     public static func supports(_ scene: LightingScene) -> Bool {
++        supports(scene, width: 192)
++    }
++
++    public static func supports(_ scene: LightingScene, width: Int) -> Bool {
++        guard width >= 24, width <= 192, width.isMultiple(of: 3) else { return false }
+         guard (try? scene.validated()) != nil,
+               let geometry = StudyGeometry(center: scene.subject),
+               let camera = CameraFraming(scene: scene),
++              camera.position.y > geometry.panelY + 0.01,
++              camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters,
+               camera.subjectDistanceMeters <= maximumRelativeDistanceMeters,
+-              scene.lights.allSatisfy({ $0.position.distance(to: scene.subject) <= maximumRelativeDistanceMeters })
++              scene.lights.allSatisfy({ $0.candela == 0 || $0.position.distance(to: scene.subject) <= maximumRelativeDistanceMeters }),
++              silhouetteShellFitsBudget(geometry: geometry, camera: camera, width: width)
+         else { return false }
+ 
+         let panel = visiblePanelBounds(geometry: geometry, camera: camera)
+@@ -54,6 +62,81 @@ public enum StudyFloat32Eligibility {
+         return true
+     }
+ 
++    /// The distance-scaled margin is an engineering allowance for Float32
++    /// ray/sphere classification drift, not a proved numerical error bound.
++    /// Spending at most 1/510 of the pixels on possible silhouette changes
++    /// reserves half an 8-bit channel level of worst-case mean error for them,
++    /// leaving budget for other drift without proving total GPU agreement.
++    private static func silhouetteShellFitsBudget(geometry: StudyGeometry, camera: CameraFraming, width: Int) -> Bool {
++        // EmitterFrame's near-vertical x-axis fallback need not be exactly
++        // perpendicular to forward. The radial shell assumes an orthogonal
++        // camera basis, so keep that narrow non-axial cone on the CPU. An
++        // exactly vertical view still has an orthogonal basis and is allowed.
++        guard hypot(camera.forward.x, camera.forward.z) > 1e-12 ||
++                (camera.forward.x == 0 && camera.forward.z == 0) else { return false }
++        let distance = camera.subjectDistanceMeters
++        let margin = 32 * Double(Float.ulpOfOne) * distance
++        let innerRadius = max(0, geometry.radius - margin)
++        let outerRadius = geometry.radius + margin
++        guard outerRadius < distance else { return false }
++
++        // The camera targets the center. For sensor slopes px, py, the
++        // tangent circle of radius R satisfies px² + py² = R² / (D² - R²).
++        func squaredSlope(_ radius: Double) -> Double {
++            let radiusSquared = radius * radius
++            return radiusSquared / (distance * distance - radiusSquared)
++        }
++        let innerSquaredSlope = squaredSlope(innerRadius)
++        let outerSquaredSlope = squaredSlope(outerRadius)
++        let height = width * 2 / 3
++        let pixelBudget = width * height / 510
++        let halfWidth = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
++        let halfHeight = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
++
++        func pixelRange(_ lower: Double, _ upper: Double) -> ClosedRange<Int>? {
++            // Invert px = (2 * (x + 0.5) / width - 1) * halfWidth.
++            // Allow Double roundoff through sqrt and the inverse transform,
++            // then round outward to retain centers on an interval edge.
++            let indexMargin = 32 * Double.ulpOfOne * Double(width)
++            let firstIndex = (Double(width) * (lower / halfWidth + 1) / 2 - 0.5).nextDown
++            let lastIndex = (Double(width) * (upper / halfWidth + 1) / 2 - 0.5).nextUp
++            let first = max(0, ceil(firstIndex - indexMargin))
++            let last = min(Double(width - 1), floor(lastIndex + indexMargin))
++            guard first <= last else { return nil }
++            return Int(first)...Int(last)
++        }
++
++        var potentialPixels = 0
++        for y in 0..<height {
++            let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfHeight
++            let squaredY = py * py
++            // Separate Double-roundoff padding keeps a tangent row from
++            // disappearing through a tiny negative squared-slope difference.
++            let slopeMargin = 32 * Double.ulpOfOne * max(outerSquaredSlope, squaredY)
++            let outerSquaredX = outerSquaredSlope - squaredY
++            guard outerSquaredX >= -slopeMargin else { continue }
++            let outerX = sqrt(max(0, outerSquaredX + slopeMargin))
++            let innerX = sqrt(max(0, innerSquaredSlope - squaredY - slopeMargin))
++            let negative = pixelRange(-outerX, -innerX)
++            let positive = pixelRange(innerX, outerX)
++            if let negative {
++                potentialPixels += negative.upperBound - negative.lowerBound + 1
++            }
++            if let positive {
++                potentialPixels += positive.upperBound - positive.lowerBound + 1
++                if let negative {
++                    // When innerX is zero, both intervals can contain the
++                    // odd-width center pixel. Count their integer union.
++                    let overlapFirst = max(negative.lowerBound, positive.lowerBound)
++                    let overlapLast = min(negative.upperBound, positive.upperBound)
++                    potentialPixels -= max(0, overlapLast - overlapFirst + 1)
++                }
++            }
++            if potentialPixels > pixelBudget { return false }
++        }
++        return true
++    }
++
+     private struct Bounds {
+         let low: SIMD3<Double>
+         let high: SIMD3<Double>
+diff --git a/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift b/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
+index f65fe28..381ded6 100644
+--- a/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
++++ b/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
+@@ -23,6 +23,32 @@ final class StudyFloat32EligibilityTests: XCTestCase {
+         XCTAssertTrue(StudyFloat32Eligibility.supports(disabled), "Disabled sources produce no samples or area guards")
+     }
+ 
++    func testCameraInsideSphereIsIneligibleAndRejectedByStudySetup() {
++        let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                  camera: .init(x: 0, y: 1.5, z: 0.1), lights: [])
++        XCTAssertThrowsError(try StudyComputeInput(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertThrowsError(try ReferenceStudyRenderer.render(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value),
++                       "A camera inside the study sphere cannot use the Float32 backend")
++    }
++
++    func testCameraBelowPanelIsIneligibleAndRejectedByStudySetup() {
++        let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                  camera: .init(x: 0, y: 1, z: 3), lights: [])
++        XCTAssertThrowsError(try StudyComputeInput(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertThrowsError(try ReferenceStudyRenderer.render(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value),
++                       "A camera below the study panel cannot use the Float32 backend")
++    }
++
+     func testMeasuredMicrometerCutoffRegressionsAndBothSidesOfBoundaryRouteToCPU() throws {
+         // Exact scenes from the independent host-kernel probe. The first
+         // mismatched by 10 nm at 1 m, the second by 1 µm at 20 m.
+@@ -111,6 +137,136 @@ final class StudyFloat32EligibilityTests: XCTestCase {
+         XCTAssertFalse(StudyFloat32Eligibility.supports(invalid))
+     }
+ 
++    func testMeasuredSilhouetteBoundaryAtRequestedWidthRoutesToCPU() throws {
++        // Shared C++ Float32 kernel versus a transcribed C++ Double reference:
++        // two pixels exceeded four levels at 24 x 16 (2 / 384 = 0.0052083333).
++        // This host-derived routing fixture is not Swift or Metal parity evidence.
++        let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                  camera: .init(x: 0, y: 1.5, z: 3), lights: [],
++                                  cameraLens: .init(focalLengthMillimeters: 161.27198111190464))
++        let packed = try StudyComputeInput(scene: value, width: 24)
++        XCTAssertEqual(packed.width, 24)
++        XCTAssertEqual(packed.height, 16)
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value, width: 24),
++                       "Eligibility must guard the silhouette at the requested pixel grid")
++
++        // Read the shipped Double renderer directly: these are unlit sphere
++        // pixels, not background or invalid-surface markers.
++        let oracle = try ReferenceStudyRenderer.render(scene: value, width: 24)
++        XCTAssertEqual(oracle.width, 24)
++        XCTAssertEqual(oracle.height, 16)
++        XCTAssertEqual(oracle.rgba.count, 24 * 16 * 4)
++        XCTAssertEqual(oracle.unsupportedPixels, 0)
++        for x in [9, 14] {
++            let offset = 4 * x // Both recorded pixels are on row zero.
++            XCTAssertEqual(Array(oracle.rgba[offset..<(offset + 4)]), [0, 0, 0, 255], "pixel (\(x), 0)")
++            XCTAssertEqual(oracle.unsupportedPixelMask[x], 0, "pixel (\(x), 0)")
++        }
++
++        for width in [27, 48, 96, 192] {
++            XCTAssertTrue(StudyFloat32Eligibility.supports(value, width: width),
++                          "The same scene clears the silhouette guard on the width-\(width) grid")
++        }
++        XCTAssertEqual(StudyFloat32Eligibility.supports(value),
++                       StudyFloat32Eligibility.supports(value, width: 192),
++                       "The legacy overload must retain the default compute width")
++    }
++
++    func testInvalidRequestedWidthsMatchComputeAndCPUResolutionRejection() {
++        var value = LightingScene.portrait()
++        value.lights = []
++        for width in [Int.min, -24, 0, 21, 23, 25, 26, 191, 193, 195, Int.max] {
++            XCTAssertFalse(StudyFloat32Eligibility.supports(value, width: width), "width \(width)")
++            XCTAssertThrowsError(try StudyComputeInput(scene: value, width: width), "width \(width)") {
++                XCTAssertEqual($0 as? StudyError, .invalidResolution)
++            }
++            XCTAssertThrowsError(try ReferenceStudyRenderer.render(scene: value, width: width), "width \(width)") {
++                XCTAssertEqual($0 as? StudyError, .invalidResolution)
++            }
++        }
++    }
++
++    func testValidResolutionEndpointsAndOddWidthsRemainAvailable() throws {
++        var value = LightingScene.portrait()
++        value.lights = []
++        for width in [24, 27, 189, 192] {
++            XCTAssertTrue(StudyFloat32Eligibility.supports(value, width: width), "width \(width)")
++            let packed = try StudyComputeInput(scene: value, width: width)
++            XCTAssertEqual(packed.width, width)
++            XCTAssertEqual(packed.height, width * 2 / 3)
++        }
++    }
++
++    func testDisabledFarEmitterPreservesNoLightRoutingAndCPUImage() throws {
++        var value = LightingScene.portrait()
++        value.lights = [point(.init(x: 21, y: 1.5, z: 0), candela: 0)]
++        for width in [24, 27, 192] {
++            XCTAssertTrue(StudyFloat32Eligibility.supports(value, width: width), "width \(width)")
++            let packed = try StudyComputeInput(scene: value, width: width)
++            XCTAssertTrue(packed.samples.isEmpty)
++            XCTAssertTrue(packed.areas.isEmpty)
++        }
++        var unlit = value
++        unlit.lights = []
++        XCTAssertEqual(try ReferenceStudyRenderer.render(scene: value, width: 24),
++                       try ReferenceStudyRenderer.render(scene: unlit, width: 24))
++
++        value.lights[0].candela = 100
++        for width in [24, 27, 192] {
++            XCTAssertFalse(StudyFloat32Eligibility.supports(value, width: width),
++                           "The same source exceeds the distance domain when enabled; width \(width)")
++        }
++    }
++
++    func testOddWidthSilhouetteCenterColumnIsCountedOnce() throws {
++        // Fixed axial fixtures selected by an independent per-ray distance
++        // scan. At width 51, only the top/bottom center pixels enter the shell;
++        // counting each twice would incorrectly reject this grid. Width 27
++        // also intersects the silhouette and cannot spend a whole pixel.
++        for (width, focal, eligible) in [(27, 154.1293387912136, false), (51, 158.39589488231985, true)] {
++            let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                      camera: .init(x: 0, y: 1.5, z: 3), lights: [],
++                                      cameraLens: .init(focalLengthMillimeters: focal))
++            let packed = try StudyComputeInput(scene: value, width: width)
++            XCTAssertEqual(packed.width, width)
++            XCTAssertEqual(packed.height, width * 2 / 3)
++            XCTAssertEqual(StudyFloat32Eligibility.supports(value, width: width), eligible, "width \(width)")
++        }
++    }
++
++    func testExactCameraClearanceBoundariesMatchStudySetup() throws {
++        let subject = Position(x: 0, y: 1.5, z: 0)
++        let geometry = try XCTUnwrap(StudyGeometry(center: subject))
++        let cameras = [Position(x: 0, y: subject.y, z: geometry.radius + CameraFraming.minimumDepthMeters),
++                       Position(x: 0, y: geometry.panelY + 0.01, z: 3)]
++        for camera in cameras {
++            let value = LightingScene(subject: subject, camera: camera, lights: [])
++            XCTAssertFalse(StudyFloat32Eligibility.supports(value, width: 24), "camera \(camera)")
++            XCTAssertThrowsError(try StudyComputeInput(scene: value, width: 24)) {
++                XCTAssertEqual($0 as? StudyError, .invalidCamera)
++            }
++            XCTAssertThrowsError(try ReferenceStudyRenderer.render(scene: value, width: 24)) {
++                XCTAssertEqual($0 as? StudyError, .invalidCamera)
++            }
++        }
++    }
++
++    func testNonAxialVerticalCameraFallbackUsesCPUWithoutChangingOracle() throws {
++        // The existing camera-frame fallback has forward dot right = 9e-13
++        // here. Independent ray enumeration found a shell pixel that the
++        // orthogonal-basis formula omitted; this is a routing regression,
++        // not a measured Float32 channel-error failure.
++        var value = LightingScene(subject: .init(x: 0, y: 0, z: 0),
++                                  camera: .init(x: 2.5133431923616664e-13, y: 0.27926035470685184, z: 0),
++                                  lights: [], cameraLens: .init(focalLengthMillimeters: 14))
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value, width: 192))
++        XCTAssertEqual(try StudyComputeInput(scene: value, width: 192).width, 192)
++        XCTAssertEqual(try ReferenceStudyRenderer.render(scene: value, width: 24).unsupportedPixels, 0)
++        value.camera.x = 0
++        XCTAssertTrue(StudyFloat32Eligibility.supports(value, width: 192),
++                      "The exactly vertical basis remains orthogonal")
++    }
++
+     private func translated(_ source: LightingScene, by offset: Position) -> LightingScene {
+         var value = source
+         func move(_ p: Position) -> Position { .init(x: p.x + offset.x, y: p.y + offset.y, z: p.z + offset.z) }

@@ -1,0 +1,62 @@
+diff --git a/NativeTests/StudyRendererTests.swift b/NativeTests/StudyRendererTests.swift
+index 20519ae..5403156 100644
+--- a/NativeTests/StudyRendererTests.swift
++++ b/NativeTests/StudyRendererTests.swift
+@@ -128,4 +128,57 @@ final class StudyRendererTests: XCTestCase {
+             XCTAssertEqual(error as? StudyError, .cancelled)
+         }
+     }
++
++    func testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal() async throws {
++        guard MTLCreateSystemDefaultDevice() != nil else {
++            throw XCTSkip("No Metal device available; silhouette routing and subsequent GPU validation cannot be verified.")
++        }
++        let silhouette = LightingScene(
++            subject: .init(x: 0, y: 1.5, z: 0),
++            camera: .init(x: 0, y: 1.5, z: 3),
++            lights: [],
++            cameraLens: .init(focalLengthMillimeters: 161.27198111190464))
++        XCTAssertFalse(MetalStudyRenderer.supports(silhouette, width: 24))
++
++        let engine = StudyRenderEngine()
++        let fallback = try await engine.render(scene: silhouette, width: 24)
++        XCTAssertEqual(fallback.backend, .cpu)
++        XCTAssertEqual(fallback.image, try ReferenceStudyRenderer.render(scene: silhouette, width: 24))
++
++        // The first request requires CPU; a later eligible scene must still
++        // perform initial Metal validation on this same engine.
++        let normal = LightingScene.portrait()
++        XCTAssertTrue(MetalStudyRenderer.supports(normal, width: 48))
++        let rendered = try await engine.render(scene: normal, width: 48)
++        XCTAssertEqual(rendered.backend, .metal)
++        let reference = try ReferenceStudyRenderer.render(scene: normal, width: 48)
++        XCTAssertTrue(try XCTUnwrap(StudyParityMetrics(reference: reference, candidate: rendered.image)).passes)
++    }
++
++    func testEngineInvalidWidthsPreserveResolutionError() async throws {
++        let engine = StudyRenderEngine()
++        let scene = LightingScene.portrait()
++        for width in [Int.min, 0, 23, 25, 193, 195, Int.max] {
++            do {
++                _ = try await engine.render(scene: scene, width: width)
++                XCTFail("Invalid width \(width) must not return a frame")
++            } catch {
++                XCTAssertEqual(error as? StudyError, .invalidResolution, "Width \(width)")
++            }
++        }
++    }
++
++    func testMetalInvalidWidthsPreserveResolutionErrorBeforePrecisionRouting() throws {
++        guard let device = MTLCreateSystemDefaultDevice() else {
++            throw XCTSkip("No Metal device available; direct renderer resolution errors cannot be verified.")
++        }
++        let renderer = try MetalStudyRenderer(device: device)
++        let scene = LightingScene.portrait()
++        for width in [Int.min, 0, 23, 25, 193, 195, Int.max] {
++            XCTAssertThrowsError(try renderer.render(scene: scene, width: width)) { error in
++                XCTAssertEqual(error as? StudyError, .invalidResolution,
++                               "Width \(width) must fail resolution validation before precision routing")
++            }
++        }
++    }
+ }

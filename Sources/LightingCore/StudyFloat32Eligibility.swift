@@ -10,11 +10,19 @@ public enum StudyFloat32Eligibility {
     public static let surfaceMarginMeters = 0.001
 
     public static func supports(_ scene: LightingScene) -> Bool {
+        supports(scene, width: 192)
+    }
+
+    public static func supports(_ scene: LightingScene, width: Int) -> Bool {
+        guard width >= 24, width <= 192, width.isMultiple(of: 3) else { return false }
         guard (try? scene.validated()) != nil,
               let geometry = StudyGeometry(center: scene.subject),
               let camera = CameraFraming(scene: scene),
+              camera.position.y > geometry.panelY + 0.01,
+              camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters,
               camera.subjectDistanceMeters <= maximumRelativeDistanceMeters,
-              scene.lights.allSatisfy({ $0.position.distance(to: scene.subject) <= maximumRelativeDistanceMeters })
+              scene.lights.allSatisfy({ $0.candela == 0 || $0.position.distance(to: scene.subject) <= maximumRelativeDistanceMeters }),
+              silhouetteShellFitsBudget(geometry: geometry, camera: camera, width: width)
         else { return false }
 
         let panel = visiblePanelBounds(geometry: geometry, camera: camera)
@@ -50,6 +58,81 @@ public enum StudyFloat32Eligibility {
                     return false
                 }
             }
+        }
+        return true
+    }
+
+    /// The distance-scaled margin is an engineering allowance for Float32
+    /// ray/sphere classification drift, not a proved numerical error bound.
+    /// Spending at most 1/510 of the pixels on possible silhouette changes
+    /// reserves half an 8-bit channel level of worst-case mean error for them,
+    /// leaving budget for other drift without proving total GPU agreement.
+    private static func silhouetteShellFitsBudget(geometry: StudyGeometry, camera: CameraFraming, width: Int) -> Bool {
+        // EmitterFrame's near-vertical x-axis fallback need not be exactly
+        // perpendicular to forward. The radial shell assumes an orthogonal
+        // camera basis, so keep that narrow non-axial cone on the CPU. An
+        // exactly vertical view still has an orthogonal basis and is allowed.
+        guard hypot(camera.forward.x, camera.forward.z) > 1e-12 ||
+                (camera.forward.x == 0 && camera.forward.z == 0) else { return false }
+        let distance = camera.subjectDistanceMeters
+        let margin = 32 * Double(Float.ulpOfOne) * distance
+        let innerRadius = max(0, geometry.radius - margin)
+        let outerRadius = geometry.radius + margin
+        guard outerRadius < distance else { return false }
+
+        // The camera targets the center. For sensor slopes px, py, the
+        // tangent circle of radius R satisfies px² + py² = R² / (D² - R²).
+        func squaredSlope(_ radius: Double) -> Double {
+            let radiusSquared = radius * radius
+            return radiusSquared / (distance * distance - radiusSquared)
+        }
+        let innerSquaredSlope = squaredSlope(innerRadius)
+        let outerSquaredSlope = squaredSlope(outerRadius)
+        let height = width * 2 / 3
+        let pixelBudget = width * height / 510
+        let halfWidth = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)
+        let halfHeight = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)
+
+        func pixelRange(_ lower: Double, _ upper: Double) -> ClosedRange<Int>? {
+            // Invert px = (2 * (x + 0.5) / width - 1) * halfWidth.
+            // Allow Double roundoff through sqrt and the inverse transform,
+            // then round outward to retain centers on an interval edge.
+            let indexMargin = 32 * Double.ulpOfOne * Double(width)
+            let firstIndex = (Double(width) * (lower / halfWidth + 1) / 2 - 0.5).nextDown
+            let lastIndex = (Double(width) * (upper / halfWidth + 1) / 2 - 0.5).nextUp
+            let first = max(0, ceil(firstIndex - indexMargin))
+            let last = min(Double(width - 1), floor(lastIndex + indexMargin))
+            guard first <= last else { return nil }
+            return Int(first)...Int(last)
+        }
+
+        var potentialPixels = 0
+        for y in 0..<height {
+            let py = (1 - 2 * (Double(y) + 0.5) / Double(height)) * halfHeight
+            let squaredY = py * py
+            // Separate Double-roundoff padding keeps a tangent row from
+            // disappearing through a tiny negative squared-slope difference.
+            let slopeMargin = 32 * Double.ulpOfOne * max(outerSquaredSlope, squaredY)
+            let outerSquaredX = outerSquaredSlope - squaredY
+            guard outerSquaredX >= -slopeMargin else { continue }
+            let outerX = sqrt(max(0, outerSquaredX + slopeMargin))
+            let innerX = sqrt(max(0, innerSquaredSlope - squaredY - slopeMargin))
+            let negative = pixelRange(-outerX, -innerX)
+            let positive = pixelRange(innerX, outerX)
+            if let negative {
+                potentialPixels += negative.upperBound - negative.lowerBound + 1
+            }
+            if let positive {
+                potentialPixels += positive.upperBound - positive.lowerBound + 1
+                if let negative {
+                    // When innerX is zero, both intervals can contain the
+                    // odd-width center pixel. Count their integer union.
+                    let overlapFirst = max(negative.lowerBound, positive.lowerBound)
+                    let overlapLast = min(negative.upperBound, positive.upperBound)
+                    potentialPixels -= max(0, overlapLast - overlapFirst + 1)
+                }
+            }
+            if potentialPixels > pixelBudget { return false }
         }
         return true
     }

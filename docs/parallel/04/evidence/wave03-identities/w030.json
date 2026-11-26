@@ -1,0 +1,93 @@
+{
+  "worker": "w030",
+  "canonical_id": "/root/w021/w030",
+  "parent": "/root/w021",
+  "task": "LAST independent review023/024/027/029 diffs against baseline and acceptance. Check threshold preservation, conservative count/odd widths, error order, CPU-only routing and ownership. No source edits, no broad repeated audit. Record exactly what was and was not executed.",
+  "input_sha": "c76e176fa60d29f8ebd49845d7e8ea883c11b64f",
+  "acceptance_sha": "d1af38e3cfdff9005c8d5f59a2ec99f81e8646cf",
+  "input_blobs": {
+    "App/MetalStudyRenderer.swift": "6f72a920bc8e14438997b07c6b45545c077509dc",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": "e9764da10eabbffbad6ceee8999977cf31deb197",
+    "NativeTests/StudyRendererTests.swift": "09e83e2c384ec89e1f3c15359375b0f77e143704",
+    "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift": "381ded6219d80c9a4a8e99cd0c76b59f0fd2683c"
+  },
+  "initial_superseded_blobs": {
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": "24a00f8bb13717c86377590a22d22faeab4153f4",
+    "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift": "7cefa2bfa6baddbb016492dc1915cdc714a46b1b"
+  },
+  "ownership": {
+    "source_scope": "Read-only review of the four input files; narrow constructor and camera-frame reads only. No source ownership or edits.",
+    "review_repo": "/tmp/keyfill04-2987b1ee980d/repo",
+    "private_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w030",
+    "artifact_paths": [
+      "/tmp/keyfill04-2987b1ee980d/results/w030/report.md",
+      "/tmp/keyfill04-2987b1ee980d/results/w030/identity.json"
+    ],
+    "integration_owner": "root coordinator"
+  },
+  "outcome": "No remaining blocker in scoped static review of final frozen blobs; runtime acceptance unverified.",
+  "changed_files": [],
+  "executed": [
+    {
+      "operation": "pwd; rg --files -g AGENTS.md; cat AGENTS.md; git status --short; git rev-parse HEAD",
+      "result": "Read root/private AGENTS. Private worktree clean at baseline; root changes observed, not modified."
+    },
+    {
+      "operation": "GitHub fetch_blob acceptance d1af38e3cfdff9005c8d5f59a2ec99f81e8646cf and worker022 report 99014954dd91a7012dcae5f941bcfafb545d6a3d",
+      "result": "Read source acceptance and attributed prior numerical evidence."
+    },
+    {
+      "operation": "git hash-object for the four assigned files, initial and final freezes",
+      "result": "All supplied initial and final SHA values matched."
+    },
+    {
+      "operation": "git diff --stat c76 -- four files; git diff c76 -- four assigned files; nl/sed/rg narrow source reads",
+      "result": "Reviewed all assigned initial diffs and final remedy/new regression."
+    },
+    {
+      "operation": "git diff --check c76e176fa60d29f8ebd49845d7e8ea883c11b64f -- four assigned files, before and after final remedy",
+      "result": "Passed with no output."
+    },
+    {
+      "operation": "Read-only Python regex/brace-delimited baseline/current test-method body comparison using git show",
+      "result": "Native 7 original methods unchanged, 11 total. Core 6 original methods unchanged, 14 before final remedy and 15 after."
+    },
+    {
+      "operation": "Narrow supporting reads: ReferenceStudy.swift StudyComputeInput/StudySetup/ReferenceStudyRenderer; CameraFraming.swift; SurfacePhotometry.swift UnitDirection; StudioOptics.swift EmitterFrame",
+      "result": "Confirmed constructor order, pixel ray convention, and exact near-vertical fallback threshold."
+    },
+    {
+      "operation": "Initial rg lookups at guessed StudyComputeInput.swift, ReferenceStudyRenderer.swift, StudioPhotometry.swift paths",
+      "result": "Three nonexistent path misses; resolved declarations by rg in Sources/LightingCore. No claim of success for these lookups."
+    },
+    {
+      "operation": "Final private git status --short and git rev-parse HEAD",
+      "result": "Clean, c76e176fa60d29f8ebd49845d7e8ea883c11b64f."
+    }
+  ],
+  "attributed_not_reexecuted": [
+    {
+      "worker": "022",
+      "report_sha": "99014954dd91a7012dcae5f941bcfafb545d6a3d",
+      "claim": "802 configurations, 7498602 pixel checks, no undercounts within reported bounded axis-based references; not general camera-basis proof."
+    },
+    {
+      "worker": "026",
+      "claim": "Parent supplied near-vertical nonorthogonal basis shell undercount and root remedy. No Float32 channel-error failure was observed in that finding."
+    }
+  ],
+  "unrun": [
+    "Swift compilation and all Swift test execution",
+    "CPU renderer execution including width24 black-pixel and width192 near-vertical constructor assertions",
+    "All 11 final native methods",
+    "Metal device/kernel execution, runtime parity, exact-mask or strict-maximum verification",
+    "Numerical enumeration or rerun of worker022/026 probes",
+    "SDK discovery, build commands, CI and injected-failure lifecycle tests",
+    "Full startup audit or agent_cycle commands, delegated as already completed by root"
+  ],
+  "mutations_performed": [
+    "Created only report.md and identity.json under owned results directory; uploaded these artifacts as Git blobs."
+  ],
+  "prohibited_actions_performed": [],
+  "children_spawned": 0
+}

@@ -22,3 +22,11 @@ Connected GitHub tools remain available. Subsequent workers use pinned Git tree/
 ## Upstream dependency
 
 Observed main remained9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318. Its four commits after f150 contain historical evidence/status updates and one source correction: b0d25ee disambiguates a local bounds value in UITests/StudioAppAccessibilityUITests.swift. This existing upstream correction is carried unchanged into the feature branch so native validation can compile. No shared build/CI configuration is edited by lane04. Main is not updated. The branch retains f150 as its inspected campaign baseline and the upstream merge as a distinct dependency.
+
+## Second execution reset during wave 3
+
+A second execution reset erased temporary directories while a root Swift fixture build was in progress. The preceding reduced-source compile failed on a missing StudioNumericInput dependency; after adding it, compilation reached the linker and failed because `-fuse-ld=lld` was unavailable. A subsequent `-use-ld=bfd` retry returned a running session, but the environment disconnected before completion could be observed. The fixture generator was never observed executing. These attempts provide no Swift oracle, app memory, or Metal evidence.
+
+The watchdog's process-tree RSS field was zero because no process RSS sample was observed through that environment's /proc view; zero is not a measured compiler or application peak. Available-memory readings were host diagnostics only. Local toolchains and result directories disappeared in the reset. No further local Swift compilation is planned for this lane; the existing CI owns portable Swift and Apple execution.
+
+All ten wave 3 private worktrees were recreated at c76e176, preserving worker IDs and input revision. Durable Git blobs recovered the three completed writer sources and reports; worker029 reconstructed its exact source edit from retained tool payloads and pinned source. Root restored the combined four-file patch, corrected the review finding about direct camera error ordering, and passed whitespace and native shard inventory checks. Those checks do not type-check or execute Swift. Original worker snapshots and follow-up corrections remain separately attributed in the wave ledger.
