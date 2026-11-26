@@ -1,0 +1,118 @@
+{
+  "wave": 1,
+  "lane": "02",
+  "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "coordinator": "/root/w01r01",
+  "requested_workers": 10,
+  "actual_spawned_children": 6,
+  "max_concurrent_children": 2,
+  "completed_count": 6,
+  "workers": [
+    {
+      "worker": "W01R01",
+      "agent_id": "/root/w01r01",
+      "task": "Acceptance audit and wave coordination",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r01",
+      "artifact": "w01r01/report.md",
+      "outcome": "No concrete defect; 8 numerical comparisons <=0.0521% error and 4 boundary assertions, Swift unrun.",
+      "artifacts": [
+        "w01r01/report.md",
+        "w01r01/acceptance_probe.py",
+        "w01r01/acceptance_results.json"
+      ]
+    },
+    {
+      "worker": "W01R02",
+      "agent_id": "/root/w01r01/r02_invariants",
+      "task": "Invariants: units, geometric scaling, intensity normalization",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r02",
+      "artifact": "w01r02/report.md",
+      "outcome": "Ordinary-range invariants passed; P3 rectangular underflow and lane01 public unbounded-distance overflow.",
+      "artifacts": [
+        "w01r02/invariant_probe.py",
+        "w01r02/invariant_results.json",
+        "w01r02/report.md",
+        "w01r02/invariant_map.md"
+      ]
+    },
+    {
+      "worker": "W01R03",
+      "agent_id": "/root/w01r01/r03_interfaces",
+      "task": "Public interface units, input/error semantics, validation compatibility",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r03",
+      "artifact": "w01r03/report.md",
+      "outcome": "P3 subnormal rectangular output erased by per-cell division; huge finite XYZ chromaticity sum overflow; no ordinary-scene mismatch.",
+      "artifacts": [
+        "w01r03/report.md",
+        "w01r03/interface_review_notes.md",
+        "w01r03/probe_interfaces.py",
+        "w01r03/probe-results.json",
+        "w01r03/commands.txt"
+      ],
+      "report_note": "Coordinator condensed original report; complete original preserved as interface_review_notes.md."
+    },
+    {
+      "worker": "W01R04",
+      "agent_id": "/root/w01r01/r04_defects",
+      "task": "Implementation: oblique rectangle clipping, emitter frame handedness and nonzero roll",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r04",
+      "artifact": "w01r04/report.md",
+      "outcome": "No roll/clipping defect; oblique partial-face world-space Simpson comparison relative error2.6581e-10; six Python assertions passed.",
+      "artifacts": [
+        "w01r04/roll_area_probe.py",
+        "w01r04/roll_area_probe.json",
+        "w01r04/report.md"
+      ]
+    },
+    {
+      "worker": "W01R05",
+      "agent_id": "/root/w01r01/r05_concurrency",
+      "task": "Concurrency: shared-state inventory, Sendable/value snapshots, nearest render cancellation boundary",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r05",
+      "artifact": "w01r05/report.md",
+      "outcome": "No demonstrated shared-state race; immutable prepared snapshots; cancellation only between pixel batches, caller owns signal synchronization.",
+      "artifacts": [
+        "w01r05/report.md",
+        "w01r05/commands.txt"
+      ]
+    },
+    {
+      "worker": "W01R06",
+      "agent_id": "/root/w01r01/r06_resources",
+      "task": "Resources: strict clipped polygon and full-face sample bounds, 12-light cap",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r06",
+      "artifact": "w01r06/report.md",
+      "outcome": "Bounded rectangle work: <=5 vertices,3 triangles,432 partial or1024 full samples; validated scene<=12 lights; no resource defect found.",
+      "artifacts": [
+        "w01r06/report.md"
+      ]
+    },
+    {
+      "worker": "W01R07",
+      "agent_id": "/root/w01r01/r07_consumers",
+      "task": "Consumers: plan-export units and unsupported-versus-zero meter semantics",
+      "status": "running",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r07",
+      "artifact": "w01r07/report.md",
+      "outcome": null
+    }
+  ],
+  "checkpoint": {
+    "completed_count": 6,
+    "actual_spawned_children": 6,
+    "note": "Six of ten assigned roles completed; R07 running; R08\u2013R10 not yet spawned."
+  }
+}

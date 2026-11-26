@@ -111,6 +111,20 @@ extension Photometry {
         guard abs(depth) >= minimumDepth else { return nil }
         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
 
+        // Keep the geometric integration at unit intensity when dividing an
+        // extremely small output among cells would lose its significant bits.
+        // Apply intensity once, after summation. The ordinary-output path keeps
+        // its established sample ordering and rounding for renderer parity.
+        if emitter.onAxisCandela < Double.leastNormalMagnitude * 1024 {
+            guard let unit = LambertianRectangle(
+                center: emitter.center, right: emitter.right, up: emitter.up,
+                widthMeters: emitter.widthMeters, heightMeters: emitter.heightMeters,
+                onAxisCandela: 1),
+                let unitLux = rectangularIlluminance(emitter: unit, receiver: receiver,
+                                                     receiverNormal: receiverNormal) else { return nil }
+            return unitLux * emitter.onAxisCandela
+        }
+
         let right = emitter.right.vector, up = emitter.up.vector
         let normal = receiverNormal.vector
         let nx = dot(right, normal), ny = dot(up, normal)

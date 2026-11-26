@@ -15,7 +15,7 @@ public enum LightOutputAdjustmentError: Error, Equatable, Sendable, LocalizedErr
         case .unsupportedGeometry:
             return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
         case .outputOutOfRange:
-            return "The requested illuminance requires an output outside the supported candela range."
+            return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
         }
     }
 }

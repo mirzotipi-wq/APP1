@@ -1,0 +1,28 @@
+# W01R05 actual inspection commands; cwd /tmp/keyfill02-workers/w01r05
+# No compilation/test/build commands were run.
+
+pwd; rg --files -g 'AGENTS.md' -g '*OPERATING*' -g '*QUALITY*' -g '*ARCHITECTURE*' -g 'SurfacePhotometry.swift' -g 'Colorimetry.swift' -g 'LightOutputAdjustment.swift' -g 'StudioOptics.swift' -g '*ReferenceStudy*' -g '*StudyLighting*'
+
+cat AGENTS.md agents/OPERATING_PROTOCOL.md docs/QUALITY.md docs/ARCHITECTURE.md
+
+rg -n 'SurfacePhotometry|Colorimetry|LightOutputAdjustment|StudioOptics|StudyLighting|ReferenceStudy|Task|actor|Sendable|static (var|let)' Sources/LightingCore/SurfacePhotometry.swift Sources/LightingCore/Colorimetry.swift Sources/LightingCore/LightOutputAdjustment.swift Sources/LightingCore/StudioOptics.swift Sources/LightingCore/ReferenceStudy.swift; rg --files Sources | rg 'Study|Render'
+
+nl -ba Sources/LightingCore/SurfacePhotometry.swift; nl -ba Sources/LightingCore/Colorimetry.swift; nl -ba Sources/LightingCore/LightOutputAdjustment.swift; nl -ba Sources/LightingCore/StudioOptics.swift
+
+nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '190,580p'; rg -n 'struct (Vector3|Light|LightingScene)|class |actor |@unchecked|static var|var |let ' Sources/LightingCore/Models.swift; git status --short; git rev-parse HEAD; rg -n 'ReferenceStudyRenderer|StudyLighting|Task.detached|Task.isCancelled|isCancelled' App | head -100
+# Models.swift and App were absent; recovered via subsequent rg search.
+
+nl -ba Sources/LightingCore/LightOutputAdjustment.swift; nl -ba Sources/LightingCore/StudioOptics.swift; nl -ba Sources/LightingCore/Colorimetry.swift | sed -n '125,190p'; nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '200,269p'
+
+rg --files | rg '(App/|LightingScene|LightSource|Position|StudyPreview)'; rg -n 'struct (Position|Light|LightingScene)|ReferenceStudyRenderer.render|Task.detached|Task.isCancelled' Sources apps | head -100
+# apps was absent; Scene.swift located.
+
+nl -ba Sources/LightingCore/Scene.swift | sed -n '1,180p'; nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '1,110p'; rg -n 'ReferenceStudyRenderer.render|Task.detached|Task.isCancelled|@unchecked|static var' --glob '*.swift' | head -100; rg --files -g 'AGENTS.md'; rg -n 'static func normalIlluminance|enum Photometry|func validated|return self' Sources/LightingCore/Photometry.swift Sources/LightingCore/Scene.swift; git status --short
+# Photometry.swift was absent; normalIlluminance is in inspected Scene.swift.
+
+rg -n 'struct CameraLens|struct CameraFraming|struct ManualRoom|public (let|var)|private (let|var)' Sources/LightingCore/CameraFraming.swift Sources/LightingCore/ManualPlacement.swift Sources/LightingCore/ManualRoom.swift; nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '110,199p'; git diff --stat
+# ManualPlacement.swift and ManualRoom.swift were absent; no claims made about their internals.
+
+# Artifact creation only:
+mkdir -p private-output
+# apply_patch created private-output/report.md and private-output/commands.txt.

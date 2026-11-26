@@ -1,0 +1,35 @@
+All commands ran in /tmp/keyfill02-workers/w01r03. Read-only compound commands below are split into constituent shell commands for readability. Artifact writes used quoted heredocs only within private-output; the complete experiment is preserved there.
+
+pwd
+rg --files -g 'AGENTS.md' -g 'OPERATING_PROTOCOL.md' -g 'QUALITY.md' -g 'ARCHITECTURE.md' -g '*SurfacePhotometry*' -g '*Colorimetry*' -g '*LightOutputAdjustment*' -g '*StudioOptics*'
+cat AGENTS.md agents/OPERATING_PROTOCOL.md docs/QUALITY.md docs/ARCHITECTURE.md
+nl -ba Sources/LightingCore/SurfacePhotometry.swift
+nl -ba Sources/LightingCore/Colorimetry.swift
+nl -ba Sources/LightingCore/LightOutputAdjustment.swift
+nl -ba Sources/LightingCore/StudioOptics.swift
+nl -ba Sources/LightingCore/SurfacePhotometry.swift
+nl -ba Sources/LightingCore/Colorimetry.swift
+cat docs/ARCHITECTURE.md
+rg -n 'struct Position|struct StudioLight|struct LightingScene|func validated|normalIlluminance|enum Photometry|isValid|schemaVersion' Sources/LightingCore/LightingScene.swift Sources/LightingCore/Photometry.swift
+rg --files Sources/LightingCore Tests/LightingCoreTests | sort
+rg -n 'StudioPhotometry|NeutralCardPreview|PreviewColorTransform|PreviewColorimetry|RelativeXYZ|DisplayRGB|LightOutputAdjustment|LambertianRectangle' Sources App Tests/LightingCoreTests
+nl -ba Tests/LightingCoreTests/SurfacePhotometryTests.swift
+nl -ba Tests/LightingCoreTests/StudioOpticsTests.swift
+nl -ba Tests/LightingCoreTests/ColorimetryTests.swift
+nl -ba Sources/LightingCore/Scene.swift
+nl -ba Sources/LightingCore/SceneCodec.swift
+rg -n 'StudioPhotometry|NeutralCardPreview|LightOutputAdjustment|computeParameters|displayRGB|\.display\.red|display\.red|\.display\(' --glob '*.swift' --glob '*.h' --glob '*.metal' --glob '!Tests/**' .
+rg --files | head -70
+nl -ba Tests/LightingCoreTests/LightOutputBoundaryTests.swift
+nl -ba Tests/LightingCoreTests/SurfacePhotometryTests.swift | sed -n '1,125p'
+nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '1,295p'
+nl -ba Sources/LightingCore/GuidedLighting.swift | sed -n '70,150p'
+nl -ba Sources/LightingCore/ReferenceStudy.swift | sed -n '295,425p'
+nl -ba Tests/LightingCoreTests/ReferenceStudyTests.swift | sed -n '1,180p'
+nl -ba Tests/LightingCoreTests/PhotometryInvariantTests.swift | sed -n '1,205p'
+rg -n 'LightOutputAdjustment|invalidTargetLux|invalidLight|unsupportedGeometry|outputOutOfRange' Tests/LightingCoreTests/SceneEditHistoryTests.swift Tests/LightingCoreTests/SceneTests.swift Sources/LightingCore/SceneEditHistory.swift
+git rev-parse HEAD
+git status --short
+mkdir -p private-output
+python3 private-output/probe_interfaces.py
+python3 private-output/probe_interfaces.py
