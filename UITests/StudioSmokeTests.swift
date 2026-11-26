@@ -13,7 +13,12 @@ final class StudioSmokeTests: XCTestCase {
 
     private func assertStatus(_ value: String, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
         let status = app.staticTexts["projectStatus"]
-        let predicate = NSPredicate(format: "exists == true AND label == %@", value)
+        // One immutable AX snapshot supplies both presence and the exact
+        // label. Separate exists/label queries exhausted the old wait before
+        // its failure snapshot read the already-correct launch status.
+        let predicate = NSPredicate { _, _ in
+            (try? status.snapshot().label) == value
+        }
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: status)
         let result = XCTWaiter.wait(for: [expectation], timeout: 10)
         if result != .completed {

@@ -307,7 +307,12 @@ extension XCTestCase {
 
     private func recordRoomInputFailure(_ stage: String, field: XCUIElement, in app: XCUIApplication) {
         let description = "Stage: \(stage)\nField: \(field.debugDescription)\n" + app.debugDescription
-        let bounded = String(decoding: description.utf8.prefix(32_768), as: UTF8.self)
+        let prefix = Array(description.utf8.prefix(32_769))
+        var endIndex = min(32_768, prefix.count)
+        if prefix.count > 32_768 {
+            while endIndex > 0 && (prefix[endIndex] & 0xC0) == 0x80 { endIndex -= 1 }
+        }
+        let bounded = String(decoding: prefix.prefix(endIndex), as: UTF8.self)
         print("Room-measurement-input-failure (at most 32,768 UTF-8 bytes):\n\(bounded)")
         let hierarchy = XCTAttachment(string: bounded)
         hierarchy.name = "Room-measurement-input-hierarchy"
