@@ -38,7 +38,7 @@ This is an intensity-scaling repair, conditioned on a finite nondegenerate unit 
 
 A MainActor publication pipeline checks generation and cancellation before rendering, after rendering and after conversion. Disappearance/inactivity invalidate old work; A→B→A reuse begins a generation even when it reuses A's completed image. An already-cancelled caller now receives an unused ticket without replacing live work, and a cancelled view task returns before mutating generation/frame state.
 
-Ten actual controlled asynchronous tests cover late success/failure, A→B→A, noncooperative completion, invalidation, retry, conversion failure and pre-cancelled entry. The added pre-cancelled-begin test failed two assertions in the original pipeline because the live result was discarded; all ten pass with the correction. This reproduces the generation-seam defect, not SwiftUI's scheduling itself. The original nine test bodies are byte-preserved. The80ms sleep is a debounce, not a cancellation-latency guarantee.
+Ten actual controlled asynchronous tests cover late success/failure, A→B→A, noncooperative completion, invalidation, retry, conversion failure and pre-cancelled entry. The added pre-cancelled-begin test failed two assertions in the original pipeline because the live result was discarded; all ten pass with the correction. This reproduces the generation-seam defect, not SwiftUI's scheduling itself. The original nine test bodies are byte-preserved. The same ten methods also passed in the finalized source36 Apple native suite. The80ms sleep is a debounce, not a cancellation-latency guarantee.
 
 ## Evidence and acceptance boundaries
 
@@ -49,12 +49,12 @@ Ten actual controlled asynchronous tests cover late success/failure, A→B→A, 
 | Standard CPU CI at db7 |391Debug/0 in13.45s,391standardRelease/0 in5.679s; core job139979301968 of run45839289363. Full log and JSON retained. |
 | Final preview portable seam |Original10methods: ninepass, newmethod twoassertionfailures. Corrected10methods/0 failures. Exact production source and XCTest file in a temporary Linux package. |
 | Earlier Apple native source ace9 |163native methods/0, no skipped native methods, including nine preview methods; unsigned Debug/Release app builds and six actual simulator Metal fixtures passed. Full raw log/receipt retained. This predates the later depth/tiny/paused/cancelled-begin source. |
-| Latest source native/UI |Source36 CI is running/queued at checkpoint creation. No latest-native, VoiceOver, lifecycle-layout or physical-device pass is inferred from portable execution. |
+| Latest Apple source36 |Unsigned Debug app/native bundle and Release app builds succeeded. All164native methods passed, including all10pipeline methods; finalized accounting reports no failures, skips, duplicates or omissions. The same job passed391portable tests on macOS and six actual simulator Metal fixtures (maximum channel error1, exact masks). UI interaction/accessibility shards remain separate. |
 | Final image matrix |All12 frozen original scene JSONs preserved byte-for-byte; all12 PPMs byte-identical; final opaque RGBA and independent valid zero masks archived. |
 | CPU/shared-Float32 host parity |Six required cases pass with exact masks; near-field retains84/84unsupported pixels. Eight required precision cases pass with maximum channel error≤1. This executes the actual Swift fixture generator and shared C++ Float32 harness, not Metal. |
 | Bounded benchmark |Eight frames, twelve observed cancellations, four visibility workloads; one warm-up and seven measured samples. Raw samples and nearest-rank percentiles preserved. |
 
-Actual native evidence remains attached to its tested source, even if a later workflow was cancelled. CI project-state success is structural validation, not rendering/native acceptance.
+Current native evidence is in `evidence/ci-native-36.json` and the byte-exact `ci-native-36.log` (job139992156576 of run45842899560). Actual native evidence remains attached to its tested source, even if a later workflow was cancelled. CI project-state success is structural validation, not rendering/native acceptance.
 
 ## Image review and hashes
 
