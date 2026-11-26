@@ -1,0 +1,162 @@
+import SceneKit
+import XCTest
+import LightingCore
+@testable import KeyAndFill
+
+@MainActor
+final class SpatialSelectionLifetimeTests: XCTestCase {
+    private struct Equipment {
+        let fixture: SCNNode
+        let indicator: SCNNode
+        let stand: SCNNode
+        let source: SCNNode
+
+        var nodes: [SCNNode] { [fixture, indicator, stand, source] }
+    }
+
+    private func singleLightScene() -> LightingScene {
+        var scene = LightingScene.portrait()
+        scene.lights = [StudioLight(name: "Retained lamp", position: .init(x: -1, y: 2, z: 1),
+                                    candela: 900, kelvin: 5600, optics: .init(kind: .point))]
+        return scene
+    }
+
+    private func render(_ scene: LightingScene, selected: UUID, onSelect: ((UUID) -> Void)? = nil)
+        -> (SCNView, SpatialPreview.Coordinator) {
+        let preview = SpatialPreview(scene: scene, selected: selected, onSelect: onSelect)
+        let coordinator = preview.makeCoordinator()
+        let view = preview.makeView(coordinator: coordinator)
+        view.frame = CGRect(x: 0, y: 0, width: 360, height: 280)
+        preview.updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        return (view, coordinator)
+    }
+
+    private func equipment(for id: UUID, in coordinator: SpatialPreview.Coordinator) throws -> Equipment {
+        let indicator = try XCTUnwrap(coordinator.selectionIndicators[id])
+        let stands = coordinator.content.childNodes.filter { $0.geometry is SCNCylinder }
+        let sources = coordinator.content.childNodes.filter { $0.light?.type == .omni }
+        XCTAssertEqual(stands.count, 1)
+        XCTAssertEqual(sources.count, 1)
+        return Equipment(fixture: try XCTUnwrap(indicator.parent), indicator: indicator,
+                         stand: try XCTUnwrap(stands.first), source: try XCTUnwrap(sources.first))
+    }
+
+    private func assertDetached(_ equipment: Equipment, from coordinator: SpatialPreview.Coordinator,
+                                file: StaticString = #filePath, line: UInt = #line) {
+        for root in [equipment.fixture, equipment.stand, equipment.source] {
+            XCTAssertNil(root.parent, file: file, line: line)
+        }
+        for node in equipment.nodes {
+            // The indicator may remain a child of its detached fixture.
+            var ancestor: SCNNode? = node
+            while let current = ancestor {
+                XCTAssertFalse(current === coordinator.content, file: file, line: line)
+                ancestor = current.parent
+            }
+            XCTAssertNil(coordinator.lightID(for: node), file: file, line: line)
+        }
+    }
+
+    private func assertReplacement(for id: UUID, old: Equipment, in coordinator: SpatialPreview.Coordinator,
+                                   file: StaticString = #filePath, line: UInt = #line) throws {
+        let replacement = try equipment(for: id, in: coordinator)
+        for (previous, current) in zip(old.nodes, replacement.nodes) {
+            XCTAssertFalse(previous === current, file: file, line: line)
+        }
+        for root in [replacement.fixture, replacement.stand, replacement.source] {
+            XCTAssertTrue(root.parent === coordinator.content, file: file, line: line)
+        }
+        for selectable in [replacement.fixture, replacement.indicator, replacement.stand] {
+            XCTAssertEqual(coordinator.lightID(for: selectable), id, file: file, line: line)
+        }
+        XCTAssertFalse(replacement.indicator.isHidden, file: file, line: line)
+        assertDetached(old, from: coordinator, file: file, line: line)
+    }
+
+    func testIdenticalSceneRefreshesAndClearsCallbackWithoutReplacingEquipmentOrOrbit() throws {
+        let scene = singleLightScene()
+        let id = scene.lights[0].id
+        var first: [UUID] = [], second: [UUID] = []
+        let (view, coordinator) = render(scene, selected: id, onSelect: { first.append($0) })
+        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
+        let nodes = coordinator.content.childNodes.map(ObjectIdentifier.init)
+        let indicator = try XCTUnwrap(coordinator.selectionIndicators[id])
+        let camera = try XCTUnwrap(view.pointOfView)
+        camera.position = SCNVector3(7, 5, 9)
+        view.defaultCameraController.target = SCNVector3(1, 2, 3)
+
+        // Direct invocation isolates callback publication from gesture delivery.
+        try XCTUnwrap(coordinator.onSelect)(id)
+        XCTAssertEqual(first, [id])
+        SpatialPreview(scene: scene, selected: id, onSelect: { second.append($0) })
+            .updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        try XCTUnwrap(coordinator.onSelect)(id)
+        XCTAssertEqual(first, [id])
+        XCTAssertEqual(second, [id])
+        XCTAssertEqual(coordinator.content.childNodes.map(ObjectIdentifier.init), nodes)
+        XCTAssertTrue(coordinator.selectionIndicators[id] === indicator)
+        XCTAssertTrue(view.pointOfView === camera)
+        XCTAssertEqual([camera.position.x, camera.position.y, camera.position.z], [7, 5, 9])
+        let targetAfterReplacement = view.defaultCameraController.target
+        XCTAssertEqual([targetAfterReplacement.x, targetAfterReplacement.y, targetAfterReplacement.z], [1, 2, 3])
+
+        SpatialPreview(scene: scene, selected: id, onSelect: nil).updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        XCTAssertNil(coordinator.onSelect)
+        coordinator.onSelect?(id)
+        XCTAssertEqual(first, [id])
+        XCTAssertEqual(second, [id])
+        XCTAssertEqual(coordinator.content.childNodes.map(ObjectIdentifier.init), nodes)
+        XCTAssertTrue(coordinator.selectionIndicators[id] === indicator)
+        XCTAssertTrue(view.pointOfView === camera)
+        XCTAssertEqual([camera.position.x, camera.position.y, camera.position.z], [7, 5, 9])
+        let targetAfterRemoval = view.defaultCameraController.target
+        XCTAssertEqual([targetAfterRemoval.x, targetAfterRemoval.y, targetAfterRemoval.z], [1, 2, 3])
+    }
+
+    func testDeletionDetachesAllRetainedEquipmentBeforeTheSameUUIDReturns() throws {
+        let scene = singleLightScene()
+        let id = scene.lights[0].id
+        let (view, coordinator) = render(scene, selected: id)
+        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
+        let old = try equipment(for: id, in: coordinator)
+        var empty = scene
+        empty.lights = []
+
+        SpatialPreview(scene: empty, selected: id).updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        XCTAssertTrue(coordinator.lightIDs.isEmpty)
+        XCTAssertTrue(coordinator.selectionIndicators.isEmpty)
+        assertDetached(old, from: coordinator)
+
+        SpatialPreview(scene: scene, selected: id).updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        try assertReplacement(for: id, old: old, in: coordinator)
+    }
+
+    func testInvalidSceneDetachesAllRetainedEquipmentBeforeRecovery() throws {
+        let scene = singleLightScene()
+        let id = scene.lights[0].id
+        let (view, coordinator) = render(scene, selected: id)
+        defer { SpatialPreview.dismantleUIView(view, coordinator: coordinator) }
+        let old = try equipment(for: id, in: coordinator)
+        var invalid = scene
+        invalid.lights.append(invalid.lights[0])
+
+        SpatialPreview(scene: invalid, selected: id).updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        XCTAssertTrue(coordinator.content.isHidden)
+        XCTAssertFalse(view.isUserInteractionEnabled)
+        XCTAssertTrue(coordinator.lightIDs.isEmpty)
+        XCTAssertTrue(coordinator.selectionIndicators.isEmpty)
+        assertDetached(old, from: coordinator)
+
+        SpatialPreview(scene: scene, selected: id).updateView(view, coordinator: coordinator)
+        SCNTransaction.flush()
+        XCTAssertFalse(coordinator.content.isHidden)
+        XCTAssertTrue(view.isUserInteractionEnabled)
+        try assertReplacement(for: id, old: old, in: coordinator)
+    }
+}
