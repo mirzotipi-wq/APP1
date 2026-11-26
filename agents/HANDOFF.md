@@ -1,6 +1,10 @@
 # Current handoff
 
-## Integrated runtime correction — full validation next
+## Current integrated validation — c118c3f
+
+Full integrated [run45778673562](https://github.com/mirzotipi-wq/APP1/actions/runs/45778673562) is running at source `c118c3f2125af23d6ed864cab6dd98adf8c51b59`. Its exact192-input manifest verifies the eight reviewed test/CI changes; App, Sources and portable Tests are unchanged fromcd5. Required inventory is138 native,35 UI and24 original Default/AXXXL PNGs. Runtime acceptance remains pending.
+
+## Integrated runtime correction
 
 Eight reviewed test/CI files now address observed native fixture, accessibility-query and simulator-observation failures. The latest [6e native run45772992319](https://github.com/mirzotipi-wq/APP1/actions/runs/45772992319) failed135/137 with three assertions: two disabled Default font-fit failures and one Default strict-pixel comparison. Direct coordinate conversion removed the origin/containment failures; AXXXL and the8-point negative fixture executed without further assertion failures. Every observer used scale1 while its actual trait/screen scale was3. The fixture now assigns the real SwiftUI environment display scale to its UIKit observer in make/update; it changes no frame, tolerance, expectation or product geometry.
 
