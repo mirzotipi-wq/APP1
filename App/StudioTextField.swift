@@ -174,7 +174,7 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
         if initial || changedIdentity {
             modelText = external
             replaceDisplayedText(with: external)
-        } else if external != modelText {
+        } else if !sameNativeText(external, modelText) {
             modelText = external
             // An explicit Clear/reset/context change must replace the visible
             // draft immediately, including an active input-method composition.
@@ -240,7 +240,7 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
     private func publishNativeText() {
         guard acceptsNativeEvents, let configuration else { return }
         let current = configuration.text.wrappedValue
-        if current != modelText {
+        if !sameNativeText(current, modelText) {
             // A clear/reset can reach the binding before updateUIView. Its new
             // value wins over a late event containing the previous draft.
             modelText = current
@@ -249,7 +249,7 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
             return
         }
         let replacement = text ?? ""
-        guard replacement != current else { selectionBeforeEdit = nil; return }
+        guard !sameNativeText(replacement, current) else { selectionBeforeEdit = nil; return }
         let token = lifecycle
         // Keep the caller's raw draft current even while an input method has
         // marked text, so an explicit Save/Apply cannot read an older value.
@@ -260,12 +260,12 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
         modelText = accepted
         // Read the caller's binding back even when it rejected the change
         // without changing state. UIKit must not keep displaying that paste.
-        if text != accepted { replaceDisplayedText(with: accepted, selection: selectionBeforeEdit) }
+        if !sameNativeText(text, accepted) { replaceDisplayedText(with: accepted, selection: selectionBeforeEdit) }
         selectionBeforeEdit = nil
     }
 
     private func replaceDisplayedText(with replacement: String, selection: NSRange? = nil) {
-        guard text != replacement else { return }
+        guard !sameNativeText(text, replacement) else { return }
         let offsets = selection ?? selectionOffsets()
         replacingText = true
         defer { replacingText = false }
@@ -288,6 +288,18 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
         let end = offset(from: beginningOfDocument, to: selectedTextRange.end)
         guard start >= 0, end >= start else { return nil }
         return NSRange(location: start, length: end - start)
+    }
+
+    /// Swift String equality folds canonically equivalent Unicode spellings.
+    /// Native editing and selection use exact UTF-16, and a decomposed paste
+    /// can exceed a caller's scalar bound even when it compares equal to the
+    /// accepted text. Every synchronization boundary must observe that change.
+    private func sameNativeText(_ lhs: String?, _ rhs: String?) -> Bool {
+        switch (lhs, rhs) {
+        case (nil, nil): return true
+        case (let lhs?, let rhs?): return lhs.utf16.elementsEqual(rhs.utf16)
+        default: return false
+        }
     }
 
     private func scheduleFocusUpdate() {

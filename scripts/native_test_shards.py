@@ -31,7 +31,7 @@ def discover_ui_classes():
     for file in (ROOT / "UITests").rglob("*.swift"):
         content = file.read_text(encoding="utf-8")
         classes = re.findall(r"\bclass\s+(\w+)\s*:\s*XCTestCase\b", content)
-        if re.search(r"\bfunc\s+test\w+\s*\(", content) and not classes:
+        if re.search(r"\bfunc\s+test\w*\s*\(", content) and not classes:
             raise ValueError(f"Test methods outside a recognized XCTestCase: {file.name}")
         for name in classes:
             if name in result:
@@ -80,7 +80,7 @@ def discover_methods(directory):
     result = {}
     for file in (ROOT / directory).rglob("*.swift"):
         content = file.read_text(encoding="utf-8")
-        methods = re.findall(r"\bfunc\s+(test\w+)\s*\(", content)
+        methods = re.findall(r"\bfunc\s+(test\w*)\s*\(", content)
         if not methods:
             continue
         classes = re.findall(r"\bclass\s+(\w+)\s*:\s*XCTestCase\b", content)

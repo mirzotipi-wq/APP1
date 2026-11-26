@@ -26,6 +26,9 @@ final class StudioPaletteTests: XCTestCase {
                     try assertContrast(color, on: background, minimum: 4.5, traits: traits,
                                        pair: "\(appearance) \(name) / \(surfaceName)")
                 }
+                try assertContrast(StudioPalette.sliderTrackUIColor, on: background,
+                                   minimum: 3, traits: traits,
+                                   pair: "\(appearance) enabled slider remaining track / \(surfaceName)")
             }
         }
     }
@@ -54,7 +57,7 @@ final class StudioPaletteTests: XCTestCase {
             let card = try components(.secondarySystemGroupedBackground, traits: traits)
             let unselectedRow = try components(.tertiarySystemGroupedBackground, traits: traits)
             // StudioView.lightList, the ideal-lux panel and the neutral-card
-            // selected preset apply this 12% tint over their enclosing
+            // selected white-balance and camera presets apply this 12% tint over their enclosing
             // secondary grouped card, not a flat swatch.
             let selectedRow = composite(selection, opacity: 0.12, over: card)
             try assertContrast(StudioPalette.secondaryTextUIColor, on: selectedRow,
@@ -62,7 +65,7 @@ final class StudioPaletteTests: XCTestCase {
                                pair: "\(appearance) secondaryText / selected row and ideal-lux panel")
             try assertContrast(StudioPalette.selectionUIColor, on: selectedRow,
                                minimum: 3, traits: traits,
-                               pair: "\(appearance) selected checkmark / light row and white-balance preset")
+                               pair: "\(appearance) selected checkmark / light row, white-balance and camera presets")
             // The equipment icon has a second 13% tint inside either row.
             for (rowName, row) in [("selected", selectedRow), ("unselected", unselectedRow)] {
                 let iconBackground = composite(selection, opacity: 0.13, over: row)
@@ -113,13 +116,16 @@ final class StudioPaletteTests: XCTestCase {
     private var appearances: [(String, UITraitCollection)] {
         let styles: [(String, UIUserInterfaceStyle)] = [("light", .light), ("dark", .dark)]
         let levels: [(String, UIUserInterfaceLevel)] = [("base", .base), ("elevated", .elevated)]
+        let contrasts: [(String, UIAccessibilityContrast)] = [("normal", .normal), ("high", .high)]
         return styles.flatMap { styleName, style in
-            levels.map { levelName, level in
-                ("\(styleName)/\(levelName)", UITraitCollection(traitsFrom: [
-                    UITraitCollection(userInterfaceStyle: style),
-                    UITraitCollection(userInterfaceLevel: level),
-                    UITraitCollection(accessibilityContrast: .normal)
-                ]))
+            levels.flatMap { levelName, level in
+                contrasts.map { contrastName, contrast in
+                    ("\(styleName)/\(levelName)/\(contrastName)", UITraitCollection(traitsFrom: [
+                        UITraitCollection(userInterfaceStyle: style),
+                        UITraitCollection(userInterfaceLevel: level),
+                        UITraitCollection(accessibilityContrast: contrast)
+                    ]))
+                }
             }
         }
     }

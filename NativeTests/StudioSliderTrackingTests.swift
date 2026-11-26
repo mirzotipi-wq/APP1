@@ -53,6 +53,66 @@ final class StudioSliderTrackingTests: XCTestCase {
 
     private let mapping = StudioSliderMapping(bounds: 0.05...4, step: 0.05)!
 
+    func testOutAndBackOptionalSettingsPreserveOriginalSceneAndRedo() throws {
+        typealias Setting = (name: String, bounds: ClosedRange<Double>, step: Double,
+                             read: (LightingScene) -> Double, write: (inout LightingScene, Double) -> Void)
+        let settings: [Setting] = [
+            ("exposure", -6...6, 0.25, { $0.effectivePreviewSettings.exposureStops }, { scene, value in
+                var settings = scene.effectivePreviewSettings
+                settings.exposureStops = value
+                scene.previewSettings = settings
+            }),
+            ("whiteBalance", 2000...10000, 100, { $0.effectivePreviewSettings.whiteBalanceKelvin }, { scene, value in
+                var settings = scene.effectivePreviewSettings
+                settings.whiteBalanceKelvin = value
+                scene.previewSettings = settings
+            }),
+            ("focalLength", 14...200, 1, { $0.effectiveCameraLens.focalLengthMillimeters }, { scene, value in
+                scene.cameraLens = .init(focalLengthMillimeters: value)
+            }),
+            ("roll", -180...180, 1, { $0.lights[0].effectiveOptics.effectiveRollDegrees }, { scene, value in
+                var optics = scene.lights[0].effectiveOptics
+                optics.rollDegrees = value
+                scene.lights[0].optics = optics
+            })
+        ]
+        for setting in settings {
+            for explicitDefaults in [false, true] {
+                var scene = LightingScene.portrait()
+                scene.lights[0].optics = .init(kind: .rectangle, rollDegrees: explicitDefaults ? 0 : nil)
+                if explicitDefaults {
+                    scene.previewSettings = .init()
+                    scene.cameraLens = .init()
+                }
+                let original = scene
+                var previousEdit = scene
+                previousEdit.camera.x += 1
+                var history = SceneEditHistory()
+                history.record(previous: original)
+                scene = try XCTUnwrap(history.undo(current: previousEdit))
+                let adapter = StudioSliderEditing(read: { setting.read(scene) }, write: { value in
+                    var next = scene
+                    setting.write(&next, value)
+                    scene = history.preservingOptionalRepresentations(in: next)
+                }, onEditingChanged: { editing in
+                    if editing { history.begin(scene: scene, owner: setting.name) }
+                    else { history.end(scene: scene, owner: setting.name) }
+                })
+                let mapping = try XCTUnwrap(StudioSliderMapping(bounds: setting.bounds, step: setting.step))
+                let originalDisplay = try XCTUnwrap(mapping.normalized(setting.read(scene)))
+                let tracking = StudioSliderTracking()
+                let token = try XCTUnwrap(tracking.begin(editing: adapter, mapping: mapping, displayedValue: originalDisplay))
+                tracking.change(0.9, for: token)
+                XCTAssertNotEqual(scene, original, setting.name)
+                tracking.finish(token, finalDisplay: originalDisplay)
+                XCTAssertEqual(scene, original, setting.name)
+                XCTAssertFalse(history.canUndo, setting.name)
+                XCTAssertFalse(history.isEditing, setting.name)
+                XCTAssertEqual(history.redo(current: scene), previousEdit, setting.name)
+            }
+        }
+    }
+
     func testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand() throws {
         let editor = Editor(), tracking = StudioSliderTracking()
         var point = editor.scene

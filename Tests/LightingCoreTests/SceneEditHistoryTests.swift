@@ -10,6 +10,100 @@ final class SceneEditHistoryTests: XCTestCase {
         return result
     }
 
+    func testActiveSettingsRestoreOriginalOptionalBytesAndKeepRedo() throws {
+        for explicitDefaults in [false, true] {
+            var original = initial
+            if explicitDefaults {
+                original.previewSettings = .init()
+                original.cameraLens = .init()
+                original.lights[0].optics = .init(rollDegrees: 0)
+            }
+            var previousEdit = original
+            previousEdit.camera.x += 1
+            var history = SceneEditHistory()
+            history.record(previous: original)
+            XCTAssertEqual(history.undo(current: previousEdit), original)
+            history.begin(scene: original, owner: "settings")
+            var returned = original
+            returned.previewSettings = .init()
+            returned.cameraLens = .init()
+            returned.lights[0].optics = .init(rollDegrees: explicitDefaults ? nil : 0)
+            returned = history.preservingOptionalRepresentations(in: returned)
+            XCTAssertEqual(returned, original)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .sortedKeys
+            XCTAssertEqual(try encoder.encode(returned), try encoder.encode(original))
+            history.end(scene: returned, owner: "settings")
+            XCTAssertFalse(history.canUndo)
+            XCTAssertEqual(history.redo(current: returned), previousEdit)
+        }
+    }
+
+    func testRestoringOptionalRollUsesLightIdentityAndKeepsOtherChanges() throws {
+        var original = initial
+        original.lights[0].optics = .init(kind: .rectangle)
+        original.lights[1].optics = .init(kind: .rectangle, rollDegrees: 0)
+        var history = SceneEditHistory()
+        history.begin(scene: original, owner: "optics")
+        var manualAimOnly = original
+        manualAimOnly.lights[0].optics?.aimTarget = original.subject
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: manualAimOnly), manualAimOnly,
+                       "A manual aim is a real setting change even when its current direction is unchanged")
+        var changed = original
+        changed.lights.swapAt(0, 1)
+        changed.lights[0].optics?.rollDegrees = nil
+        changed.lights[1].optics?.rollDegrees = 0
+        changed.lights[1].optics?.widthMeters = 1.2
+        changed.lights[1].optics?.aimTarget = original.subject
+        let added = StudioLight(name: "New light", position: original.camera, candela: 100, kelvin: 5600,
+                                optics: .init(rollDegrees: 0))
+        changed.lights.append(added)
+        let restored = history.preservingOptionalRepresentations(in: changed)
+        XCTAssertEqual(restored.lights[0].optics?.rollDegrees, 0)
+        XCTAssertNil(restored.lights[1].optics?.rollDegrees)
+        XCTAssertEqual(restored.lights[1].optics?.widthMeters, 1.2)
+        XCTAssertEqual(restored.lights[1].optics?.aimTarget, original.subject,
+                       "A manual aim at the current subject must not become automatic aim")
+        XCTAssertEqual(restored.lights.last, added, "New identities have no old representation to restore")
+        XCTAssertEqual(restored.lights.map(\.id), changed.lights.map(\.id))
+        history.end(scene: restored, owner: "optics")
+        XCTAssertEqual(history.undo(current: restored), original)
+        XCTAssertEqual(history.redo(current: original), restored)
+    }
+
+    func testOptionalRepresentationRestorationDoesNotOutliveItsTransaction() {
+        var explicit = initial
+        explicit.previewSettings = .init()
+        explicit.cameraLens = .init()
+        explicit.lights[0].optics = .init(rollDegrees: 0)
+        var history = SceneEditHistory()
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: explicit), explicit)
+        history.begin(scene: initial, owner: "old")
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: explicit), initial)
+        history.end(scene: initial, owner: "old")
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: explicit), explicit)
+        history.begin(scene: explicit, owner: "new")
+        history.end(scene: initial, owner: "old")
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: initial), explicit,
+                       "The current owner's representation wins over an old owner's late end")
+        history.reset()
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: initial), initial)
+        XCTAssertEqual(history.preservingOptionalRepresentations(in: explicit), explicit)
+    }
+
+    func testReturningOnePreviewValueKeepsAnotherSettingChangeUndoable() {
+        var history = SceneEditHistory()
+        history.begin(scene: initial, owner: "preview")
+        var changed = initial
+        changed.previewSettings = .init(whiteBalanceKelvin: 6500, exposureStops: 0)
+        let restored = history.preservingOptionalRepresentations(in: changed)
+        XCTAssertEqual(restored, changed)
+        XCTAssertEqual(restored.previewSettings?.whiteBalanceKelvin, 6500)
+        history.end(scene: restored, owner: "preview")
+        XCTAssertEqual(history.undo(current: restored), initial)
+        XCTAssertEqual(history.redo(current: initial), restored)
+    }
+
     func testContinuousChangesMakeOneUndoEntryAndRepeatedBeginKeepsOriginal() {
         let a = scene(0), b = scene(1), c = scene(2)
         var history = SceneEditHistory()

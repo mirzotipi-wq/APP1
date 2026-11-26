@@ -2,6 +2,43 @@ import XCTest
 @testable import LightingCore
 
 final class RoomPlacementTests: XCTestCase {
+    func testCardinalMappingPreservesTinyWallCrossingsAndSmallSubjectOffsets() throws {
+        let rotations: [(Double, Double, Double)] = [
+            (0, 1, 0), (360, 1, 0), (-360, 1, 0),
+            (90, 0, 1), (-270, 0, 1), (-90, 0, -1), (270, 0, -1),
+            (180, -1, 0), (-180, -1, 0)
+        ]
+        let cases: [(point: Double, offset: Double, expected: Double)] = [
+            (-1e-16, 3, -1e-16),
+            (-5e-16, 3.nextUp, -5e-16 + (3.nextUp - 3)),
+            (3, 1e-16, 1e-16),
+            (0, 3, 0)
+        ]
+        for (degrees, c, s) in rotations {
+            for sample in cases {
+                for leftWall in [true, false] {
+                    // Inverse cardinal rotation places the tested coordinate
+                    // on one room axis without mixing in the other axis.
+                    let x = leftWall ? c : -s, z = leftWall ? s : c
+                    let scene = LightingScene(subject: .init(x: x * 3, y: 1.5, z: z * 3),
+                                              camera: .init(x: x * sample.point, y: 1.5, z: z * sample.point),
+                                              lights: [])
+                    let room = ManualRoom(subjectX: leftWall ? sample.offset : 2,
+                                          subjectZ: leftWall ? 2 : sample.offset,
+                                          yawDegrees: degrees)
+                    let plan = try RoomPlacementPlan(scene: scene, room: room)
+                    let subjectCoordinate = leftWall ? plan.points[0].xFromLeft : plan.points[0].zFromNear
+                    let cameraCoordinate = leftWall ? plan.points[1].xFromLeft : plan.points[1].zFromNear
+                    XCTAssertEqual(subjectCoordinate, sample.offset)
+                    XCTAssertEqual(cameraCoordinate, sample.expected,
+                                   "\(degrees) degrees, \(leftWall ? "left" : "near") wall")
+                    XCTAssertEqual(plan.points[1].insideRoom, sample.expected >= 0)
+                    XCTAssertEqual(plan.outsideCount, sample.expected < 0 ? 1 : 0)
+                }
+            }
+        }
+    }
+
     func testDefaultPortraitFitsAndPreservesHeightAndDistance() throws {
         let scene = LightingScene.portrait()
         let plan = try RoomPlacementPlan(scene: scene, room: .init())

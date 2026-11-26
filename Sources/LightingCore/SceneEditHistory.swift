@@ -25,6 +25,38 @@ public struct SceneEditHistory: Equatable, Sendable {
     public var canRedo: Bool { !future.isEmpty }
     public var isEditing: Bool { transactionStart != nil }
 
+    /// Optional settings retain their original stored representation when a
+    /// continuous edit returns to the same effective value. This keeps an
+    /// out-and-back slider gesture exactly unchanged, including nil defaults,
+    /// so it cannot create an undo entry or discard redo. With no active
+    /// transaction, the scene is returned unchanged.
+    public func preservingOptionalRepresentations(in scene: LightingScene) -> LightingScene {
+        guard let start = transactionStart else { return scene }
+        var result = scene
+        if result.effectivePreviewSettings == start.effectivePreviewSettings {
+            result.previewSettings = start.previewSettings
+        }
+        if result.effectiveCameraLens == start.effectiveCameraLens {
+            result.cameraLens = start.cameraLens
+        }
+        for index in result.lights.indices {
+            guard let original = start.lights.first(where: { $0.id == result.lights[index].id }) else { continue }
+            let initialOptics = original.effectiveOptics
+            var optics = result.lights[index].effectiveOptics
+            if optics.effectiveRollDegrees == initialOptics.effectiveRollDegrees {
+                optics.rollDegrees = initialOptics.rollDegrees
+            }
+            // Aim-to-subject and a manual target at the subject's current
+            // position remain distinct settings, even if their rays coincide.
+            if optics == initialOptics {
+                result.lights[index].optics = original.optics
+            } else if result.lights[index].optics != nil {
+                result.lights[index].optics = optics
+            }
+        }
+        return result
+    }
+
     /// Record only actual discrete changes. If a gesture is still open,
     /// `previous` is its current result: commit that gesture before recording
     /// the new command so both operations remain independently reversible.

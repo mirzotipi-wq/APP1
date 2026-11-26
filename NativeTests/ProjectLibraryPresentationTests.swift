@@ -26,6 +26,25 @@ final class ProjectLibraryPresentationTests: XCTestCase {
         }
     }
 
+    func testIgnorableCharactersCannotHideBlankEdgesFromNameDisambiguation() throws {
+        let names = ["Studio", "Studio \u{200D}", "\u{200D} Studio", "\u{034F} Studio \u{FE0F}",
+                     "Studio\u{00A0}\u{200C}"]
+        for name in names { XCTAssertEqual(try StudioDisplayName.newInput(name), name) }
+        let projects = try names.map { try project($0) }
+        let rows = ProjectLibraryRowPresentation.make(for: projects)
+        XCTAssertEqual(Set(rows.compactMap(\.identifier)).count, projects.count,
+                       "Removing invisible edge characters must not leave a blank-only name distinction")
+        XCTAssertEqual(Set(rows.map(\.confirmationName)).count, projects.count)
+        for (row, original) in zip(rows, projects) {
+            XCTAssertEqual(row.id, original.id)
+            XCTAssertEqual(Array(row.name.unicodeScalars), Array(original.name.unicodeScalars))
+            XCTAssertEqual(row.project, original)
+            let identifier = try XCTUnwrap(row.identifier)
+            XCTAssertEqual(row.identityValue(), "Project ID \(identifier)")
+            XCTAssertTrue(row.confirmationName.contains(identifier))
+        }
+    }
+
     func testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities() throws {
         let names = ["Cafe", "Cafe", "CAFE", "Ｃａｆｅ", "Café"]
         let projects = try names.map { try project($0) }

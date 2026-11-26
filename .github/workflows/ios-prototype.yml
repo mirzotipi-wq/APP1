@@ -293,6 +293,7 @@ jobs:
           python3 scripts/native_test_shards.py verify-log unit native-tests.log \
             --report native-method-accounting.json
       - name: Export finalized XCTest result bundle and genuine attachments
+        id: native_results_export
         if: always()
         run: |
           set -euo pipefail
@@ -300,7 +301,12 @@ jobs:
           # Preserve any original bundle before checking finalization. A timed-out
           # command must retain its raw evidence without passing this required gate.
           if [ -d NativeTests.xcresult ]; then
-            ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+            ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip || {
+              native_archive_exit_code=$?
+              printf 'archive_failed=true\n' >> "$GITHUB_OUTPUT"
+              echo "::error::XCTest archive failed; preserve the original bundle separately"
+              exit "$native_archive_exit_code"
+            }
           fi
           if [ ! -f NativeTests.xcresult/Info.plist ]; then
             echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"
@@ -308,6 +314,14 @@ jobs:
           fi
           mkdir -p artifacts/native-attachments
           xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload original XCTest bundle after archive failure
+        if: ${{ always() && steps.native_results_export.outcome == 'failure' && steps.native_results_export.outputs.archive_failed == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-unit-and-build-evidence-raw-xcresult
+          path: NativeTests.xcresult/
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Upload native result and test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -609,6 +623,7 @@ jobs:
             exit "$studio_collection_exit_code"
           fi
       - name: Export finalized XCTest result bundle and genuine attachments
+        id: native_results_export
         if: always()
         run: |
           set -euo pipefail
@@ -616,7 +631,12 @@ jobs:
           # Preserve any original bundle before checking finalization. A timed-out
           # command must retain its raw evidence without passing this required gate.
           if [ -d NativeTests.xcresult ]; then
-            ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+            ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip || {
+              native_archive_exit_code=$?
+              printf 'archive_failed=true\n' >> "$GITHUB_OUTPUT"
+              echo "::error::XCTest archive failed; preserve the original bundle separately"
+              exit "$native_archive_exit_code"
+            }
           fi
           if [ ! -f NativeTests.xcresult/Info.plist ]; then
             echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"
@@ -624,6 +644,14 @@ jobs:
           fi
           mkdir -p artifacts/native-attachments
           xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
+      - name: Upload original XCTest bundle after archive failure
+        if: ${{ always() && steps.native_results_export.outcome == 'failure' && steps.native_results_export.outputs.archive_failed == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-${{ matrix.shard }}-evidence-raw-xcresult
+          path: NativeTests.xcresult/
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Upload native result and test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -706,12 +734,13 @@ jobs:
           suffixes = [
               "Plan-choices", "Plan-selection", "Inspector",
               "Precision-instructions", "Precision-keyboard", "Meter-preset-selection",
+              "Camera-preset-selection",
               "Library-unsaved", "Library-saved", "Project-name-field-keyboard",
               "Project-name-save-keyboard", "Project-name-cancel-keyboard", "Library-done",
           ]
           wanted = {category + "-" + suffix for suffix in suffixes}
           # Failure screenshots are diagnostic originals, never substitutes for
-          # the twelve required captures. Emit them once even if AXXXL failed.
+          # the thirteen required captures. Emit them once even if AXXXL failed.
           allowed = wanted | ({"Accessibility-workflow-failure", "Unreachable-studio-content"}
                               if category == "Default" else set())
           selected = {}

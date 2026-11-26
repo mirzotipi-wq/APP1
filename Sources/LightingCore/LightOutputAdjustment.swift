@@ -64,15 +64,16 @@ public enum LightOutputAdjustment {
             throw LightOutputAdjustmentError.outputOutOfRange
         }
 
+        // Preserve an already exact setting before inverting the model.
+        // Independently rounded division and integration can miss an exactly
+        // achieved target, including subnormal values and the upper boundary.
+        if source.candela > 0,
+           StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
+            return source
+        }
+
         adjusted.candela = targetLux / unitLux
         if adjusted.candela <= 0 || !adjusted.isValid {
-            // At the 100,000 cd boundary, independent integration rounding can
-            // put the quotient just above the limit. Retain an already exact
-            // setting rather than rejecting the editor's unchanged value.
-            if source.candela > 0,
-               StudioPhotometry.illuminance(for: source, in: scene) == targetLux {
-                return source
-            }
             guard adjusted.candela > maximum.candela else {
                 throw LightOutputAdjustmentError.outputOutOfRange
             }

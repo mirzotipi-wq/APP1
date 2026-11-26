@@ -55,12 +55,23 @@ struct CameraInspector: View {
                         lens.focalLengthMillimeters = mm
                         onEditingChanged(false, id)
                     } label: {
-                        Text("\(Int(mm))").font(.caption.monospacedDigit().weight(.medium))
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                            .background(lens.focalLengthMillimeters == mm ? Color.accentColor.opacity(0.16) : Color.clear,
-                                        in: RoundedRectangle(cornerRadius: 8))
+                        HStack(spacing: 4) {
+                            Text("\(Int(mm))")
+                                .fixedSize(horizontal: false, vertical: true)
+                            Image(systemName: lens.focalLengthMillimeters == mm ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(lens.focalLengthMillimeters == mm
+                                                 ? StudioPalette.selection : StudioPalette.secondaryText)
+                        }
+                        .font(.caption.monospacedDigit().weight(.medium))
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 6)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .background(lens.focalLengthMillimeters == mm ? StudioPalette.selection.opacity(0.12) : Color.clear,
+                                    in: RoundedRectangle(cornerRadius: 8))
+                        .contentShape(Rectangle())
                     }.buttonStyle(.plain)
                         .accessibilityLabel("\(Int(mm)) millimeter lens")
+                        .accessibilityIdentifier("cameraFocalLengthPreset-\(Int(mm))")
                         .accessibilityAddTraits(lens.focalLengthMillimeters == mm ? .isSelected : [])
                 }
             }

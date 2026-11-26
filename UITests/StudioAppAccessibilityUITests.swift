@@ -31,7 +31,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                                      launchValue: "UICTContentSizeCategoryL", name: "Default")
         let largest = try exerciseEssentialWorkflow(category: .accessibilityExtraExtraExtraLarge,
                                                     launchValue: "UICTContentSizeCategoryAccessibilityXXXL", name: "AXXXL")
-        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning", "projectNameHeading",
+        for key in ["projectStatus", "intensityReadout", "precisionHeading", "cameraFocalLengthReadout", "cameraPreset50", "libraryWarning", "projectNameHeading",
                     "projectNameSave", "projectNameCancel", "libraryDone"] {
             let before = try XCTUnwrap(standard[key], key)
             let after = try XCTUnwrap(largest[key], key)
@@ -183,6 +183,46 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         XCTAssertFalse(tungsten.isSelected)
         try selectedCheckmark(in: daylight)
 
+        let cameraMode = app.buttons["viewMode-Camera"]
+        try control(cameraMode, label: "Camera", in: app, towardBottom: false)
+        cameraMode.tap()
+        let cameraExact = app.buttons["cameraFocalLengthExact"]
+        let focalSlider = app.sliders["cameraFocalLength"]
+        try control(cameraExact, label: "Enter exact focal length", in: app)
+        expectValue(cameraExact, "50 mm")
+        measured["cameraFocalLengthReadout"] = try text(cameraExact.staticTexts["50 mm"], equals: "50 mm",
+            style: .subheadline, category: category, in: app, monospacedDigits: true)
+        for millimeters in [24, 35, 50, 85, 135] {
+            let preset = app.buttons["cameraFocalLengthPreset-\(millimeters)"]
+            let state = try control(preset, label: "\(millimeters) millimeter lens", in: app)
+            XCTAssertEqual(state.isSelected, millimeters == 50)
+            let titleFrame = try text(preset.staticTexts["\(millimeters)"], equals: "\(millimeters)",
+                style: .caption1, category: category, in: app, weight: .medium, monospacedDigits: true)
+            if millimeters == 50 {
+                measured["cameraPreset50"] = titleFrame
+                try selectedCheckmark(in: preset)
+            }
+        }
+        let portraitLens = app.buttons["cameraFocalLengthPreset-85"]
+        let normalLens = app.buttons["cameraFocalLengthPreset-50"]
+        try control(portraitLens, in: app, towardBottom: false)
+        portraitLens.tap()
+        expectValue(focalSlider, "85 mm")
+        expectValue(cameraExact, "85 mm")
+        XCTAssertTrue(portraitLens.isSelected)
+        XCTAssertFalse(normalLens.isSelected)
+        XCTAssertFalse(normalLens.images["checkmark.circle.fill"].exists)
+        try selectedCheckmark(in: portraitLens)
+        capture(name + "-Camera-preset-selection", in: app)
+        try control(undo, label: "Undo", in: app, scrolling: false)
+        undo.tap()
+        expectValue(focalSlider, "50 mm")
+        expectValue(cameraExact, "50 mm")
+        try control(normalLens, in: app, towardBottom: false)
+        XCTAssertTrue(normalLens.isSelected)
+        XCTAssertFalse(portraitLens.isSelected)
+        try selectedCheckmark(in: normalLens)
+
         let projects = app.buttons["openProjectLibrary"]
         try control(projects, label: "Projects", in: app, towardBottom: false)
         projects.tap()
@@ -291,8 +331,10 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         var font = UIFont.preferredFont(forTextStyle: style, compatibleWith: traits)
         if monospacedDigits { font = .monospacedDigitSystemFont(ofSize: font.pointSize, weight: weight ?? .regular) }
         else if let weight { font = .systemFont(ofSize: font.pointSize, weight: weight) }
+        let scale = UIScreen.main.scale
+        let measurementWidth = max(1, (state.frame.width * scale).rounded() / scale)
         let required = (expected as NSString).boundingRect(
-            with: CGSize(width: max(1, state.frame.width), height: .greatestFiniteMagnitude),
+            with: CGSize(width: measurementWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
         // SwiftUI's text frame contains the line's ascent/descent, not optional
         // font leading. In the retained baseline, caption text has a complete
@@ -301,12 +343,12 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         // introduce a whole-point allowance. Required text is rounded upward;
         // the observed frame is normalized to its nearest physical pixel.
         // Screenshots still require inspection of the actual rendered glyphs.
-        let scale = UIScreen.main.scale
         let requiredPixels = ceil(required.height * scale)
         let observedPixels = (state.frame.height * scale).rounded()
         observations.append("Text metrics \(expected): ascent=\(font.ascender), descent=\(font.descender), " +
                             "leading=\(font.leading), requiredHeightWithoutLeading=\(required.height), " +
-                            "scale=\(scale), requiredPixels=\(requiredPixels), observedPixels=\(observedPixels)")
+                            "scale=\(scale), rawWidth=\(state.frame.width), measurementWidth=\(measurementWidth), " +
+                            "requiredPixels=\(requiredPixels), observedPixels=\(observedPixels)")
         XCTAssertGreaterThanOrEqual(observedPixels, requiredPixels,
                                    "The complete \(expected) text must fit its observed frame")
         return state.frame
@@ -348,14 +390,16 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         let traits = UITraitCollection(preferredContentSizeCategory: category)
         var font = UIFont.preferredFont(forTextStyle: style, compatibleWith: traits)
         if let weight { font = .systemFont(ofSize: font.pointSize, weight: weight) }
-        let required = (expected as NSString).boundingRect(
-            with: CGSize(width: max(1, frame.width), height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
         let scale = UIScreen.main.scale
+        let measurementWidth = max(1, (frame.width * scale).rounded() / scale)
+        let required = (expected as NSString).boundingRect(
+            with: CGSize(width: measurementWidth, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
         let requiredPixels = ceil(required.height * scale)
         let observedPixels = (frame.height * scale).rounded()
         observations.append("Recorded app Text layout \(probe): text=\(expected), frame=\(frame), " +
                             "owner=\(state.frame), viewport=\(viewport), " +
+                            "measurementWidth=\(measurementWidth), " +
                             "requiredPixels=\(requiredPixels), observedPixels=\(observedPixels); " +
                             "source=DEBUG GeometryReader before frame/padding, not AX StaticText")
         XCTAssertGreaterThanOrEqual(observedPixels, requiredPixels,

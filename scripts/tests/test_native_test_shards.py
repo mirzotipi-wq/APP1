@@ -75,9 +75,11 @@ class NativeTestShardTests(unittest.TestCase):
 
     def test_unrecognized_test_container_requires_explicit_support(self):
         path = self.root / "UITests/Other.swift"
-        path.write_text("struct OtherTests { func testExample() {} }\n", encoding="utf-8")
-        with self.assertRaisesRegex(ValueError, "outside a recognized XCTestCase"):
-            native_test_shards.check()
+        for method in ("testExample", "test"):
+            with self.subTest(method=method):
+                path.write_text(f"struct OtherTests {{ func {method}() {{}} }}\n", encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "outside a recognized XCTestCase"):
+                    native_test_shards.check()
 
     def test_empty_suite_cannot_report_success(self):
         for path in (self.root / "UITests").rglob("*.swift"):
@@ -359,6 +361,32 @@ class NativeTestShardTests(unittest.TestCase):
         self.shards["first"] = ("MissingUITests",)
         with self.assertRaisesRegex(ValueError, "no methods"):
             native_test_shards.verify_log("first", log)
+
+    def test_bare_test_method_is_inventoried_and_requires_execution(self):
+        directory = self.root / "NativeTests"
+        directory.mkdir()
+        (directory / "Unit.swift").write_text(
+            "final class UnitTests: XCTestCase { func testNative() {} func test() {} }")
+        self.assertEqual(native_test_shards.discover_methods("NativeTests"),
+                         {"UnitTests": {"testNative", "test"}})
+        log = self.execution_log([
+            ("UnitTests", "testNative", event) for event in ("started", "passed")
+        ], "KeyAndFillTests")
+        report_path = self.root / "accounting.json"
+        with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+            native_test_shards.verify_log("unit", log, report_path)
+        report = json.loads(report_path.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["expected"], ["UnitTests.test", "UnitTests.testNative"])
+        self.assertEqual(report["passed"], ["UnitTests.testNative"])
+        self.assertEqual(report["unstarted"], ["UnitTests.test"])
+        log = self.execution_log([
+            ("UnitTests", method, event) for method in ("testNative", "test")
+            for event in ("started", "passed")
+        ], "KeyAndFillTests")
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(native_test_shards.verify_log("unit", log),
+                             {"UnitTests.testNative", "UnitTests.test"})
 
     def test_ambiguous_method_container_fails_inventory(self):
         path = self.root / "UITests/First.swift"

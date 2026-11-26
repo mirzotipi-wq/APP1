@@ -466,7 +466,7 @@ struct ProjectLibraryRowPresentation: Identifiable {
             // still need their original scalars in the displayed label.
             return String(String.UnicodeScalarView(folded.unicodeScalars.filter {
                 !$0.properties.isDefaultIgnorableCodePoint
-            }))
+            })).trimmingCharacters(in: .whitespacesAndNewlines)
         }
         let counts = Dictionary(grouping: comparableNames, by: { $0 }).mapValues(\.count)
         let ids = projects.map { $0.id.uuidString }

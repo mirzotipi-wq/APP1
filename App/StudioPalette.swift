@@ -19,6 +19,10 @@ enum StudioPalette {
     }
     static let secondaryText = Color(uiColor: secondaryTextUIColor)
 
+    /// The enabled slider's remaining range is an essential visible control
+    /// boundary. Use an opaque color with verified grouped-surface contrast.
+    static let sliderTrackUIColor = secondaryTextUIColor
+
     /// Explicit text on the action fill; system prominent-button foregrounds
     /// otherwise choose white even when the dark-appearance fill is pale blue.
     static let prominentActionTextUIColor = UIColor { traits in

@@ -59,7 +59,14 @@ public enum StudioDisplayName {
             scalars.append(scalar)
             bytes = nextBytes
         }
-        let cleaned = String(scalars).trimmingCharacters(in: .whitespacesAndNewlines)
+        let bounded = String(scalars)
+        // If the scalar budget stopped inside a grapheme, its final Character
+        // only looks complete because the unseen suffix is absent. Discard
+        // that boundary Character before trimming can free space for it.
+        // The remaining prefix contains only complete source graphemes while
+        // still inspecting at most one scalar beyond the fixed budget.
+        let completePrefix = truncated ? String(bounded.dropLast()) : bounded
+        let cleaned = completePrefix.trimmingCharacters(in: .whitespacesAndNewlines)
         // Preserve stored legacy names, but let callers display their visible
         // fallback and identity for a name consisting only of invisible marks.
         // A truncated prefix cannot establish what is in the unseen suffix.

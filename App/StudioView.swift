@@ -1029,7 +1029,9 @@ struct StudioView: View {
                           new.isValid, let i = scene.lights.firstIndex(where: { $0.id == id }),
                           scene.lights[i].effectiveOptics != new else { return }
                     if !editHistory.isEditing { remember(scene) }
-                    scene.lights[i].optics = new
+                    var next = scene
+                    next.lights[i].optics = new
+                    scene = editHistory.preservingOptionalRepresentations(in: next)
                 })
     }
 
@@ -1057,7 +1059,9 @@ struct StudioView: View {
         return Binding(get: { scene.effectivePreviewSettings }, set: { new in
             guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.effectivePreviewSettings else { return }
             if !editHistory.isEditing { remember(scene) }
-            scene.previewSettings = new
+            var next = scene
+            next.previewSettings = new
+            scene = editHistory.preservingOptionalRepresentations(in: next)
         })
     }
 
@@ -1066,7 +1070,9 @@ struct StudioView: View {
         return Binding(get: { scene.effectiveCameraLens }, set: { new in
             guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.effectiveCameraLens else { return }
             if !editHistory.isEditing { remember(scene) }
-            scene.cameraLens = new
+            var next = scene
+            next.cameraLens = new
+            scene = editHistory.preservingOptionalRepresentations(in: next)
         })
     }
 

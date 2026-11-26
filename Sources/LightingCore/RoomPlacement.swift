@@ -295,7 +295,29 @@ public struct RoomPlacementPlan: Equatable, Sendable {
             let radians = room.yawDegrees * .pi / 180
             c = cos(radians); s = sin(radians)
         }
+        func twoSum(_ a: Double, _ b: Double) -> (value: Double, error: Double) {
+            let value = a + b
+            let virtualB = value - a
+            let error = (a - (value - virtualB)) + (b - virtualB)
+            return (value, error)
+        }
+        func cardinalCoordinate(_ value: Double, origin: Double, offset: Double) -> Double {
+            // Both subtraction-first and translation-first evaluation can
+            // erase a small signed wall crossing when larger terms cancel.
+            // Retain their rounding residuals; do not snap or add a tolerance.
+            let relative = twoSum(value, -origin)
+            let translated = twoSum(relative.value, offset)
+            return translated.value + (relative.error + translated.error)
+        }
         func floorPoint(_ p: Position) -> RoomFloorPoint {
+            if s == 0 {
+                return .init(xFromLeft: cardinalCoordinate(c * p.x, origin: c * scene.subject.x, offset: room.subjectX),
+                             zFromNear: cardinalCoordinate(c * p.z, origin: c * scene.subject.z, offset: room.subjectZ))
+            }
+            if c == 0 {
+                return .init(xFromLeft: cardinalCoordinate(s * p.z, origin: s * scene.subject.z, offset: room.subjectX),
+                             zFromNear: cardinalCoordinate(-s * p.x, origin: -s * scene.subject.x, offset: room.subjectZ))
+            }
             let dx = p.x - scene.subject.x, dz = p.z - scene.subject.z
             return .init(xFromLeft: room.subjectX + c * dx + s * dz,
                          zFromNear: room.subjectZ - s * dx + c * dz)

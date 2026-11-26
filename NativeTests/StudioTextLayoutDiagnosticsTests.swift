@@ -51,6 +51,16 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
                                              installModifiers: true, enabled: true)
             let measured = try checkedRecordedText(in: observed)
             XCTAssertTrue(fitsBodyText(measured, category: nativeCategory, scale: observed.scale))
+            for width in [measured.width.nextDown, measured.width.nextUp] {
+                var adjacent = measured
+                adjacent.size.width = width
+                XCTAssertTrue(fitsBodyText(adjacent, category: nativeCategory, scale: observed.scale),
+                              "Equivalent physical-pixel widths must not introduce a spurious second line")
+            }
+            var shortLine = measured
+            shortLine.size.height -= 1 / observed.scale
+            XCTAssertFalse(fitsBodyText(shortLine, category: nativeCategory, scale: observed.scale),
+                           "Normalizing width must not permit a line that is one physical pixel too short")
             normalFrames.append(measured)
         }
         XCTAssertGreaterThanOrEqual(normalFrames[1].height, normalFrames[0].height * 1.25)
@@ -202,9 +212,16 @@ final class StudioTextLayoutDiagnosticsTests: XCTestCase {
         let traits = UITraitCollection(preferredContentSizeCategory: category)
         let body = UIFont.preferredFont(forTextStyle: .body, compatibleWith: traits)
         let font = UIFont.systemFont(ofSize: body.pointSize, weight: .semibold)
+        // The independent views already agree in physical pixels. A global
+        // CGRect subtraction can put a width one ULP below the same pixel
+        // boundary and make NSString wrap an otherwise identical line.
+        let measurementWidth = max(1, (frame.width * scale).rounded() / scale)
         let required = ("Done" as NSString).boundingRect(
-            with: CGSize(width: max(1, frame.width), height: .greatestFiniteMagnitude),
+            with: CGSize(width: measurementWidth, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
+        print("Hosted body fit: rawFrame=\(frame), category=\(category.rawValue), scale=\(scale), " +
+              "measurementWidth=\(measurementWidth), requiredHeight=\(required.height), " +
+              "requiredPixels=\(ceil(required.height * scale)), observedPixels=\((frame.height * scale).rounded())")
         return (frame.height * scale).rounded() >= ceil(required.height * scale)
     }
 

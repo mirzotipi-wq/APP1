@@ -99,6 +99,17 @@ final class LightOutputBoundaryTests: XCTestCase {
         }
     }
 
+    func testAlreadyAchievedSubnormalTargetPreservesExactSourceDespiteInverseRounding() throws {
+        let (source, scene) = fixture(candela: 499 * 1e-320)
+        let target = try XCTUnwrap(StudioPhotometry.illuminance(for: source, in: scene))
+        XCTAssertGreaterThan(target, 0)
+        XCTAssertLessThan(target, Double.leastNormalMagnitude)
+        let adjusted = try LightOutputAdjustment.light(source, targetingLux: target, in: scene)
+        XCTAssertEqual(adjusted, source)
+        XCTAssertEqual(StudioPhotometry.illuminance(for: adjusted, in: scene), target)
+        XCTAssertEqual(scene.lights, [source])
+    }
+
     func testOrdinaryInteriorTargetRetainsRequiredAccuracy() throws {
         let (source, scene) = fixture()
         let target = 250.0

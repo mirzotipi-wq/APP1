@@ -97,7 +97,7 @@ final class StudioTrackingSlider: UISlider {
         // custom-track API disables those dynamic effects while keeping native
         // thumb tracking and accessibility, so no late value can reopen history.
         let minimum = trackImage(color: tintColor)
-        let maximum = trackImage(color: .tertiaryLabel)
+        let maximum = trackImage(color: StudioPalette.sliderTrackUIColor)
         for state in [UIControl.State.normal, .highlighted, .selected, .focused] {
             setMinimumTrackImage(minimum, for: state)
             setMaximumTrackImage(maximum, for: state)

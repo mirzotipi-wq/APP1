@@ -76,6 +76,20 @@ final class StudioDisplayNameTests: XCTestCase {
         XCTAssertEqual(StudioDisplayName.display(oversized, maximumCharacters: Int.max).count, 80)
     }
 
+    func testScalarCutoffNeverPublishesAPartialJoinedEmojiAfterLeadingTrim() {
+        let family = "👩‍👩‍👧‍👦"
+        for leadingSpaces in 1...7 {
+            let original = String(repeating: " ", count: leadingSpaces) + String(repeating: family, count: 46)
+            XCTAssertGreaterThan(original.unicodeScalars.count, StudioDisplayName.maximumScalars)
+            let label = StudioDisplayName.display(original)
+            assertBounds(label)
+            XCTAssertTrue(label.hasSuffix("…"))
+            XCTAssertFalse(label.dropLast().isEmpty)
+            XCTAssertTrue(label.dropLast().allSatisfy { String($0) == family },
+                          "A bounded label must contain complete original graphemes before its ellipsis")
+        }
+    }
+
     func testNewNamesNeedContentBeyondInvisibleFormattingCharacters() {
         let invisibleNames = ["\u{200C}", "\u{200D}", "\u{FE0F}", "\u{034F}",
                               "\u{115F}", "\u{3164}", "\u{2060}", "\u{00AD}",

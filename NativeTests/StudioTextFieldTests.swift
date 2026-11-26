@@ -190,6 +190,62 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertEqual(attempts, 1, "Restoration must not replay the binding setter")
     }
 
+    func testCanonicalEquivalentOversizedPasteStillReachesBoundedValidation() throws {
+        let accepted = String(repeating: "é\u{0301}\u{0302}\u{0303}", count: 80)
+        let rejected = String(repeating: "e\u{0301}\u{0301}\u{0302}\u{0303}", count: 80)
+        XCTAssertEqual(accepted, rejected, "Swift's canonical equality is the regression trigger")
+        XCTAssertEqual(accepted.unicodeScalars.count, 320)
+        XCTAssertEqual(rejected.unicodeScalars.count, 400)
+        var draft = ProjectNameDraft(initial: accepted)
+        var attempts = 0
+        var submitted: [String] = []
+        let view = control(text: Binding(get: { draft.text }, set: {
+            attempts += 1
+            _ = try? draft.update($0)
+        }), onSubmit: {
+            if let value = try? draft.submittedName() { submitted.append(value) }
+        })
+        let field = configured(view)
+        defer { field.invalidate() }
+        let originalSelection = NSRange(location: accepted.utf16.count, length: 0)
+        try select(originalSelection, in: field)
+        XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: accepted.utf16.count),
+                                      replacementString: rejected))
+        field.text = rejected
+        try select(NSRange(location: rejected.utf16.count, length: 0), in: field)
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(attempts, 1)
+        XCTAssertTrue(draft.rejectedOversizedInput)
+        XCTAssertFalse(draft.canSubmit)
+        XCTAssertEqual(Array((field.text ?? "").utf16), Array(accepted.utf16))
+        XCTAssertEqual(try selection(in: field), originalSelection)
+        _ = field.textFieldShouldReturn(field)
+        XCTAssertTrue(submitted.isEmpty)
+        field.configure(view, contentSizeCategory: .large, isEnabled: true)
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(attempts, 1, "Restoring an exact accepted value must not replay validation")
+    }
+
+    func testCanonicalEquivalentExternalResetWinsOverLateEventsAndReconfiguration() {
+        let composed = "é", decomposed = "e\u{0301}"
+        var model = composed, writes = 0
+        let view = control(text: Binding(get: { model }, set: { model = $0; writes += 1 }))
+        let field = configured(view)
+        defer { field.invalidate() }
+        field.text = "Stale native edit"
+        model = decomposed
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(writes, 0, "An external representation change wins before the next render")
+        XCTAssertEqual(Array((field.text ?? "").utf16), Array(decomposed.utf16))
+        model = composed
+        field.configure(view, contentSizeCategory: .large, isEnabled: true)
+        XCTAssertEqual(Array((field.text ?? "").utf16), Array(composed.utf16))
+        field.configure(control(text: .constant(decomposed), identifier: "anotherField"),
+                        contentSizeCategory: .large, isEnabled: true)
+        XCTAssertEqual(Array((field.text ?? "").utf16), Array(decomposed.utf16))
+        XCTAssertEqual(writes, 0)
+    }
+
     func testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit() throws {
         var model = "900", writes = 0, focused = false, focusWrites = 0
         let view = control(text: Binding(get: { model }, set: { model = $0; writes += 1 }),
@@ -391,6 +447,7 @@ final class StudioTextFieldTests: XCTestCase {
             .compactMap { $0 as? UIWindowScene }
             .first { $0.activationState == .foregroundActive })
         let observation = HostedNameObservation()
+        let previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
         let window = UIWindow(windowScene: scene)
         window.frame = CGRect(x: 0, y: 0, width: 390, height: 700)
         let host = UIHostingController(rootView: HostedNameDraft(observation: observation))
@@ -400,8 +457,10 @@ final class StudioTextFieldTests: XCTestCase {
             nativeFields(in: host.view).forEach { $0.invalidate() }
             observation.model = nil
             observation.clear = nil
+            observation.requestFocus = nil
             window.isHidden = true
             window.rootViewController = nil
+            previousKeyWindow?.makeKeyAndVisible()
         }
         await drainMainQueue()
         host.view.layoutIfNeeded()
@@ -410,9 +469,26 @@ final class StudioTextFieldTests: XCTestCase {
         let field = try XCTUnwrap(nativeFields(in: host.view).first)
         let model = try XCTUnwrap(observation.model)
         let clear = try XCTUnwrap(observation.clear)
+        let requestFocus = try XCTUnwrap(observation.requestFocus)
         XCTAssertTrue(field.window === window)
         XCTAssertEqual(field.text, "Portrait setup")
         XCTAssertEqual(model.wrappedValue, "Portrait setup")
+        // This test delivers editingChanged events itself. Keep real UIKit
+        // responder ownership while isolating it from the simulator's remote
+        // system-keyboard service; required UI tests still type on that keyboard.
+        // Install the local input view before the first focus request, never
+        // repair focus after a failed edit or replace the native responder.
+        let inputView = UIInputView(frame: CGRect(x: 0, y: 0, width: 390, height: 44), inputViewStyle: .keyboard)
+        field.inputView = inputView
+        field.inputAssistantItem.leadingBarButtonGroups = []
+        field.inputAssistantItem.trailingBarButtonGroups = []
+        requestFocus()
+        await drainMainQueue()
+        host.view.layoutIfNeeded()
+        await drainMainQueue()
+        XCTAssertTrue(field.inputView === inputView)
+        XCTAssertTrue(window.isKeyWindow)
+        XCTAssertTrue(field.isFirstResponder)
 
         for renderAfterFirstCharacter in [false, true] {
             clear() // Same name/error/focus state changes as the real Clear action.
@@ -465,6 +541,9 @@ final class StudioTextFieldTests: XCTestCase {
             XCTAssertEqual(nativeFields(in: host.view).count, 1)
             XCTAssertTrue(nativeFields(in: host.view).first === field)
             XCTAssertTrue(field.window === window)
+            print("Hosted name final focus: renderAfterFirst=\(renderAfterFirstCharacter), " +
+                  "keyWindow=\(window.isKeyWindow), firstResponder=\(field.isFirstResponder), " +
+                  "native=\(field.text ?? "<nil>"), model=\(model.wrappedValue)")
             XCTAssertTrue(field.isFirstResponder)
             XCTAssertEqual(field.text, "Keep")
             XCTAssertEqual(model.wrappedValue, "Keep")
@@ -476,6 +555,7 @@ final class StudioTextFieldTests: XCTestCase {
     private final class HostedNameObservation {
         var model: Binding<String>?
         var clear: (() -> Void)?
+        var requestFocus: (() -> Void)?
         var writes: [String] = []
         var bindingBuilds = 0
     }
@@ -538,7 +618,7 @@ final class StudioTextFieldTests: XCTestCase {
                 .onAppear {
                     observation.model = $name
                     observation.clear = clearName
-                    focused = true
+                    observation.requestFocus = { focused = true }
                 }
             }
         }

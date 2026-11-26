@@ -29,6 +29,36 @@ COMPILE_TIMEOUT_SECONDS = 180
 PROBE_TIMEOUT_SECONDS = 140
 METADATA_TIMEOUT_SECONDS = 10
 METADATA_BYTE_CEILING = 256 * 1024
+CANCELLATION_SIGNALS = {signal.SIGTERM, signal.SIGINT}
+
+
+class TerminationRequested(BaseException):
+    """Unwind through owned-child cleanup before restoring signal termination."""
+
+
+def run_with_cancellation():
+    previous_handlers = {number: signal.getsignal(number) for number in CANCELLATION_SIGNALS}
+    termination_signal = None
+
+    def request_termination(number, _frame):
+        nonlocal termination_signal
+        if termination_signal is None:
+            termination_signal = number
+            raise TerminationRequested(number)
+
+    try:
+        for number, handler in previous_handlers.items():
+            # Preserve a caller's explicit ignored-signal disposition.
+            if handler != signal.SIG_IGN:
+                signal.signal(number, request_termination)
+        return main()
+    finally:
+        for number, handler in previous_handlers.items():
+            signal.signal(number, handler)
+        if termination_signal is not None:
+            # Cleanup must not turn cancellation into an ordinary failure/success
+            # exit. SIGTERM keeps its signal status; SIGINT keeps KeyboardInterrupt.
+            signal.raise_signal(termination_signal)
 
 
 def sha256(path):
@@ -78,40 +108,66 @@ def run_logged(arguments, repository, output, name, timeout, graceful_timeout_se
     started = time.monotonic()
     with (output / (name + ".stdout.log")).open("wb") as stdout, \
             (output / (name + ".stderr.log")).open("wb") as stderr:
-        process = subprocess.Popen(arguments, cwd=repository, stdout=stdout, stderr=stderr,
-                                   start_new_session=True, env=environment)
-        observation["processGroupID"] = process.pid
+        process = None
 
         def stop_owned_group():
             # The new session isolates this compiler/probe and its descendants
             # from the runner, parent, and every unrelated process.
-            if graceful_timeout_seconds:
-                # The commit driver owns additional child sessions. Give its
-                # signal handler time to clean them up before terminating the
-                # driver itself. A forced fallback is not proof of that cleanup.
+            # A signal arriving during timeout cleanup must not interrupt reaping.
+            previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, CANCELLATION_SIGNALS)
+            try:
+                graceful = False
+                if graceful_timeout_seconds:
+                    # The commit driver owns additional child sessions. Give its
+                    # signal handler time to clean them up before terminating the
+                    # driver itself. A forced fallback is not proof of that cleanup.
+                    try:
+                        os.killpg(process.pid, signal.SIGTERM)
+                    except ProcessLookupError:
+                        pass
+                    try:
+                        process.wait(timeout=graceful_timeout_seconds)
+                        graceful = True
+                    except subprocess.TimeoutExpired:
+                        observation["gracefulTerminationExpired"] = True
+                # Also clear any same-group descendants left behind by a driver
+                # that exited within the grace period.
                 try:
-                    os.killpg(process.pid, signal.SIGTERM)
+                    os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-                try:
-                    process.wait(timeout=graceful_timeout_seconds)
-                    return "SIGTERM to owned driver group; direct child reaped within grace period"
-                except subprocess.TimeoutExpired:
-                    observation["gracefulTerminationExpired"] = True
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            process.wait(timeout=10)
-            return "SIGKILL to owned process group; direct child reaped"
+                process.wait(timeout=10)
+                if graceful:
+                    return ("SIGTERM to owned driver group; direct child reaped within grace period; "
+                            "SIGKILL sent to any remaining group members")
+                return "SIGKILL to owned process group; direct child reaped"
+            finally:
+                signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
 
         try:
-            observation["returnCode"] = process.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            observation["timedOut"] = True
-            observation["timeoutCleanup"] = stop_owned_group()
+            # The wrapper is single-threaded. Register the child while cancellation
+            # is blocked, then restore the inherited mask in both processes. A
+            # pending signal is delivered only after this cleanup path owns it.
+            previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, CANCELLATION_SIGNALS)
+            try:
+                process = subprocess.Popen(
+                    arguments, cwd=repository, stdout=stdout, stderr=stderr,
+                    start_new_session=True, env=environment,
+                    preexec_fn=lambda: signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask),
+                )
+                observation["processGroupID"] = process.pid
+            finally:
+                signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+            try:
+                observation["returnCode"] = process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                observation["timedOut"] = True
+                observation["timeoutCleanup"] = stop_owned_group()
         except BaseException:
-            stop_owned_group()
+            # This outer guard also owns cancellation raised inside the timeout
+            # handler, including before stop_owned_group can block signals.
+            if process is not None:
+                stop_owned_group()
             raise
     observation["elapsedSeconds"] = round(time.monotonic() - started, 3)
     for suffix, destination in (("stdout", sys.stdout), ("stderr", sys.stderr)):
@@ -390,4 +446,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run_with_cancellation())
