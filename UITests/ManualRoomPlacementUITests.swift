@@ -26,9 +26,40 @@ final class ManualRoomPlacementUITests: XCTestCase {
         let rotationFrame = app.sliders["roomRotation"].frame
         assertStudioMinimumHitTarget(rotationFrame, label: "Room rotation")
         rotate.tap()
-        let outside = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", "center positions outside room"), object: status)
-        let outsideResult = XCTWaiter.wait(for: [outside], timeout: 10)
-        if outsideResult != .completed { recordRoomFailure(in: app) }
+        // At 19f, a status lookup occupied about 9.3 s and another AX read
+        // about 14.7 s. Allow bounded host-observation headroom for slow reads.
+        let outsideObservationBudget: TimeInterval = 30
+        let outsideObservationStarted = ProcessInfo.processInfo.systemUptime
+        var lastOutsideObservation = "No status snapshot completed."
+        let outside = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let started = ProcessInfo.processInfo.systemUptime - outsideObservationStarted
+            do {
+                let snapshot = try status.snapshot()
+                let finished = ProcessInfo.processInfo.systemUptime - outsideObservationStarted
+                lastOutsideObservation = "started=\(started)s, finished=\(finished)s, " +
+                    "identifier=\(String(reflecting: snapshot.identifier)), " +
+                    "type=\(snapshot.elementType), label=\(String(reflecting: snapshot.label)), " +
+                    "frame=\(snapshot.frame)"
+                return snapshot.identifier == "roomPlacementStatus" &&
+                    snapshot.label.contains("center positions outside room")
+            } catch {
+                let finished = ProcessInfo.processInfo.systemUptime - outsideObservationStarted
+                lastOutsideObservation = "started=\(started)s, finished=\(finished)s, " +
+                    "snapshotError=\(error.localizedDescription)"
+                return false
+            }
+        }, object: nil)
+        let outsideResult = XCTWaiter.wait(for: [outside], timeout: outsideObservationBudget)
+        if outsideResult != .completed {
+            let details = "Configured observation budget: \(outsideObservationBudget)s\n" +
+                lastOutsideObservation
+            print("Room-outside-status-last-observation:\n\(details)")
+            let observation = XCTAttachment(string: details)
+            observation.name = "Room-outside-status-last-observation"
+            observation.lifetime = .keepAlways
+            add(observation)
+            recordRoomFailure(in: app)
+        }
         XCTAssertEqual(outsideResult, .completed)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "Manual-room-placement"

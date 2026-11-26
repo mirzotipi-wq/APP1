@@ -382,4 +382,166 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertEqual(focusWrites, 0)
         XCTAssertEqual(submits, 0)
     }
+
+    /// Exercise the installed @State location used by the naming sheet, not a
+    /// synchronous local-variable Binding. This delivers native editingChanged
+    /// events; it deliberately makes no claim about XCTest keyboard injection.
+    func testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration() async throws {
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive })
+        let observation = HostedNameObservation()
+        let window = UIWindow(windowScene: scene)
+        window.frame = CGRect(x: 0, y: 0, width: 390, height: 700)
+        let host = UIHostingController(rootView: HostedNameDraft(observation: observation))
+        window.rootViewController = host
+        window.makeKeyAndVisible()
+        defer {
+            nativeFields(in: host.view).forEach { $0.invalidate() }
+            observation.model = nil
+            observation.clear = nil
+            window.isHidden = true
+            window.rootViewController = nil
+        }
+        await drainMainQueue()
+        host.view.layoutIfNeeded()
+        await drainMainQueue()
+        XCTAssertEqual(nativeFields(in: host.view).count, 1)
+        let field = try XCTUnwrap(nativeFields(in: host.view).first)
+        let model = try XCTUnwrap(observation.model)
+        let clear = try XCTUnwrap(observation.clear)
+        XCTAssertTrue(field.window === window)
+        XCTAssertEqual(field.text, "Portrait setup")
+        XCTAssertEqual(model.wrappedValue, "Portrait setup")
+
+        for renderAfterFirstCharacter in [false, true] {
+            clear() // Same name/error/focus state changes as the real Clear action.
+            await drainMainQueue()
+            host.view.layoutIfNeeded()
+            await drainMainQueue()
+            XCTAssertEqual(model.wrappedValue, "")
+            XCTAssertEqual(field.text, "")
+            XCTAssertTrue(field.isFirstResponder)
+            XCTAssertTrue(nativeFields(in: host.view).first === field)
+            observation.writes.removeAll()
+            var expected = ""
+            for character in "Keep" {
+                let previousBuilds = observation.bindingBuilds
+                let selectionBefore = try selection(in: field)
+                XCTAssertEqual(selectionBefore, NSRange(location: expected.utf16.count, length: 0))
+                let fragment = String(character)
+                XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: selectionBefore,
+                                              replacementString: fragment))
+                // Apply exactly one accepted native edit, then deliver the real
+                // UIControl event to StudioNativeTextField's registered target.
+                let delivered = (field.text ?? "") + fragment
+                field.text = delivered
+                try select(NSRange(location: delivered.utf16.count, length: 0), in: field)
+                field.sendActions(for: .editingChanged)
+                expected += fragment
+                print("Hosted name edit: renderAfterFirst=\(renderAfterFirstCharacter), " +
+                      "delivered=\(delivered), expected=\(expected), native=\(field.text ?? "<nil>"), " +
+                      "model=\(model.wrappedValue), writes=\(observation.writes), " +
+                      "bindingBuilds=\(observation.bindingBuilds), focused=\(field.isFirstResponder)")
+                XCTAssertEqual(field.text, expected)
+                XCTAssertEqual(model.wrappedValue, expected)
+                XCTAssertEqual(try selection(in: field),
+                               NSRange(location: expected.utf16.count, length: 0))
+                if renderAfterFirstCharacter && expected == "K" {
+                    await drainMainQueue()
+                    host.view.layoutIfNeeded()
+                    await drainMainQueue()
+                    XCTAssertGreaterThan(observation.bindingBuilds, previousBuilds,
+                                         "The first edit must actually rebuild the hosted State binding")
+                    XCTAssertTrue(nativeFields(in: host.view).first === field,
+                                  "Showing Clear must preserve the native editor identity")
+                    XCTAssertEqual(field.text, "K")
+                    XCTAssertEqual(model.wrappedValue, "K")
+                }
+            }
+            await drainMainQueue()
+            host.view.layoutIfNeeded()
+            await drainMainQueue()
+            XCTAssertEqual(nativeFields(in: host.view).count, 1)
+            XCTAssertTrue(nativeFields(in: host.view).first === field)
+            XCTAssertTrue(field.window === window)
+            XCTAssertTrue(field.isFirstResponder)
+            XCTAssertEqual(field.text, "Keep")
+            XCTAssertEqual(model.wrappedValue, "Keep")
+            XCTAssertEqual(observation.writes, ["K", "Ke", "Kee", "Keep"])
+            XCTAssertEqual(try selection(in: field), NSRange(location: 4, length: 0))
+        }
+    }
+
+    private final class HostedNameObservation {
+        var model: Binding<String>?
+        var clear: (() -> Void)?
+        var writes: [String] = []
+        var bindingBuilds = 0
+    }
+
+    /// Mirrors the actual ProjectNameEditor draft binding and the conditional
+    /// Clear action that changes the HStack after the first typed character.
+    private struct HostedNameDraft: View {
+        let observation: HostedNameObservation
+        @State private var name = StudioDisplayName.display("Portrait setup")
+        @State private var errorMessage: String?
+        @State private var focused = false
+        @State private var isSubmitting = false
+
+        private var boundedDraft: Binding<String> {
+            observation.bindingBuilds += 1
+            return Binding(get: { name }, set: { next in
+                guard next.unicodeScalars.prefix(StudioDisplayName.maximumScalars + 1).count <= StudioDisplayName.maximumScalars else {
+                    errorMessage = StudioDisplayName.NameError.tooLong.localizedDescription
+                    return
+                }
+                guard next != name else { return }
+                name = next
+                errorMessage = nil
+                observation.writes.append(next)
+            })
+        }
+
+        private func clearName() {
+            name = ""
+            errorMessage = nil
+            focused = true
+        }
+
+        var body: some View {
+            NavigationStack {
+                Form {
+                    Section {
+                        HStack {
+                            StudioTextField("Name", text: boundedDraft, isFocused: $focused,
+                                accessibility: .init(label: "Name", identifier: "projectNameInput"),
+                                returnKeyType: .done)
+                                .disabled(isSubmitting)
+                            if !name.isEmpty {
+                                Button(action: clearName) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .frame(width: 44, height: 44)
+                                }
+                                .buttonStyle(.borderless)
+                                .disabled(isSubmitting)
+                                .accessibilityIdentifier("clearProjectName")
+                            }
+                        }
+                    }
+                    Section {
+                        Button("Save project name") {}
+                            .disabled(isSubmitting || (try? StudioDisplayName.newInput(name)) == nil)
+                    }
+                }
+                .scrollDismissesKeyboard(.never)
+                .onAppear {
+                    observation.model = $name
+                    observation.clear = clearName
+                    focused = true
+                }
+            }
+        }
+    }
+
 }

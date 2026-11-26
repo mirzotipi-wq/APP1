@@ -408,8 +408,14 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         // but cannot obscure content in that foreground sheet.
         let navigationBars = app.otherElements.containing(state.elementType, identifier: key)
             .children(matching: .navigationBar).allElementsBoundByIndex
-        let navigationIdentifiers = Set(navigationBars.map(\.identifier))
-        let navigationBottom = navigationBars.map(\.frame)
+        // Keep this independent check fresh after reveal. Each bar contributes
+        // its identifier and frame from one actual snapshot.
+        guard let navigationStates = try? navigationBars.map({ try $0.snapshot() }) else {
+            XCTFail("Could not snapshot owning navigation bars for \(state.label)")
+            return .null
+        }
+        let navigationIdentifiers = Set(navigationStates.map { $0.identifier })
+        let navigationBottom = navigationStates.map { $0.frame }
             .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
             .map(\.maxY).max()
         if let navigationBottom {
@@ -430,10 +436,15 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         let fixedControls = app.buttons.matching(NSPredicate(
             format: "identifier IN %@", ["undo", "projectLibraryDone"]))
         for control in fixedControls.allElementsBoundByIndex where control.isHittable {
-            let owners = app.otherElements.containing(.button, identifier: control.identifier)
-                .children(matching: .navigationBar).allElementsBoundByIndex
-            guard owners.contains(where: { navigationIdentifiers.contains($0.identifier) }) else { continue }
-            viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)
+            guard let controlState = try? control.snapshot() else {
+                XCTFail("Could not snapshot a hittable fixed control")
+                return .null
+            }
+            let owners = app.otherElements.containing(.button, identifier: controlState.identifier)
+                .children(matching: .navigationBar)
+                .matching(NSPredicate(format: "identifier IN %@", Array(navigationIdentifiers)))
+            guard owners.firstMatch.exists else { continue }
+            viewport.size.height = max(0, min(viewport.maxY, controlState.frame.minY) - viewport.minY)
         }
         return viewport
     }

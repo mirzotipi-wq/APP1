@@ -3,7 +3,13 @@ import XCTest
 final class ProjectLibraryUITests: XCTestCase {
     private func waitUntilEnabled(_ element: XCUIElement, timeout: TimeInterval = 15,
                                   file: StaticString = #filePath, line: UInt = #line) {
-        let predicate = NSPredicate(format: "exists == true AND enabled == true")
+        // Resolve one immutable accessibility snapshot for both presence and
+        // enabled state. The failed initial-launch wait spent 29 seconds
+        // resolving existence; read enabled state from that same snapshot.
+        let predicate = NSPredicate { _, _ in
+            guard let state = try? element.snapshot() else { return false }
+            return state.isEnabled
+        }
         let ready = XCTNSPredicateExpectation(predicate: predicate, object: element)
         let result = XCTWaiter.wait(for: [ready], timeout: timeout)
         if result != .completed {
@@ -43,11 +49,43 @@ final class ProjectLibraryUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
     }
 
+    /// Check the real external AX owner while layout diagnostics are disabled.
+    /// These three actions are single Button leaves in the preserved hierarchy.
+    private func assertNormalAction(_ action: XCUIElement, identifier: String, label: String,
+                                    file: StaticString = #filePath, line: UInt = #line) throws {
+        waitUntilEnabled(action, file: file, line: line)
+        let snapshot = try action.snapshot()
+        let children = snapshot.children.map {
+            "type=\($0.elementType.rawValue), identifier=\($0.identifier), label=\($0.label)"
+        }.joined(separator: "\n")
+        let description = "identifier=\(snapshot.identifier), type=\(snapshot.elementType.rawValue), " +
+            "label=\(snapshot.label), value=\(String(describing: snapshot.value)), " +
+            "frame=\(snapshot.frame), children=\(snapshot.children.count)\n\(children)"
+        print("Normal-project-action-AX: \(description)")
+        let attachment = XCTAttachment(string: description)
+        attachment.name = "Normal-project-action-AX-\(identifier)"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        XCTAssertEqual(snapshot.identifier, identifier, file: file, line: line)
+        XCTAssertEqual(snapshot.elementType, .button, file: file, line: line)
+        XCTAssertEqual(snapshot.label, label, file: file, line: line)
+        let normalValue = snapshot.value
+        XCTAssertTrue(normalValue == nil || (normalValue as? String) == "",
+                      "Normal actions must retain an absent or empty String AX value",
+                      file: file, line: line)
+        XCTAssertTrue(snapshot.children.isEmpty, "The action must remain one grouped AX leaf",
+                      file: file, line: line)
+        XCTAssertTrue(snapshot.isEnabled, file: file, line: line)
+        XCTAssertTrue(action.isHittable, file: file, line: line)
+    }
+
     func testCreateDuplicateRenameSwitchAndRelaunch() throws {
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        XCTAssertNil(app.launchEnvironment["KEYFILL_UI_TEXT_LAYOUT_PROBES"],
+                     "This workflow verifies normal, uninstrumented accessibility")
         launchStudio(app)
         let projects = app.buttons["openProjectLibrary"]
         waitUntilEnabled(projects)
@@ -55,6 +93,8 @@ final class ProjectLibraryUITests: XCTestCase {
         app.buttons["saveProject"].tap()
         waitUntilEnabled(projects)
         projects.tap()
+        try assertNormalAction(app.buttons["projectLibraryDone"],
+                               identifier: "projectLibraryDone", label: "Done")
         let activeRow = app.descendants(matching: .any)["activeProjectRow"].firstMatch
         XCTAssertTrue(activeRow.waitForExistence(timeout: 10))
         XCTAssertEqual(activeRow.label, "Current project: Portrait setup")
@@ -71,6 +111,10 @@ final class ProjectLibraryUITests: XCTestCase {
         input.typeText("Editorial")
         let exactEditorial = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "Editorial"), object: input)
         XCTAssertEqual(XCTWaiter.wait(for: [exactEditorial], timeout: 10), .completed)
+        try assertNormalAction(app.buttons["projectNameCancel"],
+                               identifier: "projectNameCancel", label: "Cancel")
+        try assertNormalAction(app.buttons["confirmProjectName"],
+                               identifier: "confirmProjectName", label: "Save project name")
         waitUntilEnabled(app.buttons["confirmProjectName"])
         app.buttons["confirmProjectName"].tap()
         let options = app.buttons["Options for Editorial"]

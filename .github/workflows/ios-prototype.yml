@@ -297,11 +297,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts
+          # Preserve any original bundle before checking finalization. A timed-out
+          # command must retain its raw evidence without passing this required gate.
+          if [ -d NativeTests.xcresult ]; then
+            ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          fi
           if [ ! -f NativeTests.xcresult/Info.plist ]; then
-            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"
             exit 1
           fi
-          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
           mkdir -p artifacts/native-attachments
           xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
       - name: Upload native result and test evidence
@@ -387,12 +391,13 @@ jobs:
           - shard: app-accessibility
             runner: macos-26-intel
             expected_arch: x86_64
-            # This method exercises the complete workflow twice, then checks
-            # observed text growth. Default-size execution alone took 13 minutes
-            # before its former library-heading failure; allow both sizes and
-            # finalized XCTest export without dropping any required assertion.
-            ui_test_minutes: 45
-            job_minutes: 98
+            # Run45761900201 completed the Default workflow in 36 minutes
+            # after about 5 minutes of test-command startup, then reached AXXXL.
+            # The former 45-minute command cap interrupted continued queries.
+            # Budget both full sizes, slower largest-text navigation and startup;
+            # individual assertion deadlines and every required check stay intact.
+            ui_test_minutes: 100
+            job_minutes: 153
     name: ui (${{ matrix.shard }})
     steps:
       - uses: actions/checkout@v4
@@ -608,11 +613,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p artifacts
+          # Preserve any original bundle before checking finalization. A timed-out
+          # command must retain its raw evidence without passing this required gate.
+          if [ -d NativeTests.xcresult ]; then
+            ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
+          fi
           if [ ! -f NativeTests.xcresult/Info.plist ]; then
-            echo "::error::No finalized XCTest result bundle; see native-tests.log"
+            echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"
             exit 1
           fi
-          ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip
           mkdir -p artifacts/native-attachments
           xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments
       - name: Upload native result and test evidence

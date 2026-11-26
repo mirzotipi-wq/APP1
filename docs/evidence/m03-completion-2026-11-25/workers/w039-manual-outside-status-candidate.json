@@ -1,0 +1,125 @@
+{
+  "worker": "worker039",
+  "context_path": "/root/w007_review_coordinator/w039_room_draft_input_failure",
+  "status": "complete",
+  "kind": "Original near-deadline snapshot and late visual review; bounded host-observation candidate",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "19f75af24fc274b44aa0119e4e49071a5aa0b1f9",
+  "run_id": 45769542620,
+  "job_id": 139738601274,
+  "prior_reports_preserved": [
+    "fd612eed34c2fbb8055d75b47efbcc38cbffd491",
+    "93e641f2505e3d51c34b6fac32e57a15732e2932",
+    "f33fb35106f811d3740896a58ff6a1e1bbba203c",
+    "f9929d396dcd91eaa3312a95994965dc391369bd",
+    "7628ad3643526dd1d8677eccd210497adf252fc5"
+  ],
+  "authorization_update": "Root explicitly superseded the no-deadline-change constraint for THIS observation: acceptance requires actual correct editing/outside state, not a10-second host-observation SLO. A narrowly documented bounded budget plus one immutable snapshot predicate was authorized for assessment/candidate preparation. No product edit authorized by this evidence.",
+  "evidence_read": {
+    "raw_log": {
+      "retrieved_characters": 519757,
+      "independently_fetched": true,
+      "source": "mcp__codex_apps__github_fetch_workflow_job_logs"
+    },
+    "full_archive": {
+      "artifact_id": 15094813858,
+      "bytes": 141358246,
+      "sha256": "1bdc51b80ae89a97a0a5cb3b37217e1fe517c3269d69f4cd3979c939fc2fffee",
+      "verification_by": "Coordinator, report6b0506d190bb52254bdfb78836dbe9bd267aa67c. Worker obtained a download reference but lacks an executor and did not independently hash/extract full ZIP."
+    },
+    "near_deadline_snapshot": {
+      "member": "artifacts/native-attachments/B56A03C0-1E09-4A05-A99B-E5531BEE57C6",
+      "timestamp": 1795675811.938,
+      "bytes": 1211,
+      "sha256": "c9f6b848a4d0f5ff3f2e9beddb9d83a2d82ff52b64b705f0ff936a20c4445dc6",
+      "original_blob": "703a17cbf3c706e8bb3e50034bf672437ef155ca",
+      "decoded_blob": "c97038b5367e90cc15f407e83678aa04dd9817d5",
+      "worker_review": "Independently fetched and read the faithful UID-table decode and coordinator provenance. Raw binary fetch failed connector UTF-8 decoding. Original-byte hash is coordinator verification, not independent worker verification.",
+      "actual_content": "NSKeyedArchiver root XCElementSnapshot, application-like UIApplication attribute, pid13014, frame0,0,402,874, empty identifier, children UID24 is empty NSArray. No status/rotation/halfturn/close nodes or labels.",
+      "limit": "Cannot establish target state at deadline. Empty archived children are not proof of an empty actual UI. Earlier rotation-time snapshot9DCE is byte-identical per coordinator receipt."
+    },
+    "late_hierarchy": {
+      "blob": "544185b1d3201230b507fb7057d9f057ae1280de",
+      "bytes": 36658,
+      "sha256": "0cf8f49e491e48bd4c1446f4dc925c2d9f33057d45ae44075c7e455790af5b7a",
+      "timestamp": 1795675844.309,
+      "worker_review": "Independently fetched raw UTF-8 and inspected status/rotation/navigation nodes.",
+      "observed": [
+        "roomPlacementStatus Other: 1 of5 center positions outside room; raw source has standard spaces; frame y−677.",
+        "roomRotation slider value180 degrees; rendered180° text.",
+        "Room placement navigation and Done/closeRoomPlacement exist."
+      ]
+    },
+    "late_png": {
+      "transport_blob": "487890b96ef8a034c13304d6a6f6a21beca6b4c2",
+      "original_blob": "24d2dbd0a5407ee463c2c6c0dc7c1bc774eb2af7",
+      "bytes": 330832,
+      "sha256": "1d0139efc76dfeab35e0848c28dde544bea90264a664fa969fe04f034b80cfcc",
+      "timestamp": 1795675834.065,
+      "worker_review": "Independently fetched exact-original base64 transport and displayed/viewed the image without modification. Original-byte hash supplied by coordinator.",
+      "observed": "Room placement sheet visibly scrolled to Rig rotation; actual180° slider/readout and Rotate180° button visible. Room kept with setup appears. Status summary is not in visible viewport."
+    },
+    "late_extraction_receipt": "8c575651b59cdc890fc1d58484d5ed743a700fb9"
+  },
+  "timing_interpretation": {
+    "first_status_find_seconds": 271.63,
+    "debug_capture_seconds": 280.9,
+    "observed_find_to_debug_interval_seconds": 9.27,
+    "diagnostic_count_start_seconds": 280.9,
+    "next_find_after_count_seconds": 295.59,
+    "observed_count_interval_seconds": 14.69,
+    "budget_basis": "30 seconds is the smallest whole-second budget covering approximately two acquisitions at the slowest separately observed14.69-second AX interval (2×14.69=29.38). The10-second wait was dominated by one9.27-second unresolved lookup interval.",
+    "qualification": "These are observed test-log intervals around AX work, not instrumentation proving how long app state took to update. The near-deadline archive is app-only and does not expose the failed lookup's actual status label. Do not claim its empty children caused the timeout or that snapshot() is faster.",
+    "unresolved": "Actual outside label at the original deadline and origin of60-second idle misses remain unknown. Later correct label and180° do not retroactively pass the failed run."
+  },
+  "options": [
+    {
+      "option": "Return to visible summary",
+      "pros": "Late exact PNG/hierarchy support meaningful visual workflow coverage by returning from lower rotation controls to the summary. Existing reveal helper has at most12 edge-scroll gestures.",
+      "cons": "Adds navigation and delay before observation, may change the state/idle conditions, and does not directly address the observed slow AX acquisition. Offscreen status alone does not violate the original label-content gate or prove timeout cause.",
+      "decision": "Do not include in this minimal reliability candidate. May be separately considered as stronger visible-result coverage."
+    },
+    {
+      "option": "Typed Other alone",
+      "decision": "Reject as a cure claim: outside predicate is already label-only and log already identifies Other."
+    },
+    {
+      "option": "One immutable target snapshot plus measured observation budget",
+      "pros": "Preserves target identifier and required outside substring; reads label/id/type/frame from a single completed snapshot rather than separately acquired observations. Captures timing/error/last sample on failure. Raises only this configured host-observation budget to30 seconds, without repeat input, taps, sleeps or unchecked success.",
+      "cons": "Not proven faster and not proof of root cause; changing allowed observation duration requires the root authorization now supplied. A blocking XCTest snapshot call may return after the nominal waiter deadline; timestamps explicitly expose that.",
+      "decision": "Recommended narrow candidate, pending root review and actual CI execution."
+    }
+  ],
+  "candidate": {
+    "path": "UITests/ManualRoomPlacementUITests.swift",
+    "base_blob_sha": "c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa",
+    "candidate_blob_sha": "bdfca60e4571b7ab3dd452a4ac059ced69d8a153",
+    "source_mutation": "Unreferenced complete Swift source blob only. No tree, branch or ref changed.",
+    "old_block": "        let outside = XCTNSPredicateExpectation(predicate: NSPredicate(format: \"label CONTAINS %@\", \"center positions outside room\"), object: status)\n        let outsideResult = XCTWaiter.wait(for: [outside], timeout: 10)\n        if outsideResult != .completed { recordRoomFailure(in: app) }\n        XCTAssertEqual(outsideResult, .completed)",
+    "new_block": "        // At 19f, a status lookup occupied about 9.3 s and another AX read\n        // about 14.7 s. Cover two slow acquisitions, not an edit-latency limit.\n        let outsideObservationBudget: TimeInterval = 30\n        let outsideObservationStarted = ProcessInfo.processInfo.systemUptime\n        var lastOutsideObservation = \"No status snapshot completed.\"\n        let outside = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in\n            let started = ProcessInfo.processInfo.systemUptime - outsideObservationStarted\n            do {\n                let snapshot = try status.snapshot()\n                let finished = ProcessInfo.processInfo.systemUptime - outsideObservationStarted\n                lastOutsideObservation = \"started=\\(started)s, finished=\\(finished)s, \" +\n                    \"identifier=\\(String(reflecting: snapshot.identifier)), \" +\n                    \"type=\\(snapshot.elementType), label=\\(String(reflecting: snapshot.label)), \" +\n                    \"frame=\\(snapshot.frame)\"\n                return snapshot.identifier == \"roomPlacementStatus\" &&\n                    snapshot.label.contains(\"center positions outside room\")\n            } catch {\n                let finished = ProcessInfo.processInfo.systemUptime - outsideObservationStarted\n                lastOutsideObservation = \"started=\\(started)s, finished=\\(finished)s, \" +\n                    \"snapshotError=\\(error.localizedDescription)\"\n                return false\n            }\n        }, object: nil)\n        let outsideResult = XCTWaiter.wait(for: [outside], timeout: outsideObservationBudget)\n        if outsideResult != .completed {\n            let details = \"Configured observation budget: \\(outsideObservationBudget)s\\n\" +\n                lastOutsideObservation\n            print(\"Room-outside-status-last-observation:\\n\\(details)\")\n            let observation = XCTAttachment(string: details)\n            observation.name = \"Room-outside-status-last-observation\"\n            observation.lifetime = .keepAlways\n            add(observation)\n            recordRoomFailure(in: app)\n        }\n        XCTAssertEqual(outsideResult, .completed)",
+    "scope": "Only outside-status observation block in testManualRoomReportsOutOfBoundsAndRecordsRoomEdit.",
+    "preserved": [
+      "Same single half-turn tap; no new input/scroll/tap/retry or sleep.",
+      "Initial all-inside assertion,44-point hit checks, room entry and all downstream screenshot/close/Unsaved changes/undo assertions unchanged.",
+      "Actual identifier must remain roomPlacementStatus and snapshot label must contain the exact original substring center positions outside room.",
+      "Missing/incomplete/error snapshots return false. Wait result must equal completed; existing failure screenshot/hierarchy remain.",
+      "All other method source unchanged. Existing failed19f run remains failed."
+    ],
+    "added": "One immutable status.snapshot() per predicate evaluation; monotonic start/end timing with snapshot identifier/type/label/frame or error saved as last observation; failure-only log/text attachment. Existing recordRoomFailure follows and remains explicitly later state.",
+    "source_checks": {
+      "exact_one_block_replaced": true,
+      "inverse_substitution_matches_original_byte_for_byte": true,
+      "half_turn_mutations_unchanged": true,
+      "expected_outside_substring_preserved": true,
+      "all_other_existing_deadlines_unchanged": true,
+      "new_native_or_ui_execution": false
+    }
+  },
+  "acceptance": "Run the complete required room/precision method set on integrated candidate. The actual outside label must pass within configured observation budget and all downstream assertions must complete. A later correct diagnostic label does not pass the test; no failed historical evidence is reclassified.",
+  "limitations": [
+    "This worker's local executor probe still returns no usable execution environment; no Swift compilation/runtime test executed.",
+    "Original ZIP/member hashes are coordinator-verified; worker independently reviewed decoded snapshot, raw hierarchy and actual PNG transported from those exact originals.",
+    "No app/source geometry defect demonstrated. Candidate addresses bounded host observation and diagnostic consistency, not product math.",
+    "No new context/children; no source/tree/ref push. Candidate unintegrated and runtime-unverified."
+  ]
+}

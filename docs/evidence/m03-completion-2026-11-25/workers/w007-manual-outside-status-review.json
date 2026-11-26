@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "worker": "w007",
+  "context_path": "/root/w007_review_coordinator",
+  "phase": "Independent ManualRoom outside-status observation candidate review",
+  "status": "complete_source_and_swift_syntax_review",
+  "generated_at_utc": "2026-11-26 07:42:24 UTC",
+  "repository": "mirzotipi-wq/APP1",
+  "path": "UITests/ManualRoomPlacementUITests.swift",
+  "base_source_revision": "19f75af24fc274b44aa0119e4e49071a5aa0b1f9",
+  "base_blob_sha": "c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa",
+  "candidate_blob_sha": "bdfca60e4571b7ab3dd452a4ac059ced69d8a153",
+  "worker039_report_sha": "bc28bb26c76ba0b7386193ed84df2ce3e84a9c09",
+  "authorization": "Latest root instruction explicitly permits a bounded host-observation budget adjustment justified by measured AX acquisition timings; no product edit or weakening of actual expected state.",
+  "contract": {
+    "path": "docs/acceptance/m02-m03-code.md",
+    "sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+    "interpretation": "M03 requires actual correct editing/semantics and required workflows. It specifies no10-second host-observation SLO. Original failures must remain reported."
+  },
+  "actual_evidence": {
+    "run_id": 45769542620,
+    "job_id": 139738601274,
+    "raw_log_characters": 519757,
+    "methods": {
+      "started": 5,
+      "passed": 4,
+      "failed": 1
+    },
+    "original_failure": "ManualRoomPlacementUITests.testManualRoomReportsOutOfBoundsAndRecordsRoomEdit line32, outside-status observation after one half-turn",
+    "measured_intervals_seconds": {
+      "status_find_to_debug": 9.27,
+      "following_diagnostic_match_count_acquisition": 14.69
+    },
+    "no_target_state_in_near_deadline_snapshot": true,
+    "late_originals": "Verified original hierarchy and viewed original PNG show180degrees and outside1of5afterdeadline; cannot retroactively pass10secondwait.",
+    "provenance_reports": [
+      "6b0506d190bb52254bdfb78836dbe9bd267aa67c",
+      "8c575651b59cdc890fc1d58484d5ed743a700fb9"
+    ]
+  },
+  "source_checks": {
+    "unchanged_prefix_chars": 1713,
+    "unchanged_suffix_chars": 8674,
+    "changed_scope": "Only outside-status predicate, its configured observation budget and cached-observation diagnostics.",
+    "predicate": "One actual status.snapshot() per evaluation; exact identifier roomPlacementStatus and original outside substring both required.",
+    "snapshot_failure": "Returnsfalse; missing/incorrect labels cannot satisfywait.",
+    "observation_budget_seconds": {
+      "before": 10,
+      "after": 30
+    },
+    "recorded_values": "Identifier,type,label,frame fromsameimmutable snapshot; relative monotonic started/finished times. Last successful snapshot or actual snapshoterror retained onfailure, followed byexistingfailurecapture.",
+    "preserved": [
+      "Single half-turntap; no additionalinput,scroll,sleep,outerretry",
+      "Alloriginalassertionlines",
+      "Initialallinside15secondwait and all otherdeadlines",
+      "44pointhittargetchecks",
+      "Actualoutsidecontent requirement",
+      "Successscreenshot,sheetdismissal,unsavedstatus,undoassertions",
+      "BothManualRoommethodnames and complete35requiredUIinventory",
+      "Allproductgeometrysource"
+    ]
+  },
+  "budget_reasoning": "A measured14.69-secondAXacquisition exceeds theold10secondconfiguredwait, and9.27secondsnearlyconsumesit. Thirtysecondsprovides explicit boundedhost-observationheadroom onthe orderoftwoobservedslowreads. Itisnotaguarantee oftwofullpolls, notanedit-latencyclaim, andnotproof thecausewasXCTest ratherthanapp/simulator/host. BlockingAXcallsmayoverruna configuredwait; actualevaluationtimingsarethereforeretained.",
+  "alternative_assessed": "Return-to-summaryscrollingwouldaddusernavigationbutdoesnotdirectlyresolveobservedacquisitionstall; typedOtheralonealreadyresolvedtothatclassandisnotestablishedasacure.",
+  "validation": {
+    "source_diff_review": "passed; alloutsideblockassertionsretained",
+    "candidate_git_blob_recomputed": "bdfca60e4571b7ab3dd452a4ac059ced69d8a153",
+    "swift_frontend_parse": {
+      "compiler": "/workspace/scratch/13a77d3f98df/toolchain/usr/bin/swiftc",
+      "exit_code": 0,
+      "output": ""
+    },
+    "local_work": "Isolated/dev/shm/app1-m03-coordinator-review/manual-room only",
+    "apple_typecheck_or_runtime": false
+  },
+  "findings": [],
+  "disposition": "No concrete source or syntax blocker. This is an explicit evidence-based test-observation correction that still requires the actual correct state. Full requiredroom/precision andintegratedUIexecution remainrequired; original19f failure is unchanged.",
+  "new_contexts_created": 0
+}

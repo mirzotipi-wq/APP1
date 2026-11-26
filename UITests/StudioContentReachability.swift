@@ -139,7 +139,7 @@ extension XCTestCase {
                              fullyVisible: Bool = false,
                              file: StaticString = #filePath, line: UInt = #line) {
         var geometry: [String] = []
-        for _ in 0..<12 {
+        revealAttempts: for _ in 0..<12 {
             let targetExists = target.exists
             let targetState: (any XCUIElementSnapshot)? = fullyVisible && targetExists
                 ? try? target.snapshot() : nil
@@ -147,7 +147,10 @@ extension XCTestCase {
             // bounds. Use the actual visible boundaries: a List row can begin
             // exactly below its navigation bar. An extra inset made the fully
             // visible library warning permanently fail this reachability check.
-            var viewport = app.frame.insetBy(dx: 0, dy: fullyVisible ? 0 : 100)
+            // Reuse this real window frame only within the current attempt.
+            // A scroll starts a new attempt and reads all geometry again.
+            let appFrame = app.frame
+            var viewport = appFrame.insetBy(dx: 0, dy: fullyVisible ? 0 : 100)
             if fullyVisible {
                 // The keyboard and fixed edit bar can cover scroll content.
                 // Full-frame assertions opt in; ordinary functional navigation
@@ -163,8 +166,13 @@ extension XCTestCase {
                 } else {
                     navigationBars = []
                 }
-                let navigationIdentifiers = Set(navigationBars.map(\.identifier))
-                let navigationBottom = navigationBars.map(\.frame)
+                // One snapshot supplies each bar's identifier and geometry.
+                // A failed read must fail this attempt, never omit an obstacle.
+                guard let navigationStates = try? navigationBars.map({ try $0.snapshot() }) else {
+                    break revealAttempts
+                }
+                let navigationIdentifiers = Set(navigationStates.map { $0.identifier })
+                let navigationBottom = navigationStates.map { $0.frame }
                     .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
                     .map(\.maxY).max()
                 if let navigationBottom {
@@ -187,10 +195,12 @@ extension XCTestCase {
                 let fixedControls = app.buttons.matching(NSPredicate(
                     format: "identifier IN %@", ["undo", "projectLibraryDone"]))
                 for control in fixedControls.allElementsBoundByIndex where control.isHittable {
-                    let owners = app.otherElements.containing(.button, identifier: control.identifier)
-                        .children(matching: .navigationBar).allElementsBoundByIndex
-                    guard owners.contains(where: { navigationIdentifiers.contains($0.identifier) }) else { continue }
-                    viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)
+                    guard let controlState = try? control.snapshot() else { break revealAttempts }
+                    let owners = app.otherElements.containing(.button, identifier: controlState.identifier)
+                        .children(matching: .navigationBar)
+                        .matching(NSPredicate(format: "identifier IN %@", Array(navigationIdentifiers)))
+                    guard owners.firstMatch.exists else { continue }
+                    viewport.size.height = max(0, min(viewport.maxY, controlState.frame.minY) - viewport.minY)
                 }
             }
             var down = towardBottom
@@ -205,7 +215,7 @@ extension XCTestCase {
                                       app.tables.containing(state.elementType, identifier: key).firstMatch]
                     var scrollFrame = CGRect.null
                     for container in containers where container.exists {
-                        let observed = container.frame.intersection(app.frame)
+                        let observed = container.frame.intersection(appFrame)
                         if !observed.isEmpty { scrollFrame = observed; break }
                     }
                     // A fixed bar can have padding above its button. Use the
@@ -233,15 +243,15 @@ extension XCTestCase {
             if fullyVisible {
                 // Keep the gesture itself above the keyboard/fixed controls.
                 // A full-window drag could begin on a key instead of the Form.
-                guard viewport.height >= 48, app.frame.height > 0 else { break }
-                startY = (viewport.minY - app.frame.minY + viewport.height * (down ? 0.78 : 0.30)) / app.frame.height
-                endY = (viewport.minY - app.frame.minY + viewport.height * (down ? 0.30 : 0.78)) / app.frame.height
+                guard viewport.height >= 48, appFrame.height > 0 else { break }
+                startY = (viewport.minY - appFrame.minY + viewport.height * (down ? 0.78 : 0.30)) / appFrame.height
+                endY = (viewport.minY - appFrame.minY + viewport.height * (down ? 0.30 : 0.78)) / appFrame.height
             } else {
                 startY = down ? 0.78 : 0.30
                 endY = down ? 0.30 : 0.78
             }
             let x = fullyVisible
-                ? (viewport.minX - app.frame.minX + viewport.width * 0.97) / app.frame.width : 0.97
+                ? (viewport.minX - appFrame.minX + viewport.width * 0.97) / appFrame.width : 0.97
             let start = app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: startY))
             let end = app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: endY))
             start.press(forDuration: 0.05, thenDragTo: end)
