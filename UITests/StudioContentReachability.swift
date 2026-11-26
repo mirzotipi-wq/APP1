@@ -274,7 +274,25 @@ extension XCTestCase {
         clear.tap()
         XCTAssertTrue(field.waitForExistence(timeout: 5), file: file, line: line)
         field.tap()
+        dismissKeyboardTypingIntroduction(in: app, file: file, line: line)
+        // Clear focuses the field and changes the available Form viewport.
+        // Reveal that real control again after the keyboard transition.
+        revealStudioContent(field, in: app, fullyVisible: true, file: file, line: line)
+        field.tap()
+        let typingKey = app.keyboards.firstMatch.keys["1"]
+        let keyboardReady = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND hittable == true"), object: typingKey)
+        let readyResult = XCTWaiter.wait(for: [keyboardReady], timeout: 10)
+        if readyResult != .completed { recordRoomInputFailure("Keyboard not ready", field: field, in: app) }
+        XCTAssertEqual(readyResult, .completed, "The numeric keyboard must be ready before typing",
+                       file: file, line: line)
         field.typeText(text)
+        let entered = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND value == %@", text), object: field)
+        let enteredResult = XCTWaiter.wait(for: [entered], timeout: 10)
+        if enteredResult != .completed { recordRoomInputFailure("Draft did not match " + text, field: field, in: app) }
+        XCTAssertEqual(enteredResult, .completed, "Exact measurement draft must be entered",
+                       file: file, line: line)
         XCTAssertEqual(field.value as? String, text, "Exact measurement draft must be entered", file: file, line: line)
         let set = app.buttons[id + "Set"]
         XCTAssertTrue(set.isHittable, file: file, line: line)
@@ -285,5 +303,19 @@ extension XCTestCase {
         let expectation = XCTNSPredicateExpectation(predicate: keyboardGone, object: app.keyboards.firstMatch)
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed,
                        "Set must dismiss the numeric keyboard, including on validation failure", file: file, line: line)
+    }
+
+    private func recordRoomInputFailure(_ stage: String, field: XCUIElement, in app: XCUIApplication) {
+        let description = "Stage: \(stage)\nField: \(field.debugDescription)\n" + app.debugDescription
+        let bounded = String(decoding: description.utf8.prefix(32_768), as: UTF8.self)
+        print("Room-measurement-input-failure (at most 32,768 UTF-8 bytes):\n\(bounded)")
+        let hierarchy = XCTAttachment(string: bounded)
+        hierarchy.name = "Room-measurement-input-hierarchy"
+        hierarchy.lifetime = .keepAlways
+        add(hierarchy)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Room-measurement-input-failure"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 }
