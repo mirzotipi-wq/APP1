@@ -1,0 +1,535 @@
+{
+  "worker": "W63-api",
+  "role": "API specialist",
+  "wave": 7,
+  "assignment": "Review CPU03 float4 layout, metadata and public renderer contracts against immutable latest04 consumer; distinguish layout identity from numerical policy; identify owner integration dependency.",
+  "input_sha": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "comparison_db7_sha": "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5",
+  "latest04_sha": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+  "latest04_pin_source": "W67 immutable source receipts; no remote head refresh performed by W63",
+  "actual_runtime_id": "/root/wave07/w63_api",
+  "canonical_task_path": "/root/wave07/w63_api",
+  "runtime_id_kind": "canonical returned ID; no UUID exposed",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W63-api",
+  "private_output": "/tmp/keyfill03-7f4b/builds/W63-api",
+  "integration_checkout": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+  "root_head_at_initial_read": "8ce5e464253144deccb39d838faef70f05e0c38c",
+  "status": "source_review_complete_layout_preserved_paired_lane04_integration_required",
+  "report": "docs/parallel/03/workers/W63-api.md",
+  "report_sha256": "e4aea182b156a41152ff46a06533d6bbc5deac2bbe165a5fecc7f3ceabe669f3",
+  "source_metadata": [
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 31355,
+      "git_blob": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+      "computed_git_blob": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+      "git_blob_matches": true,
+      "sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "db7_blob": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+      "same_blob_as_db7": true
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 12920,
+      "git_blob": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765",
+      "computed_git_blob": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765",
+      "git_blob_matches": true,
+      "sha256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "db7_blob": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765",
+      "same_blob_as_db7": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 7190,
+      "git_blob": "69a826c8498efc508bdb2479dc80f40b75af3b71",
+      "computed_git_blob": "69a826c8498efc508bdb2479dc80f40b75af3b71",
+      "git_blob_matches": true,
+      "sha256": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+      "db7_blob": "69a826c8498efc508bdb2479dc80f40b75af3b71",
+      "same_blob_as_db7": true
+    },
+    {
+      "path": "App/StudyKernel.h",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 14385,
+      "git_blob": "df3175546623508b192d29210dcd9b51efce4c37",
+      "computed_git_blob": "df3175546623508b192d29210dcd9b51efce4c37",
+      "git_blob_matches": true,
+      "sha256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "db7_blob": "df3175546623508b192d29210dcd9b51efce4c37",
+      "same_blob_as_db7": true
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 11937,
+      "git_blob": "c96d5cb7a41143867efca160b309d71bfa993c96",
+      "computed_git_blob": "c96d5cb7a41143867efca160b309d71bfa993c96",
+      "git_blob_matches": true,
+      "sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "db7_blob": "4b1e283efcb65e890e439c05cacd93fdac293a41",
+      "same_blob_as_db7": false
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 12936,
+      "git_blob": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+      "computed_git_blob": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+      "git_blob_matches": true,
+      "sha256": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+      "db7_blob": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+      "same_blob_as_db7": true
+    }
+  ],
+  "latest04_receipts": [
+    {
+      "key": "lane04-eligibility",
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "ref": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "artifact": "docs/parallel/03/workers/wave07-evidence/W67-lane04-eligibility.swift",
+      "artifact_bytes": 12037,
+      "artifact_sha256": "4058929a4fddd1786fbb2d1f0d57ac387d091ef64bd367de0b93962f0c8e30d3",
+      "full_source_git_blob_from_W67": "e9764da10eabbffbad6ceee8999977cf31deb197",
+      "full_source_sha256_from_W67": "4058929a4fddd1786fbb2d1f0d57ac387d091ef64bd367de0b93962f0c8e30d3",
+      "full_source_independently_rehashed": true,
+      "computed_git_blob": "e9764da10eabbffbad6ceee8999977cf31deb197",
+      "git_blob_matches_receipt": true,
+      "artifact_hash_matches_receipt": true
+    },
+    {
+      "key": "lane04-metal",
+      "path": "App/MetalStudyRenderer.swift",
+      "ref": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "artifact": "docs/parallel/03/workers/wave07-evidence/W67-lane04-metal.swift",
+      "artifact_bytes": 13787,
+      "artifact_sha256": "ac846f97796b90929b4c27ae72e2698fb54f62cbc100664f455251e60de88df4",
+      "full_source_git_blob_from_W67": "6f72a920bc8e14438997b07c6b45545c077509dc",
+      "full_source_sha256_from_W67": "ac846f97796b90929b4c27ae72e2698fb54f62cbc100664f455251e60de88df4",
+      "full_source_independently_rehashed": true,
+      "computed_git_blob": "6f72a920bc8e14438997b07c6b45545c077509dc",
+      "git_blob_matches_receipt": true,
+      "artifact_hash_matches_receipt": true
+    },
+    {
+      "key": "lane04-kernel",
+      "path": "App/StudyKernel.h",
+      "ref": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "artifact": "docs/parallel/03/workers/wave07-evidence/W67-lane04-kernel.h",
+      "artifact_bytes": 15130,
+      "artifact_sha256": "5bdba47a2620807b9fa61f899c2c6d8ed2cc534f5a3e26693cbdbfbc786ef628",
+      "full_source_git_blob_from_W67": "f60258402a96f58b62607d5cefec5e41c7ec4137",
+      "full_source_sha256_from_W67": "5bdba47a2620807b9fa61f899c2c6d8ed2cc534f5a3e26693cbdbfbc786ef628",
+      "full_source_independently_rehashed": true,
+      "computed_git_blob": "f60258402a96f58b62607d5cefec5e41c7ec4137",
+      "git_blob_matches_receipt": true,
+      "artifact_hash_matches_receipt": true
+    },
+    {
+      "key": "lane04-reference",
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "ref": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "artifact": "docs/parallel/03/workers/wave07-evidence/W67-lane04-reference.txt",
+      "artifact_bytes": 5923,
+      "artifact_sha256": "4234a37adb21b43feff13ae143c985ff09de018aba17e30241b68a25ce4535ca",
+      "full_source_git_blob_from_W67": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "full_source_sha256_from_W67": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+      "full_source_independently_rehashed": false,
+      "scope": "Only W67 saved source ranges 233-291, 413-451, 548-550 inspected; full-file hashes are W67 receipt metadata.",
+      "artifact_hash_matches_receipt": true
+    }
+  ],
+  "tree_id_comparisons": {
+    "Sources": {
+      "input_tree": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4",
+      "db7_tree": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4",
+      "identical": true
+    },
+    "Tests": {
+      "input_tree": "dc52c1fd56b9580b99353436229a3559dcb38f35",
+      "db7_tree": "dc52c1fd56b9580b99353436229a3559dcb38f35",
+      "identical": true
+    },
+    "scripts": {
+      "input_tree": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f",
+      "db7_tree": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f",
+      "identical": true
+    }
+  },
+  "static_comparisons": {
+    "StudyComputeInput_block_identical_to_latest04_receipt": true,
+    "computeAreas_block_identical_to_latest04_receipt": true,
+    "computeSamples_identical_except_outputScale_restoration": true,
+    "worktree_status": "",
+    "changed_code_paths_since_db7": [
+      "App/ReferenceStudyPreview.swift",
+      "NativeTests/StudyPreviewPipelineTests.swift"
+    ]
+  },
+  "public_api": {
+    "StudyComputeInput": "public init(scene: LightingScene, width: Int = 192) throws; public width, height: Int; parameters, samples, areas: [SIMD4<Float>]",
+    "StudyImage": "public width, height: Int; rgba: Data; unsupportedPixels: Int; unsupportedPixelMask: Data; public static func fromComputeRGBA(width: Int, height: Int, data: Data) throws -> StudyImage; ordinary initializer is internal",
+    "ReferenceStudyRenderer": "public static func render(scene: LightingScene, width: Int = 120, quality: StudyQuality = .interactive, isCancelled: () -> Bool = { false }) throws -> StudyImage",
+    "PortraitStudyRenderer": "public static let maximumWidth = 144; public static func render(scene: LightingScene, width: Int = 120, isCancelled: () -> Bool = { false }) throws -> StudyImage",
+    "ReferenceStudyPreview": "App-internal @MainActor View; stored scene: LightingScene and subject: StudySubject = .sphere preserve scene/subject construction",
+    "StudyRenderEngine": "App-internal render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame; inspected latest04 calls match CPU public render and decoder signatures",
+    "eligibility_integration": "CPU36 has supports(_ scene) only. Latest04 preserves that wrapper (width 192) and adds supports(_ scene, width: Int). Latest04 Metal consumer requires the latest04 helper; transplanting only the consumer into CPU36 would leave a missing overload."
+  },
+  "field_layout": {
+    "parameter_rows": [
+      [
+        "camera origin relative to subject",
+        "halfW"
+      ],
+      [
+        "camera forward",
+        "halfH"
+      ],
+      [
+        "camera right",
+        "sphere radius"
+      ],
+      [
+        "camera up",
+        "panel half extent"
+      ],
+      [
+        "Bradford adaptation ratios",
+        "exposure"
+      ],
+      [
+        "sample count",
+        "area count",
+        "minimum camera depth meters",
+        "grid count 8"
+      ]
+    ],
+    "sample_rows": [
+      [
+        "position relative to subject",
+        "candela restored from per-emitter Double scale"
+      ],
+      [
+        "emitting normal or zero",
+        "0 point or 1 emitting-normal flag"
+      ],
+      [
+        "source XYZ color",
+        "0 point/directional or 1-based area index"
+      ]
+    ],
+    "area_rows": [
+      [
+        "center relative to subject",
+        "minimum receiver distance"
+      ],
+      [
+        "right axis",
+        "half width"
+      ],
+      [
+        "up axis",
+        "half height"
+      ]
+    ],
+    "image_metadata": "unsupportedPixelMask is one byte per row-major pixel: 1 unsupported, 0 valid. Compute alpha 0 requires RGB magenta, becomes opaque with mask 1. Other alpha must be 255. Count alone and visible RGB alone do not establish the mask."
+  },
+  "findings": {
+    "ordinary_packing": "Unchanged field order, field count, coordinate origin, units, constructor, grid and ordinary per-sample intensity. outputScale is private CPU data; it is not an extra GPU row.",
+    "numerical_policy": "Tiny Double emitters are accumulated at normalized intensity then restored per emitter. Current packing restores source intensity before Float conversion. Float underflow remains possible and is not prevented by identical layout.",
+    "kernel_order": "Both inspected kernels validate r2 before candela multiplication; incident validity precedes zero-lux success. Area near-field guards precede sample accumulation. No demonstrated zero-intensity mask defect.",
+    "latest04_source_difference": "Latest04 ReferenceStudy receipt lacks the CPU db7 private outputScale fix. Preserve the CPU fix while integrating lane04 helper and consumer changes.",
+    "gate_retention": "Identical Sources, Tests and scripts trees to db7 retain their six parity and eight precision gate sources; no fresh gate execution or pass claimed."
+  },
+  "checks_really_executed": [
+    "Read mandatory AGENTS, operating protocol, M02/M03 code acceptance and worker protocol.",
+    "Read bounded CPU source and latest04 W67 receipts, including exact packing, renderer calls, width overload and kernel guard ordering.",
+    "Read private tree status, HEAD, recent commits and detached branch; read root HEAD without updating refs.",
+    "Compared exact source Git blobs and Sources/Tests/scripts Git trees between input and db7; inspected db7 ReferenceStudy diff.",
+    "Recomputed whole local file SHA256 and Git blob SHA1; independently rehashed full saved latest04 eligibility, Metal consumer and kernel artifacts.",
+    "Verified latest04 ReferenceStudy excerpt hash and compared bounded source blocks; its whole-file identities remain W67-supplied receipts.",
+    "Wrote only assigned report and JSON metadata; no tests, builds, external messages, intentional ref updates or source mutations."
+  ],
+  "tests_run": [],
+  "builds_run": [],
+  "native_verified": false,
+  "production_or_test_files_edited": false,
+  "commits_created": [],
+  "raw_metadata_commands": [
+    {
+      "argv": [
+        "rg",
+        "-n",
+        "-A",
+        "5",
+        "-B",
+        "3",
+        "computeParameters",
+        "/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore"
+      ],
+      "exit_code": 0,
+      "stdout": "/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-110-    }\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-111-\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-112-    /// Explicit shared parameters for the optional Float32 compute implementation.\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift:113:    public var computeParameters: SIMD4<Float> {\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-114-        .init(Float(adaptationRatio.x), Float(adaptationRatio.y), Float(adaptationRatio.z), Float(exposure))\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-115-    }\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-116-\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-117-    /// Bradford adaptation, relative exposure, luminance Reinhard tone mapping and\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/Colorimetry.swift-118-    /// neutral-axis gamut compression into display-encoded sRGB.\n--\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-447-        self.samples = samples; self.areas = areas\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-448-        parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-449-                      pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift:450:                      setup.transform.computeParameters,\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-451-                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 8)]\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-452-    }\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-453-}\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-454-\n/tmp/keyfill03-7f4b/workers/W63-api/Sources/LightingCore/ReferenceStudy.swift-455-private struct StudySetup {\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:Sources/LightingCore/ReferenceStudy.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "82e54a53f3d32d745aee1edfa297086504fb81ec\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:Sources/LightingCore/ReferenceStudy.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "82e54a53f3d32d745aee1edfa297086504fb81ec\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:Sources/LightingCore/PortraitStudy.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:Sources/LightingCore/PortraitStudy.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:Sources/LightingCore/StudyFloat32Eligibility.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "69a826c8498efc508bdb2479dc80f40b75af3b71\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:Sources/LightingCore/StudyFloat32Eligibility.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "69a826c8498efc508bdb2479dc80f40b75af3b71\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:App/StudyKernel.h"
+      ],
+      "exit_code": 0,
+      "stdout": "df3175546623508b192d29210dcd9b51efce4c37\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:App/StudyKernel.h"
+      ],
+      "exit_code": 0,
+      "stdout": "df3175546623508b192d29210dcd9b51efce4c37\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:App/ReferenceStudyPreview.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "c96d5cb7a41143867efca160b309d71bfa993c96\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:App/ReferenceStudyPreview.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "4b1e283efcb65e890e439c05cacd93fdac293a41\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:App/MetalStudyRenderer.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:App/MetalStudyRenderer.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:Sources"
+      ],
+      "exit_code": 0,
+      "stdout": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:Sources"
+      ],
+      "exit_code": 0,
+      "stdout": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:Tests"
+      ],
+      "exit_code": 0,
+      "stdout": "dc52c1fd56b9580b99353436229a3559dcb38f35\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:Tests"
+      ],
+      "exit_code": 0,
+      "stdout": "dc52c1fd56b9580b99353436229a3559dcb38f35\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:scripts"
+      ],
+      "exit_code": 0,
+      "stdout": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "rev-parse",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5:scripts"
+      ],
+      "exit_code": 0,
+      "stdout": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "status",
+        "--short"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/keyfill03-7f4b/workers/W63-api",
+        "diff",
+        "--name-only",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+        "--",
+        "Sources",
+        "Tests",
+        "scripts",
+        "App",
+        "NativeTests"
+      ],
+      "exit_code": 0,
+      "stdout": "App/ReferenceStudyPreview.swift\nNativeTests/StudyPreviewPipelineTests.swift\n",
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "Source review is not a Swift compile, CPU/Float parity run, Metal execution or native test pass.",
+    "Latest04 core ReferenceStudy read is limited to W67 saved ranges; full-file hash was not independently reconstructed.",
+    "Latest04 scope is the assigned immutable SHA, not a claim about subsequent branch changes.",
+    "Initial abbreviated db7 lookup failed; resolved using exact SHA from W67 receipts. One guessed PreviewColor.swift lookup failed; corrected by rg over actual LightingCore tree.",
+    "One combined source display was truncated; required packing, public renderer calls, eligibility and kernel sections were re-read in focused outputs.",
+    "Token/checkpoint counter unavailable; 12k target and 60% checkpoint not measured."
+  ],
+  "completed_utc": "2026-11-26T15:06:47.901606+00:00"
+}

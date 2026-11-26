@@ -2,7 +2,7 @@
 
 ## Current review checkpoint
 
-Accepted executable source: `36ed6a1455dee7ca52b55f46d1a47262f5c98cc1` on `finish/03-cpu-study-mannequin`. CPU rendering source is identical to `db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5`; the later executable change affects preview presentation/publication and its matching test. Sixty actual fresh workers have completed six ten-worker waves. Waves7–10 and final100-worker acceptance are still in progress at this checkpoint.
+Accepted executable source: `36ed6a1455dee7ca52b55f46d1a47262f5c98cc1` on `finish/03-cpu-study-mannequin`. CPU rendering source is identical to `db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5`; the later executable change affects preview presentation/publication and its matching test. Seventy actual fresh workers have completed seven ten-worker waves. Waves8–10 and final100-worker acceptance are still in progress at this checkpoint.
 
 Campaign fallback was `f150f98e35dd735927075aac4d2f8b02295c6a67`; no lane20 baseline was published in the initial inventory. An ordinary merge retained already-existing main `9e0e2ba` and its `b0d25ee` native UITest CGFloat correction. This lane authored no CI/shared-composition/GPU/cache implementation and never pushed main. Global M02/M03 status remains with20.
 
@@ -66,7 +66,7 @@ No baseline image was replaced to conceal a changed result. Ordinary images are 
 
 ## Runtime and resource limits
 
-Mannequin width remains≤144, per-emitter rectangle sample counts remain64/1,024, and cancellation polling remains at most eight further pixel evaluations. Engine/cache ownership stays with04; existing limits are fourframes,256KiB RGBA and64KiB masks. This lane did not alter those implementations.
+Mannequin width remains≤144, per-emitter rectangle sample counts remain64/1,024, and cancellation polling remains at most eight further pixel evaluations. Engine/cache ownership stays with04; existing limits are fourframes,256KiB RGBA and64KiB masks. This lane did not alter those implementations. These are numeric/render/cache bounds. Arbitrary light-name validation still depends on input bytes; its grapheme limit is not a UTF-8 byte bound. Shared admission/schema changes remain with01.
 
 Final shared Linux optimized diagnostics: mannequin144point3 p50/p95=8.259656/8.685065ms; mannequin144area3=181.067702/186.794669ms. All12 cancellation probes observed cancellation; maximum requested-deadline-to-return was1.606625ms. These are short shared-host measurements with scheduler noise, not iPhone frame-rate, sustained throughput, RSS, energy or thermal evidence. `final-benchmark.json` retains every workload/sample; its raw revision field names the parent while the candidate was uncommitted, and `final-benchmark-inputs.json` binds the exact later db7 source without rewriting raw data.
 
@@ -78,4 +78,4 @@ Four executor outages lost temporary trees/builds while persistent evidence surv
 
 ReferencePNG is the existing imported-photo PNG sanitizer. It was not changed by this lane; Study diagnostic PPM-to-PNG conversion is separate and does not add photo metadata or a new asset source. Required fixtures and failure artifacts remain intact.
 
-The per-wave ledgers and primary reports are under `workers/`. Ten acceptance leaders each instantiate nine distinct fresh specialists; root is excluded, followups/precreated trees are excluded, and actual tool-returned canonical IDs are recorded. Four concurrent contexts is the platform ceiling. Exact token counters are unavailable; requested brief/working/report targets and the coordinator checkpoints are recorded without claiming unmeasured compliance. Final100-worker ledger audit, independent final review and final branch preservation remain outstanding at this sixty-worker checkpoint.
+The per-wave ledgers and primary reports are under `workers/`. Ten acceptance leaders each instantiate nine distinct fresh specialists; root is excluded, followups/precreated trees are excluded, and actual tool-returned canonical IDs are recorded. Four concurrent contexts is the platform ceiling. Exact token counters are unavailable; requested brief/working/report targets and the coordinator checkpoints are recorded without claiming unmeasured compliance. Final100-worker ledger audit, independent final review and final branch preservation remain outstanding at this seventy-worker checkpoint.

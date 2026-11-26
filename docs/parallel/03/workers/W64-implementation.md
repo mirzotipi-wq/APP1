@@ -1,0 +1,13 @@
+# W64 implementation review — positive Double to Float zero
+
+**Status:** Source review complete; the proposed guard-skipping mask defect is not supported by input `36ed6a1455dee7ca52b55f46d1a47262f5c98cc1`. No production changes, tests, or probe authored. Runtime/task ID: `/root/wave07/w64_implementation`; detached tree: `/tmp/keyfill03-7f4b/workers/W64-implementation`.
+
+`StudyLighting` retains every positive emitter (`ReferenceStudy.swift:237`), normalizes very small output for CPU integration (241–245), and restores output when packing (278–282). Positive Double per-cell candela can therefore become Float zero while sample rows and area guards remain present. The CPU tests receiver distance before incidence/emission (310–322); zero emitters have no samples or area guards.
+
+The pinned shared kernel does **not** skip zero packed candela before validation. `kfStudyIncident` checks squared distance first (`StudyKernel.h:127–133`); `kfStudyContribution` checks `incident.valid` before returning for zero lux (140–142). Its outer point/directional loop invokes that contribution unconditionally (220–228). Rectangle area-distance guards precede all sample contributions (209–215), independently of intensity. Thus this particular underflow does not erase near-field rejection through the suspected shortcut. Float32 versus Double boundary/geometry differences remain separate risks.
+
+`StudyFloat32Eligibility.supports(scene)` examines positive **Double** candela (22) and rejects near-field sphere/panel proximity (25–51); it has no explicit per-cell underflow rejection. A raw-host mismatch would not alone prove runtime admission. A supported tiny signal may be lost numerically yet still display as RGB8 black; that is distinct from unsupported magenta and its required per-pixel mask. The review establishes neither exact radiometric parity nor native behavior.
+
+**Evidence:** Exact source Git blobs/SHA-256 hashes and read/check receipts are in `wave07-evidence/W64-implementation.json`. The detached tree was clean. `agent_cycle.py check` and `next` executed successfully; they only reported ledger structure and outstanding M03 gates. Exploratory searches recorded missing filenames and exit 2; no evidence was inferred from those failures. Swift, unchanged host C++, Metal, and device execution are **UNRUN**. The parent explicitly closed the optional six-case diagnostic after falsification; no compile/run proposal remains. Existing fixtures, gates and tolerances are untouched.
+
+**Limits:** This review covers the pinned lane03 source only; latest lane04 guards were not imported or evaluated. No runtime interruptions occurred in W64. Token counter unavailable; the 12k target/60% checkpoint could not be measured.

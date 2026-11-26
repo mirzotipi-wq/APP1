@@ -1,0 +1,113 @@
+SOURCE LINES 233-298
+    public init(scene: LightingScene, quality: StudyQuality = .interactive) throws {
+        guard (try? scene.validated()) != nil else { throw StudyError.invalidScene }
+        var result: [Sample] = []
+        var guards: [AreaGuard] = []
+        for light in scene.lights where light.candela > 0 {
+            guard let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { throw StudyError.invalidEmitter }
+            let xyz = SIMD3<Double>(color.x, color.y, color.z)
+            let optics = light.effectiveOptics, center = vec(light.position)
+            // Subnormal sample output can vanish before distance or BRDF amplification.
+            // Integrate these emitters at unit intensity and restore their output once.
+            let count = optics.kind == .rectangle ? quality.grid * quality.grid : 1
+            let outputScale = light.candela / Double(count) < Double.leastNormalMagnitude ? light.candela : 1
+            let candela = outputScale == 1 ? light.candela : 1
+            if optics.kind == .point {
+                result.append(.init(position: center, emittingNormal: nil, candela: candela, xyz: xyz, areaIndex: nil, outputScale: outputScale))
+            } else {
+                guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }
+                let axis = vec(frame.normal)
+                if optics.kind == .directional {
+                    result.append(.init(position: center, emittingNormal: axis, candela: candela, xyz: xyz, areaIndex: nil, outputScale: outputScale))
+                } else {
+                    let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
+                    let perCell = candela / Double(grid * grid)
+                    let areaIndex = guards.count
+                    guards.append(.init(center: center, right: right, up: up,
+                                        halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
+                                        minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))
+                    for row in 0..<grid {
+                        let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters
+                        for col in 0..<grid {
+                            let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
+                            result.append(.init(position: center + right * x + up * y, emittingNormal: axis,
+                                                candela: perCell, xyz: xyz, areaIndex: areaIndex, outputScale: outputScale))
+                        }
+                    }
+                }
+            }
+        }
+        samples = result; areaGuards = guards; grid = quality.grid
+    }
+
+    public var sampleCount: Int { samples.count }
+
+    // Structure-of-vectors contract: three aligned float4 rows per sample and area.
+    // Translate positions to the subject center to reduce Float32 roundoff.
+    fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+        samples.flatMap { s in
+            [pack(s.position - center, s.candela * s.outputScale), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),
+             pack(s.xyz, s.areaIndex.map { Double($0 + 1) } ?? 0)]
+        }
+    }
+
+    fileprivate func computeAreas(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
+        areaGuards.flatMap { a in
+            [pack(a.center - center, a.minimumDistance), pack(a.right, a.halfWidth), pack(a.up, a.halfHeight)]
+        }
+    }
+
+    /// Evaluates one arbitrary receiver. Geometry nil means no visibility/occlusion.
+    /// A point sample nearer than 5 cm, or a receiver within the declared finite-area
+    /// near-field guard (max of 5 cm and one quarter longest side), is unsupported.
+    public func evaluate(receiver: Position, normal: UnitDirection, view: UnitDirection,
+                         material: StudyMaterial, geometry: StudyGeometry? = nil) throws -> StudySurfaceSignal {
+        guard receiver.isValid, material.isValid, dot3(vec(normal), vec(view)) > 0 else { throw StudyError.invalidSurface }
+        return try evaluate(receiver: vec(receiver), normal: vec(normal), view: vec(view), material: material, geometry: geometry)
+    }
+SOURCE LINES 336-353
+        var index = 0
+        while index < samples.count {
+            let sample = samples[index]
+            let previousTotal = total, previousVisible = visible, previousXYZ = xyz
+            if sample.outputScale != 1 { total = 0; visible = 0; xyz = .zero }
+            // A point/directional sample or one contiguous rectangle is one emitter.
+            // Keep ordinary accumulation untouched; rescale only the completed tiny group.
+            defer {
+                if sample.outputScale != 1 {
+                    total = previousTotal + total * sample.outputScale
+                    visible = previousVisible + visible * sample.outputScale
+                    xyz = previousXYZ + xyz * sample.outputScale
+                }
+            }
+            guard let areaIndex = sample.areaIndex else {
+                try accumulate(position: sample.position, candela: sample.candela, sample: sample)
+                index += 1
+                continue
+SOURCE LINES 432-453
+/// Sample color.w is zero for a point/directional source or a one-based area index.
+public struct StudyComputeInput: Sendable {
+    public let width: Int
+    public let height: Int
+    public let parameters: [SIMD4<Float>]
+    public let samples: [SIMD4<Float>]
+    public let areas: [SIMD4<Float>]
+
+    public init(scene: LightingScene, width: Int = 192) throws {
+        let setup = try StudySetup(scene: scene, width: width, quality: .interactive)
+        let c = vec(setup.geometry.center), camera = setup.camera
+        let origin = vec(camera.position) - c
+        let samples = setup.lighting.computeSamples(relativeTo: c)
+        let areas = setup.lighting.computeAreas(relativeTo: c)
+        self.width = width; self.height = setup.height
+        self.samples = samples; self.areas = areas
+        parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),
+                      pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),
+                      setup.transform.computeParameters,
+                      .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 8)]
+    }
+}
+SOURCE LINES 568-570
+private func pack(_ v: SIMD3<Double>, _ w: Double) -> SIMD4<Float> {
+    .init(Float(v.x), Float(v.y), Float(v.z), Float(w))
+}

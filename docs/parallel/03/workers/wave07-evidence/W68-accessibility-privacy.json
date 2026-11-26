@@ -1,0 +1,106 @@
+{
+  "worker": "W68",
+  "role": "accessibility/privacy",
+  "assignment": "Read/review only: unsupported versus supported RGB8 black wording; honest neutral sphere/mannequin model limits; selected local-reference-photo wording and source boundary; brief state-contract consistency only.",
+  "inputSHA": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "actualID": "/root/wave07/w68_accessibility_privacy",
+  "tree": "/tmp/keyfill03-7f4b/workers/W68-accessibility-privacy",
+  "status": "completed_bounded_source_review_no_new_scoped_contract_conflict_observed",
+  "sourceSHA256": {
+    "App/ReferenceStudyPreview.swift": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "App/ReferenceComparisonView.swift": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb",
+    "App/ReferencePhoto.swift": "1b1b1ea05833fd591fe05fbe6d9fd3f9dacfe3bdd08ad7093ed8c5c08d25792a",
+    "App/StudioGuideView.swift": "5158e7ecef6edb1f798893ec3d4ff7ea6a11654689aa07be56c0676163c351e4",
+    "App/StudioView.swift": "9fe13be92262cdfd853fba4cbf0e9403a30b747a04869af480248eee8826d2a8",
+    "docs/parallel/03/NUMERICS.md": "201e1418f0ff7a924c141c6206edea8ec674af9a85d0dd74e74f14dae84160f2",
+    "docs/PRIVACY.md": "09c7ec9e58caf67426b2403ac0ab3eb639ee2f1a5403dba0a0f86c0a97f30dee",
+    "README.md": "4b1685e1c64bf4919ccb67bcaa711df36bde20f21254eeb6147196717b8ab6c6"
+  },
+  "checksReallyExecuted": [
+    {
+      "check": "Read assigned governing instructions",
+      "commands": [
+        "cat AGENTS.md agents/OPERATING_PROTOCOL.md docs/acceptance/m02-m03-code.md docs/parallel/03/WORKER_PROTOCOL.md"
+      ],
+      "result": "Read; review-only assignment retained."
+    },
+    {
+      "check": "Identity and isolation",
+      "commands": [
+        "git status --short",
+        "git rev-parse HEAD",
+        "git branch --show-current",
+        "git log -1 --oneline",
+        "git status --porcelain"
+      ],
+      "result": "Exact input SHA; detached HEAD; no private-tree changes."
+    },
+    {
+      "check": "Preview strings and publication boundary",
+      "commands": [
+        "sed -n '1,280p' App/ReferenceStudyPreview.swift"
+      ],
+      "result": "Explicit unsupported warning/count, unavailable message/retry, neutral subject labels, and separate paused/loading/previous-image wording inspected."
+    },
+    {
+      "check": "Mask and black-pixel source semantics",
+      "commands": [
+        "sed -n '394,441p' Sources/LightingCore/ReferenceStudy.swift",
+        "sed -n '509,556p' Sources/LightingCore/ReferenceStudy.swift",
+        "sed -n '180,235p' Sources/LightingCore/PortraitStudy.swift"
+      ],
+      "result": "Separate invalid mask and compute alpha flag; byte quantization does not set unsupported state."
+    },
+    {
+      "check": "Neutral-model and numerical limits",
+      "commands": [
+        "sed -n '1,60p' Sources/LightingCore/PortraitStudy.swift",
+        "cat docs/parallel/03/NUMERICS.md docs/PRIVACY.md",
+        "rg -n -C 3 'Study|study|mannequin|synthetic|privacy|photo|local|calibrat|skin|reconstruct|accessibility' README.md",
+        "rg -n -C 5 'ReferenceStudyPreview|neutral mannequin|uncalibrated relative preview|calibrated skin' App"
+      ],
+      "result": "Inspected source/docs explicitly limit skin, exposure and person-reconstruction claims."
+    },
+    {
+      "check": "Selected-photo boundary and visible privacy wording",
+      "commands": [
+        "rg -n -C 2 'study|Study|mannequin|neutral|synthetic|skin|local|on-device|reconstruct|metadata|upload' App/ReferenceComparisonView.swift",
+        "sed -n '35,70p' App/ReferenceComparisonView.swift",
+        "sed -n '432,466p' App/ReferenceComparisonView.swift",
+        "rg -n -C 2 'struct ReferencePhoto|FileRepresentation|DataRepresentation|importedContentType|BoundedFileReader|sanitiz|metadata' App/ReferencePhoto.swift"
+      ],
+      "result": "User-selected PhotosPicker transfer, bounded file read and sanitized derivative inspected; system iCloud retrieval disclosed in copy."
+    },
+    {
+      "check": "Artifact/source identity",
+      "commands": [
+        "sha256sum on the ten files listed in sourceSHA256",
+        "Python hashlib SHA-256 recalculation; JSON serialization; private-tree HEAD and clean assertions"
+      ],
+      "result": "Hashes recorded; two assigned report artifacts written only in root checkout."
+    }
+  ],
+  "testsRun": [],
+  "buildsRun": [],
+  "newFailures": [],
+  "limitations": [
+    "Static inspection only; no native UI/accessibility audit or VoiceOver.",
+    "No actual photo import, network/privacy behavior, device, physical calibration or skin validation.",
+    "No broad lifecycle/privacy audit; paused/loading/error semantics checked only for new wording conflict.",
+    "W62 near-field-mask and W64 Float0 findings supplied by leader; not rerun or independently asserted.",
+    "One combined tool response was truncated; focused subsequent reads recovered relevant sections."
+  ],
+  "budget": {
+    "targetTokens": 12000,
+    "tokenCounter": "unavailable",
+    "checkpoint60Percent": "not measurable",
+    "toolCallsIncludingArtifactWrite": 6
+  },
+  "report": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/W68-accessibility-privacy.md",
+  "evidence": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave07-evidence/W68-accessibility-privacy.json",
+  "sourceEdits": [],
+  "commits": [],
+  "pushes": []
+}

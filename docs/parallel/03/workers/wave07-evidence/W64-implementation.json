@@ -1,0 +1,163 @@
+{
+  "runtime_id": "/root/wave07/w64_implementation",
+  "canonical_task_path": "/root/wave07/w64_implementation",
+  "role": "implementation",
+  "wave": 7,
+  "assignment": "Inspect positive Double per-cell output packing to Float zero, CPU near-field/visibility, shared kernel incident/contribution guards, and scene-only Float32 eligibility; author optional six-scenario diagnostic only if a concrete remaining risk warrants it.",
+  "input_sha": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W64-implementation",
+  "root_tree": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+  "output_directory": "/tmp/keyfill03-7f4b/builds/W64-implementation",
+  "observed_at_utc": "2026-11-26T15:00:50.435952+00:00",
+  "private_status_before_report": "## HEAD (no branch)",
+  "source_sha256": {
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+    "App/StudyKernel.h": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+    "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+    "Tests/LightingCoreTests/StudyTinyOutputTests.swift": "0b16e7067fedab5b12fec0d236026e60820c1493df66a5a3036521e458a016a0",
+    "scripts/verify-kernel-host.cpp": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216"
+  },
+  "sources": {
+    "Sources/LightingCore/ReferenceStudy.swift": {
+      "git_blob": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+      "sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "bytes": 31355,
+      "matches_input_blob": true
+    },
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": {
+      "git_blob": "69a826c8498efc508bdb2479dc80f40b75af3b71",
+      "sha256": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+      "bytes": 7190,
+      "matches_input_blob": true
+    },
+    "App/StudyKernel.h": {
+      "git_blob": "df3175546623508b192d29210dcd9b51efce4c37",
+      "sha256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "bytes": 14385,
+      "matches_input_blob": true
+    },
+    "Sources/LightingCore/StudyValidationFixtures.swift": {
+      "git_blob": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "sha256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+      "bytes": 4323,
+      "matches_input_blob": true
+    },
+    "Tests/LightingCoreTests/StudyTinyOutputTests.swift": {
+      "git_blob": "04fbfd955802014332f57fcd9753273cd65e8304",
+      "sha256": "0b16e7067fedab5b12fec0d236026e60820c1493df66a5a3036521e458a016a0",
+      "bytes": 8752,
+      "matches_input_blob": true
+    },
+    "scripts/verify-kernel-host.cpp": {
+      "git_blob": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6",
+      "sha256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "bytes": 5297,
+      "matches_input_blob": true
+    }
+  },
+  "status": "source_review_complete_hypothesis_not_supported_no_probe",
+  "finding": "Positive Double output can pack to Float zero, but this pin validates point/directional distance before zero lux and preserves rectangle area guards. No guard-skipping mask defect or admitted-runtime defect demonstrated.",
+  "source_receipt": [
+    {
+      "file": "Sources/LightingCore/ReferenceStudy.swift",
+      "lines": "237\u2013245,278\u2013282,307\u2013322",
+      "fact": "Positive emitters retained; Float packing restores original tiny output; CPU guards precede incidence."
+    },
+    {
+      "file": "App/StudyKernel.h",
+      "lines": "127\u2013142,209\u2013228",
+      "fact": "Incident distance and validity checks precede zero lux; area guards precede unconditional point/directional contribution."
+    },
+    {
+      "file": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "lines": "12\u201354",
+      "fact": "Scene-only eligibility retains Double-positive sources and rejects near-field geometry; no explicit intensity-underflow guard."
+    }
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "agents/OPERATING_PROTOCOL.md",
+    "docs/acceptance/m02-m03-code.md",
+    "docs/parallel/03/WORKER_PROTOCOL.md",
+    "agents/HANDOFF.md",
+    "agents/state.json",
+    "docs/PRODUCT.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROADMAP.md",
+    "docs/QUALITY.md",
+    "docs/DESIGN.md",
+    "Sources/LightingCore/ReferenceStudy.swift",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift",
+    "App/StudyKernel.h",
+    "Sources/LightingCore/StudyValidationFixtures.swift",
+    "Tests/LightingCoreTests/StudyTinyOutputTests.swift",
+    "scripts/verify-kernel-host.cpp",
+    "scripts/prepare-kernel-fixtures.swift",
+    "scripts/precision-boundary.swift"
+  ],
+  "actual_read_check_commands": [
+    {
+      "command": "pwd && rg --files -g 'AGENTS.md' -g 'OPERATING_PROTOCOL.md' -g 'm02-m03-code.md' -g 'WORKER_PROTOCOL.md' -g 'StudyLighting.swift' -g 'StudyFloat32Eligibility.swift' -g 'StudyKernel.h' -g '*StudyRenderer*' -g '*StudyComputeInput*'",
+      "exit": 0
+    },
+    {
+      "command": "rg -n 'computeSamples|incident|contribution|positive|struct Study|enum Study|mask|supports\\(' Sources/LightingCore App/StudyKernel.h scripts/verify-kernel-host.cpp docs/parallel/03/workers -g '*.swift' -g '*.h' -g '*.cpp' -g '*probe*' -g '*implementation*'",
+      "exit": 0
+    },
+    {
+      "command": "python3 Path.read_text() loops over read_files, with numbered source ranges and full protocol reads",
+      "kind": "read operation description; exact per-file ranges preserved in source_receipt",
+      "exit": 0,
+      "limitations": "Two broad orchestration outputs were truncated; all decisive guard/API lines were re-read in smaller complete results."
+    },
+    {
+      "command": "git status --short --branch && git rev-parse HEAD && git log -4 --oneline && rg --files scripts Sources/LightingCore docs/parallel/03/workers/wave06-evidence | rg 'parity|kernel|study|Fixture|Scene|W5[234]'",
+      "exit": 0
+    },
+    {
+      "command": "rg -n 'withUnsafeBytes|UInt32|StudyComputeInput|validation|kernel-host' scripts Tests/LightingCoreTests/StudyTinyOutputTests.swift Sources/LightingCore/LightingScene.swift Sources/LightingCore/LightFixture.swift Sources/LightingCore/ScenePresets.swift && git status --short --branch && git rev-parse HEAD && git log -3 --oneline",
+      "exit": 2,
+      "note": "Three exploratory source paths absent; following git commands did not execute in that shell call."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "exit": 0,
+      "output": "State structure and evidence references valid; not test truth. M03 outstanding editing, accessibility, persistence."
+    },
+    {
+      "command": "git status --short --branch && git rev-parse HEAD && git log -3 --oneline && rg -n 'struct Light|struct LightingScene|static func portrait|enum EmitterKind|struct EmitterOptics' Sources/LightingCore && rg -n 'swiftc|W52|W54|tiny|36ed6a1' docs/parallel/03/workers/wave06* docs/parallel/03/CONSUMER-REQUESTS.md",
+      "exit": 2,
+      "note": "Git identity succeeded; optional docs/parallel/03/CONSUMER-REQUESTS.md absent."
+    },
+    {
+      "command": "git rev-parse HEAD; for each sources entry: git rev-parse HEAD:path, git hash-object path, Python hashlib.sha256(read_bytes()); git status --short --branch",
+      "kind": "Exact subprocess argv operations performed by the metadata-writing Python call; semicolons are descriptive, not executed shell chaining",
+      "exit": 0
+    }
+  ],
+  "tests_run": [],
+  "swift_execution": "UNRUN",
+  "host_cpp_execution": "UNRUN",
+  "metal_execution": "UNRUN",
+  "device_execution": "UNRUN",
+  "probe_authored": false,
+  "probe_path": null,
+  "probe_hash": null,
+  "compile_run_proposal": null,
+  "probe_disposition": "Parent closed optional six-case diagnostic after source guard ordering falsified this hypothesis. Existing context may be reused if lane04 changes relevant guards.",
+  "production_changes": false,
+  "existing_fixtures_modified": false,
+  "commits": [],
+  "pushes": [],
+  "interruptions": [],
+  "latest02_request_blob": "e03d008c10197c960c75f5168ee1c8a46b7949cd",
+  "latest02_request_read_by_worker": false,
+  "limitations": [
+    "Source inspection is not actual Swift/host/native evidence.",
+    "No mask mismatch was demonstrated.",
+    "Float-zero numeric signal loss is distinct from display/mask contract.",
+    "No latest lane04 source was imported.",
+    "Token counter unavailable; 12k working target/60% checkpoint not measurable."
+  ]
+}

@@ -11,3 +11,15 @@ Only finish/03-cpu-study-mannequin is updated by this lane. These are handoff re
 | 20 integration | Base fallback f150f98 and ordinary inheritance of already-existing main9e0e2ba/b0d25ee are documented. Do not infer physical validation or global M02/M03 completion from this lane. Integrate accepted lane03 commits, retaining original failures, fixtures and exact masks. |
 
 Final source-specific receipts, worker accounting, native evidence and remaining limitations are collected in HANDOFF.md. Actual Swift fixture generation and shared C++ host checks are distinct from Apple Metal execution; no device result is inferred.
+
+## Immutable wave 07 contract update
+
+Lane 02 was inspected at `b5c1f008446f8b33f3ee97f8fefe6675058ef347` (request blob `e03d008c10197c960c75f5168ee1c8a46b7949cd`). Lane 04 was inspected at `88279ba0ee0262ea6c880580c8a85b56342abbff` (request blob `7ff42021d0e4f2166b8750c233474083bbc26d79`). These are observations and requests, not owner acknowledgments.
+
+Lane 04 now contains an actual-width silhouette guard and a near-vertical camera fallback. Its engine must integrate with the paired `supports(scene,width:)` helper; mixing that engine with the old helper is unsupported. Preserve lane 03's actual Swift width-24 failure and let lane 04/19 establish the integrated guard's native results. This review inspected source and test assertions without executing that branch.
+
+Lane 02 additionally requests explicit routing/rejection of positive per-cell output that becomes Float subnormal or zero. The reviewed lane 04 eligibility code does not implement that intensity policy. The request remains with 02/04. Source inspection found no proposed guard-skipping mask defect: distance/validity and rectangle guards execute before zero-lux returns in both pinned kernels. No new RGB8 mismatch or admitted runtime mask failure was demonstrated. CPU equations, public packing rows, fixture thresholds and masks remain unchanged.
+
+Shared validation of arbitrary light names remains dependent on input bytes; a grapheme-count limit is not a UTF-8 byte bound. Numeric loop/sample bounds must not be presented as a constant bound on every validation wrapper. Any schema byte bound or admitted-scene optimization belongs to 01; full validation was not bypassed here.
+
+Details and immutable receipts: `workers/wave07-evidence/W61-owner-request-analysis.md`, W63/W64/W65/W66/W67 reports and associated evidence.
