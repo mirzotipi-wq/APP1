@@ -1,0 +1,90 @@
+{
+  "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "engine_blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+  "states": [
+    "unchecked",
+    "validated Metal",
+    "permanent CPU"
+  ],
+  "transitions": [
+    {
+      "from": "unchecked",
+      "event": "valid CPU-only sphere or bust request",
+      "to": "unchecked",
+      "cache": "successful CPU frame retained; factory not invoked"
+    },
+    {
+      "from": "unchecked",
+      "event": "factory and validation succeed; final cancellation false",
+      "to": "validated Metal",
+      "cache": "only later successful render admitted"
+    },
+    {
+      "from": "unchecked",
+      "event": "StudyError.cancelled or other scene error excluding invalidComputeOutput",
+      "to": "unchecked",
+      "cache": "existing frames retained; error propagates"
+    },
+    {
+      "from": "unchecked",
+      "event": "validation returns; final cancellation true",
+      "to": "unchecked",
+      "cache": "candidate discarded; prior CPU frames retained"
+    },
+    {
+      "from": "unchecked",
+      "event": "MetalStudyError.precisionDomain",
+      "to": "unchecked",
+      "cache": "CPU fallback if not cancelled"
+    },
+    {
+      "from": "unchecked",
+      "event": "invalidComputeOutput or confirmed generic/Metal failure",
+      "to": "permanent CPU",
+      "cache": "Metal purge then cancellation poll; CPU retained"
+    },
+    {
+      "from": "validated Metal",
+      "event": "ordinary cancellation or scene error excluding invalidComputeOutput",
+      "to": "validated Metal",
+      "cache": "existing frames retained; candidate excluded"
+    },
+    {
+      "from": "validated Metal",
+      "event": "precisionDomain or CPU-only request",
+      "to": "validated Metal",
+      "cache": "CPU fallback if not cancelled"
+    },
+    {
+      "from": "validated Metal",
+      "event": "invalidComputeOutput or confirmed generic/Metal failure",
+      "to": "permanent CPU",
+      "cache": "all Metal frames purged; existing CPU retained"
+    },
+    {
+      "from": "permanent CPU",
+      "event": "any future eligible uncached request",
+      "to": "permanent CPU",
+      "cache": "CPU-only render; no backend factory retry"
+    }
+  ],
+  "linearization": "Engine render is actor-isolated and synchronous with no await; external additionalCancellation may change concurrently. Polls bound observation, not arbitrary wall-clock races. Caller owns post-await adoption.",
+  "preserved_thresholds": {
+    "canonicalFixtures": 6,
+    "meanRGB": 1,
+    "outlierFractionOver4": 0.005,
+    "precisionFixtures": 8,
+    "maxChannelError": 1,
+    "exactInvalidMasks": true,
+    "maxFrames": 4,
+    "maxRGBABytes": 262144,
+    "maxMaskBytes": 65536,
+    "maxBustWidth": 144,
+    "cpuMaxFurtherPixelEvaluations": 8
+  },
+  "current_blockers": [
+    "New wave6/7 native methods unrun",
+    "Known UI-held frame reuse owner dependency remains unapplied and uncompiled"
+  ],
+  "runtime_claim": "Source review only; no local compilation, execution, hash-object, worktree or current CI pass"
+}

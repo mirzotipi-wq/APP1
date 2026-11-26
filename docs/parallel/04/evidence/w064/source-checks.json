@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "worker": "064",
+  "wave": 7,
+  "lane": "04-metal-cache",
+  "repository": "mirzotipi-wq/APP1",
+  "branch": "finish/04-metal-cache",
+  "campaign_baseline": "f150f98",
+  "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "packet_blob": "6b541c53c6ca29cc5108f8f62412473d7ae3e559",
+  "scope": {
+    "owned_product_path": "NativeTests/StudyRenderCacheTests.swift",
+    "report_path": "docs/parallel/04/workers/w064.md",
+    "evidence_path": "docs/parallel/04/evidence/w064/source-checks.json",
+    "root_owns_commits_integration_push": true,
+    "ref_changes_performed": false
+  },
+  "candidate": {
+    "original_blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "source_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "added_lines": 208,
+    "change": "One appended block before the class closing brace; all prior source preserved verbatim."
+  },
+  "isolation": {
+    "kind": "Immutable Git snapshot plus separate session state",
+    "physical_worktree_created": false,
+    "planned_only_worker_path": "/tmp/keyfill04-2987b1ee980d/workers/w064",
+    "planned_only_results_path": "/tmp/keyfill04-2987b1ee980d/results/w064"
+  },
+  "source_verification": {
+    "mechanism": "JavaScript string comparisons in tool session; not Swift compilation or execution",
+    "roundtripEqual": true,
+    "originalFilePreservedExactly": true,
+    "existingMethodCount": 25,
+    "newMethodCount": 4,
+    "totalMethodCount": 29,
+    "unchangedMethods": [
+      "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+      "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+      "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+      "testEveryRenderingControlKeepsDistinctCacheIdentity",
+      "testSubjectAndResolutionDoNotShareFrames",
+      "testBustCachePreservesExistingMaximumWidthClamping",
+      "testInvalidMetadataCannotReuseAValidatedFrame",
+      "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+      "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+      "testCancelledTaskCannotReturnCachedFrame",
+      "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+      "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+      "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+      "testPrecisionDomainFallbackPreservesValidatedBackend",
+      "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+      "testStartupFinalCancellationLeavesInitializationRetryable",
+      "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+      "testStartupPrecisionDomainFallbackRemainsRetryable",
+      "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+      "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+      "testRealCPUCacheResourcesForFourSmallFrames",
+      "testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive"
+    ],
+    "addedMethods": [
+      "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+    ]
+  },
+  "coverage_intent": [
+    {
+      "method": "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "variants": "Factory and validation; parity and invalidComputeOutput; all with cancellation",
+      "witnesses": [
+        "Seed actual CPU bust cache while backend is unchecked",
+        "Count and exact CPU cache-hit image after confirmed failure/cancellation",
+        "Cold interrupted-key budget probe before fresh eligible request",
+        "Permanent CPU path and unchanged factory/validation counts"
+      ]
+    },
+    {
+      "method": "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "variants": "Validation throws cancelled; validation returns after setting cancellation",
+      "witnesses": [
+        "Existing CPU entry remains the only cached frame after cancellation",
+        "Eight-check budget proves the CPU hit avoids a new render",
+        "Fresh eligible key validates a newly created backend on the same engine",
+        "Original interrupted key requires a separate successful render; CPU survives"
+      ]
+    },
+    {
+      "method": "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "variants": "Three legal distinct widths selected deterministically by eligibility; count == 3 required",
+      "witnesses": [
+        "Task group submits all child operations before collecting results",
+        "One factory call and one validation call; three render calls",
+        "Exact synthetic image and mask equality by width independent of completion order",
+        "Armed render-error sentinel makes reverse-order successful repeats require cached images"
+      ]
+    },
+    {
+      "method": "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames",
+      "variants": "invalidScene, invalidCamera, invalidResolution, invalidEmitter, invalidSurface; noncancelled",
+      "witnesses": [
+        "Both CPU and scripted Metal frames pre-exist",
+        "Error propagates from an eligible uncached request after validation",
+        "Completed CPU and Metal cache hits remain usable",
+        "Repeat failed key while error is armed increases render count, with no cache admission",
+        "Clearing the error retries on the same validated backend without factory/validation rerun"
+      ]
+    }
+  ],
+  "deduplication": [
+    "The eight wave-5 lifecycle methods remain unchanged; broad startup outcome and precision matrices were not repeated.",
+    "The six wave-6 cache/resource methods remain unchanged; runtime confirmed failures without cancellation are already covered by the weak-observer method.",
+    "No additional real-Metal, canonical parity, precision fixture, or shared-kernel method was created or modified."
+  ],
+  "execution": {
+    "native_compilation": "unrun",
+    "native_tests": "unrun",
+    "swift_tests": "unrun",
+    "local_commands": "unavailable and unrun",
+    "environment_probes": "none",
+    "physical_device_tests": "unrun",
+    "actual_metal_tests": "unrun",
+    "historical_results_validate_new_methods": false
+  },
+  "evidence_limits": [
+    "Scripted backend is lifecycle-only mocked evidence; white images do not establish GPU parity.",
+    "Release counters concern mock objects, not driver resource memory or RSS.",
+    "Source preservation and blob readback passed in the session; this is not a compiler or runtime result.",
+    "Root must integrate and obtain fresh exact-revision native CI before counting these methods as passed.",
+    "Known consumer sequence Metal A -> B failure/cancellation/downgrade -> return A can bypass engine via UI-held frame. It remains unchanged and routed to lane 03/20."
+  ],
+  "frozen_contracts_unchanged": {
+    "cpu_authoritative": true,
+    "exact_invalid_masks": true,
+    "canonical_fixture_count": 6,
+    "canonical_mean_rgb_max": 1,
+    "outlier_threshold": 4,
+    "outlier_fraction_max": 0.005,
+    "precision_fixture_count": 8,
+    "precision_max_channel_error": 1,
+    "cache_count_max": 4,
+    "cache_rgba_bytes_max": 262144,
+    "cache_mask_bytes_max": 65536,
+    "bust_max_width": 144,
+    "cpu_cancellation_further_pixels_max": 8,
+    "cancelled_or_failed_excluded": true,
+    "downgrade_purges_metal_retains_cpu": true
+  },
+  "exact_ref_reads": [
+    {
+      "path": "AGENTS.md",
+      "sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "sha": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "agents/state.json",
+      "sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "sha": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "sha": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "sha": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "sha": "e9764da10eabbffbad6ceee8999977cf31deb197",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    }
+  ]
+}

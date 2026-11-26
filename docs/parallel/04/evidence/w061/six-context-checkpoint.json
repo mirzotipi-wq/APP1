@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "wave": 7,
+  "checkpoint": "six contexts created",
+  "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "distinct_contexts_created": 6,
+  "remaining_fresh_contexts": [
+    "067",
+    "068",
+    "069",
+    "070"
+  ],
+  "creation_order": [
+    "061",
+    "063",
+    "064",
+    "062",
+    "065",
+    "066"
+  ],
+  "workers": [
+    {
+      "id": "061",
+      "agent_id": "/root/w061",
+      "role": "acceptance",
+      "task": "Coordinate nine fresh workers and evaluate wave7 acceptance",
+      "status": "running",
+      "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w061",
+      "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w061",
+      "actual_snapshot_mode": "immutable Git snapshot and separate session state; no physical worktree"
+    },
+    {
+      "id": "063",
+      "agent_id": "/root/w061/w063",
+      "role": "interface",
+      "task": "Review factory/callers/default initialization and actor ownership",
+      "status": "completed",
+      "report_blob": "7a4be58000793e70bb4f091242123fc4824804a0",
+      "evidence": [
+        {
+          "path": "docs/parallel/04/evidence/w063/interface-review.json",
+          "blob_sha": "516cc17125e8d12b3ea4087669e8e4b33b6cf242"
+        }
+      ],
+      "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w063",
+      "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w063",
+      "actual_snapshot_mode": "immutable Git snapshot and separate session state; no physical worktree"
+    },
+    {
+      "id": "064",
+      "agent_id": "/root/w061/w064",
+      "role": "implementation",
+      "task": "Add only remaining bounded native mocked lifecycle tests",
+      "status": "completed",
+      "report_blob": "73050a155a63787df89ffe0179bd28b517d49295",
+      "source_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "evidence": [
+        {
+          "path": "docs/parallel/04/evidence/w064/source-checks.json",
+          "blob_sha": "6eeb54bb154f0234de0473d44500ffbd889cb5b3"
+        }
+      ],
+      "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w064",
+      "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w064",
+      "actual_snapshot_mode": "immutable Git snapshot and separate session state; no physical worktree"
+    },
+    {
+      "id": "062",
+      "agent_id": "/root/w061/w062",
+      "role": "invariants",
+      "task": "Falsify startup cancellation and confirmed-failure transitions plus candidate cases",
+      "status": "completed",
+      "report_blob": "bd966ddf7cd2b1ddd9833b4d045e7051b861e8e0",
+      "evidence": [
+        {
+          "path": "docs/parallel/04/evidence/w062/invariants-review.json",
+          "blob_sha": "c45013e4d5686bf5798f3967eb99af783133b141"
+        }
+      ],
+      "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w062",
+      "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w062",
+      "actual_snapshot_mode": "immutable Git snapshot and separate session state; no physical worktree"
+    },
+    {
+      "id": "065",
+      "agent_id": "/root/w061/w065",
+      "role": "concurrency",
+      "task": "Challenge actor schedules and new concurrent request/cancellation witnesses",
+      "status": "running",
+      "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w065",
+      "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w065",
+      "actual_snapshot_mode": "immutable Git snapshot and separate session state; no physical worktree"
+    },
+    {
+      "id": "066",
+      "agent_id": "/root/w061/w066",
+      "role": "resource-lifetime",
+      "task": "Review startup backend/pipeline lifetime and existing deinit/weak-object witnesses",
+      "status": "running",
+      "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "planned_physical_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w066",
+      "planned_physical_results": "/tmp/keyfill04-2987b1ee980d/results/w066",
+      "actual_snapshot_mode": "immutable Git snapshot and separate session state; no physical worktree"
+    }
+  ],
+  "active_children": [
+    "/root/w061/w065",
+    "/root/w061/w066"
+  ],
+  "max_active_children": 2,
+  "candidate_source_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+  "candidate_preservation_blob": "0c3f4b1ebccac61250c2a60f23d04412cde179c0",
+  "findings": [
+    "No production interface/state-transition blocker identified",
+    "25 original methods/helpers verbatim;4 appended mocked lifecycle methods",
+    "Injected-only Swift CancellationError uses catch-all permanent CPU; shipped path uses StudyError.cancelled",
+    "Known UI-held-frame owner dependency unresolved"
+  ],
+  "ci": {
+    "source_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "run_id": 45848953002,
+    "core_job_id": 140009926092,
+    "core_status": "success",
+    "core_raw_blob": "b99b8d092e34a136b6e00e14e4b8e83b1ecd98e8",
+    "core_parsed_blob": "8d53d8b3bafdb8a9b5f079a583390be7ee827ae2",
+    "debug_count": 379,
+    "release_count": 379,
+    "native_job_id": 140012314020,
+    "native_status": "in_progress",
+    "scope": "New core lifetime methods executed; native wave6/7 pending"
+  },
+  "unrun": [
+    "local startup commands",
+    "physical worktrees",
+    "git hash-object",
+    "Swift parse/compile/test",
+    "wave7 native methods",
+    "physical-device validation"
+  ]
+}

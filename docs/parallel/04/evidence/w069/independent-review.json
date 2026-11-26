@@ -1,0 +1,982 @@
+{
+  "schema": 1,
+  "worker": "w069",
+  "role": "platform/performance CI-evidence reviewer",
+  "wave": 7,
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "branchScope": "finish/04-metal-cache",
+  "inputRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "campaignBaseline": "f150f98",
+  "packetBlob": "6b541c53c6ca29cc5108f8f62412473d7ae3e559",
+  "workPacket": {
+    "hypothesis": "Supplied immutable receipts support source-specific CPU/shared-kernel and historical simulator claims, without passing current or candidate Apple lifecycle/runtime gates.",
+    "acceptance": "Reparse pass accounting, fixture metrics and source append-only status; preserve raw identities and uncertainty.",
+    "allowedWrites": "Only immutable report/evidence blobs for root integration.",
+    "budget": "brief <=2000 tokens; working target 12000; report 300–450 words <=800; checkpoint sent at ~60%.",
+    "integrationOwner": "root",
+    "plannedOnlyPaths": [
+      "/tmp/keyfill04-2987b1ee980d/workers/w069",
+      "/tmp/keyfill04-2987b1ee980d/results/w069"
+    ],
+    "environment": "Unavailable at fourth interruption; no probes, installs, shell/local commands, worktree, hash-object, agent_cycle, Swift or native builds/tests executed by worker. Read-only immutable Git snapshot in a separate session; V8 receipt parsing only."
+  },
+  "mandatoryReads": [
+    {
+      "path": "AGENTS.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "40eaa48849f59b436d7caa8ec161125d83c65ede"
+    },
+    {
+      "path": "agents/state.json",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "sourceReads": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "0731ab93a924572ccacd3dd66e334a85dc7c06e7"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "e9764da10eabbffbad6ceee8999977cf31deb197"
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "1a68db0fd7782ac945b915b32b4ddd8485321ad3"
+    }
+  ],
+  "rawReceipts": [
+    {
+      "kind": "historical actual simulator Metal",
+      "revision": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "runId": 45837392344,
+      "jobId": 139973865345,
+      "conclusion": "success",
+      "parsedPath": "docs/parallel/04/evidence/ci/wave04-native-139973865345.json",
+      "parsedBlob": "0ebfcebb81be765fc6b55cb5dbe41793fa672aeb",
+      "rawPath": "docs/parallel/04/evidence/ci/wave04-native-139973865345.log",
+      "rawBlob": "a87b4e2c42f5bd753c8312c95f22b6bd302bb78c",
+      "receiptStorageRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "kind": "historical portable core and host shared kernel",
+      "revision": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "runId": 45844671107,
+      "jobId": 139997195555,
+      "conclusion": "success",
+      "parsedPath": "docs/parallel/04/evidence/ci/wave05-core-139997195555.json",
+      "parsedBlob": "24fb408cd76f1bd9b851fa63e152420baaa96d40",
+      "rawPath": "docs/parallel/04/evidence/ci/wave05-core-139997195555.log",
+      "rawBlob": "103b9653ce0762ef6278e2b02605d200e7575b63",
+      "receiptStorageRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "kind": "historical cancelled native job",
+      "revision": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "runId": 45844671107,
+      "jobId": 139999727724,
+      "jobConclusion": "cancelled",
+      "status": "completed",
+      "startedAt": "2026-11-26T15:08:10Z",
+      "completedAt": "2026-11-26T15:25:30Z",
+      "steps": [],
+      "interpretation": "Superseded native job cancelled; no completed native test pass is claimed. Later exact-source native jobs supply runtime evidence.",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45844671107/job/139999727724",
+      "receiptBlob": "33642c10c0387bfa78bcfd0ee578eb845b76c1fc"
+    },
+    {
+      "kind": "current portable core and host shared kernel",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "runId": 45848953002,
+      "jobId": 140009926092,
+      "conclusion": "success",
+      "parsedBlob": "8d53d8b3bafdb8a9b5f079a583390be7ee827ae2",
+      "originalRawName": "wave06-core-140009926092.log",
+      "rawBlob": "b99b8d092e34a136b6e00e14e4b8e83b1ecd98e8"
+    }
+  ],
+  "independentParsing": {
+    "parserPath": "docs/parallel/04/evidence/w069/receipt-parser.mjs",
+    "parserBlob": "66c2506633163b504c0870745f176c3205c32620",
+    "current": {
+      "lineCount": 3890,
+      "debug": {
+        "passed": 379,
+        "failed": 0,
+        "skipped": 0,
+        "uniquePassed": 379
+      },
+      "release": {
+        "passed": 379,
+        "failed": 0,
+        "skipped": 0,
+        "uniquePassed": 379
+      },
+      "fixtures": [
+        {
+          "line": 3813,
+          "fixture": "dark.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3814,
+          "fixture": "hard.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3815,
+          "fixture": "near-field.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 84,
+          "referenceInvalid": 84,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3816,
+          "fixture": "soft.bin",
+          "mean": 0.0000542535,
+          "maximum": 1,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3817,
+          "fixture": "translated.bin",
+          "mean": 0.0000542535,
+          "maximum": 1,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3818,
+          "fixture": "warm-rotated.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3829,
+          "fixture": "area-camera-19.0-lens-200.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 49,
+          "referenceInvalid": 49,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3830,
+          "fixture": "area-camera-19.0-lens-85.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 9,
+          "referenceInvalid": 9,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3831,
+          "fixture": "area-camera-19.999999-lens-200.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3832,
+          "fixture": "area-camera-19.999999-lens-85.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 13,
+          "referenceInvalid": 13,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3833,
+          "fixture": "area-camera-20.0-lens-200.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3834,
+          "fixture": "area-camera-20.0-lens-85.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 13,
+          "referenceInvalid": 13,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3835,
+          "fixture": "world-translation--77.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3836,
+          "fixture": "world-translation-77.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        }
+      ],
+      "allFixturesPass": true
+    },
+    "previous": {
+      "lineCount": 3874,
+      "debug": {
+        "passed": 375,
+        "failed": 0,
+        "skipped": 0,
+        "uniquePassed": 375
+      },
+      "release": {
+        "passed": 375,
+        "failed": 0,
+        "skipped": 0,
+        "uniquePassed": 375
+      },
+      "fixtures": [
+        {
+          "line": 3797,
+          "fixture": "dark.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3798,
+          "fixture": "hard.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3799,
+          "fixture": "near-field.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 84,
+          "referenceInvalid": 84,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3800,
+          "fixture": "soft.bin",
+          "mean": 0.0000542535,
+          "maximum": 1,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3801,
+          "fixture": "translated.bin",
+          "mean": 0.0000542535,
+          "maximum": 1,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3802,
+          "fixture": "warm-rotated.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 0,
+          "referenceInvalid": 0,
+          "maskMismatches": 0,
+          "maximumLimit": null,
+          "result": "PASS"
+        },
+        {
+          "line": 3813,
+          "fixture": "area-camera-19.0-lens-200.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 49,
+          "referenceInvalid": 49,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3814,
+          "fixture": "area-camera-19.0-lens-85.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 9,
+          "referenceInvalid": 9,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3815,
+          "fixture": "area-camera-19.999999-lens-200.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3816,
+          "fixture": "area-camera-19.999999-lens-85.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 13,
+          "referenceInvalid": 13,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3817,
+          "fixture": "area-camera-20.0-lens-200.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3818,
+          "fixture": "area-camera-20.0-lens-85.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 13,
+          "referenceInvalid": 13,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3819,
+          "fixture": "world-translation--77.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        },
+        {
+          "line": 3820,
+          "fixture": "world-translation-77.bin",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "candidateInvalid": 19,
+          "referenceInvalid": 19,
+          "maskMismatches": 0,
+          "maximumLimit": 1,
+          "result": "PASS"
+        }
+      ],
+      "allFixturesPass": true
+    },
+    "native": {
+      "lineCount": 5842,
+      "passed": 160,
+      "failed": 0,
+      "skipped": 0,
+      "uniquePassed": 160,
+      "fixtures": [
+        {
+          "line": 5508,
+          "kind": "strict",
+          "fixture": "area-camera-19.0-lens-85",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5509,
+          "kind": "strict",
+          "fixture": "area-camera-19.0-lens-200",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5510,
+          "kind": "strict",
+          "fixture": "area-camera-19.999999-lens-85",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5511,
+          "kind": "strict",
+          "fixture": "area-camera-19.999999-lens-200",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5512,
+          "kind": "strict",
+          "fixture": "area-camera-20.0-lens-85",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5513,
+          "kind": "strict",
+          "fixture": "area-camera-20.0-lens-200",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5514,
+          "kind": "strict",
+          "fixture": "world-translation-77",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5515,
+          "kind": "strict",
+          "fixture": "world-translation--77",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "mask",
+          "printedTrue": true
+        },
+        {
+          "line": 5581,
+          "kind": "canonical",
+          "fixture": "hard",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "invalid match",
+          "printedTrue": true
+        },
+        {
+          "line": 5586,
+          "kind": "canonical",
+          "fixture": "soft",
+          "mean": 0.00005425347222222222,
+          "maximum": 1,
+          "outliers": 0,
+          "maskPrinted": "invalid match",
+          "printedTrue": true
+        },
+        {
+          "line": 5587,
+          "kind": "canonical",
+          "fixture": "warm-rotated",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "invalid match",
+          "printedTrue": true
+        },
+        {
+          "line": 5588,
+          "kind": "canonical",
+          "fixture": "dark",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "invalid match",
+          "printedTrue": true
+        },
+        {
+          "line": 5589,
+          "kind": "canonical",
+          "fixture": "near-field",
+          "mean": 0,
+          "maximum": 0,
+          "outliers": 0,
+          "maskPrinted": "invalid match",
+          "printedTrue": true
+        },
+        {
+          "line": 5590,
+          "kind": "canonical",
+          "fixture": "translated",
+          "mean": 0.00005425347222222222,
+          "maximum": 1,
+          "outliers": 0,
+          "maskPrinted": "invalid match",
+          "printedTrue": true
+        }
+      ],
+      "metalRequiredPassed": [
+        {
+          "line": 5516,
+          "method": "StudyPrecisionMatrixTests/testMetalMatchesCPUForEightRequiredPrecisionFixtures",
+          "status": "passed"
+        },
+        {
+          "line": 5591,
+          "method": "StudyRendererTests/testMetalMatchesCPUOnAvailableDevice",
+          "status": "passed"
+        },
+        {
+          "line": 5593,
+          "method": "StudyRendererTests/testMetalRawDispatchRejectsInvalidPackedMetadata",
+          "status": "passed"
+        }
+      ],
+      "testExecuteSucceeded": true,
+      "noSkipsVerification": true
+    },
+    "lifetimeEvidence": [
+      {
+        "method": "StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+        "Debug": [
+          {
+            "method": "StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+            "status": "passed"
+          }
+        ],
+        "Release": [
+          {
+            "method": "StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "method": "StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+        "Debug": [
+          {
+            "method": "StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+            "status": "passed"
+          }
+        ],
+        "Release": [
+          {
+            "method": "StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "method": "StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors",
+        "Debug": [
+          {
+            "method": "StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors",
+            "status": "passed"
+          }
+        ],
+        "Release": [
+          {
+            "method": "StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "method": "StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+        "Debug": [
+          {
+            "method": "StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+            "status": "passed"
+          }
+        ],
+        "Release": [
+          {
+            "method": "StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "malformed": {
+      "sourceRevision": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "sourcePath": "NativeTests/StudyRendererTests.swift",
+      "sourceBlob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119",
+      "invalidGrids": 9,
+      "gridDispatchesPerValue": 2,
+      "invalidCounts": 12,
+      "invalidTags": 7,
+      "validControls": 2,
+      "totalMalformed": 37
+    },
+    "checks": {
+      "current379": true,
+      "previous375": true,
+      "bothCoreNoFailuresOrSkips": true,
+      "lifetimeFourBothConfigs": true,
+      "hostFourteenPass": true,
+      "historicNative160": true,
+      "historicCanonical6": true,
+      "historicStrict8": true,
+      "malformed37": true,
+      "sourceAppendOnly": true,
+      "oracleUnchangedHistoricalToCurrent": true
+    }
+  },
+  "sourceComparison": {
+    "baseBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "candidateBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "baseLength": 51901,
+    "candidateLength": 63457,
+    "prefix": 51899,
+    "suffix": 2,
+    "removed": "",
+    "insertedChars": 11556,
+    "oldCount": 25,
+    "newCount": 29,
+    "newMethods": [
+      "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+    ],
+    "preservesEntireBaseAroundInsertion": true
+  },
+  "wave7Classification": {
+    "candidateBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "rootSourceReviewBlob": "8e0a5e19ad0cff66af8feab91a9836b00b7040bc",
+    "evidenceKind": "Source comparison only; four appended tests explicitly use existing scripted compute backend. Synthetic compute frames are not actual Metal output.",
+    "syntax": "not run",
+    "AppleCompilation": "not run",
+    "runtime": "not run",
+    "coveredBySuppliedCI": false
+  },
+  "currentNativeStatus": {
+    "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "runId": 45848953002,
+    "jobId": 140012314020,
+    "source": "Root status forwarded by parent /root/w061; no worker polling or terminal receipt",
+    "unsignedSimulatorAppBuild": "succeeded",
+    "unsignedNativeTestBundleBuild": "succeeded",
+    "unsignedReleaseAppBuild": "running",
+    "nativeTestOutcome": "none supplied",
+    "terminal": false,
+    "interpretation": "Build success does not establish native method execution. No wait, cancellation, rerun or CI management performed; root will preserve terminal outcome before next push."
+  },
+  "evidenceBoundaries": {
+    "sourceSyntax": "Current core raw line 145 runs Linux swiftc -frontend -parse; no Apple type checking or Apple-only execution. Candidate is outside that source revision.",
+    "portableCPU": "379 distinct methods pass once in each of Debug and Release; the four extra reference-lifetime/LRU methods prove pure Swift object retention behavior only.",
+    "hostSharedKernel": "Six canonical and eight strict fixtures pass with zero invalid-mask mismatches; host C++ shared-math execution is not Metal dispatch.",
+    "mockedLifecycle": "Wave7 new methods are source-only scripted lifecycle coverage. No compiled/executed result supplied.",
+    "actualSimulatorMetal": "Historical 88279ba native160/no skips, six canonical and eight strict fixtures and raw malformed metadata test passed. Canonical log prints invalid-count matches; exact-mask equality is linked by original receipt to passing metrics.passes. Strict source separately asserts Data equality and logs mask=true. Do not relabel as current engine validation.",
+    "physicalDevice": "No device frame rate, thermal, RSS, driver memory, photo calibration or physical-device acceptance evidence inferred."
+  },
+  "frozenContracts": {
+    "authority": "Double CPU oracle",
+    "canonical": {
+      "fixtures": 6,
+      "exactMasks": true,
+      "meanRGBChannelErrorMaximum": 1,
+      "outlierChannelErrorAbove": 4,
+      "outlierFractionMaximum": 0.005
+    },
+    "strict": {
+      "fixtures": 8,
+      "exactMasks": true,
+      "maximumChannelError": 1
+    },
+    "cache": {
+      "maximumCompletedFrames": 4,
+      "RGBABytes": 262144,
+      "maskBytes": 65536,
+      "cancelledOrFailedExcluded": true,
+      "downgrade": "purge Metal frames; retain CPU"
+    },
+    "bustWidthMaximum": 144,
+    "CPUPostCancellationPixelEvaluationsMaximum": 8
+  },
+  "remainingGaps": [
+    "Current native6 terminal native result absent; latest reported successful builds are preparatory.",
+    "Wave7 candidate is neither compiled nor executed by supplied jobs.",
+    "Known lane03/20 UI-held A→B failure and cancellation→A recovery gap remains unfixed; owner proposal unapplied/uncompiled. This worker neither reproduced nor changed it.",
+    "Physical-device and calibration evidence absent; no code-milestone physical gate was reintroduced."
+  ],
+  "receiptExcerpts": {
+    "currentCore": [
+      {
+        "line": 132,
+        "text": "2026-11-26T15:25:57.3925120Z Swift version 6.4.3 (swift-6.4.3-RELEASE)"
+      },
+      {
+        "line": 133,
+        "text": "2026-11-26T15:25:57.3925742Z Target: x86_64-unknown-linux-gnu"
+      },
+      {
+        "line": 145,
+        "text": "2026-11-26T15:25:57.4106278Z \u001b[36;1mswiftc -frontend -parse App/*.swift UITests/*.swift NativeTests/*.swift 2>&1 | tee native-syntax.log\u001b[0m"
+      },
+      {
+        "line": 189,
+        "text": "2026-11-26T15:26:19.1703686Z \u001b[36;1mswift test --jobs 2 2>&1 | tee core-tests.log\u001b[0m"
+      },
+      {
+        "line": 1052,
+        "text": "2026-11-26T15:26:59.3666493Z Test Case 'StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "line": 1070,
+        "text": "2026-11-26T15:26:59.5151497Z Test Case 'StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency' passed (0.0 seconds)"
+      },
+      {
+        "line": 1080,
+        "text": "2026-11-26T15:26:59.5159618Z Test Case 'StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "line": 1082,
+        "text": "2026-11-26T15:26:59.5161225Z Test Case 'StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement' passed (0.0 seconds)"
+      },
+      {
+        "line": 1146,
+        "text": "2026-11-26T15:26:59.7478962Z \t Executed 379 tests, with 0 failures (0 unexpected) in 10.34 (10.34) seconds"
+      },
+      {
+        "line": 1148,
+        "text": "2026-11-26T15:26:59.7479946Z \t Executed 379 tests, with 0 failures (0 unexpected) in 10.34 (10.34) seconds"
+      },
+      {
+        "line": 1155,
+        "text": "2026-11-26T15:26:59.7559202Z \u001b[36;1mswift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log\u001b[0m"
+      },
+      {
+        "line": 2008,
+        "text": "2026-11-26T15:27:39.6701796Z Test Case 'StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "line": 2026,
+        "text": "2026-11-26T15:27:39.7717104Z Test Case 'StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency' passed (0.0 seconds)"
+      },
+      {
+        "line": 2036,
+        "text": "2026-11-26T15:27:39.7724751Z Test Case 'StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "line": 2038,
+        "text": "2026-11-26T15:27:39.7726288Z Test Case 'StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement' passed (0.0 seconds)"
+      },
+      {
+        "line": 2102,
+        "text": "2026-11-26T15:27:39.7889424Z \t Executed 379 tests, with 0 failures (0 unexpected) in 5.324 (5.324) seconds"
+      },
+      {
+        "line": 2104,
+        "text": "2026-11-26T15:27:39.7890244Z \t Executed 379 tests, with 0 failures (0 unexpected) in 5.324 (5.324) seconds"
+      },
+      {
+        "line": 2129,
+        "text": "2026-11-26T15:27:39.9042881Z Swift version 6.4.3 (swift-6.4.3-RELEASE)"
+      },
+      {
+        "line": 2130,
+        "text": "2026-11-26T15:27:39.9043254Z Target: x86_64-unknown-linux-gnu"
+      }
+    ],
+    "historicalNative": [
+      {
+        "line": 4802,
+        "text": "2026-11-26T14:49:22.0229330Z \u001b[36;1mprint(\"Required Metal methods executed and passed; no native methods skipped.\")\u001b[0m"
+      },
+      {
+        "line": 5593,
+        "text": "2026-11-26T14:53:03.1813650Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalRawDispatchRejectsInvalidPackedMetadata]' passed (0.230 seconds)."
+      },
+      {
+        "line": 5603,
+        "text": "2026-11-26T14:53:03.9168960Z \t Executed 160 tests, with 0 failures (0 unexpected) in 55.718 (60.137) seconds"
+      },
+      {
+        "line": 5605,
+        "text": "2026-11-26T14:53:03.9606060Z \t Executed 160 tests, with 0 failures (0 unexpected) in 55.718 (60.141) seconds"
+      },
+      {
+        "line": 5647,
+        "text": "2026-11-26T14:55:57.9806310Z ** TEST EXECUTE SUCCEEDED **"
+      },
+      {
+        "line": 5650,
+        "text": "2026-11-26T14:56:23.2029980Z Required Metal methods executed and passed; no native methods skipped."
+      }
+    ]
+  },
+  "unavailableAdditionalReads": [
+    {
+      "path": "Sources/LightingCore/StudyParityMetrics.swift",
+      "revisions": [
+        "88279ba0ee0262ea6c880580c8a85b56342abbff",
+        "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+      ],
+      "result": "404: guessed standalone path absent. No claim of independently reading this predicate; canonical mask source linkage remains attributed to authoritative historical receipt."
+    }
+  ]
+}

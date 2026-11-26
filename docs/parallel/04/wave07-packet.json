@@ -1,0 +1,29 @@
+{
+  "wave": 7,
+  "roles": [
+    "acceptance",
+    "invariants",
+    "interface",
+    "implementation",
+    "concurrency",
+    "resource-lifetime",
+    "consumer-integration",
+    "accessibility-privacy",
+    "platform-performance",
+    "independent-review"
+  ],
+  "tasks": [
+    "Acceptance worker 061: coordinate nine fresh workers 062–070 with at most two active children. Freeze unchecked, validated-Metal and permanent-CPU transitions. Start 064 test writer and 063 interface reviewer; 070 reviews last. No source edits yourself.",
+    "Review startup cancellation versus confirmed failure. Interrupted validation must stay retryable; confirmed parity/command/output failure selects CPU even if cancelled. CPU-only requests skip Metal initialization. Falsify the source transitions and proposed tests.",
+    "Review the injected factory and every caller after wave 5: compatible default initialization, validation exactly once after success, fresh retry after interruption, actor-owned resources and no unsupported Sendable claims. No edits.",
+    "Own only NativeTests/StudyRenderCacheTests.swift. Wave 5 already adds broad startup/failure/precision tests: read them first and do not duplicate them. Fill remaining meaningful gaps: preserve a pre-existing CPU cache across startup failure plus cancellation; prove cancelled validation leaves cached CPU usable and subsequent eligible work validates on the same engine; submit distinct eligible requests concurrently and verify actor serialization creates/validates a backend once and caches correct images without race-based timing. Reuse the locked script. If another gap is already covered, document that and omit redundant tests. Keep actual Metal methods intact; label mocked evidence. No Swift build. Also cover the review's remaining steady-state scene-error gap: noncancelled scene errors must preserve validated Metal/cached frames and leave the errored request uncached. Wave06 already covers confirmed runtime failures without cancellation, so do not duplicate those cases. Keep cases bounded and reuse helpers.",
+    "Challenge schedules around factory creation, final validation check, state assignment and cache hits. A cancelled result must not adopt an unchecked backend; actor serialization must prevent duplicate successful validation. Read-only.",
+    "Review startup backend/pipeline lifetime after failure or interrupted validation. Propose a precise weak-reference test only for a concrete remaining gap. Do not infer driver memory or RSS from object counts.",
+    "Review consumer recovery: backend labels, stale-frame/error rules, retry after interruption and permanent downgrade after confirmed failure. UI is owned by 03. Report the exact contract; no UI edits.",
+    "Audit fallback wording and privacy. Missing/skipped Metal tests cannot count as GPU evidence. The default app initializer must never select fake imagery. No edits.",
+    "Inspect exact-revision CI status/logs supplied by root. Separate syntax, portable CPU/shared-kernel, mocked lifecycle and actual Metal evidence. Preserve relevant raw receipts; no broad local builds.",
+    "LAST independent review of startup tests and current engine. Ensure cases actually exercise transitions and cannot pass through old cache hits. Preserve thresholds, fixtures, oracle and CI. List concrete remaining blockers."
+  ],
+  "input_sha": null,
+  "input_sha_authority": "Root's launch brief supplies the exact published checkpoint SHA."
+}

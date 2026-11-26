@@ -1,0 +1,41 @@
+{
+  "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "path": "NativeTests/StudyRenderCacheTests.swift",
+  "baseline_blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+  "candidate_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+  "checks": {
+    "candidate_preserves_entire_baseline_prefix": true,
+    "candidate_preserves_baseline_closing_suffix": true,
+    "original_methods": [
+      "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+      "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+      "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+      "testEveryRenderingControlKeepsDistinctCacheIdentity",
+      "testSubjectAndResolutionDoNotShareFrames",
+      "testBustCachePreservesExistingMaximumWidthClamping",
+      "testInvalidMetadataCannotReuseAValidatedFrame",
+      "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+      "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+      "testCancelledTaskCannotReturnCachedFrame",
+      "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+      "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+      "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+      "testPrecisionDomainFallbackPreservesValidatedBackend",
+      "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+      "testStartupFinalCancellationLeavesInitializationRetryable",
+      "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+      "testStartupPrecisionDomainFallbackRemainsRetryable",
+      "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+      "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+      "testRealCPUCacheResourcesForFourSmallFrames",
+      "testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive"
+    ],
+    "candidate_method_count": 29,
+    "inserted_lines": 208
+  },
+  "review": "Four focused mocked lifecycle additions. Existing source prefix including all25 methods and helpers is exact. Distinct eligible dimensions witness keyed frames; armed error sentinel prevents rerender-as-hit false positive. Startup retry uses fresh key; repeated steady-state error proves errored key uncached.",
+  "execution": "Executed JavaScript text comparison using fetched immutable blobs only; Swift/compilation/native tests unrun."
+}

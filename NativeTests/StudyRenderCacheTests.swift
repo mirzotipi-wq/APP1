@@ -1025,4 +1025,212 @@ final class StudyRenderCacheTests: XCTestCase {
         }
     }
 
+    // These additional cases use the existing scripted backend for lifecycle
+    // evidence only. Synthetic compute frames are not actual Metal output.
+    func testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame() async throws {
+        // Exercise both catch paths that confirm failure while the cache already
+        // holds CPU pixels. The broader startup failure matrix remains above.
+        let failures: [ComputeOutcome] = [.metal(.parity), .study(.invalidComputeOutput)]
+        for stage in [ComputeStage.factory, .validation] {
+            for failure in failures {
+                let budget = CancellationBudget()
+                let script = ComputeScript(budget: budget)
+                let engine = scriptedEngine(budget: budget, script: script)
+                let cpuScene = portraitScene()
+                let cpu = try await engine.render(scene: cpuScene, width: 24, subject: .bust)
+                XCTAssertEqual(cpu.backend, .cpu)
+                XCTAssertEqual(script.counts.factory, 0)
+                await assertCacheUsage(engine, images: [cpu.image])
+
+                let interrupted = computeScene()
+                script.set(stage, to: ComputeStep(failure, cancel: true))
+                await assertCancelled(engine, scene: interrupted, width: 48, subject: .sphere)
+                await assertCacheUsage(engine, images: [cpu.image])
+                XCTAssertEqual(script.counts.factory, 1)
+                XCTAssertEqual(script.counts.validation, stage == .factory ? 0 : 1)
+                XCTAssertEqual(script.counts.render, 0)
+                XCTAssertEqual(script.counts.releases, stage == .factory ? 0 : 1)
+                let preserved = try await cachedFrame(engine, budget: budget, scene: cpuScene)
+                XCTAssertEqual(preserved.backend, .cpu)
+                XCTAssertEqual(preserved.image, cpu.image)
+
+                // The failed request must still be cold after cancellation.
+                // A retained CPU fallback would incorrectly pass this probe.
+                script.set(stage, to: ComputeStep())
+                budget.reset(cancelAt: 8)
+                await assertCancelled(engine, scene: interrupted, width: 48, subject: .sphere)
+                await assertCacheUsage(engine, images: [cpu.image])
+                budget.reset()
+                var fresh = interrupted
+                fresh.previewSettings?.exposureStops = 1
+                let next = try await engine.render(scene: fresh, width: 48)
+                XCTAssertEqual(next.backend, .cpu)
+                XCTAssertEqual(next.image, try ReferenceStudyRenderer.render(scene: fresh, width: 48))
+                XCTAssertEqual(script.counts.factory, 1)
+                XCTAssertEqual(script.counts.validation, stage == .factory ? 0 : 1)
+                XCTAssertEqual(script.counts.render, 0)
+                await assertCacheUsage(engine, images: [cpu.image, next.image])
+            }
+        }
+    }
+
+    func testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine() async throws {
+        // Cover a thrown cancellation and the final cancellation check after
+        // validate returns. Neither may adopt the unchecked backend.
+        for step in [ComputeStep(.study(.cancelled)), ComputeStep(cancel: true)] {
+            let budget = CancellationBudget()
+            let script = ComputeScript(budget: budget)
+            let engine = scriptedEngine(budget: budget, script: script)
+            let cpuScene = portraitScene()
+            let cpu = try await engine.render(scene: cpuScene, width: 24, subject: .bust)
+            XCTAssertEqual(cpu.backend, .cpu)
+            XCTAssertEqual(script.counts.factory, 0)
+
+            let interrupted = computeScene()
+            script.set(.validation, to: step)
+            await assertCancelled(engine, scene: interrupted, width: 48, subject: .sphere)
+            await assertCacheUsage(engine, images: [cpu.image])
+            XCTAssertEqual(script.counts.factory, 1)
+            XCTAssertEqual(script.counts.validation, 1)
+            XCTAssertEqual(script.counts.render, 0)
+            XCTAssertEqual(script.counts.releases, 1)
+            let preserved = try await cachedFrame(engine, budget: budget, scene: cpuScene)
+            XCTAssertEqual(preserved.backend, .cpu)
+            XCTAssertEqual(preserved.image, cpu.image)
+            XCTAssertEqual(script.counts.factory, 1)
+            XCTAssertEqual(script.counts.validation, 1)
+
+            script.set(.validation, to: ComputeStep())
+            var fresh = interrupted
+            fresh.previewSettings?.exposureStops = 1
+            let next = try await engine.render(scene: fresh, width: 48)
+            XCTAssertEqual(next.backend, .metal)
+            XCTAssertEqual(script.counts.factory, 2)
+            XCTAssertEqual(script.counts.validation, 2)
+            XCTAssertEqual(script.counts.render, 1)
+            XCTAssertEqual(script.counts.releases, 1)
+            await assertCacheUsage(engine, images: [cpu.image, next.image])
+
+            // Revisit the original interrupted key only after validating with
+            // a distinct key. It must require its own successful render.
+            let retried = try await engine.render(scene: interrupted, width: 48)
+            XCTAssertEqual(retried.backend, .metal)
+            XCTAssertEqual(script.counts.factory, 2)
+            XCTAssertEqual(script.counts.validation, 2)
+            XCTAssertEqual(script.counts.render, 2)
+            let stillCached = try await cachedFrame(engine, budget: budget, scene: cpuScene)
+            XCTAssertEqual(stillCached.backend, .cpu)
+            XCTAssertEqual(stillCached.image, cpu.image)
+            await assertCacheUsage(engine, images: [cpu.image, next.image, retried.image])
+        }
+    }
+
+    func testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages() async throws {
+        let budget = CancellationBudget()
+        let script = ComputeScript(budget: budget)
+        let engine = scriptedEngine(budget: budget, script: script)
+        let scene = computeScene()
+        // Select three distinct eligible widths deterministically. The images
+        // differ in dimensions even though this existing fake uses white pixels.
+        let widths = Array(stride(from: 24, through: 192, by: 3).filter {
+            MetalStudyRenderer.supports(scene, width: $0)
+        }.prefix(3))
+        XCTAssertEqual(widths.count, 3, "This fixture must supply three eligible requests")
+        guard widths.count == 3 else { return }
+
+        // Submit all children before collecting results. Assertions do not
+        // depend on start order, completion order, delays or actor scheduling.
+        let frames = try await withThrowingTaskGroup(of: (Int, StudyRenderedFrame).self) { group in
+            for width in widths {
+                group.addTask {
+                    let frame = try await engine.render(scene: scene, width: width)
+                    return (width, frame)
+                }
+            }
+            var completed: [Int: StudyRenderedFrame] = [:]
+            for try await (width, frame) in group {
+                XCTAssertNil(completed.updateValue(frame, forKey: width))
+            }
+            return completed
+        }
+        XCTAssertEqual(frames.count, widths.count)
+        XCTAssertEqual(script.counts.factory, 1)
+        XCTAssertEqual(script.counts.validation, 1)
+        XCTAssertEqual(script.counts.render, widths.count)
+        XCTAssertEqual(script.counts.releases, 0)
+
+        let expectedImages = try widths.map { width in
+            try StudyImage.fromComputeRGBA(width: width, height: width * 2 / 3,
+                data: Data(repeating: 255, count: width * (width * 2 / 3) * 4))
+        }
+        for (index, width) in widths.enumerated() {
+            let frame = try XCTUnwrap(frames[width])
+            XCTAssertEqual(frame.backend, .metal)
+            XCTAssertEqual(frame.image, expectedImages[index])
+        }
+        await assertCacheUsage(engine, images: expectedImages)
+
+        // Any miss now throws, so a same-image rerender cannot masquerade as
+        // cache reuse. Lookup order deliberately differs from submission order.
+        script.set(.render, to: ComputeStep(.study(.invalidSurface)))
+        for index in widths.indices.reversed() {
+            let cached = try await cachedFrame(engine, budget: budget, scene: scene,
+                                                 width: widths[index], subject: .sphere)
+            XCTAssertEqual(cached.backend, .metal)
+            XCTAssertEqual(cached.image, expectedImages[index])
+        }
+        XCTAssertEqual(script.counts.factory, 1)
+        XCTAssertEqual(script.counts.validation, 1)
+        XCTAssertEqual(script.counts.render, widths.count)
+        XCTAssertEqual(script.counts.releases, 0)
+        await assertCacheUsage(engine, images: expectedImages)
+    }
+
+    func testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames() async throws {
+        let errors: [StudyError] = [.invalidScene, .invalidCamera, .invalidResolution,
+                                    .invalidEmitter, .invalidSurface]
+        for error in errors {
+            let budget = CancellationBudget()
+            let script = ComputeScript(budget: budget)
+            let engine = scriptedEngine(budget: budget, script: script)
+            let cpuScene = portraitScene()
+            let cpu = try await engine.render(scene: cpuScene, width: 24, subject: .bust)
+            let original = computeScene()
+            let first = try await engine.render(scene: original, width: 48)
+            XCTAssertEqual(first.backend, .metal)
+            var failed = original
+            failed.previewSettings?.exposureStops = 1
+            // Valid eligible input ensures the injected scene error reaches the
+            // steady-state backend catch, rather than failing before startup.
+            script.set(.render, to: ComputeStep(.study(error)))
+            await assertStudyError(error, engine: engine, scene: failed)
+            XCTAssertEqual(script.counts.render, 2)
+            XCTAssertEqual(script.counts.releases, 0)
+            await assertCacheUsage(engine, images: [cpu.image, first.image])
+
+            let cached = try await cachedFrame(engine, budget: budget, scene: original,
+                                                width: 48, subject: .sphere)
+            XCTAssertEqual(cached.backend, .metal)
+            XCTAssertEqual(cached.image, first.image)
+            let preserved = try await cachedFrame(engine, budget: budget, scene: cpuScene)
+            XCTAssertEqual(preserved.backend, .cpu)
+            XCTAssertEqual(preserved.image, cpu.image)
+            XCTAssertEqual(script.counts.render, 2)
+
+            // Repeat while failure is still armed: the errored key must remain
+            // uncached, without discarding either completed frame.
+            await assertStudyError(error, engine: engine, scene: failed)
+            XCTAssertEqual(script.counts.render, 3)
+            await assertCacheUsage(engine, images: [cpu.image, first.image])
+            script.set(.render, to: ComputeStep())
+            let retried = try await engine.render(scene: failed, width: 48)
+            XCTAssertEqual(retried.backend, .metal)
+            XCTAssertEqual(script.counts.factory, 1)
+            XCTAssertEqual(script.counts.validation, 1)
+            XCTAssertEqual(script.counts.render, 4)
+            XCTAssertEqual(script.counts.releases, 0)
+            await assertCacheUsage(engine, images: [cpu.image, first.image, retried.image])
+        }
+    }
+
 }

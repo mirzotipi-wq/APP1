@@ -1,0 +1,213 @@
+{
+  "schema": 1,
+  "worker": "w062",
+  "role": "wave7 invariants review",
+  "repository": "mirzotipi-wq/APP1",
+  "branch": "finish/04-metal-cache",
+  "exactInputCommit": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "campaignBaseline": "f150f98",
+  "packetBlob": "6b541c53c6ca29cc5108f8f62412473d7ae3e559",
+  "scope": "One bounded read-only review of startup cancellation versus confirmed failure, plus four appended native lifecycle tests.",
+  "sources": {
+    "engine": {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68"
+    },
+    "candidate": {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob": "dd068965cf56312ea0feb90578ca9461ba6b1054"
+    },
+    "original": {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89"
+    },
+    "cpu": {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    },
+    "cache": {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blob": "0731ab93a924572ccacd3dd66e334a85dc7c06e7"
+    },
+    "eligibility": {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "blob": "e9764da10eabbffbad6ceee8999977cf31deb197"
+    },
+    "preview": {
+      "path": "App/ReferenceStudyPreview.swift",
+      "blob": "1a68db0fd7782ac945b915b32b4ddd8485321ad3"
+    }
+  },
+  "mandatoryReads": [
+    {
+      "path": "AGENTS.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "40eaa48849f59b436d7caa8ec161125d83c65ede"
+    },
+    {
+      "path": "agents/state.json",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "ref": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "independentTextComparison": {
+    "baselineBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "candidateBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "identicalOriginalPrefix": true,
+    "identicalOriginalSuffix": true,
+    "baselineMethods": 25,
+    "candidateMethods": 29,
+    "appendedLines": 208
+  },
+  "sourceFindings": [
+    {
+      "claim": "Interrupted StudyError.cancelled validation cannot adopt the backend; next eligible uncached request retries creation and validation.",
+      "locations": [
+        "engine:247-258"
+      ]
+    },
+    {
+      "claim": "Confirmed invalidComputeOutput or general backend failure selects permanent CPU before subsequent cancellation polling.",
+      "locations": [
+        "engine:254-266",
+        "engine:272-285"
+      ]
+    },
+    {
+      "claim": "A submitted command's failed status is checked before cancellation; parity not yet compared or output not yet decoded is unconfirmed work.",
+      "locations": [
+        "engine:108-115",
+        "engine:127-134"
+      ]
+    },
+    {
+      "claim": "CPU-only bust, ineligible sphere and invalid requests avoid unchecked backend initialization.",
+      "locations": [
+        "engine:224-247",
+        "eligibility:16-26"
+      ]
+    },
+    {
+      "claim": "Downgrade selectively purges Metal frames and retains CPU entries; CPU render polls before every eighth evaluation and at completion.",
+      "locations": [
+        "engine:290-295",
+        "cache:73-76",
+        "cpu:462-475",
+        "cpu:497-498",
+        "cpu:531-533"
+      ]
+    }
+  ],
+  "candidateReview": [
+    {
+      "method": "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "lines": "1030-1075",
+      "falsifier": "Existing CPU cache survives both confirmed-error catch paths; an eight-poll cold-key probe excludes admitted cancelled fallback; fresh key and factory counts prove permanence."
+    },
+    {
+      "method": "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "lines": "1077-1126",
+      "falsifier": "Thrown and final-check cancellation preserve CPU cache; releases and two factory/validation calls prove fresh retry; original interrupted key increments render count."
+    },
+    {
+      "method": "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "lines": "1128-1187",
+      "falsifier": "Task group submits three eligible widths; dimensions distinguish frames; one factory/validation and three renders are asserted; armed scene error exposes cache misses."
+    },
+    {
+      "method": "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames",
+      "lines": "1189-1234",
+      "falsifier": "Five injected scene errors reach steady-state catch on eligible input; repeated failed key increments render count; CPU and Metal cache remain available, with no second validation."
+    }
+  ],
+  "injectionEdge": {
+    "classification": "Nonblocking source-visible limitation, not reproduced runtime evidence",
+    "observation": "A custom factory or validator throwing Swift CancellationError reaches startup catch-all and permanently selects CPU.",
+    "locations": [
+      "engine:218-221",
+      "engine:254-264"
+    ],
+    "productionApplicability": "No such throw exists in reviewed default backend; production cancellation uses StudyError.cancelled. Existing and candidate scripted tests cover StudyError.cancelled, not Swift CancellationError."
+  },
+  "knownOutOfScopeGap": {
+    "description": "UI-held A -> B confirmed failure plus cancellation/downgrade -> A can reuse the UI frame without consulting actor state.",
+    "location": "App/ReferenceStudyPreview.swift:113",
+    "disposition": "Already routed to lane03 UI owner; lane20 integrates. Owner proposal is unapplied/uncompiled; no fix or corrupt-pixel claim."
+  },
+  "execution": {
+    "sourceReview": "completed",
+    "inMemoryTextComparison": "completed",
+    "localCommands": "not attempted; prohibited after environment interruption",
+    "worktree": "planned only",
+    "gitHashObject": "unavailable/unrun",
+    "agentCycle": "unavailable/unrun",
+    "swiftCompilation": "unavailable/unrun",
+    "nativeTests": "unavailable/unrun",
+    "mockedLifecycle": "source reviewed only; no execution",
+    "hostSharedKernel": "not executed by this worker",
+    "simulatorMetal": "not executed by this worker",
+    "physicalDevice": "not executed",
+    "priorCI": "Root-supplied old 88279ba native160 and 5934f29 core375/375 plus host6/8 do not execute new wave6/7 cases."
+  },
+  "invariantsUnchanged": {
+    "cpuAuthoritative": true,
+    "canonicalCases": 6,
+    "exactMasks": true,
+    "meanRGBMaximum": 1,
+    "fractionChannelsOver4Maximum": 0.005,
+    "precisionCases": 8,
+    "precisionMaximumChannelError": 1,
+    "maximumCacheFrames": 4,
+    "maximumRGBAPayloadBytes": 262144,
+    "maximumMaskBytes": 65536,
+    "bustMaximumWidth": 144,
+    "cpuMaximumFurtherPixelEvaluationsAfterCancellation": 8,
+    "failedAndCancelledFramesExcluded": true
+  },
+  "outcome": "No new blocking defect found in reviewed production paths or candidate tests; runtime acceptance remains unverified.",
+  "plannedPaths": [
+    "/tmp/keyfill04-2987b1ee980d/workers/w062",
+    "/tmp/keyfill04-2987b1ee980d/results/w062"
+  ],
+  "actualStorage": "Immutable Git blobs plus separate session state; no checkout or local files created."
+}
