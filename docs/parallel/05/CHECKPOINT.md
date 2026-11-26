@@ -45,3 +45,7 @@ Wave07 is complete and its20-entry manifest/21-file bundle is verified. The glob
 ## Native184 complete; reviewed Float-boundary successor
 
 Source4e694bc passed184native methods, all38spatial, with exact one-start/one-pass accounting and no failures/skips/duplicates/omissions. Debug/test-bundle and Release builds passed. Fresh original SceneKit captures were archive/hash-verified and visually inspected; they match9725PNG bytes exactly. See validation/NATIVE-4e694bc.md. Wave08 independently reviewed a minimal outward-Float projection correction and one new state regression; that source successor has185/39methods and remains unexecuted. Seventy contexts are complete; wave08 is still finishing, so no80-context claim is made here.
+
+## Eighty contexts
+
+Wave08 completed exactly10actual contexts and its41-entry manifest/42-file bundle is verified. WORKER_LEDGER.json verifies80distinct completed contexts across eight waves. Root published source60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a, containing the independently approved outward-Float correction and one regression. Its core run45851365897/job140020330561 passed366Debug/366Release/100tooling; native job 140022794410 has started (observed 2026-11-26 16:04 UTC). Expected185native/39spatial is not yet execution. Previous source4e184/38 passed; final UI dispositions and genuine captures are retained. Wave09 is active; wave10 remains.

@@ -38,6 +38,6 @@ Both originals were visually inspected and also match the9725PNG bytes exactly. 
 
 ## Other jobs and next candidate
 
-Studio-optics, studio-export and room-precision UI shards had completed successfully before the next source publication; library-reference and app-accessibility were still running. Their final outcomes must be recorded separately, including any cancellation by a later source checkpoint.
+Studio-optics, studio-export and room-precision UI shards completed successfully. Library-reference, app-accessibility and visual review were cancelled by successor source60059 after native execution had finished. These cancellations are not passes or established viewport failures. Exact final dispositions are preserved in run-4e694bc-final-jobs.json.
 
 The independently reviewed following candidate rounds the RealityKit orbit field of view outward at the Float boundary and adds one focused state regression. That candidate has185native/39spatial methods and is outside this source SHA. This184-method execution must not be transferred to it. RealityKit source compilation does not establish RealityKit runtime behavior.
