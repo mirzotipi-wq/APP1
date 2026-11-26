@@ -198,6 +198,13 @@ public enum PortraitStudyRenderer {
                     pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
                     continue
                 }
+                // The camera starts outside the closed mannequin. A nearest
+                // outward face pointing away from it is an exit exposed by the
+                // near plane clipping the entry. Reject that camera; it is not
+                // an unsupported near-emitter receiver or a lighting shadow.
+                guard portraitDot(hit.geometricNormal, -ray) >= 0 else {
+                    throw StudyError.invalidCamera
+                }
                 do {
                     guard portraitDot(hit.normal, -ray) > 0 else { throw StudyError.invalidSurface }
                     let signal = try lighting.evaluate(receiver: origin + ray * hit.distance,

@@ -29,9 +29,9 @@ All 380 portable Debug and 380 Release tests pass with these two corrections, in
 input-boundary, analytic-visibility and cancellation probes. This is a Linux
 Swift result, not an Apple UI or Metal result.
 
-Wave 1 completed all ten real fresh contexts; its final ledger contains actual
-IDs, reports, hashes and clean private-worktree receipts. Wave 2 is building the
-independent probes and source-specific test patches. The execution plan is ten acceptance
+Waves 1 and 2 completed twenty real fresh contexts; their ledgers contain actual
+IDs, reports, hashes and private-worktree/recovery receipts. Wave 3 independently
+reviews the accepted intersection and early cancellation fixes. The execution plan is ten acceptance
 leaders plus nine distinct specialists per leader, with at most two children active
 alongside root and leader. The root integrator is not included in the count.
 
@@ -54,11 +54,15 @@ the final handoff must preserve this distinction.
 
 ## Next work
 
-Finish wave 2's actual-worker ledger, independently review the corrected
-intersection in wave 3, and proceed through the user's remaining waves. A second
-preserved probe shows near-plane clipping in close overhead mannequin cameras
-being mislabeled as unsupported lighting pixels; address it with camera-specific
-regressions without relaxing true unsupported masks. Add explicit preview
+Finish independent review of the corrected intersection in wave 3 and proceed
+through the remaining waves. The camera correction now rejects outward back
+faces exposed by the near plane as invalidCamera. Original width144 overhead
+output had 11,708 false unsupported pixels with no lights; the corrected renderer
+returns no image for that invalid camera. Thirteen close front/side and safe
+overhead views remain supported, and the clear overhead image is byte-identical.
+Twenty-one targeted camera/portrait/visibility/cancellation tests pass. Initial
+test-design failures and their corrected pixel-ray witness are recorded in
+evidence/camera-review.json; no true near-emitter mask was weakened. Add explicit preview
 generation/adoption coverage and review loading,
 retry, cancellation and subject transitions. Preserve the six parity fixtures,
 eight precision cases, twelve original images and all resource/cancellation bounds.
