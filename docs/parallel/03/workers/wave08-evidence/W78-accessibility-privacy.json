@@ -1,0 +1,183 @@
+{
+  "worker": "W78-accessibility-privacy",
+  "canonical_runtime_id": "/root/wave08/w78_accessibility_privacy",
+  "parent": "/root/wave08",
+  "input_commit": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "input_tree": "bba62b3555a03cdbd6dcb47a419a433d996c82f7",
+  "private_worktree": "/tmp/keyfill03-7f4b/workers/W78-accessibility-privacy",
+  "private_outputs": "/tmp/keyfill03-7f4b/builds/W78-accessibility-privacy (unused)",
+  "review_utc": "2026-11-26T15:44:48.652044+00:00",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "execution_status": "completed local source, archived-image and finalized-receipt review; one concrete communication gap",
+  "checks_actual": [
+    "Read required operating/acceptance/protocol files; verified private HEAD, tree and clean status.",
+    "Read exact preview state gates, model labels, renderer error/mask semantics and derivative PNG sanitizer boundary.",
+    "Directly viewed three existing PNGs with view_image; read matching raw masks and verified all zero.",
+    "Hashed finalized native log and current exhibit; counted native started/passed methods, pipeline and photo methods; inspected actual Metal diagnostic lines and assertion source.",
+    "Created only the two assigned persistent W78 report/receipt files; no build, render, benchmark, test suite, CI invocation or source edit."
+  ],
+  "source_sha256": {
+    "App/ReferenceStudyPreview.swift": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+    "App/ReferenceComparisonView.swift": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb",
+    "App/StudioView.swift": "9fe13be92262cdfd853fba4cbf0e9403a30b747a04869af480248eee8826d2a8",
+    "App/ReferencePhoto.swift": "1b1b1ea05833fd591fe05fbe6d9fd3f9dacfe3bdd08ad7093ed8c5c08d25792a",
+    "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+    "NativeTests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+    "NativeTests/StudyRendererTests.swift": "e0b3bfca7d4b8098f783319cf076052b4ebd9a552561898460800d72ac005e30"
+  },
+  "reviewed_images": [
+    {
+      "path": "evidence/final/bust-rim-only.png",
+      "sha256": "98744aa462f2be3dcc673be893e8f750b7dfcbc4d3a64f50c1ddccc3c96977c3",
+      "directly_viewed_with": "view_image",
+      "mask_path": "evidence/final/bust-rim-only.mask",
+      "mask_sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "mask_bytes": 13824,
+      "unsupported_pixels": 0
+    },
+    {
+      "path": "evidence/final/exposure-minus-two.png",
+      "sha256": "0c0a3e3ed1032c06ef8b0214a89ac1307515ba8ff1f5395bd606834a47593102",
+      "directly_viewed_with": "view_image",
+      "mask_path": "evidence/final/exposure-minus-two.mask",
+      "mask_sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "mask_bytes": 9600,
+      "unsupported_pixels": 0
+    },
+    {
+      "path": "evidence/camera-corrected/overhead-clear.png",
+      "sha256": "a6ce4cf6f71f1f0214fff50644edbb7f7f267e27809722dc5cc10c4d3a0ff859",
+      "directly_viewed_with": "view_image",
+      "mask_path": "evidence/camera-corrected/overhead-clear.mask",
+      "mask_sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "mask_bytes": 13824,
+      "unsupported_pixels": 0
+    }
+  ],
+  "exhibit_sha256": "8cce8f9932fd34bf7b2b9b43c83da5f001a2d0a69c979468ca92dfcb95c79792",
+  "matches_W71_updated_exhibit_hash": true,
+  "findings": [
+    {
+      "id": "W78-AX-01",
+      "severity": "P2 source-level communication gap",
+      "status": "sent to wave lead; independent W80 challenge requested; no source modification",
+      "source": "App/ReferenceStudyPreview.swift",
+      "source_sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "conditions": [
+        "A completed frame has unsupportedPixels > 0 and an image.",
+        "The same subject is retained while a new scene request differs; the previous image remains visible.",
+        "During updating, or inactivity before a replacement frame, isCurrent is false.",
+        "The warning is hidden by if isCurrent, frame.unsupportedPixels > 0, and the previous image label supplies no unsupported count."
+      ],
+      "observable_source_consequence": "The displayed previous invalid image loses its textual/non-color unsupported cue. Native accessibility-tree behavior and spoken output are unrun.",
+      "old_current_labels": "99:     private var imageLabel: String {\n100:         subject == .sphere ? \"Rendered neutral sphere and panel\" : \"Rendered neutral mannequin bust\"\n101:     }",
+      "previous_frame_and_label": "117:                 if let frame,\n118:                    frame.request == request || (frame.image != nil && frame.request.subject == subject) {\n119:                     let isCurrent = frame.request == request\n120:                     if let image = frame.image {\n121:                         let width = min(geometry.size.width, geometry.size.height * 1.5)\n122:                         let updateStatus = activeRequest == nil ? \"Light study paused\" : \"Updating light study\"\n123:                         let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). \\(updateStatus).\"\n124:                         Image(image, scale: 1, orientation: .up, label: Text(label))\n125:                             .resizable().interpolation(.medium)\n126:                             .frame(width: width, height: width / 1.5)\n127:                             .frame(maxWidth: .infinity, maxHeight: .infinity)\n128:                             .accessibilityLabel(label)\n129:                             .accessibilityIdentifier(isCurrent ? \"studyPreview\" : \"studyPreviousPreview\")",
+      "warning_gate_and_text": "137:                         if isCurrent, frame.unsupportedPixels > 0 {\n138:                             Label(\"\\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.\",\n139:                                   systemImage: \"exclamationmark.triangle.fill\")\n140:                                 .font(.caption2.weight(.medium))\n141:                                 .foregroundStyle(.white)\n142:                                 .padding(8).background(.black.opacity(0.85))\n143:                                 .accessibilityIdentifier(\"studyWarning\")",
+      "updating_paused_semantics": "160:                                 .accessibilityLabel(updateStatus)\n161:                                 .accessibilityValue(\"Showing the previous scene\")\n162:                                 .accessibilityIdentifier(activeRequest == nil ? \"studyPaused\" : \"studyUpdating\")",
+      "suggested_disposition": "Qualify an unsupported count/description as belonging to the previous render while that invalid image remains displayed. Keep it distinct from current-scene diagnosis. Root owns correction and verification."
+    }
+  ],
+  "other_findings": [
+    "Current invalidCamera produces image=nil, unsupportedPixels=0 and camera guidance; conversion failure has separate text; retry labels are explicit.",
+    "Current invalid frames show a numeric unsupported count plus text/icon, distinct from RGB darkness.",
+    "Exhibit captions correctly identify rim-only, low-exposure and no-light darkness; neutral mannequin claims do not imply calibrated skin or person reconstruction.",
+    "ReferenceComparisonView sphere caption is consistent with its default-sphere preview call; initial suspicion dismissed.",
+    "ReferencePNG filters only a freshly encoded derivative; retained structural/transparency/color chunks preserve their CRCs. ImageIO owns decoding/pixel/CRC validation. ReferencePhoto draws a new bounded sRGB bitmap before filtering; no network/import privacy audit inferred."
+  ],
+  "native_evidence": {
+    "receipt_path": "evidence/ci-native-36.json",
+    "receipt_sha256": "3b4c1d7d94d7a3090d0d7ae0ba52cfa5c720a23a01c9b5b32102278bfd9ce056",
+    "log_path": "evidence/ci-native-36.log",
+    "log_sha256": "019f50cd8b9a949c8f5c2e7c93e79a77826cd3cd7b41a6c234c0c3b1f2ef4bf1",
+    "run_id": 45842899560,
+    "job_id": 139992156576,
+    "source_commit": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+    "debug_app_native_bundle": "success",
+    "release_app": "success",
+    "portable_tests_reported": 391,
+    "portable_summary_seen": true,
+    "native_started": 164,
+    "native_passed": 164,
+    "native_unique_passed": 164,
+    "native_failed": 0,
+    "pipeline_passed_methods": [
+      "testCancellationDiscardsNoncooperativeRenderCompletion",
+      "testCancelledErrorsAndPrecancelledWorkStaySilent",
+      "testConversionFailureHasNoSuccessfulImageOrBackend",
+      "testCurrentFailureCanRetryWithFreshAttempt",
+      "testDisappearanceOrInactivityInvalidatesLateFailure",
+      "testInvalidationDuringConversionCannotPublish",
+      "testLateFailureCannotReplaceNewerImage",
+      "testLateSuccessCannotReplaceNewerCompletion",
+      "testPrecancelledBeginCannotInvalidateLiveRequest",
+      "testReturningToCompletedRequestInvalidatesIntermediateWork"
+    ],
+    "photo_passed_methods": [
+      "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+      "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+      "testFileRepresentationConsumesOnlyItsTemporaryFile",
+      "testFileSizeBoundBeforeDecode",
+      "testRejectsMalformedAndOversizedInputs",
+      "testRotatesReducesAndRemovesSourceMetadata",
+      "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones"
+    ],
+    "metal_rows": [
+      {
+        "fixture": "hard",
+        "mean": 0.0,
+        "maximum": 0,
+        "outliers": 0.0,
+        "invalid_count_match": true
+      },
+      {
+        "fixture": "soft",
+        "mean": 5.425347222222222e-05,
+        "maximum": 1,
+        "outliers": 0.0,
+        "invalid_count_match": true
+      },
+      {
+        "fixture": "warm-rotated",
+        "mean": 0.0,
+        "maximum": 0,
+        "outliers": 0.0,
+        "invalid_count_match": true
+      },
+      {
+        "fixture": "dark",
+        "mean": 0.0,
+        "maximum": 0,
+        "outliers": 0.0,
+        "invalid_count_match": true
+      },
+      {
+        "fixture": "near-field",
+        "mean": 0.0,
+        "maximum": 0,
+        "outliers": 0.0,
+        "invalid_count_match": true
+      },
+      {
+        "fixture": "translated",
+        "mean": 5.425347222222222e-05,
+        "maximum": 1,
+        "outliers": 0.0,
+        "invalid_count_match": true
+      }
+    ],
+    "exact_mask_basis": "NativeTests/StudyRendererTests.swift:20 asserts metrics.passes; StudyValidationFixtures.swift:41-42 requires invalidMaskMatches.",
+    "mask_assignment_source": [
+      "invalidMaskMatches = reference.unsupportedPixelMask == candidate.unsupportedPixelMask"
+    ],
+    "scope": "Finalized Apple simulator and macOS evidence reviewed, not rerun by W78. Separate UI interaction/accessibility shards and manual VoiceOver are not established by this receipt."
+  },
+  "limits": [
+    "No native UI reproduction, screenshot, VoiceOver session, physical test, import/permission/network runtime audit or release acceptance.",
+    "Four historical resets and W72 optional ENOSPC evidence retained; no cleanup.",
+    "Six focused exec calls including artifact creation; exact token counters unavailable and no measured 60% claim.",
+    "Some broad read output was truncated; conclusions use subsequent focused reads and direct file parsing."
+  ]
+}

@@ -120,7 +120,10 @@ struct StudyPreviewOutput: Sendable {
                     if let image = frame.image {
                         let width = min(geometry.size.width, geometry.size.height * 1.5)
                         let updateStatus = activeRequest == nil ? "Light study paused" : "Updating light study"
+                        let previousWarning = !isCurrent && frame.unsupportedPixels > 0
+                            ? "Previous render: \(frame.unsupportedPixels) unsupported pixels (magenta)" : nil
                         let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). \(updateStatus)."
+                            + (previousWarning.map { " \($0)." } ?? "")
                         Image(image, scale: 1, orientation: .up, label: Text(label))
                             .resizable().interpolation(.medium)
                             .frame(width: width, height: width / 1.5)
@@ -143,12 +146,15 @@ struct StudyPreviewOutput: Sendable {
                                 .accessibilityIdentifier("studyWarning")
                         }
                         if !isCurrent {
-                            Group {
+                            VStack(alignment: .leading, spacing: 4) {
                                 if activeRequest == nil {
                                     Text("Light study paused")
                                 } else {
                                     ProgressView("Updating light study")
                                         .controlSize(.small)
+                                }
+                                if let previousWarning {
+                                    Text(previousWarning).font(.caption2.weight(.medium))
                                 }
                             }
                                 .font(.caption.weight(.medium))
