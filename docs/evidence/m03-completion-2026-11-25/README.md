@@ -1,37 +1,66 @@
-# M03 completion work — 25 November 2026
+# M02/M03 completion pass
 
-Baseline: `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
-Scope: complete M02, then M03, under `m02-m03-code-v2`; 100 distinct
-worker contexts in batches of at most three workers plus the integration lead.
+**Scope:** M02, then M03, under [m02-m03-code-v2](../../acceptance/m02-m03-code.md).
+**Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
+**Current status:** M02 remains complete. M03 is active pending the fresh required native/UI results and the original two-size screenshot review.
 
-## Initial evidence and corrections
+The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/commit/75e827f2ee3f99798d619aff62f3a5188b509428). [Full verification run 45751931160](https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160) is in progress. This checkpoint records only completed observations; it does not promote M03.
 
-An independent audit rehashed all 188 inputs in the retained source-equivalence
-manifest and checked the actual core archives, image bytes, six shared-kernel
-cases, eight precision cases and host benchmark samples. M02 remains accepted.
+## Completed current-source core verification
 
-GitHub run [45720754048](https://github.com/mirzotipi-wq/APP1/actions/runs/45720754048)
-finished unsuccessfully at source `5d8b065`. Native unit/Metal, room/precision,
-studio/export and portable core jobs passed. Library/reference passed eight of
-nine methods; launch readiness timed out before the ninth workflow could proceed.
-The app accessibility method stopped at the default-size library heading.
-The optics step timed out at 32 minutes; later terminal output does not turn the
-failed command or its earlier incomplete accounting into a successful run.
+| Check | Actual result |
+|---|---|
+| Swift Debug package tests | 359 passed, zero failures |
+| Swift Release package tests | 359 passed, zero failures |
+| Python tooling tests | 92 passed |
+| Native/UI Swift syntax, shard inventory, app icon and privacy manifest | Passed |
+| Synthetic image matrix | All 12 images generated with zero unsupported pixels; every SHA-256 matches the retained reviewed 5d8 image |
+| CPU/shared Float32 kernel fixtures | All 6 passed; maximum channel difference 1, largest mean 0.0000542535, no invalid-mask mismatch |
+| Strict precision fixtures | All 8 passed; maximum channel difference 0 and exact invalid masks |
+| Optimized benchmark | All 8 frame workloads, 12 observed cancellation probes and 4 visibility workloads; 7 measured samples per frame/visibility workload |
+| Linux persistence fault probes | EFBIG, before-rename interruption, after-rename interruption and rename-EIO checks passed with fresh-process reopening |
 
-The repair preserves every selected test and assertion. It replaces the measured
-36-point library Done action with an adaptive action owning at least 44 points;
-checks its actual text and growth; removes an invented eight-point scroll margin
-while preserving real container, navigation, keyboard and fixed-control bounds;
-separates bounded launch readiness from existing interaction deadlines; and
-budgets complete optics and two-size accessibility execution plus finalization.
+The source-specific [core summary](validation/source-75e827f/ci-core/summary.json), [original job log](validation/source-75e827f/ci-core/core-job.log), [raw benchmark payload](validation/source-75e827f/ci-core/benchmark-from-ci.json), and [atomic-write/interruption reports](validation/source-75e827f/ci-core/persistence-reports-from-ci.json) retain exact details. Numeric records were copied from actual CI output; no test or timing result was inferred from source review.
 
-Local verification before integration: all app/native/UI Swift sources parsed
-with Swift 6.2.1 on Linux; all 92 Python tooling tests passed; shard coverage,
-icon, privacy-manifest and whitespace checks passed. These checks do not replace
-Apple compilation or runtime execution. Fresh native/UI CI and actual screenshot
-review remain required before M03 is promoted.
+This run used Ubuntu 24.04.5, Swift 6.4.2, Python 3.12.3, x86_64 Intel Xeon 6975P-C, and ext4. Timings are short host diagnostics. The six parity cases include the deliberately unsupported near-field case; it is separate from the twelve fully supported image fixtures. Actual Apple/Metal results are tracked separately.
 
-Workers 001–003 independently verified M02 evidence, the accessibility repair,
-and CI/library readiness respectively. Subsequent worker reports and final
-results will be recorded here as they finish. Earlier evidence and failures are
-preserved in the existing evidence directories.
+## First repaired-source run: retained failures
+
+[Run 45745699007](https://github.com/mirzotipi-wq/APP1/actions/runs/45745699007), at source `7b91c1a`, completed with a failed workflow conclusion. All 132 native methods and all ten optics workflows passed. The complete UI inventory started: 29 of 35 methods passed and six failed.
+
+| UI shard | Passed / required | Remaining failure in that run |
+|---|---:|---|
+| Studio optics | 10 / 10 | None |
+| Room and precision | 4 / 5 | First room-width draft remained the placeholder after typing |
+| Studio and export | 7 / 10 | Screenshot RPC timeout; initial status wait; AR-sheet accessibility-query timeout |
+| Library and reference | 8 / 9 | Duplicate-name sheet accessibility-query timeout after successful creation |
+| App accessibility | 0 / 1 | Default-size project-name heading was rejected by the test's covered-navigation boundary |
+
+The [execution summary](validation/source-7b91c1a/execution-summary.json) and full job logs retain each actual started/passed/failed event. The native run includes the three real Metal methods; a host kernel harness is not counted as Metal execution.
+
+The [original accessibility captures and review](validation/source-7b91c1a/app-accessibility/original-capture-review.json) prove the heading was visible: its frame was y203.8...224.1, below its own New project navigation bar ending at y142. The test instead used the covered Projects large-title bar ending at y229.5. The actual keyboard input/assistant surface began at y539, above the keyboard key-frame boundary at y583. Both original PNGs and both original text hierarchies were retained after independent byte-length and SHA-256 verification.
+
+## Implemented corrections awaiting full rerun completion
+
+The initial repair replaced the measured 36-point library Done action with an adaptive action owning at least 44 points, verified its child text and growth, removed an invented eight-point scroll margin, separated initial library launch readiness from normal interactions, and budgeted complete optics and two-size execution without dropping required methods.
+
+The current repair scopes navigation boundaries to ancestors of the target content, scopes fixed bars to that navigation owner, and excludes the actual keyboard input surface. Full-frame containment, actual text metrics, hittability, disabled-state assertions, the 44-point minimum and all twelve required captures at each text size remain.
+
+Room input now waits for a usable numeric keyboard and reveals the actual field after the keyboard transition. It types once and retains the exact draft equality, Set, geometry and keyboard-dismissal assertions. Failure-only screenshot/hierarchy and bounded geometry output preserve a future failure. This is a synchronization candidate, not proof of the earlier placeholder's cause.
+
+Status polling uses one immutable snapshot per attempt, with the existing exact label and deadline. Export captures use the original screen image after the existing document/share assertions. The AR and duplicate-sheet query failures remain historical failures until their full workflows pass; source review has not established a product cause.
+
+Two production edge cases found by independent workers were corrected:
+
+- A binding read that synchronously retires or replaces a slider session cannot reopen the retired history owner. Two native regression methods were added.
+- U+2800 alone does not count as visible name content. Embedded Braille spacing remains intact; legacy stored names and identities are preserved while labels use a readable fallback. Two core methods and existing native presentation fixtures cover this policy.
+
+The required current inventories are **134 native methods and 35 UI methods**. Their Apple runtime outcomes and all original Default/AXXXL captures are still pending at this checkpoint.
+
+## Review and provenance
+
+The owner requested 100 distinct agents. Three worker slots plus the integration lead are available, so the work runs in batches. [The initial six reports](workers/initial-six-reports.json) and [the 43-child checkpoint ledger](workers/checkpoint-43-ledger.json) preserve actual returned work. The [matching report aggregate](workers/checkpoint-43-reports.json) contains real source/log reviews and their stated limits. Followups reuse their original context and never increase the distinct-agent count. Remaining contexts continue; the final ledger will reconcile all 100 once complete.
+
+The local executor became unavailable during an additional local Swift check. That unfinished check has no claimed result. Integration continued through authenticated GitHub Git operations and actual CI. A bounded, read-only [evidence review workflow](../../../.github/workflows/review-xctest-evidence.yml) verifies original run/artifact source before exposing selected original screenshot/hierarchy bytes. A temporary diagnostic branch kept the previous main run intact; the normal iOS source-push trigger was restored before publishing the current source.
+
+Earlier unsuccessful results, including the preceding `5d8b065` run, remain preserved. M04–M07 stay pending. These milestones make no physical calibration, device-performance, manual VoiceOver, platform-audit, release-candidate or App Store publication claim.
