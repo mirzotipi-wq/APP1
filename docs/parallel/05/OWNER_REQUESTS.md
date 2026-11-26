@@ -23,3 +23,9 @@ Additional completed run 68c83 outcomes: room-precision failed the exact-measure
 ## Evidence boundary
 
 No new physical-device, manual VoiceOver, thermal or photographic calibration evidence is claimed. Original acceptance thresholds, failed histories and other workstreams' ownership remain intact.
+
+## Updated native evidence and Core coordination
+
+At source9725fb1, run45826141504 passed176native methods (30spatial), with no skipped/missing methods, plus366Debug/366Release core methods and100tooling checks. Library-reference and studio-optics UI shards passed. App-accessibility failed at StudioAppAccessibilityUITests.swift:263; cause remains an owner investigation. Newer camera/selection/aim recovery tests and the RK face correction need their own execution receipt.
+
+Wave06 independently confirmed that Core rectangle dimensions describe emitting-face corners and exclude housing. The viewport correction therefore removes the rectangle diffuser inset in RealityKit, preserving Core semantics without Core changes. Exact-prefix remote checks on2026-11-26 at14:17UTC found no finish/06 or finish/20 head (both complete results with no cursor); the campaign default baseline remains unchanged.
