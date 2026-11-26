@@ -117,6 +117,8 @@ final class SpatialViewportStateTests: XCTestCase {
         XCTAssertEqual(orbit, before)
         XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0, height: 240))
         XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: .infinity, height: 240))
+        XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0.00001, height: 1000),
+                     "A Double angle rounding to Float 180 must not reach RealityKit")
     }
 
     func testGestureLimitsAndFitRecoveryRemainFinite() throws {
