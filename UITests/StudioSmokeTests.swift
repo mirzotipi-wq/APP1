@@ -14,8 +14,8 @@ final class StudioSmokeTests: XCTestCase {
     private func assertStatus(_ value: String, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
         let status = app.staticTexts["projectStatus"]
         // One immutable AX snapshot supplies both presence and the exact
-        // label. Separate exists/label queries exhausted the old wait before
-        // its failure snapshot read the already-correct launch status.
+        // label. The failed launch wait issued separate presence/label queries;
+        // a later failure snapshot recorded the requested status.
         let predicate = NSPredicate { _, _ in
             (try? status.snapshot().label) == value
         }
