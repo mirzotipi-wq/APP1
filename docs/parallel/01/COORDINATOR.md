@@ -108,3 +108,19 @@ Shared workspace nearly full. Root removed143 byte-identical external worker art
 ### Wave9 code checkpoint ready
 
 Root integrated real-store2tests d3946bc→f92c8e6, Packagec3ce487; freshscratchv9Debug targeted2passed. Observation3tests d2768d→ac0b456, Packagecdacffd3c6eb7bc178bf127187e2990adc4c676c. Production remains8b. ForcedDarwin isolatedruntime compiledallactualsession/testfiles thenLINKFAILED unresolved swift::threading::fatal fromlibswiftObservation.so; no testsran, no shims. Exacttwofiletransform,hashes,commands/logsaved wave09. NormalLinuxexpected433;Darwin436; sourceinventoryonlyuntilactualruns. Root willpublishcoherentcode now, then fullDebug/per-fileRelease at remotelyreachableSHA beforefinaldocsonlypublication. Correctedbed58priorCIcore431eachdefaultconfigsuccess; Applequeued. Wave9 actual liveIDs inmanagerledger, do notinflate80completedledgerbeforecloseout.
+
+
+### Published source / latest Apple boundary
+
+Verifiedadffee463896ba3484a6dde883f7e6745a4c0c6e treef1b9e9c2560c22eb3a9fedfa768bf6941f6c1770, localf517501preserved01-wave9-code. FullnormalDebug433passed and freshper-fileRelease433passed atadffee; logs/hash/orderedcasepairs complete, evidence/wave09-final. No activebuild. CurrentCI45864924047 sourceadffee; state45864924023passed. Correctedpreviousbed58 Applejob140060942813 failed inheritedaccessibilitytest line95 greatestFiniteMagnitude ambiguity; Session/View/FeatureSheetscompilemarkerspresent andnoearlierObservationdiagnostics. Fullrawlog/receiptwave09. Main9e0 CGFloatfix remains20integration, notownedscope. OtherpreviousApplejobscancelled bysourcepush.
+
+Workspace reached0free after completedbuilds; restoringpreservedprobe treefailedindexwrite. Root checkedpublishedwave08 bytes then sparse-excludedonlypublishedwave08evidence, freeing1.9MB. NoGit evidence removed. Probeoriginalsource restored/cleanworktreeremoved aftercheckingpublishedpatch. Fullbuildreceipt/loghashesverifiedintact. Current wave09 evidence stayscheckedout. Preserve smallrecords anduse /tmp forintermediates.
+
+Newactualownerrequests routedbyW09-07: lane03 projectKeep waiter/libraryDone state andlane05 exportformat chooser reopen-afterundo +PlanopenMeter reachability. Rootmustretrieve exactsource/logs andassignwave10 concretechallenges beforefinalhandoff; no cause/fixclaimyet. Needclose90thenexact10wave10workers, finalcurrent-source evidence, finaldocs-onlypublicationandverifiedSHA.
+
+
+## Wave9 closed / finalwave10 active
+
+90actualfreshcontextscompleted, all90IDsnormalized andallroot-readreports/hashcapsverified. W9managerfinalaudit confirms10cleanworktreesremovedafterpreservation. Latestadffee source has433normalDebug/433per-fileRelease local and433defaultDebug/433defaultReleaseCIcore140065248357.84nativeparse/181selectedinputs. Noactivebuild. SourcephysicalObservationruntime tests3 stillunexecuted; no nativepass.
+
+Fresh /root/w10_acceptance is#91, exactly9morepeersauthorized. Main concreteimplementation:one stableadaptiveheader/actionLayout acrossbothViewThatFitslevels andouterAXbranch; sourceownershipriskconfirmedindependently, nothistoricalUIcause.04ownsStudioView/newStudioAdaptiveLayout,02newnativeidentity/geometrytests; rootPackageexclusions+builds+pushes.07maywriteINTEGRATION_REQUESTS.md. RootfinalpublishesCODEfirst, revalidatesexactremoteSHA thenDOCS-only100checkpoint. Currentcodeadffeeprod8b needsnewnative/relevantchecksafterlayoutchange. Preservemain9e0CGFloatfixfor20; noCI/otherowneredits.

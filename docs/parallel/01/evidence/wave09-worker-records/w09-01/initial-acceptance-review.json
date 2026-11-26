@@ -1,0 +1,37 @@
+{
+  "input_sha": "f33a399f8ba21618320ce50aed7981450a9703a7",
+  "published_sha": "bed58c338f9f53758c611b8642241c3ec7697505",
+  "publication_diff_paths": 109,
+  "publication_all_docs_parallel_01": true,
+  "source_hashes": {
+    "App/StudioSession.swift": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+    "App/ProjectLibraryOperation.swift": "0c4bff3e4d29c585bc0cd342440a5d7e3ec43fd4bc32eeec457533a87b35c413",
+    "App/ProjectStore.swift": "404db2197b3f4f9fa45865ed915cae8bd1c255338edb1d8b834753022e3852aa",
+    "NativeTests/StudioSessionTests.swift": "f71d17ab8e7e9dd2ebfa7e20c87a395124ac8aa88910ef96c784b0be3dcb57bc",
+    "NativeTests/StudioFeatureSessionTests.swift": "3d3f9d61d97b6ad60a0941b26510c5bda72f61fcb5690dcc7c32fbca0b1cad9e",
+    "Package.swift": "2f0af38da3e97072cbb127d93d7da3afb925eb71ddbac02263013e2f1d344caf",
+    "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+  },
+  "commands": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit": 0,
+      "meaning": "structure only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit": 0,
+      "result": "M03; editing/accessibility/persistence outstanding"
+    }
+  ],
+  "findings": [
+    "Session reserves before ending edit group; compare postreservation history.",
+    "Actual ProjectStore.perform checks cancellation before synchronous transaction, never after durable commit.",
+    "Session-owned task adopts receipt without checking cancellation after executor returns; defer clears only matching operationTaskID.",
+    "Feature context uses workspaceResetID and live receipt revision independently from storage generation.",
+    "Existing fixture-cancellation and weak-lifetime tests do not prove real-store postcommit adoption, so writer02 regression is justified."
+  ],
+  "builds_or_tests_run": false,
+  "native_runtime_verified": false,
+  "created_utc": "2026-11-26T16:57:52.865412+00:00"
+}

@@ -2,9 +2,16 @@
 
 ## Status and integration boundary
 
-Waves 1–8 are complete: **80 actual fresh contexts**, ten roles per wave. Two waves and 20 fresh contexts remain; wave9 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.
+Waves 1–9 are complete: **90 actual fresh contexts**, ten roles per wave. The final wave and ten fresh contexts remain; wave10 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.
 
-Only `finish/01-architecture-composition` is pushed. Last verified publication before this checkpoint is `bed58c338f9f53758c611b8642241c3ec7697505`, tree `2cf7ec0b1390cd2af42a5f18938f18cf9d17fb14`. It includes the Observation correction and eighty-worker ledger. Production remains equivalent to corrected `8b18366c1c718c2c81f6b275d66140f6dc9d49c9`; current test membership at `cdacffd3c6eb7bc178bf127187e2990adc4c676c` adds actual-store cancellation and native Observation regressions. Local test commits and GitHub publication commits have distinct IDs; complete source manifests establish equivalence.
+Only `finish/01-architecture-composition` is pushed. Last verified publication is
+`adffee463896ba3484a6dde883f7e6745a4c0c6e`, tree
+`f1b9e9c2560c22eb3a9fedfa768bf6941f6c1770`. It includes the Observation correction,
+two actual-store cancellation tests, and three Darwin Observation tests. At this
+exact remote SHA, local Debug and per-file Release each pass433 tests; current
+Swift6.4.2 CI also passes433 in each default Debug/Release configuration. These
+passes exclude the three Darwin-only methods. Full raw logs, case reconciliation
+and181 selected source hashes are under evidence/wave09-final.
 
 Common inspected baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest observed main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`, including the later `UITests/StudioAppAccessibilityUITests.swift` correction that qualifies both `CGSize` bounds as `CGFloat.greatestFiniteMagnitude`, reserved for lane20 integration. Earlier coordinator brief shorthand calling this `Double` was inaccurate; the exact patch is retained under evidence/wave08. The observed origin advertises finish lanes01–05, with no lane20 branch or BASE_SHA at inspected paths. This is scoped observation, not a claim about every possible campaign location. CI belongs to lane19; canonical state and final main integration belong to lane20. Other feature-owner implementations remain unchanged.
 
@@ -41,10 +48,31 @@ with unresolved `swift::threading::fatal` in the Observation library; no methods
 executed. The log and exact transformation are retained. Apple execution remains
 unverified; normal Linux discovery excludes these methods.
 
+## Wave 10 final composition work
+
+Independent reviewers confirmed four structural export presenter positions in
+normal header layouts and two in the separate accessibility branch. Each owns
+private snapshot state. Wave10 will replace both fitting levels and the outer
+accessibility branch with one stable adaptive content tree, preserving width-aware
+wrapping. This is state-ownership hardening; it is not an established explanation
+or fix for the historical export-reopening failure reported by lane05.
+
+New owner-routed native failures are preserved with exact source SHAs and excerpts
+in `evidence/wave09/owner-routed-failures.json`: library name/Done interaction at
+`36ed6a1`, export reopening and meter reachability at `60059a0`. None was reproduced
+against current composition. The meter helper makes twelve observations followed
+by drags, then fails without observing the last drag; this is a specific harness
+investigation for the accessibility/CI owners, not permission to weaken visibility
+acceptance. Other feature-owner files remain unchanged.
+
 ## Actual verification
 
 | Exact local test revision | Check | Result |
 |---|---|---|
+| `adffee463896ba3484a6dde883f7e6745a4c0c6e` | Full local Debug / per-file Release | **433 passed each**; exact remote source, no skips |
+| Same source | CI Swift6.4.2 default Debug / Release | **433 passed each**, full corejob140065248357 success |
+| Same source | Native syntax and package inspection |84 Swift inputs parse; package dump/describe exit0; Apple runtime remains unverified |
+| `bed58c338f9f53758c611b8642241c3ec7697505` | Corrected-source Apple job140060942813 | Failed inherited UI literal ambiguity at line95; prior Observation errors absent; no native runtime pass |
 | `cdacffd3c6eb7bc178bf127187e2990adc4c676c` | Forced-Darwin Linux Observation test probe | Compilation succeeded; link failed with unresolved runtime symbol; **zero tests executed** |
 | `c3ce48761e2f927da82f1e86549aab77becf61a1` | Actual-store cancellation regressions | **2 passed**, fresh separate Debug scratch |
 | `bed58c338f9f53758c611b8642241c3ec7697505` | Corrected production CI Swift6.4.2 default Debug + Release | **431 passed each**, corejob140058830854 success; predates newtests |

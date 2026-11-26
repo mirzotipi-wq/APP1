@@ -1,0 +1,138 @@
+{
+  "worker": "w09-02",
+  "actual_context": 82,
+  "role": "real-store committed-save regression writer",
+  "worktree": "/tmp/keyfill01-wave09/w09-02/tree",
+  "base_revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+  "writer_revision": "d3946bc5369bb00459c161e4397d9364dccba2bc",
+  "inspected_root_checkpoint": "bed58c338f9f53758c611b8642241c3ec7697505",
+  "root_checkpoint_diff_docs_only": true,
+  "scope": [
+    "NativeTests/StudioCommittedSaveTests.swift"
+  ],
+  "git_status_porcelain": "",
+  "head_mode": "detached",
+  "source_hashes": {
+    "App/StudioSession.swift": {
+      "git_blob": "7b965091e3043fd294502f3cf900b7bd970f8458",
+      "sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997"
+    },
+    "App/ProjectStore.swift": {
+      "git_blob": "531f967fe2f532b7f68f728bcda677c75d8c0253",
+      "sha256": "404db2197b3f4f9fa45865ed915cae8bd1c255338edb1d8b834753022e3852aa"
+    },
+    "App/ProjectLibraryOperation.swift": {
+      "git_blob": "79dfd4fe8672bb2817392c2a2dfd549846688510",
+      "sha256": "0c4bff3e4d29c585bc0cd342440a5d7e3ec43fd4bc32eeec457533a87b35c413"
+    },
+    "Sources/LightingCore/StudioEditorState.swift": {
+      "git_blob": "76c9f3c70b77ffebd35ff9619a58c89a03060ebf",
+      "sha256": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668"
+    },
+    "Sources/LightingCore/SceneEditHistory.swift": {
+      "git_blob": "1b28c1e12424b98db5ccfdcbbc4b10b9d32c8368",
+      "sha256": "b74aa78bac2c6940c86177dc74703864e054190950092879e81c64cc7697a767"
+    },
+    "Sources/LightingCore/StudioFeaturePresentation.swift": {
+      "git_blob": "94ad1b901ad0cf3e34fb3c19f0512297fad32545",
+      "sha256": "220a85ac575460d54e0a39c5a9ada9f894556b849018ee5e21a2099cf6a472f0"
+    },
+    "NativeTests/StudioSessionTests.swift": {
+      "git_blob": "21be02ca1a80d33d4013c12f61d6d188a0efe07a",
+      "sha256": "f71d17ab8e7e9dd2ebfa7e20c87a395124ac8aa88910ef96c784b0be3dcb57bc"
+    },
+    "NativeTests/StudioFeatureSessionTests.swift": {
+      "git_blob": "f5a2a5184333ba42df2fc79154ead9935df8813e",
+      "sha256": "3d3f9d61d97b6ad60a0941b26510c5bda72f61fcb5690dcc7c32fbca0b1cad9e"
+    },
+    "NativeTests/ProjectStoreOperationTests.swift": {
+      "git_blob": "7005e2583b347c46e2fb3fd92e0c60e1f7c506c4",
+      "sha256": "0b529ef1265f39b94f337713cea2617b3240cd046f78c1345269320d480bde13"
+    },
+    "NativeTests/StudioCommittedSaveTests.swift": {
+      "git_blob": "07dc1cad6d7f02fc3964672426d7d57c1b3a3be8",
+      "sha256": "11fe4dd72f5f534f2bfcb270db1e731e0fc79824e9c08fd8280fb0cfe4cca70c"
+    }
+  },
+  "commands": [
+    {
+      "command": "git status --short && git rev-parse HEAD && git log -6 --oneline",
+      "exit_code": 0,
+      "result": "Clean frozen worktree; HEAD f33a399; production Observation fix 8b18366 in recent history"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; not acceptance"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03; editing, accessibility, persistence outstanding"
+    },
+    {
+      "command": "rg --files .../evidence/wave08 .../evidence/wave08-fixed .../evidence/wave09 .../workers/w09-02",
+      "exit_code": 2,
+      "result": "wave08 and wave08-fixed listed; wave09 directory absent at inspection"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0,
+      "result": "Scoped new file whitespace check passes"
+    },
+    {
+      "command": "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc -frontend -parse NativeTests/StudioCommittedSaveTests.swift",
+      "exit_code": 0,
+      "result": "Syntax only; final committed source also parsed; not typecheck or runtime"
+    },
+    {
+      "command": "git commit -m \"Test real committed first saves across session cancellation\"",
+      "exit_code": 0,
+      "result": "d3946bc5369bb00459c161e4397d9364dccba2bc"
+    },
+    {
+      "command": "git diff --name-only f33a399f8ba21618320ce50aed7981450a9703a7 bed58c338f9f53758c611b8642241c3ec7697505",
+      "exit_code": 0,
+      "result": "Only docs paths differ"
+    }
+  ],
+  "tests_added": [
+    "StudioCommittedSaveTests.testCancellingObserverAfterRealFirstSaveCommitPreservesRoomAndUndo",
+    "StudioCommittedSaveTests.testCancellingSessionTaskAfterRealFirstSaveCommitStillAdoptsReceipt"
+  ],
+  "gate": {
+    "placement": "Only after actual store.perform(.save) returns; load remains ungated",
+    "suspension": "CheckedContinuation; NSLock protects latch and continuation array only",
+    "timeout_seconds_per_wait": 5,
+    "cleanup": "Synchronous idempotent open; cancellation and bounded save/observer joins on thrown failure; outer defer opens before deleting temporary directory",
+    "sleeps": false,
+    "production_hooks": false
+  },
+  "unrun": [
+    "New test runtime execution in every configuration",
+    "Swift typechecking",
+    "Apple SDK compilation/runtime",
+    "Full Debug/Release package tests",
+    "Native/UI suites"
+  ],
+  "integration_required": [
+    "Root explicitly adds new filename to Package.swift",
+    "Root executes new methods and required relevant suites",
+    "Independent reviewer challenges draft/commit"
+  ],
+  "evidence_consulted": [
+    "docs/parallel/01/evidence/wave08/apple-observation-failure.json",
+    "docs/parallel/01/evidence/wave08/observation-after.json",
+    "docs/parallel/01/evidence/wave08-fixed/debug-command.json",
+    "docs/parallel/01/evidence/wave08-fixed/release-per-file-command.json",
+    "docs/parallel/01/evidence/wave08-fixed/native-syntax.json"
+  ],
+  "limitations": [
+    "No weak-lifetime duplicate; existing StudioSessionTests covers it",
+    "Existing Void producer limitation unchanged",
+    "Historical successful tests are not transferred to new test source",
+    "No source behavior changes"
+  ],
+  "source_patch_sha256": "f27c1fcc51216729f0fde01915f1895581c3e101dca92dc73c2ad9957b3ab5e4",
+  "report_sha256": "da8439f047eabb8f531449d8d9874874aaa4ce5b72e2d7155db9d8e27117d2d8"
+}

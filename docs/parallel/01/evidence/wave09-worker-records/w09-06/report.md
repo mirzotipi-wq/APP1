@@ -1,0 +1,9 @@
+# W09-06 — lifetime and undo review
+
+Actual fresh context 86. Read-only tree remains clean at f33a399. Inspected integrated cdacffd, writer commits d3946bc/d2768d, and published object adffee463. Exact revisions and hashes are in receipt.json. App/Sources are unchanged from the frozen input; publication matches integrated code.
+
+No new material lifecycle or undo defect found. Reservation precedes ending edits; the task retains its session until settlement and clears ownership in defer. Existing weak-lifetime coverage is retained without duplication. Repeated Room/AR results advance their receipt and share an owner group; invalid/no-op callbacks preserve it. Owner-ID checks reject old retirement/teardown against a newer sheet, while nested AR manual dismissal leaves the outer receipt live. First save preserves workspace/feature identity and history while advancing storage generation.
+
+The new real-store cases inspect committed disk state, cancel either observer or session task, then assert adoption, continued Room edits and exact undo/redo. Coverage caveat: selecting another light closes the first Room group before reservation, so these cases do not isolate save closing an open Room group. Existing accepted-save Plan coverage and the common endEditing path cover that boundary; no extra test is warranted.
+
+Ran only state check/next: exit 0, structural validation only. Independently checked the root c3ce487 receipt/log hash: two targeted Debug tests passed. Full current Debug/Release runs remain pending at this review. Native Observation tests were source-reviewed; Apple compilation, SwiftUI timing/identity and AR runtime remain unverified. Existing Void-producer draft-loss limitation remains. No builds, runtime tests, source edits or pushes by this worker; source.patch is empty.
