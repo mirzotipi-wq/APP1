@@ -40,7 +40,8 @@ final class ProjectLibraryPresentationTests: XCTestCase {
     func testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage() throws {
         // These names remain valid in the legacy library even though new-name
         // entry requires visible content. Presentation must retain each source.
-        for name in ["\u{200D}", "\u{200C}", "\u{FE0F}", "\u{034F}\u{FE0F}"] {
+        for name in ["\u{200D}", "\u{200C}", "\u{FE0F}", "\u{034F}\u{FE0F}",
+                     "\u{2800}", "\u{2800}\u{2800}", " \u{200D}\u{2800}\u{FE0F} "] {
             let original = try project(name)
             let row = try XCTUnwrap(ProjectLibraryRowPresentation.make(for: [original]).first)
             let identifier = String(original.id.uuidString.prefix(8))
@@ -66,7 +67,7 @@ final class ProjectLibraryPresentationTests: XCTestCase {
 
     func testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars() throws {
         let names = ["Family 👩\u{200D}👩\u{200D}👧\u{200D}👦", "نورپردازی می\u{200C}شود",
-                     "क्\u{200D}ष", "❤️", "e\u{0301}"]
+                     "क्\u{200D}ष", "❤️", "e\u{0301}", "\u{2803}\u{2800}\u{2817}", "Key\u{2800}light"]
         let projects = try names.map { try project($0) }
         let rows = ProjectLibraryRowPresentation.make(for: projects)
 

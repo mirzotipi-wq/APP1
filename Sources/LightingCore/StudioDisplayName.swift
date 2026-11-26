@@ -98,8 +98,11 @@ public enum StudioDisplayName {
     private static func hasDisplayContent(_ name: String) -> Bool {
         // Joining controls and variation selectors remain valid within a
         // visible script or emoji sequence; alone they do not supply a label.
+        // Braille blank is meaningful spacing within visible text, but its
+        // Unicode properties do not classify it as whitespace or ignorable.
         name.unicodeScalars.contains {
-            !$0.properties.isWhitespace && !$0.properties.isDefaultIgnorableCodePoint
+            !$0.properties.isWhitespace && !$0.properties.isDefaultIgnorableCodePoint &&
+                $0.value != 0x2800
         }
     }
 

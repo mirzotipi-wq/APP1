@@ -131,6 +131,35 @@ final class StudioDisplayNameTests: XCTestCase {
         XCTAssertTrue(StudioDisplayName.label("\u{200C}", fallback: fallback).hasSuffix("…"))
     }
 
+    func testBrailleBlankAloneCannotSupplyVisibleNameContent() {
+        for name in ["\u{2800}", String(repeating: "\u{2800}", count: 8),
+                     " \u{200D}\u{2800}\u{FE0F}\u{2800} "] {
+            XCTAssertThrowsError(try StudioDisplayName.newInput(name)) {
+                XCTAssertEqual($0 as? StudioDisplayName.NameError, .empty)
+            }
+            XCTAssertEqual(StudioDisplayName.display(name), "")
+            XCTAssertEqual(StudioDisplayName.label(name, fallback: "Unnamed project"), "Unnamed project")
+        }
+    }
+
+    func testBrailleSpacingIsPreservedAndLegacyBlankNameRoundTripsUnchanged() throws {
+        for name in ["\u{2803}\u{2800}\u{2817}", "Key\u{2800}light", "\u{2800}Portrait\u{2800}"] {
+            XCTAssertEqual(try StudioDisplayName.newInput(name), name)
+            XCTAssertEqual(StudioDisplayName.display(name), name)
+        }
+        let originalName = "\u{2800}\u{2800}"
+        let library = try ProjectLibrary(name: originalName, scene: .portrait())
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        let encoded = try encoder.encode(library)
+        let reopened = try JSONDecoder().decode(ProjectLibrary.self, from: encoded).validated()
+        let project = try XCTUnwrap(reopened.activeProject)
+        XCTAssertEqual(project.id, library.activeProject?.id)
+        XCTAssertEqual(Array(project.name.unicodeScalars), Array(originalName.unicodeScalars))
+        XCTAssertEqual(StudioDisplayName.label(project.name, fallback: "Unnamed project"), "Unnamed project")
+        XCTAssertEqual(try encoder.encode(reopened), encoded)
+    }
+
     private func assertBounds(_ label: String, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertLessThanOrEqual(label.count, StudioDisplayName.maximumCharacters, file: file, line: line)
         XCTAssertLessThanOrEqual(label.unicodeScalars.count, StudioDisplayName.maximumScalars, file: file, line: line)
