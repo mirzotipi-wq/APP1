@@ -11,15 +11,12 @@ struct StudioView: View {
     @State private var planNeedsLabelNotice = false
     @State private var planGridTitle = StudioPlanGridTitleKey.defaultValue
     @State private var showProjects = false
-    @State private var showRoomPlacement = false
     @State private var showSubject = false
     @State private var renamingLightID: UUID?
     @State private var lightNameDraft = ""
     @State private var lightNameInputTooLong = false
     @State private var showRenameLight = false
     @State private var renameGeneration: UUID?
-    @State private var luxTarget: LuxTarget?
-    @State private var showARPlacement = false
     @State private var showSettings = false
     @State private var mode = "Plan"
     @State private var studySubject: StudySubject = .sphere
@@ -32,10 +29,6 @@ struct StudioView: View {
     @State private var meterNavigationRequest = 0
     @State private var confirmRemove = false
     @State private var removalTarget: RemovalTarget?
-    @State private var referenceContext: SceneContext?
-    @State private var roomContext: SceneContext?
-    @State private var arrangementContext: SceneContext?
-    @State private var arContext: SceneContext?
     @State private var confirmReloadConflict = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -60,23 +53,9 @@ struct StudioView: View {
         nonmutating set { session.message = newValue }
     }
 
-    private struct LuxTarget: Identifiable {
-        let id = UUID()
-        let light: StudioLight
-        let scene: LightingScene
-        let generation: UUID
-    }
-
     private struct RemovalTarget {
         let lightID: UUID
         let generation: UUID
-    }
-
-    private struct SceneContext: Identifiable {
-        let scene: LightingScene
-        let generation: UUID
-        let owner = UUID().uuidString
-        var id: String { owner }
     }
 
     var body: some View {
@@ -151,62 +130,9 @@ struct StudioView: View {
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
             .sheet(isPresented: $showSettings) { StudioSettingsView(store: entitlements) }
-            .sheet(item: $referenceContext) { context in
-                ReferenceComparisonView(scene: context.scene) { rig in
-                    guard acceptsSceneResult(from: context) else { return }
-                    replace(rig); mode = "Study"
-                }
-            }
-            .background {
-                if let context = roomContext {
-                    Color.clear
-                        .sheet(isPresented: roomPresentationBinding(for: context), onDismiss: {
-                            finishRoomEditing(context)
-                        }) {
-                            ManualRoomPlacementView(scene: scene,
-                                onRemove: { removeRoom(from: context) },
-                                onClose: { retireRoomPresentation(context) }) { room in
-                                    applyRoom(room, from: context)
-                                }
-                        }
-                        .id(context.owner)
-                }
-            }
-            .sheet(item: $luxTarget) { target in
-                LightTargetLuxView(light: target.light, scene: target.scene) { adjusted in
-                    guard libraryOperation.allowsSceneMutation(from: target.generation),
-                          scene == target.scene,
-                          let index = scene.lights.firstIndex(where: { $0.id == target.light.id }),
-                          scene.lights[index] == target.light else {
-                        message = "The setup changed while adjusting output. Open the light's target again."
-                        return
-                    }
-                    var next = scene
-                    next.lights[index] = adjusted
-                    replace(next)
-                }
-            }
-            .sheet(item: $arrangementContext) { context in
-                SceneArrangementView(scene: context.scene) { next in
-                    guard acceptsSceneResult(from: context) else { return }
-                    replace(next)
-                }
-            }
-            .background {
-                if let context = arContext {
-                    Color.clear
-                        .sheet(isPresented: roomPresentationBinding(for: context, isAR: true), onDismiss: {
-                            finishRoomEditing(context)
-                        }) {
-                            ARPlacementView(scene: scene,
-                                onRoomRemove: { removeRoom(from: context) },
-                                onClose: { retireRoomPresentation(context) }) { room in
-                                    applyRoom(room, from: context)
-                                }
-                        }
-                        .id(context.owner)
-                }
-            }
+            .modifier(StudioFeatureSheets(session: session, onReferenceApplied: {
+                mode = "Study"
+            }))
             .sheet(isPresented: $showSubject) {
                 NavigationStack {
                     ScrollView {
@@ -271,8 +197,11 @@ struct StudioView: View {
                 Text("Only the unsaved changes in this window will be discarded. The latest saved library will be opened.")
             }
             .task { if !loaded { load(from: generation) } }
-            .onChange(of: session.generation) { _, _ in dismissSceneEditors() }
-            .onChange(of: session.workspaceResetID) { _, _ in mode = "Plan"; showMeter = false }
+            .onChange(of: session.workspaceResetID) { _, _ in
+                dismissSceneEditors()
+                mode = "Plan"
+                showMeter = false
+            }
             .onChange(of: scenePhase) { _, phase in
                 if phase != .active { finishPlanDrag(); session.endEditing() }
             }
@@ -406,12 +335,9 @@ struct StudioView: View {
                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
             Menu {
                 Button("Subject position", systemImage: "person.crop.rectangle") { showSubject = true }
-                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath") {
-                    arrangementContext = sceneContext()
-                }
-                Button("Place in AR", systemImage: "arkit") {
-                    arContext = sceneContext(); showARPlacement = true
-                }
+                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath",
+                       action: featureAction(.arrangement))
+                Button("Place in AR", systemImage: "arkit", action: featureAction(.ar))
                 Divider()
                 Button("Settings", systemImage: "gearshape") { showSettings = true }
             } label: {
@@ -465,7 +391,7 @@ struct StudioView: View {
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
             : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
         return layout {
-            Button { referenceContext = sceneContext() } label: {
+            Button(action: featureAction(.reference)) {
                 Label("Reference photo", systemImage: "rectangle.split.2x1")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -473,7 +399,7 @@ struct StudioView: View {
             .buttonStyle(.bordered)
             .accessibilityLabel("Compare reference photo")
             .accessibilityIdentifier("openReference")
-            Button { roomContext = sceneContext(); showRoomPlacement = true } label: {
+            Button(action: featureAction(.room)) {
                 Label("Room placement", systemImage: "ruler")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -507,14 +433,14 @@ struct StudioView: View {
                     StudioPalette.planBackground
                     if mode == "Plan" { plan }
                     else if mode == "Camera" { cameraPreview }
-                    else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
+                    else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(session.workspaceResetID) }
                     else {
                         RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in
                             guard libraryOperation.allowsSceneMutation(from: generation),
                                   scene.lights.contains(where: { $0.id == id }) else { return }
                             selected = id
                         }
-                        .id(generation)
+                        .id(session.workspaceResetID)
                         .accessibilityLabel("Illustrative 3D lighting preview")
                     }
                     if mode != "Plan" {
@@ -978,7 +904,7 @@ struct StudioView: View {
                         .disabled(scene.lights.count >= 12)
                     Button("Set ideal lux", systemImage: "sun.max", action: sceneAction {
                         guard scene.lights.contains(light) else { return }
-                        luxTarget = LuxTarget(light: light, scene: scene, generation: libraryOperation.generation)
+                        _ = session.openFeature(.targetLux(lightID: light.id), from: session.generation)
                     })
                 } label: {
                     Image(systemName: "ellipsis.circle").frame(width: 44, height: 44)
@@ -1192,95 +1118,21 @@ struct StudioView: View {
         }
     }
 
-    private func sceneContext() -> SceneContext {
-        finishPlanDrag()
-        session.endEditing()
-        return SceneContext(scene: scene, generation: libraryOperation.generation)
-    }
-
-    private func acceptsSceneResult(from context: SceneContext) -> Bool {
-        guard libraryOperation.allowsSceneMutation(from: context.generation) else { return false }
-        guard scene == context.scene else {
-            message = "The setup changed while this editor was open. Reopen it to apply changes to the current setup."
-            return false
-        }
-        return true
-    }
-
-    private func roomPresentationBinding(for context: SceneContext, isAR: Bool = false) -> Binding<Bool> {
-        Binding(get: {
-            isAR ? (showARPlacement && arContext?.owner == context.owner)
-                : (showRoomPlacement && roomContext?.owner == context.owner)
-        }, set: { presented in
-            // A delayed dismissal belongs only to its original presentation.
-            if isAR {
-                guard arContext?.owner == context.owner else { return }
-                showARPlacement = presented
-            } else {
-                guard roomContext?.owner == context.owner else { return }
-                showRoomPlacement = presented
-            }
-        })
-    }
-
-    private func retireRoomPresentation(_ context: SceneContext) {
-        if roomContext?.owner == context.owner { showRoomPlacement = false }
-        if arContext?.owner == context.owner { showARPlacement = false }
-    }
-
-    private func acceptsRoomResult(from context: SceneContext) -> Bool {
-        guard libraryOperation.allowsSceneMutation(from: context.generation),
-              (showRoomPlacement && roomContext?.owner == context.owner)
-                || (showARPlacement && arContext?.owner == context.owner) else { return false }
-        // Repeated room changes belong to this presentation; other rig edits
-        // invalidate its snapshot even if the project generation is unchanged.
-        var current = scene
-        current.placementRoom = context.scene.placementRoom
-        return current == context.scene
-    }
-
-    private func applyRoom(_ room: ManualRoom, from context: SceneContext) -> Bool {
-        guard room.isValid, acceptsRoomResult(from: context) else { return false }
-        guard room != scene.placementRoom else { return true }
-        session.editChanged(true, owner: context.owner, from: context.generation)
-        return session.apply(.room(room), from: context.generation)
-    }
-
-    private func finishRoomEditing(_ context: SceneContext?) {
-        guard let context else { return }
-        session.endEditing(owner: context.owner)
-        if roomContext?.owner == context.owner {
-            showRoomPlacement = false
-            roomContext = nil
-        }
-        if arContext?.owner == context.owner {
-            showARPlacement = false
-            arContext = nil
-        }
-    }
-
-    private func removeRoom(from context: SceneContext) -> Bool {
-        guard acceptsRoomResult(from: context) else { return false }
-        guard scene.placementRoom != nil else { return true }
-        session.editChanged(true, owner: context.owner, from: context.generation)
-        return session.apply(.room(nil), from: context.generation)
+    /// Capture storage identity when rendering the action, before a queued tap
+    /// can outlive a project switch. Opening itself reserves the live feature.
+    private func featureAction(_ destination: StudioFeatureDestination) -> () -> Void {
+        let generation = session.generation
+        return { _ = session.openFeature(destination, from: generation) }
     }
 
     private func dismissSceneEditors() {
-        showRoomPlacement = false
         showSubject = false
-        showARPlacement = false
         showRecipes = false
         showRenameLight = false
         confirmRemove = false
         renamingLightID = nil
         renameGeneration = nil
         removalTarget = nil
-        luxTarget = nil
-        referenceContext = nil
-        roomContext = nil
-        arrangementContext = nil
-        arContext = nil
     }
 
     private func replace(_ next: LightingScene) {

@@ -3,9 +3,9 @@
 These narrow contracts describe lane 01's composition seam. They do not change
 the scene schema or grant ownership over another lane's feature algorithms.
 
-Status: core contracts and the document session are implemented. Native feature
-route admission is pending; these rules are not a claim that the current sheets
-already use the new feature sessions.
+Status: core contracts, the document session and native feature-host wiring are
+implemented. Portable orchestration is tested; native Observation and sheet
+behavior still require Apple runtime validation.
 
 ## Scene invariants
 
@@ -94,7 +94,10 @@ repeat and share an owner undo group. A valid unrelated command closes that grou
 before making its own change; invalid/no-op commands preserve it. Accepted changed
 feature results also clear any frozen Plan origin, including a zero-motion drag
 that did not advance the revision. No-op results retain that still-valid origin.
-These session policies are implemented; native host wiring remains pending.
+These session policies are wired through `StudioFeatureSheets`. Its owner-keyed
+Boolean sheet binding retires immediately on dismissal and clears only the
+matching payload on teardown. Root `onDisappear` does not retire features because
+modal/adaptive coverage can also trigger it.
 
 Reference/arrangement producers keep their current snapshot + callback API.
 Room/AR keep synchronous Bool acceptance, enabling the feature to retain a draft
@@ -142,3 +145,23 @@ Reference's current Void Apply callback consumes its local session before parent
 admission. A future owner-provided acceptance callback must preserve the draft on
 rejection. Until available, native reference draft preservation remains a stated
 integration limitation, distinct from scene-result rejection.
+
+## Native composition and preview lifetime
+
+`StudioView` opens features through actions that capture storage generation when
+rendered. The session reserves the presentation only after admission. The shared
+host sends immutable opening snapshots to reference/arrangement/lux, and live
+scene values to room/AR so their own accepted changes remain visible. Nested
+manual-room closure stays within AR's local owner; it does not retire outer AR.
+
+Both Study and 3D wrappers use `workspaceResetID` for identity. The 3D selection
+callback independently checks its captured storage generation and live light UUID.
+First save does not remount a preview; intentional document reset changes identity.
+That satisfies the published lane05 composition request at source level; orbit,
+focus, Observation and camera/controller retention still need native execution.
+
+The current three Void producers can consume rejected drafts. The host's rejection
+message is scoped to the current active owner and does not claim retention.
+[FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md) records exact current signatures and
+future explicitly labeled Bool callbacks with acceptance before cleanup. No
+producer implementation was changed by this lane.

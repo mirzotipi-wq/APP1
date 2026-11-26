@@ -44,6 +44,7 @@ let package = Package(
                 "SceneArrangementView.swift",
                 "SpatialPreview.swift",
                 "StudioEntityGraph.swift",
+                "StudioFeatureSheets.swift",
                 "StudioGuideView.swift",
                 "StudioMeterReadout.swift",
                 "StudioPalette.swift",
@@ -90,6 +91,7 @@ let package = Package(
                 "StudioSessionTests.swift",
                 "StudioPlanSessionTests.swift",
                 "StudioFeatureSessionTests.swift",
+                "StudioFeatureWindowTests.swift",
             ])
     ]
 )

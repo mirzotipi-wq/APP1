@@ -1,0 +1,112 @@
+{
+  "worker": "W06-03",
+  "canonical_agent": "/root/w06_acceptance/w06_03_api",
+  "manager": "/root/w06_acceptance",
+  "base_commit": "791fa58702be6fa84a2675e7d5a9b8462c143caf",
+  "commit": "205f6a0ef0e6da6161212fc2f7bd9704dd9e4d33",
+  "commit_parent": "791fa58702be6fa84a2675e7d5a9b8462c143caf",
+  "tree": "8ed245f1b3d114a3098682fd1d8ddfe5faf8f5fc",
+  "assigned_path": "docs/parallel/01/FEATURE_ADAPTERS.md",
+  "changed_paths": [
+    "docs/parallel/01/FEATURE_ADAPTERS.md"
+  ],
+  "document_sha256": "2e1b305b4549e617125ba56808b8c9c6c292911b1c0314d6a28be86bf54d2068",
+  "document_git_blob": "6e249df26426054548d86ad51edbc719736cb628",
+  "producer_sources": {
+    "App/ReferenceComparisonView.swift": {
+      "sha256": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb",
+      "git_blob": "fad8232524c74c4cf06e0f2ff132e7f678f2c430"
+    },
+    "App/SceneArrangementView.swift": {
+      "sha256": "40b0018689e309368e37d2defac0271f6e96d8913a688bf757a0540ebf852bb8",
+      "git_blob": "242c237525abee61e4ef5cc0cb2c885611f26785"
+    },
+    "App/LightTargetLuxView.swift": {
+      "sha256": "7dc77229e6d7f50c767402dc7289e2e1e48e30ecd4845deb5a5596afa6d3b097",
+      "git_blob": "a77521a39b68c1320f6aa5bff86b0224f987e468"
+    },
+    "App/ManualRoomPlacementView.swift": {
+      "sha256": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+      "git_blob": "37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6"
+    },
+    "App/ARPlacementView.swift": {
+      "sha256": "e6085889ed25337c729c2dbb7d2b9027e7368e08b8cd3ff46ab980a617979c0a",
+      "git_blob": "ec10f43d57234af9245bddc2fd90785d6ef21b22"
+    },
+    "App/StudioSession.swift": {
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+      "git_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4"
+    }
+  },
+  "reviewed_host": {
+    "commit": "9e5b363a3fd78befd5aee14a528fe4defb97637f",
+    "path": "/workspace/scratch/e08d5190f17c/workers/w06-04/tree/App/StudioFeatureSheets.swift",
+    "sha256": "8ecbb8802dac256917bae9e779ac7b579c8789e408dfd72be1f8abb378b06e37"
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; does not verify test truth or release readiness."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03; outstanding editing, accessibility, persistence."
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0,
+      "result": "No whitespace errors in staged new document."
+    },
+    {
+      "command": "Read-only document link/fence/scope inspection",
+      "exit_code": 0,
+      "result": "6 source links resolve; fenced blocks balanced; only assigned new document staged."
+    },
+    {
+      "command": "Read-only byte/hash comparison against frozen producer and host commits",
+      "exit_code": 0,
+      "result": "All 7 inspected source files matched committed bytes; 6 frozen files unchanged after document commit."
+    },
+    {
+      "command": "git status --porcelain=v1 and git diff-tree --no-commit-id --name-only -r HEAD",
+      "exit_code": 0,
+      "result": "Clean tree; only assigned new document committed."
+    }
+  ],
+  "no_runs": [
+    "builds",
+    "tests",
+    "native runtime",
+    "network",
+    "Apple typecheck",
+    "push"
+  ],
+  "defects_or_limits": [
+    "Reference clears its ephemeral session before a Void callback; arrangement/lux set completion before their Void callbacks and dismiss afterward.",
+    "Existing API cannot preserve rejected drafts; proposed onAccept contract is not implemented.",
+    "Native runtime and Apple compilation unverified; host integration pending at source review.",
+    "agents state is canonical milestone history, not independent proof of lane progress; it was not changed."
+  ],
+  "report": {
+    "path": "/workspace/scratch/e08d5190f17c/workers/w06-03/report.md",
+    "sha256": "8cb50db2d4b346abf2af43d3e16a7e579fc89a34e43cbf2a61f72d79f00cf234",
+    "words": 177,
+    "characters": 1404,
+    "tool_original_token_count": 352,
+    "token_check_command": "cat report.md",
+    "token_check_exit_code": 0
+  },
+  "patch": {
+    "path": "/workspace/scratch/e08d5190f17c/workers/w06-03/w06-03.patch",
+    "sha256": "b7f30773f5ab1cb9b9286a96917895a0377025f57bc1e0998c464c2008f3b6b6"
+  },
+  "checkpoint": {
+    "path": "/workspace/scratch/e08d5190f17c/workers/w06-03/checkpoint.json",
+    "sha256": "d923541011a293d0dc6ab5bd0372ecd124dde68436f9c78d91779afc880a5d80"
+  },
+  "worktree": "/workspace/scratch/e08d5190f17c/workers/w06-03/tree",
+  "preserved": true,
+  "independent_review": "Pending manager/root; this worker performed source self-review only."
+}

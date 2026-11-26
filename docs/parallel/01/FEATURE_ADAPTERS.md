@@ -1,0 +1,180 @@
+# Feature producer acceptance adapters
+
+## Scope and source authority
+
+Producer contracts below were read at
+`791fa58702be6fa84a2675e7d5a9b8462c143caf`. The separately committed
+`StudioFeatureSheets` host was read at
+`9e5b363a3fd78befd5aee14a528fe4defb97637f`; root integration was pending at
+review. This document changes no producer or host implementation. Future examples
+require a feature-owner change before composition can call them.
+
+## Current constructors and callbacks
+
+| Producer source | Current constructor and inputs |
+|---|---|
+| [ReferenceComparisonView](../../../App/ReferenceComparisonView.swift) | Synthesized `init(scene:onApply:)`; `scene: LightingScene`, `onApply: (LightingScene) -> Void`. |
+| [SceneArrangementView](../../../App/SceneArrangementView.swift) | Explicit `init(scene: LightingScene, onApply: @escaping (LightingScene) -> Void)`. Initializes `destination` from `scene.subject`. |
+| [LightTargetLuxView](../../../App/LightTargetLuxView.swift) | Synthesized `init(light:scene:onApply:)`; `light: StudioLight`, `scene: LightingScene`, `onApply: (StudioLight) -> Void`. |
+| [ManualRoomPlacementView](../../../App/ManualRoomPlacementView.swift) | Explicit signature below; all three callbacks are optional and default to `nil`. |
+| [ARPlacementView](../../../App/ARPlacementView.swift) | Explicit signature below; all three callbacks are optional and default to `nil`. |
+
+```swift
+// Current ManualRoomPlacementView initializer signature.
+init(scene: LightingScene, onRemove: (() -> Bool)? = nil,
+     onClose: (() -> Void)? = nil, onChange: ((ManualRoom) -> Bool)? = nil)
+
+// Current ARPlacementView initializer signature.
+init(scene: LightingScene, onRoomRemove: (() -> Bool)? = nil,
+     onClose: (() -> Void)? = nil, onRoomChange: ((ManualRoom) -> Bool)? = nil)
+```
+
+The three `onApply` callbacks are required; none returns acceptance or exposes an
+`onClose` callback. Their current successful local calculation paths are:
+
+| Producer | Exact consumption order |
+|---|---|
+| Reference | Guard `!sessionClosed` and selected rig → `closeSession()` → `onApply(rig.scene)` → `dismiss()`. `closeSession()` sets `sessionClosed`, cancels import/analysis, and clears the reference image, tones, observations, candidates, selection and errors through `clear()`. |
+| Arrangement | Guard `!didFinish` → calculate `SceneTransform.arranged(...)` → set `didFinish = true` → `onApply(next)` → `dismiss()`. Calculation errors remain local; parent rejection cannot enter the catch path. |
+| Target lux | Guard `!didApply`, no rejected oversized draft, and parsed target → calculate `LightOutputAdjustment.light(...)` → set `didApply = true` → `onApply(adjusted)` → `dismiss()`. Calculation errors remain local; parent rejection cannot enter the catch path. |
+
+Done/Cancel never calls `onApply`: Reference Done closes its session; arrangement
+Cancel sets `didFinish`; target-lux Cancel only dismisses.
+
+Manual room initializes `room` from `scene.placementRoom ?? ManualRoom()` and
+`keptRoom` from `scene.placementRoom`. Changes to `room` and the explicit Keep
+button call `keepRoom`, which validates the room before calling `onChange(next)`.
+`false` sets `roomCommitRejected` and keeps the displayed room and previous
+`keptRoom`; `true` clears that error and updates `keptRoom`. Removal similarly
+calls `onRemove()` before clearing `keptRoom`; both outcomes retain displayed
+measurements. Neither operation dismisses the editor. Done calls `onClose?()`
+before `dismiss()`. Missing change/removal callbacks hide their commit/removal
+controls; measurements remain editable for local planning.
+
+AR's initializer seeds its `StateObject` with `ARPlacementController(scene: scene)`.
+It forwards nested manual changes/removals only while `showingManual` is true
+and `manualOwner` matches the captured owner; otherwise it returns `false`.
+It propagates the parent's Bool unchanged. **Nested manual Done is local:** its
+`onClose` sets `showingManual = false` only for that owner; matching sheet teardown
+then clears `manualOwner`. It must not call the outer `onClose` or retire the
+Studio feature. Outer AR Done calls `onClose?()`, `controller.disappeared()`, then
+`dismiss()`.
+
+## Current host behavior and limit
+
+`StudioFeatureSheets` passes the opening `context.scene` to reference and
+arrangement, and the captured light plus that snapshot to target lux. It calls
+the actual [StudioSession](../../../App/StudioSession.swift) acceptance methods;
+only accepted reference results invoke `onReferenceApplied`. Room/AR receive
+live `session.scene` and return `applyFeatureRoom(room, from: context)` or
+`applyFeatureRoom(nil, from: context)` directly. Their outer close retires only
+the matching context; sheet dismissal finishes only that context.
+
+The host can reject an obsolete scene/light result, but the existing Void API
+cannot preserve the consumed draft. Its rejection message is owner-matched and
+asks the user to reopen. Core admission, disabling busy UI, or wrapping a Void
+callback cannot recover Reference's discarded photo/candidates or undo the
+arrangement/lux completion flags. Native retention remains an owner API gap.
+
+## Future owner proposal — not implemented
+
+Add a **synchronous, explicitly labeled** `onAccept` callback to each of the three
+legacy producers:
+
+| Producer | Proposed initializer signature |
+|---|---|
+| Reference | `init(scene: LightingScene, onAccept: @escaping (LightingScene) -> Bool)` |
+| Arrangement | `init(scene: LightingScene, onAccept: @escaping (LightingScene) -> Bool)` |
+| Target lux | `init(light: StudioLight, scene: LightingScene, onAccept: @escaping (StudioLight) -> Bool)` |
+
+Run the callback synchronously on the session's main actor, with no task or
+suspension between admission and completion. `true` means admitted and validated,
+including a valid unchanged proposal. `false` preserves the open editor's draft
+and shows a local rejection error; it must not clear, mark complete, or dismiss.
+Actual Done, swipe dismissal, or document reset still performs normal cleanup.
+
+Preserve reentrancy protection with a separate short-lived
+`@State private var isSubmitting = false`. At the start of each Apply action,
+guard both its existing completion flag and `!isSubmitting`, set `isSubmitting`
+to true, and reset it with `defer`. Keep existing candidate calculation and catch
+paths. The acceptance branches must precede the existing consumption points:
+
+```swift
+// FUTURE Reference Apply action, after its existing selected-rig guard.
+guard onAccept(rig.scene) else {
+    rigError = "The change was not applied. Your draft is still open."
+    return
+}
+closeSession() // Photo/candidates may be discarded only after acceptance.
+dismiss()
+
+// FUTURE arrangement apply(), after constructing next inside the do block.
+guard onAccept(next) else {
+    error = "The change was not applied. Your draft is still open."
+    return
+}
+didFinish = true
+dismiss()
+
+// FUTURE target-lux apply(), after constructing adjusted inside the do block.
+guard onAccept(adjusted) else {
+    error = "The change was not applied. Your entry is still open."
+    return
+}
+didApply = true
+dismiss()
+```
+
+These are replacement action fragments, not compiled implementations. Retain
+Reference's image/candidates/preview selection, arrangement's destination/yaw/
+mirror, and target lux's raw input on `false`. The temporary `isSubmitting` guard
+must reset on rejection and calculation failure; it is not a completion flag.
+
+### Future composition calls
+
+Use the explicit argument label, never an unlabeled trailing closure at this
+boundary. Each example assumes its matching live presentation and, for lux,
+the light resolved from that presentation's snapshot:
+
+```swift
+ReferenceComparisonView(scene: context.scene, onAccept: { next in
+    guard session.applyFeatureScene(next, from: context) else { return false }
+    onReferenceApplied() // Switch to Study only after acceptance.
+    return true
+})
+SceneArrangementView(scene: context.scene, onAccept: { next in
+    session.applyFeatureScene(next, from: context)
+})
+LightTargetLuxView(light: light, scene: context.scene, onAccept: { adjusted in
+    session.applyFeatureLight(adjusted, from: context)
+})
+```
+
+Use these feature methods, not the ordinary mutation Bool: accepted no-ops return
+true and retire the scene/lux receipt. Lux admission checks the captured UUID and
+permits only candela changes. Room/AR already support Bool acceptance, repeated
+changes and accepted no-ops; keep their existing labels and nested close behavior.
+
+### Initializer compatibility
+
+Changing Reference/lux's stored callback changes their synthesized initializer.
+Update callers together, or supply explicit compatibility initializers. Preserve
+arrangement's `_destination = State(initialValue: scene.subject)` in its new
+explicit initializer. No other draft initialization needs to change.
+
+If legacy support is required, retain only the distinct `onApply: (...) -> Void`
+entry point, delegating to `onAccept` with `{ value in onApply(value); return true }`.
+That bridge preserves legacy unconditional completion; it cannot report parent
+rejection or promise draft retention. Never add a Void overload under `onAccept`,
+or a Bool overload under `onApply`. Audit and label existing trailing-closure
+calls explicitly when both entry points coexist; different parameter labels alone
+do not make omitted-label call sites an assured compatibility contract.
+
+## Verification boundary
+
+This is source review only. `agent_cycle.py check` and `next` ran successfully;
+they validate state references/select M03 work, not producer behavior. The owner
+change still needs native checks for rejection retaining each actual draft/error,
+accepted/no-op completion once, duplicate/reentrant Apply, and nested manual close
+leaving outer AR usable. No build, test, Apple typecheck, or native runtime was run
+for this document, and none of those future checks is claimed as passing.

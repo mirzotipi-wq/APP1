@@ -1,0 +1,70 @@
+{
+  "worker": "W06-02",
+  "agent": "/root/w06_acceptance/w06_02_data",
+  "role": "DATA",
+  "base_revision": "791fa58702be6fa84a2675e7d5a9b8462c143caf",
+  "commit": "58056209fa043e4e2d9ac274ef1ff1333c351acc",
+  "tree": "d1736650410bc484792676499935d061e61b1da6",
+  "changed_files": [
+    "NativeTests/StudioFeatureWindowTests.swift"
+  ],
+  "source_sha256": "6cb5cf2b8aef13286b81fad48f6c8c4e596a4d3923f79f88008efa2240b896fb",
+  "source_lines": 166,
+  "patch_path": "/workspace/scratch/e08d5190f17c/workers/w06-02/change.patch",
+  "patch_sha256": "480e67a49c403bba6e482056d4ed6278b2dfecb3ead1849cbf05ae81d4fc4837",
+  "checks": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; test truth and release readiness not verified."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03 editing, accessibility, persistence remain outstanding."
+    },
+    {
+      "command": "git diff --cached --check",
+      "exit_code": 0,
+      "result": "Passed before scoped commit."
+    },
+    {
+      "command": "git status --short",
+      "exit_code": 0,
+      "result": "Clean after commit."
+    },
+    {
+      "command": "git diff-tree --no-commit-id --name-only -r HEAD",
+      "exit_code": 0,
+      "result": "Exactly one allowed new source file."
+    }
+  ],
+  "independent_review": {
+    "reviewer": "/root/w06_acceptance",
+    "result": "Actual 166-line source reviewed; no source changes requested."
+  },
+  "runs": {
+    "builds": 0,
+    "swift_tests": 0,
+    "syntax_parser": 0,
+    "native_tests": 0,
+    "ui_tests": 0
+  },
+  "no_run_reason": "Worker instruction reserves integration and builds for root; no Apple toolchain is available.",
+  "limits": [
+    "New regression runtime is unverified.",
+    "Root must add package membership and execute integrated test.",
+    "No native/UI validation or release-readiness claim."
+  ],
+  "remote_operations": 0,
+  "report": {
+    "path": "/workspace/scratch/e08d5190f17c/workers/w06-02/report.md",
+    "words": 184,
+    "characters": 1451,
+    "sha256": "cefa1b8ab66098af100623b886ce39ec2877dc93b38798680f2903b930a57105",
+    "cat_original_token_count": 363,
+    "maximum_words": 250,
+    "maximum_characters": 2200,
+    "maximum_tokens": 800
+  }
+}
