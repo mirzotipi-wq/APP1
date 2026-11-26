@@ -1,0 +1,160 @@
+name: Preserve Original CI Evidence
+on:
+  push:
+    paths:
+      - '.github/workflows/preserve-ci-evidence.yml'
+      - 'docs/evidence/m03-completion-2026-11-25/preserve-request.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: keyfill-preserve-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve exact original archives with source and digest checks
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, re, time, urllib.parse, urllib.request
+          from pathlib import Path
+          request_path = Path("docs/evidence/m03-completion-2026-11-25/preserve-request.json")
+          if request_path.stat().st_size > 8192:
+              raise SystemExit("Oversized preservation request")
+          request = json.loads(request_path.read_text())
+          run_id, revision = request.get("runId"), request.get("sourceRevision", "")
+          names = request.get("artifactNames")
+          if type(run_id) is not int or not 0 < run_id < 2**63:
+              raise SystemExit("Invalid original run")
+          if not isinstance(revision, str) or not re.fullmatch("[a-f0-9]{40}", revision):
+              raise SystemExit("Invalid original source")
+          if not isinstance(names, list) or not 1 <= len(names) <= 4:
+              raise SystemExit("Invalid original artifact selection")
+          pattern = "ui-(app-accessibility|room-precision|studio-export|studio-optics|library-reference)-evidence(-compact)?"
+          if any(not isinstance(name, str) or not re.fullmatch(pattern, name) for name in names):
+              raise SystemExit("Only original UI evidence archives may be preserved")
+          if len(set(names)) != len(names):
+              raise SystemExit("Duplicate original artifact selection")
+          repository = os.environ["GITHUB_REPOSITORY"]
+          api_root = "https://api.github.com/repos/" + repository
+          # Authorization is needed at GitHub's API, never at the signed archive host.
+          class ArchiveRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, call, fp, code, message, headers, newurl):
+                  if urllib.parse.urlsplit(newurl).scheme != "https":
+                      raise ValueError("Archive redirect must use HTTPS")
+                  redirected = super().redirect_request(call, fp, code, message, headers, newurl)
+                  if redirected is not None:
+                      redirected.remove_header("Authorization")
+                  return redirected
+          opener = urllib.request.build_opener(ArchiveRedirect)
+          def api_call(suffix):
+              return urllib.request.Request(api_root + suffix, headers={
+                  "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              })
+          def get(suffix):
+              with opener.open(api_call(suffix), timeout=30) as response:
+                  return json.load(response)
+          original_run = get("/actions/runs/" + str(run_id))
+          if original_run["head_sha"] != revision or original_run["repository"]["full_name"] != repository:
+              raise SystemExit("Original source or repository mismatch")
+          listing = get("/actions/runs/" + str(run_id) + "/artifacts?per_page=100")
+          if listing["total_count"] > 100:
+              raise SystemExit("Original artifact listing is incomplete")
+          selected = []
+          for name in names:
+              matches = [item for item in listing["artifacts"] if item["name"] == name and not item["expired"]]
+              if len(matches) != 1:
+                  raise SystemExit("Original artifact is missing or ambiguous: " + name)
+              item = matches[0]
+              if item["workflow_run"]["head_sha"] != revision:
+                  raise SystemExit("Original artifact source mismatch")
+              if type(item["size_in_bytes"]) is not int or not 0 < item["size_in_bytes"] <= 512 * 1024 * 1024:
+                  raise SystemExit("Original artifact exceeds the archive bound")
+              if not re.fullmatch("sha256:[a-f0-9]{64}", item.get("digest", "")):
+                  raise SystemExit("Original artifact digest is missing")
+              selected.append(item)
+          if sum(item["size_in_bytes"] for item in selected) > 1024 * 1024 * 1024:
+              raise SystemExit("Combined preservation payload exceeds its bound")
+          root = Path("preserved-originals")
+          root.mkdir()
+          receipts = []
+          started = time.monotonic()
+          for item in selected:
+              filename = "artifact-" + str(item["id"]) + ".zip"
+              digest, size = hashlib.sha256(), 0
+              with opener.open(api_call("/actions/artifacts/" + str(item["id"]) + "/zip"), timeout=30) as response:
+                  with (root / filename).open("xb") as output:
+                      while True:
+                          if time.monotonic() - started > 480:
+                              raise SystemExit("Preservation transfer deadline exceeded")
+                          chunk = response.read(1024 * 1024)
+                          if not chunk:
+                              break
+                          size += len(chunk)
+                          if size > item["size_in_bytes"]:
+                              raise SystemExit("Archive exceeded its declared size")
+                          digest.update(chunk)
+                          output.write(chunk)
+              actual = "sha256:" + digest.hexdigest()
+              if size != item["size_in_bytes"] or actual != item["digest"]:
+                  raise SystemExit("Original archive size or digest mismatch")
+              receipt = {"originalRunId": run_id, "sourceRevision": revision,
+                         "artifactId": item["id"], "artifactName": item["name"],
+                         "archiveFile": filename, "bytes": size, "sha256": digest.hexdigest()}
+              receipts.append(receipt)
+              print("KEYFILL_PRESERVED " + json.dumps(receipt), flush=True)
+              # Read only bounded, explicitly named host diagnostics from the
+              # already SHA-verified original ZIP. Never extract archive paths.
+              if item["name"].endswith("-evidence"):
+                  import base64, zipfile
+                  from pathlib import PurePosixPath
+                  allowed = {"ui-host-before-tests.log", "ui-host-after-tests.log", "simulator-boot.log"}
+                  with zipfile.ZipFile(root / filename) as archive:
+                      entries = archive.infolist()
+                      if len(entries) > 20000:
+                          raise SystemExit("Oversized diagnostic archive index")
+                      selected_logs = [entry for entry in entries if
+                          PurePosixPath(entry.filename).name in allowed or
+                          ("simulator-startup" in PurePosixPath(entry.filename).parts and
+                           PurePosixPath(entry.filename).suffix == ".json")]
+                      if len(selected_logs) > 12:
+                          raise SystemExit("Too many host diagnostic files")
+                      diagnostic_bytes = 0
+                      for entry in selected_logs:
+                          if entry.is_dir() or entry.file_size > 256 * 1024:
+                              raise SystemExit("Oversized host diagnostic")
+                          with archive.open(entry) as stream:
+                              data = stream.read(256 * 1024 + 1)
+                          diagnostic_bytes += len(data)
+                          if len(data) != entry.file_size or diagnostic_bytes > 1024 * 1024:
+                              raise SystemExit("Host diagnostic size mismatch or total exceeded")
+                          print("KEYFILL_HOST " + json.dumps({
+                              "artifactId": item["id"], "originalRunId": run_id,
+                              "sourceRevision": revision, "path": entry.filename,
+                              "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                              "encoding": "base64", "data": base64.b64encode(data).decode("ascii")
+                          }), flush=True)
+          (root / "receipt.json").write_text(json.dumps({
+              "schema": 1, "repository": repository, "originalRunId": run_id,
+              "sourceRevision": revision, "archives": receipts,
+              "method": "Original ZIP bytes, independently SHA-256 checked before upload; no extraction or modification."
+          }, indent=2) + "\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("run_id=" + str(run_id) + "\n")
+          PY
+      - name: Upload independently verified original archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: preserved-run-${{ steps.source.outputs.run_id }}
+          path: preserved-originals/
+          compression-level: 0
+          if-no-files-found: error

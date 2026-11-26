@@ -42,6 +42,8 @@ The current [library log](validation/source-75e827f/library-reference/job.log) p
 
 The [studio/export receipt](validation/source-75e827f/studio-export/verification.json) records all ten methods started: six passed and four failed. The failed boundaries were initial export-control readiness, the PDF Close control's AX query, the AR status AX query after successful Settings/3D work, and the following app launch failing to terminate the prior process. The [five original diagnostic captures](validation/source-75e827f/studio-export/original-capture-review.json) were independently byte/hash checked; root viewed both PNGs. The three text files contain query chains only and establish no product cause. The warm-up and pre-UI host diagnostic also failed; those observations do not turn failed required tests into passes.
 
+The [original host diagnostics](validation/source-75e827f/studio-export/host-diagnostics/receipt.json) also show delayed host commands before UI execution: `vm_stat` took 54.692 seconds and `ps` timed out after 7.53 seconds; the diagnostic step itself timed out. The later host sample completed normally. These are observed host delays, not proof of the cause of the app's later failures.
+
 Both full/compact failure archives were SHA-256 verified and preserved in independent Actions runs before any retry: [library receipt](validation/source-75e827f/archive-preservation/library.json) and [studio/export receipt](validation/source-75e827f/archive-preservation/studio-export.json). The original failed results remain intact. The preservation workflow uses a cooperative 480-second transfer check and a hard 12-minute job timeout; it does not promise a strict 480-second overall deadline.
 
 ## First repaired-source run: retained failures
