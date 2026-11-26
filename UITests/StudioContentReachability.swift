@@ -138,7 +138,11 @@ extension XCTestCase {
                              towardBottom: Bool = true,
                              fullyVisible: Bool = false,
                              file: StaticString = #filePath, line: UInt = #line) {
+        var geometry: [String] = []
         for _ in 0..<12 {
+            let targetExists = target.exists
+            let targetState: (any XCUIElementSnapshot)? = fullyVisible && targetExists
+                ? try? target.snapshot() : nil
             // Full-frame callers separately assert the real scroll-container
             // bounds. Use the actual visible boundaries: a List row can begin
             // exactly below its navigation bar. An extra inset made the fully
@@ -148,11 +152,19 @@ extension XCTestCase {
                 // The keyboard and fixed edit bar can cover scroll content.
                 // Full-frame assertions opt in; ordinary functional navigation
                 // retains its established midpoint/hit-point requirement.
-                // A presented sheet can leave the underlying navigation bar
-                // first in the AX tree. Respect every overlapping bar so the
-                // sheet's lower boundary cannot be mistaken for visible text.
-                let navigationBottom = app.navigationBars.allElementsBoundByIndex
-                    .map(\.frame)
+                // Covered sheets retain navigation bars in the AX tree. Find
+                // bars belonging to ancestors of this target, not an unrelated
+                // covered library whose large title extends below this sheet.
+                let navigationBars: [XCUIElement]
+                if let state = targetState {
+                    let key = state.identifier.isEmpty ? state.label : state.identifier
+                    navigationBars = app.otherElements.containing(state.elementType, identifier: key)
+                        .children(matching: .navigationBar).allElementsBoundByIndex
+                } else {
+                    navigationBars = []
+                }
+                let navigationIdentifiers = Set(navigationBars.map(\.identifier))
+                let navigationBottom = navigationBars.map(\.frame)
                     .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
                     .map(\.maxY).max()
                 if let navigationBottom {
@@ -162,19 +174,30 @@ extension XCTestCase {
                 }
                 let keyboard = app.keyboards.firstMatch
                 if keyboard.exists {
-                    viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY) - viewport.minY)
+                    // The predictive/input-assistant strip begins above the
+                    // Keyboard's key frame in the actual exported hierarchy.
+                    let inputViews = app.otherElements.matching(NSPredicate(
+                        format: "identifier IN %@", ["inputView", "SystemInputAssistantView"]))
+                    let frames = [keyboard.frame] + inputViews.allElementsBoundByIndex.map(\.frame)
+                    if let top = frames.filter({ !$0.isEmpty && $0.minY.isFinite && $0.intersects(viewport) })
+                        .map(\.minY).min() {
+                        viewport.size.height = max(0, min(viewport.maxY, top) - viewport.minY)
+                    }
                 }
                 let fixedControls = app.buttons.matching(NSPredicate(
                     format: "identifier IN %@", ["undo", "projectLibraryDone"]))
                 for control in fixedControls.allElementsBoundByIndex where control.isHittable {
+                    let owners = app.otherElements.containing(.button, identifier: control.identifier)
+                        .children(matching: .navigationBar).allElementsBoundByIndex
+                    guard owners.contains(where: { navigationIdentifiers.contains($0.identifier) }) else { continue }
                     viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)
                 }
             }
             var down = towardBottom
-            if target.exists {
+            if targetExists {
                 let frame: CGRect
                 if fullyVisible {
-                    guard let state = try? target.snapshot() else { break }
+                    guard let state = targetState else { break }
                     frame = state.frame
                     let key = state.identifier.isEmpty ? state.label : state.identifier
                     let containers = [app.scrollViews.containing(state.elementType, identifier: key).firstMatch,
@@ -192,6 +215,7 @@ extension XCTestCase {
                 } else {
                     frame = target.frame
                 }
+                if fullyVisible { geometry.append("target=\(frame), visibleContent=\(viewport)") }
                 if !frame.isEmpty, frame.midX.isFinite, frame.midY.isFinite {
                     let contained = fullyVisible ? viewport.contains(frame)
                         : viewport.contains(CGPoint(x: frame.midX, y: frame.midY))
@@ -216,9 +240,19 @@ extension XCTestCase {
                 startY = down ? 0.78 : 0.30
                 endY = down ? 0.30 : 0.78
             }
-            let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: startY))
-            let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: endY))
+            let x = fullyVisible
+                ? (viewport.minX - app.frame.minX + viewport.width * 0.97) / app.frame.width : 0.97
+            let start = app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: startY))
+            let end = app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: endY))
             start.press(forDuration: 0.05, thenDragTo: end)
+        }
+        if !geometry.isEmpty {
+            let details = geometry.joined(separator: "\n")
+            print("Unreachable-studio-content-geometry:\n\(details)")
+            let frames = XCTAttachment(string: details)
+            frames.name = "Unreachable-studio-content-geometry"
+            frames.lifetime = .keepAlways
+            add(frames)
         }
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Unreachable-studio-content"; screenshot.lifetime = .keepAlways; add(screenshot)

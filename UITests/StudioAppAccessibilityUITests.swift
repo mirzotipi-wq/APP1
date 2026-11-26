@@ -330,10 +330,13 @@ final class StudioAppAccessibilityUITests: XCTestCase {
             if !frame.isEmpty { viewport = frame; break }
         }
         XCTAssertFalse(viewport.isNull, "Expected a real scroll container for \(state.label)")
-        // The first AX navigation bar may belong to the covered studio. A
-        // presented sheet can have a lower bar that also obscures this surface.
-        let navigationBottom = app.navigationBars.allElementsBoundByIndex
-            .map(\.frame)
+        // Scope obscuring navigation to the target's actual ancestors. A
+        // covered Projects large-title bar is lower than the New project bar
+        // but cannot obscure content in that foreground sheet.
+        let navigationBars = app.otherElements.containing(state.elementType, identifier: key)
+            .children(matching: .navigationBar).allElementsBoundByIndex
+        let navigationIdentifiers = Set(navigationBars.map(\.identifier))
+        let navigationBottom = navigationBars.map(\.frame)
             .filter { !$0.isEmpty && $0.maxY.isFinite && $0.intersects(viewport) }
             .map(\.maxY).max()
         if let navigationBottom {
@@ -342,10 +345,21 @@ final class StudioAppAccessibilityUITests: XCTestCase {
             viewport.size.height = max(0, bottom - viewport.minY)
         }
         let keyboard = app.keyboards.firstMatch
-        if keyboard.exists { viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY) - viewport.minY) }
+        if keyboard.exists {
+            let inputViews = app.otherElements.matching(NSPredicate(
+                format: "identifier IN %@", ["inputView", "SystemInputAssistantView"]))
+            let frames = [keyboard.frame] + inputViews.allElementsBoundByIndex.map(\.frame)
+            if let top = frames.filter({ !$0.isEmpty && $0.minY.isFinite && $0.intersects(viewport) })
+                .map(\.minY).min() {
+                viewport.size.height = max(0, min(viewport.maxY, top) - viewport.minY)
+            }
+        }
         let fixedControls = app.buttons.matching(NSPredicate(
             format: "identifier IN %@", ["undo", "projectLibraryDone"]))
         for control in fixedControls.allElementsBoundByIndex where control.isHittable {
+            let owners = app.otherElements.containing(.button, identifier: control.identifier)
+                .children(matching: .navigationBar).allElementsBoundByIndex
+            guard owners.contains(where: { navigationIdentifiers.contains($0.identifier) }) else { continue }
             viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)
         }
         return viewport
