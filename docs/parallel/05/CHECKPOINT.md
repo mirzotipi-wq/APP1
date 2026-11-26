@@ -33,3 +33,7 @@ Wave 04 is now complete: 40 actual contexts across four waves. All ten wave-04 r
 Wave 05 complete: fifty actual fresh contexts across five waves. Three selection-lifetime regressions are remotely preserved in bc08f3b8cd72b9d40bf86ea42a132c685b69d6d9; inventory183native/37spatial is discovery, not execution. The source9725 simulator job is running; newer seven recovery/selection methods remain unexecuted. Five waves remain.
 
 Native checkpoint9725fb1 is now successful:176/176 native methods, including30/30 spatial, no failures/skips/duplicates/omissions, and both Debug/test-bundle and Release builds. Original fresh SceneKit captures and raw native/core logs are preserved. Wave06 has an independently reviewed rectangle-diffuser dimension correction and one fixed-cardinal emitter recovery test integrated; the next source inventory is184native/38spatial. Eight later methods and the rectangle correction are unexecuted. Fifty workers are complete; wave06 is still finishing its ten roles, so no sixty-worker claim is made yet.
+
+## Sixty-context planning checkpoint
+
+Wave06 completed ten actual contexts; the global ledger now verifies60 distinct completed contexts across six waves. Source4e694bc is pushed; its core job passed366Debug/366Release/100tooling checks, while native184/38 execution is pending. The fourth executor interruption was recovered from remotely preserved source and exact report contents. See CHECKPOINT-60.md for the current snapshot, resource measurements, remaining work and explicit budget limits.

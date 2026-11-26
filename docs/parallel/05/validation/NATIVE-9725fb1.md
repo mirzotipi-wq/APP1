@@ -19,6 +19,6 @@ These are actual SCNView snapshots in a UIWindow during XCTest, not manual gestu
 
 ## Other jobs and later source
 
-The library-reference and studio-optics UI shards passed. App-accessibility failed at StudioAppAccessibilityUITests.swift:263 while waiting for a UI condition; this remains an owner investigation, not an established viewport cause. Room-precision and studio-export were still running when this receipt was written. Later source publication may supersede unfinished jobs; preserve exact final dispositions separately.
+The library-reference and studio-optics UI shards passed. App-accessibility failed at StudioAppAccessibilityUITests.swift:263 while waiting for a UI condition; this remains an owner investigation, not an established viewport cause. Room-precision and studio-export were cancelled when source4e694bc superseded this run after native execution had completed. Default visual attachment inventory passed; AXXXL inventory failed. These inventory results do not establish visual quality or VoiceOver acceptance. Exact final job dispositions are preserved in run-9725fb1-final-jobs.json.
 
 The subsequent four camera-recovery methods, three selection-lifetime methods, one emitter-recovery method and rectangle diffuser-scale correction are outside this source SHA and remain unexecuted until their own checkpoint runs. RealityKit dimensions have source/scalar evidence only.
