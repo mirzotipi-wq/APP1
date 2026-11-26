@@ -5,6 +5,7 @@ import LightingCore
 /// deliberately omit stands and housings; keep those display details here so
 /// the Plan and photometry contracts do not change when a viewport is fitted.
 struct SpatialViewportBounds: Equatable, Sendable {
+    static let aimTargetRadiusMeters = 0.0275
     let minimum: Position
     let maximum: Position
 
@@ -27,6 +28,10 @@ struct SpatialViewportBounds: Equatable, Sendable {
         box(around: scene.camera, x: 0.24, below: 0.24, above: 0.24, z: 0.24)
         for light in scene.lights {
             let optics = light.effectiveOptics
+            if StudioPhotometry.frame(for: light, subject: scene.subject) != nil {
+                let radius = Self.aimTargetRadiusMeters
+                box(around: light.target(subject: scene.subject), x: radius, below: radius, above: radius, z: radius)
+            }
             if optics.kind == .point {
                 box(around: light.position, x: 0.12, below: 0.12, above: 0.12, z: 0.12)
             } else {
@@ -95,8 +100,11 @@ struct SpatialOrbitState: Equatable, Sendable {
     }
 
     var farDistance: Double {
-        // Depth is camera-relative, so world translation must not change it.
-        max(400, distance + 400)
+        // Target panning is bounded to +/-300 m; authored centers are within
+        // +/-100 m, plus modifier margins. Enclose their full relative diagonal
+        // even after panning and orbiting at minimum distance. Translation of a
+        // fitted rig must not change its clipping depth.
+        distance + 750
     }
 
     static func verticalFieldOfView(width: Double, height: Double) -> Double? {

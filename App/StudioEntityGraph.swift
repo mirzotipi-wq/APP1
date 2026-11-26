@@ -300,7 +300,7 @@ private final class StudioLampEntity {
                 aimLine.scale = [0.005, length, 0.005]
                 aimLine.orientation = simd_quatf(from: [0, 1, 0], to: delta / length)
                 aimTarget.position = delta
-                aimTarget.scale = [0.055, 0.055, 0.055]
+                aimTarget.scale = SIMD3<Float>(repeating: Float(2 * SpatialViewportBounds.aimTargetRadiusMeters))
             }
         }
         selection.isEnabled = selected
