@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "source": "342e3280e3eb077d55e122c8bfb88b4062b431ed",
+  "run_id": 45857561126,
+  "job_id": 140042273238,
+  "job_name": "ui (studio-optics)",
+  "source_endpoint": "https://api.github.com/repos/mirzotipi-wq/APP1/actions/runs/45857561126/jobs?per_page=100",
+  "job_status_at_observation": "in_progress",
+  "build_step": {
+    "name": "Build native UI test bundle",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 7,
+    "started_at": "2026-11-26T16:30:09Z",
+    "completed_at": "2026-11-26T16:32:46Z"
+  },
+  "command": "xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=$SIMULATOR_ID -derivedDataPath $RUNNER_TEMP/keyfill-build CODE_SIGNING_ALLOWED=NO build-for-testing",
+  "evidence_level": "GitHub finalized step metadata: build-for-testing succeeded. Full job log is not yet retrieved because UI execution remains in progress.",
+  "scope": "Apple Debug app/test-bundle build result for exact source342; does not establish the new hosted test execution, manual accessibility behavior or the entire UI shard.",
+  "native_test_execution": "165 discovered methods await simulator job140042273149.",
+  "final_job_followup": {
+    "job_conclusion": "failure",
+    "full_log": "docs/parallel/03/evidence/ci-ui-studio-optics-342.log",
+    "full_log_sha256": "255001c59507d02f4f26858153b3714413eb32cb17b84c0cbdd1a3076317af52",
+    "adoption_test_compilation_present": true,
+    "test_build_succeeded_marker": true,
+    "ui_methods_started": 0,
+    "reason": "Simulator preflight timed out and UI runner failed to initialize while waiting for AX loaded notification. Full build success remains valid.",
+    "receipt": "docs/parallel/03/evidence/ci-ui-studio-optics-342.json"
+  }
+}
