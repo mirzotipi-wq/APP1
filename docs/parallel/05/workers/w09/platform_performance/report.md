@@ -1,0 +1,13 @@
+# Wave09 — platform/performance
+
+**Scope:** frozen `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a`; pinned source, acceptance contract, native log and capture receipt only. **Finding:** no additional reproducible defect identified; no edit proposed.
+
+**Execution versus inventory.** Re-accounting `docs/parallel/05/validation/native-4e694bc.log` reproduced its recorded SHA256 `b538e299ef327f66ae9307d1f8c590bc178ff5782fafd6b04e801668961281ed`: 184 historical methods each have one ordered start/pass, without missing, unexpected, failed, skipped or duplicate methods. Run 45838950713 / job 139980771221 used x86_64 iPhone 17 Pro / iOS 26.5 / Xcode 26.6; Debug native execution, Debug test-bundle build and unsigned Release simulator build succeeded. Its 38 spatial methods comprise 28 direct SceneKit tests and 10 Swift state/helpers.
+
+Current inventory is 185 native/39 spatial: 28 SceneKit plus 11 helpers. The only subsequent App/native delta is outward Float FOV rounding in `App/SpatialViewportGeometry.swift` and its added `SpatialViewportStateTests` regression. Historical execution does not establish that regression or current-source execution.
+
+**What assertions establish.** `SpatialInteractionTests`, `SpatialSelectionLifetimeTests`, `SpatialNavigationRecoveryTests` and `SpatialAimRecoveryTests` exercise teardown cleanup, disabled interaction, stale hit rejection, deletion/invalid-scene replacement, callback refresh/clearing, retained orbit, undefined-camera recovery and translated emitter recovery. `SpatialPreviewTests` and narrow-projection assertions query actual SceneKit projection. Callback tests invoke closures directly; 100 repeated updates establish bounded attached-node count and retained identity, without measuring allocations, leaks or frame timing.
+
+The original images in `docs/parallel/05/captures/receipt-4e694bc.json` came from SCNView snapshots inside UIWindow during XCTest. They establish captured SceneKit output, not delivered app gestures. The Intel fallback bypasses RealityKit construction; renderer compilation does not establish RealityKit lifecycle, hit-testing or rendering.
+
+**Remaining evidence.** Root reported current core 366 Debug / 366 Release / 100 tooling passes; native job 140022794410 had reached Generate project at 16:10:46 UTC, without a 185-pass receipt reviewed here. Historical optics/room/export UI passed; library/accessibility/visual were cancelled by the successor. RealityKit runtime, physical-device interaction, manual VoiceOver, FPS/RSS/thermal measurements remain unverified. The code-only contract removes external milestone prerequisites without converting these gaps into passes. Worker telemetry targets are unmeasured.

@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "source_commit": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+  "source_tree": "5e3c76279f1ee6ca31ffe2429d1c2de38e7210d3",
+  "campaign_baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "historical_native_source": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+  "review_method": "git show and git grep against immutable source commit; owner exception separately pinned",
+  "frozen_blob_listing": "100644 blob e4f763a15408c623912bbcdcd9b4296ec8418ae1\tApp/RealityStudioPreview.swift\n100644 blob c2dd825e406c505ded8291120bc4121f7bf35b79\tApp/SpatialPreview.swift\n100644 blob 24dcaf5223113c7daa6cfd0bab1ffce291fe81c0\tApp/SpatialViewportGeometry.swift\n100644 blob 35723305af3242e24c63e14196def45022d0519c\tApp/StudioEntityGraph.swift\n100644 blob 54ad56507484decafb467921dab801e26bfaa6dd\tApp/StudioView.swift\n100644 blob f34510a9349f66f72e2a1684883dfd2b84fc3a00\tNativeTests/SpatialInteractionTests.swift\n100644 blob b3077e5f6c3d10e129dce4af78e71550419ed25a\tNativeTests/SpatialNavigationRecoveryTests.swift\n100644 blob dcd46df3662461dc6ea3ec9a52c6a12fd1ad2635\tNativeTests/SpatialSelectionLifetimeTests.swift\n100644 blob 63e8a903b2febff1d9058434d62ccf1778f4c357\tNativeTests/SpatialViewportStateTests.swift\n100644 blob be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1\tdocs/ARCHITECTURE.md\n100644 blob d7160cdeb784080883a7fd75d8d6ed3b71c71bfa\tdocs/DESIGN.md\n100644 blob e2650deda2ca5e4ca693543b9aa4142cf9f9a45d\tdocs/acceptance/m02-m03-code.md\n",
+  "source_delta_since_historical_native": "diff --git a/App/SpatialViewportGeometry.swift b/App/SpatialViewportGeometry.swift\nindex 53f7aa8..24dcaf5 100644\n--- a/App/SpatialViewportGeometry.swift\n+++ b/App/SpatialViewportGeometry.swift\n@@ -112,10 +112,14 @@ struct SpatialOrbitState: Equatable, Sendable {\n         if width >= height { return fieldOfViewDegrees }\n         let halfTangent = tan(fieldOfViewDegrees * .pi / 360) * (height / width)\n         let result = 2 * atan(halfTangent) * 180 / .pi\n-        // RealityKit stores the angle as Float. A finite Double just below\n-        // 180 can round to a singular native projection; reject that layout.\n-        guard result.isFinite, Float(result).isFinite, Float(result) < 180 else { return nil }\n-        return result\n+        // RealityKit stores the angle as Float. Round outward so upload cannot\n+        // narrow the smaller-axis field of view, especially near 180 degrees.\n+        // Reject layouts whose enclosing native angle would be singular.\n+        guard result.isFinite, Float(result).isFinite else { return nil }\n+        let nearest = Float(result)\n+        let enclosing = Double(nearest) < result ? nearest.nextUp : nearest\n+        guard enclosing < 180 else { return nil }\n+        return Double(enclosing)\n     }\n \n     mutating func orbit(horizontal: Double, vertical: Double) {\ndiff --git a/NativeTests/SpatialViewportStateTests.swift b/NativeTests/SpatialViewportStateTests.swift\nindex 1ad7ade..63e8a90 100644\n--- a/NativeTests/SpatialViewportStateTests.swift\n+++ b/NativeTests/SpatialViewportStateTests.swift\n@@ -121,6 +121,26 @@ final class SpatialViewportStateTests: XCTestCase {\n                      \"A Double angle rounding to Float 180 must not reach RealityKit\")\n     }\n \n+    func testFloatProjectionDoesNotNarrowTheSmallerViewportAxis() throws {\n+        for (width, height) in [(360.0, 240.0), (120.0, 600.0), (600.0, 120.0),\n+                                (1.0, 1000.0), (0.0003, 3000.0), (0.0002, 3000.0)] {\n+            let ideal = width >= height ? 48 :\n+                2 * atan(tan(24 * Double.pi / 180) * height / width) * 180 / Double.pi\n+            let accepted = try XCTUnwrap(SpatialOrbitState.verticalFieldOfView(width: width, height: height))\n+            let uploaded = Float(accepted)\n+            XCTAssertEqual(accepted, Double(uploaded))\n+            XCTAssertGreaterThanOrEqual(accepted, ideal)\n+            XCTAssertLessThanOrEqual(uploaded, Float(ideal).nextUp)\n+            let verticalHalfTangent = tan(Double(uploaded) * .pi / 360)\n+            let smallerAxisHalfTangent = verticalHalfTangent * min(1, width / height)\n+            XCTAssertGreaterThanOrEqual(smallerAxisHalfTangent, tan(24 * .pi / 180) - 1e-12)\n+        }\n+        // Nearest Float is still below 180 here, but its horizontal half-angle\n+        // would be only about 14 degrees. Outward rounding must reject it.\n+        XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0.0001, height: 3000))\n+        XCTAssertNil(SpatialOrbitState.verticalFieldOfView(width: 0.00001, height: 1000))\n+    }\n+\n     func testGestureLimitsAndFitRecoveryRemainFinite() throws {\n         var orbit = SpatialOrbitState()\n         orbit.orbit(horizontal: .greatestFiniteMagnitude, vertical: .greatestFiniteMagnitude)\n",
+  "owner_checkpoint": {
+    "branch": "finish/01-architecture-composition",
+    "sha": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+    "receipt_path": "docs/parallel/05/workers/w09/interfaces/owner-checkpoint.json",
+    "claim": "Owner source implements stable workspaceResetID and separate generation/live UUID guards; lane05 integration and hosted/native first-save retention remain unverified."
+  },
+  "excluded_actions": [
+    "local builds",
+    "toolchain installation",
+    "native test execution",
+    "new test authoring for coverage",
+    "source edits",
+    "ref updates"
+  ],
+  "parent_inventory_observation": {
+    "provenance": "Parent message during wave09",
+    "native_method_inventory": 185,
+    "spatial_method_inventory": 39,
+    "unchanged_source_claim": "All 11 changed App/native source files in current root checkout byte-identical to source 60059",
+    "root_receipt_path": "docs/parallel/05/validation/inventory-60059a0.json",
+    "execution_claim": false
+  }
+}

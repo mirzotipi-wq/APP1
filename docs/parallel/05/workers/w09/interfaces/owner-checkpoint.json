@@ -1,0 +1,130 @@
+{
+  "reviewer": "/root/w09_acceptance/interfaces",
+  "mode": "Pinned source reads and read-only GitHub; no source/ref changes, builds, tests, or toolchain execution.",
+  "frozen_source": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+  "frozen_tree": "5e3c76279f1ee6ca31ffe2429d1c2de38e7210d3",
+  "campaign_baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "checked_utc": "2026-11-26 16:01:06 UTC",
+  "owner_source_pin": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+  "ref_tool_receipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"ref\":\"refs/heads/finish/01-architecture-composition\",\"node_id\":\"REF_kwDOV5Kr3toALXJlZnMvaGVhZHMvZmluaXNoLzAxLWFyY2hpdGVjdHVyZS1jb21wb3NpdGlvbg\",\"url\":\"https://api.github.com/repos/mirzotipi-wq/APP1/git/refs/heads/finish/01-architecture-composition\",\"object\":{\"sha\":\"5ccfbaae821a32d88c12ed8b3abf1600aef25753\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/mirzotipi-wq/APP1/git/commits/5ccfbaae821a32d88c12ed8b3abf1600aef25753\"}}",
+      "title": "01-architecture-composition",
+      "modified_date": null,
+      "url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/ref/heads/finish/01-architecture-composition",
+      "display_url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/ref/heads/finish/01-architecture-composition",
+      "display_title": "01-architecture-composition",
+      "structuredContent": {
+        "title": "01-architecture-composition",
+        "content": "{\"ref\":\"refs/heads/finish/01-architecture-composition\",\"node_id\":\"REF_kwDOV5Kr3toALXJlZnMvaGVhZHMvZmluaXNoLzAxLWFyY2hpdGVjdHVyZS1jb21wb3NpdGlvbg\",\"url\":\"https://api.github.com/repos/mirzotipi-wq/APP1/git/refs/heads/finish/01-architecture-composition\",\"object\":{\"sha\":\"5ccfbaae821a32d88c12ed8b3abf1600aef25753\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/mirzotipi-wq/APP1/git/commits/5ccfbaae821a32d88c12ed8b3abf1600aef25753\"}}",
+        "display_url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/ref/heads/finish/01-architecture-composition"
+      }
+    },
+    "isError": false
+  },
+  "frozen_blobs": {
+    "App/SpatialPreview.swift": "c2dd825e406c505ded8291120bc4121f7bf35b79",
+    "App/RealityStudioPreview.swift": "e4f763a15408c623912bbcdcd9b4296ec8418ae1",
+    "App/StudioEntityGraph.swift": "35723305af3242e24c63e14196def45022d0519c",
+    "App/StudioView.swift": "54ad56507484decafb467921dab801e26bfaa6dd"
+  },
+  "owner_files": {
+    "App/StudioView.swift": {
+      "blob_sha": "32f2aa6f7db8d876e1b25e9cfe8303f74a303195",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/5ccfbaae821a32d88c12ed8b3abf1600aef25753/App/StudioView.swift",
+      "ranges": [
+        {
+          "start_line": 6,
+          "end_line": 6,
+          "text": "    @State private var session = StudioSession()"
+        },
+        {
+          "start_line": 37,
+          "end_line": 46,
+          "text": "    // Read-through projections, never independently stored copies of the editor.\n    private var scene: LightingScene { session.scene }\n    private var selected: UUID? {\n        get { session.selection }\n        nonmutating set { session.select(newValue, from: session.generation) }\n    }\n    private var library: ProjectLibrary? { session.library }\n    private var saved: LightingScene? { session.saved }\n    private var editHistory: SceneEditHistory { session.history }\n    private var libraryOperation: ProjectLibraryOperationState { session.libraryOperation }"
+        },
+        {
+          "start_line": 199,
+          "end_line": 204,
+          "text": "            .task { if !loaded { load(from: generation) } }\n            .onChange(of: session.workspaceResetID) { _, _ in\n                dismissSceneEditors()\n                mode = \"Plan\"\n                showMeter = false\n            }"
+        },
+        {
+          "start_line": 414,
+          "end_line": 445,
+          "text": "    private var workspace: some View {\n        let generation = libraryOperation.generation\n        return VStack(spacing: 10) {\n            workspaceHeader\n            viewModeChoices\n            VStack(spacing: 0) {\n                if mode == \"Plan\" {\n                    // The title grows outside the diagram, so larger text\n                    // cannot cover equipment or change the world projection.\n                    Text(planGridTitle)\n                        .font(.caption2.monospaced().weight(.medium))\n                        .foregroundStyle(.white)\n                        .fixedSize(horizontal: false, vertical: true)\n                        .frame(maxWidth: .infinity, alignment: .leading)\n                        .padding(10)\n                        .background(StudioPalette.planBackground)\n                        .allowsHitTesting(false)\n                }\n                ZStack(alignment: .topLeading) {\n                    StudioPalette.planBackground\n                    if mode == \"Plan\" { plan }\n                    else if mode == \"Camera\" { cameraPreview }\n                    else if mode == \"Study\" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(session.workspaceResetID) }\n                    else {\n                        RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in\n                            guard libraryOperation.allowsSceneMutation(from: generation),\n                                  scene.lights.contains(where: { $0.id == id }) else { return }\n                            selected = id\n                        }\n                        .id(session.workspaceResetID)\n                        .accessibilityLabel(\"Illustrative 3D lighting preview\")\n                    }"
+        },
+        {
+          "start_line": 654,
+          "end_line": 662,
+          "text": "    private var cameraPreview: some View {\n        GeometryReader { geo in\n            if CameraFraming(scene: scene) != nil {\n                let aspect = CGFloat(CameraFraming.aspectRatio)\n                let width = min(geo.size.width, geo.size.height * aspect)\n                SpatialPreview(scene: scene, cameraMode: true)\n                    .frame(width: width, height: width / aspect)\n                    .frame(maxWidth: .infinity, maxHeight: .infinity)\n                    .accessibilityLabel(\"Illustrative full-frame camera preview\")"
+        }
+      ]
+    },
+    "App/StudioSession.swift": {
+      "blob_sha": "91b76ee55820642c39793acd2aa6ccf4006910f4",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/5ccfbaae821a32d88c12ed8b3abf1600aef25753/App/StudioSession.swift",
+      "ranges": [
+        {
+          "start_line": 26,
+          "end_line": 34,
+          "text": "    private(set) var editor: StudioEditorState\n    private(set) var library: ProjectLibrary?\n    private(set) var saved: LightingScene?\n    private(set) var libraryOperation = ProjectLibraryOperationState()\n    private(set) var loaded = false\n    private(set) var saveBlocked = false\n    private(set) var saveConflict = false\n    private(set) var workspaceResetID = UUID()\n    private(set) var planDrag: PlanDrag?"
+        },
+        {
+          "start_line": 64,
+          "end_line": 76,
+          "text": "    var isBusy: Bool { libraryOperation.isBusy }\n    var projectName: String { library?.activeProject?.name ?? \"Portrait setup\" }\n\n    func allowsMutation(from generation: UUID) -> Bool {\n        loaded && !saveBlocked && libraryOperation.allowsSceneMutation(from: generation)\n    }\n\n    @discardableResult\n    func select(_ id: UUID?, from generation: UUID) -> Bool {\n        guard allowsMutation(from: generation) else { return false }\n        let changed = editor.select(id)\n        if changed { planDrag = nil }\n        return changed"
+        },
+        {
+          "start_line": 274,
+          "end_line": 279,
+          "text": "    func editOwner(_ control: String) -> String {\n        // First save changes storage identity, but the same document's pending\n        // numeric drafts and focus must keep their SwiftUI control identity.\n        // Each callback still checks the separately captured generation.\n        \"\\(workspaceResetID.uuidString).\\(control)\"\n    }"
+        },
+        {
+          "start_line": 323,
+          "end_line": 344,
+          "text": "                // of its scene/history/library/generation state to observers.\n                var nextEditor = editor\n                try nextEditor.adopt(adoption.scene, resettingHistory: adoption.resetsHistory)\n                let nextSaved = try adoption.saved?.validated()\n                libraryOperation = nextOperation\n                editor = nextEditor\n                library = adoption.library\n                saved = nextSaved\n                if adoption.resetsPresentation {\n                    workspaceResetID = UUID()\n                    feature = nil\n                }\n                loaded = true\n                saveBlocked = false\n                saveConflict = false\n                switch operation {\n                case .load, .change: message = nil\n                case .save: message = \"Project saved on this device.\"\n                case .reload: message = \"Latest saved library opened.\"\n                case .recover: message = \"Your setup was saved as a recovery project.\"\n                }\n            } catch {"
+        }
+      ]
+    },
+    "NativeTests/StudioSessionTests.swift": {
+      "blob_sha": "21be02ca1a80d33d4013c12f61d6d188a0efe07a",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/5ccfbaae821a32d88c12ed8b3abf1600aef25753/NativeTests/StudioSessionTests.swift",
+      "ranges": [
+        {
+          "start_line": 132,
+          "end_line": 157,
+          "text": "    func testFirstSaveKeepsSelectionAndHistoryAndReleasesTask() async throws {\n        let base = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)\n        defer { try? FileManager.default.removeItem(at: base) }\n        let session = StudioSession(store: ProjectStore(applicationSupportDirectory: base, arguments: [], environment: [:]))\n        try await open(session)\n        let original = session.scene\n        session.select(original.lights[2].id, from: session.generation)\n        var edited = original\n        edited.lights[0].candela = 1500\n        session.replace(edited, from: session.generation)\n        let reset = session.workspaceResetID\n        let controlOwner = session.editOwner(\"camera.position\")\n        let generation = session.generation\n        try await session.beginLibraryOperation(.save, from: generation).value\n        XCTAssertEqual(session.saved, edited)\n        XCTAssertEqual(session.selection, original.lights[2].id)\n        XCTAssertNotEqual(session.generation, generation)\n        XCTAssertEqual(session.workspaceResetID, reset)\n        XCTAssertEqual(session.editOwner(\"camera.position\"), controlOwner)\n        XCTAssertNil(session.operationTask)\n        XCTAssertFalse(session.isBusy)\n        XCTAssertTrue(session.undo(from: session.generation))\n        XCTAssertEqual(session.scene, original)\n        XCTAssertEqual(session.editOwner(\"camera.position\"), controlOwner)\n        XCTAssertNotEqual(session.saved, session.scene)\n    }"
+        },
+        {
+          "start_line": 344,
+          "end_line": 369,
+          "text": "    func testProjectSwitchResetsHistoryAndPresentationButMetadataDoesNot() async throws {\n        let base = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)\n        defer { try? FileManager.default.removeItem(at: base) }\n        let session = StudioSession(store: ProjectStore(applicationSupportDirectory: base, arguments: [], environment: [:]))\n        try await open(session)\n        var changed = session.scene\n        changed.camera.x = 1\n        session.replace(changed, from: session.generation)\n        try await session.beginLibraryOperation(.save, from: session.generation).value\n        let generation = session.generation\n        let reset = session.workspaceResetID\n        let controlOwner = session.editOwner(\"camera.position\")\n        let id = try XCTUnwrap(session.library?.activeID)\n        try await session.applyLibrary(.rename(id, name: \"Renamed\"), from: generation).value\n        XCTAssertEqual(session.generation, generation)\n        XCTAssertEqual(session.workspaceResetID, reset)\n        XCTAssertEqual(session.editOwner(\"camera.position\"), controlOwner)\n        XCTAssertTrue(session.history.canUndo)\n        try await session.applyLibrary(.create(name: \"Next\", scene: .portrait()), from: generation).value\n        XCTAssertNotEqual(session.generation, generation)\n        XCTAssertNotEqual(session.workspaceResetID, reset)\n        XCTAssertNotEqual(session.editOwner(\"camera.position\"), controlOwner)\n        XCTAssertFalse(session.history.canUndo)\n        XCTAssertEqual(session.selection, session.scene.lights.first?.id)\n        XCTAssertEqual(session.saved, session.scene)\n    }"
+        }
+      ]
+    },
+    "docs/parallel/01/HANDOFF.md": {
+      "blob_sha": "ae89145114c364d7226bc40102f178b1ae3b0203",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/5ccfbaae821a32d88c12ed8b3abf1600aef25753/docs/parallel/01/HANDOFF.md",
+      "ranges": [
+        {
+          "start_line": 1,
+          "end_line": 1000,
+          "text": "# Lane 01 handoff — live feature ownership checkpoint\n\n## Status and integration boundary\n\nWaves 1–6 are complete: **60 actual fresh contexts**, ten roles per wave. Four waves and 40 fresh contexts remain; wave7 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.\n\nOnly `finish/01-architecture-composition` is pushed. Last verified publication before this checkpoint is `03f4b1aa2d31bfcfb49e830553365d8edcc46299`, tree `37e2b050b521696e2894fb6f366b07cfed9ac478`. Current wave6 tested source is `785d4587287b4a44b1d9f8f6e3d941700b04d871`; subsequent changes are documentation only. Local test commits and GitHub publication commits have distinct IDs; complete source manifests establish equivalence.\n\nCommon inspected baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest observed main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`, including a later native-test correction reserved for integration. The observed origin advertises finish lanes01–05, with no lane20 branch or BASE_SHA at inspected paths. This is scoped observation, not a claim about every possible campaign location. CI belongs to lane19; canonical state and final main integration belong to lane20. Other feature-owner implementations remain unchanged.\n\n## Implemented composition\n\n`StudioEditorState` owns validated scene, live UUID selection, revision identity and bounded undo history. Invalid candidates are atomic. Full validation remains at arbitrary scene/update/replacement/adoption boundaries. A no-reset receipt cannot replace content beneath retained redo or an open edit. Typed `StudioFieldCommand` validates closed changed payloads without rescanning unchanged names/lights; optional default and optical-roll representation remain intact. No measured UI speedup is claimed.\n\n`StudioSession` owns each window's editor, library, saved snapshot, project-operation reservation/task and cumulative Plan gesture. It reserves before ending edits and stages receipt adoption before publishing state. Cancelling a sheet observer does not abandon a committed write. Plan keeps a frozen origin/scale; a stale end cannot close a new generation's gesture. Ordinary control identity follows `workspaceResetID`, while callbacks separately check storage generation. Healthy repeated initial load is rejected before touching a dirty editor; failed-load retry remains available.\n\nThe session now owns one `StudioFeaturePresentation`: destination, immutable context and live receipt. Opening requires a loaded, writable, idle editor and valid target UUID. A currently presented draft cannot be replaced. Admission checks live owner, logical document identity and current revision; equal content after undo does not revive a result. First save retains the logical feature context. Successful document switch/reload/recovery clears it. Old teardown cannot close a newer owner.\n\nScene/lux results are one-shot, retiring callbacks synchronously after validation; valid unchanged results still report acceptance. Lux may change only the captured light's candela. Room/AR results can repeat, advance their own receipt, and share one owner undo group. Unrelated valid commands start their own undo change; invalid/no-op commands preserve the feature group. A successful changed feature result clears a frozen zero-motion Plan origin so a later drag cannot overwrite the new geometry. Rejected/no-op results retain that still-valid gesture.\n\n`StudioFeatureSheets` now connects all five native scene-mutating routes to the live session presentation. It uses owner-matched retirement/teardown, captured inputs for one-shot proposals, and live scene input for room/AR. StudioView no longer carries seven duplicate route fields, equality/masked-room guards or blanket first-save dismissal. Both Study and 3D preview lifetimes follow `workspaceResetID`, preserving captured storage-generation and light-UUID mutation guards. Broad onDisappear retirement is intentionally absent because modal coverage can hide the root while work remains pending.\n\nThe internal StudioComposition package target compiles actual app orchestration and storage adapters. [INTERFACES.md](INTERFACES.md) contains live contract examples; [FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md) distinguishes current producer APIs from future acceptance proposals. Native wiring is implemented in source; Apple behavior remains unverified.\n\n## Actual verification\n\n| Exact local test revision | Check | Result |\n|---|---|---|\n| `785d4587287b4a44b1d9f8f6e3d941700b04d871` | Full Swift6.0.3 Linux Debug | **431 tests passed, zero failures** |\n| Same source | Shared-storage feature regression | Two actual session/store owners: foreign callbacks, competing save, continued draft editing, successful recovery; no native windows instantiated |\n| Same source | App/NativeTests/UITests syntax |82 Swift inputs parsed; syntax only |\n| Same source | Source manifest |175 inputs independently matched to disk and Git blobs |\n| `363a7149e4eb6f195f478b3ce0210e33e8ac7ed0` | Earlier wave5 full Debug |430 tests passed, zero failures |\n| Wave5 source | Feature orchestration inventory |16 actual StudioFeatureSession methods passed, including failed save/reload/recover retention |\n| Wave5 source | App/NativeTests/UITests syntax |80 Swift inputs parsed; syntax only |\n| Wave5 source | Source manifest |173 inputs independently matched to disk and Git blobs |\n| `721186e93d4f4a511823d4f3013414929e54a56d` | Earlier wave5 full Debug |429 passed; retained separately before the failure-path test |\n| `2f8be604d403d02a7a8c3273ce82cb4e3f969545` | Wave4 full Debug |413 passed |\n| `6fe2cfab49f1b087553f65341f4471f786b309f9` | Wave3 full Debug |400 passed, including real two-window save conflict/recovery |\n| Apple SDK compilation, SwiftUI Observation/UI, focus/caret, AR, StoreKit/device behavior | Native validation |**Unverified** |\n\nComplete current logs, commands and manifests: [evidence/wave06](evidence/wave06). Wave5 final logs: [evidence/wave05-final](evidence/wave05-final). Initial429 run: [evidence/wave05](evidence/wave05). Earlier retained evidence: wave04, wave03-restored and revalidated. Official Swift6.0.3 restored-toolchain provenance and signature are under wave06-toolchain and earlier toolchain directories. Source-specific evidence is never transferred to changed inputs without revalidation.\n\nSeveral early temporary environments reset. Exact recovered source/report hashes and original versus reconstructed provenance are retained under evidence/recovery and evidence/wave03-recovery. Earlier raw logs that were lost are identified as historical, not presented as recovered. Durable source/reports now use sparse workspace worktrees; disposable build/cache output uses separate temporary paths.\n\n## Remaining integration work and limitations\n\nWave6 implements the live presentation host, matching teardown and first-save logical identity. Existing room/AR Bool callbacks receive current scene state without an identity reset of the AR controller. Their actual SwiftUI lifecycle, Observation and nested dismissal still require Apple execution.\n\nReferenceComparisonView clears its photo/candidate session before its Void callback. Arrangement and target-lux also mark completion and dismiss after Void callbacks. The parent can reject obsolete results but cannot retain already-consumed feature drafts through those APIs. An owner-provided acceptance callback is required; do not claim that core receipt tests solve this native boundary. Observed producer interfaces are unchanged across main and advertised lanes01–05.\n\nThe lane05 spatial-preview owner request is implemented at the composition wrapper: both preview identities follow workspaceResetID, and storage-generation/light-UUID guards remain. Renderer files are unchanged. Native first-save viewport retention still needs runtime verification.\n\nWave7 completes navigation and concrete native acceptance scenarios for reference/comparison, room/AR, export and purchase. Wave8 verifies package/generated targets and applicable build configurations. Wave9 challenges duplicate state/lifecycle/undo. Wave10 delivers the final100-context ledger, current-source evidence and precise lane20 handoff. Only preserved work may be cleaned.\n"
+        }
+      ]
+    }
+  },
+  "conclusions": [
+    "Frozen lane05 first-save generation identity still predicts viewport recreation; source-level reproducer only.",
+    "Current owner source uses requested workspaceResetID identity and retains separate storage generation/live UUID callback guards.",
+    "Owner source is not integrated in frozen lane05, and no native first-save or hosted project-switch viewport result is established.",
+    "Session tests assert reset token behavior, not SwiftUI coordinator identity, actual camera retention or delivered gestures."
+  ]
+}
+
