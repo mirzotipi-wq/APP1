@@ -1,59 +1,48 @@
-# Lane 01 handoff — waves 1–3 complete
+# Lane 01 handoff — live feature ownership checkpoint
 
-## Current checkpoint
+## Status and integration boundary
 
-Exactly **30 actual fresh worker contexts** have completed three waves of ten. The next wave separates typed mutation commands from rendering. Seven waves / 70 fresh contexts remain. See [WORKER_LEDGER.json](WORKER_LEDGER.json), [wave-03.json](wave-03.json), earlier wave ledgers and original reports for IDs, frozen inputs, provenance and outcomes. Followups and one capacity-rejected spawn received no extra credit.
+Waves1–4 are complete: **40 actual fresh contexts**, ten roles per wave. Wave5 implementation and its final430-test run are complete; remaining independent reviews are in progress. Counts are based on returned canonical agent IDs, never planned tasks. WORKER_LEDGER.json and wave ledgers preserve completed counts, reports and hashes; followups and the rejected capacity spawn count zero.
 
-Work is confined to `finish/01-architecture-composition`. Lane 19 owns CI; lane 20 owns canonical state and final integration. Campaign baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67` pending lane 20's published BASE_SHA. Inspected main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`; its later native-test correction is preserved for integration. No canonical status, CI or other feature-owner implementation was changed.
+Only `finish/01-architecture-composition` is pushed. Last verified publication is `ea83fa165916aaa2f55ddb88f6430b8a59ce5565`, tree `83bd4af88e6224abb828a6cf1cb0b286145931da`. Current wave5 local tested source is `363a7149e4eb6f195f478b3ce0210e33e8ac7ed0`. The next publication will preserve its exact source hashes; local test commits and GitHub publication commits have distinct IDs.
+
+Common inspected baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest observed main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`, including a later native-test correction reserved for integration. The observed origin advertises finish lanes01–05, with no lane20 branch or BASE_SHA at inspected paths. This is scoped observation, not a claim about every possible campaign location. CI belongs to lane19; canonical state and final main integration belong to lane20. Other feature-owner implementations remain unchanged.
 
 ## Implemented composition
 
-- `StudioEditorState` owns validated scene, stable selection, revision identity and bounded history. Invalid candidates are atomic. A no-reset receipt cannot replace scene content beneath retained redo or an open gesture.
-- `StudioSession` owns each window's editor and project/library reconciliation. It reserves operations before closing edits, stages editor and operation adoption before publishing either, and retains asynchronous work until its receipt settles. Existing ProjectStore and ProjectLibraryOperation source remain unchanged.
-- Cumulative Plan gestures now belong to the session. The frozen origin and scale survive rejected stale Save callbacks; accepted reservations finish the group. A delayed end from an old generation cannot end a newer gesture. StudioView renders the session's gesture state.
-- Both numeric editing phases pass through generation admission. A stale end captured before first save cannot close a newer same-control transaction; the View forwarding correction is statically reviewed, with the session guard/grouping exercised in actual tests.
-- Ordinary numeric-control identity now follows `workspaceResetID`, retaining identity across first save, metadata changes and undo. Intentional document switch/reload rotates it. Callback generation checks remain separate. Actual native focus/caret preservation is still unverified.
-- `StudioFeatureContext` / `StudioFeatureSession` define live owner, generation and revision admission. They are **not yet wired into native feature routes**; existing equality-based route guards remain pending work.
-- The internal StudioComposition package target compiles the actual storage adapters and session for portable orchestration tests. Native Observation remains enabled on Darwin; Linux test results do not verify SwiftUI observation.
+`StudioEditorState` owns validated scene, live UUID selection, revision identity and bounded undo history. Invalid candidates are atomic. Full validation remains at arbitrary scene/update/replacement/adoption boundaries. A no-reset receipt cannot replace content beneath retained redo or an open edit. Typed `StudioFieldCommand` validates closed changed payloads without rescanning unchanged names/lights; optional default and optical-roll representation remain intact. No measured UI speedup is claimed.
 
-[INTERFACES.md](INTERFACES.md) contains scene invariants, examples and the feature integration rules.
+`StudioSession` owns each window's editor, library, saved snapshot, project-operation reservation/task and cumulative Plan gesture. It reserves before ending edits and stages receipt adoption before publishing state. Cancelling a sheet observer does not abandon a committed write. Plan keeps a frozen origin/scale; a stale end cannot close a new generation's gesture. Ordinary control identity follows `workspaceResetID`, while callbacks separately check storage generation. Healthy repeated initial load is rejected before touching a dirty editor; failed-load retry remains available.
+
+The session now owns one `StudioFeaturePresentation`: destination, immutable context and live receipt. Opening requires a loaded, writable, idle editor and valid target UUID. A currently presented draft cannot be replaced. Admission checks live owner, logical document identity and current revision; equal content after undo does not revive a result. First save retains the logical feature context. Successful document switch/reload/recovery clears it. Old teardown cannot close a newer owner.
+
+Scene/lux results are one-shot, retiring callbacks synchronously after validation; valid unchanged results still report acceptance. Lux may change only the captured light's candela. Room/AR results can repeat, advance their own receipt, and share one owner undo group. Unrelated valid commands start their own undo change; invalid/no-op commands preserve the feature group. A successful changed feature result clears a frozen zero-motion Plan origin so a later drag cannot overwrite the new geometry. Rejected/no-op results retain that still-valid gesture.
+
+The internal StudioComposition package target compiles the actual app orchestration and storage adapters. [INTERFACES.md](INTERFACES.md) contains contract examples. **Native feature route wiring remains the next step:** StudioView still uses legacy equality guards and storage-generation dismissal until wave6.
 
 ## Actual verification
 
-The original environment disappeared after local implementation/test commits. Code and reports were recovered through GitHub, then a fresh environment returned. Published recovery checkpoint `7b37b79f5d399942b9dd226667fcd67f2ba705f6` was fetched and its commit/tree plus all six recorded source hashes verified. The original outage evidence remains under [evidence/recovery](evidence/recovery).
+| Exact local test revision | Check | Result |
+|---|---|---|
+| `363a7149e4eb6f195f478b3ce0210e33e8ac7ed0` | Full Swift6.0.3 Linux Debug | **430 tests passed, zero failures** |
+| Same source | Feature orchestration inventory |16 actual StudioFeatureSession methods passed, including failed save/reload/recover retention |
+| Same source | App/NativeTests/UITests syntax |80 Swift inputs parsed; syntax only |
+| Same source | Source manifest |173 inputs independently matched to disk and Git blobs |
+| `721186e93d4f4a511823d4f3013414929e54a56d` | Earlier wave5 full Debug |429 passed; retained separately before the failure-path test |
+| `2f8be604d403d02a7a8c3273ce82cb4e3f969545` | Wave4 full Debug |413 passed |
+| `6fe2cfab49f1b087553f65341f4471f786b309f9` | Wave3 full Debug |400 passed, including real two-window save conflict/recovery |
+| Apple SDK compilation, SwiftUI Observation/UI, focus/caret, AR, StoreKit/device behavior | Native validation |**Unverified** |
 
-The latest full fresh check is at restored source `6fe2cfab49f1b087553f65341f4471f786b309f9`: **400 Debug tests passed**, including 11 session and six Plan methods. Its complete log, command receipt, native syntax receipt and 169-input source manifest are under [evidence/wave03-restored](evidence/wave03-restored). The acceptance reviewer independently verified all 169 hashes and actual session method results. The real two-window conflict/recovery test passed.
+Complete current logs, commands and manifests: [evidence/wave05-final](evidence/wave05-final). Initial429 run: [evidence/wave05](evidence/wave05). Earlier retained evidence: wave04, wave03-restored and revalidated. Official Swift6.0.3 restored-toolchain provenance and signature are under wave04-toolchain. Source-specific evidence is never transferred to changed inputs without revalidation.
 
-The temporary filesystem reset again during wave 3. Exact worker test source and report variants were recovered and verified. Code, reports and new logs now live in a persistent sparse workspace checkout. Earlier 10-test and 16-test wave 3 runs passed, but their raw logs were lost; the new full run provides retained current-source evidence. See [recovery provenance](evidence/wave03-recovery/manager-ledger-original.json).
+Several early temporary environments reset. Exact recovered source/report hashes and original versus reconstructed provenance are retained under evidence/recovery and evidence/wave03-recovery. Earlier raw logs that were lost are identified as historical, not presented as recovered. Durable source/reports now use sparse workspace worktrees; disposable build/cache output uses separate temporary paths.
 
-Earlier restored-environment evidence remains under [evidence/revalidated](evidence/revalidated):
+## Remaining integration work and limitations
 
-| Source / check | Actual outcome |
-|---|---|
-| Local `a98be93`, full Swift 6.0.3 Linux Debug | 392 tests passed; 0 failures |
-| Local `66aec8b`, changed control-identity session suite | 9 tests passed; 0 failures |
-| Local `66aec8b`, all App/NativeTests/UITests Swift syntax | Passed parsing only |
-| Apple SDK compilation, native UI/Observation, AR/StoreKit | Unverified |
+Wave6 must replace native route state/equality checks with the live session presentation and owner-matched teardown. Storage-generation changes must no longer tear down feature drafts on first save. Existing room/AR Bool callbacks support this directly. Live room values must reach nested AR/manual room views without resetting the AR controller.
 
-The full run preceded the small control-identity change; the affected nine session tests were rerun afterward. Do not relabel that as one full run at the newer source. Exact commands, source hashes, complete new logs and compiler provenance are retained. Pre-outage 383-test and separate 8-test outcomes are historical and separately described; their lost raw logs are not presented as recovered.
+ReferenceComparisonView clears its photo/candidate session before its Void callback. Arrangement and target-lux also mark completion and dismiss after Void callbacks. The parent can reject obsolete results but cannot retain already-consumed feature drafts through those APIs. An owner-provided acceptance callback is required; do not claim that core receipt tests solve this native boundary. Observed producer interfaces are unchanged across main and advertised lanes01–05.
 
-Latest inspected recovery-source CI: iOS Prototype run `45822436205` queued; Project state run `45822436005` succeeded at `7b37b79`. Structural checks are not runtime acceptance. Earlier main UI failures remain documented in CAMPAIGN.md.
+The published spatial-preview owner request also asks composition to key preview lifetime by workspaceResetID while retaining captured storage-generation/light-UUID mutation guards. Address that in wave6 without editing renderer implementations.
 
-## Wave 4 checkpoint
-
-Typed field commands are implemented and connected to every light scalar/position/optics, camera, subject, lens, preview, room and Plan mutation binding. StudioView now has a read-only scene projection. Full validation remains at arbitrary scene boundaries; typed payloads preserve UUID, SI, schema and optional representation. Session admission uses the current loaded/writable/idle generation. No feature-owner implementation was changed.
-
-Fresh full Debug at `2f8be604d403d02a7a8c3273ce82cb4e3f969545` passed **413 tests, zero failures**, including 12 new typed-command methods and 12 actual StudioSession methods. All 79 App/NativeTests/UITests Swift files passed syntax parsing only. The 171-input source manifest, complete log and command receipt are in [evidence/wave04](evidence/wave04). The official Swift 6.0.3 archive signature and restored toolchain provenance are in [evidence/wave04-toolchain](evidence/wave04-toolchain). Native Apple compilation and runtime remain unverified.
-
-## Next executable work
-
-Wave 4 is complete: **40 actual fresh contexts across four waves**, with ten concrete roles in each. Exact canonical IDs and report hashes are in WORKER_LEDGER.json and wave-01 through wave-04.json. Root is excluded; acceptance schedulers count once. Followups and a rejected capacity spawn count zero.
-
-1. Wave 5: enforce live presentation ownership and UUID revision admission, separating stable document identity from storage generation so first save can preserve the active feature. Retire matching callbacks synchronously; reject edit-away/undo-back results and repeated initial-load resets.
-2. Waves 6–7: wire available reference/room/AR/arrangement/lux adapters and finish comparison/export/purchase navigation. Valid no-op acceptance is distinct from mutation; nested AR-room edits keep their owner transaction.
-3. Reference currently clears session data before its Void callback. Composition can reject stale results but cannot guarantee retention of already-consumed drafts without the feature owner's acceptance interface. Arrangement/lux also dismiss after Void callbacks. Coordinate narrow interfaces without editing other owners' files.
-4. Waves 8–10: package/generated target checks, independent lifecycle/state/undo challenge, fresh affected evidence and final lane 20 handoff. No Apple checks are passed without execution.
-
-Latest inspected CI at published5c69: Project state45830511522 succeeded; iOS Prototype45830511439 remained queued. These are not results for the newer wave4 source. Main remains9e0e2ba with later changes reserved for lane20 integration. The baseline remainsf150f98 pending a published campaign BASE_SHA.
-
-Source and reports use isolated durable workspace worktrees. Disposable test output uses separate /tmp build/cache directories. Only preserved work is cleaned, and only the assigned branch is pushed.
+Wave7 completes navigation and concrete native acceptance scenarios for reference/comparison, room/AR, export and purchase. Wave8 verifies package/generated targets and applicable build configurations. Wave9 challenges duplicate state/lifecycle/undo. Wave10 delivers the final100-context ledger, current-source evidence and precise lane20 handoff. Only preserved work may be cleaned.

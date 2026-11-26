@@ -89,6 +89,7 @@ let package = Package(
             sources: [
                 "StudioSessionTests.swift",
                 "StudioPlanSessionTests.swift",
+                "StudioFeatureSessionTests.swift",
             ])
     ]
 )

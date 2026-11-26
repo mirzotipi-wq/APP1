@@ -56,7 +56,7 @@ preview rendering still have costs; no measured UI performance claim is made.
 
 ## Feature result identity
 
-`StudioFeatureContext` contains a unique presentation ID, project generation,
+`StudioFeatureContext` contains a unique presentation ID, logical document generation,
 scene revision and snapshot. Revisions are UUID identity tokens, not ordered
 counters. Every actual scene mutation and undo/redo changes the token, so equal scene
 content after undo does not revive an older asynchronous result.
@@ -71,16 +71,30 @@ or AR changes updates `acceptedRevision` only after its own successful validated
 mutation. It must not advance that receipt after unrelated edits.
 
 ```swift
-let context = StudioFeatureContext(generation: generation,
-                                   revision: editor.revision, scene: editor.scene)
-var feature = StudioFeatureSession(context: context)
-if feature.accepts(context, generation: generation,
-                   revision: editor.revision, isBusy: false) {
-    try editor.replace(with: proposedScene)
-    feature.didApply(revision: editor.revision)
-}
-feature.dismiss()
+// StudioSession is the live per-window parent. Capture the context for work.
+guard let context = session.openFeature(.room, from: session.generation) else { return }
+let accepted = session.applyFeatureRoom(measuredRoom, from: context)
+// Keep the feature draft when accepted == false; valid unchanged rooms are true.
+session.retireFeature(context) // synchronously rejects any later callbacks
+session.finishFeature(context) // matching teardown releases the payload
 ```
+
+`StudioFeaturePresentation` combines destination and receipt. `StudioSession`
+owns one active presentation, rejects replacement while it is presented, and
+permits a new owner after retirement. An old teardown cannot clear the new owner.
+The logical generation is `workspaceResetID`; storage generation still fences
+project/control callbacks. First save preserves the feature; successful document
+switch/reload/recovery clears it. Healthy repeated initial load is rejected before
+reservation, while failed initial-load retry remains allowed.
+
+Scene and target-lux results are one-shot: successful validation retires their
+callbacks immediately, even for accepted no-ops. Lux may change only the captured
+light's candela, retaining its exact UUID and other fields. Room/AR results may
+repeat and share an owner undo group. A valid unrelated command closes that group
+before making its own change; invalid/no-op commands preserve it. Accepted changed
+feature results also clear any frozen Plan origin, including a zero-motion drag
+that did not advance the revision. No-op results retain that still-valid origin.
+These session policies are implemented; native host wiring remains pending.
 
 Reference/arrangement producers keep their current snapshot + callback API.
 Room/AR keep synchronous Bool acceptance, enabling the feature to retain a draft

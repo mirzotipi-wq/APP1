@@ -32,6 +32,7 @@ final class StudioSession {
     private(set) var saveConflict = false
     private(set) var workspaceResetID = UUID()
     private(set) var planDrag: PlanDrag?
+    private(set) var feature: StudioFeaturePresentation?
     var message: String?
     var showRecoveryCapacity = false
 
@@ -92,7 +93,13 @@ final class StudioSession {
     @discardableResult
     func update(_ next: LightingScene, from generation: UUID) -> Bool {
         guard allowsMutation(from: generation) else { return false }
-        do { return try editor.update(with: next) }
+        do {
+            var candidate = editor
+            if let feature { candidate.endEditing(owner: feature.context.owner) }
+            guard try candidate.update(with: next) else { return false }
+            editor = candidate
+            return true
+        }
         catch { return false }
     }
 
@@ -101,8 +108,109 @@ final class StudioSession {
     @discardableResult
     func apply(_ command: StudioFieldCommand, from generation: UUID) -> Bool {
         guard allowsMutation(from: generation) else { return false }
-        do { return try editor.apply(command) }
+        do {
+            // An unrelated command cannot silently join an open room/AR group.
+            // Stage its boundary too: invalid/no-op commands leave that group intact.
+            var candidate = editor
+            if let feature { candidate.endEditing(owner: feature.context.owner) }
+            guard try candidate.apply(command) else { return false }
+            editor = candidate
+            return true
+        }
         catch { return false }
+    }
+
+    /// A document may have one active feature draft. Storage identity can change
+    /// on first save without changing this presentation's document identity.
+    @discardableResult
+    func openFeature(_ destination: StudioFeatureDestination,
+                     from generation: UUID) -> StudioFeatureContext? {
+        guard allowsMutation(from: generation), feature?.isPresented != true else { return nil }
+        if case let .targetLux(lightID) = destination {
+            guard scene.lights.contains(where: { $0.id == lightID }) else { return nil }
+        }
+        finishPlanDrag()
+        editor.endEditing()
+        let context = StudioFeatureContext(generation: workspaceResetID,
+                                           revision: revision, scene: scene)
+        feature = StudioFeaturePresentation(destination: destination, context: context)
+        return context
+    }
+
+    func acceptsFeature(_ context: StudioFeatureContext) -> Bool {
+        guard allowsMutation(from: generation), let feature else { return false }
+        return feature.accepts(context, generation: workspaceResetID,
+                               revision: revision, isBusy: isBusy)
+    }
+
+    /// The Bool reports acceptance, including a valid unchanged proposal.
+    @discardableResult
+    func applyFeatureScene(_ next: LightingScene, from context: StudioFeatureContext) -> Bool {
+        guard acceptsFeature(context), let destination = feature?.destination,
+              destination == .reference || destination == .arrangement else { return false }
+        do {
+            let changed = try editor.replace(with: next)
+            if changed { planDrag = nil }
+            feature?.didApply(revision: revision)
+            retireFeature(context)
+            return true
+        } catch { return false }
+    }
+
+    @discardableResult
+    func applyFeatureLight(_ adjusted: StudioLight, from context: StudioFeatureContext) -> Bool {
+        guard acceptsFeature(context),
+              let destination = feature?.destination,
+              case let .targetLux(lightID) = destination,
+              adjusted.id == lightID,
+              let original = context.scene.lights.first(where: { $0.id == lightID }),
+              let index = scene.lights.firstIndex(where: { $0.id == lightID }),
+              scene.lights[index] == original else { return false }
+        // This feature adjusts output only. A malformed adapter cannot replace
+        // another light, rename it, or change its geometry through this callback.
+        var expected = original
+        expected.candela = adjusted.candela
+        guard adjusted == expected else { return false }
+        var next = scene
+        next.lights[index] = adjusted
+        do {
+            let changed = try editor.replace(with: next)
+            if changed { planDrag = nil }
+            feature?.didApply(revision: revision)
+            retireFeature(context)
+            return true
+        } catch { return false }
+    }
+
+    @discardableResult
+    func applyFeatureRoom(_ room: ManualRoom?, from context: StudioFeatureContext) -> Bool {
+        guard acceptsFeature(context), let destination = feature?.destination,
+              destination == .room || destination == .ar,
+              room?.isValid ?? true else { return false }
+        guard room != scene.placementRoom else { return true }
+        do {
+            var candidate = editor
+            candidate.beginEditing(owner: context.owner)
+            guard try candidate.apply(.room(room)) else { return true }
+            editor = candidate
+            planDrag = nil
+            feature?.didApply(revision: revision)
+            return true
+        } catch { return false }
+    }
+
+    /// Retire callbacks immediately, before an asynchronous sheet animation.
+    /// Keep the payload until the matching dismissal finishes.
+    func retireFeature(_ context: StudioFeatureContext) {
+        guard feature?.id == context.id else { return }
+        feature?.dismiss()
+        editor.endEditing(owner: context.owner)
+    }
+
+    func finishFeature(_ context: StudioFeatureContext) {
+        guard feature?.id == context.id else { return }
+        retireFeature(context)
+        feature = nil
     }
 
     func editChanged(_ editing: Bool, owner: String, from generation: UUID) {
@@ -180,7 +288,10 @@ final class StudioSession {
     func beginLibraryOperation(_ operation: ProjectLibraryOperation,
                                from generation: UUID) throws -> Task<Void, Error> {
         switch operation {
-        case .load: break
+        case .load:
+            // Initial load and a protected-data retry are allowed. Re-running
+            // initial load on a healthy editor must not discard a dirty document.
+            guard !loaded || saveBlocked else { throw ProjectLibraryError.staleSnapshot }
         default:
             guard loaded, !saveBlocked else { throw ProjectLibraryError.invalidLibrary }
         }
@@ -217,7 +328,10 @@ final class StudioSession {
                 editor = nextEditor
                 library = adoption.library
                 saved = nextSaved
-                if adoption.resetsPresentation { workspaceResetID = UUID() }
+                if adoption.resetsPresentation {
+                    workspaceResetID = UUID()
+                    feature = nil
+                }
                 loaded = true
                 saveBlocked = false
                 saveConflict = false

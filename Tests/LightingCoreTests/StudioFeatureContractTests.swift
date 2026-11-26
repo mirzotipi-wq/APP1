@@ -2,6 +2,27 @@ import XCTest
 @testable import LightingCore
 
 final class StudioFeatureContractTests: XCTestCase {
+    func testDismissedPresentationCannotAdvanceItsReceipt() {
+        let editor = StudioEditorState()
+        let generation = UUID()
+        let context = StudioFeatureContext(generation: generation, revision: editor.revision,
+                                           scene: editor.scene)
+        var presentation = StudioFeaturePresentation(destination: .room, context: context)
+        let accepted = UUID()
+        presentation.didApply(revision: accepted)
+        XCTAssertEqual(presentation.acceptedRevision, accepted)
+        let capturedCopy = presentation
+        presentation.dismiss()
+        let retired = presentation
+        presentation.didApply(revision: UUID())
+        XCTAssertEqual(presentation, retired, "A late acknowledgement cannot mutate a retired receipt")
+        XCTAssertFalse(presentation.accepts(context, generation: generation,
+                                             revision: accepted, isBusy: false))
+        XCTAssertTrue(capturedCopy.accepts(context, generation: generation,
+                                           revision: accepted, isBusy: false),
+                      "Admission must consult the live parent, never an earlier value copy")
+    }
+
     func testNoOpCandidatesPreserveOpenEditRedoAndFeatureReceipt() throws {
         var editor = StudioEditorState()
         var future = editor.scene

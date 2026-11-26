@@ -38,7 +38,11 @@ public struct StudioFeatureSession: Equatable, Sendable {
     }
 
     /// Call only after successfully applying this feature's validated result.
-    public mutating func didApply(revision: UUID) { acceptedRevision = revision }
+    /// A dismissed session cannot advance its receipt.
+    public mutating func didApply(revision: UUID) {
+        guard isPresented else { return }
+        acceptedRevision = revision
+    }
 
     public mutating func dismiss() { isPresented = false }
 }
