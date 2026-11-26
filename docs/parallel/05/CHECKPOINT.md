@@ -49,3 +49,9 @@ Source4e694bc passed184native methods, all38spatial, with exact one-start/one-pa
 ## Eighty contexts
 
 Wave08 completed exactly10actual contexts and its41-entry manifest/42-file bundle is verified. WORKER_LEDGER.json verifies80distinct completed contexts across eight waves. Root published source60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a, containing the independently approved outward-Float correction and one regression. Its core run45851365897/job140020330561 passed366Debug/366Release/100tooling; native job 140022794410 has started (observed 2026-11-26 16:04 UTC). Expected185native/39spatial is not yet execution. Previous source4e184/38 passed; final UI dispositions and genuine captures are retained. Wave09 is active; wave10 remains.
+
+## Ninety contexts
+
+Wave 09 completed ten actual fresh contexts. Root verified its 19 manifest entries, 20-file scope, exact parent/tree, and all report hashes in the aggregate 90-context ledger. Independent review found no new concrete adapter defect and clarified that lookup ownership, interaction delivery and object deallocation are separate claims. The current owner-request document records lane 01's presentation identity implementation at 5ccfbaae without claiming integration or native first-save acceptance.
+
+Source60059 is unchanged. At 2026-11-26 16:23:18 UTC, its core, simulator test-bundle and Release builds passed; native method execution was pending after simulator warm-up. CI-60059a0-progress.json preserves that observation. The expected 185 native / 39 spatial inventory is verified against the eleven changed source files. The final handoff and interaction/geometry documents are drafted for wave 10 review. They remain explicit about the pending native result and final ten workers.

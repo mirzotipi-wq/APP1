@@ -1,35 +1,51 @@
 # Integration and owner requests
 
-## Lane 01 — composition
+## Current disposition
 
-The adapters retain existing call sites. Inspection corrected the startup identity hypothesis: StudioView.workspace already applies .id(libraryOperation.generation) to RealityStudioPreview and guards its callback with generation and live UUID membership. Preserve both protections. Project replacement with overlapping UUIDs must create a new coordinator. No additional identity input is requested. Adapters refresh callbacks, cancel selection for changed UUID sets, discard invalid-scene equipment and reject detached/deleted hit objects.
+Lane 05 owns the spatial adapters, their viewport geometry helper, and matching native tests. Source `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a` contains the latest viewport implementation. No composition, Core geometry, Plan, AR, Study, CI or milestone changes are authored by this lane.
 
-Wave01's retained Plan subject/camera navigation-action observation belongs to lanes07/01; it did not establish wrong-project light selection. Wave02 noted generic unavailable-estimate guidance rather than explicit aim status in equipment rows: a composition/inspector usability request, not a demonstrated geometry or privacy blocker.
+| Owner | Request | Current disposition |
+|---|---|---|
+| 01 — composition | Preserve viewport identity on first save; replace it when the document presentation resets. Keep generation and live-UUID selection guards. | Implemented in owner source `5ccfbaae821a32d88c12ed8b3abf1600aef25753`; not merged into lane 05. Integrated native first-save retention and project-replacement/stale-callback acceptance remain open. |
+| 06 — Core geometry | Retain meter units, right-handed coordinates, emitter +Z, camera −Z and the existing Core bounds contract. | Lane 05 consumes Core frames and extends bounds only in App for represented housings, stands, bust, camera and markers. No Core changes or owner acknowledgment claimed. |
+| 07 / 01 — Plan and composition | Investigate the existing Plan light reachability and equipment-row aim-status observations. | Outside viewport ownership; historical UI failures are retained without assigning an unproven cause. |
+| 19 / 20 — execution and campaign evidence | Reconcile source-specific CI, inherited main evidence and outstanding device/accessibility checks. | Existing inventory and thresholds remain intact. No milestone promotion; M03 remains active. |
 
-Inspected lane 01 checkpoint `966c9c21adbb685d82127e7f88981b74daf47e3d` and its HANDOFF.md on 2026-11-26. Wave 04 found that only numeric editOwner uses workspaceResetID; StudioView still keys RealityStudioPreview with .id(generation). The first save can therefore recreate the coordinator despite resetsPresentation being false. Requested owner change: key the 3D wrapper with session.workspaceResetID, retain the separately captured generation/live-UUID callback guard, and cover first-save retention plus intentional project-switch reset. This is a concrete composition integration gap, not repaired by an adapter that has already been destroyed. Root independently reread the pinned source. No lane 01 implementation is merged by this lane.
+## Lane 01: first-save identity
 
-## Lane 06 — core geometry
+Root independently inspected the three pinned files listed in `validation/lane01-5ccfbaa-disposition.json`. At that owner revision, `StudioView` keys `RealityStudioPreview` with `session.workspaceResetID`. The callback still checks its separately captured library generation and current scene UUID membership. `StudioSession` rotates the presentation identity only when adoption requests a presentation reset.
 
-`StudioSceneBounds` explicitly excludes stand bases, subject body and housing. Lane 05 must include its own represented equipment in Fit without redefining the core/Plan bounds contract. Viewport-only helpers will consume `StudioSceneBounds`, `EmitterFrame` and `CameraFraming`; no core geometry file is modified. Preserve right-handed meter coordinates, emitter +Z and camera -Z conventions. A remote-head check on 2026-11-26 found no finish/06 or finish/20 branch; baseline stays the user-specified f150f98 default. These requests are recorded for owner integration, not a claim of owner acknowledgment.
+Owner test source asserts that first save retains selection, history and `workspaceResetID`, and that creating a replacement project changes the presentation identity. These assertions and the implementation are source evidence. The owner's handoff explicitly leaves native first-save viewport retention unverified.
 
-## Lanes 19/20 — native execution and baseline
+Lane 05's frozen source still uses `.id(generation)` in the inherited composition. First save can therefore recreate its coordinator even though the viewport adapters preserve state during ordinary updates. An adapter cannot preserve a coordinator that its parent destroys. Integrate the owner change through lane 01, then check both first-save retention and deliberate project replacement with overlapping UUIDs. Do not remove the captured-generation/live-UUID guards.
 
-The first source checkpoint preserves main9e0e2ba as a merge parent, carrying its existing explicit-CGFloat repair for the baseline's greatestFiniteMagnitude ambiguity. New native methods use the existing inventory; CI/shard files are unchanged.
+Earlier wave reports correctly describe the source available when they ran: `966c9c21adbb685d82127e7f88981b74daf47e3d` still used `.id(generation)`. The newer owner source supersedes that open implementation request; it does not retroactively establish integrated behavior.
 
-Run45817222487 at68c83 passed366 Debug/366 Release core tests and100 tooling checks; native test-bundle builds succeeded. Studio-optics job139901927290 failed before UI runner initialization with XCTDaemonErrorDomain Code18: timed out waiting for AX loaded notification. App-accessibility job139901927281 executed and failed at StudioAppAccessibilityUITests.swift:340: scrolling content light-Key was not visibly reachable. Test source remains in Plan mode at that step and has not constructed a spatial viewport. This identifies the exercised path, not the product/harness cause. Full logs are retained in validation/. Lanes01/07/19/20 should reconcile these results with layout/harness work without removing, skipping or relaxing assertions. The simulator job independently passed all 171 native methods, including 25 spatial methods, with zero failures/skips. Genuine SceneKit fallback captures are preserved in captures/. The later source fixes and added tests require their own execution receipt.
+## Lane 06: bounds and emitter semantics
 
-Additional completed run 68c83 outcomes: room-precision failed the exact-measurement draft and slider-spoken-value checks; library-reference and studio-export were cancelled when the new source superseded the run. The Default visual attachment inventory passed; AXXXL had only 3 of the intended 14 named captures after the Plan-path failure and failed its inventory. These are not viewport passes. See validation/run-68c83-final-jobs.json and ui-room-precision-68c83.json.
+`StudioSceneBounds` deliberately excludes stands, subject body and housing. `SpatialViewportBounds` extends that contract for the two native viewport representations without changing Core or Plan bounds. Rectangle dimensions describe the emitting face. The RealityKit rectangle face now uses authored width and height, removing the former 6 mm inset at each edge. The front remains at local z = 0.
 
-## Evidence boundary
+Exact-prefix remote checks at 2026-11-26 14:17 UTC returned no `finish/06` or `finish/20` branch, with complete results and no pagination cursor. The campaign baseline therefore remains the requested default `f150f98e35dd735927075aac4d2f8b02295c6a67`. This is a recorded integration request, not evidence of owner acknowledgment.
 
-No new physical-device, manual VoiceOver, thermal or photographic calibration evidence is claimed. Original acceptance thresholds, failed histories and other workstreams' ownership remain intact.
+## Native evidence and historical failures
 
-## Updated native evidence and Core coordination
+The source-specific receipts in `validation/` distinguish successful native spatial execution from UI failures, cancellations and unexecuted successors.
 
-At source9725fb1, run45826141504 passed176native methods (30spatial), with no skipped/missing methods, plus366Debug/366Release core methods and100tooling checks. Library-reference and studio-optics UI shards passed. App-accessibility failed at StudioAppAccessibilityUITests.swift:263; cause remains an owner investigation. Newer camera/selection/aim recovery tests and the RK face correction need their own execution receipt.
+| Source | Native / spatial passes | Other relevant results |
+|---|---:|---|
+| `68c83cca` | 171 / 25 | Optics failed before UI runner initialization with AX notification timeout. App accessibility failed reaching Plan light-Key. Room precision failed draft/spoken-value checks. Library/export were cancelled. |
+| `9725fb1` | 176 / 30 | Library and optics UI shards passed. App accessibility failed at its line-263 wait. Room/export were cancelled by the successor. |
+| `4e694bc` | 184 / 38 | Optics, room and export UI shards passed. Library, accessibility and visual review were cancelled by the successor after native execution completed. |
+| `60059a0` | Pending | Core passed 366 Debug, 366 Release and 100 tooling checks. Simulator test-bundle and Release builds passed. Native job 140022794410 is in progress; expected inventory is 185 / 39. |
 
-Wave06 independently confirmed that Core rectangle dimensions describe emitting-face corners and exclude housing. The viewport correction therefore removes the rectangle diffuser inset in RealityKit, preserving Core semantics without Core changes. Exact-prefix remote checks on2026-11-26 at14:17UTC found no finish/06 or finish/20 head (both complete results with no cursor); the campaign default baseline remains unchanged.
+Failed and cancelled jobs are not viewport passes. Their product or harness causes are not assigned without evidence. Original failure logs, final dispositions and attachment inventories remain in this directory. No assertions are skipped or relaxed.
 
-## Inherited main checkpoint and lane20 reconciliation
+## Inherited main checkpoint
 
-The branch retains main9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318 as an existing parent. Besides the explicit-CGFloat UI test compilation repair, that parent contains prior README, canonical agent state/handoff/evidence, and historical closeout evidence updates. Root compared every path changed from f150 outside App/, NativeTests/ and docs/parallel/05/: all230 paths match that main parent byte-for-byte by Git blob identity. See validation/INTEGRATION_SCOPE-4e694bc.json. They are inherited work, not lane05-authored edits or new milestone decisions. Lane20 owns reconciliation of the existing canonical evidence; lane05 leaves M03 active and does not weaken thresholds.
+The first source integration retains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318` from main as a parent. It includes the explicit-`CGFloat` UI test compilation repair and prior README, canonical agent state/handoff/evidence and historical evidence updates.
+
+Root compared every path changed from baseline outside `App/`, `NativeTests/` and `docs/parallel/05/`: all 230 paths match that main parent exactly by Git blob identity. See `validation/INTEGRATION_SCOPE-4e694bc.json`. They are inherited work, not lane-05-authored changes or new acceptance decisions. Lane 20 owns reconciliation of canonical evidence.
+
+## Evidence limits
+
+RealityKit runtime/device behavior, delivered native gestures, manual VoiceOver navigation, maximum Dynamic Type layout, sustained frame rate, thermal behavior and ARC/GPU leak measurement remain unverified. Source-level privacy checks establish non-AR viewport construction without an automatic camera session; they do not constitute a whole-app privacy audit.
