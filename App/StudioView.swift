@@ -263,25 +263,9 @@ struct StudioView: View {
     // Prefer one row when the full title and action labels fit. At narrower
     // widths or larger text sizes, place the title above the adaptive actions.
     private var header: some View {
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 8) {
-                    projectHeading
-                    projectActions
-                }
-            } else {
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .center, spacing: 8) {
-                        projectHeading.fixedSize(horizontal: true, vertical: false)
-                        Spacer(minLength: 0)
-                        projectActions.fixedSize(horizontal: true, vertical: false)
-                    }
-                    VStack(alignment: .leading, spacing: 8) {
-                        projectHeading
-                        projectActions
-                    }
-                }
-            }
+        StudioAdaptiveLayout(forceVertical: dynamicTypeSize.isAccessibilitySize) {
+            projectHeading.frame(maxWidth: .infinity, alignment: .leading)
+            projectActions
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -305,16 +289,9 @@ struct StudioView: View {
     }
 
     private var projectActions: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 8) {
-                projectLibraryButton
-                projectUtilityActions
-            }
-            .fixedSize(horizontal: true, vertical: false)
-            VStack(alignment: .leading, spacing: 8) {
-                projectLibraryButton
-                projectUtilityActions
-            }
+        StudioAdaptiveLayout() {
+            projectLibraryButton
+            projectUtilityActions
         }
     }
 

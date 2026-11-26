@@ -78,6 +78,33 @@ Release configuration**, core job `140058830854` / run `45863070423`. That resul
 predates the new test membership. Exact receipts and the 181-input manifest are
 under [wave09 evidence](evidence/wave09).
 
+## Wave 10 stable native header
+
+Current source `1f14d48a2e640ee9fe7986f15c20622461ede03f` adds
+`App/StudioAdaptiveLayout.swift` and `NativeTests/StudioAdaptiveLayoutTests.swift`.
+Both are included automatically in native directory targets and explicitly
+excluded from the portable package. The six portable composition-test sources
+and three portable composition sources are unchanged. The current manifest has
+**183 selected inputs**, syntax parsing covers **86 Swift inputs**, and source
+inventory declares **195 native test methods**. Package dump/describe and the
+unchanged UI shard check succeed. These are source/configuration checks.
+
+The helper selects native horizontal/vertical stack geometry for one stable set
+of children. It is specialized for intrinsic header/actions: nonfinite proposals
+ask for ideal size, not a general maximum-size layout contract. Only the outer
+header forces a column at accessibility sizes; inner actions stay width-adaptive.
+The hosted native regression checks actual State identity and live attached-view
+geometry through eight transitions. It does not run in the Linux/macOS portable
+target, and has not executed on an Apple simulator. Its bounded queue-turn settling
+strategy still needs native validation. The three existing Darwin Observation
+methods also remain outside normal Linux execution.
+
+Apple's [Layout](https://developer.apple.com/documentation/swiftui/layout) and
+[AnyLayout](https://developer.apple.com/documentation/swiftui/anylayout) APIs allow
+layout selection without declaring duplicate child view trees. This source change
+is not proof of the cause or resolution of the historical export UI failure.
+Source hashes and preflight receipts are under [wave10 evidence](evidence/wave10).
+
 ## Swift package membership
 
 The manifest declares Swift tools 5.9, iOS 17 and macOS 14 minimum platforms,

@@ -214,3 +214,18 @@ success/cancellation/error checks. Purchase still needs configured StoreKit
 sandbox purchase, restore, cancellation, pending, revocation and offline checks.
 The documented navigation paths do not establish device accuracy, accessibility
 acceptance, commerce acceptance or release readiness.
+
+
+## Stable header presenter ownership (wave 10)
+
+The header and project actions now each declare one child set inside
+`StudioAdaptiveLayout`. Switching available width or Dynamic Type changes native
+stack geometry instead of choosing another export-menu declaration. The outer
+header retains its accessibility column policy; the inner action row still uses
+width to choose its axis. Export's snapshot and format flow remain owned by the
+unchanged `LightingPlanExportMenu`/`LightingPlanExportFlow` implementation.
+
+A hosted native test tracks actual child State UUIDs and live view bounds through
+eight layout/environment transitions. That source regression does not establish
+actual export-sheet retention, device rotation, or the cause of the older owner
+CI failure until Apple execution/reproduction succeeds.

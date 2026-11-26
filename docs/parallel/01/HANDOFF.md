@@ -52,9 +52,14 @@ unverified; normal Linux discovery excludes these methods.
 
 Independent reviewers confirmed four structural export presenter positions in
 normal header layouts and two in the separate accessibility branch. Each owns
-private snapshot state. Wave10 will replace both fitting levels and the outer
-accessibility branch with one stable adaptive content tree, preserving width-aware
-wrapping. This is state-ownership hardening; it is not an established explanation
+private snapshot state. At local source `1f14d48a2e640ee9fe7986f15c20622461ede03f`, both fitting
+levels and the outer accessibility branch now use one stable adaptive content tree.
+The outer header forces a column for accessibility sizes; inner actions continue
+to wrap only when width requires it, preserving their prior policy. The corresponding native hosted test checks installed child State UUIDs and live
+geometry across eight width/accessibility phases. Syntax passes, but its Apple
+compilation/runtime remains unverified, including the bounded main-queue settling
+strategy. The fixture tests allocated layout geometry, not physical-window visibility.
+This is state-ownership hardening; it is not an established explanation
 or fix for the historical export-reopening failure reported by lane05.
 
 New owner-routed native failures are preserved with exact source SHAs and excerpts
