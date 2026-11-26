@@ -38,3 +38,17 @@ A third reset occurred during a root read-only command; no root Swift build was 
 The workspace filesystem survived while /tmp was erased. A small sparse repository and current-wave worktrees now live under /workspace/scratch/2987b1ee980d/lane04, with the original /tmp/keyfill04-2987b1ee980d alias restored as a symlink. Worker sparse checkouts omit bulky archived CI logs; root and Git retain them. Only preserved prior-wave worktrees may be removed to bound disk use. Builds remain serialized and generated binaries use separate temporary build directories.
 
 The original worker016 executable was recovered at /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe. Its SHA256 is fca79bd443b21d335dc8f33ac50cf6757fb7e1fc97258d9837466979e7f97afa, exactly matching the original archived manifest. Thus the earlier assumption that this executable was lost is superseded; the original temporary fixture binaries are still missing. It is not rerun as evidence of corrected code.
+
+## Wave 4 preservation and disk-capacity recovery
+
+The later worker036 candidate-only run completed: one valid and twenty fixed invalid metadata cases, compile/run exits zero, no warnings and no float-cast-overflow diagnostics. Its completed report, source, raw output and receipt are preserved separately from the initial blocked attempt in checkpoint 88279ba0ee0262ea6c880580c8a85b56342abbff. This is host C++ execution, not Swift or Metal execution.
+
+After publishing that checkpoint, local checkout stopped with `No space left on device`. No remote source or report was lost. Before cleanup, root checked every modified/untracked file in all ten completed wave4 worktrees against the published artifact map, including worker040's report and receipt. All hashes matched. Only those ten completed worktrees were removed, recovering 53,653,504 available workspace bytes at that instant. This is a filesystem-capacity observation, not application memory measurement.
+
+The coordinator repository and result directories remain on the persistent workspace. Future isolated worker checkouts use `/tmp/keyfill04-workers-2987b1ee980d` through the existing `workers` alias to avoid exhausting the shared workspace volume. Worker reports, source and evidence are preserved immediately as Git blobs and in the shared local object database. A reset may still erase temporary checkouts; actual worker IDs and original inputs remain fixed during recovery. Local checkout of 88279ba then completed with an exactly matching Git tree and clean worktree.
+
+## Fourth execution interruption during wave 5
+
+The execution environment became unavailable again on 2026-11-26 at approximately 14:35 UTC. Root was waiting for review; wave5 had no local Swift build or SDK installation. Worker041 observed an exec-server transport disconnection and a 45-second recovery timeout during read/hash/upload orchestration. These observations establish an interruption, not its cause or whether the temporary filesystem was erased.
+
+The frozen renderer and tests, original writer sources, completed reports and root CI logs were already preserved as Git blobs. Remaining read-only reviewers continued in fresh contexts against exact repository snapshots through connected Git tools. Their prepared worktree locations were marked unavailable, not presented as operational. Same-ID follow-ups or recovery attempts do not increase the worker count. No unavailable local command is counted as a build or test pass.

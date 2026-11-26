@@ -1,0 +1,40 @@
+{
+  "wave": 5,
+  "roles": [
+    "acceptance",
+    "invariants",
+    "interface",
+    "implementation",
+    "concurrency",
+    "resource-lifetime",
+    "consumer-integration",
+    "accessibility-privacy",
+    "platform-performance",
+    "independent-review"
+  ],
+  "tasks": [
+    "Acceptance worker 041: coordinate exactly nine fresh workers 042–050, with at most two active children. Freeze cancellation, backend failure, and cache admission contracts. Start 043 interface reviewer and 044 renderer writer first; start 045 test writer once the API settles; 050 reviews last. Own your report and ledger.",
+    "Review lifecycle invariants: ordinary cancellation never downgrades; confirmed backend failure purges Metal even with simultaneous cancellation; precision-domain rejection falls back per request; failed or cancelled frames never enter cache. Review 044 source and 045 tests; no edits.",
+    "Define the minimal internal backend protocol and factory with 044: validate(isCancelled:), render(scene:width:isCancelled:), real Metal default, actor-owned backend. Preserve existing initialization and UI API. No public API or oracle changes. Read-only.",
+    "Own only App/MetalStudyRenderer.swift. Add the internal StudyComputeBackend protocol and injected default factory. Pass cancellation through render, validation fixtures, and compute with compatible defaults. Check before packing/allocation/commit and after command completion; inspect command status BEFORE cancellation. Use a per-frame autoreleasepool. On confirmed runtime/startup failure, select CPU and purge Metal BEFORE cancellation checks. Ordinary cancellation leaves startup retryable. Scene errors propagate. Precision-domain errors fall back per request, checking cancellation before CPU setup. Add internal read-only cacheUsage tuple. Preserve GPU completion wait, exact parity, labels and all limits. Save the complete source.",
+    "Own only NativeTests/StudyRenderCacheTests.swift. Coordinate 044's API. Add deterministic mock-backend regressions: cache Metal, then command/allocation/invalidComputeOutput failure plus cancellation must evict Metal, reject the failed frame, preserve cached CPU and use CPU on next live request. Ordinary cancellation retains validated backend; precision-domain fallback does not poison it. Synchronize mutable flags. Keep actual Metal tests intact. No Swift build.",
+    "Review actual command/buffer lifetime, autoreleasepool, failure-before-cancellation ordering and backend release after downgrade. Distinguish cache payload and requested buffer bytes from process/driver memory. No edits or heavy builds.",
+    "Review latest-request consumer compatibility: cancellation checks after await and before frame adoption, subject changes, stale-frame labels and errors. Preview belongs to lane 03; report precise proven gaps without UI edits.",
+    "Audit privacy and accessibility of the backend seam, error labels and tests. Use synthetic fixtures; no user-content logs or mock results described as actual Metal. Focused report, no edits.",
+    "Review scheduling cost and cancellation limits: no GPU-preemption claim, CPU eight-further-pixel contract unchanged, factory constructed only for eligible unchecked requests. Check patch formatting and native inventory. Native compilation/execution belongs to CI; no SDK installs.",
+    "LAST independent review of 044 and 045: actor isolation, Swift 5 concurrency, error classification, cache admission and purge ordering, unchanged required actual Metal tests and thresholds. Identify concrete blockers and separate executed evidence from unrun assertions."
+  ],
+  "input_sha": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+  "numbers": [
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50
+  ]
+}

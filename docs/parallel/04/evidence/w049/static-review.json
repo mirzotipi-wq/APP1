@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "worker": "w049",
+  "identity": "/root/w041/w049",
+  "date": "2026-11-26",
+  "base": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+  "scope": "finish/04-metal-cache",
+  "role": "platform/performance reviewer",
+  "review": "one narrow read-only falsification pass",
+  "ownership": "Report and diagnostics only; no source changes, stage, commit, ref write, CPU oracle, preview, harness, global-state or handoff modification.",
+  "sources": {
+    "App/MetalStudyRenderer.swift": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+    "NativeTests/StudyRenderCacheTests.swift": "2af764b51023dc66a9cc0070d8d49f5bd7de334e",
+    "base:App/MetalStudyRenderer.swift": "6f72a920bc8e14438997b07c6b45545c077509dc",
+    "base:NativeTests/StudyRenderCacheTests.swift": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+    "Sources/LightingCore/ReferenceStudy.swift": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+    "Sources/LightingCore/PortraitStudy.swift": "05acc11282db60b07b6cb7e7c9b68c04148803c3",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": "e9764da10eabbffbad6ceee8999977cf31deb197",
+    "prior_renderer": "98aa3c619ef05b7cc1369ecab71a1b04456a89d3",
+    "prior_static_receipt": "c31972d9b2d5d9492b1becef664f1b1d2e22b0b3"
+  },
+  "mandatoryDocuments": {
+    "AGENTS.md": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+    "agents/OPERATING_PROTOCOL.md": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+    "agents/HANDOFF.md": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+    "agents/state.json": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+    "docs/PRODUCT.md": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+    "docs/ARCHITECTURE.md": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+    "docs/ROADMAP.md": "3e7dd3525c070e76838e20ef5e6529f534130639",
+    "docs/QUALITY.md": "203c646d5cef679495eee2c30fed8dddf900317c",
+    "docs/DESIGN.md": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+    "docs/acceptance/m02-m03-code.md": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+  },
+  "executed": {
+    "sourceConnectorCalls": {
+      "fetch_file": 13,
+      "fetch_blob": 6
+    },
+    "inMemoryJavaScriptChecks": {
+      "finalRendererVsReceipt": {
+        "priorReplacement": "The resulting backend is never shared with another",
+        "finalReplacement": "It must return a fresh backend for this actor's exclusive use;\n    /// callers must not retain it for concurrent use outside the"
+      },
+      "originalTestsExactPrefixPreserved": true,
+      "baseTestMethods": 11,
+      "finalTestMethods": 19,
+      "addedMethods": [
+        "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testFactoryIsDeferredUntilEligibleUncachedSphereRequest"
+      ],
+      "removedMethods": [],
+      "reportedInventorySums": {
+        "before": 160,
+        "after": 168
+      },
+      "finalFormatting": {
+        "renderer": {
+          "trailingWhitespaceLines": [],
+          "mergeMarkers": false,
+          "finalNewline": true
+        },
+        "tests": {
+          "trailingWhitespaceLines": [],
+          "mergeMarkers": false,
+          "finalNewline": true
+        }
+      }
+    }
+  },
+  "sourceFindings": [
+    "A synchronous actor serializes CPU fallbacks and compute submissions; queued work waits for the current operation.",
+    "Cold eligible requests may synchronously create the pipeline and validate six width-48 fixture pairs. This work is not a latency, timing, memory, or hardware measurement.",
+    "Production validation checks cancellation before each CPU fixture, after the CPU fixture, and after each submitted GPU command completes. GPU work is not preempted.",
+    "Factory invocation requires a cache miss, sphere subject, unchecked state, eligible validated scene/resolution, and a pre-factory cancellation check.",
+    "Factory ownership contract requires a fresh actor-exclusive backend with no concurrent caller use. Scripted tests create their backend inside the factory.",
+    "CPU StudyPixelCancellation checks before pixels and permits at most eight further evaluations after a false poll; both CPU renderers continue to use it unchanged.",
+    "Count/RGBA/mask bounds remain 4/262144/65536. Bust width remains 144. Failed or cancelled results are not admitted; confirmed downgrade removes Metal entries.",
+    "Original test body prefix is byte-preserved; local file inventory is 11 to 19 methods with eight additions and zero removals.",
+    "Prior repository receipt reports 160 to 168 native methods; its sums were independently checked in memory. Parent reports that a line-anchored regex omits four inline declarations; this worker did not rerun a whole-repository inventory."
+  ],
+  "nativeMethodsExecuted": 0,
+  "unrun": [
+    "git status",
+    "agent_cycle.py check",
+    "agent_cycle.py next",
+    "git diff --check",
+    "local git hash-object -w",
+    "Swift compilation",
+    "native XCTest execution",
+    "actual Metal execution",
+    "benchmarks",
+    "timing/memory/hardware measurements"
+  ],
+  "localReportPath": "/tmp/keyfill04-2987b1ee980d/results/w049/report.md",
+  "localSaving": "Temporarily unavailable after reported executor reset; no local save or object verification claimed.",
+  "recommendation": "No source blocker found in the assigned scope. Root should reconcile exact objects and run required native compilation/execution and CI before acceptance.",
+  "outputDestination": "docs/parallel/04/evidence/w049/static-review.json"
+}

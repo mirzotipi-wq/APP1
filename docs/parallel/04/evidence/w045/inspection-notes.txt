@@ -1,0 +1,54 @@
+Worker w045; base 88279ba0ee0262ea6c880580c8a85b56342abbff.
+Worktree alias: /tmp/keyfill04-2987b1ee980d/workers/w045.
+pwd reported /tmp/keyfill04-workers-2987b1ee980d/w045.
+
+Startup reads (all exit 0 unless explicitly stated):
+pwd && rg --files -g AGENTS.md -g '*AGENT*' -g 'StudyRenderCacheTests.swift' -g 'agent_cycle.py'
+cat AGENTS.md
+git status --short --branch                 [HEAD detached; no changes]
+git log -5 --oneline                       [HEAD 88279ba; then c08cd0b, c76e176, 5bf9da7, 3d0e206]
+cat agents/OPERATING_PROTOCOL.md
+cat agents/HANDOFF.md
+cat agents/state.json
+cat docs/PRODUCT.md
+cat docs/ARCHITECTURE.md
+cat docs/ROADMAP.md
+cat docs/QUALITY.md
+cat docs/DESIGN.md
+cat docs/acceptance/m02-m03-code.md
+rg --files docs/parallel/04 docs/finish agents 2>/dev/null
+  Exit 2: docs/finish is absent; available lane/agent paths were listed.
+python3 scripts/agent_cycle.py check       [exit 0; structural validity only]
+python3 scripts/agent_cycle.py next        [exit 0; M03 editing/accessibility/persistence]
+cat docs/parallel/04/PLAN.md docs/parallel/04/OWNER_REQUESTS.md docs/parallel/04/ENVIRONMENT_RECOVERY.md
+cat NativeTests/StudyRenderCacheTests.swift
+cat /tmp/keyfill04-2987b1ee980d/workers/w044/App/MetalStudyRenderer.swift
+rg -n 'enum Study|struct StudyImage|struct StudyRenderCache|enum.*Error|struct Study.*Key' Sources/LightingCore/Study* App/MetalStudyRenderer.swift NativeTests/Study*
+rg -n -A80 'public enum StudyError|public struct StudyImage|func portrait|static func portrait' Sources/LightingCore/ReferenceStudyRenderer.swift Sources/LightingCore/LightingScene.swift Sources/LightingCore/StudyFloat32Eligibility.swift
+  Exit 2: the first two guessed filenames do not exist. Correct paths found below.
+rg -n 'public enum StudyError|public struct StudyImage|static func portrait|public enum ReferenceStudyRenderer' Sources/LightingCore
+cat Sources/LightingCore/StudyFloat32Eligibility.swift
+sed -n '1,35p;375,440p;481,525p' Sources/LightingCore/ReferenceStudy.swift
+sed -n '70,105p' Sources/LightingCore/Scene.swift
+rg -n -A15 'supports.*true|XCTAssertTrue.*supports|portrait\(' Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift NativeTests/StudyRendererTests.swift
+
+One functions.exec JavaScript request failed to parse before any shell command ran; it was corrected and rerun. Some batched text outputs were truncated; required state/product/architecture and the complete owned test source were subsequently reread.
+
+Source preparation:
+mkdir -p /tmp/keyfill04-2987b1ee980d/results/w045
+git show 88279ba0ee0262ea6c880580c8a85b56342abbff:NativeTests/StudyRenderCacheTests.swift > /tmp/keyfill04-2987b1ee980d/results/w045/original-StudyRenderCacheTests.swift
+apply_patch appended the new lifecycle helpers and eight methods before the final class brace; all original text before that brace is preserved.
+git diff --check                          [exit 0]
+git diff --stat && rg -n '^    func test' NativeTests/StudyRenderCacheTests.swift
+  Exit 0: one owned source changed; +389 lines; nineteen methods.
+Inline Python copied the source to checkpoint-StudyRenderCacheTests.swift, verified original prefix preservation, and executed git hash-object -w on both original and checkpoint.
+  Original blob: 224c81401d0d816e41bdcfa91bf9aa90f6fb3853.
+  Checkpoint blob: 2af764b51023dc66a9cc0070d8d49f5bd7de334e.
+Connected github_create_blob uploaded the checkpoint as UTF-8 to the explicitly authorized repository/account; returned SHA matched local Git hash.
+
+Reproducible static diagnostics:
+python3 /tmp/keyfill04-2987b1ee980d/results/w045/source_review.py > /tmp/keyfill04-2987b1ee980d/results/w045/source-review.json
+  Exit 0. Exact child-command argv, exit code, stdout and stderr are retained in source-review.json.
+  This is textual preservation/API review only, not Swift parsing, type checking or test execution.
+
+No compiler/SDK/harness/CI/CPU-oracle/preview/fixture/tolerance/equation/ABI/global-state edits or execution occurred. No staging, commits, pushes, branch changes or ref updates occurred. Only the owned Swift source is modified in the worktree; report/evidence lives under the private results directory.

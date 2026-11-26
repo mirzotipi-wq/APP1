@@ -1,15 +1,30 @@
-# Coordinator checkpoint — four waves complete
+# Lane 04 coordinator checkpoint — five waves complete
 
-Forty actual fresh workers have completed four waves. The global ledger and wave04 ledger retain exact IDs, all reports, the initial blocked worker036 turn, its same-context follow-up, and independent review040. No follow-up or restored worktree is counted as a new worker. The only published branch is finish/04-metal-cache; the source predecessor is c08cd0be2548467add169c3594207cf489760787.
+Campaign baseline: `f150f98e35dd735927075aac4d2f8b02295c6a67`. Wave 5 input: `88279ba0ee0262ea6c880580c8a85b56342abbff`. Only `finish/04-metal-cache` may be updated. The unchanged upstream native-build correction remains separately identified in ENVIRONMENT_RECOVERY.md.
 
-Wave4 adds checked dimensions/counts/grid/tags before shared-kernel integer conversion. Valid-input numerical operations remain unchanged. Source blobs: header f60258402a96f58b62607d5cefec5e41c7ec4137; native metadata test ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119; native strict-eight matrix e101657aeea929186b0059df6963ee33d17769a5. Existing fixtures, packed constructor, oracle equations, all prior tests and thresholds remain unchanged.
+## Actual work and preserved source
 
-Observed new-header evidence: one bounded host C++ compilation and run under float-cast-overflow instrumentation passed one valid control plus twenty malformed-metadata cases, with zero compiler warnings and zero sanitizer diagnostics. This is candidate-only host execution, not Swift oracle parity or Metal execution. New native tests cover37 malformed dispatches with valid backing buffers plus eight strict precision cases; their execution is pending CI at this seal. Independent review040 found no source blocker.
+Fifty distinct fresh contexts completed five waves of ten. Each wave has one acceptance worker and nine role-specific workers; at most two children ran alongside the root and wave scheduler. The ledger records exact returned agent IDs. Planned worktrees, recoveries and same-ID follow-ups are not additional workers. Brief/report/context limits are workflow targets; the platform does not expose enforceable live token counters.
 
-Wave3 c08cd0b now has actual CI success:375 Debug and375 Release tests, including the Swift black-pixel and near-vertical routing assertions, six shared-kernel parity cases and eight strict host precision cases, all exact masks. Raw log/metadata are retained under evidence/ci. Baseline5bf9da7 native evidence includes all six printed Metal parity rows; the baseline JSON has been corrected to include those previously overlooked metrics. Do not use either earlier revision to certify this new header.
+Final wave 5 source blobs:
 
-The third environment reset happened during a root read-only command. Current worktrees now use persistent workspace backing through the unchanged /tmp alias; no further Swift toolchain installation/build is attempted locally. The recovered worker016 executable matches its original archived hash. Prior source/report artifacts are preserved before worktree cleanup. Raw logs and archived diff patches retain their original whitespace; source files pass scoped diff checks.
+- `App/MetalStudyRenderer.swift`: `8c1acd852d85cd99671feaba883db1808bbb5e68`.
+- `NativeTests/StudyRenderCacheTests.swift`: `2af764b51023dc66a9cc0070d8d49f5bd7de334e`.
 
-Read-only owner inspection found no packed ABI change in observed lane02/03 branches. Lane03 adds early CPU cancellation and preview pipeline tests; lane02 changes photometry/color helpers. OWNER_INTEGRATION.md pins the exact inspected revisions and routes combined verification to20/19. Those owner branches are not merged here.
+Confirmed backend failures now select CPU and evict Metal entries before observing simultaneous cancellation. Ordinary cancellation and scene errors propagate; precision-domain fallback remains per request. The original initializer is preserved, with a separate required-factory overload for deterministic lifecycle tests. Production remains actor-confined, without an unchecked Sendable claim. The injection contract requires a fresh backend for exclusive actor use.
 
-Next: wave5 fixes confirmed backend-failure plus cancellation ordering, adds an injectable internal backend and deterministic lifecycle tests; wave6 checks LRU/identity/payload/resource release; wave7 startup recovery; waves8–10 matrix execution, adversarial review and final handoff. The four-frame,262144-byte RGBA and65536-byte mask limits remain fixed.
+Cancellation reaches Metal packing, allocation, submission and completion checks. Submitted commands complete before buffers are released; command failure is inspected before cancellation. Per-frame autorelease pools bound temporary Objective-C ownership. Cache admission follows the final cooperative cancellation check; consumers still guard latest-result adoption after awaiting the engine.
+
+## Verification and limits
+
+The final independent review found no concrete source blocker. Pre-interruption scope checks found 184 protected files unchanged. The original eleven cache tests remain byte-preserved; eight new methods define 45 scripted lifecycle configurations. Native declaration accounting increased from 160 to 168; declarations are not executed tests. Root also passed scoped whitespace and existing shard-assignment checks before the interruption.
+
+At the preceding wave 4 revision, Linux CI job 139971277479 / run 45837392344 passed 375 Debug and 375 Release core tests, six shared-kernel parity cases and eight strict precision cases. All masks matched; six-case maximum RGB error was 1 with zero outlier fraction; strict maximum was 0. Raw logs, parsed rows and optimized CPU host timings are preserved under evidence/ci/. The Apple job 139973865345 is in progress at checkpoint assembly; its results cannot certify the later wave 5 renderer changes. Baseline actual Metal evidence remains separately pinned to 5bf9da7. No native execution of the wave 5 changes is yet claimed.
+
+Four frames, 262144 RGBA bytes and 65536 mask bytes remain the cache limits. The bust remains CPU-only at width 144 maximum, and the untouched CPU renderer retains its eight-further-pixel cancellation bound. Numerical thresholds, fixtures, CPU oracle and packed ABI remain unchanged. Payload/buffer arithmetic is not process or driver memory measurement.
+
+## Environment and next work
+
+The fourth execution interruption occurred during review, with no wave 5 Swift build. Frozen code, completed reports and CI evidence were already durable Git blobs. Later reviewers used exact Git snapshots with their unavailable physical worktrees clearly identified. Final local object reconciliation is pending recovery; no unavailable command is counted as successful. Root can assemble the immutable checkpoint through Git objects while preserving earlier raw evidence.
+
+Wave 6 will test LRU recency under cancellation, weak-reference lifetimes and actual cache payload counters. Wave 7 will fill remaining startup/concurrent-request coverage without duplicating the wave 5 matrix. Waves 8–10 will finalize parity/precision/resource evidence, recovery challenges and the lane handoff. Owner routes remain in OWNER_REQUESTS.md and OWNER_INTEGRATION.md; no external acknowledgment is claimed.
