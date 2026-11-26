@@ -69,7 +69,7 @@ final class StudioFieldCommandTests: XCTestCase {
             .init(aimTarget: .init(x: 0, y: .nan, z: 0)),
             .init(aimTarget: .init(x: 0, y: 0, z: 100.0.nextUp))
         ]
-        for value in [0.05.nextDown, 4.0.nextUp, Double.nan, Double.infinity, -Double.infinity] {
+        for value in [Double(0.05).nextDown, 4.0.nextUp, Double.nan, Double.infinity, -Double.infinity] {
             payloads.append(.init(kind: .point, widthMeters: value))
             payloads.append(.init(kind: .rectangle, heightMeters: value))
         }
