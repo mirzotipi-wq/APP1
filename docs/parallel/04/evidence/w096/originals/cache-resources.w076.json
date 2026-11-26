@@ -1,0 +1,580 @@
+{
+  "schema": 1,
+  "worker": "w076",
+  "review": "Wave 8 resource-lifetime; independently extracted retained CI logs in memory",
+  "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "baselineRevision": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "runId": 45848953002,
+  "nativeJobId": 140012314020,
+  "evidenceKind": "OBSERVED engine payload counters after real CPU rendering; dimensions supplied from returned-image arrays and cross-checked by assertions",
+  "configuration": "Debug",
+  "limits": {
+    "count": 4,
+    "rgbaBytes": 262144,
+    "maskBytes": 65536,
+    "bustMaximumWidth": 144
+  },
+  "notMeasured": [
+    "process RSS",
+    "allocator capacity/overhead",
+    "driver memory",
+    "GPU resource deallocation",
+    "GPU cancellation latency",
+    "caller-held frame allocation totals"
+  ],
+  "rawLog": {
+    "blob": "48500c2b0d1ef8ed6ac2bae8e0a12e4f7e07614d",
+    "integrationPath": "docs/parallel/04/evidence/ci/wave06-native-140012314020.log"
+  },
+  "metadata": {
+    "blob": "006f0a8f6546adb58e09b9a3942f3d624a842ac3",
+    "integrationPath": "docs/parallel/04/evidence/ci/wave06-native-140012314020.json"
+  },
+  "source": {
+    "path": "NativeTests/StudyRenderCacheTests.swift",
+    "blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "measurementHelperLines": [
+      748,
+      798
+    ]
+  },
+  "reconciliation": {
+    "rawRows": 19,
+    "perRequestRows": 15,
+    "summaryRows": 4,
+    "exactReceiptRowMatch": true,
+    "allWithinLimits": true,
+    "allDimensionCountMatches": true,
+    "allDimensionRGBAArithmeticMatches": true,
+    "allDimensionMaskArithmeticMatches": true
+  },
+  "observations": [
+    {
+      "row": 1,
+      "logLine": 5550,
+      "timestamp": "2026-11-26T15:55:21.2638240Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "kind": "per-request",
+      "count": 1,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "maximum-bust-step-1",
+      "maskBytes": 13824,
+      "pixelBytes": 55296,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 2,
+      "logLine": 5553,
+      "timestamp": "2026-11-26T15:55:21.5671380Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "kind": "per-request",
+      "count": 2,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "maximum-bust-step-2",
+      "maskBytes": 27648,
+      "pixelBytes": 110592,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 3,
+      "logLine": 5554,
+      "timestamp": "2026-11-26T15:55:21.6662590Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "kind": "per-request",
+      "count": 3,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "maximum-bust-step-3",
+      "maskBytes": 41472,
+      "pixelBytes": 165888,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 4,
+      "logLine": 5555,
+      "timestamp": "2026-11-26T15:55:22.1600270Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "kind": "per-request",
+      "count": 4,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "maximum-bust-step-4",
+      "maskBytes": 55296,
+      "pixelBytes": 221184,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 5,
+      "logLine": 5556,
+      "timestamp": "2026-11-26T15:55:22.2640500Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourMaximumBustFrames",
+      "kind": "summary",
+      "count": 4,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "maximum-bust",
+      "maskBytes": 55296,
+      "pixelBytes": 221184,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 6,
+      "logLine": 5559,
+      "timestamp": "2026-11-26T15:55:22.5656150Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+      "kind": "per-request",
+      "count": 1,
+      "dimensions": [
+        {
+          "height": 16,
+          "width": 24
+        }
+      ],
+      "fixture": "small-bust-step-1",
+      "maskBytes": 384,
+      "pixelBytes": 1536,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 7,
+      "logLine": 5560,
+      "timestamp": "2026-11-26T15:55:22.6660140Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+      "kind": "per-request",
+      "count": 2,
+      "dimensions": [
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        }
+      ],
+      "fixture": "small-bust-step-2",
+      "maskBytes": 768,
+      "pixelBytes": 3072,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 8,
+      "logLine": 5562,
+      "timestamp": "2026-11-26T15:55:22.8668170Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+      "kind": "per-request",
+      "count": 3,
+      "dimensions": [
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        }
+      ],
+      "fixture": "small-bust-step-3",
+      "maskBytes": 1152,
+      "pixelBytes": 4608,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 9,
+      "logLine": 5563,
+      "timestamp": "2026-11-26T15:55:22.9679110Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+      "kind": "per-request",
+      "count": 4,
+      "dimensions": [
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        }
+      ],
+      "fixture": "small-bust-step-4",
+      "maskBytes": 1536,
+      "pixelBytes": 6144,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 10,
+      "logLine": 5564,
+      "timestamp": "2026-11-26T15:55:23.0692580Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForFourSmallFrames",
+      "kind": "summary",
+      "count": 4,
+      "dimensions": [
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        },
+        {
+          "height": 16,
+          "width": 24
+        }
+      ],
+      "fixture": "small-bust",
+      "maskBytes": 1536,
+      "pixelBytes": 6144,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 11,
+      "logLine": 5568,
+      "timestamp": "2026-11-26T15:55:23.4725440Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "kind": "per-request",
+      "count": 1,
+      "dimensions": [
+        {
+          "height": 128,
+          "width": 192
+        }
+      ],
+      "fixture": "maximum-sphere-step-1",
+      "maskBytes": 24576,
+      "pixelBytes": 98304,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 12,
+      "logLine": 5569,
+      "timestamp": "2026-11-26T15:55:23.5727510Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "kind": "per-request",
+      "count": 2,
+      "dimensions": [
+        {
+          "height": 128,
+          "width": 192
+        },
+        {
+          "height": 128,
+          "width": 192
+        }
+      ],
+      "fixture": "maximum-sphere-step-2",
+      "maskBytes": 49152,
+      "pixelBytes": 196608,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 13,
+      "logLine": 5570,
+      "timestamp": "2026-11-26T15:55:23.6729620Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "kind": "per-request",
+      "count": 2,
+      "dimensions": [
+        {
+          "height": 128,
+          "width": 192
+        },
+        {
+          "height": 128,
+          "width": 192
+        }
+      ],
+      "fixture": "maximum-sphere-step-3",
+      "maskBytes": 49152,
+      "pixelBytes": 196608,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 14,
+      "logLine": 5571,
+      "timestamp": "2026-11-26T15:55:23.7735680Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+      "kind": "summary",
+      "count": 2,
+      "dimensions": [
+        {
+          "height": 128,
+          "width": 192
+        },
+        {
+          "height": 128,
+          "width": 192
+        }
+      ],
+      "fixture": "maximum-sphere",
+      "maskBytes": 49152,
+      "pixelBytes": 196608,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 15,
+      "logLine": 5574,
+      "timestamp": "2026-11-26T15:55:24.0775530Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "kind": "per-request",
+      "count": 1,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "mixed-bust-sphere-step-1",
+      "maskBytes": 13824,
+      "pixelBytes": 55296,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 16,
+      "logLine": 5577,
+      "timestamp": "2026-11-26T15:55:24.2988740Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "kind": "per-request",
+      "count": 2,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "mixed-bust-sphere-step-2",
+      "maskBytes": 27648,
+      "pixelBytes": 110592,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 17,
+      "logLine": 5578,
+      "timestamp": "2026-11-26T15:55:24.3084170Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "kind": "per-request",
+      "count": 3,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        }
+      ],
+      "fixture": "mixed-bust-sphere-step-3",
+      "maskBytes": 41472,
+      "pixelBytes": 165888,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 18,
+      "logLine": 5579,
+      "timestamp": "2026-11-26T15:55:24.3183050Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "kind": "per-request",
+      "count": 3,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 128,
+          "width": 192
+        }
+      ],
+      "fixture": "mixed-bust-sphere-step-4",
+      "maskBytes": 52224,
+      "pixelBytes": 208896,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    },
+    {
+      "row": 19,
+      "logLine": 5580,
+      "timestamp": "2026-11-26T15:55:24.4282240Z",
+      "method": "StudyRenderCacheTests/testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+      "kind": "summary",
+      "count": 3,
+      "dimensions": [
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 96,
+          "width": 144
+        },
+        {
+          "height": 128,
+          "width": 192
+        }
+      ],
+      "fixture": "mixed-bust-sphere",
+      "maskBytes": 52224,
+      "pixelBytes": 208896,
+      "status": "OBSERVED",
+      "measurement": "cacheUsage counters; bytes are payload lengths"
+    }
+  ],
+  "nativeResults": {
+    "starts": 174,
+    "passes": 174,
+    "uniqueStarts": 174,
+    "uniquePasses": 174,
+    "failures": 0,
+    "skips": 0,
+    "source6CacheMethods": 25,
+    "source6CacheMethodsEachStartedAndPassedOnce": true,
+    "debugBuild": "success",
+    "releaseBuild": "success (build only)",
+    "methodAccounting": "success",
+    "finalizedXCTestExport": "success"
+  },
+  "artifacts": [
+    {
+      "id": 15136500149,
+      "name": "native-unit-and-build-evidence-compact",
+      "size_in_bytes": 332373,
+      "digest": "sha256:61cd00143b5c0a7d77e0e303efd7ddf89b01eedb5b2084d541677b44027567a3",
+      "verification": "ID and reported digest reconciled against raw CI upload lines; archives not re-downloaded or independently rehashed by this worker"
+    },
+    {
+      "id": 15135391983,
+      "name": "native-unit-and-build-evidence",
+      "size_in_bytes": 65050006,
+      "digest": "sha256:fac90cb1ce6c4ae8133f9af521d12cf37165982d2c852c9b888701f9e5b1638d",
+      "verification": "ID and reported digest reconciled against raw CI upload lines; archives not re-downloaded or independently rehashed by this worker"
+    }
+  ],
+  "requestedMetalBufferArithmetic": {
+    "classification": "Source-derived requested lengths only; not observed memory",
+    "sourceBlobs": [
+      "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    ],
+    "formulaBytes": "96 + 16*max(3*S,1) + 16*max(3*A,1) + 4*W*H",
+    "symbols": {
+      "S": "prepared light samples",
+      "A": "prepared area guards",
+      "W": "image width",
+      "H": "image height = 2*W/3"
+    },
+    "derivation": "Six parameter float4 rows; three float4 rows per sample and per area; each empty row buffer binds one zero float4; output is four bytes per pixel. SIMD4<Float> stride is 16 in the packed contract.",
+    "maximumWidthOutputOnly": {
+      "width": 192,
+      "height": 128,
+      "requestedOutputBytes": 98304
+    },
+    "dimensionArgumentBytes": 8,
+    "dimensionArgumentNote": "SIMD2<UInt32> passed with setBytes; not a separately requested MTLBuffer in this source.",
+    "limits": "Excludes command/pipeline/queue allocations, allocator/driver granularity, input CPU arrays, output-copy temporaries and reconstructed CPU mask; not a total or high-water memory estimate."
+  }
+}

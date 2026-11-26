@@ -1,0 +1,468 @@
+{
+  "schema": 1,
+  "worker": "w092",
+  "role": "invariants",
+  "input": "0fa824307da13934a289a825fd6d9d4a1939241f",
+  "baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "finalProductTestSource": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "method": "Pinned GitHub file/blob reads; in-memory content, method and constructor comparisons. No local hash calculation or code execution.",
+  "finding": "No invariant weakening found in reviewed lane04 source.",
+  "directEquality": [
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "baseline": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "source": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "equalContent": true,
+      "input": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    },
+    {
+      "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+      "baseline": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "source": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "equalContent": true,
+      "input": "555677e7baf0931b6c629b635f617a9cc2356800"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "baseline": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "source": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "equalContent": true,
+      "input": "0731ab93a924572ccacd3dd66e334a85dc7c06e7"
+    },
+    {
+      "path": "App/ReferenceStudy.metal",
+      "baseline": "09fb9ae35ebeb27eac28bec32e27cd18501fd9e4",
+      "source": "09fb9ae35ebeb27eac28bec32e27cd18501fd9e4",
+      "equalContent": true,
+      "input": "09fb9ae35ebeb27eac28bec32e27cd18501fd9e4"
+    },
+    {
+      "path": "scripts/precision-boundary.swift",
+      "baseline": "a8260cc021ea45aab5d1649ed8283e36a807e0ae",
+      "source": "a8260cc021ea45aab5d1649ed8283e36a807e0ae",
+      "equalContent": true,
+      "input": "a8260cc021ea45aab5d1649ed8283e36a807e0ae"
+    },
+    {
+      "path": "scripts/verify-kernel-host.cpp",
+      "baseline": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6",
+      "source": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6",
+      "equalContent": true,
+      "input": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6"
+    },
+    {
+      "path": "scripts/prepare-kernel-fixtures.swift",
+      "baseline": "be419f64796e72d0523099ca783d0e15d490a293",
+      "source": "be419f64796e72d0523099ca783d0e15d490a293",
+      "equalContent": true,
+      "input": "be419f64796e72d0523099ca783d0e15d490a293"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "baseline": "55e68ee810a4dbe72cd8bd5c4aba295958f80d7c",
+      "source": "55e68ee810a4dbe72cd8bd5c4aba295958f80d7c",
+      "equalContent": true,
+      "input": null
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "baseline": "05acc11282db60b07b6cb7e7c9b68c04148803c3",
+      "source": "05acc11282db60b07b6cb7e7c9b68c04148803c3",
+      "equalContent": true,
+      "input": null
+    }
+  ],
+  "abi": {
+    "oracleBlob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+    "parameterRows": 6,
+    "sampleRows": 3,
+    "areaRows": 3,
+    "rowType": "SIMD4<Float>/float4",
+    "rowBytes": 16,
+    "parameters": [
+      "origin.xyz/halfW",
+      "forward.xyz/halfH",
+      "right.xyz/radius",
+      "up.xyz/panelHalfExtent",
+      "Bradford ratio.xyz/exposure",
+      "sampleCount/areaCount/minimumDepth/gridCount"
+    ],
+    "sampleRowsMeaning": [
+      "position relative to subject/candela",
+      "emitting normal/hasNormal",
+      "XYZ/one-based area index or zero"
+    ],
+    "areaRowsMeaning": [
+      "center relative to subject/minimumDistance",
+      "right/halfWidth",
+      "up/halfHeight"
+    ],
+    "coordinateRule": "Subtract subject in Double before conversion to Float; unchanged lane04 construction."
+  },
+  "canonical": {
+    "names": [
+      "hard",
+      "soft",
+      "warm-rotated",
+      "dark",
+      "near-field",
+      "translated"
+    ],
+    "fixtureBlob": "555677e7baf0931b6c629b635f617a9cc2356800",
+    "comparisonDimensions": [
+      96,
+      64
+    ],
+    "startupDimensions": [
+      48,
+      32
+    ],
+    "nativeMethod": {
+      "method": "testMetalMatchesCPUOnAvailableDevice",
+      "byteIdentical": true,
+      "content": "func testMetalMatchesCPUOnAvailableDevice() throws {\n        guard let device = MTLCreateSystemDefaultDevice() else {\n            throw XCTSkip(\"No Metal device available; GPU parity is not verified by this simulator.\")\n        }\n        let renderer = try MetalStudyRenderer(device: device)\n        for fixture in StudyValidationFixtures.all() {\n            let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 96)\n            // Exercise all raw kernels, including the deliberate invalid-mask\n            // fixture that production precision routing sends to Double CPU.\n            let candidate = try renderer.renderValidationFixture(scene: fixture.scene, width: 96)\n            let metrics = try XCTUnwrap(StudyParityMetrics(reference: reference, candidate: candidate))\n            print(\"Metal \\(fixture.name): mean \\(metrics.meanChannelError), max \\(metrics.maximumChannelError), outliers \\(metrics.fractionAboveFour), invalid match \\(metrics.invalidCountMatches)\")\n            XCTAssertTrue(metrics.passes, \"\\(fixture.name): \\(metrics)\")\n        }\n    }"
+    }
+  },
+  "strict": {
+    "generatorBlob": "a8260cc021ea45aab5d1649ed8283e36a807e0ae",
+    "nativeBlob": "e101657aeea929186b0059df6963ee33d17769a5",
+    "dimensions": [
+      192,
+      128
+    ],
+    "cameraDistanceMeters": [
+      19,
+      19.999999,
+      20
+    ],
+    "focalMillimeters": [
+      85,
+      200
+    ],
+    "translationBaseIndex": 5,
+    "translations": [
+      [
+        77,
+        70,
+        75
+      ],
+      [
+        -77,
+        -70,
+        -75
+      ]
+    ],
+    "constructorComparisons": [
+      {
+        "section": "six area-camera constructors",
+        "marker": "for distance in [19.0, 19.999999, 20.0]",
+        "equalIgnoringWhitespace": true
+      },
+      {
+        "section": "two world translations",
+        "marker": "for offset in [SIMD3<Double>(77, 70, 75), SIMD3<Double>(-77, -70, -75)]",
+        "equalIgnoringWhitespace": true
+      },
+      {
+        "section": "UUID normalization",
+        "marker": "for index in scene.lights.indices {\n                scene.lights[index].id",
+        "equalIgnoringWhitespace": true
+      }
+    ],
+    "relativeGuardEqualityIgnoringWhitespace": true,
+    "uuidPattern": "00000000-0000-4000-8000-%012d",
+    "guard": "camera and every light relative to subject <=20m",
+    "generatedProbeArithmetic": "6 area-camera +9 tangent +14 near-mask +2 light-distance +2 translations =33",
+    "selectedProbes": 8,
+    "unselected": 25,
+    "selection": "CI area-camera-*.bin + world-translation-*.bin; --maximum-channel-error 1",
+    "nativeAddedAfterBaseline": true,
+    "claimBoundary": "Validation API bypasses production eligibility; no inference that every strict fixture is production-Metal eligible. No-device XCTSkip is unverified."
+  },
+  "thresholds": {
+    "countsMustMatch": true,
+    "everyMaskPositionMustMatch": true,
+    "meanRGBChannelErrorMaximum": 1,
+    "fractionChannelsErrorAboveFourMaximum": 0.005,
+    "strictMaximumChannelError": 1,
+    "canonicalMaximumThreshold": false,
+    "zeroUnsupportedRequired": false
+  },
+  "resourceBounds": {
+    "frames": 4,
+    "rgbaBytes": 262144,
+    "maskBytes": 65536,
+    "scope": "Per-engine retained completed-frame payload",
+    "bustWidthMaximum": 144,
+    "bustCPUOnly": true,
+    "baselineConstantsCheck": {
+      "limits": [
+        "static let maximumCachedFrames = 4",
+        "static let maximumCachedPixelBytes = 256 * 1024",
+        "static let maximumCachedMaskBytes = 64 * 1024"
+      ],
+      "baselineContainsAll": true
+    },
+    "portraitBlob": "05acc11282db60b07b6cb7e7c9b68c04148803c3",
+    "notMeasured": [
+      "RSS",
+      "allocator capacity",
+      "driver resources",
+      "physical-device performance"
+    ]
+  },
+  "headerChanges": [
+    {
+      "op": "+",
+      "line": 190,
+      "text": "    if (width < 24 || width > 192 || width % 3 != 0 || height != width * 2 / 3"
+    },
+    {
+      "op": "+",
+      "line": 191,
+      "text": "        || x >= width || y >= height) return kfInvalid();"
+    },
+    {
+      "op": "+",
+      "line": 192,
+      "text": "    // Validate packed metadata before integer conversion or buffer indexing."
+    },
+    {
+      "op": "+",
+      "line": 193,
+      "text": "    const float rawSampleCount = parameters[5].x, rawAreaCount = parameters[5].y;"
+    },
+    {
+      "op": "+",
+      "line": 194,
+      "text": "    if (!isfinite(rawSampleCount) || rawSampleCount < 0.0f || rawSampleCount > 768.0f"
+    },
+    {
+      "op": "+",
+      "line": 195,
+      "text": "        || floor(rawSampleCount) != rawSampleCount"
+    },
+    {
+      "op": "+",
+      "line": 196,
+      "text": "        || !isfinite(rawAreaCount) || rawAreaCount < 0.0f || rawAreaCount > 12.0f"
+    },
+    {
+      "op": "+",
+      "line": 197,
+      "text": "        || floor(rawAreaCount) != rawAreaCount) return kfInvalid();"
+    },
+    {
+      "op": "+",
+      "line": 198,
+      "text": "    const float rawGrid = parameters[5].w;"
+    },
+    {
+      "op": "+",
+      "line": 199,
+      "text": "    if (rawGrid != 8.0f) return kfInvalid();"
+    },
+    {
+      "op": "+",
+      "line": 200,
+      "text": "    const uint sampleCount = (uint)rawSampleCount, areaCount = (uint)rawAreaCount;"
+    },
+    {
+      "op": "+",
+      "line": 201,
+      "text": "    const uint grid = (uint)rawGrid;"
+    },
+    {
+      "op": "-",
+      "line": 193,
+      "text": "    const uint sampleCount = (uint)parameters[5].x, areaCount = (uint)parameters[5].y;"
+    },
+    {
+      "op": "-",
+      "line": 218,
+      "text": "    const uint grid = (uint)parameters[5].w;"
+    },
+    {
+      "op": "-",
+      "line": 219,
+      "text": "    if (areaCount > 0 && grid != 8) return kfInvalid();"
+    },
+    {
+      "op": "+",
+      "line": 239,
+      "text": "        if (!isfinite(color.w) || color.w < 1.0f || color.w > (float)areaCount"
+    },
+    {
+      "op": "+",
+      "line": 240,
+      "text": "            || floor(color.w) != color.w) return kfInvalid();"
+    }
+  ],
+  "ownership": {
+    "primaryAuditBlob": "bdf56508e7029cff701f64c366b0bbdadd8cca13",
+    "initialAuditBlob": "f32370ed77e300f23f1df9efd207d154ebc591f3",
+    "independent094Receipt": "13965f8e4c0261b19d5772813be359c9683d5a86",
+    "basis": "Root/094 complete untruncated recursive-tree comparisons, independently supplemented with w092 direct source equality. w092 did not fetch recursive trees.",
+    "counts": {
+      "vs_baseline_blob_changes": 674,
+      "vs_imported_upstream_blob_changes": 444,
+      "lane04_document_blob_changes": 436,
+      "lane04_owned_code_test_changes": 8,
+      "unchanged_upstream_imported_blob_changes": 230,
+      "unexplained_changes": 0
+    },
+    "owned": [
+      {
+        "path": "App/MetalStudyRenderer.swift",
+        "upstream": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+        "current": "8c1acd852d85cd99671feaba883db1808bbb5e68"
+      },
+      {
+        "path": "App/StudyKernel.h",
+        "upstream": "df3175546623508b192d29210dcd9b51efce4c37",
+        "current": "f60258402a96f58b62607d5cefec5e41c7ec4137"
+      },
+      {
+        "path": "NativeTests/StudyRenderCacheTests.swift",
+        "upstream": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+        "current": "dd068965cf56312ea0feb90578ca9461ba6b1054"
+      },
+      {
+        "path": "NativeTests/StudyRendererTests.swift",
+        "upstream": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+        "current": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119"
+      },
+      {
+        "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+        "upstream": "69a826c8498efc508bdb2479dc80f40b75af3b71",
+        "current": "e9764da10eabbffbad6ceee8999977cf31deb197"
+      },
+      {
+        "path": "Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift",
+        "upstream": "f65fe28d2fa4fe4442f3293ae5b387e438844125",
+        "current": "381ded6219d80c9a4a8e99cd0c76b59f0fd2683c"
+      },
+      {
+        "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+        "upstream": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84",
+        "current": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de"
+      },
+      {
+        "path": "NativeTests/StudyPrecisionMatrixTests.swift",
+        "upstream": null,
+        "current": "e101657aeea929186b0059df6963ee33d17769a5"
+      }
+    ],
+    "imported": {
+      "commit": "9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318",
+      "tree": "91814ab93b95cbe55f6c9e1aa10acf36f6b8a1c9",
+      "total_recursive_entries": 3180,
+      "truncated": false,
+      "integration_commit": "5bf9da747f947e9f5ed2e0836abb3ba726800307",
+      "scope": "Unchanged upstream import, including UI-test CGRect/local-bounds build correction and accompanying README/agents/evidence records. These are not lane04-authored changes."
+    },
+    "uiCorrection": {
+      "replacementOnlyIgnoringWhitespace": true,
+      "explicitBoundOccurrences": 2,
+      "baseline": "e75aa14b2c3bae2316d950cf118fee0e8e576c82",
+      "final": "b26e9ccb9a764e7618128b5c6164c52b1f5b0cd0",
+      "upstream": "b26e9ccb9a764e7618128b5c6164c52b1f5b0cd0"
+    },
+    "globalRecords": "README/agents/global evidence imported byte-for-byte from upstream; not lane04 authored.",
+    "cappedComparisonLimitation": "Parent f150 compare capped300 is not exhaustive."
+  },
+  "source6CarryForward": {
+    "source_commit": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "source_tree_entries": 3436,
+    "truncated": false,
+    "audited_commit": "0fa824307da13934a289a825fd6d9d4a1939241f",
+    "non_lane_document_changes": [
+      {
+        "path": "NativeTests/StudyRenderCacheTests.swift",
+        "before": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+        "after": "dd068965cf56312ea0feb90578ca9461ba6b1054"
+      }
+    ],
+    "lane_document_changes": 228,
+    "conclusion": "All production sources and all other tests are byte-identical to the source6 native execution. Only StudyRenderCacheTests.swift differs outside lane04 documentation; its four appended methods are not credited with execution by this identity proof."
+  },
+  "runtimeBoundary": {
+    "newExecution": false,
+    "source7NativeAdditions": "Four appended methods remain unexecuted under supplied frozen receipts; no worker CI polling.",
+    "source6": "174 Debug native methods/25 cache methods passed in retained receipts, with actual simulator Metal6/8; separate failed preparatory warmup remains failed. Release application build only. No new verification of raw native logs by w092.",
+    "source7": "379 Debug/379 Release and host6/8 supplied by frozen manifest; no new native claim."
+  },
+  "owner03": {
+    "head": "92dc7a69c0032141ee49de0b96940fccab83a33e",
+    "oracleBlob": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+    "status": "External integration obligation, unmerged into lane04; source remedy and hosted test present, Apple compile/hosted/before-fail unrun in retained receipts.",
+    "arithmetic": "Tiny-output unit-intensity integration/restoration and packing construction change; row layout and original intensity meaning retained.",
+    "claimBoundary": "Lane04 unchanged-oracle results do not establish combined parity.",
+    "owner20": "Retain lane04 engine/eligibility/guarded header while combining owner03 oracle/consumer/tests and rerun relevant combined gates.",
+    "basis": "Pinned fallback contract, parity/reproducibility append, shared packet and frozen handoff/manifest; not a fresh owner branch inspection."
+  },
+  "historicalSilhouette": {
+    "configuration": "-O2",
+    "reference": "Independent C++ Double geometry transcription",
+    "candidate": "Host shared C++ Float32",
+    "notSwiftOrMetalExecution": true,
+    "invalidZeroMeaning": "Candidate.w==0 count only; no two-mask equality measurement",
+    "reproducedFailure": {
+      "mean": 0.1076388888888889,
+      "max": 24,
+      "fractionAboveFour": 0.005208333333333333
+    },
+    "processExitZero": "Successful reproduction of failure; not parity pass"
+  },
+  "sourceExcerpts": [
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "start": 235,
+      "end": 305,
+      "content": "235:         var guards: [AreaGuard] = []\n236:         for light in scene.lights where light.candela > 0 {\n237:             guard let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { throw StudyError.invalidEmitter }\n238:             let xyz = SIMD3<Double>(color.x, color.y, color.z)\n239:             let optics = light.effectiveOptics, center = vec(light.position)\n240:             if optics.kind == .point {\n241:                 result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz, areaIndex: nil))\n242:             } else {\n243:                 guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }\n244:                 let axis = vec(frame.normal)\n245:                 if optics.kind == .directional {\n246:                     result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz, areaIndex: nil))\n247:                 } else {\n248:                     let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)\n249:                     let perCell = light.candela / Double(grid * grid)\n250:                     let areaIndex = guards.count\n251:                     guards.append(.init(center: center, right: right, up: up,\n252:                                         halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,\n253:                                         minimumDistance: max(0.05, max(optics.widthMeters, optics.heightMeters) / 4)))\n254:                     for row in 0..<grid {\n255:                         let y = ((Double(row) + 0.5) / Double(grid) - 0.5) * optics.heightMeters\n256:                         for col in 0..<grid {\n257:                             let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters\n258:                             result.append(.init(position: center + right * x + up * y, emittingNormal: axis,\n259:                                                 candela: perCell, xyz: xyz, areaIndex: areaIndex))\n260:                         }\n261:                     }\n262:                 }\n263:             }\n264:         }\n265:         samples = result; areaGuards = guards; grid = quality.grid\n266:     }\n267: \n268:     public var sampleCount: Int { samples.count }\n269: \n270:     // Structure-of-vectors contract: three aligned float4 rows per sample and area.\n271:     // Translate positions to the subject center to reduce Float32 roundoff.\n272:     fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {\n273:         samples.flatMap { s in\n274:             [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),\n275:              pack(s.xyz, s.areaIndex.map { Double($0 + 1) } ?? 0)]\n276:         }\n277:     }\n278: \n279:     fileprivate func computeAreas(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {\n280:         areaGuards.flatMap { a in\n281:             [pack(a.center - center, a.minimumDistance), pack(a.right, a.halfWidth), pack(a.up, a.halfHeight)]\n282:         }\n283:     }\n284: \n285:     /// Evaluates one arbitrary receiver. Geometry nil means no visibility/occlusion.\n286:     /// A point sample nearer than 5 cm, or a receiver within the declared finite-area\n287:     /// near-field guard (max of 5 cm and one quarter longest side), is unsupported.\n288:     public func evaluate(receiver: Position, normal: UnitDirection, view: UnitDirection,\n289:                          material: StudyMaterial, geometry: StudyGeometry? = nil) throws -> StudySurfaceSignal {\n290:         guard receiver.isValid, material.isValid, dot3(vec(normal), vec(view)) > 0 else { throw StudyError.invalidSurface }\n291:         return try evaluate(receiver: vec(receiver), normal: vec(normal), view: vec(view), material: material, geometry: geometry)\n292:     }\n293: \n294:     /// Internal direct-light evaluator shared by the sphere and mannequin\n295:     /// diagnostics. The additional visibility function is CPU-only; the sphere\n296:     /// and its Metal oracle share the clipped-area sampling contract.\n297:     func evaluate(receiver: SIMD3<Double>, normal: SIMD3<Double>, view: SIMD3<Double>,\n298:                   material: StudyMaterial, geometry: StudyGeometry? = nil,\n299:                   occlusionTest: ((SIMD3<Double>, SIMD3<Double>, Double) -> Bool)? = nil,\n300:                   geometricNormal: SIMD3<Double>? = nil) throws -> StudySurfaceSignal {\n301:         if areaGuards.contains(where: { $0.containsNearReceiver(receiver) }) { throw StudyError.invalidSurface }\n302:         var total = 0.0, visible = 0.0, xyz = SIMD3<Double>.zero\n303:         let shadowOrigin = receiver + (geometricNormal ?? normal) * 1e-5\n304:         func accumulate(position: SIMD3<Double>, candela: Double, sample: Sample) throws {\n305:             let delta = position - receiver"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "start": 411,
+      "end": 447,
+      "content": "411: /// Optional GPU backend input, generated from the same validated source samples,\n412: /// camera, and display transform as the CPU oracle. Every row is a 16-byte float4.\n413: /// Parameters: 0 origin/halfW, 1 forward/halfH, 2 right/radius, 3 up/panelHalfExtent,\n414: /// 4 Bradford ratio/exposure, 5 sample count/area count/minimum depth/grid count.\n415: /// Sample color.w is zero for a point/directional source or a one-based area index.\n416: public struct StudyComputeInput: Sendable {\n417:     public let width: Int\n418:     public let height: Int\n419:     public let parameters: [SIMD4<Float>]\n420:     public let samples: [SIMD4<Float>]\n421:     public let areas: [SIMD4<Float>]\n422: \n423:     public init(scene: LightingScene, width: Int = 192) throws {\n424:         let setup = try StudySetup(scene: scene, width: width, quality: .interactive)\n425:         let c = vec(setup.geometry.center), camera = setup.camera\n426:         let origin = vec(camera.position) - c\n427:         let samples = setup.lighting.computeSamples(relativeTo: c)\n428:         let areas = setup.lighting.computeAreas(relativeTo: c)\n429:         self.width = width; self.height = setup.height\n430:         self.samples = samples; self.areas = areas\n431:         parameters = [pack(origin, setup.halfW), pack(vec(camera.forward), setup.halfH),\n432:                       pack(vec(camera.right), setup.geometry.radius), pack(vec(camera.up), setup.geometry.panelHalfExtent),\n433:                       setup.transform.computeParameters,\n434:                       .init(Float(samples.count / 3), Float(areas.count / 3), Float(CameraFraming.minimumDepthMeters), 8)]\n435:     }\n436: }\n437: \n438: private struct StudySetup {\n439:     let camera: CameraFraming\n440:     let geometry: StudyGeometry\n441:     let lighting: StudyLighting\n442:     let transform: PreviewColorTransform\n443:     let height: Int\n444:     let halfW: Double\n445:     let halfH: Double\n446: \n447:     init(scene: LightingScene, width: Int, quality: StudyQuality) throws {"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "revision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "start": 154,
+      "end": 202,
+      "content": "154: actor StudyRenderEngine {\n155:     static let shared = StudyRenderEngine()\n156:     // Bound both the number of scene snapshots and retained RGBA storage.\n157:     // Four small frames fit; at 192 × 128 the byte limit retains at most two.\n158:     static let maximumCachedFrames = 4\n159:     static let maximumCachedPixelBytes = 256 * 1024\n160:     static let maximumCachedMaskBytes = 64 * 1024\n161: \n162:     private struct CacheKey: Equatable, Sendable {\n163:         let scene: LightingScene\n164:         let width: Int\n165:         let subject: StudySubject\n166: \n167:         init?(scene: LightingScene, width: Int, subject: StudySubject) {\n168:             // A hit must never bypass validation of metadata that the renderer\n169:             // otherwise rejects. Leave errors and their ordering to the actual\n170:             // render path when validation fails.\n171:             guard (try? scene.validated()) != nil else { return nil }\n172:             var snapshot = scene\n173:             snapshot.lights = scene.lights.map { light in\n174:                 var copy = light\n175:                 // Display names do not affect pixels. Do not retain arbitrary\n176:                 // Unicode storage: the 80-character limit is not a byte limit.\n177:                 copy.name = \"\"\n178:                 return copy\n179:             }\n180:             // Retain every other scene value, including complete optics, light\n181:             // order, camera, exposure and room metadata. Equality is exact;\n182:             // there is no hash-only or rounded-coordinate cache identity.\n183:             self.scene = snapshot\n184:             self.width = width\n185:             self.subject = subject\n186:         }\n187:     }\n188: \n189:     private enum State { case unchecked, cpu, metal(any StudyComputeBackend) }\n190:     private var state = State.unchecked\n191:     // Least recently used first. Validated keys contain at most twelve lights\n192:     // and only bounded, fixed-size values after display names are removed.\n193:     private var frameCache = StudyFrameCache<CacheKey, StudyRenderedFrame>(\n194:         maximumCount: StudyRenderEngine.maximumCachedFrames,\n195:         maximumPixelBytes: StudyRenderEngine.maximumCachedPixelBytes,\n196:         maximumMaskBytes: StudyRenderEngine.maximumCachedMaskBytes)\n197:     private let additionalCancellation: @Sendable () -> Bool\n198:     private let makeComputeBackend: @Sendable () throws -> any StudyComputeBackend\n199: \n200:     var cacheUsage: (count: Int, pixelBytes: Int, maskBytes: Int) {\n201:         (frameCache.count, frameCache.pixelBytes, frameCache.maskBytes)\n202:     }"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "revision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "start": 205,
+      "end": 244,
+      "content": "205:     /// invalidate work independently of a task, and permits deterministic\n206:     /// lifecycle tests. It can never suppress actual task cancellation.\n207:     init(cancellationRequested: @escaping @Sendable () -> Bool = { false }) {\n208:         additionalCancellation = cancellationRequested\n209:         makeComputeBackend = {\n210:             guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }\n211:             return try MetalStudyRenderer(device: device)\n212:         }\n213:     }\n214: \n215:     /// The factory runs inside this actor when an eligible request first needs\n216:     /// compute. It must return a fresh backend for this actor's exclusive use;\n217:     /// callers must not retain it for concurrent use outside the actor.\n218:     init(cancellationRequested: @escaping @Sendable () -> Bool = { false },\n219:          makeComputeBackend: @escaping @Sendable () throws -> any StudyComputeBackend) {\n220:         additionalCancellation = cancellationRequested\n221:         self.makeComputeBackend = makeComputeBackend\n222:     }\n223: \n224:     func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {\n225:         let additionalCancellation = additionalCancellation\n226:         let isCancelled = { Task.isCancelled || additionalCancellation() }\n227:         guard !isCancelled() else { throw StudyError.cancelled }\n228:         let renderWidth = subject == .bust ? min(width, PortraitStudyRenderer.maximumWidth) : width\n229:         let key = CacheKey(scene: scene, width: renderWidth, subject: subject)\n230:         if let key {\n231:             // Check before the cache promotes a hit. A cancelled request must\n232:             // neither publish pixels nor change the eviction order.\n233:             guard !isCancelled() else { throw StudyError.cancelled }\n234:             if let cached = frameCache.value(for: key) { return cached }\n235:         }\n236:         if subject == .bust {\n237:             // The mannequin has additional geometry. Do not send it\n238:             // to the sphere-only Metal kernel or claim a validated GPU path.\n239:             let image = try PortraitStudyRenderer.render(scene: scene, width: renderWidth,\n240:                                                         isCancelled: isCancelled)\n241:             guard !isCancelled() else { throw StudyError.cancelled }\n242:             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)\n243:         }\n244:         // Eligibility belongs to this request. CPU-only and invalid requests"
+    },
+    {
+      "path": "App/StudyKernel.h",
+      "revision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "f60258402a96f58b62607d5cefec5e41c7ec4137",
+      "start": 186,
+      "end": 252,
+      "content": "186: inline uchar4 kfStudyPixel(KF_DEVICE const float4 *parameters,\n187:                            KF_DEVICE const float4 *samples,\n188:                            KF_DEVICE const float4 *areas,\n189:                            uint width, uint height, uint x, uint y) {\n190:     if (width < 24 || width > 192 || width % 3 != 0 || height != width * 2 / 3\n191:         || x >= width || y >= height) return kfInvalid();\n192:     // Validate packed metadata before integer conversion or buffer indexing.\n193:     const float rawSampleCount = parameters[5].x, rawAreaCount = parameters[5].y;\n194:     if (!isfinite(rawSampleCount) || rawSampleCount < 0.0f || rawSampleCount > 768.0f\n195:         || floor(rawSampleCount) != rawSampleCount\n196:         || !isfinite(rawAreaCount) || rawAreaCount < 0.0f || rawAreaCount > 12.0f\n197:         || floor(rawAreaCount) != rawAreaCount) return kfInvalid();\n198:     const float rawGrid = parameters[5].w;\n199:     if (rawGrid != 8.0f) return kfInvalid();\n200:     const uint sampleCount = (uint)rawSampleCount, areaCount = (uint)rawAreaCount;\n201:     const uint grid = (uint)rawGrid;\n202:     const float3 origin = kfXYZ(parameters[0]), forward = kfXYZ(parameters[1]);\n203:     const float3 right = kfXYZ(parameters[2]), up = kfXYZ(parameters[3]);\n204:     const float radius = parameters[2].w, extent = parameters[3].w;\n205:     const float px = (2.0f*((float)x+0.5f)/(float)width-1.0f) * parameters[0].w;\n206:     const float py = (1.0f-2.0f*((float)y+0.5f)/(float)height) * parameters[1].w;\n207:     const float3 ray = normalize(forward + right*px + up*py);\n208:     const float minimum = parameters[5].z / dot(ray,forward);\n209:     const float sphereT = kfSphereHit(origin,ray,radius,minimum);\n210:     float planeT = INFINITY;\n211:     if (ray.y < -1e-12f) {\n212:         const float t = (-radius-origin.y)/ray.y;\n213:         if (t >= minimum && kfInPanel(origin+ray*t,extent)) planeT = t;\n214:     }\n215:     const bool sphere = sphereT < planeT;\n216:     if (!sphere && !isfinite(planeT)) return uchar4(18,20,24,255);\n217:     const float3 p = origin + ray*(sphere ? sphereT : planeT);\n218:     const float3 n = sphere ? normalize(p) : float3(0.0f,1.0f,0.0f);\n219:     const float3 shadowOrigin = p+n*1e-5f;\n220:     for (uint i=0; i<areaCount; ++i) {\n221:         const float4 center = areas[3*i], ar = areas[3*i+1], au = areas[3*i+2];\n222:         const float3 delta = p-kfXYZ(center);\n223:         const float ax = clamp(dot(delta,kfXYZ(ar)),-ar.w,ar.w);\n224:         const float ay = clamp(dot(delta,kfXYZ(au)),-au.w,au.w);\n225:         const float3 separation = delta-kfXYZ(ar)*ax-kfXYZ(au)*ay;\n226:         if (dot(separation,separation) < center.w*center.w) return kfInvalid();\n227:     }\n228:     float3 xyz = float3(0.0f,0.0f,0.0f);\n229:     for (uint i=0; i<sampleCount;) {\n230:         const float4 source = samples[3*i], axis = samples[3*i+1], color = samples[3*i+2];\n231:         if (color.w == 0.0f) {\n232:             const KFStudyContribution c = kfStudyContribution(kfXYZ(source),source.w,axis,kfXYZ(color),\n233:                                                             p,n,-ray,shadowOrigin,radius,extent,sphere);\n234:             if (!c.valid) return kfInvalid();\n235:             xyz += c.xyz;\n236:             ++i;\n237:             continue;\n238:         }\n239:         if (!isfinite(color.w) || color.w < 1.0f || color.w > (float)areaCount\n240:             || floor(color.w) != color.w) return kfInvalid();\n241:         const uint areaIndex = (uint)color.w-1;\n242:         if (areaIndex >= areaCount || i+grid*grid > sampleCount) return kfInvalid();\n243:         const float4 center = areas[3*areaIndex], ar = areas[3*areaIndex+1], au = areas[3*areaIndex+2];\n244:         const float3 plane = float3(dot(n,kfXYZ(center)-p),dot(n,kfXYZ(ar))*ar.w,dot(n,kfXYZ(au))*au.w);\n245:         const float span = abs(plane.y)+abs(plane.z);\n246:         if (plane.x >= span) {\n247:             for (uint offset=0; offset<grid*grid; ++offset) {\n248:                 const float4 full = samples[3*(i+offset)];\n249:                 const KFStudyContribution c = kfStudyContribution(kfXYZ(full),full.w,axis,kfXYZ(color),\n250:                                                                 p,n,-ray,shadowOrigin,radius,extent,sphere);\n251:                 if (!c.valid) return kfInvalid();\n252:                 xyz += c.xyz;"
+    }
+  ],
+  "limitations": {
+    "executor": "Unavailable; no shell,probes,SDKs,builds,cleanup",
+    "sourceEdits": 0,
+    "refMutations": 0,
+    "ciPolls": 0,
+    "children": 0,
+    "uncreatedPaths": [
+      "/tmp/keyfill04-2987b1ee980d/workers/w092",
+      "/tmp/keyfill04-2987b1ee980d/results/w092"
+    ]
+  }
+}
