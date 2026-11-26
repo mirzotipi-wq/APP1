@@ -1,9 +1,9 @@
 """Independent Python numeric audit; not Swift execution or device evidence."""
-import json, math, pathlib, re
+import json, math, pathlib
 
-ROOT = pathlib.Path(__file__).parents[1]
-source = (ROOT / "Sources/LightingCore/SurfacePhotometry.swift").read_text()
-GAUSS = [tuple(map(float, x)) for x in re.findall(r"\((0\.\d+), (0\.\d+)\)", source)]
+OUTPUT = pathlib.Path(__file__).parent
+# Fixed quadrature constants transcribed at the recorded input SHA.
+GAUSS = [(0.009219682876640378, 0.023587668193255706), (0.0479413718147626, 0.05346966299765953), (0.11504866290284765, 0.08003916427167321), (0.20634102285669126, 0.10158371336153287), (0.31608425050090994, 0.1167462682691773), (0.43738329574426554, 0.12457352290670134), (0.5626167042557344, 0.12457352290670134), (0.6839157494990901, 0.1167462682691773), (0.7936589771433087, 0.10158371336153287), (0.8849513370971523, 0.08003916427167321), (0.9520586281852375, 0.05346966299765953), (0.9907803171233596, 0.023587668193255706)]
 assert len(GAUSS) == 12
 
 def normalize(v):
@@ -92,5 +92,5 @@ assert normalize((1e308,1e308,0)) == normalize((1,1,0))
 result={'evidence_kind':'Python transcription versus independent Simpson reference; Swift not executed',
         'input_sha':'f150f98e35dd735927075aac4d2f8b02295c6a67','fixtures':rows,
         'maximum_relative_error':max(r['relative_error'] for r in rows),'boundary_checks':4}
-(ROOT/'private-output/acceptance_results.json').write_text(json.dumps(result,indent=2)+'\n')
+(OUTPUT/'acceptance_results.json').write_text(json.dumps(result,indent=2)+'\n')
 print(json.dumps({'fixtures':len(rows),'maximum_relative_error':result['maximum_relative_error'], 'boundary_checks':4}))

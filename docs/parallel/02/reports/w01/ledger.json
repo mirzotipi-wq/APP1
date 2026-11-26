@@ -4,9 +4,9 @@
   "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
   "coordinator": "/root/w01r01",
   "requested_workers": 10,
-  "actual_spawned_children": 7,
+  "actual_spawned_children": 9,
   "max_concurrent_children": 2,
-  "completed_count": 6,
+  "completed_count": 10,
   "workers": [
     {
       "worker": "W01R01",
@@ -21,7 +21,12 @@
         "w01r01/report.md",
         "w01r01/acceptance_probe.py",
         "w01r01/acceptance_results.json"
-      ]
+      ],
+      "artifact_sha256": {
+        "w01r01/report.md": "8313c29b9b86551616220430746f8f235190283728c3e6682a787fa7b21bb253",
+        "w01r01/acceptance_probe.py": "85aad44c38c33363a6b7c16796ed2d2821b969615c38db72c0b86736df9092cc",
+        "w01r01/acceptance_results.json": "562763dd2f8c4696db50e60079f6089c4ed991835db79395be722d5d667cba35"
+      }
     },
     {
       "worker": "W01R02",
@@ -37,7 +42,13 @@
         "w01r02/invariant_results.json",
         "w01r02/report.md",
         "w01r02/invariant_map.md"
-      ]
+      ],
+      "artifact_sha256": {
+        "w01r02/invariant_probe.py": "6682fc236541fbe2f320c3edf1e77c3d11cb1c633f4c4efd85997b17d5c013bf",
+        "w01r02/invariant_results.json": "161d8b3f786ce35a40340389b8d019cc7f0a21b42592ab57c41c29200c670c3f",
+        "w01r02/report.md": "4993d72e2ff26a9844a2f1a907aa9c0469c7d10413cfb7642a857e9256958212",
+        "w01r02/invariant_map.md": "d633dd9c47a7170b8d9d0cd4e8c465f7ebc300818cd941944f092ca6865095ff"
+      }
     },
     {
       "worker": "W01R03",
@@ -55,7 +66,14 @@
         "w01r03/probe-results.json",
         "w01r03/commands.txt"
       ],
-      "report_note": "Coordinator condensed original report; complete original preserved as interface_review_notes.md."
+      "report_note": "Coordinator condensed original report; complete original preserved as interface_review_notes.md.",
+      "artifact_sha256": {
+        "w01r03/report.md": "aa548e451c55c19b9b7543616cbdbb38dc34589776f07a4fda733b5475329411",
+        "w01r03/interface_review_notes.md": "c082086b1dc2cf652fd92072953df0032b766e01d8680edceb25d7d63438e616",
+        "w01r03/probe_interfaces.py": "929d8850cb11834eaf2033ca856066221fcc6515a02a18b7665ac0515c0724e6",
+        "w01r03/probe-results.json": "780322cc64bf0b1680a97fa6813da2447579eb05e450adfbf50a882df030f11a",
+        "w01r03/commands.txt": "58e2b9042f3f5fb9ea98822486771ae8ef0faf42b9e8fcb0ad414f7ac113fcc7"
+      }
     },
     {
       "worker": "W01R04",
@@ -70,7 +88,12 @@
         "w01r04/roll_area_probe.py",
         "w01r04/roll_area_probe.json",
         "w01r04/report.md"
-      ]
+      ],
+      "artifact_sha256": {
+        "w01r04/roll_area_probe.py": "e6507f1b03b60279a27f34965ba103b7ad108095f69e18b3d816b77590b3dd2b",
+        "w01r04/roll_area_probe.json": "afd26819dfdc4ddbc73a2122424fe94ae0061e6ef02bf11a4948da0b5515009b",
+        "w01r04/report.md": "f80016e3a1162b02bc7388f8ad490ec7c1f620a5f2baf9bda1bc64370e98c7d8"
+      }
     },
     {
       "worker": "W01R05",
@@ -84,7 +107,11 @@
       "artifacts": [
         "w01r05/report.md",
         "w01r05/commands.txt"
-      ]
+      ],
+      "artifact_sha256": {
+        "w01r05/report.md": "b7de9476153f0ab8154e39593bbf6aab0fd634e50d6ce53186196ed2c3e7286e",
+        "w01r05/commands.txt": "a8d2fa4334e5feb0cad244fc6f4cb1c0ae38509147c581c0f24e04faf81dc3ee"
+      }
     },
     {
       "worker": "W01R06",
@@ -97,32 +124,86 @@
       "outcome": "Bounded rectangle work: <=5 vertices,3 triangles,432 partial or1024 full samples; validated scene<=12 lights; no resource defect found.",
       "artifacts": [
         "w01r06/report.md"
-      ]
+      ],
+      "artifact_sha256": {
+        "w01r06/report.md": "5f12c3021eff8f2bf2f01ce8e5bb1edef3a59e86cb3cb08cbe92e8919e75f91c"
+      }
     },
     {
       "worker": "W01R07",
       "agent_id": "/root/w01r01/r07_consumers",
       "task": "Consumers: plan-export units and unsupported-versus-zero meter semantics",
-      "status": "running",
+      "status": "completed",
       "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
       "worktree": "/tmp/keyfill02-workers/w01r07",
       "artifact": "w01r07/report.md",
-      "outcome": null
+      "outcome": "Plan export labels candela ascd; it does not consume a lux meter, so actual meter-consumer zero/nil semantics remain outside this tiny check.",
+      "artifacts": [
+        "w01r07/report.md"
+      ],
+      "artifact_sha256": {
+        "w01r07/report.md": "0f2a20da837a006f1c4f69cfa65509ddb28ac5cfdd6177280796121d09f60fd2"
+      }
     },
     {
       "worker": "W01R08",
       "agent_id": "/root/w01r01/r08_accessibility_privacy",
       "task": "Accessibility/privacy: target-lux labels and errors, local calculation path only",
-      "status": "running",
+      "status": "completed",
       "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
       "worktree": "/tmp/keyfill02-workers/w01r08",
       "artifact": "w01r08/report.md",
-      "outcome": null
+      "outcome": "Target-lux units labeled; Apply exposes localized errors; preview suppresses error until Apply (discoverability limit). No transfer visible in narrow path; no broad privacy/a11y claim.",
+      "artifacts": [
+        "w01r08/report.md"
+      ],
+      "artifact_sha256": {
+        "w01r08/report.md": "f2433c08d8a6b6c113d3ad6550ff30dde8424ded63a8d4c2b0133c45a473b950"
+      }
+    },
+    {
+      "worker": "W01R09",
+      "agent_id": "/root/w01r01/r09_platform_performance",
+      "task": "Platform/performance: Float compute-parameter finite representability at accepted color-setting endpoints",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r09",
+      "artifact": "w01r09/w01r09_report.md",
+      "outcome": "Four accepted WB/exposure endpoint combinations yield finite Float32 parameters; maximum64; interior/GPU/performance not tested.",
+      "artifacts": [
+        "w01r09/w01r09_float_endpoints.py",
+        "w01r09/w01r09_float_endpoints.json",
+        "w01r09/w01r09_report.md"
+      ],
+      "artifact_sha256": {
+        "w01r09/w01r09_float_endpoints.py": "f8290b8ea597964788cb8c25c5c3d91757e4944ed239f48afac2d3b5eab321aa",
+        "w01r09/w01r09_float_endpoints.json": "99b725dc0f8d1117cc19cee4336ac96b80d6d695f3035e250f07138e7b0b44af",
+        "w01r09/w01r09_report.md": "8f82c0b2e66565bbc5ef6f5bc9bd464f4c057a11056cbbcaa609740d2e40acb7"
+      }
+    },
+    {
+      "worker": "W01R10",
+      "agent_id": "/root/w01r01/r10_independent_verification",
+      "task": "Independent verification: neutral-card relative normalization and expected matched-WB display scalar",
+      "status": "completed",
+      "input_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+      "worktree": "/tmp/keyfill02-workers/w01r10",
+      "artifact": "w01r10/report.md",
+      "outcome": "Independent neutral-card scalar0.42694613346378979; Y normalization and lux/exposure separation verified analytically; no Swift/UI claim.",
+      "artifacts": [
+        "w01r10/report.md"
+      ],
+      "artifact_sha256": {
+        "w01r10/report.md": "d71b7e18ee4b4f37e6ae2d7b70f790478f9802ad00aefbaa0fc525b252daaab3"
+      }
     }
   ],
   "checkpoint": {
     "completed_count": 6,
     "actual_spawned_children": 6,
     "note": "Six of ten assigned roles completed; R07 running; R08\u2013R10 not yet spawned."
-  }
+  },
+  "actual_returned_children": 9,
+  "wave_complete": true,
+  "summary_sha256": "2122b2db259e84fda3b89610612699a2a27e6c80f037d9a96f5e661db5ea8016"
 }
