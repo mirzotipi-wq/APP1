@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "worker_id": "w038",
+  "context_path": "/root/w007_review_coordinator/w038_project_name_ax_failure",
+  "status": "complete",
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "task": "Concrete debug-only actual Text-layout oracle candidate after confirmed leaf Button aggregation",
+  "authorization": "Root explicitly authorized unreferenced source blobs only; root owns integration. Final steering chose no Vision, actual GeometryReader/PreferenceKey before frame/padding, tagged owning Button diagnostic value, separate AX-only flag, and native hosted regression.",
+  "prior_diagnosis_report": "d4370610520876761781da1be8b45e425cef4f7e",
+  "files": [
+    {
+      "path": "App/StudioTextLayoutDiagnostics.swift",
+      "base_blob_sha": null,
+      "blob_sha": "699a0bf7a441d28d8d2f16d9332a481165f09313",
+      "change": "new debug-gated actual Text geometry preference and tagged owner-value transport",
+      "git_blob_url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/blobs/699a0bf7a441d28d8d2f16d9332a481165f09313"
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "base_blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+      "blob_sha": "2d540991327e5db1569e9b0f6839c732e33d843f",
+      "change": "six probe/value modifier insertions for actual Done, Save and Cancel Text/Buttons",
+      "git_blob_url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/blobs/2d540991327e5db1569e9b0f6839c732e33d843f"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "base_blob_sha": "d3bf0b1794ae86f07d0533c9ec6fbd38fc8dc8c7",
+      "blob_sha": "5c5f6360f63267f6dc50473d88a7261bb0387e3b",
+      "change": "only consumer enables probe flag; three impossible AX-child queries replaced with explicitly decoded layout checks; Save/Cancel growth added",
+      "git_blob_url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/blobs/5c5f6360f63267f6dc50473d88a7261bb0387e3b"
+    },
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "base_blob_sha": null,
+      "blob_sha": "ed138c6197160ae614580d53ebdf85444551ea35",
+      "change": "three required native methods including foreground-hosted layout/normal-semantics regressions",
+      "git_blob_url": "https://api.github.com/repos/mirzotipi-wq/APP1/git/blobs/ed138c6197160ae614580d53ebdf85444551ea35"
+    }
+  ],
+  "scope": {
+    "branches_commits_trees_refs_modified": 0,
+    "local_source_files_written": 0,
+    "children": 0,
+    "source_blobs_only": true
+  },
+  "implementation": [
+    "New App helper measures the actual Text with a clear, non-hit-testable, accessibility-hidden GeometryReader background and propagates its global CGRect using PreferenceKey. It is inserted after the real font/fixedSize and before expanding frames/padding.",
+    "Only owning Button receives a clearly tagged DEBUG_UI_TEXT_LAYOUT_V1 JSON diagnostic value; no fabricated StaticText is introduced. JSON contains actual x/y/width/height and a constant probe identity, without expected UIFont-derived geometry.",
+    "Both instrumentation modifiers require DEBUG and, for normal call sites, -ui-testing plus KEYFILL_UI_TEXT_LAYOUT_PROBES=1. Only the app accessibility UI workflow sets this flag. Other functional UI tests and platform audits retain normal values. An explicit internal enabled seam supports hosted fixtures; release bodies return the original view even with that seam.",
+    "Normal disabled branch returns the original view without applying accessibilityValue, labels, actions or grouping modifiers. Original App/ProjectLibraryView source differs only by six modifier lines.",
+    "UI consumer verifies diagnostic kind/probe identity, finite nonempty bounds, actual text containment in parent owner and independently computed viewport, original label/hittability/44pt control checks, and the same UIFont line-box physical-pixel minimum. Records explicitly identify the source as app debug layout rather than AX StaticText.",
+    "Existing real StaticText helper is byte-identical. Existing parent control helper, viewport/containment calculations and all twelve original named captures per category are unchanged.",
+    "Done retains its1.25 actual text-height growth requirement; Save and Cancel gain the same cross-size growth checks.",
+    "No Vision/OCR implementation or dependency is included."
+  ],
+  "static_checks": {
+    "originalControlHelperUnchanged": true,
+    "originalStaticTextHelperUnchanged": true,
+    "independentViewportAndContainmentUnchanged": true,
+    "originalNamedCaptureCallsUnchanged": true,
+    "requiredCaptureCallsPerCategory": 12,
+    "uiMethodNamesUnchanged": true,
+    "nativeMethods": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesNormalValueAndElementGrouping"
+    ],
+    "onlySixLibraryDiagnosticInsertions": true,
+    "noVisionOrCoreTextImports": true,
+    "growthThresholdUnchanged": true,
+    "noNewAccessibilityGrouping": true,
+    "releaseProbeBodyDisabled": true,
+    "explicitOnlyConsumerFlag": true
+  },
+  "native_regressions": [
+    {
+      "name": "testExplicitGatingAndExactFrameRoundTrip",
+      "intent": "Both launch switches required; malformed/mismatched/pending frames rejected; real fractional CGFloat frame roundtrip exact."
+    },
+    {
+      "name": "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "intent": "Attach UIHostingController to a foreground UIWindowScene. Compare actual SwiftUI text frame with independent UIKit screen conversion of a nonaccessible intrinsic background observer at physical pixels; require Default/AXXXL line metrics and growth. An8pt title in a300x100action must fail text metrics although the parent bounds would pass."
+    },
+    {
+      "name": "testDisabledHostedProbePreservesNormalValueAndElementGrouping",
+      "intent": "Compare actual public AX leaves for a foreground-hosted baseline Button and disabled-instrumentation Button. Require one Button leaf, original label/value/traits, identical text geometry and no recorded probe. Empty/inaccessible native AX enumeration fails; it is not accepted as preservation."
+    }
+  ],
+  "inventory": {
+    "new_native_methods": 3,
+    "new_ui_methods": 0,
+    "new_native_class": "StudioTextLayoutDiagnosticsTests",
+    "root_reported_historical_native_methods": 134,
+    "prospective_native_methods": 137,
+    "root_reported_historical_required_ui_methods": 35,
+    "prospective_required_ui_methods": 35,
+    "native_shard_change_required": false,
+    "project_change_required": false,
+    "reason": "project.yml includes whole App/NativeTests/UITests directories; native_test_shards.py discovers every NativeTests method under unit selector."
+  },
+  "verification": {
+    "source_and_diff_review": "performed",
+    "static_comparisons": "performed with JavaScript on exact fetched/candidate source strings",
+    "compile": "UNVERIFIED: local host/compiler unavailable",
+    "native_hosted_tests": "NOT RUN",
+    "ui_workflow": "NOT RUN",
+    "Vision_runtime": "not applicable; no Vision code",
+    "screenshots": "new source has no runtime captures; existing75e failure images/hierarchies remain original failed evidence"
+  },
+  "review_risks": [
+    "GeometryReader .global must agree with actual screen coordinates for real presentation contexts. The foreground-hosted independent UIKit conversion and UI owner/viewport checks are deliberately fail-closed; no coordinate offset or margin is invented.",
+    "Public native AX traversal of SwiftUI-hosted Buttons is not runtime-verified. The normal-value/grouping regression requires real elements and may expose a host inspection limitation rather than silently pass.",
+    "Preference-to-diagnostic AX value propagation is asynchronous. The UI consumer has a bounded10s readiness wait for a valid matching probe, followed by exact owner/viewport and font checks; actual runtime behavior remains to be validated.",
+    "The app accessibility workflow intentionally runs with tagged debug diagnostic values on these three actions. This is explicitly recorded app geometry and cannot be described as an uninstrumented VoiceOver or platform audit pass.",
+    "Text layout geometry does not inspect individual rasterized glyphs. All24 original Default/AXXXL screenshots remain required for actual pixel review, together with independent control semantics and hit checks.",
+    "No pass is inferred from creation of these candidate blobs."
+  ],
+  "integration_advice": "Review four source blobs against pinned75e, integrate as one coherent source change, then run actual137-native/35-required-UI inventory. Preserve all prior failure evidence and require complete Default/AXXXL app accessibility captures. Do not promote M03 based on this source-only candidate.",
+  "contract": {
+    "path": "docs/acceptance/m02-m03-code.md",
+    "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+    "scope": "m02-m03-code-v2; no clipped essential text, lost action or unreachable control at both sizes;44pt minimum; actual app semantics/output/source evidence."
+  }
+}

@@ -31,7 +31,8 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                                                      launchValue: "UICTContentSizeCategoryL", name: "Default")
         let largest = try exerciseEssentialWorkflow(category: .accessibilityExtraExtraExtraLarge,
                                                     launchValue: "UICTContentSizeCategoryAccessibilityXXXL", name: "AXXXL")
-        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning", "projectNameHeading", "libraryDone"] {
+        for key in ["projectStatus", "intensityReadout", "precisionHeading", "libraryWarning", "projectNameHeading",
+                    "projectNameSave", "projectNameCancel", "libraryDone"] {
             let before = try XCTUnwrap(standard[key], key)
             let after = try XCTUnwrap(largest[key], key)
             observations.append("Growth \(key): default=\(before), AXXXL=\(after)")
@@ -50,6 +51,8 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US",
                                "-UIPreferredContentSizeCategoryName", launchValue]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        // Only this semantics/layout workflow opts into recorded Text geometry.
+        app.launchEnvironment["KEYFILL_UI_TEXT_LAYOUT_PROBES"] = "1"
         runningApp = app
         observations.append("\nRequested size: \(name) / \(launchValue)")
         app.launch()
@@ -229,14 +232,14 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         XCTAssertTrue(app.keyboards.firstMatch.exists)
         capture(name + "-Project-name-field-keyboard", in: app)
         try control(nameSave, label: "Save project name", in: app)
-        try text(nameSave.staticTexts["Save project name"], equals: "Save project name", style: .body,
-                 category: category, in: app, weight: .semibold)
+        measured["projectNameSave"] = try recordedButtonText(nameSave, probe: "projectNameSaveTitle",
+            equals: "Save project name", style: .body, category: category, in: app, weight: .semibold)
         XCTAssertTrue(app.keyboards.firstMatch.exists,
                       "Reaching Save must not depend on dismissing the keyboard")
         capture(name + "-Project-name-save-keyboard", in: app)
         try control(nameCancel, label: "Cancel", in: app, towardBottom: false)
-        try text(nameCancel.staticTexts["Cancel"], equals: "Cancel", style: .body,
-                 category: category, in: app, towardBottom: false)
+        measured["projectNameCancel"] = try recordedButtonText(nameCancel, probe: "projectNameCancelTitle",
+            equals: "Cancel", style: .body, category: category, in: app)
         XCTAssertTrue(app.keyboards.firstMatch.exists,
                       "Reaching Cancel must not depend on dismissing the keyboard")
         capture(name + "-Project-name-cancel-keyboard", in: app)
@@ -245,8 +248,8 @@ final class StudioAppAccessibilityUITests: XCTestCase {
 
         let done = app.buttons["projectLibraryDone"]
         let doneState = try control(done, label: "Done", in: app, scrolling: false)
-        measured["libraryDone"] = try text(done.staticTexts["Done"], equals: "Done", style: .body,
-                                             category: category, in: app, weight: .semibold, scrolling: false)
+        measured["libraryDone"] = try recordedButtonText(done, probe: "libraryDoneTitle",
+            equals: "Done", style: .body, category: category, in: app, weight: .semibold, scrolling: false)
         assertContained(try XCTUnwrap(measured["libraryDone"]), inside: doneState.frame)
         capture(name + "-Library-done", in: app)
         done.tap()
@@ -307,6 +310,76 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         XCTAssertGreaterThanOrEqual(observedPixels, requiredPixels,
                                    "The complete \(expected) text must fit its observed frame")
         return state.frame
+    }
+
+    /// A native Button may aggregate its visible title into its own AX label.
+    /// This reads explicitly tagged DEBUG app layout, not a fabricated StaticText.
+    /// Parent semantics/hit targets and original screenshots remain independent.
+    private func recordedButtonText(_ element: XCUIElement, probe: String,
+                                    equals expected: String, style: UIFont.TextStyle,
+                                    category: UIContentSizeCategory, in app: XCUIApplication,
+                                    weight: UIFont.Weight? = nil,
+                                    scrolling: Bool = true) throws -> CGRect {
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let state = try? element.snapshot(), let value = state.value as? String else { return false }
+            return RecordedTextLayout.frame(from: value, probe: probe) != nil
+        }, object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+                       "The opted-in app must publish actual Text layout for \(probe)")
+        let state = try element.snapshot()
+        XCTAssertEqual(state.elementType, .button)
+        XCTAssertEqual(state.label, expected)
+        XCTAssertTrue(element.isHittable)
+        assertStudioMinimumHitTarget(state.frame, label: expected)
+        let viewport = scrolling ? contentViewport(for: state, in: app) : app.frame
+        assertContained(state.frame, inside: viewport)
+        let value = try XCTUnwrap(state.value as? String, "Expected tagged app layout diagnostic")
+        let frame = try XCTUnwrap(RecordedTextLayout.frame(from: value, probe: probe),
+                                 "Missing or invalid actual Text frame for \(probe)")
+        assertContained(frame, inside: state.frame)
+        assertContained(frame, inside: viewport)
+
+        // The same UIFont line-box and physical-pixel rule as the unchanged
+        // StaticText helper. The measured rectangle is the Text BEFORE the
+        // Button's expanding frame/padding, never the parent action's rectangle.
+        let traits = UITraitCollection(preferredContentSizeCategory: category)
+        var font = UIFont.preferredFont(forTextStyle: style, compatibleWith: traits)
+        if let weight { font = .systemFont(ofSize: font.pointSize, weight: weight) }
+        let required = (expected as NSString).boundingRect(
+            with: CGSize(width: max(1, frame.width), height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
+        let scale = UIScreen.main.scale
+        let requiredPixels = ceil(required.height * scale)
+        let observedPixels = (frame.height * scale).rounded()
+        observations.append("Recorded app Text layout \(probe): text=\(expected), frame=\(frame), " +
+                            "owner=\(state.frame), viewport=\(viewport), " +
+                            "requiredPixels=\(requiredPixels), observedPixels=\(observedPixels); " +
+                            "source=DEBUG GeometryReader before frame/padding, not AX StaticText")
+        XCTAssertGreaterThanOrEqual(observedPixels, requiredPixels,
+                                   "The complete \(expected) text must fit its recorded Text layout")
+        return frame
+    }
+
+    private struct RecordedTextLayout: Decodable {
+        let kind: String
+        let probe: String
+        let x: Double
+        let y: Double
+        let width: Double
+        let height: Double
+
+        static func frame(from value: String, probe: String) -> CGRect? {
+            let prefix = "DEBUG_UI_TEXT_LAYOUT_V1:"
+            guard value.utf8.count <= 1_024, value.hasPrefix(prefix),
+                  let data = String(value.dropFirst(prefix.count)).data(using: .utf8),
+                  let record = try? JSONDecoder().decode(Self.self, from: data),
+                  record.kind == "recorded-swiftui-text-layout", record.probe == probe else { return nil }
+            let frame = CGRect(x: record.x, y: record.y, width: record.width, height: record.height)
+            guard !frame.isEmpty, !frame.isNull, !frame.isInfinite,
+                  frame.minX.isFinite, frame.minY.isFinite,
+                  frame.maxX.isFinite, frame.maxY.isFinite else { return nil }
+            return frame
+        }
     }
 
     private func selectedCheckmark(in row: XCUIElement) throws {

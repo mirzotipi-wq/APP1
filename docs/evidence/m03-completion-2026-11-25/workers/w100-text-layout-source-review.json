@@ -1,0 +1,183 @@
+{
+  "schema": "app1-independent-source-review-v1",
+  "worker": 100,
+  "context_path": "/root/w007_review_coordinator/w100_current_native_ui_evidence",
+  "repository": "mirzotipi-wq/APP1",
+  "base_ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "phase": "candidate_recorded_text_layout_source_review",
+  "status": "complete",
+  "verdict": "No concrete source blocker identified in the four reviewed candidate blobs. Eligible for integration and actual compile/runtime validation; this is not a compiled/tested or acceptance pass.",
+  "generated_at": "2026-11-26T05:26:25.588Z",
+  "scope": "Bounded same-context independent source review. GitHub connector reads and JavaScript source comparisons only; no compiler, repository script, build, test, host command, child context or source/tree/ref mutation. Only this unreferenced JSON report is created.",
+  "candidate_sources": [
+    {
+      "path": "App/StudioTextLayoutDiagnostics.swift",
+      "blob_sha": "699a0bf7a441d28d8d2f16d9332a481165f09313",
+      "baseline": "new file",
+      "inspection": "Entire 127-line source"
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "2d540991327e5db1569e9b0f6839c732e33d843f",
+      "baseline_blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+      "inspection": "Full source comparison; exactly six added probe/value modifier lines and no removals. Inspected each actual leaf Text/button modifier sequence."
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blob_sha": "5c5f6360f63267f6dc50473d88a7261bb0387e3b",
+      "baseline_blob_sha": "d3bf0b1794ae86f07d0533c9ec6fbd38fc8dc8c7",
+      "inspection": "Full source comparison; complete new recordedButtonText decoder/measurement helper plus exact preservation checks for old helpers and captures."
+    },
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "blob_sha": "ed138c6197160ae614580d53ebdf85444551ea35",
+      "baseline": "new file",
+      "inspection": "Entire 290-line source including actual hosted fixture, independent native coordinate observer, public AX traversal and cleanup."
+    }
+  ],
+  "source_preservation_checks": {
+    "staticTextHelperUnchanged": true,
+    "controlHelperUnchanged": true,
+    "viewportAndRemainingHelpersUnchanged": true,
+    "captureNamesUnchanged": true,
+    "captureCountPerCategory": 12,
+    "methodNamesUnchanged": true,
+    "baselineUiFilesSettingFlag": [],
+    "candidateOnlyFlagSetter": [
+      "        app.launchEnvironment[\"KEYFILL_UI_TEXT_LAYOUT_PROBES\"] = \"1\""
+    ],
+    "sourceType": "Unreferenced candidate blobs, not compiled or run."
+  },
+  "source_diffs": {
+    "project_library": [
+      {
+        "kind": "+",
+        "line": 171,
+        "text": "                            .studioTextLayoutProbe(\"libraryDoneTitle\")"
+      },
+      {
+        "kind": "+",
+        "line": 181,
+        "text": "                .studioTextLayoutValue(\"libraryDoneTitle\")"
+      },
+      {
+        "kind": "+",
+        "line": 561,
+        "text": "                            .studioTextLayoutProbe(\"projectNameSaveTitle\")"
+      },
+      {
+        "kind": "+",
+        "line": 572,
+        "text": "                    .studioTextLayoutValue(\"projectNameSaveTitle\")"
+      },
+      {
+        "kind": "+",
+        "line": 606,
+        "text": "                    .studioTextLayoutProbe(\"projectNameCancelTitle\")"
+      },
+      {
+        "kind": "+",
+        "line": 614,
+        "text": "            .studioTextLayoutValue(\"projectNameCancelTitle\")"
+      }
+    ],
+    "ui_changed_behavior": "Only the required app-accessibility workflow opts in to the new environment flag. The Save, Cancel and Done child-StaticText queries become explicitly tagged recordedButtonText reads from the owning Button. Save and Cancel are added to the existing height-growth matrix. Original StaticText helper, control/viewport helpers, original captures, keyboard assertions and font/pixel minimum rules remain intact."
+  },
+  "checks": [
+    {
+      "id": "explicit_gate",
+      "result": "source_satisfied",
+      "evidence": "StudioTextLayoutDiagnostics.swift lines 15-20 require DEBUG, -ui-testing and KEYFILL_UI_TEXT_LAYOUT_PROBES exactly equal to 1 for production use. Both View modifiers return self outside that gate; Release also ignores the optional enabled override. ProjectLibraryView passes no override. Across all ten baseline UI source files no flag setter exists; only the candidate app-accessibility workflow adds the setter.",
+      "qualification": "The optional enabled argument is an explicit internal DEBUG hosted-test seam, so enabled:true can bypass the launch inputs inside native regression fixtures. It is not used by the three production callsites. This is stated rather than describing the override as triple-gated."
+    },
+    {
+      "id": "normal_accessibility",
+      "result": "source_satisfied",
+      "evidence": "ProjectLibraryView differs by six modifier additions only. Disabled/release modifier branches return self without changing labels, actions, traits, grouping or existing values. Enabled probes add only an accessibility-hidden noninteractive background and an explicitly tagged diagnostic Button value.",
+      "qualification": "The opted-in diagnostic launch intentionally changes the three Button values; normal-launch and VoiceOver behavior has not been manually executed in this review."
+    },
+    {
+      "id": "actual_text_geometry",
+      "result": "source_satisfied",
+      "evidence": "Done probe is after body-semibold/font and fixedSize, before enclosing HStack expansion/padding; Save probe is after fontWeight/fixedSize and before maxWidth/minHeight/padding; Cancel probe is after body/fixedSize and before 44pt frame. GeometryReader observes the actual Text background in .global space. It does not create a second label, substitute parent bounds, or synthesize a frame from expected font metrics."
+    },
+    {
+      "id": "identity_finiteness",
+      "result": "source_satisfied",
+      "evidence": "Producer and independent UI consumer require the exact DEBUG_UI_TEXT_LAYOUT_V1 prefix, kind recorded-swiftui-text-layout and matching probe identity; decode is bounded to 1024 UTF-8 bytes. Frames must be nonempty, nonnull, noninfinite with finite endpoints. Missing/invalid layout stays pending rather than receiving an expected rectangle."
+    },
+    {
+      "id": "coordinate_and_visibility_checks",
+      "result": "source_guarded_runtime_pending",
+      "evidence": "The UI reader verifies the record is owned by a Button with the expected label, is hittable, has a 44pt target and lies in the real existing viewport. The Text frame must be contained by both the Button and that viewport. Existing scroll-container, foreground-navigation-owner, keyboard/input-assistant and fixed-bar logic is byte-identical. Save and Cancel keep keyboard-present assertions; Done retains its existing fixed-control containment.",
+      "qualification": "SwiftUI .global versus screen-space AX frames must still align in the actual presented name sheet and library safe-area bar. The native fixture checks an actual host window with independent UIKit conversion but does not itself test those two production presentation contexts."
+    },
+    {
+      "id": "font_pixels_growth_captures",
+      "result": "source_satisfied",
+      "evidence": "Exact comparison proved the original StaticText helper is unchanged, including UIFont line-box and ceil(requiredPixels)/rounded(observedPixels) rule. The new helper applies the same rule to actual recorded Text bounds. All twelve capture names/order per category remain unchanged, giving the original 24 planned captures. All existing 1.25 growth checks remain; Save and Cancel additionally participate."
+    },
+    {
+      "id": "feedback_and_api_review",
+      "result": "no_concrete_source_blocker_found",
+      "evidence": "Preference-key dictionary values are actual CGRect records. The owner assigns @State only when the frame differs, and the resulting accessibility value does not set layout dimensions. No obvious self-sizing cycle, fabricated AX child, Vision/OCR dependency or Swift-5-mode syntax issue was identified by source inspection.",
+      "qualification": "No compiler was available. Preference propagation, AX value exposure, state convergence and SDK/API/concurrency compatibility remain compile/runtime checks."
+    }
+  ],
+  "native_regression": {
+    "methods": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesNormalValueAndElementGrouping"
+    ],
+    "candidate_inventory": {
+      "existing_native": 134,
+      "added_native": 3,
+      "total_native": 137,
+      "required_ui": 35,
+      "claim": "Prospective source inventory only. The original executed native count remains 134; none of these three new methods has an observed execution result here."
+    },
+    "gate_and_codec": {
+      "method": "testExplicitGatingAndExactFrameRoundTrip",
+      "checks": "Absent switches, each single switch, flag=0, enabled DEBUG combination and disabled Release combination; exact fractional CGRect JSON round trips; wrong probe rejected; zero/null/infinite/pending/untagged inputs rejected.",
+      "distinction": "The two exact round-trip rectangles are codec fixtures; they are not represented as actual hosted layout."
+    },
+    "actual_host_geometry": {
+      "method": "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "hosting": "@MainActor XCTestCase; unwraps a foreground-active UIWindowScene, attaches a UIWindow/UIHostingController, makes it visible, drains the main queue and lays out the real host. Absence of a foreground scene fails via XCTUnwrap.",
+      "measurement": "Fixture Text('Done') has the actual supplied font and fixedSize. A hidden native UIViewRepresentable background reports UIAccessibility.convertToScreenCoordinates(bounds,in:self) before parent expansion. The separate production probe reports its GeometryReader .global rectangle. The parent label is expanded to 300 by 100 and independently observed as well.",
+      "assertions": "Default and AXXXL compare real probe versus independent native Text rectangle at physical-pixel coordinates, require containment by the real control, require the control at least 44pt tall and Text smaller than that control, validate the body font/pixel minimum, decode the actual AX diagnostic value to that measured rectangle, require exactly one leaf with label Done, and require >=1.25 height growth.",
+      "negative_falsification": "The same real hosted Text uses an 8-point font inside the 300x100 control. The parent is asserted to pass the body-size predicate while the actual small Text is asserted to fail it. This directly detects a parent-bounds-as-text false pass rather than injecting a made-up expected geometry.",
+      "release_limit": "The hosted positive/negative probe exercise is DEBUG-only; Release takes the explicit disabled assertion branch. No Release hosted geometry execution is claimed."
+    },
+    "disabled_behavior": {
+      "method": "testDisabledHostedProbePreservesNormalValueAndElementGrouping",
+      "actual_comparison": "Hosts one baseline action without diagnostic modifiers and another with the modifiers explicitly disabled. Requires no emitted probe frames, baseline accessible-leaf count exactly one, identical actual label/value/traits/isButton records, Done label, Original action value, button trait, and equal independently observed Text geometry.",
+      "fail_closed_ax": "Public accessibility traversal follows actual accessibilityElements/accessibilityElementCount and UIView subviews; deduplicates object identity, skips hidden elements and stops at actual accessible leaves. It bounds visits to 512 and per-container count to 128, throwing on overflow. Missing/empty traversal cannot pass because baseline must have exactly one leaf and subsequent label/value/button assertions also require actual elements.",
+      "timing_limit": "Queue drainage is bounded and no synthetic or fallback AX element is fabricated. An unavailable/delayed public SwiftUI AX hierarchy will fail the regression and must be investigated from actual runtime evidence."
+    },
+    "cleanup": "Each observation hides and detaches its temporary host window in defer. The reviewer did not execute or verify key-window restoration/runtime isolation."
+  },
+  "findings": [],
+  "concrete_blockers": [],
+  "limitations": [
+    "Source review only; all four objects are unreferenced candidate blobs. No integration tree, Xcode build or test result was reviewed.",
+    "No compiler is available; no compile/API success is asserted. Swift 5 mode was considered, but warnings/errors require an actual build.",
+    "Actual modal-sheet/safe-area coordinates, first preference delivery, public SwiftUI AX enumeration and dynamic-type text frames must be established by real native/UI execution.",
+    "Normal VoiceOver/manual accessibility behavior was not exercised; source no-op gating and an unexecuted hosted regression support the intended preservation only.",
+    "The original failed UI job, six failed methods, 15 missing required captures and raw native/UI warm-up failures retain their original outcomes."
+  ],
+  "preserved_actual_evidence_reports": [
+    {
+      "phase": "native",
+      "blob_sha": "655318fa58dfa18ca7b08dbedce4b60ee759929c",
+      "unchanged": true
+    },
+    {
+      "phase": "original_ui_and_pngs",
+      "blob_sha": "2607c032fd481fcccce028abb4be6a000e7d2fae",
+      "unchanged": true
+    }
+  ],
+  "disposition": "No source-review blocker to root integration was identified. Run and reconcile the actual candidate build, 137 native methods and required UI/image evidence separately; never relabel the original failed receipts."
+}

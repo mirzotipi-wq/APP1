@@ -168,6 +168,7 @@ struct ProjectLibraryView: View {
                         Text("Done")
                             .font(.body.weight(.semibold))
                             .fixedSize(horizontal: false, vertical: true)
+                            .studioTextLayoutProbe("libraryDoneTitle")
                         Spacer(minLength: 0)
                     }
                     .frame(maxWidth: .infinity, minHeight: 44)
@@ -177,6 +178,7 @@ struct ProjectLibraryView: View {
                 .buttonStyle(.plain)
                 .foregroundStyle(StudioPalette.action)
                 .accessibilityIdentifier("projectLibraryDone")
+                .studioTextLayoutValue("libraryDoneTitle")
                 .padding(.horizontal, 16)
                 .background(Color(uiColor: .systemGroupedBackground))
             }
@@ -556,6 +558,7 @@ private struct ProjectNameEditor: View {
                     Button { submit() } label: {
                         Text("Save project name").fontWeight(.semibold)
                             .fixedSize(horizontal: false, vertical: true)
+                            .studioTextLayoutProbe("projectNameSaveTitle")
                             .frame(maxWidth: .infinity, minHeight: 44)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
@@ -566,6 +569,7 @@ private struct ProjectNameEditor: View {
                     .buttonStyle(.plain)
                     .disabled(!canSubmit)
                     .accessibilityIdentifier("confirmProjectName")
+                    .studioTextLayoutValue("projectNameSaveTitle")
                 }
             }
             .navigationTitle(title)
@@ -599,6 +603,7 @@ private struct ProjectNameEditor: View {
                 Text("Cancel")
                     .font(.body)
                     .fixedSize(horizontal: false, vertical: true)
+                    .studioTextLayoutProbe("projectNameCancelTitle")
                     .frame(minWidth: 44, minHeight: 44)
                     .contentShape(Rectangle())
             }
@@ -606,6 +611,7 @@ private struct ProjectNameEditor: View {
             .foregroundStyle(StudioPalette.action)
             .disabled(isSubmitting)
             .accessibilityIdentifier("projectNameCancel")
+            .studioTextLayoutValue("projectNameCancelTitle")
         }
     }
 
