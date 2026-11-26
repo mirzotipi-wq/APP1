@@ -10,6 +10,8 @@ The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/comm
 
 [Source `cd5b461`](https://github.com/mirzotipi-wq/APP1/commit/cd5b461e9b1e534911ead986bed0a79188e20add) contains the four reviewed Text-layout repair files. [Full CI run 45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) must compile and execute 137 native methods, the unchanged 35 required UI methods, all existing core/tooling/build/Metal/persistence checks and all 24 original accessibility captures. The [repair note](text-layout-repair.md), [implementation report](workers/w038-text-layout-implementation.json), [independent source review](workers/w100-text-layout-source-review.json), and [192-input source manifest](validation/source-cd5b461/source-manifest.json) describe its exact scope. No new runtime pass is claimed.
 
+The current cd5 portable job has completed successfully. Its [source-specific receipt](validation/source-cd5b461/ci-core/summary.json), [raw job log](validation/source-cd5b461/ci-core/core-job.log), [benchmark payload](validation/source-cd5b461/ci-core/benchmark-from-ci.json) and [persistence reports](validation/source-cd5b461/ci-core/persistence-reports-from-ci.json) record 359 Debug and 359 Release tests, 92 tooling tests, twelve exact image matches, six parity and eight precision fixtures, the complete 8/12/4 benchmark inventory, and actual ext4 EFBIG/interruption/rename-EIO checks. This run used an AMD EPYC 9V74 host; earlier Xeon timings are not reused. Apple and UI execution remain pending.
+
 The completed-source sections below describe the preceding 75e run and retain its failures. Results are not transferred to changed App/test files.
 
 ## Completed 75e core verification

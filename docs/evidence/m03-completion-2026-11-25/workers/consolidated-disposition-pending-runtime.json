@@ -1,0 +1,313 @@
+{
+  "schema": "app1-m02-m03-review-disposition-v1",
+  "created_at_utc": "2026-11-26 05:34:44 UTC",
+  "status": "interim_pending_newsource_runtime",
+  "acceptance_contract": "m02-m03-code-v2",
+  "acceptance_source_blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+  "review_reports_aggregate_blob_sha": "a4786a3763b29962444d79e978f649a1801131ed",
+  "runtime": {
+    "executed_source_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+    "executed_run_id": 45751931160,
+    "executed_run_conclusion": "failure",
+    "native_required_passed": 134,
+    "native_required_total": 134,
+    "ui_required_passed": 29,
+    "ui_required_total": 35,
+    "ui_required_failed": 6,
+    "required_original_images_verified": 9,
+    "required_original_images_total": 24,
+    "additional_diagnostic_original_images_verified": 2,
+    "m03_accepted": false,
+    "new_source_revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+    "new_source_run_id": 45761900201,
+    "new_source_run_status": "active; actual outcomes not yet independently reconciled",
+    "expected_new_native_required": 137,
+    "expected_new_ui_required": 35,
+    "expected_new_required_images": 24,
+    "provenance": "Executed75e counts were independently reconciled in worker100 reports655318fa and2607c032. Root reported the new source commit and active run. No new-source native or UI pass is claimed."
+  },
+  "conclusion": "No additional demonstrated must-fix product defect remains unimplemented in the reviewed reports. M03 remains blocked: the completed75e run has six failed UI methods and15 missing required images. The proven leaf-button-label test defect is implemented atcd5b461 but not yet validated. The causes of the other five failed methods remain unproved. The new full run must provide actual137-native,35-UI and24-image evidence.",
+  "dispositions": [
+    {
+      "id": "confirmed-product-slider-reentrant-read",
+      "workers": [
+        "w012"
+      ],
+      "kind": "Confirmed production adapter contract defect; ordinary binding-getter reachability not established",
+      "paths": [
+        "App/StudioSliderTracking.swift",
+        "NativeTests/StudioSliderTrackingTests.swift"
+      ],
+      "evidence": "An actual pre-outage production-source probe ended tracking but reopened editing after a reentrant read. An unmatched begin event was observed.",
+      "disposition": "Root added the token guard immediately after the read and two regressions. Both regressions passed in the actual75e native134 execution.",
+      "status": "fixed_and_runtime_verified_at75e; rerun pending atcd5b461",
+      "report_shas": [
+        "000d16616a3865859966e3fac056f97c376938f0",
+        "655318fa58dfa18ca7b08dbedce4b60ee759929c"
+      ]
+    },
+    {
+      "id": "confirmed-product-braille-blank",
+      "workers": [
+        "w028"
+      ],
+      "kind": "confirmed display-name content validation defect",
+      "paths": [
+        "Sources/LightingCore/StudioDisplayName.swift"
+      ],
+      "evidence": "A name containing only U+2800 was considered visible content and bypassed empty-input validation and the visible fallback.",
+      "disposition": "Root's narrow fix preserves embedded Braille spacing while rejecting blank-only input. Two new core regressions passed in both359-method configurations, and expanded native cases passed at75e. The initial native test expectation was corrected to compare the name actually stored after normalization.",
+      "status": "fixed_and_runtime_verified_at75e; rerun pending atcd5b461",
+      "report_shas": [
+        "f5f341e40d35b6b4d0e892c992f1ac47faf82f12",
+        "442af6045c57b0d869ebe351f7fe0355992a961a",
+        "4870a97ce3809e9aac2a8fdbc15f8dce310ec787",
+        "036b94469e4fa539f11fac0bc4dd2b6a8b468a1e",
+        "655318fa58dfa18ca7b08dbedce4b60ee759929c"
+      ]
+    },
+    {
+      "id": "confirmed-product-done-target",
+      "workers": [
+        "w002",
+        "w005"
+      ],
+      "kind": "confirmed historical interactive-target defect",
+      "paths": [
+        "App/ProjectLibraryView.swift"
+      ],
+      "evidence": "Worker002 measured the original Done control at36 points high; the required minimum is44 points.",
+      "disposition": "An adaptive44-point Done action was implemented and independently reviewed. Full Default/AXXXL execution and actual Done captures remain necessary because75e never reached Done.",
+      "status": "implemented; final_accessibility_runtime_pending",
+      "report_shas": [
+        "d9b45320cb150c1d5a41d583a83b9c3891c7c320"
+      ]
+    },
+    {
+      "id": "confirmed-oracle-viewport",
+      "workers": [
+        "w002",
+        "w006",
+        "w038"
+      ],
+      "kind": "confirmed historical UItest oracle defects",
+      "paths": [
+        "UITests/StudioContentReachability.swift",
+        "UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "evidence": "An earlier invented8-point inset rejected content on the actual boundary. Subsequent original7b hierarchy and PNG evidence proved that a covered Projects navigation bar incorrectly excluded the visible Project name heading.",
+      "disposition": "The implementation now uses actual container boundaries, the owning navigation bar and the real input-view keyboard boundary without relaxing full-frame,44-point or hittability gates. The heading was reached in75e. Its later missing Save child is a separate oracle error.",
+      "status": "implemented; specific_heading_boundary_passed_at75e; complete_workflow_pending",
+      "report_shas": [
+        "d9b45320cb150c1d5a41d583a83b9c3891c7c320",
+        "4a777b9d533991945505ec861daf8389a0f2fe52",
+        "2607c032fd481fcccce028abb4be6a000e7d2fae"
+      ]
+    },
+    {
+      "id": "confirmed-oracle-leaf-button-label",
+      "workers": [
+        "w038",
+        "w100"
+      ],
+      "kind": "Confirmed current required-test oracle defect",
+      "paths": [
+        "App/StudioTextLayoutDiagnostics.swift",
+        "App/ProjectLibraryView.swift",
+        "UITests/StudioAppAccessibilityUITests.swift",
+        "NativeTests/StudioTextLayoutDiagnosticsTests.swift"
+      ],
+      "evidence": "The complete75e hierarchy has Save, Cancel and Done as leaf Buttons. Their nonexistent StaticText child query fails after the parent frame and hittability checks pass. Original PNGs show the visible Save title.",
+      "disposition": "Root integrated four reviewed blobs atcd5b461. DEBUG plus both explicit launch switches records actual intrinsic Text geometry before frame expansion and padding. Normal accessibility grouping is preserved. Existing StaticText, control and viewport gates and all24 required captures remain. Three hosted regressions include rejection of8-point text inside a large button.",
+      "status": "implemented_and_independently_source_reviewed; compilation_and137native35UI24image_runtime_pending",
+      "report_shas": [
+        "d4370610520876761781da1be8b45e425cef4f7e",
+        "24d21a23d38e72ca7649004a80125c0dd714198b",
+        "d16e13d29036e1d0402c294d06aa72ecb98b8682"
+      ]
+    },
+    {
+      "id": "actual-room-first-input-failure",
+      "workers": [
+        "w039"
+      ],
+      "kind": "Observed required UI failure; product cause unproved",
+      "evidence": "The first7b room-width input yielded the Meters placeholder rather than2 before Set. Four other room/precision methods passed.",
+      "disposition": "Bounded keyboard/control readiness and an exact-draft wait were added while retaining one typing event. All five75e methods passed. The native text-field bridge was not established as the cause.",
+      "status": "required_workflow_passed_at75e; no_product_causal_claim",
+      "report_shas": [
+        "7628ad3643526dd1d8677eccd210497adf252fc5",
+        "f9929d396dcd91eaa3312a95994965dc391369bd",
+        "2607c032fd481fcccce028abb4be6a000e7d2fae"
+      ]
+    },
+    {
+      "id": "actual-duplicate-query-failure",
+      "workers": [
+        "w053",
+        "w084"
+      ],
+      "kind": "Observed historical required UI failure; product cause unproved",
+      "evidence": "The7b Duplicate menu action was followed by an idle/snapshot RPC failure before duplicate submission. The original diagnostic contained infinite/zero frames and Editorial. It does not establish actual screen geometry.",
+      "disposition": "Source, lifecycle and rendering reviews found no causal defect. The corresponding75e create/duplicate/rename/switch/relaunch method passed with relevant production code unchanged. No causal fix is claimed.",
+      "status": "required_method_passed_at75e; historicalfailure_retained",
+      "report_shas": [
+        "c1967ef10ca46fdbde0f8bc61d6d8d9da2ed8de7",
+        "8c8e994cdc5564317cff1ce9c049b06869e6d0c9",
+        "8ae355098d316113c4489db27623791159458b8c",
+        "2607c032fd481fcccce028abb4be6a000e7d2fae"
+      ]
+    },
+    {
+      "id": "actual-large-library-relaunch-failure",
+      "workers": [
+        "w088",
+        "w100"
+      ],
+      "kind": "Unresolved required UI failure; no demonstrated causal product defect",
+      "paths": [
+        "UITests/ProjectLibraryUITests.swift:424",
+        "App/ProjectStore.swift",
+        "App/StudioView.swift"
+      ],
+      "evidence": "The actual75e original PNG and hierarchy show Opening projects after relaunch, with Projects and Save disabled. Eight of nine library methods passed. This is not a title mismatch or merely an invalid snapshot.",
+      "disposition": "Source establishes a pending load and duplicated fixture load/validation work, but no actor, cancellation, locking or adoption cause was proved. Preserve the original failure and require a fresh successful workflow. No speculative product patch or deadline waiver was applied.",
+      "status": "blocking_runtime_gate; fresh_run_pending",
+      "report_shas": [
+        "075f956381c023c60d83da36bde7f0a271ab8cdc",
+        "c918dc02132cc86b2b082793568252af824511c7",
+        "2607c032fd481fcccce028abb4be6a000e7d2fae"
+      ]
+    },
+    {
+      "id": "actual-export-studio-four-failures",
+      "workers": [
+        "w050",
+        "w100"
+      ],
+      "kind": "Four unresolved required UI failures; no demonstrated causal product defect",
+      "evidence": [
+        {
+          "method": "LightingPlanExportUITests.testExportPreviewOpensWithoutSavingOrChangingScene",
+          "boundary": "Export control enabled-readiness after launch, line127."
+        },
+        {
+          "method": "LightingPlanExportUITests.testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory",
+          "boundary": "PDF close-button isHittable atline175, after actual PDF-page and share-button checks passed."
+        },
+        {
+          "method": "StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback",
+          "boundary": "AR tracking-status query atline101 after Place in AR;3D fit and its capture had passed."
+        },
+        {
+          "method": "StudioSmokeTests.testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+          "boundary": "app.launch atline359 could not terminate prior PID51396; guide assertions were not reached."
+        }
+      ],
+      "disposition": "Six of ten75e methods passed. Root retained full and compact archives, original captures, the raw log and host data. Host stalls outside app commands occurred before tests, but their role in the later PDF/AR failures remains unproved. Fresh execution is required. No arbitrary retry loop, wider assertion deadline or speculative product patch was applied.",
+      "status": "blocking_runtime_gates; fresh_run_pending",
+      "report_shas": [
+        "91791f7c09250d58a61bcd1707a00b5d98b3e769",
+        "37dc2d7138cf48dde062e3423356b9901f3e58c6",
+        "2607c032fd481fcccce028abb4be6a000e7d2fae"
+      ]
+    },
+    {
+      "id": "ci-optics-budget",
+      "workers": [
+        "w003",
+        "w099"
+      ],
+      "kind": "confirmed historical CI timeout/accounting failure",
+      "evidence": "An old optics command cutoff preceded later uploaded terminal events. Those events did not make the interrupted required job a pass.",
+      "disposition": "Root reviewed the budget repair. All ten actual75e optics methods, required accounting and finalized export succeeded. The older interrupted run remains a failure.",
+      "status": "required_shard_passed_at75e; newsource_rerun_pending",
+      "report_shas": [
+        "d9b45320cb150c1d5a41d583a83b9c3891c7c320",
+        "2607c032fd481fcccce028abb4be6a000e7d2fae"
+      ]
+    },
+    {
+      "id": "nonblocking-unbounded-standalone-photometry",
+      "workers": [
+        "w032"
+      ],
+      "kind": "Source-derived numerical limitation outside the bounded scene domain",
+      "paths": [
+        "Sources/LightingCore/Scene.swift:99"
+      ],
+      "evidence": "normalIlluminance(100000,1e155) squares the distance to infinity and returns0, although the mathematical result near1e-305 is representable. This source-derived example was not executed.",
+      "disposition": "App scene coordinates are bounded to±100 metres, so supported M02 scene inputs cannot reach this case. Root explicitly classified it as nonblocking and declined scope expansion.",
+      "status": "open_nonblocking_outside_supported_scene_domain",
+      "report_shas": [
+        "83b0883c7baea43622457d3c6b0bb7fb32b5442e"
+      ]
+    },
+    {
+      "id": "nonblocking-diagnostic-trigger-guard",
+      "workers": [
+        "w092"
+      ],
+      "kind": "Source-derived gap in the guard against future workflow changes",
+      "paths": [
+        "scripts/native_test_shards.py:64-67"
+      ],
+      "evidence": "The guard's denylist would allow pull_request_target beside workflow_dispatch. The pinned workflow is actually manual-only. This is a static counterexample, not an executed test.",
+      "disposition": "This is a future allowlist-hardening opportunity. No current required-suite omission, automatic diagnostic execution or current M03 violation was found.",
+      "status": "open_nonblocking_guard_hardening",
+      "report_shas": [
+        "30520379298553e743ada381071183c6705dae95"
+      ]
+    },
+    {
+      "id": "nonblocking-shared-text-metadata",
+      "workers": [
+        "w086"
+      ],
+      "kind": "Exposed text-metadata differences outside current M03 requirements",
+      "evidence": "The actual Share text path omits report/schema versions and explicit X/Z orientation. The PDF includes both; signed coordinates, units and declared precision remain in text.",
+      "disposition": "These are two nonblockingP3 observations. No M03 repair or M05 scope expansion is requested. The earlier claim that the text was not user-exposed was corrected.",
+      "status": "open_nonblocking_future_export_text_maintenance",
+      "report_shas": [
+        "63cc009fe12e7eaedd21c84d00b86a6e3ef5f178"
+      ],
+      "superseded_report_sha": "fc38e93870fd4d8678b7978de6f7fa4d592ba098"
+    }
+  ],
+  "corrections": [
+    {
+      "id": "w067-padded-name",
+      "status": "withdrawn",
+      "reason": "Stored-name normalization is intentional. No inspected contract requires strict preservation of whitespace in serialized names.",
+      "report_sha": "b8df7760e06a1dab1d29d5941ef1f6e8b964d650"
+    },
+    {
+      "id": "w073-unknown-nested-key",
+      "status": "withdrawn",
+      "reason": "Unknown-metadata compatibility is intentional. Renaming an optional key to an unknown key does not prove loss of fields emitted by the current encoder or a violation of a closed nested-schema contract.",
+      "report_sha": "6f9e38eee52918139ad07940a72c3af57fd26aa4"
+    },
+    {
+      "id": "w050-host-timeout-inference",
+      "status": "corrected; superseded report retained",
+      "superseded_report_sha": "c4a44453d141a71b7ca0201fddcc2ed216a3db56",
+      "corrected_report_sha": "37dc2d7138cf48dde062e3423356b9901f3e58c6",
+      "reason": "Raw logline1839 explicitly reports that the before-UI host step timed out after one minute. The continue-on-error wrapper SUCCESS does not negate that error. All four command records do not prove the whole step passed. A causal role in later app failures remains unproved."
+    },
+    {
+      "id": "native-warmup-vs-test",
+      "status": "explicit independent outcomes",
+      "report_sha": "655318fa58dfa18ca7b08dbedce4b60ee759929c",
+      "reason": "The actual75e warm-up failed with timeouts and exit1 despite wrapper SUCCESS. The actual selected native command,134-method accounting, Metal execution and finalized export subsequently passed. Neither outcome overwrites the other."
+    }
+  ],
+  "other_review_limits": [
+    "Source-only reviews establish reasoning about inspected code, not runtime passes or an exhaustive absence of defects.",
+    "Reduced-motion handling is present in StudioView; no independent actual toggle execution is claimed.",
+    "Required method accounting must be combined with a successful selected-test command, required Metal execution and finalized result export. Method events alone are insufficient.",
+    "Optional coverage opportunities remain for future changes. No additional M03 requirements were invented.",
+    "Historical failed and unavailable evidence remains retained. Diagnostic images do not replace the required24 captures.",
+    "Original report files008-016 remain unavailable after the executor outage. Their actual returned summaries are explicitly identified as the retained evidence."
+  ],
+  "supersedes_blob_sha": "79a612674907bcd4884eb10130cdbc3cab655f75"
+}
