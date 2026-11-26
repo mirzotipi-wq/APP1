@@ -48,6 +48,36 @@ Both corrected local case inventories were independently reconciled against
 the raw logs. The configuration/source counts below are unchanged; their
 historical receipts retain their original revision and scope.
 
+## Wave 9 composition regression additions
+
+At `cdacffd3c6eb7bc178bf127187e2990adc4c676c`, two additional test files are
+explicitly included in `StudioCompositionTests`: `StudioCommittedSaveTests.swift`
+and `StudioObservationTests.swift`. The native directory inclusion also picks up
+both files without a `project.yml` change. The earlier tables below retain their
+wave 8 inventory; the current selected manifest has **181 inputs**, native syntax
+has **84 Swift inputs**, and native unit source declares **194 methods**.
+
+The committed-save file contains two real-store cancellation methods. They passed
+on Swift 6.0.3 Linux at `c3ce48761e2f927da82f1e86549aab77becf61a1` in a fresh
+separate Debug build. The Observation file has three methods inside a Darwin
+conditional. Normal Linux discovery therefore expects **433 tests** (396 core
+and 37 composition), while Darwin package discovery expects **436** (396 + 40).
+These expected counts are source inventory, not additional execution claims.
+The 36 required UI methods and two diagnostics are unchanged.
+
+A controlled Linux attempt enabled only `#if canImport(Darwin)` in the actual
+session and Observation test files. Both compiled, but linking failed because
+`libswiftObservation.so` references unresolved `swift::threading::fatal`.
+No Observation tests executed. The original failure log, exact transformation
+patch and source hashes are retained; no runtime shim or production workaround
+was added. Apple execution of those three methods remains unverified.
+
+The production correction at published `bed58c338f9f53758c611b8642241c3ec7697505`
+also has actual Swift 6.4.2 CI success: **431 cases in each standard Debug and
+Release configuration**, core job `140058830854` / run `45863070423`. That result
+predates the new test membership. Exact receipts and the 181-input manifest are
+under [wave09 evidence](evidence/wave09).
+
 ## Swift package membership
 
 The manifest declares Swift tools 5.9, iOS 17 and macOS 14 minimum platforms,

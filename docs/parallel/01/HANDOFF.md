@@ -4,7 +4,7 @@
 
 Waves 1–8 are complete: **80 actual fresh contexts**, ten roles per wave. Two waves and 20 fresh contexts remain; wave9 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.
 
-Only `finish/01-architecture-composition` is pushed. Last verified publication before this checkpoint is `7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f`, tree `7cfb635b0a57f1b634701eb75bb6cf2d0d0b88b9`. It includes wave7 native navigation and its earlier compiler-literal correction. Current corrected source is `8b18366c1c718c2c81f6b275d66140f6dc9d49c9`; its Observation repair and separate verification are recorded below. Local test commits and GitHub publication commits have distinct IDs; complete source manifests establish equivalence.
+Only `finish/01-architecture-composition` is pushed. Last verified publication before this checkpoint is `bed58c338f9f53758c611b8642241c3ec7697505`, tree `2cf7ec0b1390cd2af42a5f18938f18cf9d17fb14`. It includes the Observation correction and eighty-worker ledger. Production remains equivalent to corrected `8b18366c1c718c2c81f6b275d66140f6dc9d49c9`; current test membership at `cdacffd3c6eb7bc178bf127187e2990adc4c676c` adds actual-store cancellation and native Observation regressions. Local test commits and GitHub publication commits have distinct IDs; complete source manifests establish equivalence.
 
 Common inspected baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest observed main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`, including the later `UITests/StudioAppAccessibilityUITests.swift` correction that qualifies both `CGSize` bounds as `CGFloat.greatestFiniteMagnitude`, reserved for lane20 integration. Earlier coordinator brief shorthand calling this `Double` was inaccurate; the exact patch is retained under evidence/wave08. The observed origin advertises finish lanes01–05, with no lane20 branch or BASE_SHA at inspected paths. This is scoped observation, not a claim about every possible campaign location. CI belongs to lane19; canonical state and final main integration belong to lane20. Other feature-owner implementations remain unchanged.
 
@@ -28,10 +28,26 @@ The protected-storage utility path now keeps Studio Tools → Settings → Purch
 
 Apple Swift6.3.3 CI at `5ccfbaa` exposed an owned-source failure in the conditional `@ObservationIgnored` task properties. Both the macOS package build and a native UI build failed with unexpected getter/init-accessor diagnostics. Correction `8b18366c1c718c2c81f6b275d66140f6dc9d49c9` places each attribute directly on its complete Darwin declaration and keeps plain Linux declarations. Types, access and orchestration behavior are unchanged. A controlled actual-source Linux macro probe reproduces the original four errors and passes with the correction; it is not an Apple SDK check. Corrected source passes full431 Debug and431 per-file Release tests, with82 native syntax inputs parsed. Apple compilation/execution of the correction remains unverified pending CI. See [CONFIGURATION.md](CONFIGURATION.md) and [wave08-fixed evidence](evidence/wave08-fixed).
 
+## Wave 9 lifecycle regressions
+
+Two actual-store first-save tests now gate the receipt after `ProjectStore.perform`
+commits to disk. Cancelling either the UI observer or the session-owned task at
+that point must still adopt the committed receipt once, retain the room draft,
+selection and undo history, and reject callbacks carrying the old storage generation.
+Both methods passed at `c3ce487` on Swift 6.0.3 Linux. Three additional Darwin-only
+Observation methods check edit/undo, presentation retirement/removal, and busy
+notifications while task bookkeeping stays ignored. A controlled Linux forced-branch attempt compiled them but failed at link time
+with unresolved `swift::threading::fatal` in the Observation library; no methods
+executed. The log and exact transformation are retained. Apple execution remains
+unverified; normal Linux discovery excludes these methods.
+
 ## Actual verification
 
 | Exact local test revision | Check | Result |
 |---|---|---|
+| `cdacffd3c6eb7bc178bf127187e2990adc4c676c` | Forced-Darwin Linux Observation test probe | Compilation succeeded; link failed with unresolved runtime symbol; **zero tests executed** |
+| `c3ce48761e2f927da82f1e86549aab77becf61a1` | Actual-store cancellation regressions | **2 passed**, fresh separate Debug scratch |
+| `bed58c338f9f53758c611b8642241c3ec7697505` | Corrected production CI Swift6.4.2 default Debug + Release | **431 passed each**, corejob140058830854 success; predates newtests |
 | `8b18366c1c718c2c81f6b275d66140f6dc9d49c9` | Corrected Swift6.0.3 Linux Debug + per-file Release |431 passed each; Release has explicit no-whole-module-optimization flag |
 | Same corrected source | Forced Observation-branch macro typecheck / native syntax |Before4 errors → afterexit0;82native syntax inputs; no Apple SDK/runtime |
 | `7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f` | Pre-correction default local Release |Compile interrupted by signal9 beforetests; notpassed, causeunproven |

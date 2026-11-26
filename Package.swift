@@ -92,6 +92,8 @@ let package = Package(
                 "StudioPlanSessionTests.swift",
                 "StudioFeatureSessionTests.swift",
                 "StudioFeatureWindowTests.swift",
+                "StudioCommittedSaveTests.swift",
+                "StudioObservationTests.swift",
             ])
     ]
 )

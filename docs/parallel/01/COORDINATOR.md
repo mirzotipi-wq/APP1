@@ -96,3 +96,15 @@ RootcurrentHEADf33a399f8ba21618320ce50aed7981450a9703a7 docsonlyafter8b. CONFIGU
 ## Wave8 closed / wave9 active
 
 80 actual fresh contexts completed, IDs and all reports normalized. Root read all10 final wave8 reports; hashes and <=800 tool-token estimates agree. All temporary wave8 trees removed only after preservation. Current corrected production8b18366 has431Debug/431per-fileRelease and forced native-branch macro before/after evidence. Root publishes80 checkpoint now. Fresh /root/w09_acceptance is#81 and creates exactly9 peers; live durable ledger workers/w09-01/ledger.json. Wave9 concrete real-store postcommit cancellation regression, possible meaningful Observation subscription regression, and independent lifecycle/undo challenges. Root only builds and pushes.
+
+
+### Wave9 coordinator checkpoint after publication
+
+Verified remote bed58c338f9f53758c611b8642241c3ec7697505, tree2cf7ec0b1390cd2af42a5f18938f18cf9d17fb14. Local35e69f7 preserved as local-preserved/01-wave8; root soft-aligned only after equal-tree checks. Corrected CI45863070423/core140058830854 running; state45863070477 passed. Wave9 manager#81 and initial02/03 peers#82–83 live, exact IDs in workers/w09-01/ledger.json.02 writes actual-store postcommit cancellation tests;04 may write native-only Observation subscriptions regression after concrete design. Current officialSwift6.0.3 includes Observation module/plugin/runtime, so optional isolated forced-branch runtime evidence may be possible; never label as Apple evidence.
+
+Shared workspace nearly full. Root removed143 byte-identical external worker artifact duplicates only after matching publishedbed58 files. Two ordinary git repack attempts failed for diskspace; no source loss. Root then sparse-excluded14 historical evidence directories from working copy only (all published and retained in Git), giving5MB free. Current wave08 evidence remains checked out for reviewers. Worktrees use /tmp, durable records remain small. No source changes after8b18366 yet. Root serializes all builds and integration.
+
+
+### Wave9 code checkpoint ready
+
+Root integrated real-store2tests d3946bc→f92c8e6, Packagec3ce487; freshscratchv9Debug targeted2passed. Observation3tests d2768d→ac0b456, Packagecdacffd3c6eb7bc178bf127187e2990adc4c676c. Production remains8b. ForcedDarwin isolatedruntime compiledallactualsession/testfiles thenLINKFAILED unresolved swift::threading::fatal fromlibswiftObservation.so; no testsran, no shims. Exacttwofiletransform,hashes,commands/logsaved wave09. NormalLinuxexpected433;Darwin436; sourceinventoryonlyuntilactualruns. Root willpublishcoherentcode now, then fullDebug/per-fileRelease at remotelyreachableSHA beforefinaldocsonlypublication. Correctedbed58priorCIcore431eachdefaultconfigsuccess; Applequeued. Wave9 actual liveIDs inmanagerledger, do notinflate80completedledgerbeforecloseout.
