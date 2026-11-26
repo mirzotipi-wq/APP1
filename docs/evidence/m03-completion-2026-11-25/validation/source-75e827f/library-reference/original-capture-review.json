@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "originalRunId": 45751931160,
+  "originalJobId": 139682754765,
+  "extractionRevision": "29fc53124ed237113ec3f91e1ae20d4ce91b0a25",
+  "extractionRunId": 45756316890,
+  "extractionJobId": 139695653207,
+  "artifact": {
+    "type": "artifact",
+    "runId": 45751931160,
+    "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+    "artifactId": 15088005587,
+    "artifactName": "ui-library-reference-evidence-compact",
+    "archiveBytes": 1143196,
+    "archiveDigest": "sha256:e19f9b6401799e196b7299d93c0ba100b78ef0e1f1cb882231358ccc5e84cda0"
+  },
+  "captures": [
+    {
+      "type": "text",
+      "name": "Project-control-readiness-failure",
+      "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "file": "66CB1C75-FB38-4612-8E00-18118B7DDFE1.txt",
+      "humanName": "Project-control-readiness-failure_0_9038575A-6AF6-4772-82D0-AF78D1068BDB.txt",
+      "bytes": 5001,
+      "sha256": "093129e409c1ceecf3060f01f6f831fc0baffc2d90adeb69b5e512d428456faa",
+      "chunks": 1,
+      "deviceName": "iPhone 17 Pro",
+      "captureTimestamp": 1795666831.006
+    },
+    {
+      "type": "image",
+      "name": "Project-control-readiness-failure-screen",
+      "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "file": "6B1B78E5-B711-4C47-A3AC-E10EA8F02D6F.png",
+      "humanName": "Project-control-readiness-failure-screen_0_10609EE0-C121-4480-B05C-49178211D215.png",
+      "bytes": 145448,
+      "sha256": "8f646b46829c7352148590a1c7eab2acef1ba6e3982d2e8fa58ad0a8ccfed3df",
+      "chunks": 9,
+      "deviceName": "iPhone 17 Pro",
+      "captureTimestamp": 1795666831.593
+    }
+  ],
+  "verification": {
+    "independentBase64ReassemblyAndSHA256": true,
+    "verifierKnownVectors": 4,
+    "viewedOriginalPNG": true,
+    "readOriginalText": true
+  },
+  "findings": [
+    "Initial large-library load, edit, exact saved-state check, library browsing and retained light passed.",
+    "The same process identifier/test fixture was retained across relaunch; the new app process remained in a pending load with disabled Projects/Save. The failure occurs at launchStudio on source line424, before the final saved-content assertions.",
+    "The original PNG at04:20:31.593UTC visibly shows Portrait setup/Unsaved changes, two Opening projects indicators and disabled actions; it is not a substituted image.",
+    "Source review identified no demonstrated cancellation/ownership deadlock. The DEBUG fixture checks existence with an additional validated load; its contribution to this stall is not established.",
+    "The earlier create/duplicate/rename/switch/relaunch method passed in this run. These distinct outcomes remain separate."
+  ],
+  "decision": "Retain failure and recheck the required workflow; no production root-cause or full-library/relaunch acceptance is claimed from this run."
+}

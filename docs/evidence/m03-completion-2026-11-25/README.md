@@ -2,7 +2,7 @@
 
 **Scope:** M02, then M03, under [m02-m03-code-v2](../../acceptance/m02-m03-code.md).
 **Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
-**Current status:** M02 remains complete. M03 is active pending the fresh required native/UI results and the original two-size screenshot review.
+**Current status:** M02 remains complete. M03 is active pending the remaining required UI results, resolution of the current large-library relaunch failure, and the original two-size screenshot review.
 
 The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/commit/75e827f2ee3f99798d619aff62f3a5188b509428). [Full verification run 45751931160](https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160) is in progress. This checkpoint records only completed observations; it does not promote M03.
 
@@ -23,6 +23,22 @@ The current tested source is [75e827f](https://github.com/mirzotipi-wq/APP1/comm
 The source-specific [core summary](validation/source-75e827f/ci-core/summary.json), [original job log](validation/source-75e827f/ci-core/core-job.log), [raw benchmark payload](validation/source-75e827f/ci-core/benchmark-from-ci.json), and [atomic-write/interruption reports](validation/source-75e827f/ci-core/persistence-reports-from-ci.json) retain exact details. Numeric records were copied from actual CI output; no test or timing result was inferred from source review.
 
 This run used Ubuntu 24.04.5, Swift 6.4.2, Python 3.12.3, x86_64 Intel Xeon 6975P-C, and ext4. Timings are short host diagnostics. The six parity cases include the deliberately unsupported near-field case; it is separate from the twelve fully supported image fixtures. Actual Apple/Metal results are tracked separately.
+
+## Completed current-source native checks and UI progress
+
+[M02 revalidation](m02-revalidation.md) is complete at the current source. [The native receipt](validation/source-75e827f/native/verification.json) records **134/134 native methods passed**, both new slider reentrancy regressions, all three actual Metal methods, 359 macOS package tests, both unsigned simulator builds and finalized XCTest export. All 116 contrast pairs passed: 80 text pairs have a minimum 5.41294844133131:1 and 36 non-text pairs a minimum 4.272705279813226:1. The actual macOS APFS EFBIG/control/reopen probe also passed.
+
+The native simulator warm-up itself reported a recovery-preflight timeout. That preparatory diagnostic remains failed in the raw log; the subsequent native test command, exact accounting and finalized export independently succeeded.
+
+| Current UI shard | Result at this checkpoint |
+|---|---|
+| Room and precision | All 5 passed, including the formerly failed resize workflow |
+| Studio optics | All 10 passed |
+| Library and reference | 8 of 9 passed; large-library relaunch readiness failed |
+| Studio and export | Still running |
+| App accessibility | Still running |
+
+The current [library log](validation/source-75e827f/library-reference/job.log) proves that create/duplicate/rename/switch/relaunch now passed. Its different large-library method loaded, edited, saved and browsed successfully, then failed at relaunch readiness. The [original screenshot, hierarchy and receipt](validation/source-75e827f/library-reference/original-capture-review.json) show the new process still displaying Opening projects with disabled actions. No source root cause has been demonstrated; this failure is not renamed a successful workflow. Remaining required checks continue.
 
 ## First repaired-source run: retained failures
 
@@ -57,11 +73,11 @@ Two production edge cases found by independent workers were corrected:
 - A binding read that synchronously retires or replaces a slider session cannot reopen the retired history owner. Two native regression methods were added.
 - U+2800 alone does not count as visible name content. Embedded Braille spacing remains intact; legacy stored names and identities are preserved while labels use a readable fallback. Two core methods and existing native presentation fixtures cover this policy.
 
-The required current inventories are **134 native methods and 35 UI methods**. Their Apple runtime outcomes and all original Default/AXXXL captures are still pending at this checkpoint.
+The required current inventories remain **134 native methods and 35 UI methods**. All 134 native methods have passed. Of the 24 UI methods completed so far, 23 passed and one failed; the remaining 11 methods and the original Default/AXXXL image review are pending at this checkpoint.
 
 ## Review and provenance
 
-The owner requested 100 distinct agents. Three worker slots plus the integration lead are available, so the work runs in batches. [The initial six reports](workers/initial-six-reports.json) and [the 57-child checkpoint ledger](workers/checkpoint-57-ledger.json) preserve actual returned work. The [matching report aggregate](workers/checkpoint-57-reports.json) contains real source/log reviews and their stated limits. Followups reuse their original context and never increase the distinct-agent count. Remaining contexts continue; the final ledger will reconcile all 100 once complete.
+The owner requested 100 distinct agents. Three worker slots plus the integration lead are available, so the work runs in batches. [The initial six reports](workers/initial-six-reports.json) and [the 75-completion checkpoint ledger](workers/checkpoint-75-ledger.json) preserve actual returned work. The [matching report aggregate](workers/checkpoint-75-reports.json) contains real source/log reviews and their stated limits. Followups reuse their original context and never increase the distinct-agent count. Remaining contexts continue; the final ledger will reconcile all 100 once complete.
 
 The local executor became unavailable during an additional local Swift check. That unfinished check has no claimed result. Integration continued through authenticated GitHub Git operations and actual CI. A bounded, read-only [evidence review workflow](../../../.github/workflows/review-xctest-evidence.yml) verifies original run/artifact source before exposing selected original screenshot/hierarchy bytes. A temporary diagnostic branch kept the previous main run intact; the normal iOS source-push trigger was restored before publishing the current source.
 
