@@ -43,3 +43,27 @@ Published final50doccheckpoint03f4b1aa2d31bfcfb49e830553365d8edcc46299 tree37e2b
 ## Candidate wave7 concrete work
 
 Sourceconfirmed navigation defect: Studio tools Menu currently disables ENTIRE menu when !loaded/saveBlocked/busy/historyediting, so Settings/privacy/purchaseoptions inaccessible on corruptedproject. Existing ProjectStore fixture supports -ui-testing + KEYFILL_UI_TEST_ID UUID + KEYFILL_UI_TEST_CORRUPT=1. Fix onlyStudioView utilitymenu: individualSubject/Arrange/AR requireloaded/writable/idle; preserveactiveedit protection; allowSettings whenstorageprotected. Do notenableediting/export/save. Dataworker can add newUITests/StudioCompositionNavigationUITests.swift using existingcorruptfixture, assertSettings +openPurchaseOptions/Pro +closeProFeatures navigable andsaving/editingstilldisabled. Nevertapbuy/restore; no StoreKittransaction. Existing ReferenceComparisonUITests alreadycovers nestedPhotoComparison retaining observations/selectedrig andapply/undo. Room/AR/export existingtestsneed mapping, notduplicate speculative tests. W7implementationworker mayown narrowStudioView menu fix; rootdoesnotparallel-edit samefile. NativeUItests remainunrun/unverified withoutAppleSDK. Taskscope includesreference/room/comparison/AR/export/purchase route map andspecificremainingVoidinterfacegap; no ownerfeatureedits.
+
+
+## Wave7 coordinator checkpoint — current work
+
+Completed ledger: 60 contexts through wave6. Active wave7 live ledger is workers/w07-01/ledger.json (schema entries/canonicalID). Do not infer ten complete until scheduler final. Manager /root/w07_acceptance counts once; exactly nine peers requested, no nested extra spawns. Current wave7 writers integrated: cb0b3b7→5decbb0 (StudioView menu: Settings available while protected, scene actions guarded),237165a→08e80c7 (one meaningful test in existing StudioSmokeTests, no new class; native shard check rejects unassigned classes/extensions).
+
+Last verified remote5ccfbaae821a32d88c12ed8b3abf1600aef25753 tree63fc8e1673b3b0016ebcf942b073ad40c8ffa9c7. Contains wave6 native host431 evidence and compiler compatibility correction Double(0.05).nextDown. Prior CI run45842239860 job139986642720 failed on Swift6.4.2 lexer; full log in evidence/wave07. Targeted12 StudioFieldCommandTests passed locally at73a829d. Current CI45851159581 running; Project state45851159596 passed. No CI edits.
+
+Current root08e80c756cb7c8aa4eaf11f27932c8f701000be1 has native menu/test changes beyond published compiler correction. Fresh82-input syntax parse and native_test_shards check passed,175 complete tracked-source hashes in evidence/wave07. UI execution unverified. FullDebug+Release with exact source planned wave8. Worker07 will author NAVIGATION.md, remaining peers review real routes/lifetime/close guards; producer Void gap remains.
+
+Workspace capacity is tight; preserve reports/patches/source refs before removing clean finished worktrees. Root metadata may be repacked without pruning to free space; never delete other work. CurrentSwift6.0.3 available /tmp/keyfill01-swift-6.0.3; Debug build/cache /tmp/keyfill01-build-v6 and /tmp/keyfill01-cache-v6. Root serializes builds and integration. Source reports/records preserved under durable workspace.
+
+### Next-wave preparation
+
+Wave8 should verify Package dump/describe and explicit target source/exclude membership, native project.yml target mappings and actual generated-target CI status, run current-source Debug/Release serially, and publish CONFIGURATION.md with reproducible commands and limits. The existing Swift6.4.2 CI succeeded at5ccfbaa (431eachDebug/Release,175historicalinputmanifest,rawlog471KB); own localSwift6.0.3 useful to catch oldercompiler compatibility after later source changes. Do not modify CI or baseline owner tests simply to green nativeCI.
+
+Wave9 independent lifecycle challenge must first account for existing StudioSessionTests.testSessionAndStoreSurviveObserverReleaseUntilReceiptSettles, which already uses weak references and a gated task to verify release without sleeps. Do not duplicate it. Challenge genuinely missing failure/feature combinations only when they expose a substantive invariant. Check session-level Plan/undo/command transitions for a real reproducer before changing code; do not add speculative stale-tickets. Existing generic apply/edit phase guards and zero-motion feature-origin regression already cover the previously confirmed defect. Add only meaningful missing tests, not implementation mirrors. Finalwave10 must publish final code, execute against that remotelyreachableSHA, then docs-only finalpublication and final100actualIDs audit.
+
+
+## Wave7 closed / wave8 active
+
+70actualfreshcontexts complete. All70finalreports retained; prior60 independently re-auditedhashes/tokenestimates<=800, andwave7managercheckedall10<=526. Rootsource46a161c equals08e80c7 nativechanges withNAVdoconly. Wave7rootrecords copied inthischeckpoint; lastverifiedremote5ccfbaa. Source-specific CI431eachDebug/Release at5cc, laternative82parse+shards at08e, no nativepasses.
+
+Wave8manager /root/w08_acceptance isfresh#71, exactly9peersassigned. Temporarytrees /tmp/keyfill01-wave08/w08-NN/tree avoidsharedworkspacecapacity; durable externalreports /workspace/scratch/e08d5190f17c/workers/w08-NN, sharedGitcommits persist. RootserialDebug+Release and package dump/describe required, no workerbuilds. Preserveonlycleanfinishedwork. Configurationdocwriter04onlydocs; don'tchangePackage/projectwithoutactualdefect. Finalsource10publish/test/docssequence unchanged.

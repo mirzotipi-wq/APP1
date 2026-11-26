@@ -2,9 +2,9 @@
 
 ## Status and integration boundary
 
-Waves 1–6 are complete: **60 actual fresh contexts**, ten roles per wave. Four waves and 40 fresh contexts remain; wave7 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.
+Waves 1–7 are complete: **70 actual fresh contexts**, ten roles per wave. Three waves and 30 fresh contexts remain; wave8 has started. Final reports meet the 800-token tool-estimated cap after same-context condensation where necessary, with originals preserved. Working-token budgets are requested targets because the spawn API exposes no enforcement or actual usage measure. Counts use returned canonical agent IDs. Followups and the rejected capacity spawn count zero.
 
-Only `finish/01-architecture-composition` is pushed. Last verified publication before this checkpoint is `03f4b1aa2d31bfcfb49e830553365d8edcc46299`, tree `37e2b050b521696e2894fb6f366b07cfed9ac478`. Current wave6 tested source is `785d4587287b4a44b1d9f8f6e3d941700b04d871`; subsequent changes are documentation only. Local test commits and GitHub publication commits have distinct IDs; complete source manifests establish equivalence.
+Only `finish/01-architecture-composition` is pushed. Last verified publication is `5ccfbaae821a32d88c12ed8b3abf1600aef25753`, tree `63fc8e1673b3b0016ebcf942b073ad40c8ffa9c7`. It contains the wave6 composition and the Swift6.4 fractional-literal correction. Current wave7 native navigation source is `08e80c756cb7c8aa4eaf11f27932c8f701000be1`; its changes are separately verified below. Local test commits and GitHub publication commits have distinct IDs; complete source manifests establish equivalence.
 
 Common inspected baseline remains `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest observed main remains `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`, including a later native-test correction reserved for integration. The observed origin advertises finish lanes01–05, with no lane20 branch or BASE_SHA at inspected paths. This is scoped observation, not a claim about every possible campaign location. CI belongs to lane19; canonical state and final main integration belong to lane20. Other feature-owner implementations remain unchanged.
 
@@ -22,11 +22,17 @@ Scene/lux results are one-shot, retiring callbacks synchronously after validatio
 
 The internal StudioComposition package target compiles actual app orchestration and storage adapters. [INTERFACES.md](INTERFACES.md) contains live contract examples; [FEATURE_ADAPTERS.md](FEATURE_ADAPTERS.md) distinguishes current producer APIs from future acceptance proposals. Native wiring is implemented in source; Apple behavior remains unverified.
 
+The protected-storage utility path now keeps Studio Tools → Settings → Purchase options available, while scene tools, export, Projects, Recipes and Save remain protected. The corresponding test is a new method in existing `StudioSmokeTests`; its shard registration is unchanged. [NAVIGATION.md](NAVIGATION.md) maps real callers, local versus outer dismissal, exports, purchase ownership and remaining native checks.
+
 ## Actual verification
 
 | Exact local test revision | Check | Result |
 |---|---|---|
-| `785d4587287b4a44b1d9f8f6e3d941700b04d871` | Full Swift6.0.3 Linux Debug | **431 tests passed, zero failures** |
+| `5ccfbaae821a32d88c12ed8b3abf1600aef25753` | CI Swift6.4.2 Linux Debug + Release | **431 passed in each configuration, zero failures; full core job success** |
+| Same published source | CI case/source reconciliation |431 unique started/passed cases per configuration;175 source hashes; complete raw log retained |
+| `08e80c756cb7c8aa4eaf11f27932c8f701000be1` | Wave7 native syntax/shard inventory |82 Swift files parse;9 UI classes correctly assigned; native UI method not executed |
+| `73a829dc5c3af0394b15f9103421d89a245edcf1` | Local compiler-literal correction |12 affected boundary tests passed on Swift6.0.3 |
+| `785d4587287b4a44b1d9f8f6e3d941700b04d871` | Wave6 full Swift6.0.3 Linux Debug | **431 tests passed, zero failures** |
 | Same source | Shared-storage feature regression | Two actual session/store owners: foreign callbacks, competing save, continued draft editing, successful recovery; no native windows instantiated |
 | Same source | App/NativeTests/UITests syntax |82 Swift inputs parsed; syntax only |
 | Same source | Source manifest |175 inputs independently matched to disk and Git blobs |
@@ -39,7 +45,7 @@ The internal StudioComposition package target compiles actual app orchestration 
 | `6fe2cfab49f1b087553f65341f4471f786b309f9` | Wave3 full Debug |400 passed, including real two-window save conflict/recovery |
 | Apple SDK compilation, SwiftUI Observation/UI, focus/caret, AR, StoreKit/device behavior | Native validation |**Unverified** |
 
-Complete current logs, commands and manifests: [evidence/wave06](evidence/wave06). Wave5 final logs: [evidence/wave05-final](evidence/wave05-final). Initial429 run: [evidence/wave05](evidence/wave05). Earlier retained evidence: wave04, wave03-restored and revalidated. Official Swift6.0.3 restored-toolchain provenance and signature are under wave06-toolchain and earlier toolchain directories. Source-specific evidence is never transferred to changed inputs without revalidation.
+Wave7 syntax, shard, targeted correction and CI evidence: [evidence/wave07](evidence/wave07). The historical failed CI run45842239860 is preserved separately; corrected run45851159581 core job140017565927 succeeded. Native jobs were queued at the recorded observation. Wave6 complete local logs: [evidence/wave06](evidence/wave06). Wave5 final logs: [evidence/wave05-final](evidence/wave05-final). Initial429 run: [evidence/wave05](evidence/wave05). Earlier retained evidence: wave04, wave03-restored and revalidated. Official Swift6.0.3 restored-toolchain provenance and signature are under wave06-toolchain and earlier toolchain directories. Source-specific evidence is never transferred to changed inputs without revalidation.
 
 Several early temporary environments reset. Exact recovered source/report hashes and original versus reconstructed provenance are retained under evidence/recovery and evidence/wave03-recovery. Earlier raw logs that were lost are identified as historical, not presented as recovered. Durable source/reports now use sparse workspace worktrees; disposable build/cache output uses separate temporary paths.
 
@@ -51,4 +57,4 @@ ReferenceComparisonView clears its photo/candidate session before its Void callb
 
 The lane05 spatial-preview owner request is implemented at the composition wrapper: both preview identities follow workspaceResetID, and storage-generation/light-UUID guards remain. Renderer files are unchanged. Native first-save viewport retention still needs runtime verification.
 
-Wave7 completes navigation and concrete native acceptance scenarios for reference/comparison, room/AR, export and purchase. Wave8 verifies package/generated targets and applicable build configurations. Wave9 challenges duplicate state/lifecycle/undo. Wave10 delivers the final100-context ledger, current-source evidence and precise lane20 handoff. Only preserved work may be cleaned.
+Wave7 has implemented the protected-storage utility navigation fix and corresponding UI regression, with source reviews of reference/comparison, room/AR, export and purchase. All ten wave7 workers completed, with scoped source acceptance and source-specific evidence independently checked. Wave8 verifies package/generated targets and applicable build configurations. Wave9 challenges duplicate state/lifecycle/undo. Wave10 delivers the final100-context ledger, current-source evidence and precise lane20 handoff. Only preserved work may be cleaned.

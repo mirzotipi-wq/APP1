@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "worker": "w07-09",
+  "role": "platform/performance readonly",
+  "overall_context": 69,
+  "worktree": "/workspace/scratch/e08d5190f17c/workers/w07-09/tree",
+  "output_directory": "/workspace/scratch/e08d5190f17c/workers/w07-09",
+  "startup_documents_read": [
+    "AGENTS.md",
+    "agents/OPERATING_PROTOCOL.md",
+    "agents/HANDOFF.md",
+    "agents/state.json",
+    "docs/PRODUCT.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROADMAP.md",
+    "docs/QUALITY.md",
+    "docs/DESIGN.md",
+    "docs/parallel/01/COORDINATOR.md",
+    "docs/parallel/01/HANDOFF.md",
+    "docs/parallel/01/INTERFACES.md",
+    "docs/parallel/01/FEATURE_ADAPTERS.md"
+  ],
+  "commands": [
+    {
+      "command": "git status --short && git rev-parse HEAD && git log -5 --oneline",
+      "exit_code": 0,
+      "result": "Clean detached HEAD at 46a161cb01d0aee2e91940dbd06d82cfe2df5821; five recent commits inspected."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; this does NOT verify test truth or release readiness."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03: Professional editing and project library. Outstanding gates: editing, accessibility, persistence."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 scripts/native_test_shards.py check",
+      "exit_code": 0,
+      "result": "All 9 UI test classes assigned once across 5 required and 1 opt-in diagnostic shards; native unit target is separate."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 scripts/native_test_shards.py studio-export",
+      "exit_code": 0,
+      "stdout": "-only-testing:KeyAndFillUITests/StudioSmokeTests\n-only-testing:KeyAndFillUITests/LightingPlanExportUITests\n"
+    },
+    {
+      "command": "git diff --name-status 08e80c756cb7c8aa4eaf11f27932c8f701000be1 HEAD",
+      "exit_code": 0,
+      "stdout": "A\tdocs/parallel/01/NAVIGATION.md\n"
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib,re,subprocess,collections,runpy\nroot=Path.cwd()\nevidence=Path('/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave07')\nh=lambda b:hashlib.sha256(b).hexdigest()\nblob=lambda rev,path:subprocess.check_output(['git','show',f'{rev}:{path}'])\nlog=evidence/'ci-140017565927.log'\ntext=log.read_text()\nby_config={k:collections.defaultdict(list) for k in ('debug','release')}\nconfig=None;unassigned=[];markers={}\nfor line_no,line in enumerate(text.splitlines(),1):\n if 'swift test --jobs 2' in line:\n  config='debug';markers[config]=line_no\n elif 'swift test --configuration release --jobs 2' in line:\n  config='release';markers[config]=line_no\n m=re.search(r\"Test Case '([^']+)' (\\w+)\",line)\n if m:\n  if config is None: unassigned.append(line_no)\n  else: by_config[config][m[1]].append(m[2])\nresults={}\nfor config,cases in by_config.items():\n counts=collections.Counter(e for events in cases.values() for e in events)\n valid=all(events==['started','passed'] for events in cases.values())\n inventory_hash=h('\\n'.join(sorted(cases)).encode())\n results[config]={'unique_cases':len(cases),'events':dict(counts),'every_case_one_ordered_start_pass':valid,'inventory_sha256':inventory_hash}\n assert len(cases)==431 and counts=={'started':431,'passed':431} and valid\nassert not unassigned\nrecorded=json.loads((evidence/'ci-case-reconciliation.json').read_text())\nassert h(log.read_bytes())==recorded['log_sha256']==json.loads((evidence/'ci-passing-core.json').read_text())['log_sha256']\nfor config in results:\n assert results[config]['inventory_sha256']==recorded[config]['case_inventory_sha256']\nmanifest_checks={}\nmanifest_contents={}\nfor name in ('ci-source-manifest.json','source-manifest.json'):\n d=json.loads((evidence/name).read_text());rev=d['source_revision'];files=d['files']\n assert len(files)==len({v['path'] for v in files})==175\n git_mismatch=[];disk_mismatch=[];disk_missing=[]\n for item in files:\n  path=item['path'];expected=item['sha256']\n  if h(blob(rev,path))!=expected:git_mismatch.append(path)\n  p=root/path\n  if not p.exists():disk_missing.append(path)\n  elif h(p.read_bytes())!=expected:disk_mismatch.append(path)\n assert not git_mismatch\n if name=='source-manifest.json':assert not disk_mismatch\n manifest_contents[name]={v['path']:v['sha256'] for v in files}\n manifest_checks[name]={'sha256':h((evidence/name).read_bytes()),'source_revision':rev,'count':len(files),'git_mismatches':git_mismatch,'current_disk_mismatches':disk_mismatch,'current_sparse_disk_missing':disk_missing}\nsource_changes=[p for p in manifest_contents['ci-source-manifest.json'] if manifest_contents['ci-source-manifest.json'][p]!=manifest_contents['source-manifest.json'].get(p)]\nassert source_changes==['App/StudioView.swift','UITests/StudioSmokeTests.swift']\nnative=json.loads((evidence/'native-syntax.json').read_text());parse_inputs=native['command'][3:]\nassert native['input_count']==len(parse_inputs)==len(set(parse_inputs))==82\nassert all(p in manifest_contents['source-manifest.json'] for p in parse_inputs)\nassert native['source_revision']==manifest_checks['source-manifest.json']['source_revision'] and native['exit_code']==0\nboundary=json.loads((evidence/'boundary-command.json').read_text());bound_log=evidence/'boundary-debug.log';btext=bound_log.read_text();bevents=collections.defaultdict(list)\nfor m in re.finditer(r\"Test Case '([^']+)' (\\w+)\",btext):bevents[m[1]].append(m[2])\nassert len(bevents)==12 and all(v==['started','passed'] for v in bevents.values())\nassert h(bound_log.read_bytes())==boundary['log_sha256']\nbpath='Tests/LightingCoreTests/StudioFieldCommandTests.swift'\nassert h(blob(boundary['source_commit'],bpath))==boundary['test_source_sha256']==h(blob(recorded['source_revision'],bpath))==h((root/bpath).read_bytes())\ncompat=json.loads((evidence/'ci-compatibility.json').read_text());failure_log=evidence/'ci-139986642720.log';failure=failure_log.read_text()\nassert h(failure_log.read_bytes())==compat['log_sha256']\nassert 'expected named member of numeric literal' in failure and '0.05.nextDown' in failure\nm=runpy.run_path('scripts/native_test_shards.py');ui=m['discover_methods']('UITests');native_inventory=m['discover_methods']('NativeTests')\nnew_method='testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable'\nassert new_method in ui['StudioSmokeTests'] and 'StudioSmokeTests' in m['SHARDS']['studio-export']\nworkflow=(root/'.github/workflows/ios-prototype.yml').read_text()\nassert 'selectors=$(python3 scripts/native_test_shards.py \"$TEST_SHARD\")' in workflow\nassert 'CODE_SIGNING_ALLOWED=NO \"${tests[@]}\" test-without-building' in workflow\nassert 'sources: [UITests]' in (root/'project.yml').read_text()\nreport={'base_revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'ci_log':{'path':str(log),'bytes':log.stat().st_size,'sha256':h(log.read_bytes()),'configuration_marker_lines':markers,'source_revision':recorded['source_revision'],'source_revision_appears_in_raw_log':recorded['source_revision'] in text,'compiler_marker_in_log':'Swift version 6.4.2' in text,'configuration_counts':results,'total_passes':sum(len(c) for c in by_config.values()),'unassigned_case_events':unassigned},'manifests':manifest_checks,'changed_inputs_after_ci':source_changes,'syntax_only':{'source_revision':native['source_revision'],'input_count':len(parse_inputs),'exit_code':native['exit_code'],'log_bytes':(evidence/'native-syntax.log').stat().st_size,'scope':native['scope']},'boundary':{'source_revision':boundary['source_commit'],'unique_ordered_passes':len(bevents),'source_sha256':boundary['test_source_sha256'],'log_sha256':boundary['log_sha256']},'retained_failure':{'workflow_run':compat['workflow_run'],'log_sha256':compat['log_sha256'],'error_present':True},'inventory':{'native_classes':len(native_inventory),'native_methods':sum(map(len,native_inventory.values())),'ui_classes':len(ui),'required_shard_methods':{k:sum(len(ui[c]) for c in names) for k,names in m['SHARDS'].items()},'diagnostic_methods':sum(len(ui[c]) for names in m['DIAGNOSTIC_SHARDS'].values() for c in names),'new_method':new_method,'new_method_is_selected':True},'source_hashes':{p:h((root/p).read_bytes()) for p in ['project.yml','scripts/native_test_shards.py','.github/workflows/ios-prototype.yml','App/StudioView.swift','App/StudioSession.swift','UITests/StudioSmokeTests.swift',bpath]},'clean_worktree':not subprocess.check_output(['git','status','--porcelain'],text=True).strip()}\nprint(json.dumps(report,indent=2))\nPY",
+      "exit_code": 1,
+      "stdout": "Traceback (most recent call last):\n  File \"<stdin>\", line 31, in <module>\nAssertionError\n",
+      "interpretation": "Audit-helper assertion failed because the retained inventory hash includes a final newline. Independent followup reproduced the recorded hash with newline termination; counts and raw-log hash had already passed."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib,re,subprocess,collections,runpy\nroot=Path.cwd()\nevidence=Path('/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave07')\nh=lambda b:hashlib.sha256(b).hexdigest()\nblob=lambda rev,path:subprocess.check_output(['git','show',f'{rev}:{path}'])\nlog=evidence/'ci-140017565927.log'\ntext=log.read_text()\nby_config={k:collections.defaultdict(list) for k in ('debug','release')}\nconfig=None;unassigned=[];markers={}\nfor line_no,line in enumerate(text.splitlines(),1):\n if 'swift test --jobs 2' in line:\n  config='debug';markers[config]=line_no\n elif 'swift test --configuration release --jobs 2' in line:\n  config='release';markers[config]=line_no\n m=re.search(r\"Test Case '([^']+)' (\\w+)\",line)\n if m:\n  if config is None: unassigned.append(line_no)\n  else: by_config[config][m[1]].append(m[2])\nresults={}\nfor config,cases in by_config.items():\n counts=collections.Counter(e for events in cases.values() for e in events)\n valid=all(events==['started','passed'] for events in cases.values())\n inventory_hash=h(('\\n'.join(sorted(cases))+'\\n').encode())\n results[config]={'unique_cases':len(cases),'events':dict(counts),'every_case_one_ordered_start_pass':valid,'inventory_sha256':inventory_hash}\n assert len(cases)==431 and counts=={'started':431,'passed':431} and valid\nassert not unassigned\nrecorded=json.loads((evidence/'ci-case-reconciliation.json').read_text())\nassert h(log.read_bytes())==recorded['log_sha256']==json.loads((evidence/'ci-passing-core.json').read_text())['log_sha256']\nfor config in results:\n assert results[config]['inventory_sha256']==recorded[config]['case_inventory_sha256']\nmanifest_checks={}\nmanifest_contents={}\nfor name in ('ci-source-manifest.json','source-manifest.json'):\n d=json.loads((evidence/name).read_text());rev=d['source_revision'];files=d['files']\n assert len(files)==len({v['path'] for v in files})==175\n git_mismatch=[];disk_mismatch=[];disk_missing=[]\n for item in files:\n  path=item['path'];expected=item['sha256']\n  if h(blob(rev,path))!=expected:git_mismatch.append(path)\n  p=root/path\n  if not p.exists():disk_missing.append(path)\n  elif h(p.read_bytes())!=expected:disk_mismatch.append(path)\n assert not git_mismatch\n if name=='source-manifest.json':assert not disk_mismatch\n manifest_contents[name]={v['path']:v['sha256'] for v in files}\n manifest_checks[name]={'sha256':h((evidence/name).read_bytes()),'source_revision':rev,'count':len(files),'git_mismatches':git_mismatch,'current_disk_mismatches':disk_mismatch,'current_sparse_disk_missing':disk_missing}\nsource_changes=[p for p in manifest_contents['ci-source-manifest.json'] if manifest_contents['ci-source-manifest.json'][p]!=manifest_contents['source-manifest.json'].get(p)]\nassert source_changes==['App/StudioView.swift','UITests/StudioSmokeTests.swift']\nnative=json.loads((evidence/'native-syntax.json').read_text());parse_inputs=native['command'][3:]\nassert native['input_count']==len(parse_inputs)==len(set(parse_inputs))==82\nassert all(p in manifest_contents['source-manifest.json'] for p in parse_inputs)\nassert native['source_revision']==manifest_checks['source-manifest.json']['source_revision'] and native['exit_code']==0\nboundary=json.loads((evidence/'boundary-command.json').read_text());bound_log=evidence/'boundary-debug.log';btext=bound_log.read_text();bevents=collections.defaultdict(list)\nfor m in re.finditer(r\"Test Case '([^']+)' (\\w+)\",btext):bevents[m[1]].append(m[2])\nassert len(bevents)==12 and all(v==['started','passed'] for v in bevents.values())\nassert h(bound_log.read_bytes())==boundary['log_sha256']\nbpath='Tests/LightingCoreTests/StudioFieldCommandTests.swift'\nassert h(blob(boundary['source_commit'],bpath))==boundary['test_source_sha256']==h(blob(recorded['source_revision'],bpath))==h((root/bpath).read_bytes())\ncompat=json.loads((evidence/'ci-compatibility.json').read_text());failure_log=evidence/'ci-139986642720.log';failure=failure_log.read_text()\nassert h(failure_log.read_bytes())==compat['log_sha256']\nassert 'expected named member of numeric literal' in failure and '0.05.nextDown' in failure\nm=runpy.run_path('scripts/native_test_shards.py');ui=m['discover_methods']('UITests');native_inventory=m['discover_methods']('NativeTests')\nnew_method='testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable'\nassert new_method in ui['StudioSmokeTests'] and 'StudioSmokeTests' in m['SHARDS']['studio-export']\nworkflow=(root/'.github/workflows/ios-prototype.yml').read_text()\nassert 'selectors=$(python3 scripts/native_test_shards.py \"$TEST_SHARD\")' in workflow\nassert 'CODE_SIGNING_ALLOWED=NO \"${tests[@]}\" test-without-building' in workflow\nassert 'sources: [UITests]' in (root/'project.yml').read_text()\nreport={'base_revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'ci_log':{'path':str(log),'bytes':log.stat().st_size,'sha256':h(log.read_bytes()),'configuration_marker_lines':markers,'source_revision':recorded['source_revision'],'source_revision_appears_in_raw_log':recorded['source_revision'] in text,'compiler_marker_in_log':'Swift version 6.4.2' in text,'configuration_counts':results,'total_passes':sum(len(c) for c in by_config.values()),'unassigned_case_events':unassigned},'manifests':manifest_checks,'changed_inputs_after_ci':source_changes,'syntax_only':{'source_revision':native['source_revision'],'input_count':len(parse_inputs),'exit_code':native['exit_code'],'log_bytes':(evidence/'native-syntax.log').stat().st_size,'scope':native['scope']},'boundary':{'source_revision':boundary['source_commit'],'unique_ordered_passes':len(bevents),'source_sha256':boundary['test_source_sha256'],'log_sha256':boundary['log_sha256']},'retained_failure':{'workflow_run':compat['workflow_run'],'log_sha256':compat['log_sha256'],'error_present':True},'inventory':{'native_classes':len(native_inventory),'native_methods':sum(map(len,native_inventory.values())),'ui_classes':len(ui),'required_shard_methods':{k:sum(len(ui[c]) for c in names) for k,names in m['SHARDS'].items()},'diagnostic_methods':sum(len(ui[c]) for names in m['DIAGNOSTIC_SHARDS'].values() for c in names),'new_method':new_method,'new_method_is_selected':True},'source_hashes':{p:h((root/p).read_bytes()) for p in ['project.yml','scripts/native_test_shards.py','.github/workflows/ios-prototype.yml','App/StudioView.swift','App/StudioSession.swift','UITests/StudioSmokeTests.swift',bpath]},'clean_worktree':not subprocess.check_output(['git','status','--porcelain'],text=True).strip()}\nprint(json.dumps(report,indent=2))\nPY",
+      "exit_code": 1,
+      "stdout": "Traceback (most recent call last):\n  File \"<stdin>\", line 62, in <module>\nAssertionError\n",
+      "interpretation": "Audit-helper text-match assertion failed on ANSI-colored retained compiler diagnostics. Independent followup stripped ANSI and found the exact numeric-literal error; all manifest and boundary-log assertions had already passed."
+    },
+    {
+      "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport json,hashlib,re,subprocess,collections,runpy\nroot=Path.cwd()\nevidence=Path('/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave07')\nh=lambda b:hashlib.sha256(b).hexdigest()\nblob=lambda rev,path:subprocess.check_output(['git','show',f'{rev}:{path}'])\nlog=evidence/'ci-140017565927.log'\ntext=log.read_text()\nby_config={k:collections.defaultdict(list) for k in ('debug','release')}\nconfig=None;unassigned=[];markers={}\nfor line_no,line in enumerate(text.splitlines(),1):\n if 'swift test --jobs 2' in line:\n  config='debug';markers[config]=line_no\n elif 'swift test --configuration release --jobs 2' in line:\n  config='release';markers[config]=line_no\n m=re.search(r\"Test Case '([^']+)' (\\w+)\",line)\n if m:\n  if config is None: unassigned.append(line_no)\n  else: by_config[config][m[1]].append(m[2])\nresults={}\nfor config,cases in by_config.items():\n counts=collections.Counter(e for events in cases.values() for e in events)\n valid=all(events==['started','passed'] for events in cases.values())\n inventory_hash=h(('\\n'.join(sorted(cases))+'\\n').encode())\n results[config]={'unique_cases':len(cases),'events':dict(counts),'every_case_one_ordered_start_pass':valid,'inventory_sha256':inventory_hash}\n assert len(cases)==431 and counts=={'started':431,'passed':431} and valid\nassert not unassigned\nrecorded=json.loads((evidence/'ci-case-reconciliation.json').read_text())\nassert h(log.read_bytes())==recorded['log_sha256']==json.loads((evidence/'ci-passing-core.json').read_text())['log_sha256']\nfor config in results:\n assert results[config]['inventory_sha256']==recorded[config]['case_inventory_sha256']\nmanifest_checks={}\nmanifest_contents={}\nfor name in ('ci-source-manifest.json','source-manifest.json'):\n d=json.loads((evidence/name).read_text());rev=d['source_revision'];files=d['files']\n assert len(files)==len({v['path'] for v in files})==175\n git_mismatch=[];disk_mismatch=[];disk_missing=[]\n for item in files:\n  path=item['path'];expected=item['sha256']\n  if h(blob(rev,path))!=expected:git_mismatch.append(path)\n  p=root/path\n  if not p.exists():disk_missing.append(path)\n  elif h(p.read_bytes())!=expected:disk_mismatch.append(path)\n assert not git_mismatch\n if name=='source-manifest.json':assert not disk_mismatch\n manifest_contents[name]={v['path']:v['sha256'] for v in files}\n manifest_checks[name]={'sha256':h((evidence/name).read_bytes()),'source_revision':rev,'count':len(files),'git_mismatches':git_mismatch,'current_disk_mismatches':disk_mismatch,'current_sparse_disk_missing':disk_missing}\nsource_changes=[p for p in manifest_contents['ci-source-manifest.json'] if manifest_contents['ci-source-manifest.json'][p]!=manifest_contents['source-manifest.json'].get(p)]\nassert source_changes==['App/StudioView.swift','UITests/StudioSmokeTests.swift']\nnative=json.loads((evidence/'native-syntax.json').read_text());parse_inputs=native['command'][3:]\nassert native['input_count']==len(parse_inputs)==len(set(parse_inputs))==82\nassert all(p in manifest_contents['source-manifest.json'] for p in parse_inputs)\nassert native['source_revision']==manifest_checks['source-manifest.json']['source_revision'] and native['exit_code']==0\nboundary=json.loads((evidence/'boundary-command.json').read_text());bound_log=evidence/'boundary-debug.log';btext=bound_log.read_text();bevents=collections.defaultdict(list)\nfor m in re.finditer(r\"Test Case '([^']+)' (\\w+)\",btext):bevents[m[1]].append(m[2])\nassert len(bevents)==12 and all(v==['started','passed'] for v in bevents.values())\nassert h(bound_log.read_bytes())==boundary['log_sha256']\nbpath='Tests/LightingCoreTests/StudioFieldCommandTests.swift'\nassert h(blob(boundary['source_commit'],bpath))==boundary['test_source_sha256']==h(blob(recorded['source_revision'],bpath))==h((root/bpath).read_bytes())\ncompat=json.loads((evidence/'ci-compatibility.json').read_text());failure_log=evidence/'ci-139986642720.log';failure=re.sub(r'\\x1b\\[[0-9;]*m','',failure_log.read_text())\nassert h(failure_log.read_bytes())==compat['log_sha256']\nassert 'expected named member of numeric literal' in failure and '0.05.nextDown' in failure\nm=runpy.run_path('scripts/native_test_shards.py');ui=m['discover_methods']('UITests');native_inventory=m['discover_methods']('NativeTests')\nnew_method='testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable'\nassert new_method in ui['StudioSmokeTests'] and 'StudioSmokeTests' in m['SHARDS']['studio-export']\nworkflow=(root/'.github/workflows/ios-prototype.yml').read_text()\nassert 'selectors=$(python3 scripts/native_test_shards.py \"$TEST_SHARD\")' in workflow\nassert 'CODE_SIGNING_ALLOWED=NO \"${tests[@]}\" test-without-building' in workflow\nassert 'sources: [UITests]' in (root/'project.yml').read_text()\nreport={'base_revision':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'ci_log':{'path':str(log),'bytes':log.stat().st_size,'sha256':h(log.read_bytes()),'configuration_marker_lines':markers,'source_revision':recorded['source_revision'],'source_revision_appears_in_raw_log':recorded['source_revision'] in text,'compiler_marker_in_log':'Swift version 6.4.2' in text,'configuration_counts':results,'total_passes':sum(len(c) for c in by_config.values()),'unassigned_case_events':unassigned},'manifests':manifest_checks,'changed_inputs_after_ci':source_changes,'syntax_only':{'source_revision':native['source_revision'],'input_count':len(parse_inputs),'exit_code':native['exit_code'],'log_bytes':(evidence/'native-syntax.log').stat().st_size,'scope':native['scope']},'boundary':{'source_revision':boundary['source_commit'],'unique_ordered_passes':len(bevents),'source_sha256':boundary['test_source_sha256'],'log_sha256':boundary['log_sha256']},'retained_failure':{'workflow_run':compat['workflow_run'],'log_sha256':compat['log_sha256'],'error_present':True},'inventory':{'native_classes':len(native_inventory),'native_methods':sum(map(len,native_inventory.values())),'ui_classes':len(ui),'required_shard_methods':{k:sum(len(ui[c]) for c in names) for k,names in m['SHARDS'].items()},'diagnostic_methods':sum(len(ui[c]) for names in m['DIAGNOSTIC_SHARDS'].values() for c in names),'new_method':new_method,'new_method_is_selected':True},'source_hashes':{p:h((root/p).read_bytes()) for p in ['project.yml','scripts/native_test_shards.py','.github/workflows/ios-prototype.yml','App/StudioView.swift','App/StudioSession.swift','UITests/StudioSmokeTests.swift',bpath]},'clean_worktree':not subprocess.check_output(['git','status','--porcelain'],text=True).strip()}\nprint(json.dumps(report,indent=2))\nPY",
+      "exit_code": 0,
+      "result": "All assertions passed; parsed output retained under verification."
+    },
+    {
+      "command": "git status --porcelain=v1 && git diff --check",
+      "exit_code": 0,
+      "stdout": "",
+      "result": "Clean; no source edits or patch."
+    }
+  ],
+  "verification": {
+    "base_revision": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+    "ci_log": {
+      "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave07/ci-140017565927.log",
+      "bytes": 471293,
+      "sha256": "00323fc554ab439fd44077bbd8535368b39fce4181080383d67a243c41af93aa",
+      "configuration_marker_lines": {
+        "debug": 189,
+        "release": 1311
+      },
+      "source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+      "source_revision_appears_in_raw_log": true,
+      "compiler_marker_in_log": true,
+      "configuration_counts": {
+        "debug": {
+          "unique_cases": 431,
+          "events": {
+            "started": 431,
+            "passed": 431
+          },
+          "every_case_one_ordered_start_pass": true,
+          "inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d"
+        },
+        "release": {
+          "unique_cases": 431,
+          "events": {
+            "started": 431,
+            "passed": 431
+          },
+          "every_case_one_ordered_start_pass": true,
+          "inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d"
+        }
+      },
+      "total_passes": 862,
+      "unassigned_case_events": []
+    },
+    "manifests": {
+      "ci-source-manifest.json": {
+        "sha256": "d2e081869fe68e8b63d7e6d7b0473d381969c09e139258e803f4f2334d076113",
+        "source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+        "count": 175,
+        "git_mismatches": [],
+        "current_disk_mismatches": [
+          "App/StudioView.swift",
+          "UITests/StudioSmokeTests.swift"
+        ],
+        "current_sparse_disk_missing": []
+      },
+      "source-manifest.json": {
+        "sha256": "d119b45806845017bcee97fb44ca019f59375bb058b7d680b1c2e0acc243a417",
+        "source_revision": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+        "count": 175,
+        "git_mismatches": [],
+        "current_disk_mismatches": [],
+        "current_sparse_disk_missing": []
+      }
+    },
+    "changed_inputs_after_ci": [
+      "App/StudioView.swift",
+      "UITests/StudioSmokeTests.swift"
+    ],
+    "syntax_only": {
+      "source_revision": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+      "input_count": 82,
+      "exit_code": 0,
+      "log_bytes": 0,
+      "scope": "Syntax only; Apple compilation and UI execution unverified"
+    },
+    "boundary": {
+      "source_revision": "73a829dc5c3af0394b15f9103421d89a245edcf1",
+      "unique_ordered_passes": 12,
+      "source_sha256": "048db29957e2921cec29f2eea8ccd475169ef4259f7400226c2da44a47aef17e",
+      "log_sha256": "c5add21c4af34eec646a78fae453875ad748476e1d2fdff7e68b414683bf34c9"
+    },
+    "retained_failure": {
+      "workflow_run": 45842239860,
+      "log_sha256": "400379e690f7f881525088ca1f99f48e3306b1972d6c893e9c7593d5b9feae4d",
+      "error_present": true
+    },
+    "inventory": {
+      "native_classes": 23,
+      "native_methods": 189,
+      "ui_classes": 9,
+      "required_shard_methods": {
+        "room-precision": 5,
+        "library-reference": 9,
+        "studio-export": 11,
+        "studio-optics": 10,
+        "app-accessibility": 1
+      },
+      "diagnostic_methods": 2,
+      "new_method": "testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+      "new_method_is_selected": true
+    },
+    "source_hashes": {
+      "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+      "scripts/native_test_shards.py": "12e982beab8e472432121b24171bc1e2963b71a227123016d022f127bfcf3454",
+      ".github/workflows/ios-prototype.yml": "a695b17bad26f9d6e6617ac22d1e8e7fb0431b17186bba0a29d3eb285b6e7210",
+      "App/StudioView.swift": "a574f3bc04d0d854de7fa7d6710dc38a58d87c11654721cc25fff5635a67b506",
+      "App/StudioSession.swift": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+      "UITests/StudioSmokeTests.swift": "963ea1efbf72a1b365a6bf339c5031a9a163e396c791173726032692c4d36b23",
+      "Tests/LightingCoreTests/StudioFieldCommandTests.swift": "048db29957e2921cec29f2eea8ccd475169ef4259f7400226c2da44a47aef17e"
+    },
+    "clean_worktree": true
+  },
+  "integration": {
+    "source_changed_files": [],
+    "new_commit": null,
+    "source_patch": null,
+    "reviewed_changes": [
+      {
+        "commit": "5decbb0bacb20a1b55f9c346fa954d5e76ebbff3",
+        "file": "App/StudioView.swift"
+      },
+      {
+        "commit": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+        "file": "UITests/StudioSmokeTests.swift"
+      }
+    ],
+    "ci_change_requested": false,
+    "root_alone_integrates_and_pushes": true,
+    "worker_tree_cleanup_performed": false
+  },
+  "runtime_review": {
+    "added_work": "UUID capture, Boolean disabled expressions and admission check; no new loops, scene validation/traversal, tasks, renderer, timers or I/O in the narrow diff.",
+    "acceptance_scope": "Source inspection only; no native or measured performance claim."
+  },
+  "limitations": [
+    "No build or test rerun; no Apple SDK compilation/typecheck or runtime execution.",
+    "82-input parse receipt is syntax-only and covers later 08e80c7 source; passing Linux CI covers only 5ccfbaa.",
+    "No native queued-job waiting, external actions, CI edits, nested spawns, camera/photo access or purchase/restore.",
+    "Reference/Arrangement/Lux producer Void callbacks still may consume rejected drafts.",
+    "Startup state/handoff contain historical counts; this receipt records current discovered inventory separately."
+  ],
+  "report_files": {
+    "original": "report.original.md",
+    "condensed": "report.md",
+    "receipt": "receipt.json"
+  },
+  "report_bounds": {
+    "characters": 1791,
+    "words": 199,
+    "required_max_characters": 2200,
+    "required_max_words": 250,
+    "required_max_tool_estimated_tokens": 800,
+    "tool_estimated_tokens": 449
+  }
+}
+

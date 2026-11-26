@@ -1,0 +1,35 @@
+# W07-03 API readonly review — original
+
+## Conclusion and revision
+
+Reviewed detached commit `08e80c756cb7c8aa4eaf11f27932c8f701000be1`. Repository files are unchanged and the worktree is clean. No new commit exists. The composition host uses the currently available producer signatures. The outstanding feature-owner API gap remains: Reference, Arrangement and target lux can consume a rejected draft even when the session correctly protects the current scene.
+
+## Actual constructors and consumption
+
+- `ReferenceComparisonView` has the synthesized `init(scene:onApply:)`, with `(LightingScene) -> Void` (`App/ReferenceComparisonView.swift:8`). Apply checks the open session and selected rig, calls `closeSession`, then calls the parent, then dismisses (`:115`). `closeSession` marks closed and clears import/analysis work, the photo derivative, tones, observations, candidate rigs and selection (`:520`). Done closes without applying (`:112`); the dismissal observer also closes (`:147`). No owner-close callback or acceptance return is available.
+- `SceneArrangementView` explicitly initializes `scene:onApply:` with the same Void callback and seeds destination from the subject (`App/SceneArrangementView.swift:22`). After successful local transformation it sets `didFinish` before invoking the parent and dismissing (`:97`). Parent rejection cannot enter its calculation-error catch. Cancel also marks completion and dismisses without applying (`:75`).
+- `LightTargetLuxView` has synthesized `init(light:scene:onApply:)` and `(StudioLight) -> Void` (`App/LightTargetLuxView.swift:5`). It validates target input and calculates output, then sets `didApply` before callback/dismissal (`:108`). Cancel only dismisses (`:76`).
+- `ManualRoomPlacementView` explicitly takes `scene`, optional `onRemove: (() -> Bool)?`, `onClose: (() -> Void)?`, and `onChange: ((ManualRoom) -> Bool)?`, all callbacks default nil (`App/ManualRoomPlacementView.swift:55`). It seeds room/keptRoom from the scene. Field changes and explicit Keep call the valid-room callback (`:130`, `:158`). False sets an error and preserves displayed room plus previous keptRoom; true acknowledges it. Removal acknowledges only after true and always retains displayed planning values (`:185`). Done invokes close then dismisses (`:114`). No callback means its corresponding commit/removal controls are hidden.
+- `ARPlacementView` uses the matching optional `onRoomRemove`, `onClose`, `onRoomChange` initializer and seeds a StateObject controller from the opening scene (`App/ARPlacementView.swift:23`). Nested manual callbacks require matching manual owner and an open nested presentation, returning the parent Bool unchanged (`:93`). Nested Done affects only local showingManual; it never retires outer Studio ownership (`:63`). Outer Done invokes onClose, stops the controller and dismisses (`:54`). SwiftUI controller persistence and dismissal timing have not been executed here.
+
+## Host and acceptance semantics
+
+`StudioFeatureSheets` uses a presentation-ID identity and owner-matched Bool sheet binding (`App/StudioFeatureSheets.swift:10`). False writes retire callbacks immediately; true writes do nothing. Matching onDismiss calls finishFeature. Reference/Arrangement/Lux receive immutable opening snapshots and call actual session acceptance methods; only accepted Reference results switch to Study (`:42`). Room/AR receive live session.scene and forward their Bool results directly (`:64`). The host's active-owner rejection message asks the user to reopen (`:79`); it cannot restore already-consumed producer state. Disabling during an operation does not solve late rejection.
+
+`StudioSession.applyFeatureScene` and `applyFeatureLight` return acceptance, including validated unchanged proposals, then retire one-shot ownership (`App/StudioSession.swift:146`). Lux checks the captured UUID, original light identity/content and candela-only change (`:161`). Room/AR accept unchanged values, permit repeated own changes and retain one owner edit group (`:185`). Ordinary `apply`, `update` and `replace` return mutation Bool instead (`:79`, `:94`, `:109`). Admission uses loaded/writable/current-storage state plus live feature owner/logical generation/revision; dismissed or stale receipts reject (`:126`; `Sources/LightingCore/StudioFeatureContext.swift:34`). Close/finish match context identity (`App/StudioSession.swift:204`).
+
+## Settings, Pro and export
+
+Studio Settings remains a separate sheet. The tools Menu now disables only while a continuous edit is active; scene actions retain loaded/writable/idle checks (`App/StudioView.swift:332`). Settings uses the shared EntitlementStore, opens Pro locally, and Done dismisses its own sheet (`App/StudioSettingsView.swift:4`, `:31`, `:57`). Pro has no result callback and its Done only dismisses (`App/ProFeaturesView.swift:67`). Purchase/restore/refresh remain explicit button actions; none was invoked. The new protected-storage test is one method in the existing StudioSmokeTests class (`UITests/StudioSmokeTests.swift:357`), not a new test class; it must be included in native shard validation. It is source-reviewed, unexecuted here.
+
+Export takes scene/title/optional text, captures one immutable snapshot at open and changes internal format destination within one sheet (`App/LightingPlanExportView.swift:16`, `:47`). PDF and editable-copy routes consume that snapshot. It does not return a mutation/acceptance callback to Studio. Root opening remains disabled for unloaded/protected/busy state (`App/StudioView.swift:335`). No export, share or provider operation was invoked.
+
+## Checks and limits
+
+Mandatory startup documents and assigned brief were read. `python3 scripts/agent_cycle.py check` exited 0: state/evidence references valid, explicitly no truth/readiness verification. `next` exited 0: M03 editing/accessibility/persistence remains selected. Source hashes match assigned Git blobs; final git status and binary diff are empty. No builds, tests, Swift syntax parse, Apple typecheck, native UI, camera, photo, StoreKit transaction, upload or external action ran.
+
+Root's separately retained wave07 receipt records the Swift6.4.2 numeric-literal lexer failure for workflow 45842239860 and the explicit `Double(0.05).nextDown` repair. Its 12 targeted Swift6.0.3 tests passed; this worker only read that receipt/log and verified artifact hashes. The failed workflow remains failed and Swift6.4.2 revalidation remains pending.
+
+## Recommendation
+
+Feature owners should supply explicitly labeled synchronous Bool acceptance before draft cleanup/completion/dismissal, preserve each rejected draft and error, and retain reentrancy protection. Do not silently infer acceptance from ordinary mutation Bool. Native acceptance should cover rejection, valid no-op, duplicate Apply, close ownership, nested manual close, and Settings/Pro under protected storage. Root alone integrates and pushes. Manager may remove this tree only after verifying the preserved report, receipt and empty source patch.

@@ -330,14 +330,21 @@ struct StudioView: View {
     }
 
     private var projectUtilityActions: some View {
-        HStack(spacing: 8) {
+        let generation = session.generation
+        return HStack(spacing: 8) {
             LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
             Menu {
-                Button("Subject position", systemImage: "person.crop.rectangle") { showSubject = true }
+                Button("Subject position", systemImage: "person.crop.rectangle") {
+                    guard session.allowsMutation(from: generation), !editHistory.isEditing else { return }
+                    showSubject = true
+                }
+                    .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
                 Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath",
                        action: featureAction(.arrangement))
+                    .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
                 Button("Place in AR", systemImage: "arkit", action: featureAction(.ar))
+                    .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
                 Divider()
                 Button("Settings", systemImage: "gearshape") { showSettings = true }
             } label: {
@@ -345,7 +352,7 @@ struct StudioView: View {
             }
             .accessibilityLabel("Studio tools")
             .accessibilityIdentifier("studioTools")
-            .disabled(!loaded || saveBlocked || libraryOperation.isBusy || editHistory.isEditing)
+            .disabled(editHistory.isEditing)
             Button { showStudioGuide = true } label: {
                 Label("Guide", systemImage: "questionmark.circle")
                     .labelStyle(.iconOnly)

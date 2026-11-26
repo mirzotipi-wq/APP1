@@ -1,0 +1,653 @@
+{
+  "schema": 1,
+  "worker": "W07-06",
+  "role": "Read-only resource-lifetime specialist",
+  "date_utc": "2026-11-26T15:57:12.689299+00:00",
+  "base_revision": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "reviewed_revision": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "worktree": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+  "output_directory": "/workspace/scratch/e08d5190f17c/workers/w07-06",
+  "source_changes": [],
+  "commit_created": null,
+  "branch_status": "## HEAD (no branch)\n",
+  "final_status_porcelain": "",
+  "startup_documents_read": [
+    "AGENTS.md",
+    "agents/OPERATING_PROTOCOL.md",
+    "agents/HANDOFF.md",
+    "agents/state.json",
+    "docs/PRODUCT.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROADMAP.md",
+    "docs/QUALITY.md",
+    "docs/DESIGN.md",
+    "docs/parallel/01/COORDINATOR.md",
+    "docs/parallel/01/HANDOFF.md",
+    "docs/parallel/01/INTERFACES.md",
+    "docs/parallel/01/FEATURE_ADAPTERS.md",
+    "docs/parallel/01/NAVIGATION.md"
+  ],
+  "checks": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "result": "State structure and evidence references valid; this does NOT verify test truth or release readiness."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03: Professional editing and project library; outstanding editing, accessibility, persistence."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "No output."
+    },
+    {
+      "check": "Source SHA-256 and committed-byte comparison",
+      "result": "35 files match HEAD",
+      "count": 35
+    },
+    {
+      "check": "Read-only source patch",
+      "result": "0 bytes",
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-06/source.patch"
+    }
+  ],
+  "findings": [
+    {
+      "id": "W07-06-F1",
+      "classification": "known unchanged limitation",
+      "summary": "Reference consumes photo/candidate draft before Void parent acceptance; legacy rejection cannot restore it.",
+      "anchors": [
+        "App/ReferenceComparisonView.swift:115-123",
+        "App/ReferenceComparisonView.swift:499-535",
+        "App/StudioFeatureSheets.swift:43-49",
+        "App/StudioFeatureSheets.swift:79-84"
+      ],
+      "recommendation": "Retain feature-owner synchronous Bool acceptance API work; do not claim draft retention fixed."
+    },
+    {
+      "id": "W07-06-R1",
+      "classification": "unverified native lifecycle risk; no proven leak",
+      "summary": "Reference's unstructured import/analysis tasks rely on closeSession or dismissal observer. Parent reset/removal while already covered by child/picker lacks demonstrated teardown behavior.",
+      "anchors": [
+        "App/ReferenceComparisonView.swift:128-149",
+        "App/ReferenceComparisonView.swift:432-535",
+        "App/PhotoComparisonView.swift:348-398",
+        "UITests/ReferenceComparisonUITests.swift:76-93"
+      ],
+      "recommendation": "Native tests with authorized actual image, in-flight imports/analysis, nested coverage, cancelled/completed swipes and parent reset; assert retention until completed close and eventual cleanup."
+    },
+    {
+      "id": "W07-06-R2",
+      "classification": "native coverage gap",
+      "summary": "AR nested manual Done is correctly owner-local in source, but the simulator smoke closes one child without committing room changes.",
+      "anchors": [
+        "App/ARPlacementView.swift:54-106",
+        "App/ARPlacementView.swift:243-247",
+        "UITests/StudioSmokeTests.swift:97-114"
+      ],
+      "recommendation": "Commit room A, close/reopen nested manual, commit room B under same outer receipt, then outer Done and undo; reject stale old-owner callbacks."
+    },
+    {
+      "id": "W07-06-R3",
+      "classification": "native provider and responsiveness coverage gap",
+      "summary": "PDF DataRepresentation and backup FileDocument own immutable bytes; no app-created temporary file found. PDF rendering is synchronous MainActor work between cancellation checkpoints; provider behavior remains unexecuted.",
+      "anchors": [
+        "App/LightingPlanExportView.swift:7-12",
+        "App/LightingPlanExportView.swift:175-190",
+        "App/LightingPlanPDF.swift:17-40",
+        "App/ProjectBackupView.swift:75-121",
+        "App/ProjectDocumentIO.swift:8-30"
+      ],
+      "recommendation": "Exercise actual share/open and provider success/cancel/failure; measure maximum-valid PDF preparation dismissal latency without asserting a leak."
+    }
+  ],
+  "route_map_comparison": {
+    "path": "docs/parallel/01/NAVIGATION.md",
+    "result": "No mismatch found for inspected Reference/comparison, manual room/AR, host retirement and PDF/editable-copy ownership paths.",
+    "scope_limit": "This is source inspection, not native behavior acceptance."
+  },
+  "commands": [
+    {
+      "sequence": 1,
+      "id": "inventory",
+      "command": "rg --files -g AGENTS.md -g OPERATING_PROTOCOL.md -g HANDOFF.md -g state.json -g PRODUCT.md -g ARCHITECTURE.md -g ROADMAP.md -g QUALITY.md -g DESIGN.md -g COORDINATOR.md -g INTERFACES.md -g FEATURE_ADAPTERS.md -g NAVIGATION.md",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 2,
+      "id": "git",
+      "command": "git status --short && git rev-parse HEAD && git log -5 --oneline",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 3,
+      "id": "cycle_check",
+      "command": "python3 scripts/agent_cycle.py check",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 4,
+      "id": "cycle_next",
+      "command": "python3 scripts/agent_cycle.py next",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 5,
+      "id": "startup",
+      "command": "cat AGENTS.md agents/OPERATING_PROTOCOL.md agents/HANDOFF.md agents/state.json",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 6,
+      "id": "product",
+      "command": "cat docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 7,
+      "id": "lane",
+      "command": "cat docs/parallel/01/COORDINATOR.md docs/parallel/01/HANDOFF.md docs/parallel/01/INTERFACES.md docs/parallel/01/FEATURE_ADAPTERS.md docs/parallel/01/NAVIGATION.md",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 8,
+      "id": null,
+      "command": "rg --files App NativeTests UITests Sources | rg '(ReferenceComparison|PhotoComparison|ComparisonSession|PhotoImport|ReferenceAnalysis|LightingPlanExport|ProjectBackup|ARPlacement|ManualRoom|FeatureSheets|StudioSession)'",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 9,
+      "id": "ownership_symbols",
+      "command": "rg -n 'ComparisonSessionDismissal|ReferencePhoto|PhotoImport|fileExporter|FileDocument|removeItem|temporaryDirectory|withTaskCancellation|Task.detached|onDisappear|closeSession|func clear|onDismiss' App NativeTests UITests",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 10,
+      "id": "reference",
+      "command": "nl -ba App/ReferenceComparisonView.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 11,
+      "id": "comparison",
+      "command": "nl -ba App/PhotoComparisonView.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 12,
+      "id": "ar_host",
+      "command": "nl -ba App/ARPlacementView.swift && nl -ba App/StudioFeatureSheets.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 13,
+      "id": "export",
+      "command": "nl -ba App/LightingPlanExportView.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 14,
+      "id": "backup",
+      "command": "nl -ba App/ProjectBackupView.swift && nl -ba App/ProjectDocumentIO.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 15,
+      "id": "photo_analysis",
+      "command": "nl -ba App/ReferencePhoto.swift && nl -ba App/ReferenceAnalysisService.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 16,
+      "id": "ar_controller",
+      "command": "nl -ba App/ARPlacementController.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 17,
+      "id": "manual_lifetime",
+      "command": "rg -n 'sheet|notesSnapshot|onChange|keepRoom|onClose|keptRoom|roomCommitRejected|remove|Done' App/ManualRoomPlacementView.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 18,
+      "id": "tests",
+      "command": "rg -n 'func test|Photo|photo|Dismiss|dismiss|cancel|Cancel|manual|Manual|export|Export|closeAR|closeReference|closePhoto' UITests/ReferenceComparisonUITests.swift UITests/StudioSmokeTests.swift UITests/LightingPlanExportUITests.swift NativeTests/ReferencePhotoTests.swift NativeTests/ReferenceAnalysisServiceTests.swift NativeTests/*Comparison*",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 2,
+      "result": "Search returned matches plus two nonexistent-file errors; corrected by rg --files in focused_refs."
+    },
+    {
+      "sequence": 19,
+      "id": "focused_refs",
+      "command": "rg --files NativeTests | rg '(Reference|Photo|LightingPlanPDF)' && rg -n 'placementRoom|subject|room' Sources/LightingCore/ARPlacementLayout.swift && rg -n 'Task|onChange|workspaceResetID|LightingPlanExportMenu|showSettings|featureAction' App/StudioView.swift && rg -n 'finishFeature|retireFeature|feature =|acceptsFeature' App/StudioSession.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 20,
+      "id": "actual_ui",
+      "command": "nl -ba UITests/ReferenceComparisonUITests.swift && nl -ba UITests/LightingPlanExportUITests.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 21,
+      "id": "manual_source",
+      "command": "nl -ba App/ManualRoomPlacementView.swift | sed -n '35,205p'",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 22,
+      "id": "file_reader",
+      "command": "nl -ba App/BoundedFileReader.swift | sed -n '1,215p'",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 23,
+      "id": "teardown_tests",
+      "command": "rg -n 'ComparisonSessionDismissalObserver|ReferenceAnalysisService|ComparisonPhotoSlot|manualOwner|arManualMeasurements|Task.*cancel|withTaskCancellationHandler' NativeTests UITests App/LightingPlanPDF.swift && nl -ba UITests/StudioSmokeTests.swift | sed -n '62,138p'",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 24,
+      "id": "session_host",
+      "command": "nl -ba App/StudioSession.swift | sed -n '110,220p;305,345p' && nl -ba App/StudioView.swift | sed -n '125,215p;325,360p;1125,1150p'",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 25,
+      "id": "pdf_ownership",
+      "command": "nl -ba App/LightingPlanPDF.swift | sed -n '1,115p' && rg -n 'pageCount|maximum|bound|count|Task' Sources/LightingCore/LightingPlan.swift",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 26,
+      "id": null,
+      "command": "python3 - <<'PY'\nimport hashlib, json, pathlib, subprocess\nroot = pathlib.Path.cwd()\npaths = ['AGENTS.md','agents/OPERATING_PROTOCOL.md','agents/HANDOFF.md','agents/state.json','docs/PRODUCT.md','docs/ARCHITECTURE.md','docs/ROADMAP.md','docs/QUALITY.md','docs/DESIGN.md','docs/parallel/01/COORDINATOR.md','docs/parallel/01/HANDOFF.md','docs/parallel/01/INTERFACES.md','docs/parallel/01/FEATURE_ADAPTERS.md','docs/parallel/01/NAVIGATION.md','App/StudioView.swift','App/StudioFeatureSheets.swift','App/StudioSession.swift','App/ReferenceComparisonView.swift','App/PhotoComparisonView.swift','App/ReferencePhoto.swift','App/ReferenceAnalysisService.swift','App/ARPlacementView.swift','App/ARPlacementController.swift','App/ManualRoomPlacementView.swift','App/LightingPlanExportView.swift','App/LightingPlanPDF.swift','App/ProjectBackupView.swift','App/ProjectDocumentIO.swift','App/BoundedFileReader.swift','Sources/LightingCore/ARPlacementLayout.swift','Sources/LightingCore/LightingPlan.swift','UITests/ReferenceComparisonUITests.swift','UITests/StudioSmokeTests.swift','UITests/LightingPlanExportUITests.swift','NativeTests/ReferencePhotoTests.swift']\nrecords=[]\nfor name in paths:\n    data=(root/name).read_bytes()\n    committed=subprocess.check_output(['git','show','HEAD:'+name])\n    records.append({'path':name,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'matches_head':data==committed,'git_blob':subprocess.check_output(['git','rev-parse','HEAD:'+name],text=True).strip()})\nprint(json.dumps({'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'branch_status':subprocess.check_output(['git','status','--short','--branch'],text=True),'status_porcelain':subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],text=True),'sources':records},indent=2))\nPY",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 27,
+      "id": "empty_patch",
+      "command": "git diff --binary HEAD > ../source.patch",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 28,
+      "id": "diff_check",
+      "command": "git diff --check",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    },
+    {
+      "sequence": 29,
+      "id": "final_status",
+      "command": "git status --short --branch && git rev-parse HEAD",
+      "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06/tree",
+      "exit_code": 0,
+      "result": "Completed; full output in commands.json."
+    }
+  ],
+  "full_command_results_artifact": "/workspace/scratch/e08d5190f17c/workers/w07-06/commands.json",
+  "additional_artifact_hash_command": {
+    "command": "python3 - <<'PY'\nimport hashlib, json, pathlib, re, datetime\nroot = pathlib.Path('/workspace/scratch/e08d5190f17c/workers/w07-06')\nartifacts=[]\nfor name in ['report-original.md','report.md','commands.json','source.patch']:\n    data=(root/name).read_bytes()\n    row={'name':name,'path':str(root/name),'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)}\n    if name=='report.md':\n        text=data.decode()\n        row.update({'characters':len(text),'words':len(re.findall(r'\\S+',text)),'estimated_tokens':(len(data)+3)//4,'estimate_method':'ceil(UTF-8 bytes / 4), not actual tokenizer usage'})\n    artifacts.append(row)\nprint(json.dumps({'recorded_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'artifacts':artifacts},indent=2))\nPY",
+    "workdir": "/workspace/scratch/e08d5190f17c/workers/w07-06",
+    "exit_code": 0,
+    "output": "{\n  \"recorded_at_utc\": \"2026-11-26T15:57:12.689299+00:00\",\n  \"artifacts\": [\n    {\n      \"name\": \"report-original.md\",\n      \"path\": \"/workspace/scratch/e08d5190f17c/workers/w07-06/report-original.md\",\n      \"sha256\": \"3a2deed960586a76f679afa3336ad7237151b9d04761bffe4d5be68797d68b39\",\n      \"bytes\": 6440\n    },\n    {\n      \"name\": \"report.md\",\n      \"path\": \"/workspace/scratch/e08d5190f17c/workers/w07-06/report.md\",\n      \"sha256\": \"da847ddfd900833bd48a1ae44dbd2e9b5fa8092fc71457c593980f2fefc62c26\",\n      \"bytes\": 2102,\n      \"characters\": 2078,\n      \"words\": 242,\n      \"estimated_tokens\": 526,\n      \"estimate_method\": \"ceil(UTF-8 bytes / 4), not actual tokenizer usage\"\n    },\n    {\n      \"name\": \"commands.json\",\n      \"path\": \"/workspace/scratch/e08d5190f17c/workers/w07-06/commands.json\",\n      \"sha256\": \"99974eb1d79d807ced3cf13a4b53d18a3abfa4a66bcd6b05370b2bbecfaf95ef\",\n      \"bytes\": 399918\n    },\n    {\n      \"name\": \"source.patch\",\n      \"path\": \"/workspace/scratch/e08d5190f17c/workers/w07-06/source.patch\",\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n      \"bytes\": 0\n    }\n  ]\n}\n"
+  },
+  "source_hashes": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+      "bytes": 6812,
+      "matches_head": true,
+      "git_blob": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "sha256": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6",
+      "bytes": 3838,
+      "matches_head": true,
+      "git_blob": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "sha256": "b55cbb91ade0b8a578f5da2d9f570c0e62451b5974fa5c4b8c0dbb67d5df0021",
+      "bytes": 12871,
+      "matches_head": true,
+      "git_blob": "98ecb8840ea8ed7a4879069e557b508039b4fc64"
+    },
+    {
+      "path": "agents/state.json",
+      "sha256": "6b1610f15e9106612098f1626d6277e6063d9d44a4870e6a0a5f727e15ac1f3e",
+      "bytes": 3378,
+      "matches_head": true,
+      "git_blob": "5b954225413af6a63d1ea82170cfcc57d90d0a92"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "sha256": "1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628",
+      "bytes": 2556,
+      "matches_head": true,
+      "git_blob": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a",
+      "bytes": 9951,
+      "matches_head": true,
+      "git_blob": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "sha256": "038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678",
+      "bytes": 2013,
+      "matches_head": true,
+      "git_blob": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "sha256": "af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336",
+      "bytes": 5675,
+      "matches_head": true,
+      "git_blob": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "sha256": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117",
+      "bytes": 2446,
+      "matches_head": true,
+      "git_blob": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/parallel/01/COORDINATOR.md",
+      "sha256": "f9bffe62928a37ceda9cb125cfc82e2dd70c34cccbf2998081d765801b4dc0e6",
+      "bytes": 10280,
+      "matches_head": true,
+      "git_blob": "092449a3a15ce3c1315a0dbf4b65dea3afd8414c"
+    },
+    {
+      "path": "docs/parallel/01/HANDOFF.md",
+      "sha256": "85d61f6bd4404ca3daa107ef0311c2ae8120cca7c3a724405b5ac9079f25fba6",
+      "bytes": 8530,
+      "matches_head": true,
+      "git_blob": "ae89145114c364d7226bc40102f178b1ae3b0203"
+    },
+    {
+      "path": "docs/parallel/01/INTERFACES.md",
+      "sha256": "65c1f6a55b5ae2f342fba0c2ad174defa8e6bb3ce10db7f1ebadfa7eb82ef719",
+      "bytes": 9966,
+      "matches_head": true,
+      "git_blob": "b71f38f0b7145ae8eb1c6b2ec1db3efe84c9c097"
+    },
+    {
+      "path": "docs/parallel/01/FEATURE_ADAPTERS.md",
+      "sha256": "2e1b305b4549e617125ba56808b8c9c6c292911b1c0314d6a28be86bf54d2068",
+      "bytes": 9953,
+      "matches_head": true,
+      "git_blob": "6e249df26426054548d86ad51edbc719736cb628"
+    },
+    {
+      "path": "docs/parallel/01/NAVIGATION.md",
+      "sha256": "315a5d4a2dbb4ddb84623fab6b42adfb923d870c5f7ecd1f9dc5e26cf0f4b23e",
+      "bytes": 20154,
+      "matches_head": true,
+      "git_blob": "68ae37af3d769e813361f169caea0b0c31fdf5df"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "sha256": "a574f3bc04d0d854de7fa7d6710dc38a58d87c11654721cc25fff5635a67b506",
+      "bytes": 67629,
+      "matches_head": true,
+      "git_blob": "88cbc339130ad6af7f9a77adda34754aeb1a2e9c"
+    },
+    {
+      "path": "App/StudioFeatureSheets.swift",
+      "sha256": "8ecbb8802dac256917bae9e779ac7b579c8789e408dfd72be1f8abb378b06e37",
+      "bytes": 3692,
+      "matches_head": true,
+      "git_blob": "1ce678d9009b74ed74d2893522cd6828ec4be74c"
+    },
+    {
+      "path": "App/StudioSession.swift",
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+      "bytes": 16667,
+      "matches_head": true,
+      "git_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4"
+    },
+    {
+      "path": "App/ReferenceComparisonView.swift",
+      "sha256": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb",
+      "bytes": 28497,
+      "matches_head": true,
+      "git_blob": "fad8232524c74c4cf06e0f2ff132e7f678f2c430"
+    },
+    {
+      "path": "App/PhotoComparisonView.swift",
+      "sha256": "243a57126323fffcd904b18edc413cd31d5b90f0e2494fd388d2766db0588294",
+      "bytes": 21570,
+      "matches_head": true,
+      "git_blob": "93e72b0562e27bd3b90f110a2b7440a45bb63ba1"
+    },
+    {
+      "path": "App/ReferencePhoto.swift",
+      "sha256": "1b1b1ea05833fd591fe05fbe6d9fd3f9dacfe3bdd08ad7093ed8c5c08d25792a",
+      "bytes": 7355,
+      "matches_head": true,
+      "git_blob": "340fa6f2b3099b3e9219cbd5467f5f150caa06e4"
+    },
+    {
+      "path": "App/ReferenceAnalysisService.swift",
+      "sha256": "252f749c99cab7c86fd0795632fcc7df55d8cbe303c27b9fd0a6c9a02d2d5f69",
+      "bytes": 17961,
+      "matches_head": true,
+      "git_blob": "a9729e4106cd1d95f7261b17f581703eb935028c"
+    },
+    {
+      "path": "App/ARPlacementView.swift",
+      "sha256": "e6085889ed25337c729c2dbb7d2b9027e7368e08b8cd3ff46ab980a617979c0a",
+      "bytes": 14741,
+      "matches_head": true,
+      "git_blob": "ec10f43d57234af9245bddc2fd90785d6ef21b22"
+    },
+    {
+      "path": "App/ARPlacementController.swift",
+      "sha256": "21843199fc457a6252d00a691381c53568438357b2602a6a073cc494a0e49f4b",
+      "bytes": 24093,
+      "matches_head": true,
+      "git_blob": "a65a5d09b1e2daf9b2a047cf22158913e87de07f"
+    },
+    {
+      "path": "App/ManualRoomPlacementView.swift",
+      "sha256": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+      "bytes": 37724,
+      "matches_head": true,
+      "git_blob": "37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6"
+    },
+    {
+      "path": "App/LightingPlanExportView.swift",
+      "sha256": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+      "bytes": 9722,
+      "matches_head": true,
+      "git_blob": "2db6c333853c8f4cab16082cd4d9037cd05feafb"
+    },
+    {
+      "path": "App/LightingPlanPDF.swift",
+      "sha256": "6ed5b44341d5ac873f9ac84ff16458527b5b38c2bdb12667d9c860e36b220027",
+      "bytes": 13839,
+      "matches_head": true,
+      "git_blob": "0e26c90ab3213f88fc1c337006f817dbbbfd39e5"
+    },
+    {
+      "path": "App/ProjectBackupView.swift",
+      "sha256": "2b46bb6b7b9de27ccaafbf9e69a4d8940af55cb560a7a1ff8b140e1d654a5b81",
+      "bytes": 6060,
+      "matches_head": true,
+      "git_blob": "fbb8ea667bfdc43d81ff831929fa1f437d5ded89"
+    },
+    {
+      "path": "App/ProjectDocumentIO.swift",
+      "sha256": "84c163b88c41cb9b3535ac4c74d0c0dae3c5ce7628c5890b70b4656ce3167f85",
+      "bytes": 7128,
+      "matches_head": true,
+      "git_blob": "5b2c7eb311527a5bdd201a23e4674cfc816c673b"
+    },
+    {
+      "path": "App/BoundedFileReader.swift",
+      "sha256": "f420bf7876ee9d556c69b1682300e402640046983f7cf34cabe8d0508469e36c",
+      "bytes": 3691,
+      "matches_head": true,
+      "git_blob": "cb8ffc012386b339e5ca30ff82cf388bb51dfc03"
+    },
+    {
+      "path": "Sources/LightingCore/ARPlacementLayout.swift",
+      "sha256": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+      "bytes": 8200,
+      "matches_head": true,
+      "git_blob": "8930dade3f8a78ae3933fa9c5cd2d3a0b6fc8e1d"
+    },
+    {
+      "path": "Sources/LightingCore/LightingPlan.swift",
+      "sha256": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+      "bytes": 23438,
+      "matches_head": true,
+      "git_blob": "823e4157b73c2f3e474772d8378cb99f87b9babc"
+    },
+    {
+      "path": "UITests/ReferenceComparisonUITests.swift",
+      "sha256": "a352a3419e02a9b58acb476ed62d713267f245634d76a549671009ac9fb38b5b",
+      "bytes": 6150,
+      "matches_head": true,
+      "git_blob": "908a41c5b143c47e4dbccd119cb30e3d6441c994"
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "sha256": "963ea1efbf72a1b365a6bf339c5031a9a163e396c791173726032692c4d36b23",
+      "bytes": 26873,
+      "matches_head": true,
+      "git_blob": "9f086fe2d3de9eb65785005187da63787d5aba01"
+    },
+    {
+      "path": "UITests/LightingPlanExportUITests.swift",
+      "sha256": "f551809314d0e2b18ad150f5978ff2e2376dac3d8d2be6da7fbc0664e294b958",
+      "bytes": 9429,
+      "matches_head": true,
+      "git_blob": "015eda966fc11edaa2f5828631e04a4ce9320e5c"
+    },
+    {
+      "path": "NativeTests/ReferencePhotoTests.swift",
+      "sha256": "cfd30a1f0ae5c416ea1f5fa01bd097d458948a1de3784cd2da9701d868241bee",
+      "bytes": 15558,
+      "matches_head": true,
+      "git_blob": "91a4f5956579df8d248a82cc881b1baf67ab367a"
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "report-original.md",
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-06/report-original.md",
+      "sha256": "3a2deed960586a76f679afa3336ad7237151b9d04761bffe4d5be68797d68b39",
+      "bytes": 6440
+    },
+    {
+      "name": "report.md",
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-06/report.md",
+      "sha256": "da847ddfd900833bd48a1ae44dbd2e9b5fa8092fc71457c593980f2fefc62c26",
+      "bytes": 2102,
+      "characters": 2078,
+      "words": 242,
+      "estimated_tokens": 526,
+      "estimate_method": "ceil(UTF-8 bytes / 4), not actual tokenizer usage"
+    },
+    {
+      "name": "commands.json",
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-06/commands.json",
+      "sha256": "99974eb1d79d807ced3cf13a4b53d18a3abfa4a66bcd6b05370b2bbecfaf95ef",
+      "bytes": 399918
+    },
+    {
+      "name": "source.patch",
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-06/source.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "limits": {
+    "build_ran": false,
+    "swift_parse_ran": false,
+    "native_runtime_ran": false,
+    "native_tests_ran": false,
+    "camera_photo_export_purchase_actions": false,
+    "push_performed": false,
+    "external_communications_performed": false,
+    "working_token_budget": "Requested <=12000 target only; API does not expose/enforce actual usage."
+  },
+  "report_constraints": {
+    "maximum_characters": 2200,
+    "maximum_words": 250,
+    "maximum_estimated_tokens": 800,
+    "characters": 2078,
+    "words": 242,
+    "estimated_tokens": 526,
+    "estimate_method": "ceil(UTF-8 bytes / 4), not actual tokenizer usage",
+    "original_preserved": "/workspace/scratch/e08d5190f17c/workers/w07-06/report-original.md"
+  },
+  "recommendation": "Accept reviewed navigation inventory as source-level evidence only; retain known producer gap and native acceptance work.",
+  "cleanup": "Manager alone may remove the worktree after verifying preserved artifacts and clean unchanged HEAD."
+}
+
