@@ -1,0 +1,122 @@
+[
+  {
+    "name": "compiler-version",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "g++ --version",
+    "exit": 0,
+    "stdout": "g++ (Debian 14.2.0-19) 14.2.0\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "baseline-head",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "git rev-parse HEAD",
+    "exit": 0,
+    "stdout": "3d0e20616d0e771ad72161592c59105f591951c9\n",
+    "stderr": ""
+  },
+  {
+    "name": "baseline-status",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "git status --short --branch",
+    "exit": 0,
+    "stdout": "## HEAD (no branch)\n",
+    "stderr": ""
+  },
+  {
+    "name": "source-product-diff",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "git diff f150f98e35dd735927075aac4d2f8b02295c6a67 -- scripts/verify-kernel-host.cpp App/StudyKernel.h Sources/LightingCore/ReferenceStudy.swift Sources/LightingCore/Scene.swift App/MetalStudyRenderer.swift",
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "compile",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "flock /tmp/keyfill04-2987b1ee980d/build.lock g++ -std=c++17 -O1 -g -fno-omit-frame-pointer -ffp-contract=off -fsanitize=undefined,float-cast-overflow -fno-sanitize-recover=all /tmp/keyfill04-2987b1ee980d/results/w016/malformed-metadata-probe.cpp -o /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe",
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "valid-control",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe grid 8 /tmp/keyfill04-2987b1ee980d/results/w016/valid-control.bin",
+    "exit": 0,
+    "stdout": "field=grid value=8 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/valid-control.bin reference=same-kernel-canonical-control\n/tmp/keyfill04-2987b1ee980d/results/w016/valid-control.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS\n",
+    "stderr": ""
+  },
+  {
+    "name": "grid-huge",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe grid 4294967296 /tmp/keyfill04-2987b1ee980d/results/w016/grid-huge.bin",
+    "exit": 1,
+    "stdout": "field=grid value=4294967296 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/grid-huge.bin reference=same-kernel-canonical-control\n",
+    "stderr": "/tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:218:43: runtime error: 4.29497e+09 is outside the range of representable values of type 'unsigned int'\n    #0 0x55e4fd199621 in kfStudyPixel(float4 const*, float4 const*, float4 const*, unsigned int, unsigned int, unsigned int, unsigned int) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:218\n    #1 0x55e4fd19414a in compare /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:63\n    #2 0x55e4fd19414a in keyfill_existing_host_harness_main(int, char**) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:98\n    #3 0x55e4fd1967e0 in main /tmp/keyfill04-2987b1ee980d/results/w016/malformed-metadata-probe.cpp:77\n    #4 0x7fed5a34bca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #5 0x7fed5a34bd64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #6 0x55e4fd1924b0 in _start (/workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe+0x84b0) (BuildId: c1e1d256e265613d29901cf0b3f7a81eea1c3d5b)\n\n"
+  },
+  {
+    "name": "tag-huge",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe tag 4294967296 /tmp/keyfill04-2987b1ee980d/results/w016/tag-huge.bin",
+    "exit": 1,
+    "stdout": "field=tag value=4294967296 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/tag-huge.bin reference=same-kernel-canonical-control\n",
+    "stderr": "/tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:230:44: runtime error: 4.29497e+09 is outside the range of representable values of type 'unsigned int'\n    #0 0x55a74813ce62 in kfStudyPixel(float4 const*, float4 const*, float4 const*, unsigned int, unsigned int, unsigned int, unsigned int) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:230\n    #1 0x55a74813714a in compare /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:63\n    #2 0x55a74813714a in keyfill_existing_host_harness_main(int, char**) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:98\n    #3 0x55a7481397e0 in main /tmp/keyfill04-2987b1ee980d/results/w016/malformed-metadata-probe.cpp:77\n    #4 0x7f71240d8ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #5 0x7f71240d8d64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #6 0x55a7481354b0 in _start (/workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe+0x84b0) (BuildId: c1e1d256e265613d29901cf0b3f7a81eea1c3d5b)\n\n"
+  },
+  {
+    "name": "grid-negative",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe grid -1 /tmp/keyfill04-2987b1ee980d/results/w016/grid-negative.bin",
+    "exit": 1,
+    "stdout": "field=grid value=-1 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/grid-negative.bin reference=same-kernel-canonical-control\n",
+    "stderr": "/tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:218:43: runtime error: -1 is outside the range of representable values of type 'unsigned int'\n    #0 0x562100c1c621 in kfStudyPixel(float4 const*, float4 const*, float4 const*, unsigned int, unsigned int, unsigned int, unsigned int) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:218\n    #1 0x562100c1714a in compare /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:63\n    #2 0x562100c1714a in keyfill_existing_host_harness_main(int, char**) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:98\n    #3 0x562100c197e0 in main /tmp/keyfill04-2987b1ee980d/results/w016/malformed-metadata-probe.cpp:77\n    #4 0x7f107541aca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #5 0x7f107541ad64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #6 0x562100c154b0 in _start (/workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe+0x84b0) (BuildId: c1e1d256e265613d29901cf0b3f7a81eea1c3d5b)\n\n"
+  },
+  {
+    "name": "tag-negative",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe tag -1 /tmp/keyfill04-2987b1ee980d/results/w016/tag-negative.bin",
+    "exit": 1,
+    "stdout": "field=tag value=-1 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/tag-negative.bin reference=same-kernel-canonical-control\n",
+    "stderr": "/tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:230:44: runtime error: -1 is outside the range of representable values of type 'unsigned int'\n    #0 0x557024773e62 in kfStudyPixel(float4 const*, float4 const*, float4 const*, unsigned int, unsigned int, unsigned int, unsigned int) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/../App/StudyKernel.h:230\n    #1 0x55702476e14a in compare /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:63\n    #2 0x55702476e14a in keyfill_existing_host_harness_main(int, char**) /tmp/keyfill04-2987b1ee980d/results/w016/../../workers/w016/scripts/verify-kernel-host.cpp:98\n    #3 0x5570247707e0 in main /tmp/keyfill04-2987b1ee980d/results/w016/malformed-metadata-probe.cpp:77\n    #4 0x7fa56ab0eca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #5 0x7fa56ab0ed64 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: 93f70d1a8ae34f8e63c223f1500327fbd717f871)\n    #6 0x55702476c4b0 in _start (/workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe+0x84b0) (BuildId: c1e1d256e265613d29901cf0b3f7a81eea1c3d5b)\n\n"
+  },
+  {
+    "name": "grid-fractional",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe grid 8.5 /tmp/keyfill04-2987b1ee980d/results/w016/grid-fractional.bin",
+    "exit": 0,
+    "stdout": "field=grid value=8.5 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/grid-fractional.bin reference=same-kernel-canonical-control\n/tmp/keyfill04-2987b1ee980d/results/w016/grid-fractional.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS\n",
+    "stderr": ""
+  },
+  {
+    "name": "tag-fractional",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe tag 1.5 /tmp/keyfill04-2987b1ee980d/results/w016/tag-fractional.bin",
+    "exit": 0,
+    "stdout": "field=tag value=1.5 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/tag-fractional.bin reference=same-kernel-canonical-control\n/tmp/keyfill04-2987b1ee980d/results/w016/tag-fractional.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS\n",
+    "stderr": ""
+  },
+  {
+    "name": "count-huge-rejected",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe area-count 4294967296 /tmp/keyfill04-2987b1ee980d/results/w016/count-huge-rejected.bin",
+    "exit": 2,
+    "stdout": "field=area-count value=4294967296 finite=1 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/count-huge-rejected.bin reference=same-kernel-canonical-control\n",
+    "stderr": "invalid sample counts\n"
+  },
+  {
+    "name": "nonfinite-rejected",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 /workspace/scratch/2987b1ee980d/build04/w016/malformed-metadata-probe grid nan /tmp/keyfill04-2987b1ee980d/results/w016/nonfinite-rejected.bin",
+    "exit": 2,
+    "stdout": "field=grid value=nan finite=0 canonical_surface_pixels=190 canonical_unsupported=0 fixture=/tmp/keyfill04-2987b1ee980d/results/w016/nonfinite-rejected.bin reference=same-kernel-canonical-control\n",
+    "stderr": "nonfinite input\n"
+  },
+  {
+    "name": "final-status",
+    "cwd": "/tmp/keyfill04-2987b1ee980d/workers/w016",
+    "command": "git status --short --branch",
+    "exit": 0,
+    "stdout": "## HEAD (no branch)\n",
+    "stderr": ""
+  }
+]

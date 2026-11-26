@@ -1,0 +1,24 @@
+diff --git a/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift b/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
+--- a/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
++++ b/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
+@@ -137,6 +137,20 @@
+         XCTAssertFalse(StudyFloat32Eligibility.supports(invalid))
+     }
+ 
++    func testMeasuredSilhouetteBoundaryAtRequestedWidthRoutesToCPU() throws {
++        // Shared C++ Float32 kernel versus a transcribed C++ Double reference:
++        // two pixels exceeded four levels at 24 x 16 (2 / 384 = 0.0052083333).
++        // This host-derived routing fixture is not Swift or Metal parity evidence.
++        let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                  camera: .init(x: 0, y: 1.5, z: 3), lights: [],
++                                  cameraLens: .init(focalLengthMillimeters: 161.27198111190464))
++        let packed = try StudyComputeInput(scene: value, width: 24)
++        XCTAssertEqual(packed.width, 24)
++        XCTAssertEqual(packed.height, 16)
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value, width: 24),
++                       "Eligibility must guard the silhouette at the requested pixel grid")
++    }
++
+     private func translated(_ source: LightingScene, by offset: Position) -> LightingScene {
+         var value = source
+         func move(_ p: Position) -> Position { .init(x: p.x + offset.x, y: p.y + offset.y, z: p.z + offset.z) }
