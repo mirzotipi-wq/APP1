@@ -1,0 +1,150 @@
+{
+  "worker": "w048",
+  "context_path": "/root/w007_review_coordinator/w048_spatial_emitter_geometry",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Focused source/test review of SceneKit front emitting planes and roll, powered-off bodies, degenerate aim markers, stands and selection UUIDs; camera fit/orbit excluded.",
+  "method": "Fetched actual GitHub contents pinned to base_sha and matched paths to blob SHAs from the recursive Git tree. Static source inspection only.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "App/SpatialPreview.swift",
+      "blob_sha": "69631a347204a89d1f6e6863ce5d0bec236efd1d",
+      "inspection": "focused implementation/test review"
+    },
+    {
+      "path": "NativeTests/SpatialEmitterGeometryTests.swift",
+      "blob_sha": "7fecaa44cbed76f421a0d91d6553754ece2908c4",
+      "inspection": "focused implementation/test review"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "inspection": "focused implementation/test review"
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426",
+      "inspection": "UnitDirection dependency and source context"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "startup/acceptance context"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "startup/acceptance context"
+    }
+  ],
+  "checks": [
+    {
+      "id": "front_plane_roll",
+      "status": "source_reviewed",
+      "paths": [
+        "App/SpatialPreview.swift:221-230",
+        "App/SpatialPreview.swift:290-297",
+        "Sources/LightingCore/StudioOptics.swift:EmitterFrame"
+      ],
+      "observation": "The fixture quaternion uses the shared right/up/normal columns, including authored roll and deterministic vertical aims. Moving a box by minus half its local depth after orientation places its local +Z emitting-face center at the authored world position."
+    },
+    {
+      "id": "source_anchor_direction",
+      "status": "source_reviewed",
+      "paths": [
+        "App/SpatialPreview.swift:267-280"
+      ],
+      "observation": "Source nodes remain at the authored position. Aimed lights flip both right and normal basis columns, preserving handedness while mapping SceneKit local -Z to the shared emitting normal. Point emitters remain omnidirectional at their authored center."
+    },
+    {
+      "id": "powered_off_geometry",
+      "status": "source_reviewed",
+      "paths": [
+        "App/SpatialPreview.swift:250-254",
+        "App/SpatialPreview.swift:274",
+        "App/SpatialPreview.swift:282-298",
+        "App/SpatialPreview.swift:317-319"
+      ],
+      "observation": "Zero-candela fixtures retain housing geometry and the valid aimed frame; their source intensity is zero, body material emission is not assigned, and the illustrative ambient fill is zero when no valid positive-output emitter exists."
+    },
+    {
+      "id": "degenerate_aim",
+      "status": "source_reviewed",
+      "paths": [
+        "App/SpatialPreview.swift:267-280",
+        "App/SpatialPreview.swift:289-318",
+        "Sources/LightingCore/StudioOptics.swift:StudioPhotometry.frame",
+        "Sources/LightingCore/SurfacePhotometry.swift:UnitDirection"
+      ],
+      "observation": "Coincident source/target produces no UnitDirection and no EmitterFrame. The adapter suppresses the aimed source rather than substituting an omni source, retains an unshifted marker and registers its UUID, and withholds emissive material."
+    },
+    {
+      "id": "stands_uuid_lifecycle",
+      "status": "source_reviewed",
+      "paths": [
+        "App/SpatialPreview.swift:94-106",
+        "App/SpatialPreview.swift:142-175",
+        "App/SpatialPreview.swift:299-324"
+      ],
+      "observation": "Fixture and stand map to the same live light UUID. Selection outline is a child of the registered fixture, so hit ancestry resolves consistently. Stand remains at authored x/z and half-height. Selection-only updates toggle existing indicators without rebuilding geometry; content rebuilds clear old node mappings, and tap delivery checks current scene membership."
+    },
+    {
+      "id": "native_test_coverage",
+      "status": "source_reviewed_not_run",
+      "paths": [
+        "NativeTests/SpatialEmitterGeometryTests.swift"
+      ],
+      "observation": "Reviewed all five test methods. Cases cover translated rectangular planes, arbitrary and vertical aims, rolls in both preview modes, powered-off directional plane/source intensity, bare-point center, stand/outline UUID identity and retained selection-only geometry, and degenerate aim with no spot/omni source."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete must-fix defect identified within the assigned emitter-geometry and selection-identity scope at this revision.",
+  "limitations": [
+    "Host execution was unavailable; no scripts, Swift tests, xcodebuild, SceneKit rendering, actual tap gesture delivery or screenshots were run or observed by this worker.",
+    "scripts/agent_cycle.py check/next, local git status and uncommitted-work inspection were unavailable; repository startup/state documents were read remotely.",
+    "Static inspection and test-source coverage do not establish native test success, photographic calibration, device behavior or milestone acceptance.",
+    "Camera fit/orbit, actual visual readability of powered-off fixtures, and other rendering paths are outside this focused review."
+  ],
+  "mutations": "Only an unreferenced JSON report blob is uploaded. No source, tree, commit or ref mutation.",
+  "status": "complete"
+}

@@ -1,0 +1,115 @@
+{
+  "worker": "worker039",
+  "context_path": "/root/w007_review_coordinator/w039_room_draft_input_failure",
+  "status": "complete",
+  "kind": "same-context independent source-review followup",
+  "repository": "mirzotipi-wq/APP1",
+  "original_failure_revision": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "candidate_revision": "49a6945951638047a4545310268ab3d159906c79",
+  "candidate_url": "https://github.com/mirzotipi-wq/APP1/commit/49a6945951638047a4545310268ab3d159906c79",
+  "original_report_blob_sha": "7628ad3643526dd1d8677eccd210497adf252fc5",
+  "original_log": {
+    "run_id": 45745699007,
+    "job_id": 139662471927,
+    "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45745699007/job/139662471927",
+    "context": "Previously fetched exact log: first roomWidth draft type('2') returned AX placeholder Meters before Set; later same room helper successfully entered roomSubjectX='1.6'. Original failure and four passing methods retain their actual outcomes."
+  },
+  "verdict": "No blocking source defect found in this room-input delta. Suitable bounded synchronization/diagnostic candidate for required CI rerun. Synchronization remains a cause hypothesis; source review is not runtime validation or proof of repair.",
+  "reviewed_sources": [
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "candidate_blob_sha": "063083979946d4d0f8e0d0d313b4f75a0cbf19b1",
+      "baseline_blob_sha": "b0c50c85ba7c85dd644b922586958047a490f0cb",
+      "candidate_lines": "266–320",
+      "scope": "room helper and failure diagnostics; enclosing reveal and introduction helpers read for dependencies"
+    },
+    {
+      "path": "UITests/ManualRoomPlacementUITests.swift",
+      "blob_sha": "c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa",
+      "unchanged_from_original_failure_source": true
+    },
+    {
+      "path": "App/ManualRoomPlacementView.swift",
+      "blob_sha": "37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6",
+      "unchanged_from_original_failure_source": true
+    },
+    {
+      "path": "App/StudioTextField.swift",
+      "blob_sha": "0d5481be3b13fd06acb9fe2674af503b8a7ec6a9",
+      "unchanged_from_original_failure_source": true
+    }
+  ],
+  "commit_delta": {
+    "files": [
+      {
+        "path": "UITests/StudioContentReachability.swift",
+        "patch": "@@ -274,7 +274,25 @@ extension XCTestCase {\n         clear.tap()\n         XCTAssertTrue(field.waitForExistence(timeout: 5), file: file, line: line)\n         field.tap()\n+        dismissKeyboardTypingIntroduction(in: app, file: file, line: line)\n+        // Clear focuses the field and changes the available Form viewport.\n+        // Reveal that real control again after the keyboard transition.\n+        revealStudioContent(field, in: app, fullyVisible: true, file: file, line: line)\n+        field.tap()\n+        let typingKey = app.keyboards.firstMatch.keys[\"1\"]\n+        let keyboardReady = XCTNSPredicateExpectation(\n+            predicate: NSPredicate(format: \"exists == true AND hittable == true\"), object: typingKey)\n+        let readyResult = XCTWaiter.wait(for: [keyboardReady], timeout: 10)\n+        if readyResult != .completed { recordRoomInputFailure(\"Keyboard not ready\", field: field, in: app) }\n+        XCTAssertEqual(readyResult, .completed, \"The numeric keyboard must be ready before typing\",\n+                       file: file, line: line)\n         field.typeText(text)\n+        let entered = XCTNSPredicateExpectation(\n+            predicate: NSPredicate(format: \"exists == true AND value == %@\", text), object: field)\n+        let enteredResult = XCTWaiter.wait(for: [entered], timeout: 10)\n+        if enteredResult != .completed { recordRoomInputFailure(\"Draft did not match \" + text, field: field, in: app) }\n+        XCTAssertEqual(enteredResult, .completed, \"Exact measurement draft must be entered\",\n+                       file: file, line: line)\n         XCTAssertEqual(field.value as? String, text, \"Exact measurement draft must be entered\", file: file, line: line)\n         let set = app.buttons[id + \"Set\"]\n         XCTAssertTrue(set.isHittable, file: file, line: line)\n@@ -286,4 +304,18 @@ extension XCTestCase {\n         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed,\n                        \"Set must dismiss the numeric keyboard, including on validation failure\", file: file, line: line)\n     }\n+\n+    private func recordRoomInputFailure(_ stage: String, field: XCUIElement, in app: XCUIApplication) {\n+        let description = \"Stage: \\(stage)\\nField: \\(field.debugDescription)\\n\" + app.debugDescription\n+        let bounded = String(decoding: description.utf8.prefix(32_768), as: UTF8.self)\n+        print(\"Room-measurement-input-failure (at most 32,768 UTF-8 bytes):\\n\\(bounded)\")\n+        let hierarchy = XCTAttachment(string: bounded)\n+        hierarchy.name = \"Room-measurement-input-hierarchy\"\n+        hierarchy.lifetime = .keepAlways\n+        add(hierarchy)\n+        let screenshot = XCTAttachment(screenshot: app.screenshot())\n+        screenshot.name = \"Room-measurement-input-failure\"\n+        screenshot.lifetime = .keepAlways\n+        add(screenshot)\n+    }\n }"
+      }
+    ],
+    "description": "The candidate commit changes only UITests/StudioContentReachability.swift, adding room input readiness and failure evidence. Earlier reachability changes already present in this candidate are outside this commit delta."
+  },
+  "source_checks": {
+    "typeTextOccurrences": 1,
+    "clearTapOccurrences": 1,
+    "setTapOccurrences": 1,
+    "directExactEqualityPreserved": true,
+    "keyboardReady10s": true,
+    "exactDraft10s": true,
+    "keyboardGone10s": true,
+    "fullyVisibleReveal": true,
+    "clearExistenceEnabledHittable": true,
+    "keyboardPredicate": true,
+    "commitPaths": [
+      "UITests/StudioContentReachability.swift"
+    ]
+  },
+  "findings": [
+    {
+      "result": "preserved",
+      "area": "single entry and submission",
+      "detail": "Existing Clear is tapped once, field.typeText(text) remains exactly one occurrence without a retry loop, and Set is tapped once after both exact-draft assertions. Extra taps request focus, not replacement values; no programmatic app text injection."
+    },
+    {
+      "result": "preserved",
+      "area": "exact draft",
+      "detail": "Waits at most the configured 10 seconds for exists && value == requested text, asserts wait completion, then retains the original direct XCTAssertEqual(field.value as? String, text). No tolerance, normalization, placeholder acceptance, or retry typing added."
+    },
+    {
+      "result": "preserved",
+      "area": "validation and geometry",
+      "detail": "ManualRoomPlacementUITests.swift has unchanged blob c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa. ManualRoomPlacementView.swift is unchanged blob37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6; StudioTextField.swift is unchanged blob0d5481be3b13fd06acb9fe2674af503b8a7ec6a9. Rejected resize, signed precision, explicit restore, notes, undo/save/relaunch behavior is neither altered nor bypassed."
+    },
+    {
+      "result": "added",
+      "area": "keyboard and visibility",
+      "detail": "After Clear and initial tap, calls the existing exact-copy keyboard introduction handler, requests full field visibility using actual keyboard-aware container bounds, taps again, then waits for numeric key1 to exist and be hittable. This is an explicit precondition check, not merely a longer delay."
+    },
+    {
+      "result": "bounded",
+      "area": "waiting and gestures",
+      "detail": "New keyboard and exact-draft waits are each configured10 seconds. The reused reveal helper permits at most12 iterations; no new unbounded retry or sleep. Existing field existence5 seconds and post-Set keyboard-disappearance10 seconds remain. Accessibility IPC and screenshot acquisition are not strictly wall-clock bounded by those expectation deadlines."
+    },
+    {
+      "result": "meaningful",
+      "area": "failure diagnostics",
+      "detail": "On keyboard readiness or exact-draft timeout, captures stage, actual field debugDescription and app hierarchy, prints and retains a bounded text attachment, then captures actual app screenshot with keepAlways. No synthetic image or fixture state. Existing reveal failures use their own geometry/screenshot/hierarchy diagnostics."
+    },
+    {
+      "result": "limitation",
+      "area": "diagnostic bounds",
+      "detail": "Full field/app debugDescription strings are acquired before truncation, so only retained text is capped, not AX traversal cost. String(decoding: utf8.prefix(32768), as: UTF8.self) can replace a truncated multibyte character with U+FFFD, making re-encoded UTF-8 up to32770 bytes; this small bound-label imprecision is nonblocking for the room-input candidate."
+    },
+    {
+      "result": "unproven",
+      "area": "cause and acceptance",
+      "detail": "The original room failure artifact remains unviewed. Numeric keyboard readiness and exact draft visibility are plausible missing synchronization preconditions; no new run was inspected. Success of this patch would still require actual required method outcomes and preserved downstream assertions, not relabeling the old failure."
+    }
+  ],
+  "required_verification": "Rerun the required room/precision methods on candidate/integrated source and retain full original method accounting. The rejected-resize workflow must reach and pass all existing validation, notes, signed coordinates, undo/save/relaunch assertions; keyboard readiness success alone is insufficient.",
+  "limits": [
+    "Read-only GitHub source/commit review; no host/compiler/simulator execution.",
+    "No failure artifact bytes, screenshots or video fetched or viewed during either review.",
+    "No source/tree/ref changes or child contexts. Only authorized unreferenced report blob created.",
+    "No claim that M03 editing passes or that the original failure is fixed."
+  ]
+}

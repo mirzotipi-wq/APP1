@@ -1,0 +1,145 @@
+{
+  "worker": "w028",
+  "context_path": "/root/w007_review_coordinator/w028_display_names_unicode",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "repository": "mirzotipi-wq/APP1",
+  "task": "Review StudioDisplayName Unicode visibility, control handling, readable fallback selection and meaningful Unicode preservation.",
+  "focus": [
+    "Sources/LightingCore/StudioDisplayName.swift",
+    "Tests/LightingCoreTests/StudioDisplayNameTests.swift"
+  ],
+  "scope_exclusions": [
+    "Library duplicate-name and identity policy",
+    "Source, tree, branch and ref modifications"
+  ],
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "blob_sha": "eaf8555b2bae9ac86ce2d2916408fc823ca35698",
+      "inspection": "full remote file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioDisplayNameTests.swift",
+      "blob_sha": "43644d21395a642accfe083451e6313141fb3506",
+      "inspection": "full remote file at base_sha"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Startup and acceptance guidance",
+      "method": "Remote source reading",
+      "result": "Read AGENTS.md, all eight mandated startup documents and m02-m03-code-v2; M03 remains active. No milestone promotion inferred."
+    },
+    {
+      "check": "Bounds and truncation",
+      "method": "Static control-flow review",
+      "result": "Reviewed at most 321 inspected source scalars, 80-character/320-scalar/1280-byte caps, ellipsis reservations and requested-limit clamping; no additional defect identified."
+    },
+    {
+      "check": "Control and bidi sanitization",
+      "method": "Static source/test comparison",
+      "result": "Unsafe categories and explicit bidi-control ranges are rejected by newInput and replaced for display; tests cover representative line/control/bidi inputs. Tests were read, not run."
+    },
+    {
+      "check": "Meaningful Unicode preservation",
+      "method": "Static source/test comparison",
+      "result": "Existing assertions cover combining accents, Arabic/Hebrew/CJK, ZWNJ/ZWJ, variation selectors, Indic joining and emoji families; hasDisplayContent gates an entire name without stripping meaningful embedded formatting."
+    },
+    {
+      "check": "Blank-name/fallback edge cases",
+      "method": "Static trace with U+2800 input and primary Unicode documentation",
+      "result": "One P2 issue: U+2800 is a blank symbol outside both rejected visibility properties, so a blank-only name is considered display content. Runtime reproduction was not performed."
+    }
+  ],
+  "findings": [
+    {
+      "id": "w028-F1",
+      "severity": "P2",
+      "title": "Braille blank-only names bypass empty-name validation and visible fallback",
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "lines": [
+        98,
+        105
+      ],
+      "reproduction": {
+        "type": "Source-derived, not executed",
+        "steps": [
+          "Call try StudioDisplayName.newInput(\"\\u{2800}\").",
+          "Call StudioDisplayName.display(\"\\u{2800}\").",
+          "Call StudioDisplayName.label(\"\\u{2800}\", fallback: \"Unnamed project\")."
+        ],
+        "predicted_actual": "All three paths retain U+2800: it is not whitespace, is not default-ignorable, and is not rejected by isUnsafe. The label path sees a nonempty string and bypasses the fallback.",
+        "expected": "Treat a string containing only BRAILLE PATTERN BLANK and other non-content scalars as empty for new input; display should return empty so label chooses its visible fallback."
+      },
+      "impact": "A user can enter a visually blank name and retained blank-only names produce a blank UI label instead of the contextual fallback. This undermines the readable-name contract without affecting storage integrity.",
+      "recommendation": "Make U+2800 non-content in hasDisplayContent, without removing it from otherwise meaningful names. Add tests for a single/repeated braille blank, mixtures with whitespace/default-ignorable scalars, label fallback, and preservation inside visible braille or ordinary text.",
+      "evidence": [
+        "hasDisplayContent accepts any scalar that is neither whitespace nor default-ignorable.",
+        "Existing invisible-name tests enumerate default-ignorable fillers but do not include U+2800.",
+        "Unicode chart describes U+2800 as BRAILLE PATTERN BLANK and says it is rendered as a fixed-width blank in many fonts but does not act as a space."
+      ],
+      "primary_reference_urls": [
+        "https://www.unicode.org/Public/18.0.0/charts/PDF/U2800.pdf",
+        "https://www.unicode.org/L2/L2025/25183-utc184-properties-recs.pdf"
+      ],
+      "validation_needed": "Run focused Swift regression tests and confirm the label in the app's supported font. No claim of observed iOS rendering or test execution is made."
+    }
+  ],
+  "limitations": [
+    "Host unavailable: no local checkout, local files, shell commands, repository scripts, Swift tests, builds or app runtime were used.",
+    "Review was limited to the pinned remotely fetched source/test files and mandatory startup/acceptance guidance.",
+    "Unicode rendering impact is source-derived and supported by primary Unicode documentation; actual platform font output was not observed.",
+    "No source, tree, commit, branch or ref was modified; only this unreferenced report blob is uploaded."
+  ],
+  "status": "complete"
+}

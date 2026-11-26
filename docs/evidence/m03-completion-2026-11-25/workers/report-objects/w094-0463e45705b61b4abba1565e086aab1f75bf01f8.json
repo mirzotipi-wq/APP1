@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "worker": "worker094",
+  "context_path": "/root/w007_review_coordinator/w094_simulator_warmup_cleanup",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "status": "complete",
+  "scope": "Pinned source review of simulator warm-up timeout, owned command cleanup, output/reporting semantics and separation from required native/UI acceptance. No numeric CI budget tuning or artifact transport review.",
+  "read_sources": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/AGENTS.md"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/OPERATING_PROTOCOL.md"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/HANDOFF.md"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/state.json"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/PRODUCT.md"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/ROADMAP.md"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/QUALITY.md"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/DESIGN.md"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/acceptance/m02-m03-code.md"
+    },
+    {
+      "path": "scripts/boot_simulator.py",
+      "blob_sha": "4bb1b85aab9ef1f6d6f5f46ecbdf8ed0aabff6c2",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/boot_simulator.py"
+    },
+    {
+      "path": "scripts/tests/test_boot_simulator.py",
+      "blob_sha": "26542907edfaa2c9398d019079376113afb8a8ac",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/tests/test_boot_simulator.py"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blob_sha": "c83e4340e5b0b6d6ec10f6b3439195a648aa9894",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/.github/workflows/ios-prototype.yml"
+    }
+  ],
+  "checks": [
+    {
+      "case": "shared_deadline_and_attempts",
+      "result": "source_reviewed",
+      "evidence": "scripts/boot_simulator.py:65-68,117-153,223-296,341-347",
+      "detail": "Monotonic work deadline bounds command waits; maximum two attempts and one hosted-CI-only, selected-UDID shutdown recovery. Exit zero observed after deadline is rejected."
+    },
+    {
+      "case": "owned_process_cleanup",
+      "result": "source_reviewed",
+      "evidence": "scripts/boot_simulator.py:96-115,139-165,174-189",
+      "detail": "Each subprocess starts a new session. Success, nonzero exit, timeout, signal and execution-error paths attempt SIGKILL only against that command's process group and bounded direct-child reaping. Cleanup error/unreaped child is terminal rather than a retry trigger."
+    },
+    {
+      "case": "raw_diagnostic_status",
+      "result": "source_reviewed",
+      "evidence": "scripts/boot_simulator.py:123-171,248-258,335-361",
+      "detail": "Separate stdout/stderr and command receipts retain real return codes, timeout/interruption status and failed attempts. Recovery success is explicitly ready_after_recovery, not a rewrite of the first attempt. Finalization interruption replaces a success receipt."
+    },
+    {
+      "case": "preparatory_vs_required_acceptance",
+      "result": "source_reviewed",
+      "evidence": ".github/workflows/ios-prototype.yml:241-306,447-458,496-533,606-617; docs/acceptance/m02-m03-code.md Evidence and integration",
+      "detail": "Warm-up is explicitly continue-on-error diagnostic; the workflow passes steps.simulator_warmup.outcome to test logs rather than interpreting wrapper conclusion as a warm-up pass. Selected xcodebuild retains pipefail, method accounting is required with always(), native Metal methods require one passed occurrence, and finalized xcresult/export checks remain required."
+    },
+    {
+      "case": "regression_source_coverage",
+      "result": "read_only_not_executed",
+      "evidence": "scripts/tests/test_boot_simulator.py",
+      "detail": "Synthetic tests cover delayed postflight, two timeouts sharing budget, preserved stderr/nonzero status, identity failure, terminal cleanup failure, descendant cleanup after timeout/success/failure, cancellation without recovery, finalization interruption, invalid budgets, existing evidence preservation and late exit zero.",
+      "test_methods_in_source": 26
+    },
+    {
+      "case": "output_behavior",
+      "result": "source_reviewed_with_limits",
+      "evidence": "scripts/boot_simulator.py:132-140,201; .github/workflows/ios-prototype.yml:478-494,552-568",
+      "detail": "Warm-up command output is file-backed rather than pipe-buffered. No explicit byte ceiling exists for those raw logs, inventory JSON read_text, or host-diagnostic PIPE capture; the host-diagnostic 65536-character slice limits emitted output only after collection. Do not claim a proven memory/disk byte bound from this review."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete blocking defect established in the reviewed cleanup/reporting semantics. The source preserves failed preparatory diagnostics separately from genuine selected-test acceptance. No runtime pass or milestone acceptance is established.",
+  "limitations": [
+    "Host unavailable. No local repository status, Python execution, Apple simulator execution, agent_cycle.py check/next, or tests were run.",
+    "Only pinned remote source was reviewed; no current branch/head or full CI reconciliation was performed. Full run reconciliation remains worker100's assignment.",
+    "Parent-supplied native job 139682754688 example (raw warm-up failed at 04:16:01, later selected tests/accounting/Metal/export passed) was not independently fetched or reconciled and is not used as execution evidence.",
+    "Process-group cleanup covers descendants retaining the created group; detached descendants and operating-system refusal to terminate are not proven handled by source review.",
+    "Output capture is time-bounded at subprocess waits but not explicitly byte-bounded; no oversized-output or disk-exhaustion reproduction was executed.",
+    "No source, tree, commit or ref was changed. Only this unreferenced report blob is created."
+  ]
+}

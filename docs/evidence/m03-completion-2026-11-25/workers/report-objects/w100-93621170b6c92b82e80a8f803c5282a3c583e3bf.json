@@ -1,0 +1,166 @@
+{
+  "report_kind": "independent_source_review",
+  "worker": "100",
+  "context_path": "/root/w007_review_coordinator/w100_current_native_ui_evidence",
+  "phase": "hosted_state_name_edit_regression",
+  "repository": "mirzotipi-wq/APP1",
+  "base_ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+  "status": "complete_source_review_no_concrete_blocker_uncompiled_unexecuted",
+  "verdict": "The new regression meaningfully exercises delivered native editing events through an installed SwiftUI State binding under two bounded schedules. No concrete source, lifecycle, or oracle blocker was found. It is not evidence of a known product fix or of successful keyboard injection.",
+  "candidate": {
+    "path": "NativeTests/StudioTextFieldTests.swift",
+    "blob_sha": "5ef2eacdf9d531c2f1ef0e5f2015629a55211b9d",
+    "base_blob_sha": "2b7e89a2f02b22b981278bb72ef6a49801dc0833",
+    "candidate_decoded_characters": 26580,
+    "base_decoded_characters": 18666,
+    "author_report_sha": "da838557acabd3de8d4e41921eecfcf7df9eae87",
+    "new_method": "StudioTextFieldTests.testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration",
+    "scope": "One native test method and two private fixture types are added before the final test-class closing brace. No existing source content before that brace is changed."
+  },
+  "actual_inspected_sources": [
+    {
+      "path": "NativeTests/StudioTextFieldTests.swift",
+      "blob_sha": "5ef2eacdf9d531c2f1ef0e5f2015629a55211b9d",
+      "role": "Unreferenced candidate; complete added method, fixture, observation type and comparison with base."
+    },
+    {
+      "path": "NativeTests/StudioTextFieldTests.swift",
+      "blob_sha": "2b7e89a2f02b22b981278bb72ef6a49801dc0833",
+      "ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+      "role": "Base test methods and native field, selection and main-queue helpers."
+    },
+    {
+      "path": "App/StudioTextField.swift",
+      "blob_sha": "0d5481be3b13fd06acb9fe2674af503b8a7ec6a9",
+      "ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+      "role": "Actual UIViewRepresentable, StudioNativeTextField, registered editingChanged action, delegate, publishing, focus and invalidation behavior."
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "2d540991327e5db1569e9b0f6839c732e33d843f",
+      "ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+      "role": "Actual private ProjectNameEditor State, boundedDraft binding, conditional Clear HStack and focus behavior."
+    },
+    {
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "blob_sha": "d5a8f4876b4e81154c6ef9a02cdc190a1b001f9d",
+      "ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+      "role": "Actual maximumScalars value of 320 and name-input API."
+    }
+  ],
+  "inventory_and_scope": {
+    "base_methods_in_changed_file": [
+      "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+      "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+      "testDisabledEnvironmentReachesNativeControl",
+      "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+      "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+      "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+      "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+      "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+      "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+      "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+      "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+      "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+      "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+      "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents"
+    ],
+    "added_methods": [
+      "testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration"
+    ],
+    "removed_methods": [],
+    "old_method_count": 14,
+    "candidate_method_count": 15,
+    "old_methods_and_helpers_byte_unchanged": true,
+    "removed_or_modified_diff_lines": [],
+    "previously_verified_native_inventory": 137,
+    "previous_inventory_report_sha": "98cdd1cdf5907dbfd902e886fe5671263d408908",
+    "prospective_native_inventory_if_integrated": 138,
+    "required_UI_inventory_unchanged": 35,
+    "inventory_basis": "The candidate delta of exactly one method is independently checked against the exact base file. Whole-suite totals combine that delta with the previously reconciled 03cfd3c inventory; they are prospective source counts, not runtime counts for this candidate.",
+    "app_source_changes": false,
+    "UI_source_changes": false
+  },
+  "independent_checks": [
+    {
+      "name": "Real foreground host and installed State",
+      "result": "pass_source_review",
+      "evidence": "The method unwraps an actual foregroundActive UIWindowScene, makes a UIWindow visible, hosts HostedNameDraft in UIHostingController, drains the main queue, lays out the host, and requires one actual StudioNativeTextField attached to that window. The model binding is captured from the fixture's installed $name in onAppear, rather than from a synchronous local variable."
+    },
+    {
+      "name": "Production binding and conditional layout correspondence",
+      "result": "pass_source_review",
+      "evidence": "After removing only the observation counter/write instrumentation and the explicit return keyword, the fixture boundedDraft getter/setter is whitespace-normalized identical to the actual ProjectNameEditor boundedDraft. It preserves the real 320-scalar guard, same-value early return, name assignment and error clearing. The relevant native field, conditional Clear HStack, 44-point Clear image, submission disabling, scroll-dismiss policy and focused State correspond to production."
+    },
+    {
+      "name": "Two delivered-event schedules",
+      "result": "pass_source_review",
+      "evidence": "The first schedule delivers K, Ke, Kee and Keep without yielding between events. The second yields and lays out after K and requires the boundedDraft construction counter to increase before continuing e, e and p without further inter-character yields. Both schedules first clear the installed State and settle it."
+    },
+    {
+      "name": "Actual registered production event target",
+      "result": "pass_source_review",
+      "evidence": "The test calls the real native delegate shouldChangeCharactersIn method, assigns one native text edit and its caret, then calls sendActions(for: .editingChanged). Actual App source registers nativeTextChanged for this UIControl event, and that action invokes production publishNativeText. No replacement event handler or expected-value model is installed."
+    },
+    {
+      "name": "Independent expected text and raw model oracle",
+      "result": "pass_source_review",
+      "evidence": "The expected prefix is appended separately from the actual field text. Delivered text is derived from the actual current native text. After each event, both actual field.text and the installed raw model binding must equal the independent expected prefix. A rejected, overwritten or corrupted prefix cannot become a silent pass by replacing the expectation with the observed model."
+    },
+    {
+      "name": "Accepted writes, selection, focus and identity",
+      "result": "pass_source_review",
+      "evidence": "Both schedules require the exact accepted-write array [K, Ke, Kee, Keep] after settling, native and model text Keep, and final caret at UTF-16 offset 4. Caret is also checked before and after each edit. Native identity is checked after Clear, after the K binding rebuild in the yielding schedule, and after final settling. Focus is asserted after Clear and at final settling, and logged for each edit. One native field and attachment to the same window are checked at entry and final settling."
+    },
+    {
+      "name": "Instrumentation and cleanup",
+      "result": "pass_source_review",
+      "evidence": "The observation reference is not ObservableObject and its plain counter does not itself request a SwiftUI render. The deferred cleanup invalidates actual native fields, clears the stored binding and Clear closure, hides the window and removes its root controller. The method uses existing native selection and main-queue helpers without modifying them."
+    },
+    {
+      "name": "Compile plausibility",
+      "result": "no_concrete_source_blocker",
+      "evidence": "The existing test class is MainActor-isolated, imports SwiftUI, UIKit, XCTest and LightingCore, and uses actual available app APIs through the existing testable import. The new fixture, State initialization, binding, event delivery, selection helpers and hosting calls are consistent with the surrounding source. No compiler or Apple runtime was invoked."
+    }
+  ],
+  "exact_source_check_flags": {
+    "bounded_binding_matches_production_except_observation_instrumentation": true,
+    "scalar_limit_320": true,
+    "actual_registered_event_target": true,
+    "native_event_calls_production_publish": true,
+    "native_class_is_real_textfield": true
+  },
+  "limitations": [
+    "The test assigns UITextField.text and selectedTextRange and then sends a registered UIControl event. It does not exercise actual keyboard injection, XCUIElement.typeText, IME delivery or UIKit's insertion implementation.",
+    "The bindingBuilds counter establishes that the hosted boundedDraft getter reconstructed a binding after K. It is not a separate instrumented observation of updateUIView/configure completion and does not cover every possible event/render interleaving.",
+    "Focus is asserted after Clear and after final settling and logged during edits. There is no continuous focus assertion for every instant of event delivery.",
+    "Caret assertions check bridge preservation of a supplied native caret. They do not independently test the keyboard's own caret movement.",
+    "The fixture mirrors the relevant production State binding and conditional HStack. It does not instantiate the private full ProjectNameEditor or exercise its save task, error presentation, Cancel flow or legacy shortened-name rules.",
+    "The four-character input is within the 320-scalar bound. This new method does not itself exercise the 320/321 boundary, marked text or non-ASCII composition.",
+    "The main-queue/layout settling schedule must be validated on Apple CI. The test fails its explicit assertions if focus, State installation or the required K binding rebuild is unavailable under that schedule.",
+    "No source was compiled and no test was executed during this independent review. There is no runtime pass or repaired-product claim.",
+    "The focused original K-only PNG/TXT was independently inspected by author038. Worker100 did not fetch or view those original bytes in this phase and does not claim an independent pixel finding from them.",
+    "Without an original per-character trace, the earlier UI symptom does not establish whether subsequent characters were undelivered, rejected or overwritten.",
+    "A separately running 137-method native diagnostic cannot validate this candidate's new 138th method. Integration and a fresh run of the exact candidate remain necessary."
+  ],
+  "findings": [],
+  "discrepancies": [],
+  "historical_evidence_preservation": {
+    "existing_actual_failure_reports_unchanged": true,
+    "previous_03cfd3c_native_and_library_report_sha": "98cdd1cdf5907dbfd902e886fe5671263d408908",
+    "current_cd5_AX_and_main_UI_status_report_sha": "94118452a22bd663e47149f839090a110baaffcd",
+    "all_native_pass_claimed": false,
+    "all_UI_pass_claimed": false,
+    "M03_pass_claimed": false,
+    "known_product_cause_claimed": false,
+    "product_fix_claimed": false
+  },
+  "actions": {
+    "GitHub_source_reads": true,
+    "pure_JS_source_comparison": true,
+    "local_execution": false,
+    "source_tree_ref_mutation": false,
+    "CI_trigger_or_retry": false,
+    "report_write": "Only this unreferenced JSON Git blob."
+  }
+}

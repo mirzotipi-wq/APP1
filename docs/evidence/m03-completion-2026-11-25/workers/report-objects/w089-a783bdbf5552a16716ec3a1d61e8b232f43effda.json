@@ -1,0 +1,151 @@
+{
+  "worker": "w089",
+  "context_path": "/root/w007_review_coordinator/w089_room_modifier_footprint",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Existing M03 manual-room ideal rectangular emitting-face corner geometry against walls, floor and optional ceiling; translated/noncentral fixtures; finite/degenerate aims and unavailable status; source-center versus whole-face semantics.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "review_kind": "startup or acceptance documentation"
+    },
+    {
+      "path": "Sources/LightingCore/RoomPlacement.swift",
+      "blob_sha": "669ee6553baadf920f658de86a9d3f37adace8e3",
+      "review_kind": "primary source"
+    },
+    {
+      "path": "Tests/LightingCoreTests/RoomModifierFootprintTests.swift",
+      "blob_sha": "6d0201584b1e93917c9a399ac9b49dac30a7c20d",
+      "review_kind": "primary tests"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "review_kind": "dependency excerpt"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "review_kind": "dependency excerpt"
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426",
+      "review_kind": "dependency excerpt"
+    }
+  ],
+  "checks": [
+    {
+      "case": "Convex ideal-face wall containment",
+      "kind": "static source review",
+      "paths": [
+        "Sources/LightingCore/RoomPlacement.swift"
+      ],
+      "result": "Four corners use +/- half width and height along shared frame.right/frame.up, then the same room transformation as centers. Signed left/right/near/far distances use coordinate extrema; negative minimum distances are violations. Checking all four corners is sufficient for the convex rectangle and its projection."
+    },
+    {
+      "case": "Noncentral and translated fixture invariance",
+      "kind": "static source and test review",
+      "paths": [
+        "Sources/LightingCore/RoomPlacement.swift",
+        "Tests/LightingCoreTests/RoomModifierFootprintTests.swift"
+      ],
+      "result": "World corners are formed around the actual light.position, then floor mapping subtracts scene.subject x/z before room offsets and yaw. Existing testWorldTranslationPreservesProjectedCorners translates source, subject, camera and manual aim by (+8, -6) horizontally at yaw 37 and compares projected corners and crossed walls; center-inside/face-crossing cases use noncentral sources."
+    },
+    {
+      "case": "Source center versus full ideal face",
+      "kind": "static source and test review",
+      "paths": [
+        "Sources/LightingCore/RoomPlacement.swift",
+        "Tests/LightingCoreTests/RoomModifierFootprintTests.swift"
+      ],
+      "result": "points/outsideCount remain distinct from modifierFootprints/crossingModifierCount; testCenterInsideDoesNotHideCrossingModifier and default portrait fixture explicitly assert inside centers with a crossing face. Vertical center and face clearances are also stored separately."
+    },
+    {
+      "case": "Floor and optional ceiling",
+      "kind": "static source review",
+      "paths": [
+        "Sources/LightingCore/RoomPlacement.swift"
+      ],
+      "result": "Corner heights determine face minima/maxima. Negative floor or ceiling clearance reports violation, including a face wholly outside the permitted half-space. Unmeasured ceiling preserves nil full-height containment when no floor violation exists; a known floor violation remains false. Unavailable geometry preserves nil heights even if ceiling measurement exists."
+    },
+    {
+      "case": "Finite and degenerate aims",
+      "kind": "static dependency review",
+      "paths": [
+        "Sources/LightingCore/RoomPlacement.swift",
+        "Sources/LightingCore/StudioOptics.swift",
+        "Sources/LightingCore/Scene.swift",
+        "Sources/LightingCore/SurfacePhotometry.swift"
+      ],
+      "result": "Plan validates scene first. Positions and manual aims require finite coordinates in -100...100; dimensions and roll are bounded and finite. UnitDirection rejects zero/nonfinite direction and normalizes using maximum-component scaling. Coincident valid source/target returns no frame and an empty unavailable footprint with nil clearance. Invalid nonfinite input is rejected rather than yielding a clear face."
+    },
+    {
+      "case": "Unavailable and unsupported face assertions",
+      "kind": "static test review",
+      "paths": [
+        "Tests/LightingCoreTests/RoomModifierFootprintTests.swift"
+      ],
+      "result": "Degenerate-aim test requires false isAvailable, nil isInsideRoom and clearance, unavailable count 1 and crossing count 0. Nonrectangular emitters produce no claimed footprint. Source scene equality checks protect value semantics."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete defect found within the assigned scope at the pinned revision. Static review supports the current ideal-emitter-face geometry and availability semantics; this does not establish executed test acceptance.",
+  "limitations": [
+    "No host/toolchain available; no Swift, XCTest, native UI, scripts/agent_cycle.py check or next, or physical-device execution performed.",
+    "Pinned remote source review only; repository working-tree state, live branch status and CI were not verified by this worker.",
+    "Exact cardinal and roll contact behavior is excluded for worker w090; general center and room bounds are excluded for worker w091.",
+    "Only the named RoomModifierFootprintTests.swift test file was reviewed; separate vertical-clearance test files were not reviewed and no coverage completeness claim is made.",
+    "No AR, fixture housing, stand, boom, collision or physical-clearance expansion. The analysis concerns ideal emitting faces only.",
+    "Two initial dependency path guesses, Sources/LightingCore/StudioPhotometry.swift and Sources/LightingCore/LightingScene.swift, returned 404; actual dependency files listed above were subsequently retrieved at the pinned SHA."
+  ],
+  "changes": "Only this unreferenced JSON report blob is created. No source, test, tree, commit or ref changes.",
+  "status": "complete"
+}

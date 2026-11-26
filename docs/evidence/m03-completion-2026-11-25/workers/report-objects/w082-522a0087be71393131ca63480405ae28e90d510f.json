@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "worker": "w082",
+  "context_path": "/root/w007_review_coordinator/w082_saved_thumbnail_correctness",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Saved-rig thumbnail source identity, bounded projection and fit, finite geometry, library selection/status semantics and accessibility description.",
+  "status": "complete",
+  "review_kind": "Pinned remote source and test review; no execution",
+  "actual_paths": [
+    {
+      "path": "App/ProjectLibraryThumbnail.swift",
+      "blob_sha": "d5666ee2386f33261850401a493e4b01bb031e47",
+      "reviewed_scope": "Source and relevant test assertions"
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+      "reviewed_scope": "Thumbnail call site, active/inactive/archived row labels, accessibility and adaptive row layout"
+    },
+    {
+      "path": "Sources/LightingCore/StudioSceneBounds.swift",
+      "blob_sha": "bb8b76a7edf803583470ff0dc3c54709baac1e2c",
+      "reviewed_scope": "Source and relevant test assertions"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "reviewed_scope": "Source and relevant test assertions"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "reviewed_scope": "LightOptics validation, EmitterFrame and StudioPhotometry.frame"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioSceneBoundsTests.swift",
+      "blob_sha": "4ae89d708e83c3225ac5f8c4980616689c71767b",
+      "reviewed_scope": "Source and relevant test assertions"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blob_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "reviewed_scope": "Source and relevant test assertions"
+    }
+  ],
+  "startup_documents": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "path_resolution": [
+    {
+      "requested": "Sources/LightingCore/SceneBounds.swift",
+      "result": "404 at pinned commit",
+      "actual": "Sources/LightingCore/StudioSceneBounds.swift",
+      "verified_by": "Nontruncated recursive Git tree at pinned SHA"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Saved snapshot identity",
+      "result": "No concrete defect found in source",
+      "evidence": "ProjectLibraryView.projectRowLabel passes presentation.project.scene into ProjectLibraryThumbnail (line 270), never the editor scene binding. Snapshot owns a LightingScene value and derives its drawing scene from that saved record."
+    },
+    {
+      "name": "Bounded work",
+      "result": "No concrete defect found in source",
+      "evidence": "Snapshot rejects more than 12 lights before mapping, substitutes constant drawing names, excludes room notes and other non-geometric document fields, includes at most 48 rectangle corners, and asks grid(maximumLinesPerAxis: 5). Grid clamps its limit and retries at most four times."
+    },
+    {
+      "name": "Projection and fit",
+      "result": "No concrete defect found in source",
+      "evidence": "Actual helper StudioSceneBounds validates input; fits subject/camera/light positions, visible aim targets and rectangle corners using a bounds-centered aspect-preserving scale. Thumbnail uses 64 by 56 points, 10-point padding and 2-meter minimum span. Markers retain authored positions and coincident equipment is not shifted."
+    },
+    {
+      "name": "Finite geometry and degenerate aim",
+      "result": "No concrete defect found in source",
+      "evidence": "Scene positions are finite and bounded to -100...100 meters; dimensions are finite 0.05...4 meters; emitter frame construction is failable and bounded. Coincident rectangular aim omits its undefined face but preserves its center. Coincident camera/subject uses a neutral triangle. overheadFit rejects nonfinite/invalid dimensions and scale."
+    },
+    {
+      "name": "State cues and accessibility",
+      "result": "No concrete contract violation established by source review",
+      "evidence": "Circle/triangle/square glyphs and a textual legend distinguish types without hue alone. Current row provides a checkmark, visible Open status, Current project accessibility label, light-count value and isSelected trait. Thumbnail is hidden from accessibility; row text/actions carry identity/status. Accessibility-size row content switches to a vertical layout."
+    },
+    {
+      "name": "Relevant regression source",
+      "result": "Inspected only; not run",
+      "evidence": "StudioSceneBoundsTests contains translated-rig, face-corner padding, manual-target inclusion, degenerate modifier, empty/coincident rig, extreme centers/derived corners, invalid input, narrow-viewport grid, translated grid and bounded-limit cases.",
+      "methods": [
+        "testTranslatedRigRetainsScaleAndProjectedLayout",
+        "testRectangularFaceCornersFitWithConsistentPadding",
+        "testManualAimTargetsParticipateOnlyWhenVisible",
+        "testDegenerateModifierReportsUnavailableWithoutLosingItsCenter",
+        "testEmptyCoincidentRigHasFiniteCenteredMinimumSpan",
+        "testExtremeValidCentersRetainDerivedCornersBeyondAuthoringLimit",
+        "testInvalidSceneAndViewportInputsAreRejected",
+        "testGridStaysBoundedImmediatelyAbovePaddingThresholdAndInNarrowView",
+        "testGridUsesOneMeterForPortraitAndKeepsWorldAlignmentWhenTranslated",
+        "testGridHonorsRequestedLimitAndRejectsUnrepresentableSpansWithoutTrapping"
+      ]
+    },
+    {
+      "name": "Library UI test source",
+      "result": "Inspected only; not run",
+      "evidence": "ProjectLibraryUITests asserts current-row identity and switching, unsaved-save protection, recovery and relaunch. It does not directly assert thumbnail pixels, saved-versus-live schematic geometry, or thumbnail accessibility descriptions. This test-scope observation is not reported as a product defect.",
+      "methods": [
+        "testCreateDuplicateRenameSwitchAndRelaunch",
+        "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+        "testStaleSaveReloadRequiresConfirmation",
+        "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+        "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+        "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch"
+      ]
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete defect established in the assigned thumbnail scope at the pinned commit. Source review is complete; execution and visual/accessibility acceptance remain unverified by this worker.",
+  "limitations": [
+    "Host and scripts unavailable; no agent_cycle check/next, local git status, build, unit/native/UI execution, simulator, image review or VoiceOver session was performed.",
+    "GitHub reads were pinned to the supplied base SHA; this review does not establish current main status, CI success or freshness of historical results.",
+    "No full geometry description is exposed for the hidden schematic; this narrow source review cannot determine whether additional accessible detail is necessary for the intended browsing task.",
+    "No rendered-image, exact contrast, Dynamic Type reachability or runtime frame-geometry claim is made.",
+    "Mode render-loop and library collision/filter logic excluded as assigned.",
+    "No source, tree, commit, branch or reference changes; only this authorized unreferenced JSON blob was created."
+  ]
+}

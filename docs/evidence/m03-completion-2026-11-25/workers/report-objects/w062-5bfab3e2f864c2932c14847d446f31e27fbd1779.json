@@ -1,0 +1,122 @@
+{
+  "worker": "w062",
+  "context_path": "/root/w007_review_coordinator/w062_parity_masks_metrics",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Static review of parity mask equality and counts, RGB-channel threshold interpretation, and malformed/truncated image buffers.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "scope": "Full file source"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "scope": "Full file source"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "scope": "Full file source"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "scope": "Full file source"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "scope": "Full file source"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "scope": "Full file source"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "scope": "Full file source"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "scope": "Full file source"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "scope": "Full file source"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "scope": "Full file source"
+    },
+    {
+      "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+      "blob_sha": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "scope": "Full file source"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "scope": "StudyImage, fromComputeRGBA and ReferenceStudyRenderer mask production, lines 375–407 and 481–533"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyParityMetricsTests.swift",
+      "blob_sha": "3b290ccb450ad4d1d00a0f10a1b64a8a057441ea",
+      "scope": "Full file source"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Acceptance threshold interpretation",
+      "method": "Manual source comparison to m02-m03-code-v2 rendering gate",
+      "result": "StudyParityMetrics uses mean absolute RGB-channel error <= 1 and fraction of RGB channels with error strictly > 4 <= 0.005; denominator is 3 * pixelCount and alpha is excluded. Maximum error is diagnostic for these six parity fixtures, consistent with the separate maximum <= 1 precision-harness requirement.",
+      "evidence": "Sources/LightingCore/StudyValidationFixtures.swift:41–42, 69–78; docs/acceptance/m02-m03-code.md rendering gate"
+    },
+    {
+      "check": "Mask equality and count validation",
+      "method": "Manual control-flow inspection",
+      "result": "Both masks must contain exactly pixelCount binary bytes and their population must equal the bounded unsupportedPixels value. The pass predicate requires exact per-position mask equality and count equality. Equal aggregate unsupported counts cannot hide swapped invalid pixels.",
+      "evidence": "Sources/LightingCore/StudyValidationFixtures.swift:53–63, 79–80; testSwappedInvalidPixelsFailDespitePassingAggregateRGBLimits; testOpaqueMagentaCannotHideSwappedInvalidFlags"
+    },
+    {
+      "check": "Buffer and dimension validation",
+      "method": "Manual short-circuit and integer-bound inspection",
+      "result": "Positive identical dimensions, checked pixel and RGBA-size multiplication, and exact byte counts are required before buffer iteration. Thus equally truncated/extended images, empty data, mismatched row layouts, and overflow dimensions are rejected rather than receiving a false parity pass.",
+      "evidence": "Sources/LightingCore/StudyValidationFixtures.swift:45–51; testEquallyTruncatedAndExtendedBuffersAreRejected; testNonpositiveOverflowingAndDifferentDimensionsAreRejected"
+    },
+    {
+      "check": "Compute flags and display alpha",
+      "method": "Manual source inspection",
+      "result": "fromComputeRGBA bounds dimensions before multiplication, requires the exact packed RGBA length, accepts alpha 0 only with diagnostic magenta RGB, restores opaque alpha and retains a separate invalid mask. Opaque magenta is not inferred to be invalid. Parity requires alpha 255 for every display pixel.",
+      "evidence": "Sources/LightingCore/ReferenceStudy.swift:393–407; Sources/LightingCore/StudyValidationFixtures.swift:68; testDisplayRGBAWithNonopaqueAlphaIsRejected"
+    },
+    {
+      "check": "CPU mask propagation",
+      "method": "Manual source and test inspection",
+      "result": "ReferenceStudyRenderer starts with a zero mask, increments the count and corresponding mask byte in the invalid-surface branch, and returns both. Tests inspect sphere and portrait output count/mask consistency and diagnostic magenta, but were not executed here.",
+      "evidence": "Sources/LightingCore/ReferenceStudy.swift:489–491, 524–533; testCPURenderersRetainTheirUnsupportedPixelMasks"
+    },
+    {
+      "check": "Adversarial regression coverage",
+      "method": "Read all nine StudyParityMetricsTests methods",
+      "result": "Source covers identical images, swapped flags, valid opaque magenta, sparse maximum error, malformed buffers, invalid/overflow dimensions, missing/short/long/nonbinary/inconsistent masks, nonopaque alpha, and renderer mask retention. No test execution is claimed.",
+      "evidence": "Tests/LightingCoreTests/StudyParityMetricsTests.swift"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host execution was unavailable. No Swift tests, build, scripts/agent_cycle.py check or next, renderer, benchmark, or native tool was run.",
+    "Remote pinned-source review cannot inspect local worktree status, uncommitted changes or local branch state.",
+    "Actual CI artifacts and Metal backend routing/execution were explicitly excluded and remain other reviewers' responsibility.",
+    "This bounded review does not establish milestone acceptance, physical rendering fidelity or release readiness.",
+    "Only the declared source/test files and startup/contract documentation were reviewed; no source, tree, commit or ref was changed."
+  ],
+  "conclusion": "No concrete defect found in the assigned parity metrics, invalid-mask and malformed-buffer scope. Source semantics and existing regression cases align with the dated code acceptance contract.",
+  "status": "complete"
+}

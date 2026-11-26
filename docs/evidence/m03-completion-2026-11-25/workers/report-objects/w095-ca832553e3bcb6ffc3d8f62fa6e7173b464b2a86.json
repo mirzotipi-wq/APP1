@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "worker": "worker095",
+  "context_path": "/root/w007_review_coordinator/w095_atomic_failure_probe_validity",
+  "repository": "mirzotipi-wq/APP1",
+  "base": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "status": "complete",
+  "reviewType": "Pinned-source independent review; no test or probe execution",
+  "scope": "Atomic-write bounded failure mechanism, provenance and assertion validity. Commit-boundary interruption review belongs to worker096; actual Linux evidence to worker059 and current Apple evidence to worker100.",
+  "actualReads": [
+    {
+      "path": "AGENTS.md",
+      "blobSHA": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blobSHA": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blobSHA": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blobSHA": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blobSHA": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blobSHA": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blobSHA": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blobSHA": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blobSHA": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blobSHA": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "scripts/run_atomic_library_write_probe.py",
+      "blobSHA": "534c876610e5e5682558ba6b84dc0a7fb9b275ef"
+    },
+    {
+      "path": "scripts/probe_atomic_library_write.py",
+      "blobSHA": "34f825d3ce1bbdbfc866b52ba89fd30ec0254730"
+    },
+    {
+      "path": "scripts/tests/test_atomic_library_probe_filesystem.py",
+      "blobSHA": "acf8dfa92ea888b3ace944939c468c93718d5445"
+    },
+    {
+      "path": "scripts/tests/test_atomic_library_probe_sdk.py",
+      "blobSHA": "7fbf91f4bb0180751df48ee9d63e317166eb9cfd"
+    },
+    {
+      "path": "scripts/probe-atomic-library-write.swift",
+      "blobSHA": "4eadb41b2801bffab2c4abf73644125c01742b65"
+    }
+  ],
+  "checks": [
+    {
+      "case": "preconditions",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/probe_atomic_library_write.py",
+        "scripts/probe-atomic-library-write.swift"
+      ],
+      "evidence": "Runner requires Linux/Darwin, an executable helper, parent file-size capacity at least 1 MiB, and a new output directory. Swift setup requires fresh library/control stores and canonical validated prior/candidate libraries. Both layers require prior bytes below 32 KiB and candidate bytes above 32 KiB, below diagnostic/application bounds. Setup requires the production store to reopen both initial snapshots and exact bytes."
+    },
+    {
+      "case": "compiler_source_binary_identity",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/run_atomic_library_write_probe.py",
+        "scripts/probe_atomic_library_write.py"
+      ],
+      "evidence": "Wrapper records git HEAD as baseRevision while explicitly labeling sources current working tree; enumerates all direct LightingCore Swift files plus the Swift helper; hashes those sources and diagnostic drivers before/after compile and after probe; refuses changes; records exact compiler invocation/resolved path/version, optimized compile command and helper binary SHA256. Runner checks binary against manifest and records working-tree differences from compiled source hashes. The standalone runner reports, rather than rejects, differing source paths; the reviewed wrapper enforces equality."
+    },
+    {
+      "case": "host_sdk",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/run_atomic_library_write_probe.py",
+        "scripts/tests/test_atomic_library_probe_sdk.py"
+      ],
+      "evidence": "On Darwin the wrapper retains DEVELOPER_DIR/TOOLCHAINS/SDKROOT, discovers macosx with xcrun, validates an existing single absolute directory, and passes explicit -sdk while retaining the original swiftc invocation name. SDK failures/timeouts/invalid paths block compilation and preserve raw receipts. Seven source-visible test methods exercise successful Darwin/Linux selection and failure handling; execution is entirely mocked."
+    },
+    {
+      "case": "filesystem_identity",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/run_atomic_library_write_probe.py",
+        "scripts/tests/test_atomic_library_probe_filesystem.py"
+      ],
+      "evidence": "Wrapper observes initial output directory and final actual library/control files. Linux findmnt major/minor must match target stat; Darwin df device/mount pair must exactly join mount output, avoiding lexical-parent APFS firmlink assumptions. Both require target and selected mount st_dev equality and stable target identity during observation. Missing/ambiguous metadata blocks success. Twelve source-visible tests cover parser/device provenance and failures, expressly disclaiming actual Darwin or failure-injection execution."
+    },
+    {
+      "case": "actual_failure_mechanism",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/probe_atomic_library_write.py",
+        "scripts/probe-atomic-library-write.swift"
+      ],
+      "evidence": "Only injection child's preexec sets RLIMIT_FSIZE soft/hard to 32768 and ignores SIGXFSZ, with restore_signals=False. Compile/setup/control/verify are unrestricted. Parent limit and signal are checked unchanged. Reports name EFBIG and explicitly exclude ENOSPC/physical low storage, interruption, rename-only failure and device/iOS execution."
+    },
+    {
+      "case": "error_evidence",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/probe_atomic_library_write.py",
+        "scripts/probe-atomic-library-write.swift"
+      ],
+      "evidence": "Pass requires normal helper process exit with save_threw and writeAttempted, plus an NSPOSIXErrorDomain/EFBIG entry or errno reset before save and captured immediately after catch as EFBIG. Generic Cocoa failure alone cannot satisfy it. Setup/preflight failures use a separate failure status/exit. Error domain/code/description chain and raw stdout/stderr remain retained. The errno fallback is a high-level save-boundary observation, not a syscall-level trace; it is paired with controlled size-limit injection and successful unrestricted control."
+    },
+    {
+      "case": "prior_bytes_identity_and_records",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/probe_atomic_library_write.py",
+        "scripts/probe-atomic-library-write.swift"
+      ],
+      "evidence": "Swift verify in a separate unrestricted process requires decoded entire prior library equality and exact prior bytes, active UUID preservation and both unrelated open/archived records unchanged. Python additionally compares after bytes to prior bytes and records sizes/SHA256 for prior/candidate/after/library/control. Candidate changes edited record and grows project/light payload, while retaining unrelated records."
+    },
+    {
+      "case": "unrestricted_control_and_fresh_reopen",
+      "result": "source_review_satisfied",
+      "paths": [
+        "scripts/probe_atomic_library_write.py",
+        "scripts/probe-atomic-library-write.swift"
+      ],
+      "evidence": "A separate unrestricted control save must succeed before injection. Fresh verify process requires control to decode as complete candidate with exact candidate bytes. Injection verification is collected even after unexpected injection outcome; success still requires all checks and the caught EFBIG evidence."
+    },
+    {
+      "case": "contract_alignment",
+      "result": "source_review_satisfied",
+      "paths": [
+        "docs/acceptance/m02-m03-code.md"
+      ],
+      "evidence": "The bounded host failure mechanism and explicit excluded claims align with m02-m03-code-v2 persistence scope. Source review alone does not establish execution or complete M03."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable: no shell, compiler, scripts, agent_cycle check/next, tests or probes executed.",
+    "Pinned remote source inspection only; local worktree status and current HEAD/branch not inspected.",
+    "Existing Linux evidence and current Apple evidence were not opened or independently certified by this worker.",
+    "Commit-boundary interruption implementation is outside this assignment and is separately reviewed by worker096.",
+    "The 12 filesystem and 7 SDK test methods are mocked source tests; their existence is not a passing execution result.",
+    "No ENOSPC, physical low-storage, power-loss, iOS/provider behavior, durability beyond the described process failure, or release-readiness conclusion.",
+    "No source, tree, branch or ref changed. Only this unreferenced report blob is authorized."
+  ],
+  "conclusion": "No concrete defect found in the assigned mechanism/provenance/assertion source scope. The wrapper and helper define a defensible bounded EFBIG/control/fresh-reopen diagnostic, contingent on separately verified runtime evidence."
+}

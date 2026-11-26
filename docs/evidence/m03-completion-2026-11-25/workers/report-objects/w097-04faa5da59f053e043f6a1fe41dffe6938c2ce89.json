@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "task": "Independent candidate visual-review CI and native target/resource coverage review",
+  "repository": "mirzotipi-wq/APP1",
+  "candidateRevision": "aebf0838029ad8807fb9df446d97229bf3d51bfc",
+  "date": "2026-11-26",
+  "status": "review-complete",
+  "recommendation": "No source-level defect found in the scoped change. Runtime execution, PNG reconstruction and actual screenshot review remain required separately.",
+  "scope": [
+    ".github/workflows/ios-prototype.yml appended visual-review job",
+    "Current app-accessibility capture names and real retained XCTest manifest shape",
+    "project.yml and Package.swift target/resource coverage"
+  ],
+  "findings": [],
+  "inspectedFiles": [
+    {
+      "path": "AGENTS.md",
+      "blobSHA": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "README.md",
+      "blobSHA": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blobSHA": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blobSHA": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blobSHA": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blobSHA": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blobSHA": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blobSHA": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blobSHA": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blobSHA": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blobSHA": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blobSHA": "1c83e21ee307be3df2379a659ccb01b6fffbc328"
+    },
+    {
+      "path": "project.yml",
+      "blobSHA": "a1e016274c267ab045876737965b49fa900b0934"
+    },
+    {
+      "path": "Package.swift",
+      "blobSHA": "a574497006b00a96ee33d29439b1da5be8eb9363"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blobSHA": "1dcd3990cf65912cac4d4cdeb7ae3012a5975651"
+    },
+    {
+      "path": "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/ax/attachment-manifest.json",
+      "blobSHA": "1eca410cd6eaf89b56b46d1b4ecaa0bf125e8467"
+    }
+  ],
+  "inspectedCommit": {
+    "sha": "aebf0838029ad8807fb9df446d97229bf3d51bfc",
+    "changedPaths": [
+      ".github/workflows/ios-prototype.yml"
+    ],
+    "addedLines": 98,
+    "removedLines": 0,
+    "description": "The remotely fetched commit diff contains only an appended visual-review job; existing tests, selectors, finalized-result checks, uploads, permissions and other jobs are unchanged."
+  },
+  "observations": [
+    {
+      "topic": "YAML/Python static semantics",
+      "result": "The added job is a sibling under jobs, with two ubuntu-24.04 matrix jobs (Default and AXXXL), max-parallel 2, fail-fast false and an 8-minute per-job timeout. Its block scalar and Python heredoc indentation are coherent on source inspection; no YAML parser or Python interpreter was run."
+    },
+    {
+      "topic": "Dependencies and artifact provenance",
+      "result": "needs: ui waits for the existing UI matrix. The always() condition permits transport after a failed UI result while excluding cancellation. download-artifact@v4 names ui-app-accessibility-evidence-compact with no repository, run-id or token override, selecting the artifact from this workflow run. The existing compact upload retains the original manifest and PNGs; no rewrite or substitute image is introduced."
+    },
+    {
+      "topic": "Exact screenshot set",
+      "result": "The 12 unique suffixes extracted from the workflow exactly match the 12 capture(name + suffix) sites in the candidate UI test. Categories match the Default and AXXXL invocations. Duplicate capture names, missing files, ambiguous UUID paths and missing required names cause failure; unrelated attachments are ignored.",
+      "suffixes": [
+        "Plan-choices",
+        "Plan-selection",
+        "Inspector",
+        "Precision-instructions",
+        "Precision-keyboard",
+        "Meter-preset-selection",
+        "Library-unsaved",
+        "Library-saved",
+        "Project-name-field-keyboard",
+        "Project-name-save-keyboard",
+        "Project-name-cancel-keyboard",
+        "Library-done"
+      ]
+    },
+    {
+      "topic": "Bounded original-byte transport",
+      "result": "Each selected file is read at most 1 MiB + 1 byte, rejected above 1 MiB, and checked for the PNG signature. Cumulative selected bytes are limited to 8 MiB per category. Base64 chunks contain at most 24,000 ASCII characters (at most 59 chunks for a maximum-size image). SHA256 is computed over the original bytes. This reviews transport limits, not complete PNG decoding or visual correctness."
+    },
+    {
+      "topic": "Path constraints",
+      "result": "Exported screenshot names are constrained to hexadecimal/hyphen .png basenames. rglob must resolve exactly one candidate. Symlink files and resolved paths outside the artifact root are rejected."
+    },
+    {
+      "topic": "Output provenance",
+      "result": "Every image record emits expected capture name, GITHUB_SHA, original exported filename, byte count, SHA256, chunk count, attachment deviceName and timestamp. Chunks carry capture name and zero-based index. A summary reports category, GITHUB_SHA, selected image count, total bytes and missing names, then missing captures fail the step."
+    },
+    {
+      "topic": "Real manifest schema",
+      "result": "Fetched and JSON-parsed retained source-c85544f attachment-manifest.json, blob 1eca410cd6eaf89b56b46d1b4ecaa0bf125e8467. It is an array containing one test record and 53 attachments. Screenshot attachment fields and names match the new parser, including deviceName/timestamp on each attachment. Five required Default captures and no AXXXL captures exist in that historical failed run; this verifies schema only and does not establish candidate capture completeness.",
+      "historicalSelection": [
+        {
+          "category": "Default",
+          "matchingHistoricalCaptures": [
+            "Default-Precision-keyboard_0_3D6B57D1-84F8-4831-B2E5-B2FC65D39591.png",
+            "Default-Precision-instructions_0_CC38236F-4B34-4E09-8A15-BE2EADA5F567.png",
+            "Default-Inspector_0_82885D91-C25D-475F-A243-E8384515F392.png",
+            "Default-Plan-selection_0_2F0C4460-25AC-4539-8F23-16E65DE36CCB.png",
+            "Default-Plan-choices_0_A8162404-89DB-4642-AB65-35D775FEB059.png"
+          ],
+          "missingHistoricalNames": [
+            "Default-Meter-preset-selection",
+            "Default-Library-unsaved",
+            "Default-Library-saved",
+            "Default-Project-name-field-keyboard",
+            "Default-Project-name-save-keyboard",
+            "Default-Project-name-cancel-keyboard",
+            "Default-Library-done"
+          ],
+          "exportedFileNamePatternMatches": true
+        },
+        {
+          "category": "AXXXL",
+          "matchingHistoricalCaptures": [],
+          "missingHistoricalNames": [
+            "AXXXL-Plan-choices",
+            "AXXXL-Plan-selection",
+            "AXXXL-Inspector",
+            "AXXXL-Precision-instructions",
+            "AXXXL-Precision-keyboard",
+            "AXXXL-Meter-preset-selection",
+            "AXXXL-Library-unsaved",
+            "AXXXL-Library-saved",
+            "AXXXL-Project-name-field-keyboard",
+            "AXXXL-Project-name-save-keyboard",
+            "AXXXL-Project-name-cancel-keyboard",
+            "AXXXL-Library-done"
+          ],
+          "exportedFileNamePatternMatches": true
+        }
+      ]
+    },
+    {
+      "topic": "Permissions and required gates",
+      "result": "Top-level permissions remain contents: read. New job adds no secrets, checkout, credentials, token override or write permissions. Existing required native/UI tests and finalized-result checks are untouched. Transport success itself does not constitute screenshot review or override required test outcomes."
+    },
+    {
+      "topic": "Native target/resource coverage",
+      "result": "The fetched nontruncated tree lists 44 App Swift files, 16 NativeTests Swift files, 10 UITests Swift files, 31 Sources/LightingCore Swift files and 48 Tests/LightingCoreTests Swift files. project.yml includes App recursively, including StudioTextField.swift, the asset catalog and Metal source/header; PrivacyInfo.xcprivacy is explicitly a resource. NativeTests and UITests each have their target and both are in the KeyAndFill test scheme. App and native-test targets depend on LightingCore. Package.swift uses conventional LightingCore and LightingCoreTests directories; no non-Swift package resources are present in the inspected tree. This is configuration/source review only, not generated-project or compiler validation."
+    }
+  ],
+  "methods": [
+    "Remote fetch_file at the exact candidate revision for all recorded files",
+    "Remote fetch_commit to inspect the complete single-file append-only diff",
+    "Remote recursive Git tree inspection, returned truncated=false",
+    "In-memory JavaScript extraction/comparison of workflow suffixes and Swift capture call sites",
+    "In-memory JSON parsing and selector-shape comparison against the real retained historical manifest",
+    "Manual YAML/Python source review"
+  ],
+  "notExecuted": [
+    "Local git status, branch inspection, agent_cycle check/next, or repository scripts: local environment unavailable by assignment",
+    "YAML parser, Python interpreter, shell, Swift/Xcode builds or tests",
+    "Candidate workflow execution/status validation",
+    "Artifact ZIP unpacking, original PNG byte reconstruction, CRC or SHA verification against actual image files",
+    "Actual visual screenshot review or platform accessibility audit"
+  ],
+  "limitations": [
+    "The original retained manifest is historical source-c85544f evidence; candidate screenshots were not available to this reviewer.",
+    "No claim that the new job has run successfully, that all 24 images currently exist, or that visual/M03 acceptance is complete.",
+    "Filesystem and runtime-dependent behaviors were assessed statically.",
+    "No repository branch, tree, ref, source or test was mutated. Only this explicitly authorized unreferenced report blob is created."
+  ]
+}

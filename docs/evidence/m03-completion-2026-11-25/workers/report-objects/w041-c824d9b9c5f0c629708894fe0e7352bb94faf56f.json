@@ -1,0 +1,137 @@
+{
+  "worker": "w041_selection_history_policy",
+  "context_path": "/root/w007_review_coordinator/w041_selection_history_policy",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Static source/test review of StudioView repairSelection, replace, undo, redo, confirmed deletion and duplication against docs/DESIGN.md live-UUID selection policy. Async project adoption and Plan marker semantics excluded.",
+  "repository": "mirzotipi-wq/APP1",
+  "actual_paths_blob_shas": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SceneEditHistoryTests.swift",
+      "blob_sha": "2768088f683d93dd1e4fe77cac8d42c8d5ccca6e"
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "blob_sha": "b506f6f5ba8f7e6075fd91d00ffc056c7317b2c5"
+    },
+    {
+      "path": "Sources/LightingCore/SceneEditHistory.swift",
+      "blob_sha": "85989b11d8bbb2808ea05e8f435a45c0a2353831"
+    }
+  ],
+  "checks": [
+    {
+      "kind": "source_review",
+      "paths": [
+        "docs/DESIGN.md",
+        "App/StudioView.swift"
+      ],
+      "locations": [
+        "docs/DESIGN.md:9",
+        "App/StudioView.swift:1271-1292"
+      ],
+      "result": "replace validates before changing scene, ignores no-op replacements, records prior scene, then repairs selection. Undo and redo restore scene content and repair selection without restoring historical selection. A surviving selected UUID remains unchanged; an absent UUID falls back to first remaining light; an empty rig clears it."
+    },
+    {
+      "kind": "source_review",
+      "paths": [
+        "App/StudioView.swift"
+      ],
+      "locations": [
+        "App/StudioView.swift:252-261",
+        "App/StudioView.swift:1332-1353",
+        "App/StudioView.swift:883-886",
+        "App/StudioView.swift:1170-1175"
+      ],
+      "result": "Confirmed deletion removes only the captured target UUID from the current scene, and its captured generation is checked. It routes through replace/repairSelection, so undoing deletion cannot steal another surviving selection. Duplicate requires a live original and available capacity, assigns a new UUID, preserves equipment geometry, replaces the scene, and selects that inserted UUID. The only inspected duplicate caller uses sceneAction generation validation. Equipment-list selection additionally checks the UUID still exists."
+    },
+    {
+      "kind": "source_review",
+      "paths": [
+        "App/StudioView.swift",
+        "Sources/LightingCore/SceneEditHistory.swift"
+      ],
+      "locations": [
+        "App/StudioView.swift:270-275",
+        "App/StudioView.swift:1088-1094",
+        "Sources/LightingCore/SceneEditHistory.swift:28-95"
+      ],
+      "result": "Selection/lifecycle boundaries close pending edit transactions. Discrete record closes a continuous edit before recording the new command. History stores scene snapshots only, consistent with current-selection policy. Owner-qualified late end callbacks cannot close a newer edit belonging to another owner."
+    },
+    {
+      "kind": "test_source_review",
+      "paths": [
+        "Tests/LightingCoreTests/SceneEditHistoryTests.swift"
+      ],
+      "locations": [
+        "Tests/LightingCoreTests/SceneEditHistoryTests.swift:13-255"
+      ],
+      "result": "Reviewed tests for coalesced edits, unchanged/cancelled edits preserving redo, discrete commands during gestures preserving independent undo steps, limits/reset, delayed owner callbacks and cross-control edits. These are source assertions, not executed results."
+    },
+    {
+      "kind": "test_source_review",
+      "paths": [
+        "UITests/StudioSmokeTests.swift"
+      ],
+      "locations": [
+        "UITests/StudioSmokeTests.swift:135-170",
+        "UITests/StudioSmokeTests.swift:178-213",
+        "UITests/StudioSmokeTests.swift:352-448"
+      ],
+      "result": "Recipe/add workflow asserts the newly added row is selected; guide workflow asserts the selected Key survives modal navigation with both history directions retained and then exercises history content transitions. Camera workflow asserts undo/redo restores focal length. These are source assertions, not executed results."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable. No shell commands, agent_cycle check/next, Swift tests, build, simulator, UI test or screenshot review executed.",
+    "Review used actual GitHub fetch_file responses at the pinned base SHA; local working-tree status, branch/recent commits and runtime CI outcomes were not independently inspected in this worker.",
+    "The two assigned test files do not directly assert selection fallback after selected-light deletion, empty-rig selection clearing, retained selection after undo-restoring a deleted light, or duplicate undo/redo selection. This is limited test-source coverage observation, not a demonstrated product defect or a claim about unreviewed test suites.",
+    "Async project adoption and Plan marker semantics intentionally excluded.",
+    "No source files, tree objects, commits or refs changed. This report is uploaded only as an unreferenced JSON blob."
+  ],
+  "conclusion": "No reproducible must-fix source defect found within the assigned live-UUID selection and edit-history scope. Implementation inspected is consistent with the written policy; runtime behavior remains unverified.",
+  "status": "complete"
+}

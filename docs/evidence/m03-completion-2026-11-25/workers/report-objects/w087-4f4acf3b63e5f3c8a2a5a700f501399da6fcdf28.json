@@ -1,0 +1,131 @@
+{
+  "worker": "w087",
+  "context_path": "/root/w007_review_coordinator/w087_lighting_pdf_layout_content",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Current local vector PDF content, page/layout bounds, equipment and measured-room rows, declared precision/units, Unicode/name limits, Letter and A4. Source/test review only; no future M05 acceptance or plain-text/workflow audit.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "App/LightingPlanPDF.swift",
+      "blob_sha": "0e26c90ab3213f88fc1c337006f817dbbbfd39e5",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "NativeTests/LightingPlanPDFTests.swift",
+      "blob_sha": "57e6619a02d55a14972ffde0368e1f2927f491f9",
+      "scope": "Read at pinned base."
+    },
+    {
+      "path": "Sources/LightingCore/LightingPlan.swift",
+      "blob_sha": "823e4157b73c2f3e474772d8378cb99f87b9babc",
+      "scope": "Dependency only: paper dimensions, pagination, settings/room strings, name binding and diagram geometry. Plain-text output excluded."
+    },
+    {
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "blob_sha": "d5a8f4876b4e81154c6ef9a02cdc190a1b001f9d",
+      "scope": "Dependency only: bounded display names and unsafe scalar handling."
+    }
+  ],
+  "checks": [
+    {
+      "id": "pdf_generation",
+      "result": "Source-reviewed",
+      "evidence": "App/LightingPlanPDF.swift:17-40 constructs native PDF pages from the immutable plan, emits overview/equipment/optional room pages, and rejects data that PDFKit cannot open or whose page count differs from plan.pageCount."
+    },
+    {
+      "id": "paper_page_counts",
+      "result": "Source-reviewed",
+      "evidence": "PlanPaper is Letter 612 x 792 points and A4 595.28 x 841.89 points. Five lights per equipment page; four items per room page; an empty equipment page is retained. Twelve lights produce four pages without room; fourteen room items add four pages, total eight. NativeTests verifies these counts and both paper mediaBoxes for the equipment fixture."
+    },
+    {
+      "id": "page_bounds",
+      "result": "Source arithmetic only",
+      "evidence": "All outer content uses 40-point side margins. Diagram occupies y150...534. Overview's last text box ends y730. Equipment row five starts y599, its rule is y704, and precision note ends y739. Room row four starts y546, its rule is y664, and room limitations end y739. Letter footer rule is y743, footer text y751...771; A4 footer rule y792.89, text y800.89...820.89. Thus declared rectangles fit both pages; this does not establish actual glyph fit."
+    },
+    {
+      "id": "row_content",
+      "result": "Source-reviewed",
+      "evidence": "Equipment includes marker, name, emitter/settings, XYZ/subject distance and aim. Room pages repeat all five current summary strings, then marker/name, signed coordinates, center/height and optional face/height status, coordinate note and limitations. Marker identities provide a fallback when names duplicate or truncate."
+    },
+    {
+      "id": "units_precision",
+      "result": "Source-reviewed",
+      "evidence": "PDF delegates numeric strings to PlanUnits and plan settings. Metric is meters; imperial divides by 0.3048. Entered/converted parameters use up to six fractional digits; derived equipment subject distances use two. The PDF discloses this rounding. Small nonzero room distances use signed bounds below 0.000001 display units. Candela is labeled cd and the overview explicitly distinguishes it from electrical watts/calibrated fixture data."
+    },
+    {
+      "id": "native_test_inventory",
+      "result": "Source-inspected, not executed",
+      "evidence": "Four methods exist: testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes; testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits; testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits; testEmptySceneStillProducesReadableDiagramAndSchedule. Precision and measured-room cases iterate both paper sizes and units. Content is asserted through PDFKit text extraction; equipment and room PDF attachments are retained by those tests when run."
+    },
+    {
+      "id": "unicode_and_long_names",
+      "result": "Bounded implementation inspected; rendered fit unverified",
+      "evidence": "LightingPlan delegates display names to StudioDisplayName: maximum 80 Characters, 320 Unicode scalars, 1280 UTF-8 bytes; unsafe control/line/bidi-format scalars are replaced; truncation appends an ellipsis. The PDF measures height while shrinking to a declared font minimum, then draws with truncatesLastVisibleLine. Native PDF tests use short ASCII names and do not assert Unicode fallback rendering, maximum-length name retention or text glyph bounds."
+    },
+    {
+      "id": "acceptance_scope",
+      "result": "Reviewed",
+      "evidence": "Read m02-m03-code-v2 and startup documents. M03 remains active in the pinned state. No inference that these source checks satisfy runtime/UI gates or pending M05 export/device requirements."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host and scripts unavailable; did not inspect a local checkout/status, run agent_cycle.py, compile, execute XCTest, render/open a PDF artifact, or inspect screenshots.",
+    "No visual pass, Unicode/font-fit pass, actual glyph-bounds pass, native/runtime pass, share-provider behavior or M05 completion is claimed.",
+    "The existing tests check extracted content and mediaBox dimensions; they do not prove absence of glyph clipping/overlap for all valid names or maximum-width numeric/status strings. Source text helper permits truncation at its minimum font size.",
+    "A dependency-path probe for Sources/LightingCore/RoomPlacementPlan.swift returned 404. That path was not inspected and no findings rely on its content.",
+    "No source, test, tree, commit or ref was changed. The sole authorized write is this unreferenced report blob."
+  ],
+  "status": "complete",
+  "conclusion": "No confirmed defect or must-fix found in the scoped source/test inspection. Declared page rectangles and current pagination fit both supported paper sizes; runtime PDF readability and hostile/Unicode text fit remain unverified."
+}

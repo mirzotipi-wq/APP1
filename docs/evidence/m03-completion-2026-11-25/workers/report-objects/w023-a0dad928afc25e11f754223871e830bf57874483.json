@@ -1,0 +1,173 @@
+{
+  "worker": "w023",
+  "context_path": "/root/w007_review_coordinator/w023_scene_domain_validation",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "repository": "mirzotipi-wq/APP1",
+  "task": "Scene domain validation source and test review",
+  "focus": "Finite scene/light/camera/optics validation, UUID uniqueness, and light-count bounds",
+  "scope": [
+    "Sources/LightingCore/Scene.swift",
+    "Tests/LightingCoreTests/SceneTests.swift"
+  ],
+  "excluded": [
+    "Codec and schema migration correctness",
+    "Photometric calculations",
+    "Implementation changes",
+    "Runtime or CI validation"
+  ],
+  "method": "Read-only GitHub fetches followed by manual source/test inspection. The sole write is this authorized, unreferenced JSON report blob.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "role": "startup_or_acceptance",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "role": "review_or_validation_dependency",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SceneTests.swift",
+      "blob_sha": "33d552258daad7b3a5e4e25e7228091e3ed33978",
+      "role": "review_or_validation_dependency",
+      "inspection": "Read remotely at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "blob_sha": "7d2c50105bda390ca49cdaa75711380cc5047ae7",
+      "role": "review_or_validation_dependency",
+      "inspection": "Supporting validation definitions only; unrelated geometry/photometry not reviewed"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "role": "review_or_validation_dependency",
+      "inspection": "Supporting validation definitions only; unrelated geometry/photometry not reviewed"
+    }
+  ],
+  "checks": [
+    {
+      "id": "position_finiteness_and_bounds",
+      "kind": "source_review",
+      "observation": "Position.isValid requires each x/y/z component to be finite and in inclusive -100...100. LightingScene.validated applies it to subject and camera, and StudioLight.isValid applies it to light positions.",
+      "result": "No defect identified by inspection"
+    },
+    {
+      "id": "light_values_and_optics",
+      "kind": "source_review",
+      "observation": "StudioLight.isValid requires a nonblank name of at most 80 Swift characters; finite candela in inclusive 0...100000; finite kelvin in inclusive 1000...20000; and validation of optional optics. Nil optics remains valid by design.",
+      "result": "No defect identified by inspection"
+    },
+    {
+      "id": "camera_lens",
+      "kind": "source_review",
+      "observation": "LightingScene.validated delegates a present cameraLens to CameraLens.isValid, which requires finite focalLengthMillimeters in inclusive 14...200. Nil uses the documented default.",
+      "result": "No defect identified by inspection"
+    },
+    {
+      "id": "optics_values",
+      "kind": "source_review",
+      "observation": "LightOptics.isValid checks any aim target through Position.isValid, finite width and height in inclusive 0.05...4, and finite effective roll in inclusive -180...180. Nil roll resolves to zero.",
+      "result": "No defect identified by inspection"
+    },
+    {
+      "id": "light_count",
+      "kind": "source_review",
+      "observation": "The unconditional lights.count <= 12 guard applies before per-light checks. An empty rig is accepted, consistent with docs/DESIGN.md explicitly describing empty-rig selection behavior.",
+      "result": "No defect identified by inspection"
+    },
+    {
+      "id": "uuid_uniqueness",
+      "kind": "source_review",
+      "observation": "Set(lights.map(\\.id)).count == lights.count rejects repeated UUID values with duplicateLight after per-light validation.",
+      "result": "No defect identified by inspection"
+    },
+    {
+      "id": "test_assertions",
+      "kind": "test_source_review",
+      "observation": "SceneTests.testRejectDuplicateIDs checks the precise duplicateLight error. testLightCountBoundaryAcrossSchemas constructs twelve unique valid lights and checks acceptance, then checks rejection of thirteen with invalidScene for each supported schema. testRejectInvalidLight exercises invalid kelvin through SceneCodec.encode. No tests were executed.",
+      "result": "Relevant assertions present in reviewed test source"
+    },
+    {
+      "id": "finite_input_test_coverage",
+      "kind": "coverage_observation",
+      "observation": "SceneTests.swift itself has no direct matrix for NaN, +/-infinity or boundary-adjacent subject/camera coordinates, candela, kelvin, camera-lens values or optics values. Dedicated camera/optics/other validation test files were not reviewed, so this is not a claim of a repository-wide missing regression or a product defect.",
+      "result": "Optional follow-up: inspect dedicated suites before adding duplicate finite/boundary cases"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable. No local checkout, local file creation, git status, branch, or uncommitted-change inspection was possible.",
+    "python3 scripts/agent_cycle.py check and next were not executable in this worker context.",
+    "No Swift runtime, builds, tests, native app, simulator or device execution occurred; no passing-test claim is made.",
+    "Inspected source and tests at the specified immutable base SHA only; no freshness claim for a later branch head or CI run.",
+    "PreviewSettings and ManualRoom are delegated through isValid in Scene.swift; their internal validation implementations were outside this focused review.",
+    "Initial guessed LightOptics.swift and CameraLens.swift paths returned 404; actual definitions were subsequently located and read in StudioOptics.swift and CameraFraming.swift.",
+    "Source review does not establish M02/M03 acceptance or release readiness."
+  ],
+  "status": "complete",
+  "conclusion": "No reproducible must-fix defect found in the scoped scene validation. Review complete; runtime verification remains unperformed."
+}

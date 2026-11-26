@@ -1,0 +1,142 @@
+{
+  "worker": "w078",
+  "context_path": "/root/w007_review_coordinator/w078_coordinated_read_cancel",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Coordinated project-read cancellation before/during NSFileCoordinator wait and bounded read; detached task/token handoff; exactly-once completion; suppression of late successful results.",
+  "inspection_method": "Remote pinned-source review through GitHub fetch_file; no local execution.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "scope": "startup/acceptance contract"
+    },
+    {
+      "path": "App/ProjectDocumentIO.swift",
+      "blob_sha": "5b2c7eb311527a5bdd201a23e4674cfc816c673b",
+      "scope": "Full file source review"
+    },
+    {
+      "path": "NativeTests/ProjectDocumentIOTests.swift",
+      "blob_sha": "96f33253c58ace19d83d02d33791e05351b3b7e7",
+      "scope": "Full file source review"
+    },
+    {
+      "path": "App/BoundedFileReader.swift",
+      "blob_sha": "cb8ffc012386b339e5ca30ff82cf388bb51dfc03",
+      "scope": "Integration signature and cancellation propagation only; internal polling review belongs to w077"
+    }
+  ],
+  "checks": [
+    {
+      "case": "pre_cancelled_async_and_sync_entry",
+      "evidence": "ProjectDocumentIO.swift:50-54,68-73; testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+      "observation": "Both entry paths call a cancellation checkpoint before reading; the native test gates entry until after cancellation.",
+      "result": "No concrete defect identified by source review."
+    },
+    {
+      "case": "cancel_between_detached_creation_and_handler_installation",
+      "evidence": "ProjectDocumentIO.swift:50-63",
+      "observation": "The operation awaits the sole detached worker inside a cancellation handler, forwards cancellation to worker and token, and checks parent cancellation after worker.value; worker success cannot bypass the post-await checkpoint.",
+      "result": "No concrete defect identified by source review."
+    },
+    {
+      "case": "cancel_before_or_during_coordinator_install",
+      "evidence": "ProjectDocumentIO.swift:92-106,142-167",
+      "observation": "A lock serializes token state and coordinator installation. Cancellation sets a sticky boolean, so an earlier cancel rejects installation; a later cancel obtains a strong local coordinator reference. The following checkpoints detect cancellation even before coordination begins.",
+      "result": "No concrete defect identified by source review."
+    },
+    {
+      "case": "cancel_while_waiting_for_presenter",
+      "evidence": "ProjectDocumentIO.swift:98-109,156-161; testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+      "observation": "cancel() is forwarded to the installed coordinator. After coordination returns, cancellation is checked before either coordinationError or accessor result is returned. Existing native test holds a registered presenter and requires completion before release.",
+      "result": "No concrete defect identified by source review; runtime outcome not executed."
+    },
+    {
+      "case": "cancel_during_accessor_bounded_read_or_decode",
+      "evidence": "ProjectDocumentIO.swift:99-103,112-123; App/BoundedFileReader.swift:36-42,66-78",
+      "observation": "The same token checkpoint is passed as a throwing bounded-reader callback. The typed ReadError catch does not intercept CancellationError. Cancellation checks surround decode and occur after coordination.",
+      "result": "No concrete defect identified by integration source review."
+    },
+    {
+      "case": "finish_cancel_lifetime_race",
+      "evidence": "ProjectDocumentIO.swift:137-168",
+      "observation": "Coordinator reference access is lock protected. cancel() copies a strong reference before unlocking; finish() clears the stored reference without clearing the cancelled state. There is no shared mutable coordinator slot accessed without that lock.",
+      "result": "No concrete defect identified by source review."
+    },
+    {
+      "case": "single_completion_and_late_success",
+      "evidence": "ProjectDocumentIO.swift:50-63,97-109",
+      "observation": "One detached Task supplies the result; cancellation does not independently resume a continuation or publish a value. The synchronous coordinator accessor stores a Result, and outer cancellation checks precede success return. No duplicate completion path identified.",
+      "result": "No concrete defect identified by source review."
+    },
+    {
+      "case": "test_scope_and_contract",
+      "evidence": "docs/acceptance/m02-m03-code.md M03 persistence; NativeTests/ProjectDocumentIOTests.swift",
+      "observation": "Existing source tests cover pre-entry cancellation for both APIs, presenter-wait cancellation, presenter errors, successful immutable read, and malformed/oversized input. Deterministic every-instruction race injection is not present; coverage absence alone is not classified as a product defect.",
+      "result": "Source review only; does not satisfy native runtime acceptance."
+    }
+  ],
+  "external_references": [
+    {
+      "url": "https://developer.apple.com/documentation/foundation/nsfilecoordinator/cancel()",
+      "purpose": "Confirmed Apple's documented cross-thread cancel support, immediate return, cancellation of presenter waits, and requirement that an already-running accessor finish.",
+      "source_ref": "turn181834736search1"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host and scripts unavailable: no agent_cycle, Swift compilation, XCTest, simulator, filesystem, or timing execution performed.",
+    "No native or provider behavior pass claimed; native cancellation tests were inspected only.",
+    "This narrowly scoped report does not assess UI caller identity guards, general URL/security/error semantics (w075), or BoundedFileReader internal polling correctness (w077).",
+    "A lookup of Sources/LightingCore/BoundedFileReader.swift returned 404; the actual App/BoundedFileReader.swift was subsequently fetched and its blob SHA verified.",
+    "No source, tree, commit, branch, ref, PR, or test changes were made. The only authorized write is this unreferenced report blob."
+  ],
+  "conclusion": "No concrete must-fix defect identified in the assigned coordinated-read cancellation integration at the pinned revision.",
+  "status": "complete"
+}

@@ -1,0 +1,134 @@
+{
+  "worker_id": "w050",
+  "context_path": "/root/w007_review_coordinator/w050_studio_export_failure_triage",
+  "status": "complete",
+  "followup": true,
+  "new_worker_count_increment": 0,
+  "task": "Source review of synchronization/capture candidate and room UTF-8 diagnostic truncation",
+  "repository": "mirzotipi-wq/APP1",
+  "original_report_blob": "1ab045ab7f1749c8486aa682073edc2621def2a5",
+  "failure_evidence_base": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "candidate_commit": "d4780c1617936fdc88aef995bfc05cd2bd6644bf",
+  "candidate_parent": "8d1f6a363665d7e926fdb9df3cb00ac9eec8468f",
+  "verdict": "Source review supports proceeding to required runtime verification. Assertions and original capture provenance are preserved; no candidate runtime repair is proven. Correct the causal wording in the status-predicate comment, and preserve the original three failed required outcomes.",
+  "provenance": {
+    "candidate_commit_url": "https://github.com/mirzotipi-wq/APP1/commit/d4780c1617936fdc88aef995bfc05cd2bd6644bf",
+    "exact_commit_diff_reviewed": true,
+    "base_to_candidate_ahead_by": 13,
+    "paths": [
+      {
+        "path": "UITests/LightingPlanExportUITests.swift",
+        "candidate_blob_sha": "015eda966fc11edaa2f5828631e04a4ce9320e5c"
+      },
+      {
+        "path": "UITests/StudioContentReachability.swift",
+        "candidate_blob_sha": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5"
+      },
+      {
+        "path": "UITests/StudioSmokeTests.swift",
+        "candidate_blob_sha": "c0b7d8a48046ca27e9ae9965863c8cc7a72da312"
+      }
+    ],
+    "source_reads": [
+      "Complete candidate StudioSmokeTests.swift",
+      "Complete candidate LightingPlanExportUITests.swift",
+      "Candidate StudioContentReachability.swift lines 280-340",
+      "Original pinned StudioSmokeTests.swift and LightingPlanExportUITests.swift retained from prior actual reads"
+    ],
+    "original_failure_log": {
+      "run_id": 45745699007,
+      "job_id": 139662471930,
+      "source_ref": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+      "observed_in_prior_report": true
+    },
+    "validation": "In-memory exact string comparison against retrieved full sources confirmed that StudioSmokeTests differs from original failure baseline only by the status-predicate/comment replacement, and LightingPlanExportUITests differs only by its two capture replacements/comment. This is source comparison, not Swift compilation or XCTest execution."
+  },
+  "findings": [
+    {
+      "id": "status-snapshot",
+      "severity": "informational",
+      "path": "UITests/StudioSmokeTests.swift",
+      "candidate_lines": "14-25",
+      "finding": "The predicate now requests one immutable projectStatus snapshot per evaluation and compares its label exactly to the requested string. A thrown snapshot produces nil through try?, which does not satisfy the non-optional expected label.",
+      "assertions_retained": [
+        "XCTWaiter timeout argument remains 10 seconds.",
+        "XCTAssertEqual(result, .completed, file: file, line: line) remains.",
+        "Failure-only immutable metadata snapshot and 4096-byte UTF-8 metadata-prefix handling are unchanged.",
+        "Test methods and downstream save/undo/relaunch/history assertions are unchanged.",
+        "AR readiness query, timeout, unsupported label, camera-absence assertions and manual fallback sequence are unchanged."
+      ],
+      "limits": [
+        "The predicate still performs synchronous AX snapshot work. An unchanged nominal waiter timeout is not a hard wall-clock cap on an individual snapshot RPC.",
+        "The original failure's later matching label does not prove it matched throughout the initial wait or that two property reads caused the timeout.",
+        "Try? does not turn failed readiness into success; no new fallback pass or failure suppression was added."
+      ]
+    },
+    {
+      "id": "comment-causality",
+      "severity": "low",
+      "path": "UITests/StudioSmokeTests.swift",
+      "candidate_lines": "16-18",
+      "finding": "The comment says separate exists/label queries exhausted the old wait and that the launch status was already correct. The actual log establishes a timeout followed by a later matching snapshot, not that specific cause or earlier state.",
+      "recommendation": "Use observational wording, for example: One immutable AX snapshot avoids separate property reads. The prior timed-out wait was followed by a matching failure-diagnostic snapshot.",
+      "behavioral_change_required": false
+    },
+    {
+      "id": "screen-capture",
+      "severity": "informational",
+      "path": "UITests/LightingPlanExportUITests.swift",
+      "candidate_lines": "70, 151-155",
+      "finding": "Both existing attachments now use XCUIScreen.main.screenshot(). They remain runtime screen captures with the same names and keepAlways lifetime; no pixels are fabricated, transformed, redrawn or substituted from prior artifacts.",
+      "assertions_retained": [
+        "Full-library copy preparation, enabled save control, error absence, scope and light-count assertions.",
+        "Chooser cancel/reopen and original snapshot checks.",
+        "Actual two-page PDF and share-control assertions before capture.",
+        "Close/dismiss, unchanged status/history, undo/redo, unsaved scene and relaunch checks."
+      ],
+      "limits": [
+        "Capture scope changes from app element to the entire main screen and may include system chrome or overlays.",
+        "The source no longer requests app.screenshot at these sites; that is a plausible way to avoid app-element resolution during capture, not evidence that the underlying screenshot service stall is repaired.",
+        "The original screenshot-timeout test remains failed until a new candidate run completes.",
+        "Actual candidate captures have not been inspected."
+      ]
+    },
+    {
+      "id": "room-utf8-bound",
+      "severity": "informational",
+      "path": "UITests/StudioContentReachability.swift",
+      "candidate_lines": "308-328",
+      "finding": "Truncation reads at most 32769 source UTF-8 bytes, starts the emitted limit at min(32768, count), and when truncated moves the first-excluded-byte index left over UTF-8 continuation bytes. For valid Swift String input this leaves a whole-scalar boundary, avoiding replacement-character expansion beyond the intended payload limit.",
+      "bounds": {
+        "prefix_byte_count_max": 32769,
+        "emitted_hierarchy_payload_byte_count_max": 32768,
+        "boundary_backtrack_max_for_valid_utf8": 3,
+        "fixed_print_heading_excluded_from_payload_cap": true
+      },
+      "assertions_retained": [
+        "Only diagnostic truncation changes in this commit; original failure stage, hierarchy attachment name/lifetime, screenshot capture and caller assertions are retained."
+      ],
+      "limits": [
+        "The full description is still constructed from field.debugDescription and app.debugDescription before truncation. This change bounds the emitted hierarchy payload, not full source-description allocation or AX acquisition time.",
+        "The complete printed message includes its fixed heading/newline beyond the 32768-byte payload limit.",
+        "A boundary may split a user-perceived multi-scalar grapheme, but it does not split a Unicode scalar or create invalid UTF-8."
+      ]
+    }
+  ],
+  "original_failure_meaning_preserved": {
+    "total_executed": 10,
+    "total_failures": 3,
+    "export": "Original baseline failed app.screenshot after prepared page/share checks.",
+    "meter": "Original baseline failed initial projectStatus readiness before meter/balance operations; later matching snapshot did not pass the method.",
+    "ar": "Original baseline failed arTrackingStatus AX query after Place in AR; Settings/3D fit completed beforehand.",
+    "acceptance": "Required methods remain unsuccessful. Removed external requirements do not dismiss these failures. No synthetic pass, screenshot review or repair claim is made."
+  },
+  "next_actions": [
+    "Correct comment causality to match observed evidence.",
+    "Run required candidate methods and retain finalized results, exact method accounting and actual captures.",
+    "Continue AR presentation/AX investigation without changing the currently unsupported cause assumption; this candidate intentionally leaves AR query unchanged."
+  ],
+  "limits": [
+    "Host unavailable; no Swift build, XCTest execution, simulator run or screenshot/PDF review performed.",
+    "Review covers the exact candidate commit and specified test-file behavior, not the other twelve commits between failure baseline and candidate.",
+    "No source/tree/commit/ref mutations or children; only this authorized unreferenced report blob."
+  ]
+}

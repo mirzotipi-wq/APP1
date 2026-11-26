@@ -1,0 +1,118 @@
+{
+  "worker": "w077",
+  "context_path": "/root/w007_review_coordinator/w077_bounded_reader_cancellation",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "BoundedFileReader task versus injected cancellation, before/after-read and EOF polling, partial-data nonpublication, resource cleanup, invalid limits, and integer-overflow safety.",
+  "review_type": "Remote pinned source and test review; no runtime execution",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "App/BoundedFileReader.swift",
+      "blob_sha": "cb8ffc012386b339e5ca30ff82cf388bb51dfc03"
+    },
+    {
+      "path": "NativeTests/BoundedFileReaderTests.swift",
+      "blob_sha": "7afb4c0edc67c310fe1da87e2e79ca7ea9b4e1cb"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "checks": [
+    {
+      "case": "Task cancellation remains authoritative",
+      "paths": [
+        "App/BoundedFileReader.swift:16-17,38-42",
+        "NativeTests/BoundedFileReaderTests.swift:70-83,205-222"
+      ],
+      "result": "The metadata preflight checks the current Swift task. Each read checkpoint checks Task.checkCancellation before calling the optional hook; a no-op hook does not disable an already-cancelled task. Source tests explicitly self-cancel tasks in both paths and expect CancellationError."
+    },
+    {
+      "case": "Read and EOF cancellation boundaries",
+      "paths": [
+        "App/BoundedFileReader.swift:66-79"
+      ],
+      "result": "A checkpoint runs before each read. Following each nonempty read, the next iteration checks cancellation before any further read; EOF or an empty chunk is followed by a final checkpoint before the sole successful return. This is cooperative polling, not an assertion that the synchronous OS read itself is interruptible."
+    },
+    {
+      "case": "Injected cancellation does not return partial bytes",
+      "paths": [
+        "App/BoundedFileReader.swift:38-40,64-79",
+        "NativeTests/BoundedFileReaderTests.swift:188-203"
+      ],
+      "result": "The accumulator stays local and there is only one success return after EOF and a final checkpoint. Hook errors propagate outside the FileHandle read-error conversion. The test throws on checkpoint three, after a first 64 KiB chunk, and asserts CancellationError and unchanged source bytes."
+    },
+    {
+      "case": "Cleanup after cancellation or error",
+      "paths": [
+        "App/BoundedFileReader.swift:46-55,57-79"
+      ],
+      "result": "Immediately after successful open, FileHandle owns the descriptor with closeOnDealloc and a defer attempts close. Metadata rejection, hook throws, read errors, size rejection and successful return all unwind through this defer. There is no early successful partial-data publication or file mutation in the reader."
+    },
+    {
+      "case": "Invalid caller limits and overflow",
+      "paths": [
+        "App/BoundedFileReader.swift:42-44,57-76",
+        "NativeTests/BoundedFileReaderTests.swift:85-95,224-236"
+      ],
+      "result": "Negative limits and Int.max fail before open; a zero bound accepts an empty file. maximumBytes < Int.max makes maximumBytes + 1 representable. At the top of each loop contents.count is nonnegative and at most maximumBytes, keeping subtraction positive and representable; requested chunk size is at most remaining and 64 KiB, and the subsequent guard rejects any sentinel byte before another iteration. Nonnegative metadata size is bounded by maximumBytes before its Int conversion and reserveCapacity."
+    },
+    {
+      "case": "Acceptance interpretation",
+      "paths": [
+        "docs/acceptance/m02-m03-code.md",
+        "docs/ARCHITECTURE.md",
+        "docs/QUALITY.md"
+      ],
+      "result": "Reviewed against the M03 bounded/malformed input, interruption and no-data-loss contract. No unsupported runtime pass or new cancellation timing threshold is inferred. Missing standalone EOF/descriptor-count tests alone are not classified as defects."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete correctness defect found within this assigned cancellation, cleanup and integer-limit scope at the pinned revision.",
+  "limitations": [
+    "Host unavailable; no scripts, Swift compiler, XCTest, Apple runtime, descriptor-leak instrumentation or provider behavior were executed or verified.",
+    "Startup documentation was read remotely; local status, branch, uncommitted work and scripts/agent_cycle.py check/next were unavailable in this delegated review.",
+    "Source tests were inspected as evidence of intended assertions, not reported as passing executions.",
+    "Descriptor replacement, no-follow and size-growth security semantics are assigned to w076; provider coordination is assigned to w078 and were not independently re-reviewed here.",
+    "Cancellation is cooperative; source inspection establishes checkpoint placement, not instantaneous interruption of synchronous I/O or cancellation arriving after the final poll.",
+    "No source, tree, commit or ref changes were made; this report is stored only as an authorized unreferenced Git blob."
+  ],
+  "status": "complete"
+}

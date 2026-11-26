@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "context": "/root/w007_review_coordinator/w097_native_build_target_coverage",
+  "type": "same-context-fifth-source-followup",
+  "workerCountIncrement": 0,
+  "status": "complete",
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "candidateRevision": "ea776af0ac204c35da73031d922c229335fcf6d5",
+  "priorReportBlobs": [
+    "04faa5da59f053e043f6a1fe41dffe6938c2ce89",
+    "2c450e55777427fd1c626936ed1827e925d3ee4d",
+    "26eeb0d8357696342247e7bd9b8a2e67d4b5e563",
+    "15258f00a191751b1295492719222489c5eb81dd"
+  ],
+  "verdict": "No new source-level defect found in the diagnostic addition for the current request. Read-only ZIP member inspection follows original archive size/SHA256 verification; bounded original host records retain source/path/hash provenance. Per-archive scope and optional-file behavior are qualified below.",
+  "findings": [],
+  "inspectedFiles": [
+    {
+      "path": ".github/workflows/preserve-ci-evidence.yml",
+      "blobSHA": "7e518284411f35c72302198ef55001e0ac0540c5"
+    },
+    {
+      "path": "docs/evidence/m03-completion-2026-11-25/preserve-request.json",
+      "blobSHA": "2a64d4471df4e044e2ebf3b8d6faf4486d165a91"
+    }
+  ],
+  "diff": {
+    "changedPaths": [
+      ".github/workflows/preserve-ci-evidence.yml"
+    ],
+    "addedLines": 31,
+    "removedLines": 0
+  },
+  "checks": [
+    {
+      "topic": "Narrow change",
+      "result": "Actual commit adds only 31 lines to preserve-ci-evidence.yml. It does not change original archive downloading/size/hash checks, permissions, uploads, request data, application source or tests."
+    },
+    {
+      "topic": "Verification order",
+      "result": "Diagnostic code runs after the size != metadata or SHA256 != metadata guard and after the original archive receipt. No member is inspected before the containing original ZIP passes those checks."
+    },
+    {
+      "topic": "Archive selection",
+      "result": "Only allowlisted names ending -evidence enter diagnostic inspection. -evidence-compact does not. The current request selects one full studio/export archive and its compact companion for source 75e827f2ee3f99798d619aff62f3a5188b509428, so diagnostic limits apply once."
+    },
+    {
+      "topic": "Host member selection",
+      "result": "Selection is limited to the three exact basenames ui-host-before-tests.log, ui-host-after-tests.log, simulator-boot.log, plus .json members with an exact simulator-startup path component. PurePosixPath avoids substring-only matching. Original member paths are carried unchanged in output."
+    },
+    {
+      "topic": "Entry and byte bounds",
+      "result": "Archives with more than 20,000 entries fail before member selection/reads. More than 12 selected members fail. Directories and members declaring >256 KiB fail. Each read requests at most 256 KiB + 1 sentinel byte; actual length must equal the declared file size. Cumulative selected bytes above 1 MiB fail before the current record is emitted."
+    },
+    {
+      "topic": "Read-only semantics",
+      "result": "ZipFile is opened in its default read mode. archive.open(entry) reads members into bounded memory. There is no extract, extractall, filesystem path constructed from an entry name, ZIP write or image conversion. Member reads do not change the already verified original ZIP."
+    },
+    {
+      "topic": "ZIP errors",
+      "result": "Malformed ZIP/member errors, unsupported decoding, CRC errors surfaced by zipfile, size mismatches and explicit bound failures propagate out of the Python step. Default success gating prevents the new upload after any such failure. Existing independently preserved backups are outside this step and unaffected."
+    },
+    {
+      "topic": "Record provenance",
+      "result": "KEYFILL_HOST records include artifact ID, original run ID, verified original source revision, exact member path, actual byte count, SHA256 of the member bytes, encoding=base64 and base64 of those same bytes. JSON/base64 prevent raw host text from being interpreted as workflow output commands."
+    },
+    {
+      "topic": "Python/YAML assumptions",
+      "result": "Manual source inspection finds coherent indentation, imports, conditional scope, set/list comprehension, context managers and serialization. No Python interpreter, YAML parser or archive operations were executed."
+    },
+    {
+      "topic": "Failure truth",
+      "result": "The job emits original diagnostic bytes and does not turn a failed test into a pass. Any already printed KEYFILL_PRESERVED/KEYFILL_HOST records may precede a later step failure; consumers must retain the terminal job outcome. No source/test gate is weakened."
+    }
+  ],
+  "request": {
+    "runId": 45751931160,
+    "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+    "artifactNames": [
+      "ui-studio-export-evidence",
+      "ui-studio-export-evidence-compact"
+    ],
+    "purpose": "Preserve complete original studio/export failures before any focused rerun; all failed methods and attachments remain evidence."
+  },
+  "limits": {
+    "archiveIndexEntries": 20000,
+    "selectedMembersPerFullArchive": 12,
+    "declaredMemberBytes": 262144,
+    "maximumMemberReadBytes": 262145,
+    "combinedMemberBytesPerFullArchive": 1048576,
+    "currentRequestFullArchiveCount": 1,
+    "maximumGeneralRequestFullArchiveCount": 4,
+    "generalRequestMaximumSelectedMembers": 48,
+    "generalRequestMaximumMemberBytes": 4194304,
+    "originalArchiveBytes": 536870912,
+    "originalCombinedArchiveBytes": 1073741824,
+    "cooperativeTransferCheckSeconds": 480,
+    "hardJobTimeoutMinutes": 12
+  },
+  "qualifications": [
+    "The 12-member and 1-MiB counters reset for every full archive. They are per-archive caps, not global caps across an arbitrary four-full-archive request. Current request has only one full archive and therefore stays within 12 members / 1 MiB total.",
+    "Host basenames match at any archive depth; the simulator-startup rule accepts .json descendants at any depth below an exact simulator-startup component, not only immediate children. Nothing is extracted to disk.",
+    "Missing host diagnostics are optional: zero selected members is not an error and there is no required-file completeness summary. A preservation success does not establish that any particular host log was present.",
+    "The 20,000-entry check is applied after ZipFile parses its central directory; it is an inspection cap, not a pre-parse memory bound. Existing original-archive size/job bounds remain.",
+    "Host data is emitted as one JSON/base64 record per member, not 24,000-character chunks. Maximum raw member is 256 KiB; log delivery/readback was not tested.",
+    "The previously reviewed 480-second cooperative-transfer qualification and 12-minute hard job timeout remain unchanged and were accepted by root for this followup."
+  ],
+  "execution": {
+    "candidateTriggered": false,
+    "workflowExecuted": false,
+    "pythonExecuted": false,
+    "yamlParserExecuted": false,
+    "archivesDownloaded": false,
+    "zipMembersRead": false,
+    "hostRecordsReconstructed": false,
+    "testsExecuted": false,
+    "imagesReviewed": false
+  },
+  "limitations": [
+    "No new runtime verification was requested or performed.",
+    "Previously successful backup/review runs and viewed originals supplied by root are contextual statements, not independently reverified results in this report.",
+    "Actual member counts, presence, CRC/size success and KEYFILL_HOST delivery require the later run; source review alone does not establish them."
+  ],
+  "mutationScope": "Only this authorized unreferenced JSON report blob is created. No child agents or source/tree/branch/ref changes. Prior w097 report history and count are preserved."
+}

@@ -1,0 +1,204 @@
+{
+  "schema": 1,
+  "worker": "APP1 worker100",
+  "context_path": "/root/w007_review_coordinator/w100_current_native_ui_evidence",
+  "repository": "mirzotipi-wq/APP1",
+  "base_ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+  "phase": "Native-only direct coordinate-conversion candidate independent source review",
+  "status": "COMPLETE_SOURCE_REVIEW_NO_CONCRETE_BLOCKER_UNCOMPILED_UNEXECUTED",
+  "generated_at": "2026-11-26T07:05:10.896Z",
+  "candidate": {
+    "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+    "blob_sha": "06b98da41ac77d64bd4129f7bb3d89876a9ebe30",
+    "base_blob_sha": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+    "decoded_characters": 15237,
+    "lines": 278
+  },
+  "primary_evidence": {
+    "base_source_read_at_ref": "03cfd3c90d2a45e96ee03ad71234363dfc899be7",
+    "base_source_sha": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+    "candidate_source_fetched_directly": true,
+    "entire_diff_inspected": true,
+    "actual_failed_run_report": "98cdd1cdf5907dbfd902e886fe5671263d408908",
+    "actual_failed_native_job": 139734913476,
+    "actual_focused_run": 45768421649,
+    "prior_source_review": "b6d62159cd44dc22928d79731415a93a58d6b04f"
+  },
+  "exact_checks": {
+    "beforeObserveByteUnchanged": true,
+    "afterDrainMainQueueByteUnchanged": true,
+    "methodNamesOld": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesUninstrumentedLayout"
+    ],
+    "methodNamesNew": [
+      "testExplicitGatingAndExactFrameRoundTrip",
+      "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+      "testDisabledHostedProbePreservesUninstrumentedLayout"
+    ],
+    "newToleranceWords": false,
+    "sourceDiffLimitedToObserveAndLiveConversion": true
+  },
+  "complete_diff": [
+    {
+      "kind": "+",
+      "old": 153,
+      "new": 153,
+      "text": "        let nativeText = liveScreenFrame(of: textView, in: host.view, window: window,"
+    },
+    {
+      "kind": "+",
+      "old": 153,
+      "new": 154,
+      "text": "                                         screen: scene.screen, role: \"Text\")"
+    },
+    {
+      "kind": "+",
+      "old": 153,
+      "new": 155,
+      "text": "        let nativeControl = liveScreenFrame(of: controlView, in: host.view, window: window,"
+    },
+    {
+      "kind": "+",
+      "old": 153,
+      "new": 156,
+      "text": "                                            screen: scene.screen, role: \"control\")"
+    },
+    {
+      "kind": "-",
+      "old": 153,
+      "new": 157,
+      "text": "        let nativeText = liveScreenFrame(of: textView, in: host.view, window: window)"
+    },
+    {
+      "kind": "-",
+      "old": 154,
+      "new": 157,
+      "text": "        let nativeControl = liveScreenFrame(of: controlView, in: host.view, window: window)"
+    },
+    {
+      "kind": "+",
+      "old": 164,
+      "new": 166,
+      "text": "                                 screen: UIScreen, role: String,"
+    },
+    {
+      "kind": "+",
+      "old": 167,
+      "new": 170,
+      "text": "        XCTAssertTrue(window.windowScene?.screen === screen, file: file, line: line)"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 172,
+      "text": "        // The actual attached-view run still returned local bounds through"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 173,
+      "text": "        // UIAccessibility conversion. Convert through the real view/window"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 174,
+      "text": "        // hierarchy and then the scene's screen coordinate space instead."
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 175,
+      "text": "        let windowFrame = view.convert(view.bounds, to: window)"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 176,
+      "text": "        let frame = window.convert(windowFrame, to: screen.coordinateSpace)"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 177,
+      "text": "        print(\"Native direct \\(role) conversion: bounds=\\(view.bounds), viewFrame=\\(view.frame), \" +"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 178,
+      "text": "              \"center=\\(view.center), transform=\\(view.transform), layerTransform=\\(view.layer.transform), \" +"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 179,
+      "text": "              \"viewScale=\\(view.contentScaleFactor), traitScale=\\(view.traitCollection.displayScale), \" +"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 180,
+      "text": "              \"hostBounds=\\(host.bounds), hostFrame=\\(host.frame), hostTransform=\\(host.transform), \" +"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 181,
+      "text": "              \"windowBounds=\\(window.bounds), windowFrame=\\(window.frame), windowTransform=\\(window.transform), \" +"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 182,
+      "text": "              \"screenBounds=\\(screen.coordinateSpace.bounds), screenScale=\\(screen.scale), \" +"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 183,
+      "text": "              \"convertedWindowFrame=\\(windowFrame), convertedScreenFrame=\\(frame)\")"
+    },
+    {
+      "kind": "+",
+      "old": 168,
+      "new": 184,
+      "text": "        XCTAssertTrue(StudioTextLayoutDiagnostics.valid(windowFrame), file: file, line: line)"
+    },
+    {
+      "kind": "-",
+      "old": 168,
+      "new": 185,
+      "text": "        let frame = UIAccessibility.convertToScreenCoordinates(view.bounds, in: view)"
+    }
+  ],
+  "review": {
+    "scope": "Only the observe() call arguments and liveScreenFrame() conversion/logging change. All text before observe(), including all3 test bodies and checkedRecordedText, is byte-identical. Everything from drainMainQueue() onward, including pixel rounding, UIFont threshold, actual fixture and UIView observer implementation, is byte-identical.",
+    "geometry": "The independent observer samples actual view.bounds through view.convert(...,to:expectedWindow), then window.convert(...,to:the explicit scene.screen.coordinateSpace). Both Text and control use the same conversion path. It does not read the recorded SwiftUI frame to invent its native expected rectangle, derive an offset from that frame, or substitute parent bounds for Text.",
+    "ownership": "Existing exact view.window and host descendant assertions remain. The passed screen comes directly from the same foreground scene used to create the window, and a new identity assertion checks window.windowScene?.screen === screen.",
+    "finiteness": "Original valid(bounds) and valid(finalFrame) assertions remain; new valid(windowFrame) assertion covers the intermediate conversion. Invalid geometry remains an assertion failure. There is no fallback, optional-empty success, tolerance, skip or recovery conversion that can conceal it.",
+    "diagnostics": "Logs actual Text/control bounds, UIView frame/center/transform/layer transform, content/trait scale, host bounds/frame/transform, window bounds/frame/transform, screen coordinate-space bounds/scale, intermediate window rectangle and final screen rectangle. The existing LIVE attachment/category/recorded frame receipt also remains.",
+    "thresholds": "Exact physical-pixel x/y/width/height equality, parent containment, positive>=44pt parent, actualText<parent, UIFont/body minimum, Default+AXXXL, >=1.25growth, 8pt-negative rejection and disabled-vs-baseline geometry checks are unchanged.",
+    "gates": "The exact gate+codec method remains unchanged. Candidate does not modify App/StudioTextLayoutDiagnostics.swift or its DEBUG/-ui-testing/separate environment gate, production Text/owner modifiers, instrumentedAX oracle, screenshot contract or external normal-value/grouping assertions.",
+    "actors_and_API": "The @MainActor fixture/hosting lifetime and existing layout/main-queue settling remain unchanged. Both conversion calls use actual UIKit CGRect/coordinate-space objects. No concrete Swift5 source/API issue is apparent from this inspection; no local compiler or SDK type-check was available.",
+    "inventory": "Same3 native methods; base17-file inventory remains137 methods when this single candidate file is substituted. This one-file candidate adds/removes no UI method; the existing35-required-UI source inventory is unchanged by its scope.",
+    "external_semantics": "The source03cf library file remains618c70bb4677c1d391c54bd3d6b4584e641b21d4 by candidate scope. Its three normal owner checks actually passed in focused job139734913231, while that full library job still failed7/9. Candidate does not claim a new library execution."
+  },
+  "facts_kept_separate": {
+    "prior_runtime_failure": "03cf native137executed/135passed/2failed/8assertions is immutable. All three enabled cases and both disabled fixtures were reached and showed attached views with zero native origins through UIAccessibility conversion.",
+    "falsified_hypothesis": "Actual live observations disprove stale callback caching as the sole explanation. This candidate changes the conversion mechanism; source plausibility is not evidence that it works.",
+    "remaining_size_issue": "Default native pixels were(0,0,126,60) versus recorded(448,366,125,61), and both disabled fixtures failed font fit. Direct hierarchy conversion may expose transforms, but no assumption is made that it will fix size or font-fit. Existing strict checks must pass in actual execution.",
+    "candidate_runtime": "No compile, native execution, focused retry, UI execution, image review or finalization result exists in this worker's evidence for06b98."
+  },
+  "findings": [],
+  "limitations": [
+    "Only this unreferenced candidate blob is reviewed; a future integrated tree must be checked separately for scope.",
+    "No source/tree/ref edits, builds, diagnostic triggers or new contexts performed.",
+    "Currentcd5 AX terminal/image work is outside this source review. No full native/library/UI/M03 acceptance is asserted.",
+    "Normal external AX evidence from03cf is not substituted for the instrumented Default/AXXXL workflow or its required24 originals."
+  ],
+  "verdict": "No concrete source blocker. Suitable for root integration and focused validation while preserving every strict existing oracle. A fresh result is required before claiming that the conversion change resolves either coordinate or size failures.",
+  "mutation": "Only this unreferenced JSON source-review report blob is created."
+}

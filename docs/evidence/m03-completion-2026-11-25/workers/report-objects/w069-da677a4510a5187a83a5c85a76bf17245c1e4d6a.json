@@ -1,0 +1,123 @@
+{
+  "worker": "w069",
+  "context_path": "/root/w007_review_coordinator/w069_legacy_migration_concurrency",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Idempotent portrait.json legacy migration under in-process concurrent load/save; one stable migrated project and active identity; malformed/current-library precedence; preservation of original files.",
+  "inspection_mode": "Remote pinned-source review only",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "blob_sha": "eaf1852a0c9507027f7ef27d27f6b863c8288afa",
+      "coverage": "Full file read"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SceneFileStoreTests.swift",
+      "blob_sha": "5ad13f192b47f5f463e065d28f5b4bdb794ce4a4",
+      "coverage": "Full file read"
+    }
+  ],
+  "checks": [
+    {
+      "case": "Concurrent initial migration",
+      "source": "Sources/LightingCore/ProjectLibrary.swift:137-176",
+      "observation": "One process-wide static NSLock encloses both public load and save's loadWhileLocked path. The first caller reads portrait.json, constructs a single-project library, writes it, and returns only after the write succeeds. Subsequent callers read projects.json and retain that project's UUID and activeID.",
+      "result": "Source reasoning supports contract; not executed"
+    },
+    {
+      "case": "First save races with migration",
+      "source": "Sources/LightingCore/ProjectLibrary.swift:159-176",
+      "observation": "A save replacing nil that acquires the lock while only legacy data exists first migrates it, then fails the comparison with staleSnapshot. If load acquires the lock first, that save observes the same already-migrated snapshot and fails. Neither ordering overwrites the migrated identity with a fresh candidate.",
+      "result": "Source interleaving review; not executed"
+    },
+    {
+      "case": "Idempotence and successful-save identity preservation",
+      "source": "Tests/LightingCoreTests/ProjectLibraryTests.swift:36-53,287-307",
+      "observation": "Sequential test compares first/reloaded library, checks v1 scene upgrade and original legacy bytes, then saves a renamed migrated record. Concurrent test uses 12 independently constructed stores, requires every returned snapshot to equal the persisted snapshot, and checks legacy bytes unchanged.",
+      "result": "Regression assertions inspected; tests not run"
+    },
+    {
+      "case": "Current-library precedence and corruption",
+      "source": "Sources/LightingCore/ProjectLibrary.swift:159-166,237-260; Tests/LightingCoreTests/ProjectLibraryTests.swift:68-77,421-434",
+      "observation": "Existing projects.json is read and decoded/validated before consulting legacy data. Decode, validation, oversized and nonregular failures propagate. The corrupt-library regression asserts load/save rejection and unchanged corrupt bytes.",
+      "result": "Source and regression assertions inspected; tests not run"
+    },
+    {
+      "case": "Malformed legacy preservation",
+      "source": "Sources/LightingCore/ProjectLibrary.swift:163-166; Tests/LightingCoreTests/ProjectLibraryTests.swift:56-65",
+      "observation": "Legacy load must succeed before a ProjectLibrary is created or written. The malformed-legacy regression asserts load/save failure, no projects.json creation, and byte-for-byte preservation of portrait.json.",
+      "result": "Source and regression assertions inspected; tests not run"
+    },
+    {
+      "case": "Original file preservation boundary",
+      "source": "Sources/LightingCore/ProjectLibrary.swift:146-147,163-166,228-235; Tests/LightingCoreTests/SceneFileStoreTests.swift",
+      "observation": "The migration path reads legacyURL and writes only projects.json; it performs no legacy removal, rename or save. SceneFileStore tests additionally assert preservation on oversized, directory and symbolic-link inputs; its general implementation was intentionally outside this packet.",
+      "result": "Source and regression assertions inspected; tests not run"
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete defect found in the assigned migration-concurrency scope at the pinned revision.",
+  "limitations": [
+    "Host unavailable; no shell, Swift tests, agent_cycle check/next, native/UI tests, filesystem probes or builds were executed.",
+    "Repository status, uncommitted work, current branch/recent commits and CI were not independently inspected; review was pinned to the supplied base SHA and inspected blobs.",
+    "Mixed concurrent first-migration load/save is reasoned from the shared lock but has no dedicated mixed-operation regression in the inspected test file.",
+    "The explicit concurrency contract excludes external processes or direct directory writers.",
+    "General compare-and-replace correctness and general legacy-file I/O were excluded as assigned to other workers.",
+    "No source, tree, commit, branch or ref mutation performed; only an authorized unreferenced JSON blob was created for this report."
+  ],
+  "status": "complete"
+}

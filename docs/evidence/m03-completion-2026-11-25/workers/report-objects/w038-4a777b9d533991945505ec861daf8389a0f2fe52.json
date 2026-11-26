@@ -1,0 +1,267 @@
+{
+  "schema": 1,
+  "worker_id": "w038",
+  "context_path": "/root/w007_review_coordinator/w038_project_name_ax_failure",
+  "status": "complete",
+  "task": "Same-context independent review of AX viewport repair against original failed-run captures",
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "prior_report_blob": "2d53456dfe7dce35b652c43c140eeb842a25f9a4",
+  "original_failed_source": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "reviewed_candidate": "7aea6a89cf8653cf33b02db924d0c7bf720916c2",
+  "evidence_commit": "0336090704bf5815695e5735be2d25e41ed75860",
+  "candidate_parent": "0336090704bf5815695e5735be2d25e41ed75860",
+  "scope": {
+    "no_children": true,
+    "source_changes": 0,
+    "tree_changes": 0,
+    "ref_changes": 0,
+    "write": "authorized unreferenced followup report blob only"
+  },
+  "source_provenance": [
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blob_sha": "d3bf0b1794ae86f07d0533c9ec6fbd38fc8dc8c7",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/7aea6a89cf8653cf33b02db924d0c7bf720916c2/UITests/StudioAppAccessibilityUITests.swift"
+    },
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "blob_sha": "12f1cc54c29af61d0f42bb7dc098a3780b1b6c14",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/7aea6a89cf8653cf33b02db924d0c7bf720916c2/UITests/StudioContentReachability.swift"
+    }
+  ],
+  "baseline_provenance": [
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "blob_sha": "b0c50c85ba7c85dd644b922586958047a490f0cb"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blob_sha": "1dcd3990cf65912cac4d4cdeb7ae3012a5975651"
+    }
+  ],
+  "artifacts_read": [
+    {
+      "name": "Unreachable-studio-hierarchy.txt",
+      "blob_sha": "c8a5a3297423291035bbba36e236ea2c35b72aed",
+      "path": "docs/evidence/m03-completion-2026-11-25/validation/source-7b91c1a/app-accessibility/Unreachable-studio-hierarchy.txt",
+      "read": "complete UTF-8 hierarchy",
+      "original_export": "235B07C2-41EB-4F44-A564-0089A8EB46F7.txt"
+    },
+    {
+      "name": "Unreachable-studio-content.png",
+      "blob_sha": "012eb7917cfc0e17ebbb04d333a7ec7c85d341fe",
+      "path": "docs/evidence/m03-completion-2026-11-25/validation/source-7b91c1a/app-accessibility/Unreachable-studio-content.png",
+      "read": "base64 fetched and original PNG displayed via image(); visually inspected",
+      "original_export": "9CFE685F-75BC-4B19-BC9D-234265BDEE04.png",
+      "manifest_bytes": 168068,
+      "manifest_sha256": "9ea7dda3b3f176876103eaf02d5b780f479ad764fabeb68966b0471eabe9d9ca",
+      "independently_rehashed": false
+    },
+    {
+      "name": "original-capture-review.json",
+      "blob_sha": "163be737233893ebd61099ec10b530710df32157",
+      "path": "docs/evidence/m03-completion-2026-11-25/validation/source-7b91c1a/app-accessibility/original-capture-review.json",
+      "read": "full provenance manifest and prior root observations"
+    }
+  ],
+  "original_run_provenance": {
+    "run_id": 45745699007,
+    "job_id": 139662471911,
+    "artifact_id": 15085151015,
+    "source_revision": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+    "artifact_digest": "sha256:edf6f4e55db1c018085afc02af11c8f1e64afaa3da2e9edf9c1e72e6fc01fd2f",
+    "review_transport_run_id": 45750515297,
+    "review_transport_job_id": 139676905493,
+    "not_a_new_runtime_run": true
+  },
+  "observations": [
+    {
+      "id": "O1",
+      "confidence": "independently confirmed by original screenshot and hierarchy",
+      "finding": "The Project name heading was visibly complete in the original failed screen, together with Cancel, the focused Portrait setup field and Save project name above the keyboard. The previous report's unresolved root cause is now resolved by original evidence."
+    },
+    {
+      "id": "O2",
+      "confidence": "confirmed by hierarchy ancestry and numeric replay",
+      "finding": "Original global navigation maxY excluded foreground content using a covered sibling sheet's Projects navigation bar.",
+      "hierarchy_lines": [
+        11,
+        183,
+        264,
+        270,
+        280
+      ],
+      "frames": {
+        "app": [
+          0,
+          0,
+          402,
+          874
+        ],
+        "covered_projects_nav": [
+          16,
+          76.7,
+          370,
+          152.8
+        ],
+        "own_new_project_nav": [
+          0,
+          88,
+          402,
+          54
+        ],
+        "heading": [
+          32,
+          203.8,
+          105,
+          20.3
+        ],
+        "own_collection": [
+          0,
+          72,
+          402,
+          802
+        ]
+      },
+      "calculation": {
+        "old_global_top": 229.5,
+        "heading_top": 203.8,
+        "heading_bottom": 224.1,
+        "own_nav_bottom": 142,
+        "old_contains_heading": false
+      }
+    },
+    {
+      "id": "O3",
+      "confidence": "confirmed by hierarchy plus source",
+      "finding": "The current keyboard key frame starts at583 while both inputView and SystemInputAssistantView start539. Candidate excludes the actual44pt assistant strip in both viewport calculations.",
+      "hierarchy_lines": [
+        309,
+        313,
+        329
+      ],
+      "old_keyboard_boundary": 583,
+      "new_keyboard_boundary": 539
+    },
+    {
+      "id": "O4",
+      "confidence": "confirmed by static ancestry replay over retained hierarchy",
+      "finding": "The candidate Other-ancestor/direct-navigation-child query selects only New project for the heading. Undo owns Key & Fill and projectLibraryDone owns Projects, so neither covered fixed control is applied to the naming sheet.",
+      "ownership": {
+        "heading": [
+          {
+            "line": 264,
+            "text": "                    NavigationBar, 0x1176fc5d0, {{0.0, 88.0}, {402.0, 54.0}}, identifier: 'New project'"
+          }
+        ],
+        "undo": [
+          {
+            "line": 11,
+            "text": "                NavigationBar, 0x1175f4300, {{0.0, 62.0}, {402.0, 54.0}}, identifier: 'Key & Fill'"
+          }
+        ],
+        "done": [
+          {
+            "line": 183,
+            "text": "                    NavigationBar, 0x1175f99b0, {{16.0, 76.7}, {370.0, 152.8}}, identifier: 'Projects'"
+          }
+        ]
+      }
+    },
+    {
+      "id": "O5",
+      "confidence": "numeric replay, not XCTest execution",
+      "finding": "The old erroneous viewport reproduces the normalized gesture coordinates recorded in the CI log. Candidate geometry gives the real visible rectangle and contains the measured heading/input/actions.",
+      "old_viewport": {
+        "x": 0,
+        "y": 229.5,
+        "width": 402,
+        "height": 353.5
+      },
+      "old_downward_gesture": {
+        "x": 0.97,
+        "startY": 0.38392448512585814,
+        "endY": 0.5780663615560641
+      },
+      "observed_log_rounded_gesture": {
+        "x": 0.97,
+        "startY": 0.38,
+        "endY": 0.58
+      },
+      "candidate_viewport": {
+        "x": 0,
+        "y": 142,
+        "width": 402,
+        "height": 397
+      },
+      "candidate_contains": {
+        "heading": true,
+        "name_field": true,
+        "cancel": true,
+        "save": true
+      }
+    }
+  ],
+  "review_findings": [
+    {
+      "id": "R1",
+      "severity": "none blocking",
+      "result": "Corrects evidenced ownership defect without reducing the visibility requirement",
+      "detail": "Both revealStudioContent and the independent contentViewport calculate navigation occlusion from actual target ancestors. The changed top boundary142 is justified by the foreground sheet's own navigation bar;229.5 belonged to a covered sibling. This is an ownership correction, not a tolerance increase."
+    },
+    {
+      "id": "R2",
+      "severity": "none blocking",
+      "result": "Keyboard coverage is strengthened",
+      "detail": "Both paths now exclude keyboard input/assistant surfaces starting539 instead of admitting the44pt predictive strip above keyframe583. The actual screenshot confirms this strip belongs to the keyboard."
+    },
+    {
+      "id": "R3",
+      "severity": "none blocking",
+      "result": "Acceptance assertions preserved",
+      "detail": "Read-only string comparisons verified exact minimum-hit-target implementation, complete workflow/control/text-metric/growth assertions, and final assertContained implementation are unchanged. Full CGRect containment, hittability, exact44pt minimum with existing endpoint-ULP treatment, keyboard-visible requirements, and12-attempt limit remain.",
+      "checks": {
+        "minimumTargetImplementationIdentical": true,
+        "workflowControlTextMetricAndGrowthAssertionsIdentical": true,
+        "containmentAndRemainingAssertionsIdentical": true,
+        "sameTwelveAttempts": true,
+        "fullContainmentStillRequired": true,
+        "hittabilityStillRequired": true,
+        "fallbackMidpointBehaviorPreserved": true,
+        "geometryAppendsBoundedOncePerAttempt": true,
+        "failureStillCallsXCTFail": true,
+        "newMinimumInputTop": "minimum of keyboard.frame and actual inputView/SystemInputAssistantView",
+        "noAppSourceChangesInRepairCommit": true
+      }
+    },
+    {
+      "id": "R4",
+      "severity": "none blocking",
+      "result": "Scrolling and failure diagnostics remain bounded",
+      "detail": "The fullyVisible drag x now comes from the real viewport width. Both y endpoints remain inside its keyboard/fixed-control-clipped vertical extent. Diagnostics append at most one target/visibleContent line per existing iteration, print only on failure, and preserve screenshots, full hierarchy and XCTFail. No new waits, retries or tolerances were added."
+    }
+  ],
+  "limits": [
+    "No Xcode compilation or XCTest/simulator execution performed by this worker.",
+    "Only one original failure PNG was independently displayed; the other failure PNG and truncated teardown hierarchy were listed but not viewed.",
+    "Numerical replay uses one-decimal values exported by app.debugDescription and proves the observed boundary error; it is not a fresh runtime result.",
+    "Navigation-identifier matching is unambiguous for the actual retained hierarchy and current named screens; this review does not establish behavior for arbitrary future containers or duplicated navigation titles.",
+    "New failure diagnostics expose target and final viewport, not the full per-occluder breakdown.",
+    "Candidate still requires the complete Default and AXXXL accessibility workflow and retained screenshot review; original failed evidence remains failed."
+  ],
+  "validation_performed": [
+    "Read exact repair commit and both complete changed files through GitHub.",
+    "Read original full failure hierarchy and provenance manifest at evidence commit.",
+    "Fetched and visually inspected original Unreachable-studio-content.png.",
+    "Parsed hierarchy indentation to independently identify navigation ownership for heading, Undo and library Done.",
+    "Replayed old/new geometry numerically; old coordinates match exact job-log gestures.",
+    "Compared baseline/candidate unchanged acceptance implementations as recorded in checks."
+  ],
+  "acceptance_recommendation": "Approve this source correction for fresh runtime validation; no blocking source-review finding. Keep M03 accessibility acceptance unverified until the existing complete Default/AXXXL method and required artifact review succeed.",
+  "required_runtime_followup": [
+    "Run KeyAndFillUITests/StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize at the integrated candidate.",
+    "Require completion of Default and AXXXL, naming field/Save/Cancel with keyboard, text metrics and growth checks; inspect their original captures.",
+    "Retain failed7b91c1a evidence and do not describe this review as a runtime pass."
+  ]
+}

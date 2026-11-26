@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "worker": "w088",
+  "context_path": "/root/w007_review_coordinator/w088_large_library_relaunch",
+  "followup": true,
+  "distinct_worker_increment": 0,
+  "status": "complete",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "prior_report_blob": "075f956381c023c60d83da36bde7f0a271ab8cdc",
+  "scope": "Inspect original recovered failure PNG and diagnostic text only. No broader source hunt, original-job refetch, runtime tests, source/tree/ref changes or children.",
+  "extraction": {
+    "workflow_run": 45756316890,
+    "job_id": 139695653207,
+    "request_revision": "29fc53124ed237113ec3f91e1ae20d4ce91b0a25",
+    "job_log_tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+    "log_characters": 227266,
+    "log_lines": 291,
+    "record_format": "KEYFILL_REVIEW metadata and indexed base64 chunks",
+    "original_run": 45751931160,
+    "original_job": 139682754765,
+    "artifact_id": 15088005587,
+    "artifact_name": "ui-library-reference-evidence-compact",
+    "original_source_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+    "archive_digest_from_remote_metadata": "sha256:e19f9b6401799e196b7299d93c0ba100b78ef0e1f1cb882231358ccc5e84cda0",
+    "archive_digest_independently_verified_by_this_worker": false
+  },
+  "independent_verification": {
+    "transport": "Parsed extraction log in code-mode, checked exact chunk count and contiguous indices (PNG9,text1), concatenated base64 and decoded bytes. Full base64 was not printed.",
+    "hash_method": "SHA-256 recomputed over recovered bytes in code-mode JavaScript; implementation sanity-checked against empty-input and abc known vectors.",
+    "files": [
+      {
+        "file": "66CB1C75-FB38-4612-8E00-18118B7DDFE1.txt",
+        "bytes": 5001,
+        "computed_sha256": "093129e409c1ceecf3060f01f6f831fc0baffc2d90adeb69b5e512d428456faa",
+        "emitted_sha256": "093129e409c1ceecf3060f01f6f831fc0baffc2d90adeb69b5e512d428456faa",
+        "hash_match": true,
+        "captureTimestamp": 1795666831.006,
+        "captureUTC": "2026-11-26T04:20:31.006Z"
+      },
+      {
+        "file": "6B1B78E5-B711-4C47-A3AC-E10EA8F02D6F.png",
+        "bytes": 145448,
+        "computed_sha256": "8f646b46829c7352148590a1c7eab2acef1ba6e3982d2e8fa58ad0a8ccfed3df",
+        "emitted_sha256": "8f646b46829c7352148590a1c7eab2acef1ba6e3982d2e8fa58ad0a8ccfed3df",
+        "hash_match": true,
+        "dimensions": {
+          "width": 1206,
+          "height": 2622
+        },
+        "captureTimestamp": 1795666831.593,
+        "captureUTC": "2026-11-26T04:20:31.593Z"
+      }
+    ],
+    "root_reported_values": "Root had reported both file hashes, byte lengths and viewing the PNG. This worker subsequently independently recomputed both hashes and inspected the image/text; matches are not merely copied root assertions.",
+    "png_view_method": "image('data:image/png;base64,...') rendered original transport bytes; no conversion, cropping or modification.",
+    "png_signature_valid": true,
+    "png_actual_pixels_viewed": true,
+    "original_text_read_complete": true
+  },
+  "observations": {
+    "pixels": [
+      "Actual Key & Fill light-appearance app screenshot, status-bar time4:20.",
+      "Visible title Portrait setup and status Unsaved changes.",
+      "Two separate visible Opening projects... labels with spinner indicators: one under project status, one centered below disabled action row.",
+      "Projects and adjacent actions are visibly gray; bottom Save appears pale blue and remains visible.",
+      "No project-library sheet, title mismatch, alert or clipping of these loading-state labels is visible."
+    ],
+    "diagnostic_text": [
+      "Application state4, pid28239; title/status match screenshot.",
+      "projectOperationProgress reports In progress, Opening projects… with value1.",
+      "openProjectLibrary and saveProject explicitly marked Disabled.",
+      "Workspace progress label is present in the hierarchy despite its nested StaticText reporting zero frame."
+    ],
+    "interpretation": "The rendered image confirms the visible pending-load state represented by the printed diagnostic. The zero-frame nested static-text entry does not negate the actually visible loading label. No new actionable accessibility defect is established by this single loading-state capture.",
+    "capture_timestamp_basis": "Capture timestamps are extraction metadata; PNG time2026-11-26T04:20:31.593Z and text2026-11-26T04:20:31.006Z. This worker converted those epochs but did not independently derive them from image content."
+  },
+  "preserved_result": {
+    "selected_methods": 9,
+    "passed": 8,
+    "failed": 1,
+    "failing_method": "ProjectLibraryUITests.testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+    "failure_location": "UITests/ProjectLibraryUITests.swift:424",
+    "cause": "unknown",
+    "causal_findings": [],
+    "must_fix_source_findings": [],
+    "new_actionable_accessibility_findings": []
+  },
+  "recommendation": "Original failure remains required failed evidence. These artifacts do not justify a source patch or deadline change. A focused rerun of the unchanged-source library workflow after the current full run can provide repeatability evidence; do not reclassify the original failure as a pass.",
+  "limits": [
+    "Whole artifact archive was not independently downloaded or hashed by this worker; file-byte hashes were independently verified after reconstruction from authenticated remote job-log chunks.",
+    "Screenshot is a single capture and cannot establish spinner animation, CPU state, task scheduling, I/O behavior or a loader root cause.",
+    "No runtime rerun or additional source investigation was performed."
+  ],
+  "changes": {
+    "source": [],
+    "trees": [],
+    "refs": [],
+    "report_only": "Unreferenced JSON follow-up blob authorized by root"
+  }
+}

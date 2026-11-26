@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "worker": "worker098",
+  "context_path": "/root/w007_review_coordinator/w098_export_workflow_test_strength",
+  "status": "complete",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "scope": "Static independent review of required local export UI test oracle and integration coverage; no source/tree/ref changes; no M05 or provider acceptance expansion.",
+  "files_reviewed": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "UITests/LightingPlanExportUITests.swift",
+      "blob_sha": "015eda966fc11edaa2f5828631e04a4ce9320e5c"
+    },
+    {
+      "path": "App/LightingPlanExportView.swift",
+      "blob_sha": "2db6c333853c8f4cab16082cd4d9037cd05feafb"
+    },
+    {
+      "path": "App/ProjectBackupView.swift",
+      "blob_sha": "fbb8ea667bfdc43d81ff831929fa1f437d5ded89"
+    },
+    {
+      "path": "NativeTests/LightingPlanPDFTests.swift",
+      "blob_sha": "57e6619a02d55a14972ffde0368e1f2927f491f9"
+    },
+    {
+      "path": "NativeTests/ProjectDocumentIOTests.swift",
+      "blob_sha": "96f33253c58ace19d83d02d33791e05351b3b7e7"
+    }
+  ],
+  "checks": [
+    {
+      "case": "real_preparation_readiness",
+      "result": "supported_by_source",
+      "evidence": [
+        "UITests/LightingPlanExportUITests.swift:38-58,81-85,144-150",
+        "App/LightingPlanExportView.swift:137-151,175-191",
+        "App/ProjectBackupView.swift:31-44,95-124"
+      ],
+      "detail": "PDF pages and share button appear only after LightingPlanPDF.make returns data and the current options match. Editable-copy save button appears only after a real LightingProjectDocument and ProjectBackupFile are successfully prepared. These checks are stronger than unconditional identifier existence and do not bypass document construction."
+    },
+    {
+      "case": "full_library_unsaved_history_preservation",
+      "result": "meaningful_behavioral_oracle",
+      "evidence": [
+        "UITests/LightingPlanExportUITests.swift:8-36,69-117"
+      ],
+      "detail": "Unique fixture namespace plus full-library launch flag; initial Saved locally; actual added fourth light; Unsaved changes; PDF and copy preparations; unchanged dirty state; undo removes fourth light and restores Saved locally; reopening at three lights preserves redo; redo restores unsaved fourth light; relaunch shows original saved project with no fourth light or history. This exercises local no-save/no-history-change behavior. It does not compare all unrelated library records or every scene field."
+    },
+    {
+      "case": "reopen_and_format_snapshot_freshness",
+      "result": "supported_at_metadata_and_workflow_level",
+      "evidence": [
+        "UITests/LightingPlanExportUITests.swift:76-106,162-170",
+        "App/LightingPlanExportView.swift:24-32"
+      ],
+      "detail": "Copy to PDF reopening asserts chooser reset and absence of prior document labels. Reopening editable copy after undo asserts a fresh three-light summary rather than prior four-light snapshot. It does not decode the UI-prepared bytes, so content-level stale snapshot substitution could evade this test while summary labels remain current."
+    },
+    {
+      "case": "actual_content_coverage",
+      "result": "covered_by_separate_native_tests_not_ui_bytes",
+      "evidence": [
+        "NativeTests/LightingPlanPDFTests.swift",
+        "NativeTests/ProjectDocumentIOTests.swift:testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource"
+      ],
+      "detail": "Native PDF source tests parse generated data with PDFKit, assert actual page counts/media boxes/equipment/units/precision/room text and attach PDFs. Native backup test writes prepared.data, reads through production async ProjectDocumentIO, asserts whole-document equality and unchanged bytes. These are substantive serialization oracles, but they construct their own inputs and do not capture bytes from the UI snapshot path."
+    },
+    {
+      "case": "cancel_scope",
+      "result": "format_cancellation_only",
+      "evidence": [
+        "UITests/LightingPlanExportUITests.swift:131-140",
+        "App/ProjectBackupView.swift:76-90"
+      ],
+      "detail": "Format chooser Cancel and Done dismissal are tested with editor/history assertions. Neither shareLightingPlanPDF nor saveEditableProjectCopy is tapped. System share/file-export cancellation, post-cancel Save reenablement, and exporter callback status behavior are not exercised by these methods. Do not label their current coverage canceled system sharing; no new M05/provider completion condition is inferred."
+    },
+    {
+      "case": "screenshots",
+      "result": "attachments_are_visual_review_evidence_not_automated_oracles",
+      "evidence": [
+        "UITests/LightingPlanExportUITests.swift:69-73,151-154"
+      ],
+      "detail": "Two keepAlways XCUIScreen screenshots capture current screens after readiness assertions. There is no image comparison, text extraction or assertion about preview content/readability. They support separate actual-image review when executed and recovered; screenshots alone do not prove PDF/JSON payload correctness, successful sharing, test terminal success or current runtime pass."
+    },
+    {
+      "case": "acceptance_scope",
+      "result": "respected",
+      "evidence": [
+        "docs/acceptance/m02-m03-code.md",
+        "docs/ROADMAP.md",
+        "docs/QUALITY.md"
+      ],
+      "detail": "M03 requires successful existing functional workflows and honest evidence. M05 export/open/provider scope remains pending. Review finds no demonstrated blocking product defect or weakened required assertion in the scoped files. Existing readiness and state assertions should be retained."
+    }
+  ],
+  "findings": [],
+  "nonblocking_coverage_opportunities": [
+    "To strengthen existing local snapshot guarantees, add an integration oracle that inspects the actual prepared snapshot payload for the added-light UUID or distinct setting, then repeats after undo/reopen; current UI labels alone cannot establish serialized snapshot freshness.",
+    "If local system-cancel handling is subsequently modified, exercise open/cancel and restored button/history/status behavior in an Apple runtime. This is an identified coverage boundary, not a newly imposed provider/M05 gate."
+  ],
+  "limitations": [
+    "Remote source review only. No host filesystem, scripts, Xcode, simulator, tests or screenshots were executed/viewed in this worker.",
+    "agent_cycle.py check/next unavailable; current local branch/status/uncommitted state cannot be inspected. Every reviewed file was fetched at the pinned revision.",
+    "Native content tests were read to establish oracle design; no current pass is claimed. No CI result or historical failure disposition was changed.",
+    "No all-record library byte comparison or actual UI-prepared payload inspection exists in the two scoped UI methods.",
+    "No share-sheet/file-exporter presentation or cancellation is exercised. Done/format Cancel are distinct local interactions.",
+    "PDF generation and export state-machine correctness were outside this task's re-review scope; only their conditional readiness wiring was traced.",
+    "An initial recursive read returned excessive tree output; subsequent review used only exact relevant file reads. No repository tree was mutated."
+  ],
+  "conclusion": "Complete static review: no concrete blocking finding. Required local preparation/history/reopen checks are substantive, with separately defined native content oracles. UI-prepared payload fidelity, system cancellation and screenshot review remain precisely bounded evidence limits, and fresh required runtime completion is still necessary.",
+  "mutations": {
+    "source": false,
+    "tree": false,
+    "refs": false,
+    "report_only": "unreferenced JSON Git blob"
+  }
+}

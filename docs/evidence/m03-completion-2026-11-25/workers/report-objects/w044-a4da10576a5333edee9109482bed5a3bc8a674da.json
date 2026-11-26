@@ -1,0 +1,128 @@
+{
+  "worker": "w044",
+  "context_path": "/root/w007_review_coordinator/w044_preferences_units_state",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Metric/imperial preference persistence, unknown raw values, and preserving scene precision when switching display units; formatter internals excluded.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "App/StudioPreferences.swift",
+      "blob_sha": "05439f428c90b027c476cf889c3d1145f955282f"
+    },
+    {
+      "path": "App/StudioSettingsView.swift",
+      "blob_sha": "4f45e201369051598cae04134c4ebb5c5016b06c"
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "blob_sha": "b506f6f5ba8f7e6075fd91d00ffc056c7317b2c5"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Preference storage linkage",
+      "method": "remote source review",
+      "result": "Settings and Studio use the same StudioPreferences.unitsKey and shared defaults instance, with metric as the absent-key default. The Settings binding setter writes only unitsRaw.",
+      "evidence": [
+        "App/StudioPreferences.swift:5-20",
+        "App/StudioSettingsView.swift:7-8,64-68",
+        "App/StudioView.swift:6-9,280"
+      ]
+    },
+    {
+      "check": "Unknown raw unit values",
+      "method": "remote source review",
+      "result": "PlanUnits(rawValue:) failure falls back to metric. Picker selection, picker accessibility value, and Studio displayUnits all use that same helper, keeping a valid Meters selection and consistent display without rewriting scene coordinates.",
+      "evidence": [
+        "App/StudioPreferences.swift:23-25",
+        "App/StudioSettingsView.swift:17-23,64-68",
+        "App/StudioView.swift:280,587"
+      ]
+    },
+    {
+      "check": "Display switches preserve scene state",
+      "method": "remote source review",
+      "result": "Unit switching writes only the separate AppStorage preference. Studio scene remains a separate State value; unit consumption in StudioView is read-only display/export conversion. The reviewed unit path has no scene reassignment, rounding write-back, unit-change history entry, or unit-change observer.",
+      "evidence": [
+        "App/StudioSettingsView.swift:64-68",
+        "App/StudioView.swift:6-9,269-280,778,893,1012-1019,1161-1163"
+      ]
+    },
+    {
+      "check": "UI test preference isolation",
+      "method": "remote source review",
+      "result": "DEBUG UI testing uses a UUID-named UserDefaults suite; makeApp supplies one UUID in the application's launch environment, supporting suite reuse when that same application object relaunches. Production path uses standard defaults.",
+      "evidence": [
+        "App/StudioPreferences.swift:8-20",
+        "UITests/StudioSmokeTests.swift:6-11"
+      ]
+    },
+    {
+      "check": "Existing smoke-test assertions",
+      "method": "test source review only",
+      "result": "testSettingsFeet3DFitAndSimulatorARManualFallback asserts initial Meters, selection of Feet, Studio header propagation, same-process Settings reopening retention, and manual-room Width in feet. It does not exercise units preference across process relaunch, Feet-to-Meters round-trip, injected unknown raw units, or exact scene equality before/after toggles.",
+      "evidence": [
+        "UITests/StudioSmokeTests.swift:56-132"
+      ]
+    },
+    {
+      "check": "Startup and acceptance context",
+      "method": "remote document review",
+      "result": "Read AGENTS and mandatory startup documents plus m02-m03-code-v2. M03 remains active in the reviewed state. This report supplies bounded source-review evidence only and does not promote a gate."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "No host was available; no scripts, builds, simulator execution, UI tests, or native tests were run.",
+    "No runtime preference durability or precision result is claimed.",
+    "The scoped smoke test leaves relaunch, invalid-raw fallback, and exact scene-equality unit-switch cases unexercised; this is a coverage limitation rather than evidence of an implementation defect.",
+    "Formatter internals and child editor implementations were outside this work packet.",
+    "No source, tree, commit, or ref changes were made. The report is an unreferenced Git blob as authorized."
+  ],
+  "conclusion": "No must-fix defect identified in the reviewed preference storage and unit-switch wiring.",
+  "status": "complete"
+}

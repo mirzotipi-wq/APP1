@@ -1,0 +1,120 @@
+{
+  "worker": "w043_arrangement_view_validation",
+  "context_path": "/root/w007_review_coordinator/w043_arrangement_view_validation",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Source review of arrangement-sheet bounded drafts, Apply state, error/cancel paths, and atomic parent commit/undo wiring. Transform arithmetic and domain operation order excluded.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "App/SceneArrangementView.swift",
+      "blob_sha": "242c237525abee61e4ef5cc0cb2c885611f26785",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SceneArrangementTests.swift",
+      "blob_sha": "fe525e62e16abf1410952fb05ae60b5887954041",
+      "inspection": "Test-method inventory plus full validation/atomicity bodies at lines 357–423; transform-arithmetic tests excluded from review conclusions"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "inspection": "Targeted excerpts: presentation callback; controls opening arrangement; SceneContext, sceneContext, acceptsSceneResult, replace, remember, undo, redo, dismissal on project changes"
+    },
+    {
+      "path": "App/PrecisionValueButton.swift",
+      "blob_sha": "e252af60d0662281814d9efae51892954939fbc5",
+      "inspection": "Complete source text"
+    },
+    {
+      "path": "App/DistanceValueButton.swift",
+      "blob_sha": "4cc7600426fec01fccbe93a750d8c656354b18c8",
+      "inspection": "Complete source text"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Local draft isolation and bounds",
+      "result": "Source-confirmed: destination is State seeded from scene.subject; yaw/mirror are sheet State. Coordinates use DistanceValueButton with Position.coordinateRange and rotation uses PrecisionValueButton plus Slider at -180...180. Numeric-editor boundedDraft rejects oversized replacement before state assignment; parse validates finite bounded numeric input. Distance conversion validates display and SI ranges before local draft write."
+    },
+    {
+      "check": "Apply enabled state",
+      "result": "Source-confirmed: arrangement Apply remains enabled while didFinish is false, allowing combined arrangement validation on submission. didFinish disables the form and Cancel after success/cancellation. Numeric-editor oversized input disables its Apply; invalid decimal gives inline error without local draft write."
+    },
+    {
+      "check": "Atomic application and recovery",
+      "result": "Source-confirmed: one SceneTransform.arranged call produces next before any parent callback; typed errors retain sheet/draft and display localized error, generic errors display recovery text. Draft changes/reset clear stale errors. Success sets didFinish before onApply and dismiss, preventing repeated Apply."
+    },
+    {
+      "check": "Cancellation",
+      "result": "Source-confirmed: Cancel sets didFinish and dismisses without calling onApply; Reset restores only local state. Numeric editor cancels without write and rejects stale/closed submissions."
+    },
+    {
+      "check": "Parent commit and undo",
+      "result": "Source-confirmed: StudioView captures a scene snapshot and generation after completing active edit; callback accepts only allowed generation and unchanged source scene. replace revalidates next, skips no-op, records prior scene once, assigns whole validated scene and repairs selection; undo/redo restore whole scenes."
+    },
+    {
+      "check": "Designated regression assertions",
+      "result": "Source-inspected only: testInvalidFinalLightCameraAimOrSubjectRejectsTheWholeArrangement asserts failed assignment preserves current; testInvalidSourceCannotBeRepairedByAnArrangement checks invalid light/unsupported schema; testNonfiniteTransformInputsAreRejected checks all destination axes and rotation; testMirroringStillRequiresAHorizontalCameraDirection covers undefined mirror axis."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable; no local filesystem, shell, scripts, compilation, Swift tests, native/UI tests, or runtime interaction executed.",
+    "No claims of UI layout, accessibility runtime, gesture behavior, or required M03 acceptance pass.",
+    "Named core test file provides domain validation/atomicity assertions, not execution proof or direct sheet lifecycle/undo UI coverage.",
+    "Actual pinned GitHub fetch_file used for each inspected path. GitHub default-branch search for SceneArrangementView returned no results; App/ContentView.swift fetch returned 404 and was not inspected.",
+    "Repository state and historical handoff are read as context, not independently reverified execution evidence.",
+    "No source, tree, commit, branch, or reference changes; only this authorized unreferenced report blob created."
+  ],
+  "status": "complete",
+  "conclusion": "No concrete must-fix defect found in scoped static source/test review. Runtime sheet lifecycle and undo behavior remain unverified in this worker context."
+}

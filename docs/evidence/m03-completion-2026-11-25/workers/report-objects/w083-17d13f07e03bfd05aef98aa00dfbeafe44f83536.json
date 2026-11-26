@@ -1,0 +1,135 @@
+{
+  "worker": "w083_recovery_capacity_ui_confirmation",
+  "context_path": "/root/w007_review_coordinator/w083_recovery_capacity_ui_confirmation",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Full-library recovery UI choices, archived target identity/confirmation, cancellation, busy/error state, and preservation of the unsaved setup until successful save; excludes actor/CAS and core capacity internals already assigned elsewhere.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "App/RecoveryCapacityView.swift",
+      "blob_sha": "7c948b0c4015ecd0eac3e58563c0af568db29bc3",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+      "scope": "ProjectLibraryRowPresentation type"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "scope": "Recovery sheet wiring and beginLibraryOperation caller/adoption/error handling only"
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "blob_sha": "1c108acca53243472810eef5cb8570fee99fe674",
+      "scope": "Document or complete focused file"
+    },
+    {
+      "path": "NativeTests/ProjectStoreOperationTests.swift",
+      "blob_sha": "7005e2583b347c46e2fb3fd92e0c60e1f7c506c4",
+      "scope": "Recovery-related methods plus cancellation/failure context"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blob_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "scope": "Stale-save, full-library recovery and unsaved protection workflows"
+    }
+  ],
+  "checks": [
+    {
+      "case": "full_library_choices",
+      "result": "Source review found archived candidates computed after identity presentation for the whole validated library; empty and failed-load states distinguish unavailable choices from load failure and offer refresh/export guidance."
+    },
+    {
+      "case": "archived_target_confirmation",
+      "result": "Source review found each choice retains its full LightingProject value; selected presentation is frozen for the alert, confirmationName includes disambiguating ID when needed, and only the destructive native alert action calls replace."
+    },
+    {
+      "case": "cancel_preserves_unsaved_setup",
+      "result": "Alert Cancel clears local selection; Keep editing cancels only candidate loading and dismisses the sheet. Neither mutates the parent scene. Load completion checks request identity and cancellation."
+    },
+    {
+      "case": "busy_and_failure",
+      "result": "replace guards against replacement/loading; the parent reservation runs synchronously before the sheet starts observing. Replacement progress is shown, Keep editing and interactive dismissal are disabled during replacement, and failure keeps the sheet open with preserved editor guidance and refresh. Async failure refreshes candidate identities."
+    },
+    {
+      "case": "success_boundary",
+      "result": "The sheet dismisses only after onReplace task.value succeeds. The parent's recovery task updates scene/saved from a successful adopted result; the failure branch does not replace the editor scene."
+    },
+    {
+      "case": "existing_ui_regression",
+      "result": "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup explicitly adds a fourth light, cancels the confirmation and sheet, asserts Unsaved changes and the new light, reopens the unchanged archive, asserts exactly one native destructive action, saves, and checks the recovery title/light count again after relaunch. This was inspected, not executed.",
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "lines": "291-361"
+    },
+    {
+      "case": "existing_identity_regressions",
+      "result": "Native presentation source tests cover visually colliding names, invisible legacy names, UUID prefix expansion, and hidden/archived records. Native recovery identity test checks whole-library identities before filtering and unchanged persisted bytes."
+    },
+    {
+      "case": "existing_recovery_operation_context",
+      "result": "Inspected native recovery read and changed-candidate/newly-available-capacity assertions for integration context. Did not repeat review of actor/CAS or core capacity implementation."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Remote pinned-source review only; host unavailable, so agent_cycle.py check/next, builds, native tests and UI tests were not run.",
+    "No simulator, visual screenshot, accessibility-layout or runtime pass is claimed.",
+    "GitHub code search returned no results; exact pinned directory listing and fetch_file established actual source paths.",
+    "Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift and storage/CAS implementation intentionally excluded as already assigned to other workers.",
+    "No source/tree/ref changes; the only write is this owner-authorized unreferenced JSON report blob."
+  ],
+  "conclusion": "No concrete new defect found in this bounded UI/confirmation/cancellation review. Required runtime acceptance remains governed by m02-m03-code-v2 and is not established by this report.",
+  "status": "complete"
+}

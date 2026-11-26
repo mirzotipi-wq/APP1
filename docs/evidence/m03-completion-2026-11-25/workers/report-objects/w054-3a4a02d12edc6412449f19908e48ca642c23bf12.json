@@ -1,0 +1,160 @@
+{
+  "worker": "w054",
+  "context_path": "/root/w007_review_coordinator/w054_portrait_renderer_limits",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Portrait renderer width limits, material and geometric normals, grazing fallback, malformed image rejection, cancellation and publication; mesh topology/BVH excluded.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "blob_sha": "05acc11282db60b07b6cb7e7c9b68c04148803c3",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "Tests/LightingCoreTests/PortraitStudyTests.swift",
+      "blob_sha": "13ff05921bbc8d7f720a1ac74980a180cb4e05d3",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "Tests/LightingCoreTests/GrazingStudyContinuityTests.swift",
+      "blob_sha": "027f0db479b89b055977ea3fc07e6aa74439117c",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "Sources/LightingCore/PortraitHeadMesh.swift",
+      "blob_sha": "e7c4fb134d1ecc8e58e06db8ffd12a9db6724ab7",
+      "review": "Relevant source/test excerpts inspected"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "review": "Relevant source/test excerpts inspected"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob_sha": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+      "review": "Relevant source/test excerpts inspected"
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "blob_sha": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blob_sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "review": "Full file inspected"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyCancellationTests.swift",
+      "blob_sha": "0e79b2f8d92614b5c208ef79300b1b5b0386dd72",
+      "review": "Relevant source/test excerpts inspected"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+      "blob_sha": "5df398240d096f3fe8499f81fc6be82fde1121a8",
+      "review": "Relevant source/test excerpts inspected"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob_sha": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+      "review": "Relevant source/test excerpts inspected"
+    },
+    {
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blob_sha": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+      "review": "Relevant source/test excerpts inspected"
+    }
+  ],
+  "checks": [
+    {
+      "id": "startup_contract",
+      "result": "Source read",
+      "detail": "Read AGENTS.md, required startup documents and m02-m03-code-v2 acceptance. No scripts run, as assigned. Only root AGENTS.md exists in recursively retrieved fixed-revision tree."
+    },
+    {
+      "id": "width_limit",
+      "result": "No defect found in source",
+      "detail": "PortraitStudyRenderer validates 24...144 and divisibility by three before dimension multiplication/allocation. StudyRenderEngine clamps bust width with min(width, 144), including Int.max, while leaving invalid small/negative widths for renderer rejection. Native testBustCachePreservesExistingMaximumWidthClamping and testInvalidResolutionAndCameraKeepOriginalErrorOrdering cover those contracts."
+    },
+    {
+      "id": "normals_materials",
+      "result": "No defect found in source",
+      "detail": "Analytic ellipsoid gradients use inverse-square radius scaling and normalize before returning matching shading/geometric normals. Head, clothing and panel have distinct bounded materials. Renderer forwards geometric normals to the shared evaluator, which offsets the shadow origin geometrically and rejects light below the actual face. Segment visibility retains actual source endpoints."
+    },
+    {
+      "id": "grazing_fallback",
+      "result": "No defect found in source",
+      "detail": "PortraitHeadMesh Triangle.hit lines 124-134 uses interpolated shading normal only when it faces both the camera and the geometric face; otherwise it uses the outward geometric normal. Renderer retains a positive-view check. PortraitStudyTests includes full-resolution oblique area-light silhouette coverage. GrazingStudyContinuityTests preserves narrow positive strips/corners, signed slopes, full-face sample count and material/visibility/geometric-hemisphere behavior. Mesh generation, topology and BVH correctness are excluded."
+    },
+    {
+      "id": "malformed_image",
+      "result": "No defect found in source",
+      "detail": "StudyImage.fromComputeRGBA validates bounded width before arithmetic, exact aspect and byte length, and only accepts opaque alpha or explicitly magenta alpha-zero invalid flags. StudyComputeInputTests.testComputeOutputFlagsAndBounds covers malformed alpha, invalid flag color, empty payload and Int.max dimensions. Bust images are locally constructed from bounded allocations and bypass the sphere-only Metal path."
+    },
+    {
+      "id": "no_partial_publication",
+      "result": "No defect found in source",
+      "detail": "Portrait renderer accumulates into local buffers and returns only after the final cancellation check. Shared pixel cancellation polls once per eight pixel evaluations. Engine adds a post-render cancellation check before retain; failed/cancelled calls never reach admission. Preview checks task cancellation before and after image conversion. StudyCancellationTests and native cache tests include final-checkpoint cancellation, interruption followed by cold-cache lookup, cancelled task/cache lookup and preservation of completed prior frames."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Static GitHub source/test review at the specified commit only; no compiler, test suite, benchmark, actual image render, Apple runtime, Metal execution, UI screenshot or device checks performed.",
+    "Host and working-copy status unavailable; startup script execution intentionally omitted per assignment.",
+    "Mesh topology/BVH and full area-sampling algorithm are outside this packet. Related normal/evaluator call-site excerpts were inspected only to trace the renderer contract.",
+    "Test names and assertions were inspected, not executed; this report cannot independently establish milestone acceptance."
+  ],
+  "conclusion": "No concrete must-fix defect identified in the assigned portrait-renderer boundary and publication scope.",
+  "status": "complete"
+}

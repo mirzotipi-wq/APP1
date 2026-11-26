@@ -1,0 +1,131 @@
+{
+  "worker": "w060",
+  "context_path": "/root/w007_review_coordinator/w060_metal_backend_downgrade",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Source/test review of six-fixture Metal validation, unsupported-scene and parity-failure CPU fallback, backend downgrade and eviction of cached Metal frames.",
+  "paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob_sha": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blob_sha": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+      "blob_sha": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blob_sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "access": "GitHub contents API pinned to base_sha; SHA from recursive git tree"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Read root AGENTS.md, mandatory startup documents and m02-m03-code-v2 acceptance contract",
+      "result": "complete; source-review scope and unrun/native execution distinction preserved"
+    },
+    {
+      "check": "Six-fixture validation gate",
+      "result": "source-confirmed",
+      "evidence": "App/MetalStudyRenderer.swift validate iterates StudyValidationFixtures.all at width 48, requires non-nil StudyParityMetrics with passes == true before state becomes metal. Fixture source enumerates hard, soft, warm-rotated, dark, near-field, translated."
+    },
+    {
+      "check": "Parity threshold and unsupported-mask validation",
+      "result": "source-confirmed",
+      "evidence": "StudyParityMetrics requires matching dimensions, valid opaque RGBA, internally valid masks, equal unsupported counts and exact mask positions; passes requires mean channel error <= 1 and fractionAboveFour <= 0.005."
+    },
+    {
+      "check": "Unavailable device, initialization and initial parity failures",
+      "result": "source-confirmed",
+      "evidence": "App/MetalStudyRenderer.swift lines 195-209 catches non-cancellation validation failures and selects CPU; production frame is rendered by ReferenceStudyRenderer after downgrade."
+    },
+    {
+      "check": "Per-scene unsupported routing",
+      "result": "source-confirmed",
+      "evidence": "MetalStudyRenderer.supports forwards to StudyFloat32Eligibility; engine lines 212-229 bypasses Metal for unsupported scenes without changing validated Metal state. Bust rendering is CPU-only before backend initialization."
+    },
+    {
+      "check": "Runtime backend downgrade",
+      "result": "source-confirmed",
+      "evidence": "Engine lines 217-224 downgrade on invalidComputeOutput or non-StudyError backend failures. Other StudyError input failures propagate without disabling a working backend."
+    },
+    {
+      "check": "Cached Metal frame eviction",
+      "result": "source-confirmed",
+      "evidence": "selectCPU at lines 232-236 first sets cpu state and calls frameCache.removeAll where backend == metal. StudyFrameCache.removeAll removes matching entries in reverse index order using the same cost-accounting removal; surviving CPU entries retain order. Engine render has no await suspension during state mutation/eviction."
+    },
+    {
+      "check": "Native test coverage",
+      "result": "source-confirmed only; not executed",
+      "evidence": "StudyRendererTests covers all six raw Metal fixtures at width 96, engine/reference parity, CPU mannequin, CPU far geometry and near-field routing followed by normal-scene Metal output. Native GPU tests explicitly XCTSkip when no Metal device exists."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete must-fix correctness defect identified in the assigned backend validation/fallback/downgrade scope. Source control flow implements fail-closed CPU selection and removes cached Metal output on downgrade.",
+  "limitations": [
+    "Host execution was unavailable: no agent_cycle.py check/next, Swift builds/tests, simulator runs, Metal execution, timings or visual review were performed.",
+    "Review used actual GitHub source pinned to base_sha; live branch status, uncommitted files, CI and historical execution claims were not independently verified.",
+    "Assigned native test file does not directly inject initial parity failure, device unavailability, or a runtime Metal fault after cached Metal success. Those branches and downgrade eviction were reviewed statically, not demonstrated by executed regression evidence.",
+    "The near-field test reuses the original normal-scene cache key for its final Metal assertion; a separate uncached normal scene would strengthen direct evidence of retained backend state. Current source correctly avoids a downgrade for near-field routing.",
+    "Buffer/dispatch internals, separate cache-key correctness and cancellation behavior were outside this review scope."
+  ],
+  "mutations": "Unreferenced JSON report blob only; no source/tree/commit/ref mutation.",
+  "status": "complete"
+}

@@ -1,0 +1,721 @@
+{
+  "schema": 1,
+  "worker": "worker092",
+  "context_path": "/root/w007_review_coordinator/w092_native_shard_inventory",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "status": "complete",
+  "review_type": "remote static source and test review",
+  "scope": [
+    "required/native/UI versus opt-in diagnostic discovery",
+    "one-to-one shard selector assignment",
+    "duplicate/unknown/missing suites",
+    "nested source detection",
+    "deterministic inventory"
+  ],
+  "conclusion": "Pinned source declares 134 required native methods and 35 required UI methods, with two opt-in audit methods separate. Current shard assignments and workflow selection agree. One nonblocking fail-closed diagnostic-trigger guard gap was identified; no current suite omission or duplication was found.",
+  "startup": {
+    "documents_read": [
+      "AGENTS.md",
+      "agents/OPERATING_PROTOCOL.md",
+      "agents/HANDOFF.md",
+      "agents/state.json",
+      "docs/PRODUCT.md",
+      "docs/ARCHITECTURE.md",
+      "docs/ROADMAP.md",
+      "docs/QUALITY.md",
+      "docs/DESIGN.md",
+      "docs/acceptance/m02-m03-code.md"
+    ],
+    "host_status": "unavailable per coordinator",
+    "agent_cycle_check": "not run: host unavailable",
+    "agent_cycle_next": "not run: host unavailable",
+    "working_tree_and_branch_status": "not inspected: remote pinned-ref review only"
+  },
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/AGENTS.md"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/OPERATING_PROTOCOL.md"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/HANDOFF.md"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/state.json"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/PRODUCT.md"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/ROADMAP.md"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/QUALITY.md"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/DESIGN.md"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/acceptance/m02-m03-code.md"
+    },
+    {
+      "path": "scripts/native_test_shards.py",
+      "blob_sha": "71dae8d6a8f445895d273f565ef98bd353598e46",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/native_test_shards.py"
+    },
+    {
+      "path": "scripts/tests/test_native_test_shards.py",
+      "blob_sha": "9e73e31d049d3b805451278f9cd21164a6b90e1b",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/tests/test_native_test_shards.py"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blob_sha": "c83e4340e5b0b6d6ec10f6b3439195a648aa9894",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/.github/workflows/ios-prototype.yml"
+    },
+    {
+      "path": ".github/workflows/platform-accessibility-diagnostics.yml",
+      "blob_sha": "9f472293be18fc008a794ccd18e92d62031c8996",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/.github/workflows/platform-accessibility-diagnostics.yml"
+    },
+    {
+      "path": "project.yml",
+      "blob_sha": "a1e016274c267ab045876737965b49fa900b0934",
+      "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/project.yml"
+    }
+  ],
+  "source_inventory": [
+    {
+      "path": "UITests/AccessibilityAuditUITests.swift",
+      "blob_sha": "fa2b0844a92719bf9efa84b24a04b82ec7a6e402",
+      "classes": [
+        "AccessibilityAuditUITests"
+      ],
+      "method_count": 2,
+      "methods": [
+        "testInitialLoadedPlanStudioAccessibilityAudit",
+        "testExactLightIntensityEditorAccessibilityAudit"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/LightingPlanExportUITests.swift",
+      "blob_sha": "015eda966fc11edaa2f5828631e04a4ce9320e5c",
+      "classes": [
+        "LightingPlanExportUITests"
+      ],
+      "method_count": 2,
+      "methods": [
+        "testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory",
+        "testExportPreviewOpensWithoutSavingOrChangingScene"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/ManualRoomPlacementUITests.swift",
+      "blob_sha": "c6f6f4f8ea1d9c7289cead11b47327f1ee1878aa",
+      "classes": [
+        "ManualRoomPlacementUITests"
+      ],
+      "method_count": 2,
+      "methods": [
+        "testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+        "testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/PrecisionEditingUITests.swift",
+      "blob_sha": "d0478631b8569dbf9636607312e812cb7dbbb7a7",
+      "classes": [
+        "PrecisionEditingUITests"
+      ],
+      "method_count": 3,
+      "methods": [
+        "testExactLightIntensityValidationUndoRedoAndReopen",
+        "testExactCameraFocalLengthUndoRedoAndReopen",
+        "testExactModifierWidthAndRoomCrossingWithInsideCenters"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blob_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "classes": [
+        "ProjectLibraryUITests"
+      ],
+      "method_count": 7,
+      "methods": [
+        "testCreateDuplicateRenameSwitchAndRelaunch",
+        "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+        "testStaleSaveReloadRequiresConfirmation",
+        "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+        "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+        "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/ReferenceComparisonUITests.swift",
+      "blob_sha": "908a41c5b143c47e4dbccd119cb30e3d6441c994",
+      "classes": [
+        "ReferenceComparisonUITests"
+      ],
+      "method_count": 2,
+      "methods": [
+        "testReferenceComparisonOpensWithRealStudyAndNoPhoto",
+        "testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blob_sha": "d3bf0b1794ae86f07d0533c9ec6fbd38fc8dc8c7",
+      "classes": [
+        "StudioAppAccessibilityUITests"
+      ],
+      "method_count": 1,
+      "methods": [
+        "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "blob_sha": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5",
+      "classes": [],
+      "method_count": 0,
+      "methods": [],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/StudioOpticsUITests.swift",
+      "blob_sha": "096f1c7b863fa6256f785c5aec077a1f610a115c",
+      "classes": [
+        "StudioOpticsUITests"
+      ],
+      "method_count": 10,
+      "methods": [
+        "testOpticsEditingUndoRedoAndRelaunch",
+        "testOpticsRepeatability02",
+        "testOpticsRepeatability03",
+        "testOpticsRepeatability04",
+        "testOpticsRepeatability05",
+        "testOpticsRepeatability06",
+        "testOpticsRepeatability07",
+        "testOpticsRepeatability08",
+        "testOpticsRepeatability09",
+        "testOpticsRepeatability10"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "blob_sha": "d96f26584971d1a785146ea41d4790d8e73b03af",
+      "classes": [
+        "StudioSmokeTests"
+      ],
+      "method_count": 8,
+      "methods": [
+        "testSettingsFeet3DFitAndSimulatorARManualFallback",
+        "testRecipeEditSaveAndReopen",
+        "testCameraFocalLengthUndoAndRelaunch",
+        "testMeterBalanceSaveUndoAndRelaunch",
+        "testStudyRendersActualReferenceFrame",
+        "testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene",
+        "testCorruptProjectBlocksSavingAcrossRelaunch",
+        "testStudioGuideKeepsUnsavedSetupSelectionAndHistory"
+      ],
+      "conditional_lines": [
+        "    #if targetEnvironment(simulator)",
+        "    #endif"
+      ]
+    },
+    {
+      "path": "NativeTests/BoundedFileReaderTests.swift",
+      "blob_sha": "7afb4c0edc67c310fe1da87e2e79ca7ea9b4e1cb",
+      "classes": [
+        "BoundedFileReaderTests"
+      ],
+      "method_count": 13,
+      "methods": [
+        "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+        "testMetadataPreflightHonorsActualTaskCancellation",
+        "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "testRejectsOversizeBeforeAnyReadCheckpoint",
+        "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+        "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+        "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+        "testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+        "testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+        "testCheckpointCannotSuppressActualTaskCancellation",
+        "testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/LightingPlanPDFTests.swift",
+      "blob_sha": "57e6619a02d55a14972ffde0368e1f2927f491f9",
+      "classes": [
+        "LightingPlanPDFTests"
+      ],
+      "method_count": 4,
+      "methods": [
+        "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+        "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+        "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+        "testEmptySceneStillProducesReadableDiagramAndSchedule"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/ProjectDocumentIOTests.swift",
+      "blob_sha": "96f33253c58ace19d83d02d33791e05351b3b7e7",
+      "classes": [
+        "ProjectDocumentIOTests"
+      ],
+      "method_count": 9,
+      "methods": [
+        "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+        "testOversizedFileIsRejectedBeforeReadingItsContents",
+        "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+        "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+        "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+        "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+        "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+        "testCancelledReaderDoesNotPublishOrModifyASelectedProject"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "blob_sha": "1c108acca53243472810eef5cb8570fee99fe674",
+      "classes": [
+        "ProjectLibraryPresentationTests"
+      ],
+      "method_count": 8,
+      "methods": [
+        "testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+        "testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+        "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+        "testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+        "testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars",
+        "testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+        "testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+        "testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/ProjectStoreOperationTests.swift",
+      "blob_sha": "7005e2583b347c46e2fb3fd92e0c60e1f7c506c4",
+      "classes": [
+        "ProjectStoreOperationTests"
+      ],
+      "method_count": 16,
+      "methods": [
+        "testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+        "testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+        "testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+        "testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+        "testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+        "testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+        "testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+        "testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+        "testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+        "testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+        "testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+        "testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+        "testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+        "testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects",
+        "testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+        "testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult"
+      ],
+      "conditional_lines": [
+        "    #if DEBUG",
+        "    #endif"
+      ]
+    },
+    {
+      "path": "NativeTests/ReferencePhotoTests.swift",
+      "blob_sha": "91a4f5956579df8d248a82cc881b1baf67ab367a",
+      "classes": [
+        "ReferencePhotoTests"
+      ],
+      "method_count": 7,
+      "methods": [
+        "testRotatesReducesAndRemovesSourceMetadata",
+        "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+        "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones",
+        "testRejectsMalformedAndOversizedInputs",
+        "testFileRepresentationConsumesOnlyItsTemporaryFile",
+        "testFileSizeBoundBeforeDecode",
+        "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/RoomRotationReadoutTests.swift",
+      "blob_sha": "fccf67bb8302904007ae902a46d186fbf493c0be",
+      "classes": [
+        "RoomRotationReadoutTests"
+      ],
+      "method_count": 3,
+      "methods": [
+        "testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+        "testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+        "testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/SpatialEmitterGeometryTests.swift",
+      "blob_sha": "7fecaa44cbed76f421a0d91d6553754ece2908c4",
+      "classes": [
+        "SpatialEmitterGeometryTests"
+      ],
+      "method_count": 5,
+      "methods": [
+        "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+        "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+        "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+        "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+        "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/SpatialPreviewTests.swift",
+      "blob_sha": "4475b46c379e08e4bc8509f75031d1636ce50d83",
+      "classes": [
+        "SpatialPreviewTests"
+      ],
+      "method_count": 3,
+      "methods": [
+        "testTranslatedRigAndModifierFitActualSceneKitProjection",
+        "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+        "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudioPaletteTests.swift",
+      "blob_sha": "3e9b05371e4855f36aa9c4ec634b422dcf578450",
+      "classes": [
+        "StudioPaletteTests"
+      ],
+      "method_count": 5,
+      "methods": [
+        "testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+        "testProjectSheetControlsContrastOnTheirProductionSurfaces",
+        "testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows",
+        "testFixedPlanTextAndLightControlsContrastInBothAppearances",
+        "testPlanColorsStayFixedWhenInterfaceAppearanceChanges"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudioSliderEditingTests.swift",
+      "blob_sha": "8fef54c202db6c48f4767a40c2dc00bb45581e8e",
+      "classes": [
+        "StudioSliderEditingTests"
+      ],
+      "method_count": 8,
+      "methods": [
+        "testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+        "testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+        "testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+        "testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+        "testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+        "testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+        "testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue",
+        "testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudioSliderTrackingTests.swift",
+      "blob_sha": "c3e435726f8192a2228740b5dfb759af2ed67599",
+      "classes": [
+        "StudioSliderTrackingTests"
+      ],
+      "method_count": 18,
+      "methods": [
+        "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "testValueAfterEndCannotReopenHistoryOrDisableUndo",
+        "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "testSessionRetainsOriginalWriterAndRange",
+        "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "testReadThatFinishesSessionCannotReopenHistory",
+        "testReadThatReplacesSessionCannotReopenRetiredOwner",
+        "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudioTextFieldTests.swift",
+      "blob_sha": "2b7e89a2f02b22b981278bb72ef6a49801dc0833",
+      "classes": [
+        "StudioTextFieldTests"
+      ],
+      "method_count": 14,
+      "methods": [
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudioTrackingSliderTests.swift",
+      "blob_sha": "df0f559fbacd691f893aefef3ff24ebd8332d382",
+      "classes": [
+        "StudioTrackingSliderTests"
+      ],
+      "method_count": 3,
+      "methods": [
+        "testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble",
+        "testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+        "testInvalidRangeDisablesNativeControlWithoutWritingTheModel"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob_sha": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+      "classes": [
+        "StudyRenderCacheTests"
+      ],
+      "method_count": 11,
+      "methods": [
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testSubjectAndResolutionDoNotShareFrames",
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached"
+      ],
+      "conditional_lines": []
+    },
+    {
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blob_sha": "20519ae77dc2c97226a2fea40e78388ddeb73836",
+      "classes": [
+        "StudyRendererTests"
+      ],
+      "method_count": 7,
+      "methods": [
+        "testMetalMatchesCPUOnAvailableDevice",
+        "testEnginePublishesRealFrameWithEitherBackend",
+        "testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+        "testEngineUsesCPUForFarGeometry",
+        "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+        "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "testAdditionalCancellationPredicateCannotSuppressTaskCancellation"
+      ],
+      "conditional_lines": []
+    }
+  ],
+  "counts": {
+    "required_native_methods": 134,
+    "required_native_classes": 16,
+    "required_ui_methods": 35,
+    "required_ui_classes": 8,
+    "diagnostic_ui_methods": 2,
+    "diagnostic_ui_classes": 1,
+    "ui_helper_files_without_tests": 1
+  },
+  "shards": [
+    {
+      "name": "unit",
+      "target": "KeyAndFillTests",
+      "method_count": 134,
+      "selector": "-only-testing:KeyAndFillTests"
+    },
+    {
+      "name": "room-precision",
+      "target": "KeyAndFillUITests",
+      "classes": [
+        "ManualRoomPlacementUITests",
+        "PrecisionEditingUITests"
+      ],
+      "method_count": 5
+    },
+    {
+      "name": "library-reference",
+      "target": "KeyAndFillUITests",
+      "classes": [
+        "ProjectLibraryUITests",
+        "ReferenceComparisonUITests"
+      ],
+      "method_count": 9
+    },
+    {
+      "name": "studio-export",
+      "target": "KeyAndFillUITests",
+      "classes": [
+        "StudioSmokeTests",
+        "LightingPlanExportUITests"
+      ],
+      "method_count": 10
+    },
+    {
+      "name": "studio-optics",
+      "target": "KeyAndFillUITests",
+      "classes": [
+        "StudioOpticsUITests"
+      ],
+      "method_count": 10
+    },
+    {
+      "name": "app-accessibility",
+      "target": "KeyAndFillUITests",
+      "classes": [
+        "StudioAppAccessibilityUITests"
+      ],
+      "method_count": 1
+    },
+    {
+      "name": "platform-audit",
+      "target": "KeyAndFillUITests",
+      "classes": [
+        "AccessibilityAuditUITests"
+      ],
+      "method_count": 2,
+      "required": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "source-method-count",
+      "outcome": "confirmed statically",
+      "detail": "Fetched all entries from pinned NativeTests and UITests directories, then read all 26 Swift files and enumerated class/test-method declarations. No directories or nested files exist at this ref; no duplicate method names were observed. Counts are source inventory, not executed tests."
+    },
+    {
+      "id": "current-partition",
+      "outcome": "consistent",
+      "detail": "SHARDS contains eight required classes across five shards; DIAGNOSTIC_SHARDS contains AccessibilityAuditUITests only. UI helper contains no test methods. All nine UI test classes have exactly one assignment."
+    },
+    {
+      "id": "workflow-selection",
+      "outcome": "consistent",
+      "detail": "ios-prototype.yml line 361 required shard list exactly matches SHARDS. All five include entries correspond once to those same shard names. Native uses TEST_SHARD unit and emits only KeyAndFillTests; UI uses matrix.shard and emits class selectors. Each selected command uses the generated selector array."
+    },
+    {
+      "id": "diagnostic-boundary-current",
+      "outcome": "consistent",
+      "detail": "platform-accessibility-diagnostics.yml is currently workflow_dispatch-only and TEST_SHARD is platform-audit. The two audit methods remain intact and are excluded from required 35 UI methods."
+    },
+    {
+      "id": "duplicate-missing-unknown",
+      "outcome": "guards and regression tests inspected",
+      "detail": "check rejects overlapping required/diagnostic shard names, repeated classes, missing/stale class assignments, duplicate/unknown/missing matrix members and mismatched diagnostic selectors. CLI unknown selectors raise before emitting unrestricted selection. Tests inspect these failure cases; they were not run."
+    },
+    {
+      "id": "nested-source-discovery",
+      "outcome": "consistent",
+      "detail": "Both discover_ui_classes and discover_methods use rglob('*.swift'). Regression source covers nested relocation, new unassigned nested class and duplicate class in nested directories. project.yml sources NativeTests/UITests match these source roots."
+    },
+    {
+      "id": "inventory-ambiguity",
+      "outcome": "guard inspected",
+      "detail": "discover_methods rejects multiple recognized XCTestCase classes in a method-containing file, duplicate method names and repeated class names. Empty selected suites cannot pass verification. Current method-containing sources all have one recognized class."
+    },
+    {
+      "id": "deterministic-output",
+      "outcome": "consistent for externally reported inventory",
+      "detail": "Selection order is from declared tuples; expected method inventory is sorted before reporting and iteration. Filesystem rglob order does not affect expected membership or sorted inventory. Error text that embeds Python sets may have nondeterministic ordering, without changing acceptance."
+    },
+    {
+      "id": "conditional-methods",
+      "outcome": "count context matches configured jobs",
+      "detail": "ProjectStoreOperationTests DEBUG methods are active in required Debug native invocation; StudioSmokeTests simulator method is active in required simulator invocation."
+    },
+    {
+      "id": "regression-test-source",
+      "outcome": "reviewed, not run",
+      "detail": "scripts/tests/test_native_test_shards.py has 29 test methods; focused inventory/selector checks were inspected. Execution-log semantics and current CI outcomes remain assigned to workers093 and100."
+    }
+  ],
+  "findings": [
+    {
+      "id": "W092-01",
+      "severity": "P2",
+      "category": "diagnostic-boundary guard hardening",
+      "title": "Opt-in diagnostic guard accepts additional event keys outside its five-item deny-list",
+      "path": "scripts/native_test_shards.py",
+      "blob_sha": "71dae8d6a8f445895d273f565ef98bd353598e46",
+      "line_start": 64,
+      "line_end": 67,
+      "case": "Keep the existing workflow_dispatch entry and TEST_SHARD: platform-audit, but add a sibling pull_request_target: event to on:. The required workflow_dispatch regex still matches; pull_request_target is absent from the forbidden-event alternation. The guard therefore has no failing predicate for this case.",
+      "evidence": "The forbidden-event expression is (push|pull_request|schedule|workflow_run|workflow_call):. test_diagnostic_cannot_be_automatic_unassigned_or_duplicate checks replacement with push, addition of schedule, unknown selector and repeated class assignment, but does not cover other event keys.",
+      "impact": "The validation code does not fully enforce its stated explicit-dispatch-only boundary against future workflow edits. The pinned workflow is correctly manual-only; this finding does not claim that diagnostics currently run automatically or that required suite counts are wrong.",
+      "recommendation": "Validate the actual on event mapping against an explicit allowed set containing only workflow_dispatch, rejecting all additional event keys and unsupported shapes; add regression cases preserving workflow_dispatch while adding a disallowed event.",
+      "validation": "Reasoned static counterexample only; repository script and regression tests were not executed."
+    }
+  ],
+  "limitations": [
+    "No host, Python unittest, agent_cycle, Swift or xcodebuild execution was performed.",
+    "No current workflow results, runtime log accounting, screenshots, visual transport or CI budget review was performed.",
+    "Inventory uses the current source naming/container convention; it is not a compiler-derived XCTest discovery listing.",
+    "No source, tree, commit, branch or ref changed; only this unreferenced report blob is created."
+  ],
+  "execution_claims": [],
+  "source_changes": [],
+  "integration_recommendation": "Keep current required 134-native/35-UI inventory. Treat W092-01 as nonblocking guard hardening and reconcile actual execution separately."
+}

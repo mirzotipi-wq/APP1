@@ -1,0 +1,156 @@
+{
+  "worker": "w042",
+  "context_path": "/root/w007_review_coordinator/w042_plan_drag_transactions",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Plan drag origin, frozen scale, coordinate sign, completion and shared history integration; asynchronous project operation identity and selection policy excluded.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b"
+    },
+    {
+      "path": "App/StudioSliderEditing.swift",
+      "blob_sha": "952903a30de3f3eecc485a6355afa0ecb55a2812"
+    },
+    {
+      "path": "App/StudioPlanMarkers.swift",
+      "blob_sha": "741916b17e822d00b2d2cd422aa7728e8b1fc141"
+    },
+    {
+      "path": "App/StudioSlider.swift",
+      "blob_sha": "39f522e3858cd60e94c4af026817bcb1810de818"
+    },
+    {
+      "path": "Sources/LightingCore/SceneEditHistory.swift",
+      "blob_sha": "85989b11d8bbb2808ea05e8f435a45c0a2353831"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SceneTransformTests.swift",
+      "blob_sha": "691a0c9ed0310823714d9498365eb3444d7dd1d5"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SceneEditHistoryTests.swift",
+      "blob_sha": "2768088f683d93dd1e4fe77cac8d42c8d5ccca6e"
+    },
+    {
+      "path": "NativeTests/StudioSliderEditingTests.swift",
+      "blob_sha": "8fef54c202db6c48f4767a40c2dc00bb45581e8e"
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "blob_sha": "b506f6f5ba8f7e6075fd91d00ffc056c7317b2c5"
+    },
+    {
+      "path": "UITests/StudioOpticsUITests.swift",
+      "blob_sha": "096f1c7b863fa6256f785c5aec077a1f610a115c"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blob_sha": "1dcd3990cf65912cac4d4cdeb7ae3012a5975651"
+    }
+  ],
+  "checks": [
+    {
+      "kind": "remote_source_review",
+      "result": "reviewed",
+      "detail": "Read startup directives and m02-m03-code-v2 at the pinned base. No local repository or execution host was available."
+    },
+    {
+      "kind": "remote_source_review",
+      "result": "no_concrete_defect_found",
+      "paths": [
+        "App/StudioView.swift"
+      ],
+      "detail": "PlanDrag captures initial scene and positive finite pointsPerMeter. Bounds/center fit uses the captured scene during drag. dragLight computes source.x + cumulative width/scale and source.z + cumulative height/scale consistently with point()'s positive screen-Y/positive-Z projection, preserves source.y, clamps Position.coordinateRange, and validates the final position."
+    },
+    {
+      "kind": "remote_source_review",
+      "result": "no_concrete_defect_found",
+      "paths": [
+        "App/StudioPlanMarkers.swift",
+        "App/StudioView.swift"
+      ],
+      "detail": "Marker drag uses .global translation, stable marker identity and captured change/completion callbacks. The terminal translation publishes before finishDrag. GestureState reset, loss of dragging/enabled state and disappearance invoke idempotent completion; marker ownership clears before calling the parent. Parent completion qualifies the light and generation before ending the owned history transaction and clearing PlanDrag. Lifecycle/mode/selection force-close paths are present."
+    },
+    {
+      "kind": "remote_source_review",
+      "result": "no_concrete_defect_found",
+      "paths": [
+        "App/StudioSliderEditing.swift",
+        "App/StudioSlider.swift",
+        "Sources/LightingCore/SceneEditHistory.swift"
+      ],
+      "detail": "StudioSliderEditing begins before first nontrivial finite write. Shared SceneEditHistory coalesces repeated begins from one owner, commits the preceding owner when another begins, ignores unmatched late ends, and preserves redo for unchanged edits. Accessibility adjustments finish as discrete commands. Native slider forwards final value before completion and ignores value events outside tracking."
+    },
+    {
+      "kind": "test_source_review",
+      "result": "coverage_present_not_executed",
+      "paths": [
+        "NativeTests/StudioSliderEditingTests.swift",
+        "Tests/LightingCoreTests/SceneEditHistoryTests.swift",
+        "UITests/StudioOpticsUITests.swift"
+      ],
+      "detail": "Reviewed authored checks for early first-write ordering, repeated begins, cancellation, separate accessibility steps, late other-owner ends, exact precision edits after a gesture, and one-step width undo/redo/relaunch. None was executed by this worker."
+    },
+    {
+      "kind": "test_source_review",
+      "result": "coverage_limit",
+      "paths": [
+        "Tests/LightingCoreTests/SceneTransformTests.swift",
+        "UITests/StudioSmokeTests.swift",
+        "UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "detail": "SceneTransformTests verifies rotational boundary/bit invariants, not Plan screen drag math. Smoke tests exercise other studio workflows and guide/history retention. App accessibility checks select Plan markers but do not drag them. These inspected tests do not directly prove Plan drag cumulative movement, end/cancellation closure, or its one-step undo/redo."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Source and authored-test review only; no scripts, builds, tests, simulator, physical device or screenshot execution.",
+    "Review is pinned to 7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f; no claim about a newer main revision.",
+    "No concrete production defect was established. SwiftUI cancellation callback ordering and coordinate behavior during viewport resizing remain runtime-unverified.",
+    "Suggested follow-up coverage: an actual selected-marker drag in both axes with preserved height, multiple cumulative updates, one Undo/Redo, and interruption/cancel closure; this suggestion is not a fabricated failure.",
+    "Asynchronous project-operation identity and selection-policy correctness were excluded per assignment.",
+    "No source, tree, commit, branch or ref changed; the sole write is this authorized unreferenced report blob."
+  ],
+  "status": "complete"
+}

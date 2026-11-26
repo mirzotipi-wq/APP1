@@ -1,0 +1,457 @@
+{
+  "schema": 1,
+  "worker": "APP1 worker100",
+  "context_path": "/root/w007_review_coordinator/w100_current_native_ui_evidence",
+  "repository": "mirzotipi-wq/APP1",
+  "base_ref": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "phase": "Independent 006 query-reduction source review",
+  "status": "COMPLETE_SOURCE_REVIEW_NO_CONCRETE_BLOCKER_UNCOMPILED_UNEXECUTED",
+  "generated_at": "2026-11-26T07:11:40.028Z",
+  "authorization": "Read-only GitHub source comparison and pure JavaScript analysis. Only this unreferenced JSON report is created. No source/tree/ref edits, workflow changes, compiler execution, test run, retries, new contexts, or workspace changes.",
+  "candidates": [
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "base_sha": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5",
+      "candidate_sha": "342485407554ade056f31d479517855b70579895",
+      "changed_function": "revealStudioContent",
+      "decoded_characters": 21104
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "base_sha": "5c5f6360f63267f6dc50473d88a7261bb0387e3b",
+      "candidate_sha": "cf6c51b5bcf0db240c3354507fbaaa2c63e6213b",
+      "changed_function": "contentViewport",
+      "decoded_characters": 28820
+    }
+  ],
+  "evidence_context": {
+    "actual_terminal_cd5_report": "94118452a22bd663e47149f839090a110baaffcd",
+    "prior_four_shard_report": "c91102c9742ee7df4d7c4e190399d1019bdf4ef8",
+    "actual_AX_job": 139715217068,
+    "actual_run": 45761900201,
+    "actual_boundary": "The unchanged baseline timed out after 45 minutes while querying Select Fill on plan during AXXXL; it had one start and no terminal, and lacked a finalized result bundle. Thirteen capture-name emissions are not recovered image evidence."
+  },
+  "exact_comparisons": [
+    {
+      "kind": "reachability",
+      "changed_function": "func revealStudioContent(",
+      "prefix_byte_identical": true,
+      "suffix_byte_identical": true,
+      "keyboard_and_input_assistant_block_identical": true,
+      "old_test_methods": [],
+      "new_test_methods": [],
+      "timeout_literals_identical": true,
+      "capture_calls_identical": true,
+      "old_assertion_calls": 16,
+      "new_assertion_calls": 16,
+      "all_new_assertion_delta_is_failclosed": true
+    },
+    {
+      "kind": "ax",
+      "changed_function": "private func contentViewport(",
+      "prefix_byte_identical": true,
+      "suffix_byte_identical": true,
+      "keyboard_and_input_assistant_block_identical": true,
+      "old_test_methods": [
+        "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ],
+      "new_test_methods": [
+        "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ],
+      "timeout_literals_identical": true,
+      "capture_calls_identical": true,
+      "old_assertion_calls": 56,
+      "new_assertion_calls": 58,
+      "all_new_assertion_delta_is_failclosed": true
+    }
+  ],
+  "complete_diffs": {
+    "reachability": [
+      {
+        "kind": "+",
+        "old": 142,
+        "new": 142,
+        "text": "        revealAttempts: for _ in 0..<12 {"
+      },
+      {
+        "kind": "-",
+        "old": 142,
+        "new": 143,
+        "text": "        for _ in 0..<12 {"
+      },
+      {
+        "kind": "+",
+        "old": 150,
+        "new": 150,
+        "text": "            // Reuse this real window frame only within the current attempt."
+      },
+      {
+        "kind": "+",
+        "old": 150,
+        "new": 151,
+        "text": "            // A scroll starts a new attempt and reads all geometry again."
+      },
+      {
+        "kind": "+",
+        "old": 150,
+        "new": 152,
+        "text": "            let appFrame = app.frame"
+      },
+      {
+        "kind": "+",
+        "old": 150,
+        "new": 153,
+        "text": "            var viewport = appFrame.insetBy(dx: 0, dy: fullyVisible ? 0 : 100)"
+      },
+      {
+        "kind": "-",
+        "old": 150,
+        "new": 154,
+        "text": "            var viewport = app.frame.insetBy(dx: 0, dy: fullyVisible ? 0 : 100)"
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 169,
+        "text": "                // One snapshot supplies each bar's identifier and geometry."
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 170,
+        "text": "                // A failed read must fail this attempt, never omit an obstacle."
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 171,
+        "text": "                guard let navigationStates = try? navigationBars.map({ try $0.snapshot() }) else {"
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 172,
+        "text": "                    break revealAttempts"
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 173,
+        "text": "                }"
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 174,
+        "text": "                let navigationIdentifiers = Set(navigationStates.map { $0.identifier })"
+      },
+      {
+        "kind": "+",
+        "old": 166,
+        "new": 175,
+        "text": "                let navigationBottom = navigationStates.map { $0.frame }"
+      },
+      {
+        "kind": "-",
+        "old": 166,
+        "new": 176,
+        "text": "                let navigationIdentifiers = Set(navigationBars.map(\\.identifier))"
+      },
+      {
+        "kind": "-",
+        "old": 167,
+        "new": 176,
+        "text": "                let navigationBottom = navigationBars.map(\\.frame)"
+      },
+      {
+        "kind": "+",
+        "old": 190,
+        "new": 198,
+        "text": "                    guard let controlState = try? control.snapshot() else { break revealAttempts }"
+      },
+      {
+        "kind": "+",
+        "old": 190,
+        "new": 199,
+        "text": "                    let owners = app.otherElements.containing(.button, identifier: controlState.identifier)"
+      },
+      {
+        "kind": "+",
+        "old": 190,
+        "new": 200,
+        "text": "                        .children(matching: .navigationBar)"
+      },
+      {
+        "kind": "+",
+        "old": 190,
+        "new": 201,
+        "text": "                        .matching(NSPredicate(format: \"identifier IN %@\", Array(navigationIdentifiers)))"
+      },
+      {
+        "kind": "+",
+        "old": 190,
+        "new": 202,
+        "text": "                    guard owners.firstMatch.exists else { continue }"
+      },
+      {
+        "kind": "+",
+        "old": 190,
+        "new": 203,
+        "text": "                    viewport.size.height = max(0, min(viewport.maxY, controlState.frame.minY) - viewport.minY)"
+      },
+      {
+        "kind": "-",
+        "old": 190,
+        "new": 204,
+        "text": "                    let owners = app.otherElements.containing(.button, identifier: control.identifier)"
+      },
+      {
+        "kind": "-",
+        "old": 191,
+        "new": 204,
+        "text": "                        .children(matching: .navigationBar).allElementsBoundByIndex"
+      },
+      {
+        "kind": "-",
+        "old": 192,
+        "new": 204,
+        "text": "                    guard owners.contains(where: { navigationIdentifiers.contains($0.identifier) }) else { continue }"
+      },
+      {
+        "kind": "-",
+        "old": 193,
+        "new": 204,
+        "text": "                    viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)"
+      },
+      {
+        "kind": "+",
+        "old": 208,
+        "new": 218,
+        "text": "                        let observed = container.frame.intersection(appFrame)"
+      },
+      {
+        "kind": "-",
+        "old": 208,
+        "new": 219,
+        "text": "                        let observed = container.frame.intersection(app.frame)"
+      },
+      {
+        "kind": "+",
+        "old": 236,
+        "new": 246,
+        "text": "                guard viewport.height >= 48, appFrame.height > 0 else { break }"
+      },
+      {
+        "kind": "+",
+        "old": 236,
+        "new": 247,
+        "text": "                startY = (viewport.minY - appFrame.minY + viewport.height * (down ? 0.78 : 0.30)) / appFrame.height"
+      },
+      {
+        "kind": "+",
+        "old": 236,
+        "new": 248,
+        "text": "                endY = (viewport.minY - appFrame.minY + viewport.height * (down ? 0.30 : 0.78)) / appFrame.height"
+      },
+      {
+        "kind": "-",
+        "old": 236,
+        "new": 249,
+        "text": "                guard viewport.height >= 48, app.frame.height > 0 else { break }"
+      },
+      {
+        "kind": "-",
+        "old": 237,
+        "new": 249,
+        "text": "                startY = (viewport.minY - app.frame.minY + viewport.height * (down ? 0.78 : 0.30)) / app.frame.height"
+      },
+      {
+        "kind": "-",
+        "old": 238,
+        "new": 249,
+        "text": "                endY = (viewport.minY - app.frame.minY + viewport.height * (down ? 0.30 : 0.78)) / app.frame.height"
+      },
+      {
+        "kind": "+",
+        "old": 244,
+        "new": 254,
+        "text": "                ? (viewport.minX - appFrame.minX + viewport.width * 0.97) / appFrame.width : 0.97"
+      },
+      {
+        "kind": "-",
+        "old": 244,
+        "new": 255,
+        "text": "                ? (viewport.minX - app.frame.minX + viewport.width * 0.97) / app.frame.width : 0.97"
+      }
+    ],
+    "accessibility": [
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 411,
+        "text": "        // Keep this independent check fresh after reveal. Each bar contributes"
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 412,
+        "text": "        // its identifier and frame from one actual snapshot."
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 413,
+        "text": "        guard let navigationStates = try? navigationBars.map({ try $0.snapshot() }) else {"
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 414,
+        "text": "            XCTFail(\"Could not snapshot owning navigation bars for \\(state.label)\")"
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 415,
+        "text": "            return .null"
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 416,
+        "text": "        }"
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 417,
+        "text": "        let navigationIdentifiers = Set(navigationStates.map { $0.identifier })"
+      },
+      {
+        "kind": "+",
+        "old": 411,
+        "new": 418,
+        "text": "        let navigationBottom = navigationStates.map { $0.frame }"
+      },
+      {
+        "kind": "-",
+        "old": 411,
+        "new": 419,
+        "text": "        let navigationIdentifiers = Set(navigationBars.map(\\.identifier))"
+      },
+      {
+        "kind": "-",
+        "old": 412,
+        "new": 419,
+        "text": "        let navigationBottom = navigationBars.map(\\.frame)"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 439,
+        "text": "            guard let controlState = try? control.snapshot() else {"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 440,
+        "text": "                XCTFail(\"Could not snapshot a hittable fixed control\")"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 441,
+        "text": "                return .null"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 442,
+        "text": "            }"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 443,
+        "text": "            let owners = app.otherElements.containing(.button, identifier: controlState.identifier)"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 444,
+        "text": "                .children(matching: .navigationBar)"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 445,
+        "text": "                .matching(NSPredicate(format: \"identifier IN %@\", Array(navigationIdentifiers)))"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 446,
+        "text": "            guard owners.firstMatch.exists else { continue }"
+      },
+      {
+        "kind": "+",
+        "old": 433,
+        "new": 447,
+        "text": "            viewport.size.height = max(0, min(viewport.maxY, controlState.frame.minY) - viewport.minY)"
+      },
+      {
+        "kind": "-",
+        "old": 433,
+        "new": 448,
+        "text": "            let owners = app.otherElements.containing(.button, identifier: control.identifier)"
+      },
+      {
+        "kind": "-",
+        "old": 434,
+        "new": 448,
+        "text": "                .children(matching: .navigationBar).allElementsBoundByIndex"
+      },
+      {
+        "kind": "-",
+        "old": 435,
+        "new": 448,
+        "text": "            guard owners.contains(where: { navigationIdentifiers.contains($0.identifier) }) else { continue }"
+      },
+      {
+        "kind": "-",
+        "old": 436,
+        "new": 448,
+        "text": "            viewport.size.height = max(0, min(viewport.maxY, control.frame.minY) - viewport.minY)"
+      }
+    ]
+  },
+  "semantic_review": {
+    "actual_target_ownership": "The owning navigation bar selection is unchanged: ancestors represented by app.otherElements.containing(target element type, target identifier or label), then direct navigationBar children. The patch does not switch to all app navigation bars, a covered sheet, or an unrelated global owner.",
+    "immutable_attribute_reads": "Each selected navigation bar now supplies identifier and frame through one actual XCUIElementSnapshot. Each hittable fixed control similarly supplies identifier and frame from its own snapshot. These are actual observations; no expected geometry or duplicate label is fabricated.",
+    "owner_intersection": "The old predicate was owners.contains(where: navigationIdentifiers.contains(owner.identifier)). The new query asks the same direct navigationBar children to match identifier IN Array(navigationIdentifiers), then requires firstMatch.exists. For a successful query this preserves the same nonempty intersection, including the empty-set case. It does not replace ownership with a global identifier lookup.",
+    "fixed_controls": "The fixed control list remains exactly undo and projectLibraryDone. The original control.isHittable filter remains. The lower viewport boundary still comes from the actual matched owner's control frame.minY. Covered fixed controls are not newly admitted merely by existing in the accessibility tree.",
+    "navigation_geometry": "The same nonempty, finite-maxY, viewport-intersecting bar frames determine the maximum navigation bottom. Top trimming is unchanged.",
+    "keyboard": "The entire keyboard and input-assistant block is byte-identical in both changed functions: only when a real keyboard exists, trim at the earliest intersecting finite/nonempty frame among keyboard, inputView and SystemInputAssistantView. Keyboard visibility assertions and introduction handling elsewhere are byte-identical.",
+    "real_scroll_viewport": "The actual target-containing scrollView, collectionView and table selection remains unchanged. Fully visible reveal still intersects its viewport with the real scroll surface and requires containment of the entire target frame plus current target.isHittable. The independent contentViewport check still begins with a real scroll-container intersection and fails for a null viewport.",
+    "fresh_geometry": "Only app.frame is cached, within one reveal attempt. After every drag a new iteration reads it again. No viewport is cached across scrolling, target changes, sheets, or workflow steps. contentViewport independently reads fresh geometry after reveal; it does not reuse the reveal function's cached viewport.",
+    "gesture_bounds": "Twelve reveal attempts, directional logic, the >=48pt usable viewport requirement, edge x=0.97, y fractions0.78/0.30 and press duration0.05 are unchanged. Cached appFrame is used consistently for its intersection and normalized coordinate denominators.",
+    "fail_closed_snapshots": "If any navigation bar snapshot or eligible fixed-control snapshot throws, reveal breaks the labelled outer loop and reaches its existing retained screenshot/hierarchy and XCTFail path. contentViewport explicitly records XCTFail and returns CGRect.null. Snapshot failures are not converted into empty obstacle lists or success.",
+    "target_snapshot_failure": "The original fullyVisible target snapshot guard remains: failure to obtain an existing target's snapshot exits reveal and reaches failure diagnostics. No fallback to parent or midpoint is introduced for full-frame callers.",
+    "existing_oracles": "All existing assertions outside the two functions are byte-identical. Reachability assertion count stays16. AX source assertion count changes56->58 solely because of two new snapshot-failure XCTFail calls; existing assertions are preserved.",
+    "counts_and_capture_contract": "No test method is added or removed. Required UI inventory remains35; the AX class retains exactly its one required method. All12 capture calls per category and both Default/AXXXL workflow calls are byte-identical, preserving24 required originals.",
+    "waits_and_thresholds": "Every timeout literal in both files is identical. Readiness waits, enabled checks, 44pt hit-target helper, exact UIFont line-box/physical-pixel minima, recorded Text transport validation, true viewport containment, and >=1.25 dynamic-type growth checks remain unchanged.",
+    "scope_and_build": "Computed prefix/suffix comparisons establish every byte outside revealStudioContent and contentViewport is unchanged. No app, native-test, workflow, outer timeout, method inventory, or capture contract source is part of these two blobs.",
+    "Swift_API_review": "The throwing snapshot map, labelled loop break, Set<String> to identifier-IN predicate, existing XCUIElementSnapshot existential attributes and firstMatch.exists query introduce no concrete Swift5/API issue apparent from this source inspection. No compiler or runtime verification is claimed."
+  },
+  "runtime_limits": [
+    "Fewer separate attribute reads and owner enumeration calls do not prove a specific performance gain. snapshot() and predicate resolution can still be expensive or time out; actual runtime must measure the result.",
+    "Successful-query predicate equivalence does not establish timing or behavior of a future XCTest query under runtime failure. Newly explicit snapshot failures are fail-closed, while existing query APIs retain their platform behavior.",
+    "Per-attempt app frame reuse assumes no deliberate layout mutation before the attempt's drag; the code retains fresh reads after each drag and an independent fresh containment check. No cross-attempt cache is introduced.",
+    "This is an unreferenced source candidate, not a tested integrated tree. Root owns integration, measured outer budgets, result preservation and any runtime validation.",
+    "The original cd5 timeout, absent finalized result, missing compact artifact and both failed visual jobs remain unchanged.",
+    "No original PNG bytes, visual acceptance, full35 UI pass, full native pass, or M03 pass is inferred from this source change."
+  ],
+  "findings": [],
+  "verdict": "No concrete source blocker identified. The pair preserves ownership, keyboard/navigation exclusions, actual scroll-container containment, thresholds, individual waits, required methods and captures while reducing repeated query work. Suitable for root integration and measured validation; performance and acceptance remain unproven.",
+  "mutation": "Only this unreferenced JSON source-review report blob is created."
+}

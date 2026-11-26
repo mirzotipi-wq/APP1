@@ -1,0 +1,121 @@
+{
+  "worker": "w051",
+  "context_path": "/root/w007_review_coordinator/w051_study_camera_intersections",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Source/test review of StudyGeometry sphere/panel intersections and ReferenceStudyRenderer camera-ray construction and numerical precision; lighting sampling, cancellation and compute packing excluded.",
+  "repository": "mirzotipi-wq/APP1",
+  "method": "Read-only GitHub API retrieval at the assigned immutable revision; manual source and test inspection. No Swift execution or local host commands.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "blob_sha": "7d2c50105bda390ca49cdaa75711380cc5047ae7"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6"
+    },
+    {
+      "path": "Tests/LightingCoreTests/CameraFramingTests.swift",
+      "blob_sha": "12da7cbc4a87e202d7863973c3a9d8e6077e892f"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ReferenceStudyTests.swift",
+      "blob_sha": "6bea31ecac52420612c88c8542ef84b4c99882cd"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "checks": [
+    {
+      "scope": "Startup and acceptance",
+      "result": "Read AGENTS.md, mandatory startup documents and m02-m03-code-v2; distinguished source review from required rendering/precision execution."
+    },
+    {
+      "scope": "ReferenceStudy.swift lines 62-82",
+      "result": "Checked bounded finite geometry and sphere quadratic. The b*b-c discriminant and -b±sqrt(discriminant) roots are algebraically correct for normalized directions; near then far selection honors the supplied minimum. Primary rays are normalized immediately before use."
+    },
+    {
+      "scope": "ReferenceStudy.swift lines 85-92",
+      "result": "Checked sphere and panel shadow intersections, epsilon bounds and segment endpoint exclusion. Panel intersection checks both finite panel axes. No concrete incorrect hit or miss found for the supported input domain."
+    },
+    {
+      "scope": "ReferenceStudy.swift lines 447-458",
+      "result": "Checked 3:2 output geometry, finite supported lens range via CameraFraming, camera-above-panel guard, and camera distance beyond sphere radius plus minimum depth."
+    },
+    {
+      "scope": "ReferenceStudy.swift lines 495-515",
+      "result": "Checked pixel-center sensor mapping, image-y inversion, normalized perspective ray, optical-axis near-plane conversion minimumDepth/dot(ray,forward), downward panel-ray condition, finite panel bounds and closest-hit selection."
+    },
+    {
+      "scope": "CameraFraming.swift and StudioOptics.swift EmitterFrame",
+      "result": "Checked camera right sign, forward -Z convention, unit frame construction, explicit vertical fallback, 36x24 mm sensor and project() inverse mapping. EmitterFrame validates camera and subject positions."
+    },
+    {
+      "scope": "Scene.swift coordinate limits and Double camera path",
+      "result": "Checked that supported positions are finite and bounded to [-100,100] meters on each axis and the CPU intersection/ray math uses Double. No concrete precision failure identified by inspection. This does not establish the required eight-fixture numerical result."
+    },
+    {
+      "scope": "ReferenceStudyTests.swift and CameraFramingTests.swift",
+      "result": "Inspected existing sphere-shadow/open-panel checks, deterministic image/dark-scene assertions and coincident-camera rejection, plus focal length/FOV, center/edge projection, side and vertical camera, minimum-depth and invalid-lens tests. Tests were not executed."
+    }
+  ],
+  "findings": [],
+  "coverage_observations": [
+    "The assigned ReferenceStudyTests.swift lacks direct assertions for tangent sphere roots, finite-panel edge hits, and the minimum-depth ray conversion. This is a bounded test-coverage observation, not a reproduced functional defect; no claim is made about complete repository-wide coverage."
+  ],
+  "limitations": [
+    "Host unavailable as provided in assignment; scripts/agent_cycle.py check and next, Swift tests, builds, renderer execution, native Metal and precision harnesses were not run.",
+    "No rendered images were inspected. No runtime, CI, physical calibration, platform audit or release-readiness claim is made.",
+    "Review was focused on the assigned geometry/camera slice; sampling, cancellation and compute packing were excluded.",
+    "A guessed Sources/LightingCore/LightOptics.swift path did not resolve; actual EmitterFrame source was subsequently found in Sources/LightingCore/StudioOptics.swift and inspected.",
+    "No source, test, tree, branch or ref was modified; only this authorized unreferenced JSON report blob is written."
+  ],
+  "conclusion": "No concrete must-fix issue found in the reviewed geometry/camera slice. Runtime acceptance remains unverified by this worker.",
+  "status": "complete"
+}

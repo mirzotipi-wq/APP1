@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "worker": "worker053",
+  "context_path": "/root/w007_review_coordinator/w053_library_duplicate_failure",
+  "status": "complete",
+  "followup": "same-context recovered failure-diagnostic review; worker counts unchanged",
+  "completed_at_utc": "2026-11-26T04:19:36Z",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "prior_report_blob": "c1967ef10ca46fdbde0f8bc61d6d8d9da2ed8de7",
+  "provenance": {
+    "original_run_id": 45745699007,
+    "original_job_id": 139662472079,
+    "original_artifact_id": 15085746378,
+    "original_artifact_name": "ui-library-reference-evidence-compact",
+    "original_archive_bytes": 864197,
+    "original_archive_digest": "sha256:9c2656f4e9663738b643ab66a2a8db480ee1d7c8ca2892558e4d6496f8b3e72c",
+    "attachment_file": "B9FBFF14-7DC9-4D35-A160-D3FD9B3C150A.txt",
+    "attachment_human_name": "Debug description for `\"projectNameInput\" TextField`_0_ACDB9F07-1DB9-464F-BD85-27EBEA261737.txt",
+    "capture_timestamp_epoch": 1795664236.603,
+    "capture_timestamp_utc": "2026-11-26T03:37:16.603Z",
+    "attachment_bytes": 1807,
+    "attachment_sha256": "6707efb4117b8e02ad68b0fe396b42107b056f0a0cb8d198606ab800a2807f92",
+    "diagnostic_blob": "14a95a4fff2f67dc1fe4306c2c0e60924cc77af4",
+    "extraction_run_id": 45754252800,
+    "extraction_job_id": 139689019113,
+    "extraction_job_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45754252800/job/139689019113",
+    "verification": "Fetched diagnostic and prior report by exact blob SHA; fetched extraction job logs and corroborated source revision, artifact identity, filename, capture timestamp, 1807 bytes, and declared SHA256. Independently counted fetched text as 1807 UTF-8 bytes. Root independently verified the SHA256; this followup did not recompute it.",
+    "relevant_source_blobs": [
+      {
+        "path": "App/ProjectLibraryView.swift",
+        "blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+        "ref": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/App/ProjectLibraryView.swift",
+        "review": "remote source read"
+      },
+      {
+        "path": "App/StudioTextField.swift",
+        "blob_sha": "0d5481be3b13fd06acb9fe2674af503b8a7ec6a9",
+        "ref": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/App/StudioTextField.swift",
+        "review": "remote source read"
+      },
+      {
+        "path": "UITests/ProjectLibraryUITests.swift",
+        "blob_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+        "ref": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/UITests/ProjectLibraryUITests.swift",
+        "review": "remote source read"
+      }
+    ]
+  },
+  "observed": {
+    "diagnostic_type": "Element debug description: attributes, one-element subtree, ancestor path, and query chain. Not a complete modal/application hierarchy.",
+    "application_pid": 30638,
+    "application_label": "Key & Fill",
+    "field_identifier": "projectNameInput",
+    "field_label": "Name",
+    "field_placeholder": "Name",
+    "serialized_value": "Editorial",
+    "serialized_keyboard_focused": true,
+    "geometry": "Every serialized frame shown is {{inf, inf}, {0.0, 0.0}}, including Window (Main), ancestor nodes, and the field.",
+    "geometry_literal_occurrences": 20,
+    "query": "Target Application com.example.keyandfill -> TextField descendants -> projectNameInput IN identifiers",
+    "missing_from_this_attachment": [
+      "Modal title",
+      "Sibling Save/Cancel controls",
+      "Other presented sheets",
+      "Keyboard tree/keys",
+      "Finite window or field coordinates",
+      "Screenshot",
+      "Main-thread stack",
+      "Native field lifecycle identity"
+    ]
+  },
+  "reconciliation": [
+    "This adds actual field/ancestor attributes to the earlier review; the recovered text is richer than a query-chain-only diagnostic.",
+    "PID 30638 matches the app PID in the old job's failed snapshot requests.",
+    "Capture time 03:37:16.603 UTC is in the failed post-Duplicate query interval, after the first idle/animation timeout and before the later retry sequence. It does not demonstrate freshness of the serialized element state.",
+    "The old sequence still shows exact Editorial entry, first Save, Options for Editorial, Duplicate event, then idle/animation timeout and line-80 matching-snapshot failure. No second confirmProjectName tap or duplicate persistence occurs.",
+    "Source initializes a requested Duplicate name with the original display name plus ' copy', so this scenario's fresh duplicate draft would be 'Editorial copy'. The diagnostic instead carries 'Editorial', matching the prior Create draft. That is evidence of a mismatch in the retained query state, not proof of which editor was on screen.",
+    "The previous AGENTS startup handoff at blob474bac51ab37e4030067b77ebf9b6d81499e21b1 documents a C855 duplicate-name-sheet query timeout alongside Keep-input/termination failures. This establishes historical recurrence as recorded in the handoff, not a common root cause."
+  ],
+  "conclusions": [
+    "A failed-query diagnostic retained a matching name field with prior-draft text and a focused attribute while its geometry and all shown ancestor geometry were unusable.",
+    "Stale or incomplete failed-query/snapshot data remains compatible with these observations. Incorrect fresh-editor state or actual focus/presentation trouble is not ruled out.",
+    "The invalid frames cannot be treated as measurements of the real onscreen field/window or as proof of a zero-size product-layout defect.",
+    "Keyboard Focused is a serialized AX attribute; this attachment does not establish a visible keyboard, usable typing keys, current first-responder ownership, or a focus loop.",
+    "The excerpt does not show whether the Duplicate naming sheet successfully presented, what its modal title was, or whether the old editor remained on screen.",
+    "No supported product correction follows from this attachment alone. Original failure localization and required failed outcome remain unchanged."
+  ],
+  "gate_disposition": {
+    "milestone": "M03",
+    "contract": "m02-m03-code-v2",
+    "required_method": "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch",
+    "status": "failed",
+    "ui_library_reference": {
+      "expected": 9,
+      "started": 9,
+      "passed": 8,
+      "failed": 1,
+      "unstarted": 0
+    },
+    "promotion_allowed_from_this_review": false
+  },
+  "bounded_next_evidence": "A genuine visual/full-hierarchy capture and, if needed, lifecycle/main-thread evidence at the second-sheet boundary remain necessary to determine cause. This followup did not change transport, source, timeouts, or acceptance; background-render source investigation is owned separately by worker084.",
+  "limits": {
+    "new_native_test_execution": false,
+    "fresh_simulator_reproduction": false,
+    "image_or_video_review": false,
+    "full_modal_hierarchy_review": false,
+    "source_changes": [],
+    "ref_changes": [],
+    "children_spawned": 0,
+    "worker_count_increment": 0,
+    "source_comparison_to_75e": "Root reports production ProjectLibraryView/StudioTextField unchanged at 75e; this followup reviews original7b evidence and does not independently establish a 75e source comparison.",
+    "compact_content_limit": "Root reports no full modal hierarchy or PNG for this failure in the compact artifact; only the recovered exact text attachment is examined here."
+  },
+  "diagnostic_text": "Attributes: TextField, 0x10c83a290, {{inf, inf}, {0.0, 0.0}}, identifier: 'projectNameInput', label: 'Name', placeholderValue: 'Name', value: Editorial, Keyboard Focused\nElement subtree:\n →TextField, 0x10c83a290, {{inf, inf}, {0.0, 0.0}}, identifier: 'projectNameInput', label: 'Name', placeholderValue: 'Name', value: Editorial, Keyboard Focused\nPath to element:\n →Application, 0x10c833dd0, pid: 30638, label: 'Key & Fill'\n  ↳Window (Main), 0x10c808870, {{inf, inf}, {0.0, 0.0}}\n   ↳Other, 0x10c808b30, {{inf, inf}, {0.0, 0.0}}\n    ↳Other, 0x10c838ff0, {{inf, inf}, {0.0, 0.0}}\n     ↳Other, 0x10c839110, {{inf, inf}, {0.0, 0.0}}\n      ↳Other, 0x10c839230, {{inf, inf}, {0.0, 0.0}}\n       ↳Other, 0x10c838ea0, {{inf, inf}, {0.0, 0.0}}\n        ↳Other, 0x10c839590, {{inf, inf}, {0.0, 0.0}}\n         ↳Other, 0x10c838640, {{inf, inf}, {0.0, 0.0}}\n          ↳Other, 0x10c839350, {{inf, inf}, {0.0, 0.0}}\n           ↳Other, 0x10c839470, {{inf, inf}, {0.0, 0.0}}\n            ↳Other, 0x10c839ab0, {{inf, inf}, {0.0, 0.0}}\n             ↳Other, 0x10c839bd0, {{inf, inf}, {0.0, 0.0}}\n              ↳CollectionView, 0x10c839cf0, {{inf, inf}, {0.0, 0.0}}\n               ↳Cell, 0x10c839e10, {{inf, inf}, {0.0, 0.0}}\n                ↳Other, 0x10c839f30, {{inf, inf}, {0.0, 0.0}}\n                 ↳Other, 0x10c83a050, {{inf, inf}, {0.0, 0.0}}\n                  ↳Other, 0x10c83a170, {{inf, inf}, {0.0, 0.0}}\n                   ↳TextField, 0x10c83a290, {{inf, inf}, {0.0, 0.0}}, identifier: 'projectNameInput', label: 'Name', placeholderValue: 'Name', value: Editorial, Keyboard Focused\nQuery chain:\n →Find: Target Application 'com.example.keyandfill'\n  ↪︎Find: Descendants matching type TextField\n    ↪︎Find: Elements matching predicate '\"projectNameInput\" IN identifiers'\n"
+}

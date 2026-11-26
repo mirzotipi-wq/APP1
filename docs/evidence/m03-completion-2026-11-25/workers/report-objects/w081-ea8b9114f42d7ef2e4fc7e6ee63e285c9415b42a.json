@@ -1,0 +1,116 @@
+{
+  "worker": "w081",
+  "context_path": "/root/w007_review_coordinator/w081_library_search_archived_scope",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Project-library search, archived filtering, sections and empty-state semantics, stable identities across filters, visible-result actions and prevention of accidental targeting of hidden/nonmatching rows.",
+  "contract": "m02-m03-code-v2",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Startup/contract source read."
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+      "inspection": "Body filtering/sections, row actions, mutation guards, boundedSearch, presentation id and matches; naming and import details outside review focus."
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "blob_sha": "1c108acca53243472810eef5cb8570fee99fe674",
+      "inspection": "Source review with focus on testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects and empty-query/no-match assertions."
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blob_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "inspection": "Full method inventory and first 213 lines closely reviewed: active-row semantics, archive/restore and archived delete persistence checks; remaining recovery/unsaved/large-library methods read for context."
+    }
+  ],
+  "checks": [
+    {
+      "case": "Search construction and empty query",
+      "result": "source_review_no_defect",
+      "evidence": "App/ProjectLibraryView.swift lines 49–56 and ProjectLibraryRowPresentation.matches: whole-library presentations are created first; surrounding whitespace/newlines are trimmed; empty query includes all rows, otherwise displayed names use localizedStandardContains. Search edits are transient and scalar-bounded."
+    },
+    {
+      "case": "Saved/archived partition and section emptiness",
+      "result": "source_review_no_defect",
+      "evidence": "Lines 97–155 render only filtered nonarchived rows in On this device and filtered archived rows in Archived. Nil library has No saved projects yet. Existing library with no saved match has section-scoped empty text. Archived section exists when any full-library archive exists and gives a specific no-match message when filtered out."
+    },
+    {
+      "case": "Stable model identities across filters",
+      "result": "source_review_no_defect",
+      "evidence": "ForEach consumes ProjectLibraryRowPresentation with id == project.id. Presentation is calculated against all library records before filtering. Native testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects asserts UUID identity with hidden archived prefix collisions, reorder stability, empty query and no-match behavior. Test source inspected, not executed."
+    },
+    {
+      "case": "Actions target visible row UUIDs",
+      "result": "source_review_no_defect",
+      "evidence": "projectRow captures presentation.project; Open/Archive/Rename/Duplicate target that UUID, while archived Restore targets presentation.id and Delete stores the selected presentation. No visible-array index is used to resolve a domain target. Only filtered arrays produce row controls. Active row exposes selected status rather than Open; Archive is disabled for active row."
+    },
+    {
+      "case": "Action availability with filtered library",
+      "result": "source_review_no_defect",
+      "evidence": "canMutate disables mutations for unsaved changes, unavailable library and active work; apply rechecks canMutate. Capacity checks use full-library project count, preserving limits when search hides records. Archived results retain Restore/Delete controls, saved results retain appropriate Open/Options controls."
+    },
+    {
+      "case": "UI regression source coverage",
+      "result": "source_review_no_defect",
+      "evidence": "ProjectLibraryUITests inspects active-row identity, create/duplicate/rename/switch/relaunch, archive/restore, and only selected archived-record removal after confirmation. This file has no direct UI search workflow; absence alone is not reported as a defect."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Focused remote source/test review only; host unavailable, so scripts/agent_cycle.py check and next, Swift compilation, native tests, UI tests, visual output and runtime interactions were not executed.",
+    "Repository status, local uncommitted changes and current head were not inspected; every fetched file used the supplied pinned base SHA.",
+    "Display collision label generation belongs to w080; modal behavior to w053/w084; domain operations to w065/w066. These were not independently re-reviewed.",
+    "No M03 gate pass, runtime success, manual accessibility audit or release readiness is claimed."
+  ],
+  "conclusion": "No concrete defect found in the assigned search/archived filtering and visible-row action scope. Existing source uses stable project UUIDs and computes presentation before filtering; required runtime evidence remains separate.",
+  "status": "complete"
+}

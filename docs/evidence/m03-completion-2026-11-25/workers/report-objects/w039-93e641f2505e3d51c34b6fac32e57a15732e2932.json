@@ -1,0 +1,84 @@
+{
+  "worker": "worker039",
+  "context_path": "/root/w007_review_coordinator/w039_room_draft_input_failure",
+  "status": "complete",
+  "review_kind": "Same-context source review plus concrete unreferenced test-only candidate after root-supplied original attachment extraction",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "original_failure": {
+    "run_id": 45761900201,
+    "job_id": 139715216957,
+    "method": "PrecisionEditingUITests.testExactModifierWidthAndRoomCrossingWithInsideCenters",
+    "stage": "FIRST center-status predicate before room measurement/crossing",
+    "earlier_source_trace_report": "f33fb35106f811d3740896a58ff6a1e1bbba203c"
+  },
+  "prior_reports_preserved": [
+    "7628ad3643526dd1d8677eccd210497adf252fc5",
+    "f9929d396dcd91eaa3312a95994965dc391369bd",
+    "f33fb35106f811d3740896a58ff6a1e1bbba203c"
+  ],
+  "attachment_evidence": {
+    "provenance": "Root-supplied verified extraction; this worker did not independently fetch/hash/view original bytes.",
+    "path": "artifacts/native-attachments/6FC5D73E-BA12-4702-BC5C-2A68F3F6274F.txt",
+    "byte_count": 224,
+    "sha256": "15a275ad08c33c52de85c1a67ed9e62aa6b89180e8f60d0195a788d7c2892170",
+    "root_reported_content": "Query chain: Target Application com.example.keyandfill → Descendants matching type Any → Elements matching predicate '\"roomPlacementStatus\" IN identifiers' → First Match.",
+    "establishes": "Which query was unresolved/described.",
+    "does_not_establish": "No actual label, node hierarchy, element type, screenshot, sheet presentation state, or center geometry."
+  },
+  "verdict": "Accept as a narrow test synchronization/query candidate for root review and required CI evaluation. Sufficient source/trace justification exists for these independent test-precondition improvements, but neither root cause nor product correctness is established; no claim of runtime repair.",
+  "candidate": {
+    "path": "UITests/PrecisionEditingUITests.swift",
+    "base_blob_sha": "d0478631b8569dbf9636607312e812cb7dbbb7a7",
+    "candidate_blob_sha": "5a7c67e80164ffd0f883b61d5698d03fbd483a80",
+    "representation": "Complete replacement Swift source, unreferenced blob only",
+    "patch": "--- a/UITests/PrecisionEditingUITests.swift\n+++ b/UITests/PrecisionEditingUITests.swift\n@@ -127,11 +127,13 @@\n         let open = app.buttons[\"openRoomPlacement\"]\n         reveal(open, in: app, towardBottom: false)\n         open.tap()\n-        let centers = app.descendants(matching: .any)[\"roomPlacementStatus\"].firstMatch\n+        XCTAssertTrue(app.buttons[\"closeRoomPlacement\"].waitForExistence(timeout: 15),\n+                      \"Room sheet must actually open\")\n+        let centers = app.otherElements[\"roomPlacementStatus\"]\n         let faces = app.descendants(matching: .any)[\"modifierCrossingStatus\"].firstMatch\n         func expect(_ target: XCUIElement, contains message: String) {\n-            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: \"exists == true AND label CONTAINS %@\", message), object: target)\n+            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: \"label CONTAINS %@\", message), object: target)\n             XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 15), .completed)\n         }\n         expect(centers, contains: \"All 5 center positions inside room\")\n",
+    "integration": "Root review and integration required; no branch/tree/ref changed by this worker."
+  },
+  "source_basis": [
+    "Passing ManualRoomPlacementUITests.testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates at exact cd5 source awaits closeRoomPlacement, queries app.otherElements[roomPlacementStatus], and uses label-only CONTAINS with timeout15.",
+    "Both passing manual-room methods establish closeRoomPlacement after opening; failing precision method lacked this explicit sheet-readiness boundary.",
+    "Failing exact trace has existence/predicate132.85, Find139.30, debug capture147.11 and timeout152.37. This supports reducing redundant resolution as a targeted efficiency improvement, not a measured attribution of the whole timeout.",
+    "Production placementSummary explicitly provides roomPlacementStatus and label(centerStatus); prior actual manual-room logs describe that element as Other. The passed resize flow exercises this typed query on current code."
+  ],
+  "preserved_invariants": [
+    "Expected center string remains All5 center positions inside room (with exact original spacing in source). Both pre-edit and post-edit assertions remain.",
+    "Initial modifier-face label and post-edit1-crossing label remain identical, as do setRoomMeasurement(1.6), screenshot, close, undo, redo, exact width1.237 and save/relaunch-related assertions.",
+    "Every existing timeout remains unchanged. Shared status predicate deadline remains15seconds.",
+    "One room-open tap and one room subject edit; no retry, retype, synthetic fixture, programmatic app-state injection, or product code change.",
+    "Label-only predicate still requires the nonempty expected content; missing or incorrect label cannot pass. Removing the separate exists clause does not accept placeholder/missing/wrong status.",
+    "Faces retain the original broad target query; no unsupported assumption that modifierCrossingStatus is Other.",
+    "Only one exact source block replaced; inverse substitution reproduces original source byte-for-byte."
+  ],
+  "deadline_qualification": "The new explicit sheet-readiness gate has its own15-second bound, matching the passing manual-room flow. This can add up to15seconds to total method duration, but does not increase the existing15-second status deadline. It distinguishes failed sheet presentation from failed status content.",
+  "bounded_existing_evidence_options": [
+    {
+      "priority": 1,
+      "action": "If existing tooling supports it, decode only failure snapshot artifacts/native-attachments/7AC04F85-BDDB-4A67-B157-9E6ADB639D5C (06:03:11). Extract matching nodes for roomPlacementStatus, closeRoomPlacement, modifierCrossingStatus, and the exact fallback Check room measurements and scene geometry, with type/label/frame. Preserve raw snapshot and extracted data provenance.",
+      "discriminates": "Expected label+Other means correct captured semantic state despite unsuccessful wait. Done+fallback without status indicates unavailable plan. Missing Done suggests presentation boundary. Wrong center label establishes a real observed state requiring further scene/domain inspection."
+    },
+    {
+      "priority": 2,
+      "action": "If the snapshot has no supported decoder, use the existing retained recording60BDDBBE-7F70-4116-A95D-E25E7B62A705.mp4 to inspect one actual frame near06:03:11, approximately2m27s after its06:00:44 start. Use existing extraction facilities only; do not build a general archive decoder.",
+      "discriminates": "Visible sheet and text versus absent sheet/fallback. A video frame cannot independently prove the accessibility label or element type."
+    },
+    {
+      "priority": 3,
+      "action": "If neither narrow extraction is available within current tooling, preserve uncertainty and evaluate the candidate in required CI. Do not widen deadlines or retry until pass.",
+      "discriminates": "A later pass validates that execution, not a reconstructed cause of this historical failure."
+    }
+  ],
+  "checks": {
+    "source_fetch": "Exactcd5 file fetched again; base blob d0478631b8569dbf9636607312e812cb7dbbb7a7",
+    "changed_block_count": 1,
+    "round_trip_outside_scope_equality": true,
+    "new_runtime_execution": false,
+    "new_artifact_view": false
+  },
+  "limits": [
+    "Original failure app state remains unknown. Query-chain-only attachment is not a snapshot or observation of label.",
+    "No independent hash validation of root-supplied224-byte TXT.",
+    "No compiler, simulator, test run, screenshot/video review, or source/tree/ref push.",
+    "Candidate is unintegrated and unverified at runtime; required fifth method and complete shard still need actual passing evidence."
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "worker": "w006",
+  "context": "existing worker006; focused followup; no new workers",
+  "repository": "mirzotipi-wq/APP1",
+  "baseRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "status": "candidate_prepared_unreferenced_not_compiled_or_executed",
+  "authority": "Root-authorized focused followup through worker007 coordinator. Source blobs and report only; no refs, commits, workflow, or product changes.",
+  "sourceBlobs": [
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "baseBlob": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5",
+      "candidateBlob": "342485407554ade056f31d479517855b70579895",
+      "characters": 21104,
+      "scope": "revealStudioContent only"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "baseBlob": "5c5f6360f63267f6dc50473d88a7261bb0387e3b",
+      "candidateBlob": "cf6c51b5bcf0db240c3354507fbaaa2c63e6213b",
+      "characters": 28820,
+      "scope": "contentViewport only"
+    }
+  ],
+  "executedEvidence": {
+    "runId": 45761900201,
+    "jobId": 139715217068,
+    "rawLogCharacters": 566730,
+    "methodStarts": 1,
+    "methodTerminalCount": 0,
+    "assertionErrorCount": 0,
+    "defaultAttachmentEmissions": 12,
+    "axxxlAttachmentEmissions": 1,
+    "lastDefaultCaptureElapsedSeconds": 2153.93,
+    "firstAXXXLCaptureElapsedSeconds": 2358.67,
+    "outerTimeout": "2026-11-26T06:55:35.7600420Z; Run selected native UI shard timed out after 45 minutes",
+    "interpretation": "Required AX method unfinished. Attachment emissions are not viewed screenshots or a successful method; no finalized result bundle was produced.",
+    "selectedQueryCounts": [
+      [
+        "Find the Target Application 'com.example.keyandfill'",
+        352
+      ],
+      [
+        "Get all elements bound by index for: Children matching type NavigationBar",
+        213
+      ],
+      [
+        "Find the NavigationBar (Element at index 0)",
+        213
+      ],
+      [
+        "Find the \"undo\" Button",
+        160
+      ],
+      [
+        "Checking existence of `Keyboard (First Match)`",
+        123
+      ],
+      [
+        "Get all elements bound by index for: Elements matching predicate 'identifier IN {\"undo\", \"projectLibraryDone\"}'",
+        119
+      ],
+      [
+        "Find the Button (Element at index 0)",
+        119
+      ],
+      [
+        "Checking existence of `ScrollView (First Match)`",
+        119
+      ],
+      [
+        "Find the \"Key & Fill\" NavigationBar",
+        75
+      ],
+      [
+        "Find the ScrollView (First Match)",
+        75
+      ]
+    ],
+    "observedDragEvents": 11
+  },
+  "changes": [
+    {
+      "change": "Read app.frame once inside each reveal iteration and reuse that real frame for the viewport, real scroll intersection, gesture height/origin and horizontal coordinate.",
+      "sourceAccessReduction": "9 app.frame expression sites to 1; successful containment uses one instead of two reads, full drag path uses one instead of nine reads.",
+      "refresh": "The local binding is recreated at the next attempt after every drag. No geometry is cached across helper calls, actions, keyboard transitions, or test-size launches."
+    },
+    {
+      "change": "Read each owning navigation bar with one actual snapshot, using that immutable snapshot's identifier and frame.",
+      "sourceAccessReduction": "Two separate XCUIElement property resolutions per bar become one snapshot resolution.",
+      "preserved": "Identical target-containing otherElements and direct navigationBar children query; same finite/nonempty/intersection filter and maximum bottom boundary. Snapshot failure aborts reveal to its unchanged diagnostics, or fails independent containment and returns CGRect.null."
+    },
+    {
+      "change": "After each fixed control's unchanged live isHittable check, read its identifier and frame from one actual snapshot. Apply the existing owner-navigation identifier membership test as an identifier-IN predicate followed by firstMatch.exists.",
+      "sourceAccessReduction": "Separate fixed-control identifier/frame reads become one snapshot. Owner navigation enumeration plus identifier reads become one existence query for the same membership condition.",
+      "preserved": "Fixed controls still restricted to undo/projectLibraryDone; owner query still target-containing otherElements and direct navigationBar children. The exact same set of target-owned navigation identifiers determines ownership. Snapshot failure cannot silently omit a fixed obstruction."
+    }
+  ],
+  "protections": {
+    "reachRoundTripExact": true,
+    "axRoundTripExact": true,
+    "reachOutsideFunctionExact": true,
+    "axOutsideFunctionExact": true,
+    "allOriginalAssertionLinesPreserved": true,
+    "individualTimeoutTokensExact": true,
+    "fullWorkflowAndCapturesExact": true,
+    "revealKeyboardAndInputAssistantExact": true,
+    "independentKeyboardAndInputAssistantExact": true,
+    "twelveRevealAttemptsRetained": true,
+    "liveFixedControlHittabilityRetained": true,
+    "revealUsesOneRealAppFrame": true
+  },
+  "unchangedCoverage": [
+    "All bytes outside the two named helper functions are identical to the pinned source.",
+    "All original XCTest assertion lines remain, including exact containment, null/nonempty/finite geometry, 44-point target, typography, growth, semantics, disabled controls and real keyboard requirements.",
+    "All individual timeout values, the 12-attempt reveal bound, actions, per-size launches and 12 capture sites per category (24 total required captures) are unchanged.",
+    "The actual keyboard/inputView/SystemInputAssistantView blocks are byte-for-byte unchanged in both helpers.",
+    "The independent post-reveal contentViewport is still recomputed separately; no successful reveal result or synthetic geometry substitutes for it.",
+    "No test method declarations, selectors or workflow files changed; the required 35-method inventory is unaffected by these candidate blobs."
+  ],
+  "validationPerformed": [
+    "Fetched both exact source files at baseRevision and analyzed the complete decoded GitHub Actions job log.",
+    "Applied replacements only after checking each old source segment appeared exactly once.",
+    "Compared bytes outside the two modified function bodies and checked all original assertion lines, timeout tokens, keyboard blocks, capture workflow and loop bound.",
+    "Created only unreferenced Git blobs and fetched both back; exact UTF-8 content equality passed."
+  ],
+  "notPerformed": [
+    "No local executor, Swift/XCTest compilation, native UI execution, screenshot rendering or screenshot visual review.",
+    "No measured runtime speedup; fewer source resolutions do not by themselves establish a latency improvement.",
+    "No commit, branch/ref update, workflow modification or product/App change."
+  ],
+  "recommendation": "Independently review these concrete blobs, integrate only if accepted, compile with Apple XCTest, and rerun the complete preserved required workflow. Maintain unfinished status until the AX method and all 24 screenshots are actually complete and reviewed."
+}

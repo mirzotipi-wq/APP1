@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "worker": "w091",
+  "context_path": "/root/w007_review_coordinator/w091_room_general_bounds",
+  "repository": "mirzotipi-wq/APP1",
+  "base": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "status": "complete",
+  "review_kind": "remote source and test review only",
+  "scope": "Existing manual-room validation, subject/camera/light centers, horizontal distances, room origin conventions, finite and degenerate inputs, scene transformation boundaries.",
+  "excluded": [
+    "Rectangular emitting-face geometry (w089)",
+    "Cardinal/roll exact-contact cases (w090)",
+    "AR and physical-device behavior",
+    "Source, tree, commit, or reference mutations"
+  ],
+  "paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "role": "startup or acceptance contract"
+    },
+    {
+      "path": "Sources/LightingCore/RoomPlacement.swift",
+      "blob_sha": "669ee6553baadf920f658de86a9d3f37adace8e3",
+      "role": "review target"
+    },
+    {
+      "path": "Tests/LightingCoreTests/RoomPlacementTests.swift",
+      "blob_sha": "ff335ffe98f546268a14982f4568463dd1f188d6",
+      "role": "review target"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "role": "actual scene/position dependency"
+    }
+  ],
+  "checks": [
+    {
+      "id": "manual_room_validation",
+      "outcome": "source reviewed; no concrete defect",
+      "evidence": "RoomPlacement.swift:11,56-64 rejects nonfinite or out-of-range dimensions/optional ceiling, dimensions below 1 or above 30 meters, subjects outside inclusive room extents, and nonfinite/out-of-range yaw."
+    },
+    {
+      "id": "resize_preserves_subject",
+      "outcome": "source and regression assertions reviewed",
+      "evidence": "dimensionRangePreserving bounds the edit range without changing the subject, falls back safely for invalid offsets; testResizeRangesPreserveSubjectWithoutSilentRelocation asserts unchanged coordinates."
+    },
+    {
+      "id": "transform_origin_and_scale",
+      "outcome": "source reviewed; consistent with documented convention",
+      "evidence": "RoomPlacement.swift:298-311 subtracts scene subject X/Z, applies a yaw rotation, and adds measured subject X/Z. Positive yaw maps scene +Z toward room +X. Room subject maps to the measured subject coordinates. No scaling or clamping occurs."
+    },
+    {
+      "id": "height_and_containment",
+      "outcome": "source reviewed; no concrete defect",
+      "evidence": "RoomPlacement.swift:307 preserves absolute studio-floor Y. insideRoom tests only the floor projection as documented. RoomVerticalClearance independently reports below-floor or above-ceiling centers; unmeasured ceiling does not claim full vertical containment."
+    },
+    {
+      "id": "distance_and_finite_boundaries",
+      "outcome": "source reviewed; bounded arithmetic",
+      "evidence": "Scene.swift Position.isValid requires finite coordinates in -100...100. RoomPlacementPlan validates the scene before subtraction; horizontal deltas are at most 200 meters per axis. hypot provides center-to-subject floor distance, independent of room translation/yaw; coincident centers yield zero without normalization."
+    },
+    {
+      "id": "scene_validation_boundary",
+      "outcome": "source reviewed",
+      "evidence": "RoomPlacement.swift:281-283 rejects invalid manual room first, then calls actual LightingScene.validated() from Scene.swift. Invalid coordinates/lights, duplicate IDs, invalid optional scene fields, and unsupported or contradictory schemas are rejected before mapping."
+    },
+    {
+      "id": "test_inventory",
+      "outcome": "nine existing test methods read; not executed",
+      "tests": [
+        "testDefaultPortraitFitsAndPreservesHeightAndDistance",
+        "testQuarterTurnAndHalfTurnRotateWithoutScaling",
+        "testArbitraryWorldTranslationDoesNotChangeRoomCoordinates",
+        "testOutsideCoordinatesRemainSignedAndNotClamped",
+        "testMeasurementInputAcceptsExactLocalizedValuesAndRejectsInvalidText",
+        "testRoomInputSupportsLocalDigitsWithoutGroupingOrSigns",
+        "testResizeRangesPreserveSubjectWithoutSilentRelocation",
+        "testSignedRoomDisplayDoesNotRoundRealCrossingToZero",
+        "testRejectsInvalidRoomAndScene"
+      ],
+      "evidence": "Tests exercise default coordinates/heights/distance, 1:1 rotated placement, X/Z world-translation invariance, signed outside coordinates, strict localized input, resize preservation, signed distance display, and invalid room/scene rejection."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host execution unavailable; no Swift compiler, XCTest, native UI, simulator, CI rerun, or scripts/agent_cycle.py check/next execution was performed.",
+    "Reviewed exactly the pinned revision using GitHub fetch_file; no live working-tree status or independent branch-head verification was performed.",
+    "Test assertions were inspected as source, not reported as passed. This is a bounded source review and does not establish M03 acceptance.",
+    "No AR placement accuracy, physical device, calibration, complete equipment-body, stand, cable, or collision claim."
+  ],
+  "conclusion": "No concrete correctness defect identified in the assigned manual-room center/validation/coordinate scope. Runtime acceptance remains unverified.",
+  "mutations": "Only this unreferenced JSON report blob was created; no source/tree/ref changes."
+}

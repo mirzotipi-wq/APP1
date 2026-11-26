@@ -1,0 +1,118 @@
+{
+  "worker": "w035",
+  "context_path": "/root/w007_review_coordinator/w035_target_lux_boundaries",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Target-lux solve bounds, zero and unavailable photometry, rejection preserving output, valid UI commits",
+  "repository": "mirzotipi-wq/APP1",
+  "paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "blob_sha": "fd8df0b0c99d64cf82296832c11d9800167dce50"
+    },
+    {
+      "path": "App/LightTargetLuxView.swift",
+      "blob_sha": "a77521a39b68c1320f6aa5bff86b0224f987e468"
+    },
+    {
+      "path": "Tests/LightingCoreTests/LightOutputBoundaryTests.swift",
+      "blob_sha": "0936ded6afa6cdc0bde19c1c5711fe035f220415"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6"
+    },
+    {
+      "path": "Sources/LightingCore/StudioNumericInput.swift",
+      "blob_sha": "6ea4208e6b787d1c9a418a83f843d16db2d3912a"
+    }
+  ],
+  "checks": [
+    {
+      "kind": "source_review",
+      "scope": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "result": "Finite nonnegative target, valid source and validated scene are required. Positive solve uses a one-candela sample and explicitly rejects nil, zero or nonfinite unit lux."
+    },
+    {
+      "kind": "source_review",
+      "scope": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "result": "The forward-model output at 100,000 cd bounds the target before division. nextUp(maximumLux) is rejected; inverse-rounding overflow can use the validated maximum only after the achieved/target relative accuracy check <= 1e-9."
+    },
+    {
+      "kind": "source_review",
+      "scope": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "result": "An explicit zero sets only candela to zero before any photometric sample, including valid scenes with unavailable photometric geometry. Invalid scenes and invalid source settings still reject."
+    },
+    {
+      "kind": "source_review",
+      "scope": "Sources/LightingCore/LightOutputAdjustment.swift; Sources/LightingCore/Scene.swift",
+      "result": "StudioLight and LightingScene are value types; the function returns a local copy and cannot mutate the supplied source or scene on rejection. Identity, geometry and all non-candela values are preserved on success."
+    },
+    {
+      "kind": "source_review",
+      "scope": "App/LightTargetLuxView.swift; Sources/LightingCore/StudioNumericInput.swift",
+      "result": "Target parsing is bounded, localized and finite/nonnegative. Invalid text disables Apply. Oversized replacement preserves the previous draft and blocks Apply until a changed acceptable draft. Solver rejection only records an error; onApply is invoked only after successful solve."
+    },
+    {
+      "kind": "source_review",
+      "scope": "App/LightTargetLuxView.swift",
+      "result": "didApply is set before the callback, preventing queued or reentrant duplicate applies during dismissal. Unavailable/noneditable current lux does not seed a rounded zero."
+    },
+    {
+      "kind": "test_source_review_only",
+      "scope": "Tests/LightingCoreTests/LightOutputBoundaryTests.swift",
+      "result": "Reviewed all eight test methods: rounded inverse maximum, nextDown maximum, nextUp and 1.01x maximum across all emitter kinds/width fixtures, unchanged exact maximum, off-to-maximum, zero with unavailable geometry, subnormal integration underflow, and ordinary interior target accuracy. Assertions cover preservation of original scene/source and unchanged identity/geometry in the main maximum case."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Static source/test review only. Host unavailable; no scripts, Swift tests, builds, simulator/UI workflows or runtime experiments executed.",
+    "Scoped review does not establish full M02/M03 acceptance, physical calibration or release readiness.",
+    "Current-branch/worktree state and runtime results were not inspected; all successful source reads pinned to base_sha.",
+    "An attempted supplemental fetch for Tests/LightingCoreTests/LightOutputAdjustmentTests.swift returned 404; it was not treated as reviewed or as evidence."
+  ],
+  "status": "complete"
+}

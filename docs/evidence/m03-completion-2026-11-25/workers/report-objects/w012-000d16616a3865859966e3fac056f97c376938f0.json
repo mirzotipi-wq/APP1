@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "worker": "w012",
+  "context_path": "/root/w007_review_coordinator/w012_slider_tracking_cancel",
+  "task": "w012_slider_tracking_cancel",
+  "review_kind": "independent followup in the same worker context",
+  "status": "complete",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "candidate_sha": "a5b06c8acc4ccbe649eff8d35701ec710ea8d6ec",
+  "focus": "Verify the repair for cancellation or replacement during editing.read(), including actual regression assertions.",
+  "inspected_paths": [
+    {
+      "path": "App/StudioSliderTracking.swift",
+      "blob_sha": "58795fbe1810663d8c7c98e081d54c87a3079ea0",
+      "source_url": "https://github.com/mirzotipi-wq/APP1/blob/a5b06c8acc4ccbe649eff8d35701ec710ea8d6ec/App/StudioSliderTracking.swift"
+    },
+    {
+      "path": "NativeTests/StudioSliderTrackingTests.swift",
+      "blob_sha": "c3e435726f8192a2228740b5dfb759af2ed67599",
+      "source_url": "https://github.com/mirzotipi-wq/APP1/blob/a5b06c8acc4ccbe649eff8d35701ec710ea8d6ec/NativeTests/StudioSliderTrackingTests.swift"
+    }
+  ],
+  "historical_finding": {
+    "preserved": true,
+    "original_report_path": "/dev/shm/app1-m03/workers/w012.json",
+    "original_probe_path": "/dev/shm/app1-m03/reviews/w012/main.swift",
+    "original_probe_revision": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+    "severity": "P2",
+    "title": "A cancellation during the binding read can reopen an already-finished edit",
+    "prior_actual_probe_output": "tracking=false editing=true value=0.2 events=[true, false, true]",
+    "prior_actual_probe_execution": "Compiled and ran the production StudioSliderEditing.swift and StudioSliderTracking.swift with an isolated Swift main.swift in the original review; the first link failed without libm, then succeeded with -Xlinker -lm.",
+    "reachability_limit": "The original reproduction used a reentrant adapter read callback; no ordinary UIKit/SwiftUI trigger was established.",
+    "followup_disposition": "Addressed in candidate source. This does not turn the historical failing probe into a candidate runtime pass."
+  },
+  "checks": [
+    {
+      "operation": "github.fetch_file",
+      "ref": "a5b06c8acc4ccbe649eff8d35701ec710ea8d6ec",
+      "paths": [
+        "App/StudioSliderTracking.swift",
+        "NativeTests/StudioSliderTrackingTests.swift"
+      ],
+      "outcome": "Fetched complete UTF-8 contents at the exact candidate commit; recorded connector-returned blob SHAs."
+    },
+    {
+      "operation": "github.compare_commits",
+      "base": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+      "head": "a5b06c8acc4ccbe649eff8d35701ec710ea8d6ec",
+      "outcome": "ahead by 1, behind by 0, total commits 1, merge base equals base; exactly the two assigned files are modified.",
+      "changed_files": [
+        {
+          "filename": "App/StudioSliderTracking.swift",
+          "status": "modified",
+          "additions": 4,
+          "deletions": 1,
+          "changes": 5,
+          "previous_filename": null
+        },
+        {
+          "filename": "NativeTests/StudioSliderTrackingTests.swift",
+          "status": "modified",
+          "additions": 64,
+          "deletions": 1,
+          "changes": 65,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "operation": "source review",
+      "location": "App/StudioSliderTracking.swift:87-97",
+      "inspected_assertion": "After let observed = current.editing.read(), guard session?.token == token, next != observed returns before onEditingChanged(true) and write when the read cancelled or replaced the current token. The existing token recheck after onEditingChanged(true) remains.",
+      "outcome": "The original callback-ordering defect is repaired at the correct synchronous boundary; no callback occurs between the read and the token guard."
+    },
+    {
+      "operation": "source review of regression",
+      "method": "testReadThatFinishesSessionCannotReopenHistory",
+      "location": "NativeTests/StudioSliderTrackingTests.swift:212-231",
+      "inspected_assertions": [
+        "afterRead calls tracking.finish(token) during change",
+        "tracking and history are both no longer editing",
+        "begins == 1 and ends == 1",
+        "writes == 0 and the scene equals the initial scene",
+        "history.canUndo is false",
+        "a repeated finish with a final display cannot add a begin or end"
+      ],
+      "outcome": "Directly exercises the original failing read-cancellation path. The original implementation would violate the begins and history-isEditing assertions. Reviewed only; not executed."
+    },
+    {
+      "operation": "source review of regression",
+      "method": "testReadThatReplacesSessionCannotReopenRetiredOwner",
+      "location": "NativeTests/StudioSliderTrackingTests.swift:233-268",
+      "inspected_assertions": [
+        "original.afterRead begins a replacement session",
+        "current replacement token differs from the retired token",
+        "original scene is unchanged, begins == 1, ends == 1, writes == 0, and original history is closed",
+        "replacement history remains editing, begins == 1, ends == 0",
+        "stale change and finish leave the replacement scene and current token unchanged",
+        "finishing the replacement closes tracking/history once and Undo returns the replacement scene to its initial value"
+      ],
+      "outcome": "Covers replacement as well as cancellation, rejects stale-owner callbacks, and verifies that the replacement can complete a useful undoable edit. Reviewed only; not executed."
+    },
+    {
+      "operation": "in-memory JavaScript enumeration of fetched XCTest declarations",
+      "expression": "Array.from(content.matchAll(/^\\s*func\\s+(test[A-Za-z0-9_]+)\\s*\\(/gm))",
+      "outcome": "18 tracking test methods independently counted in the candidate source; two added read-reentrancy methods.",
+      "test_methods": [
+        "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "testValueAfterEndCannotReopenHistoryOrDisableUndo",
+        "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "testSessionRetainsOriginalWriterAndRange",
+        "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "testReadThatFinishesSessionCannotReopenHistory",
+        "testReadThatReplacesSessionCannotReopenRetiredOwner",
+        "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps"
+      ]
+    }
+  ],
+  "findings": [],
+  "conclusion": "The candidate source correctly repairs the reported read-reentrancy defect and includes focused cancellation and replacement regressions. No additional finding in the assigned source-review scope. Runtime acceptance remains unverified.",
+  "inventory": {
+    "tracking_methods_independently_counted": 18,
+    "expected_native_total_reported_by_coordinator": 134,
+    "full_native_total_independently_verified": false,
+    "note": "Only the two assigned files were fetched. The coordinator's 134-native expectation and separately recorded syntax/shard checks are not claimed as independently verified or executed here."
+  },
+  "execution": {
+    "candidate_tests_executed": false,
+    "candidate_build_executed": false,
+    "candidate_syntax_check_executed": false,
+    "candidate_shard_check_executed": false,
+    "local_execution_attempted": false,
+    "reason": "Local environment is unavailable. This followup used connector reads and in-memory source inspection only."
+  },
+  "limitations": [
+    "Source review does not establish Swift compiler acceptance, native XCTest success, or UIKit gesture runtime behavior.",
+    "The coordinator reported an interrupted baseline execution and separately recorded syntax/shard checks; this reviewer did not independently execute or verify those runs.",
+    "Original scratch artifacts were not reopened after the environment became unavailable; their paths and observed output are preserved from this same worker's prior review.",
+    "No source edits, branch creation, ref updates, commits, or child agents. The only authorized write is this unreferenced report blob."
+  ]
+}

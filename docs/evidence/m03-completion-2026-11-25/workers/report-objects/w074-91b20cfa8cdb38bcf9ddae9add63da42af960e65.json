@@ -1,0 +1,144 @@
+{
+  "worker": "w074",
+  "context_path": "/root/w007_review_coordinator/w074_project_document_adversarial",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": [
+    "lexical JSON scan and string escaping",
+    "escaped/direct Unicode key equivalence",
+    "parser nesting and byte/resource bounds",
+    "malformed trailing tokens and adversarial document input"
+  ],
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "Sources/LightingCore/LightingProjectDocument.swift",
+      "blob_sha": "018ee8cf72cb4a854cbf396a54086d3536d9dc3d",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectDocumentAdversarialTests.swift",
+      "blob_sha": "1a53759b473255d57a38fe44199fd7d64678692a",
+      "inspection": "full file read at pinned base; specialized review only of scoped parser/adversarial behavior"
+    }
+  ],
+  "checks": [
+    {
+      "id": "parser-before-scanner",
+      "method": "static source review",
+      "paths": [
+        "Sources/LightingCore/LightingProjectDocument.swift:45-52",
+        "Sources/LightingCore/LightingProjectDocument.swift:99-106"
+      ],
+      "result": "The raw 8 MiB check precedes JSONDecoder. The duplicate-key scanner is reached only after successful envelope decoding. Returning at root close relies on the decoder having validated the remaining input; no independent permissive parsing path was found."
+    },
+    {
+      "id": "string-escape-scope",
+      "method": "static branch tracing",
+      "paths": [
+        "Sources/LightingCore/LightingProjectDocument.swift:70-115"
+      ],
+      "cases": [
+        "escaped quote after backslash",
+        "paired backslashes before a closing quote",
+        "braces, brackets and commas inside string values",
+        "object nested in array with sibling objects"
+      ],
+      "result": "Two-byte escape skipping preserves quote boundaries for already-valid JSON. Only commas in the current object scope reset expectsKey; array commas do not affect the parent object. Closing scopes release their key sets. No concrete lexical scope defect identified."
+    },
+    {
+      "id": "unicode-key-equivalence",
+      "method": "static source review",
+      "paths": [
+        "Sources/LightingCore/LightingProjectDocument.swift:83-95",
+        "Sources/LightingCore/LightingProjectDocument.swift:118-147"
+      ],
+      "cases": [
+        "direct ASCII key versus equivalent Unicode escape",
+        "direct scalar versus escaped surrogate pair",
+        "distinct NFC/NFD UTF-8 sequences",
+        "UTF-16/UTF-32 BOM precedence and BOM-free ASCII structural prefixes"
+      ],
+      "result": "Keys are decoded as JSON strings before exact UTF-8 Data comparison, which identifies equivalent escape spellings without intentionally normalizing canonically equivalent but distinct sequences. UTF-32 BOM detection precedes UTF-16 detection; prefix tests are coherent for object or JSON-whitespace starts. Runtime behavior was not executed."
+    },
+    {
+      "id": "resource-bound",
+      "method": "static source review",
+      "paths": [
+        "Sources/LightingCore/LightingProjectDocument.swift:8",
+        "Sources/LightingCore/LightingProjectDocument.swift:45-52",
+        "Sources/LightingCore/LightingProjectDocument.swift:70-115",
+        "Sources/LightingCore/LightingProjectDocument.swift:122-147"
+      ],
+      "result": "The imported raw byte count is bounded. Scanner traversal is iterative; scope storage grows with nesting and stored key data, and sets are mutated in place then released at scope close. There is no application-defined depth ceiling in this file. UTF conversion and decoder/scanner allocations mean the raw-byte limit is not a measured peak-memory guarantee. No crash or unbounded-loop case established from source."
+    },
+    {
+      "id": "adversarial-test-source",
+      "method": "test definition review only",
+      "paths": [
+        "Tests/LightingCoreTests/ProjectDocumentAdversarialTests.swift:18-55"
+      ],
+      "result": "Definitions reject raw numeric overflow/nonfinite values, malformed or noninteger version tokens, invalid UTF-8, unpaired surrogates, a NUL-containing name, and an extra JSON root. Positive controls preserve valid equivalent integer spellings and an escaped surrogate pair. These methods were read, not run."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable. No scripts, Swift tests, builds, parser probes, benchmarks, memory measurements, CI verification or device checks executed.",
+    "Startup documents were read remotely; agent_cycle.py check/next and local status/uncommitted-change inspection were unavailable.",
+    "The inspected adversarial test file does not itself cover nesting thresholds, wide objects, or UTF-16/32 decoding. This is a statement about the scoped file only; coordinator reports those cases in the separately assigned ProjectDocumentNestedIntegrityTests.swift, which this worker did not inspect.",
+    "Foundation's actual depth limits, complete trailing-token rejection and alternate-encoding behavior remain runtime-dependent and were not independently verified.",
+    "Envelope and nested-member semantic schema review belongs to w072/w073; provider I/O review belongs to w075 and is excluded.",
+    "No source, tree, commit or ref was changed. The only authorized mutation is this unreferenced JSON report blob."
+  ],
+  "conclusion": "No concrete must-fix finding in the assigned source/test slice. Static review complete; this is not an executed test pass or milestone acceptance.",
+  "status": "complete"
+}

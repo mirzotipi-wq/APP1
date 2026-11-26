@@ -1,0 +1,27 @@
+{
+  "worker": "w012",
+  "context_path": "/root/w007_review_coordinator/w012_slider_tracking_cancel",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "evidence_type": "summary_of_actual_returned_worker_messages",
+  "report_file": "/dev/shm/app1-m03/workers/w012.json",
+  "report_file_verified_before_outage": true,
+  "full_report_file_currently_unavailable": true,
+  "report_hash_reconstructed": false,
+  "summary": "Completed w012 at7b91c1a. Report /dev/shm/app1-m03/workers/w012.json. One P2 adapter-level finding: StudioSliderTracking.change can reopen editing after a binding read synchronously cancels tracking; token validity checked after onEditingChanged(true). Compiled production-source probe produced tracking=false editing=true value=0.2 events=[true,false,true]. Proposed recheck token after read before reasserting owner, with cancel/replacement regressions. Inspected production getters are plain reads; no ordinary UIKit/SwiftUI trigger established. Native tests inspected, not executed. Repository unchanged. Root independently confirmed and prepared guard/tests in candidate a5b06c8; separate followup is pending.",
+  "findings": [
+    {
+      "severity": "P2",
+      "path": "App/StudioSliderTracking.swift",
+      "lines": "87-94",
+      "repro": "binding read finishes current tracking token; change emits unmatched begin before token guard",
+      "observed": "tracking=false editing=true value=0.2 events=[true,false,true]",
+      "production_reachability": "Not established; production getters inspected are plain reads",
+      "status": "source correction independently reviewed at a5b06c8; candidate runtime unverified"
+    }
+  ],
+  "limitations": [
+    "Original report was written and validated before host outage; its bytes/hash are not reconstructed here.",
+    "This summary preserves actual returned review conclusions and limits, not a new review or test pass."
+  ],
+  "status": "complete"
+}

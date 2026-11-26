@@ -1,0 +1,90 @@
+{
+  "worker": "w080",
+  "context_path": "/root/w007_review_coordinator/w080_project_collision_identity",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Static review of project display-name collision groups, case/diacritic/width and default-ignorable equivalence, UUID-prefix expansion uniqueness and ordering stability, preservation of original model identity, and distinguishing row/user actions.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89"
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "blob_sha": "1c108acca53243472810eef5cb8570fee99fe674"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Read startup directives and m02-m03-code-v2 acceptance",
+      "result": "Read remotely at the pinned revision; applied meaningful app labels/values/actions and stable identities requirements. Did not infer runtime acceptance from source."
+    },
+    {
+      "check": "Display-name equivalence",
+      "result": "ProjectLibraryRowPresentation.make compares displayed names using caseInsensitive, diacriticInsensitive and widthInsensitive folding, then removes default-ignorable scalars only from comparison keys. The displayed name and original project are retained separately. Static review of the first two presentation tests confirms fixtures for exact, case, width, diacritic and default-ignorable collisions."
+    },
+    {
+      "check": "UUID-prefix uniqueness and stability",
+      "result": "Prefixes are chosen at lengths 8, 13, 18, 23 and 36 by checking every other supplied UUID. With valid distinct project UUIDs, the full UUID always terminates with an unambiguous identifier; selection does not depend on array order. Reviewed boundary-expansion and reordered-library fixtures; source computes presentations from the entire library."
+    },
+    {
+      "check": "Original model identity",
+      "result": "Each presentation stores the original LightingProject and exposes id as project.id. Name folding operates on temporary comparison strings. Existing fixtures assert preservation of project values and exact displayed scalars for joined emoji/scripts."
+    },
+    {
+      "check": "Distinguishable user actions",
+      "result": "Current/open/options/restore/delete controls include identityValue when needed; visible rows include Project ID. Select, rename, duplicate, archive, restore and delete commands retain project UUIDs. Deletion freezes the original presentation, uses confirmationName, and checks full record equality before dispatch. Naming sheet behavior was excluded."
+    },
+    {
+      "check": "Test-source adequacy",
+      "result": "Read all eight ProjectLibraryPresentationTests methods as source. Cases cover default-ignorables, exact/case/width/diacritic duplicates, fallback collisions, visible scalar preservation, all UUID group boundaries, reordered whole-library identity and ordinary unique names. Missing runtime evidence was not converted into a defect or a pass."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Read-only remote source review; host and execution scripts were unavailable. No Swift build, XCTest, simulator, visual/VoiceOver, locale-runtime or CI execution was performed.",
+    "Scope excludes filtering behavior (w081), sheet behavior (w084/w053), and the already fixed blank-only U+2800 policy (w028).",
+    "StudioDisplayName implementation was not inspected: a single attempted auxiliary lookup at App/StudioDisplayName.swift returned 404. Findings concern the inspected presentation and its test contract.",
+    "No repository source, tree, commit or ref changes; only this unreferenced report blob is created."
+  ],
+  "status": "complete"
+}

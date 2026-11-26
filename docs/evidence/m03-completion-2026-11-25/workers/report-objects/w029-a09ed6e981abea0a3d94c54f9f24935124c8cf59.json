@@ -1,0 +1,114 @@
+{
+  "worker": "w029",
+  "context_path": "/root/w007_review_coordinator/w029_emitter_frame_degeneracy",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "EmitterFrame orthonormality, vertical/coincident aim, roll convention, and source center; excludes photometry integration and scene-transform roll transport.",
+  "actual": {
+    "method": "GitHub fetch_file at the pinned commit; static source and test review only.",
+    "paths": [
+      {
+        "path": "AGENTS.md",
+        "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+      },
+      {
+        "path": "agents/OPERATING_PROTOCOL.md",
+        "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+      },
+      {
+        "path": "agents/HANDOFF.md",
+        "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+      },
+      {
+        "path": "agents/state.json",
+        "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+      },
+      {
+        "path": "docs/PRODUCT.md",
+        "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+      },
+      {
+        "path": "docs/ARCHITECTURE.md",
+        "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+      },
+      {
+        "path": "docs/ROADMAP.md",
+        "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+      },
+      {
+        "path": "docs/QUALITY.md",
+        "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+      },
+      {
+        "path": "docs/DESIGN.md",
+        "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+      },
+      {
+        "path": "docs/acceptance/m02-m03-code.md",
+        "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+      },
+      {
+        "path": "Sources/LightingCore/StudioOptics.swift",
+        "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6"
+      },
+      {
+        "path": "Tests/LightingCoreTests/StudioOpticsTests.swift",
+        "blob_sha": "8a590db71dd9ac5db406c1f2e84a5430cbf65187"
+      },
+      {
+        "path": "Sources/LightingCore/Scene.swift",
+        "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+      },
+      {
+        "path": "Sources/LightingCore/SurfacePhotometry.swift",
+        "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426"
+      }
+    ],
+    "checks": [
+      {
+        "check": "Input and coincident-aim handling",
+        "outcome": "Reviewed",
+        "evidence": "EmitterFrame validates both Positions and finite roll in -180...180 before constructing target-source. UnitDirection rejects a zero vector, so coincident source and target return nil. Position bounds keep coordinate subtraction finite."
+      },
+      {
+        "check": "Ordinary basis orthogonality and handedness",
+        "outcome": "Reviewed",
+        "evidence": "For horizontal magnitude > 1e-12, right normalizes (normal.z,0,-normal.x); up normalizes normal cross right. Algebra gives right cross up aligned with normal and pairwise orthogonality, subject to floating-point rounding."
+      },
+      {
+        "check": "Vertical and near-vertical aims",
+        "outcome": "Reviewed",
+        "evidence": "Exact vertical aims choose right=(1,0,0), yielding up=(0,0,-1) for upward normal and up=(0,0,1) for downward normal. Near-vertical fallback can leave right dot normal bounded by 1e-12, below the assigned test's 1e-10 orthogonality tolerance; no material defect identified."
+      },
+      {
+        "check": "Roll convention and cardinal cases",
+        "outcome": "Reviewed",
+        "evidence": "Rolled right=c*right+s*up and rolled up=-s*right+c*up preserve handedness and the normal. +90 maps right to up and up to -right; -90 reverses that rotation; +/-180 flips both plane axes. Exact cardinal coefficients avoid trigonometric residue, and zero roll preserves existing coordinates."
+      },
+      {
+        "check": "Source center and direction origin",
+        "outcome": "Reviewed",
+        "evidence": "EmitterFrame direction uses target-source, StudioPhotometry.frame forwards light.position as source, and rectangular-emitter construction forwards light.position as center. No substitution of world origin or target for emitter center was found."
+      },
+      {
+        "check": "Normalization dependency",
+        "outcome": "Reviewed",
+        "evidence": "UnitDirection scales by the largest absolute component before calculating length, rejecting nonfinite/zero inputs and avoiding overflow or underflow from directly squaring raw components."
+      },
+      {
+        "check": "Assigned regression coverage",
+        "outcome": "Reviewed, not executed",
+        "evidence": "testFrameOrthonormalIncludingVertical checks generic, upward, downward, negative-Z and near-vertical targets; verifies pairwise dot products and handedness; and rejects coincidence. The assigned StudioOpticsTests file has no direct nonzero-roll or translated-source frame test. This is a scoped coverage observation, not a claim about other test files."
+      }
+    ]
+  },
+  "findings": [],
+  "limitations": [
+    "No host, shell, scripts, Swift compilation, tests, native/UI execution, benchmark, or numerical harness was run.",
+    "Startup documents were fetched and read; repository worktree/branch inspection and agent_cycle.py execution were unavailable and not performed.",
+    "No full-repository roll-test inventory, photometric integration review, or scene-transform roll-transport review was attempted.",
+    "This report records bounded source review and cannot establish runtime acceptance or milestone completion.",
+    "Only this report blob is uploaded; no source, tree, branch, or ref is changed."
+  ],
+  "conclusion": "No must-fix defect identified in the assigned EmitterFrame scope at the pinned revision.",
+  "status": "complete"
+}

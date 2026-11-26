@@ -1,0 +1,126 @@
+{
+  "worker": "w066",
+  "context_path": "/root/w007_review_coordinator/w066_library_archive_active_ids",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Select/archive/restore/delete identity transitions; active and last-unarchived project protection; rejection preserves state.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Startup or acceptance context read"
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "inspection": "ProjectLibrary value-state and identity mutation methods, especially lines 91–134; file-store implementation excluded"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "blob_sha": "eaf1852a0c9507027f7ef27d27f6b863c8288afa",
+      "inspection": "Identity-related tests at lines 12–33, 96–131 and 147–198; remaining test declarations scanned"
+    }
+  ],
+  "checks": [
+    {
+      "case": "select_live_missing_archived",
+      "method": "Static control-flow review",
+      "result": "select first resolves the ID, rejects an archived record, and only then changes activeID. Existing scenes and records remain untouched; failed lookup or archive guard does not mutate state.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:91–95; Tests/LightingCoreTests/ProjectLibraryTests.swift:30–32,106,129–130"
+    },
+    {
+      "case": "archive_current_and_last_live",
+      "method": "Static invariant review",
+      "result": "archive rejects activeID before changing an archive flag. For a valid snapshot this also protects the last unarchived project. Archiving an inactive record retains activeID and all record identities/content; missing ID throws before assignment.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:116–119; Tests/LightingCoreTests/ProjectLibraryTests.swift:104–111"
+    },
+    {
+      "case": "restore_preserves_identity_and_selection",
+      "method": "Static control-flow review",
+      "result": "restore changes only the located record's archive flag. It neither replaces the UUID nor selects the restored record. Unknown IDs throw before mutation. Repeated restore is an idempotent assignment.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:121–123; Tests/LightingCoreTests/ProjectLibraryTests.swift:112–114,174"
+    },
+    {
+      "case": "archive_restore_idempotence",
+      "method": "Static reasoning",
+      "result": "Repeated archive of an inactive archived record and repeated restore of an unarchived record do not change any other state. A restore of the current unarchived active record is a no-op.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:116–123"
+    },
+    {
+      "case": "delete_only_archived_inactive",
+      "method": "Static control-flow and test-source review",
+      "result": "deleteArchived resolves the ID, requires a different ID from activeID and an archived flag, then removes exactly that index. The active and unrelated records are preserved, preventing deletion of the last active project in a valid snapshot.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:128–134; Tests/LightingCoreTests/ProjectLibraryTests.swift:147–175"
+    },
+    {
+      "case": "rejection_preserves_snapshot",
+      "method": "Static exception-order review",
+      "result": "All possible errors in the scoped methods occur before their single mutation. Existing tests compare the full library after invalid selection and rejected live/active/missing deletion. The archive/restore round-trip checks active identity and scene preservation.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:91–134; Tests/LightingCoreTests/ProjectLibraryTests.swift:96–130,155–174"
+    },
+    {
+      "case": "base_revision",
+      "method": "GitHub fetch_commit and fixed-ref file retrieval",
+      "result": "All inspected files were fetched with the requested full commit SHA. Commit metadata confirms the revision and its retained historical evidence commit message.",
+      "evidence": "75e827f2ee3f99798d619aff62f3a5188b509428"
+    }
+  ],
+  "findings": [],
+  "coverage_notes": [
+    "The scoped test file does not separately assert every missing-ID archive/restore rejection, exact archive error type, or the singleton last-active case. Source ordering and guards cover these cases; this observation is not a demonstrated product defect."
+  ],
+  "limitations": [
+    "Source/test review only. No Swift compilation, tests, scripts, native application, UI workflows or filesystem probes executed.",
+    "Host unavailable as supplied in assignment; local status, branch, uncommitted changes and agent_cycle.py check/next unavailable. Review pinned to the supplied immutable revision.",
+    "Create/name policy, decode validation, filesystem compare-and-swap, recovery-store transactions and UI actor behavior excluded.",
+    "Historical execution claims encountered in startup documentation and commit metadata were not independently validated or counted as passes.",
+    "No source, tree, commit or ref changes; only the authorized unreferenced report blob was created."
+  ],
+  "conclusion": "No concrete defect found in the assigned identity-transition and state-preservation scope.",
+  "status": "complete"
+}

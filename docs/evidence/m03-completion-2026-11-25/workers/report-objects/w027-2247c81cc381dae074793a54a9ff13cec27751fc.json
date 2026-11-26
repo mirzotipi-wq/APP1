@@ -1,0 +1,129 @@
+{
+  "worker": "w027",
+  "context_path": "/root/w007_review_coordinator/w027_plan_label_collisions",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "task": "Static review of plan caption placement",
+  "focus": [
+    "determinism",
+    "caption/marker and caption/caption collision clearance",
+    "caption boundaries",
+    "larger caption boxes"
+  ],
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "Sources/LightingCore/StudioPlanLabelLayout.swift",
+      "blob_sha": "3f7adc3be8dbc23404db7d5efbedd880b5680557",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioPlanLabelLayoutTests.swift",
+      "blob_sha": "6f6c861dff2ec7208511c8d041ef588f2cb152c7",
+      "read_method": "GitHub fetch_file",
+      "extent": "full file"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Input validation and bounded work",
+      "kind": "source inspection",
+      "result": "Layout rejects nonfinite canvas/item inputs, nonpositive caption sizes, negative reservedTop, and more than 14 markers. Each eligible caption considers eight adjacent positions and a fixed 9-by-7 fallback grid."
+    },
+    {
+      "name": "Stable placement and output indexing",
+      "kind": "source inspection",
+      "result": "Selected captions receive placement priority; equal selection priority resolves by input index. Fallbacks sort by Euclidean anchor distance, resolving equal distance by original enumeration index. Frame arrays retain input order."
+    },
+    {
+      "name": "Caption boundary and collision filtering",
+      "kind": "source inspection",
+      "result": "A candidate must stay within eight-point horizontal/bottom margins and max(8,reservedTop) at the top. It must avoid every marker frame and every previously placed caption by the four-point clearance supplied to Rect.intersects. Marker frames preserve supplied anchor centers."
+    },
+    {
+      "name": "Larger caption boxes",
+      "kind": "source inspection",
+      "result": "Caption dimensions are used unchanged; oversized or unplaceable captions remain explicitly nil. Enlarged boxes continue through the same boundary/collision filtering, without shrinking or displacing markers."
+    },
+    {
+      "name": "Regression test coverage",
+      "kind": "test source inspection only",
+      "result": "Read all six methods. They check the prior captured caption/icon collision; widths 160, 240, 342 and 700 with text scales 1, 1.5, 2.5 and 3.2; repeated-layout equality; coincident markers and selected priority; oversized omission; invalid inputs/count limit; and empty/tiny layouts. Shared assertions inspect frame dimensions, anchor preservation, margins and marker/caption separation. No method was executed."
+    },
+    {
+      "name": "Acceptance alignment",
+      "kind": "contract inspection",
+      "result": "M03 requires real app semantics and default/largest-text layout evidence. This helper and its synthetic box assertions provide relevant source-level coverage, but do not by themselves establish rendered glyph fit or native/UI acceptance."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete correctness defect found within the two-file placement scope. Report is static review evidence only.",
+  "limitations": [
+    "Execution host unavailable: no scripts, Swift tests, native builds, UI tests or screenshots were run.",
+    "No local repository or report file was created; files were read directly from GitHub at the stated base SHA.",
+    "No viewport/footer or caller rendering implementation was reviewed, per assigned scope.",
+    "Test caption sizes are synthetic approximations; actual rendered glyph bounds and accessibility-size UI output were not validated.",
+    "Working-tree/branch status and agent_cycle checks were unavailable; this report does not establish milestone completion or test passes.",
+    "Only the owner-authorized unreferenced report blob is written; no source, tree, branch or commit is changed."
+  ],
+  "status": "complete"
+}

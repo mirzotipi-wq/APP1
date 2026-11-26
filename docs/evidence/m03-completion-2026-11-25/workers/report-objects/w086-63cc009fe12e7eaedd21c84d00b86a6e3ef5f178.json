@@ -1,0 +1,192 @@
+{
+  "worker": "w086",
+  "context_path": "/root/w007_review_coordinator/w086_lighting_plan_text_precision",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Existing M03 local lighting-plan text: explicit units, axis signs and coordinate references, room-position descriptions, numerical formatting/version metadata, equipment/optics wording, illustrative/calibration assumptions. No M05 or physical-calibration expansion.",
+  "review_type": "remote pinned-source and test inspection only",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "startup or governing-contract context"
+    },
+    {
+      "path": "Sources/LightingCore/LightingPlan.swift",
+      "blob_sha": "823e4157b73c2f3e474772d8378cb99f87b9babc",
+      "inspection": "primary source/test review"
+    },
+    {
+      "path": "Tests/LightingCoreTests/LightingPlanTests.swift",
+      "blob_sha": "5d5fac9728067e9af57021baf48a5fc89760bab7",
+      "inspection": "primary source/test review"
+    },
+    {
+      "path": "App/LightingPlanExportView.swift",
+      "inspection": "production caller verification; full file read",
+      "blob_sha": "2db6c333853c8f4cab16082cd4d9037cd05feafb"
+    },
+    {
+      "path": "App/LightingPlanPDF.swift",
+      "inspection": "targeted version/coordinate/assumption comparison; lines 1–118 only",
+      "blob_sha": "0e26c90ab3213f88fc1c337006f817dbbbfd39e5"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "inspection": "targeted export producer snippets; lines 394–405 and 1156–1167 only",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Metric/imperial conversion and stable formatting",
+      "result": "Source uses 0.3048 meters per foot and POSIX fixed formatting; two-decimal derived values and six-decimal parameter rounding are explicitly disclosed in plainText.",
+      "evidence": [
+        "LightingPlan.swift:3-48,312-316",
+        "LightingPlanTests.testUnitConversionAndStableFormatting",
+        "LightingPlanTests.testFixedPrecisionAndNegativeZero",
+        "LightingPlanTests.testAdaptiveParameterFormattingRetainsPrecisionWithoutFalseNegativeZero"
+      ],
+      "execution": "not run"
+    },
+    {
+      "check": "Snapshot values, negative-coordinate presentation and aim semantics",
+      "result": "Validated scene snapshot supplies coordinates and values; explicit manual/follows-subject/undefined/omnidirectional aim text is present. Tests inspect representative fractional and negative coordinates and both units.",
+      "evidence": [
+        "LightingPlan.swift:124-138,211-228,293-310",
+        "LightingPlanTests.testPrecisePDFModelAndPlainTextShareTheSameValidatedParameters",
+        "LightingPlanTests.testEquipmentRowsPreserveSceneValuesAndAimSemantics",
+        "LightingPlanTests.testInvalidSceneAndUndefinedAimAreNotPresentedAsValid"
+      ],
+      "execution": "not run"
+    },
+    {
+      "check": "Coordinate and version self-description",
+      "result": "Current PDF source includes Plan v/reportVersion and Scene v/schemaVersion plus +X right/+Z down/Y elevation. The actual Share text settings production path uses plainText, whose two metadata omissions are retained as nonblocking observations, not M03 violations.",
+      "evidence": [
+        "LightingPlan.swift:197,303-318",
+        "LightingPlan.swift:321-323",
+        "docs/ARCHITECTURE.md:Coordinates and color",
+        "docs/PRODUCT.md:First release workflow",
+        "App/StudioView.swift:399,1161-1162",
+        "App/LightingPlanExportView.swift:73-78",
+        "App/LightingPlanPDF.swift:53,93"
+      ],
+      "execution": "static inspection"
+    },
+    {
+      "check": "Room-position wording and signed subprecision values",
+      "result": "Room section distinguishes left/near wall coordinates, floor-relative height, horizontal subject distance, floor projection, positive yaw, unmeasured ceiling, wall overhang and height checks. roomDistance uses selected-unit bounds for nonzero magnitudes below 0.000001 and preserves negative-side meaning.",
+      "evidence": [
+        "LightingPlan.swift:30-39,150-191,208-209,269-291"
+      ],
+      "execution": "static inspection; underlying room transform and room tests not reviewed"
+    },
+    {
+      "check": "Equipment/optics and assumptions",
+      "result": "Text carries light number/name and kind.title; rectangle dimensions and authored roll are conditional, output uses cd/K/mm and relative stops. Source clearly states ideal uncalibrated parameters and absent reference images; room limitations distinguish displayed precision from measurement accuracy and require physical verification of complete fixtures.",
+      "evidence": [
+        "LightingPlan.swift:124-138,208-209,219-228,293-316",
+        "LightingPlanTests.testUnicodeAndControlCharactersAreSafelyBounded",
+        "LightingPlanTests.testInvisibleReportNamesHaveContextWithoutRenamingEditableData"
+      ],
+      "execution": "static inspection; EmitterKind.title implementation not inspected"
+    },
+    {
+      "check": "Actual production plain-text exposure",
+      "result": "Confirmed source chain: StudioView.exportText -> LightingPlanExportMenu.textSettings -> snapshot -> conditional ShareLink. Default-branch code search returned no results even for a known declaration, so no absence conclusions are drawn from search.",
+      "evidence": [
+        "App/StudioView.swift:399,1161-1162",
+        "App/LightingPlanExportView.swift:19-24,37-41,73-78"
+      ],
+      "execution": "remote static inspection; no UI run"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host/runtime unavailable per assignment: no scripts, Swift tests, Apple builds, UI tests, PDF render/share/open checks, or physical validation were executed.",
+    "Remote reads were pinned to the supplied base SHA; local status, current branch/HEAD, uncommitted work, recent commits and live CI were not independently inspected.",
+    "Source/test review is not a passing M03 acceptance run or verification of historical handoff claims.",
+    "RoomPlacementPlan/RoomVerticalClearance implementations and EmitterKind.title definitions were outside the narrow inspected paths; their calculations/strings are not independently validated by this report.",
+    "PDF layout and workflow behavior are assigned to separate workers. No source, tree, commit, branch or ref was changed.",
+    "Additional caller/PDF reads were made only to settle the coordinator's applicability question; no PDF-layout or general workflow review is claimed."
+  ],
+  "status": "complete",
+  "conclusion": "No actionable M03 finding established in inspected source; findings is empty. Two exposed plain-text metadata differences are nonblocking P3 observations, with current PDF conventions/versions verified in source. Units, declared rounding, conditional optics/aim text, room-reference wording and calibration limitations are coherent in the inspected code. Runtime remains unverified.",
+  "report_revision": 2,
+  "supersedes_report_blob_sha": "fc38e93870fd4d8678b7978de6f7fa4d592ba098",
+  "scope_disposition": "Current m02-m03-code-v2 requires editing exactness and app semantics/workflows, but does not add standalone text-version or world-axis metadata acceptance clauses. Later M05 export requirements are not imported into M03. No current M03 acceptance violation was established by this review.",
+  "observations": [
+    {
+      "id": "w086-O1",
+      "severity": "P3",
+      "classification": "nonblocking observation; no M03 repair requested",
+      "case": "Use the current studio Export lighting plan menu and choose Share text settings.",
+      "path": "Sources/LightingCore/LightingPlan.swift",
+      "lines": "197,303-318",
+      "title": "Shared plain text does not carry report/scene versions",
+      "evidence": "The complete plainText body omits reportVersion and scene.schemaVersion. This string is produced by StudioView.exportText (1161–1162), passed to LightingPlanExportMenu at 399, and shared by LightingPlanExportFlow at 73–78. PDF base() separately includes both versions at LightingPlanPDF.swift:53.",
+      "impact": "Standalone text lacks format/schema provenance that the PDF carries; numerical settings and units remain present.",
+      "scope": "The general product workflow mentions version-bearing exports, but current M03 acceptance does not expressly require this text metadata. Do not infer an M03 failure or expand M05 scope.",
+      "possible_future_action": "Consider matching PDF version metadata when undertaking export-text maintenance, with a presence assertion."
+    },
+    {
+      "id": "w086-O2",
+      "severity": "P3",
+      "classification": "nonblocking observation; no M03 repair requested",
+      "case": "Share text settings for a no-room scene with lights at positive and negative X/Z positions.",
+      "path": "Sources/LightingCore/LightingPlan.swift",
+      "lines": "303-308",
+      "title": "Shared plain-text header does not explicitly state X/Z orientation",
+      "evidence": "The header defines XYZ units and Y elevation and supplies both subject and camera positions, but omits +X/+Z orientation wording. The PDF overview explicitly supplies +X right/+Z down/Y elevation at LightingPlanPDF.swift:93. The optional room section separately defines wall-relative coordinates and positive rotation.",
+      "impact": "A reader using standalone text must infer the world orientation from scene/camera context or external conventions. This is narrower than asserting the numerical coordinates are wrong; all signed values remain present at the disclosed rounding precision.",
+      "scope": "No current M03 acceptance violation or demonstrated broken workflow was established. Current PDF already supplies the convention; no PDF fix or M05 expansion is requested.",
+      "possible_future_action": "Consider explicit authored-world direction wording if export text is revised, carefully qualifying the initial/default-camera +Z convention."
+    }
+  ]
+}

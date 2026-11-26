@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "worker": "worker096",
+  "workerNumber": 96,
+  "context_path": "/root/w007_review_coordinator/w096_commit_interruption_probe_validity",
+  "repository": "mirzotipi-wq/APP1",
+  "base": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "date": "2026-11-26",
+  "status": "complete",
+  "reviewType": "Focused independent source review",
+  "scope": "Commit interruption probe validity: real rename interception, stop/witness/owned kill sequencing, strict prior/candidate preservation and unrelated records, EIO injection, failure handling, truthful host limitations.",
+  "inputs": [
+    {
+      "path": "AGENTS.md",
+      "blobSHA": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blobSHA": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blobSHA": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "agents/state.json",
+      "blobSHA": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blobSHA": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blobSHA": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blobSHA": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blobSHA": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blobSHA": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blobSHA": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "scripts/probe_library_commit_interruption.py",
+      "blobSHA": "9149f26bc08089af96886e2583168a8295de7efa",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "scripts/probe-library-commit-interposer.c",
+      "blobSHA": "01c1936cd613ca1451553ed331c883de29f6d7f5",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "scripts/probe-atomic-library-write.swift",
+      "blobSHA": "4eadb41b2801bffab2c4abf73644125c01742b65",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "scripts/tests/test_atomic_library_probe_filesystem.py",
+      "blobSHA": "acf8dfa92ea888b3ace944939c468c93718d5445",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    },
+    {
+      "path": "scripts/tests/test_atomic_library_probe_sdk.py",
+      "blobSHA": "7fbf91f4bb0180751df48ee9d63e317166eb9cfd",
+      "inspection": "Remote UTF-8 source read at the pinned base; no execution"
+    }
+  ],
+  "checks": [
+    {
+      "case": "before-rename",
+      "status": "source_review_satisfied",
+      "evidence": [
+        {
+          "path": "scripts/probe-library-commit-interposer.c",
+          "lines": "132-143,155-185"
+        },
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "235-255,324-368"
+        }
+      ],
+      "observation": "Targeted rename/renameat/renameat2 emit a before-call witness and SIGSTOP before invoking the real rename. Parent validates child PID, target, mode and API, observes SIGSTOP with waitid, checks exact prior target bytes and the staged exact candidate, then SIGKILLs the private group and requires the corresponding signal return code."
+    },
+    {
+      "case": "after-rename",
+      "status": "source_review_satisfied",
+      "evidence": [
+        {
+          "path": "scripts/probe-library-commit-interposer.c",
+          "lines": "146-185"
+        },
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "166-190,241-255,324-348"
+        }
+      ],
+      "observation": "The interposer invokes the real rename before emitting after-success; only return code zero triggers stop. Driver rejects after-error, confirms target contains candidate bytes at the stop and selects strict verify-candidate after termination."
+    },
+    {
+      "case": "target-and-witness-isolation",
+      "status": "source_review_satisfied",
+      "evidence": [
+        {
+          "path": "scripts/probe-library-commit-interposer.c",
+          "lines": "28-74,76-123"
+        },
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "96-113,166-180,204-240"
+        }
+      ],
+      "observation": "Hooks require a canonical existing regular-file target, valid mode and FIFO witness descriptor. Final-component symlink aliases are excluded. LD_PRELOAD applies only to the owned save child through an inherited /proc/self/fd descriptor; setup/control/reopen run without interposition. Witnesses must identify that child and exact target; bounded atomic pipe writes fail with exit 125 if they cannot be emitted."
+    },
+    {
+      "case": "prior-candidate-and-unrelated-records",
+      "status": "source_review_satisfied",
+      "evidence": [
+        {
+          "path": "scripts/probe-atomic-library-write.swift",
+          "lines": "40-58,93-121,159-216"
+        },
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "316-372"
+        }
+      ],
+      "observation": "Fixtures deliberately change the primary project name, scene/light count and project count while preserving stable active identity plus one unrelated open and one unrelated archived record. Verification requires complete decoded-library equality and exact canonical bytes against the same expected fixture. Driver requires strict prior for before/EIO and strict candidate after rename, with an independently saved/reopened unrestricted candidate control."
+    },
+    {
+      "case": "rename-eio",
+      "status": "source_review_satisfied",
+      "evidence": [
+        {
+          "path": "scripts/probe-library-commit-interposer.c",
+          "lines": "138-141,155-185"
+        },
+        {
+          "path": "scripts/probe-atomic-library-write.swift",
+          "lines": "128-158"
+        },
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "352-359"
+        }
+      ],
+      "observation": "The hook actually sets errno=EIO and returns -1 from the targeted rename without calling its real implementation. Driver requires a matching rejected witness, actual save_threw/writeAttempted output from the production save catch, and strict prior/control preservation. A generic validation or setup error alone cannot satisfy these checks."
+    },
+    {
+      "case": "missing-witness-stop-cleanup-and-failure",
+      "status": "source_review_satisfied",
+      "evidence": [
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "51-62,105-153,156-190,235-300,332-376,473-505"
+        },
+        {
+          "path": "scripts/probe-library-commit-interposer.c",
+          "lines": "118-129"
+        }
+      ],
+      "observation": "Missing/invalid/oversized witnesses, unexpected exit/stop, timeout, wrong bytes, failed fresh reopen and cleanup errors prevent success. Child handles are registered while cancellation signals are blocked; spawned processes have private sessions. Finally blocks kill and reap registered children, and a resumed stop hook exits rather than continuing into a commit. This is a source assessment of intended cleanup behavior, not a process execution observation."
+    },
+    {
+      "case": "existing-probe-tests-and-claim-limits",
+      "status": "source_review_satisfied_with_runtime_limit",
+      "evidence": [
+        {
+          "path": "scripts/tests/test_atomic_library_probe_filesystem.py",
+          "lines": "1-205"
+        },
+        {
+          "path": "scripts/tests/test_atomic_library_probe_sdk.py",
+          "lines": "1-178"
+        },
+        {
+          "path": "scripts/probe_library_commit_interruption.py",
+          "lines": "1-8,403-418"
+        }
+      ],
+      "observation": "Existing related test files explicitly use mocked filesystem/SDK command execution and cannot prove live rename interception. No dedicated interruption test file appears in the inspected scripts tree. Driver explicitly scopes itself to Linux and excludes power-loss/storage durability, physical low storage, Darwin/iOS/device execution and cleanup after the driver receives uncatchable SIGKILL. Actual filesystem/runtime evidence is outside this worker's assignment."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete defect found in the assigned source scope. The implementation has coherent witnessed before/after-rename and EIO checks with strict snapshot preservation; this review alone does not establish that probes passed at the pinned revision.",
+  "limitations": [
+    "Host was unavailable. No shell, agent_cycle check/next, compiler, tests or probes were executed, and local branch/status/uncommitted work could not be inspected.",
+    "All source reads were pinned to the supplied base. No source, tree or ref was changed.",
+    "EFBIG mechanism review belongs to worker095; accepted runtime/hash evidence belongs to worker059.",
+    "No claim of power-loss durability, provider behavior, iOS/device execution or milestone acceptance.",
+    "Related mocked tests were read only; no pass was inferred from their presence.",
+    "Only the authorized unreferenced JSON report blob is created."
+  ],
+  "testsExecuted": [],
+  "startupCommandsExecuted": [],
+  "sourceChanges": [],
+  "treeChanges": [],
+  "refChanges": []
+}

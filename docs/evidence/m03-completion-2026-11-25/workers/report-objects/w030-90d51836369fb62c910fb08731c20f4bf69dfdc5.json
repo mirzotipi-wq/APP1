@@ -1,0 +1,124 @@
+{
+  "worker": "w030",
+  "context_path": "/root/w007_review_coordinator/w030_area_photometry_reference",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Rectangular diagnostic illuminance integration assumptions, SI units/ranges, and analytic/numerical-reference test contract; EmitterFrame basis and SurfacePhotometry clipping internals excluded.",
+  "review_method": "Remote source and test inspection at the supplied immutable revision through GitHub fetch_file. No repository scripts, build, tests, host commands, source edits, tree changes, or ref changes.",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "role": "startup_or_contract"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "role": "review_scope"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioOpticsTests.swift",
+      "blob_sha": "8a590db71dd9ac5db406c1f2e84a5430cbf65187",
+      "role": "review_scope"
+    },
+    {
+      "path": "Tests/LightingCoreTests/PhotometryInvariantTests.swift",
+      "blob_sha": "27f611a596501d691a506407efc01daed33ccb19",
+      "role": "review_scope"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "role": "dependency_public_contract"
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426",
+      "role": "dependency_public_contract"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Acceptance contract",
+      "result": "Reviewed m02-m03-code-v2: point analytic error <=1%, declared area numerical-reference error <=5%, preserved Debug/Release tests, documented geometry and units. Static inspection is not gate execution or acceptance."
+    },
+    {
+      "name": "Adapter units and validation",
+      "result": "StudioPhotometry passes StudioLight.candela as onAxisCandela and widthMeters/heightMeters unchanged to LambertianRectangle. The 0.05...4 meter dimension range and 0...100000 candela range match the callee. Scene positions are finite and bounded to -100...100 meters per component. Receiver direction is camera minus subject, normalized through UnitDirection."
+    },
+    {
+      "name": "Diagnostic geometry and abstention",
+      "result": "The subject center and camera-facing plane are explicitly documented. Automatic aim follows the subject; manual aim is an absolute position. Invalid light/receiver direction/frame/emitter results propagate nil. The rectangle's public separation contract is max(0.05 meters, longest side/4); StudioOpticsTests exercises abstention with a 2x2 meter emitter at 0.4 meters."
+    },
+    {
+      "name": "Independent centered analytic fixture",
+      "result": "testRectangleMatchesIndependentAnalyticAndRotatedScene uses half-extents a=0.6, b=0.3, distance=2, intensity=400 cd and the centered parallel-rectangle formula 2*I/area*(a/hypot(d,a)*atan(b/hypot(d,a)) + b/hypot(d,b)*atan(a/hypot(d,b))). Its 800/area coefficient is consistent. The <1% assertion is stricter than the 5% declared-area threshold. This source assertion was reviewed, not executed."
+    },
+    {
+      "name": "Finite area behavior",
+      "result": "testRectangleNearPlaneAbstainsAndDimensionsChangeEstimate compares different emitting areas at fixed on-axis candela; reduced near-field illuminance for the larger panel is consistent with the declared L=I/area normalization."
+    },
+    {
+      "name": "Metamorphic invariants",
+      "result": "PhotometryInvariantTests independently composes proper coordinate rotations/translations, tests finite-source inverse-area scaling at fixed candela, and checks mixed studio-rig yaw/translation invariance. Scoped fixtures remain within position/dimension ranges. The studio-rig test explicitly limits the transformation contract to yaw plus translation. These invariants complement absolute reference accuracy; they do not establish that accuracy by themselves."
+    },
+    {
+      "name": "Claims boundary",
+      "result": "Source documentation distinguishes diagnostic lux from exposure, rendered-face brightness, equipment calibration, and occlusion/reflection effects. Existing milestone status and historical execution claims were not independently revalidated by this review."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "No host/toolchain was available. No tests, scripts, CI, or numerical-reference computation were executed; execution outcomes remain unverified.",
+    "Pinned-file review does not inspect current remote branch state, working-tree status, recent commits, or uncommitted work.",
+    "EmitterFrame basis correctness and SurfacePhotometry clipping/quadrature internals were outside this worker's assigned scope.",
+    "Other area-model numerical-reference tests and runtime artifacts were not audited; the scoped analytic and invariant source checks alone do not establish the full M02 photometry gate.",
+    "No physical calibration, device performance, platform audit, or release-readiness conclusion."
+  ],
+  "conclusion": "No new correctness defect or must-fix identified within the assigned static review scope.",
+  "status": "complete"
+}

@@ -1,0 +1,133 @@
+{
+  "worker": "w063",
+  "context_path": "/root/w007_review_coordinator/w063_study_compute_packing",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "StudyComputeInput packing: parameter rows, sample rows, rectangular-area payloads, subject-relative positions, Float conversion preconditions, and input error ordering. Eligibility heuristic policy and Metal execution/dispatch excluded.",
+  "method": "Focused remote source and test review at the pinned commit. GitHub fetch_file used for actual source; no host execution, scripts, Swift compilation, tests, or GPU execution.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read": "complete file",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "read": "complete file",
+      "scope": "Packing-focused review, particularly lines 232-283, 411-459 and 548-550; full source read"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+      "blob_sha": "5df398240d096f3fe8499f81fc6be82fde1121a8",
+      "read": "complete file",
+      "scope": "All four test methods reviewed as source"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "blob_sha": "69a826c8498efc508bdb2479dc80f40b75af3b71",
+      "read": "complete file",
+      "scope": "Context only: validated scene, camera, and relative-distance entry guards; heuristic policy not assessed"
+    }
+  ],
+  "checks": [
+    {
+      "name": "parameter_layout",
+      "status": "source-reviewed",
+      "evidence": "ReferenceStudy.swift:411-435 documents and builds six SIMD4<Float> rows: relative camera origin/halfW, forward/halfH, right/radius, up/panel extent, color-transform parameters, sample count/area count/minimum depth/grid. Counts derive from triplet-array lengths. The interactive grid is consistently 8.",
+      "test_evidence": "StudyComputeInputTests.swift:12-16,24-26 asserts 16-byte SIMD4 stride, dimensions, six parameter rows, sample/area counts, expected origin/halfW, and finite default payload values. Tests not run."
+    },
+    {
+      "name": "sample_and_area_layout",
+      "status": "source-reviewed",
+      "evidence": "ReferenceStudy.swift:236-265 creates active-light samples only; point and directional sources get one sample each, rectangles get 64 samples sharing a zero-based area index and candela/64. Lines 272-282 pack position/candela, emission-normal/enabled, XYZ/one-based-area-index and three area rows carrying center/minimum-distance, right/halfWidth, up/halfHeight. Non-area color.w is zero.",
+      "test_evidence": "StudyComputeInputTests.swift:6-27 covers one rectangle, one directional source, one inactive light, summed rectangle candela and area scalar payloads. Tests not run."
+    },
+    {
+      "name": "relative_coordinates",
+      "status": "source-reviewed",
+      "evidence": "ReferenceStudy.swift:274,281,425-432 subtracts the same subject center from sample positions, rectangle centers and camera origin before Float conversion; basis directions, dimensions and spectral values remain untranslated.",
+      "test_evidence": "StudyComputeInputTests.swift:30-38 compares parameter/sample arrays after a common (20,10,-13) translation. That test does not compare areas and uses the portrait fixture without explicitly adding a rectangle. Tests not run."
+    },
+    {
+      "name": "finite_conversion_preconditions",
+      "status": "source-reviewed-with-limitation",
+      "evidence": "ReferenceStudy.swift:233 calls scene.validated before creating samples; camera/geometry and color-transform construction must succeed in StudySetup. The final pack helper at lines 548-549 performs ordinary Float conversion without an additional isFinite guard. The inspected default mixed-light test asserts all packed components finite. No concrete overflow/nonfinite input passing all upstream validators was established.",
+      "limitation": "Definitions of LightingScene.validated, CameraFraming, PreviewColorTransform.computeParameters and PreviewColorimetry.blackbody were outside this narrow source scope, so global finite-output safety across all validated boundary values was not independently proved."
+    },
+    {
+      "name": "input_error_ordering",
+      "status": "source-reviewed",
+      "evidence": "StudySetup lines 447-458 checks width range and divisibility first, then camera/geometry/clearance, then constructs StudyLighting (scene validation before emitter generation), then the display transform. StudyComputeInput and the CPU renderer share StudySetup. Width validation occurs before height arithmetic and packed-array construction.",
+      "test_evidence": "StudyComputeInputTests.swift:57-65 covers empty lights, width 193 rejection, and camera equal to subject producing invalidCamera. It does not assert compound-invalid-input error precedence. Tests not run."
+    }
+  ],
+  "findings": [],
+  "coverage_notes": [
+    "Optional follow-up regression coverage could assert mixed multiple-rectangle one-based area indices, all point/directional flags, and area-payload translation invariance; no existing regression was demonstrated.",
+    "Compound-invalid-input cases and boundary finite conversions are not directly exercised by the four inspected test methods; this is a coverage observation, not a proven product defect."
+  ],
+  "limitations": [
+    "Host unavailable by task context; repository status/worktree/recent-commit inspection and agent_cycle.py check/next were not performed by this worker.",
+    "No test execution, compiler/typecheck, native Metal execution, dispatch validation, benchmark, or acceptance-gate pass is claimed.",
+    "Eligibility heuristic policy and Metal execution/dispatch intentionally excluded.",
+    "Review used the pinned source only; no source, tree, commit, branch or ref changes made. The only authorized write is this unreferenced JSON report blob."
+  ],
+  "conclusion": "No concrete must-fix defect established in the assigned packing scope. Source layout and coordinate treatment are consistent with their documented contract; global Float boundary guarantees remain dependent on upstream validators outside the narrow review.",
+  "status": "complete"
+}

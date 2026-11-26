@@ -1,0 +1,105 @@
+{
+  "worker": "w040_plan_marker_actions",
+  "context_path": "/root/w007_review_coordinator/w040_plan_marker_actions",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Source/test review of meaningful Plan marker labels, interactive targets/action identifiers, and delayed light-selection UUID membership.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "App/StudioPlanMarkers.swift",
+      "blob_sha": "741916b17e822d00b2d2cd422aa7728e8b1fc141",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "read_method": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "blob_sha": "1dcd3990cf65912cac4d4cdeb7ae3012a5975651",
+      "read_method": "GitHub fetch_file at base_sha"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Startup and acceptance instructions read remotely",
+      "result": "Read AGENTS.md, all listed startup documents, and m02-m03-code-v2. No scripts were run because the assigned host is unavailable and this packet authorizes source review only."
+    },
+    {
+      "check": "Plan marker labels and targets",
+      "result": "StudioPlanMarkerControl applies marker.accessibilityLabel, marker.accessibilityIdentifier and selected trait at StudioPlanMarkers.swift:159-164. Its icon ends with a 44 by 44 frame and rectangular content shape at lines 237-245. Non-drag markers use native Button; selected draggable markers supply button trait, precise-position hint and default accessibility action at lines 180-200."
+    },
+    {
+      "check": "Subject/camera action IDs",
+      "result": "StudioView.swift:802-809 supplies Edit subject position / editSubject and Edit camera position and lens / editCamera; corresponding actions open subject editing and Camera mode."
+    },
+    {
+      "check": "Live identity and generation checks",
+      "result": "StudioView.swift:812-823 uses UUID marker identity and wraps light selection in sceneAction plus a current-scene UUID membership guard. Equipment list selection has the same membership check at lines 882-886. sceneAction captures operation generation and calls allowsSceneMutation at lines 1168-1175. Undo/redo repair current selection using live UUID membership at lines 1280-1291."
+    },
+    {
+      "check": "Relevant required UI test assertions",
+      "result": "StudioAppAccessibilityUITests.swift:29-33 requests default and AXXXL. Lines 67-91 check mode labels/selected state, resolve the Fill Plan marker by its meaningful label, validate it through control(), tap it, check selected text, and validate rack selection/checkmarks. control() checks label, enabled/hittable state and minimum target using observed snapshots. This is source coverage review, not execution."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "No Apple runtime, build, UI execution, screenshot inspection, or platform accessibility audit was available or performed.",
+    "The exact reviewed revision is pinned; this packet does not verify current branch HEAD or remote CI status.",
+    "The inspected UI method does not directly invoke editSubject/editCamera or re-snapshot the selected draggable marker after its native Button changes to a gesture-backed view with a default accessibility action. These remain coverage limits, not demonstrated product failures.",
+    "Viewport oracle, naming failure038, footer behavior, and coordinate math were explicitly outside this packet.",
+    "No source, tree, branch, ref, or test changes were made. Only this unreferenced review-report blob is created."
+  ],
+  "conclusion": "No concrete must-fix found in the assigned source/test scope. The delayed selection checks satisfy the documented live UUID membership rule in source. Runtime accessibility acceptance remains unverified by this worker.",
+  "status": "complete"
+}

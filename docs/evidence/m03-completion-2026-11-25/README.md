@@ -2,41 +2,19 @@
 
 **Scope:** M02, then M03, under [m02-m03-code-v2](../../acceptance/m02-m03-code.md).
 **Baseline:** `916ecb9284747e91cb3840c4776c634d798f1a51` on `main`.
-**Current status:** M02 remains complete at the retained75e checkpoint. M03 remains active. Current cd5 native execution failed135/137; completed UI groups passed33/34, and app accessibility plus24 original captures remain pending. No failed or unrun requirement is promoted.
+**Current status:** M02 complete at retained75e evidence; M03 active. The latest required runs failed or remain in progress. No unverified result is promoted.
 
-## Current source and actual runtime findings
+## Latest runtime checkpoint — 26 November UTC
 
-[Source `cd5b461`](https://github.com/mirzotipi-wq/APP1/commit/cd5b461e9b1e534911ead986bed0a79188e20add) contains the four reviewed intrinsic Text-layout files. [Full CI run45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) retains the complete137-native/35-UI requirement and24 original Default/AXXXL captures. The [repair note](text-layout-repair.md), [source review](workers/w100-text-layout-source-review.json) and [192-input manifest](validation/source-cd5b461/source-manifest.json) remain source-specific records.
+The full [cd5 run45761900201](https://github.com/mirzotipi-wq/APP1/actions/runs/45761900201) is terminal and failed. Portable tests passed359 Debug/359 Release and92 tooling checks; unsigned builds, macOS tests, actual Metal methods,116 contrast pairs and actual persistence probes passed. Required native tests passed135/137. Required UI accounting is **33 passed,1 failed,1 incomplete out of35**. The app-accessibility method exhausted its45-minute outer step during the largest-size flow after all12 Default capture emissions. It produced no terminal method event or finalized result; zero original current PNGs were recovered. Thirteen capture emissions are not13 retained screenshots.
 
-The current cd5 portable job has completed successfully. Its [source-specific receipt](validation/source-cd5b461/ci-core/summary.json), [raw job log](validation/source-cd5b461/ci-core/core-job.log), [benchmark payload](validation/source-cd5b461/ci-core/benchmark-from-ci.json) and [persistence reports](validation/source-cd5b461/ci-core/persistence-reports-from-ci.json) record 359 Debug and 359 Release tests, 92 tooling tests, twelve exact image matches, six parity and eight precision fixtures, the complete 8/12/4 benchmark inventory, and actual ext4 EFBIG/interruption/rename-EIO checks. This run used an AMD EPYC 9V74 host; earlier Xeon timings are not reused. [Worker 058](workers/w058-cd5-core-counts-images.json) independently reconciled all 359 started/pass pairs per configuration and the twelve original image hashes. [Worker 059](workers/w059-cd5-core-numerics-probes.json) independently reconciled all numerical, benchmark and real persistence output. The [method ledger](validation/source-cd5b461/ci-core/method-accounting.json) and [decoded-log hash receipt](validation/source-cd5b461/ci-core/log-receipt.json) retain root's separate reconciliation. The separate Apple/UI findings are recorded below.
+The focused [03cfd3c run45768421649](https://github.com/mirzotipi-wq/APP1/actions/runs/45768421649) also failed:135/137 native and7/9 library tests passed. Retaining live native views disproved stale callback data as the sole geometry cause: the public accessibility conversion still returned local-origin frames. All three size fixtures reached. Actual external Done/Cancel/Save Button checks passed. Original library screenshots show a focused name field containing onlyK after one Keep request, and a later fully loaded studio after a distinct initial-launch readiness timeout. Neither later observation passes the original failed expectation.
 
-| Current cd5 check | Actual result |
-|---|---|
-| Unsigned Debug/test bundle and Release app builds | Passed |
-| macOS portable package |359 methods started and passed |
-| Required native methods |135 passed,2 failed;137 distinct starts and terminal events;7 assertions in the two failed methods |
-| Actual Metal methods |All3 passed; inline post-command checker unrun after xcodebuild exit65 |
-| Resolved palette contrast |116 distinct pairs passed and independently recomputed |
-| Actual APFS persistence probe |Passed EFBIG/control/exact-byte/fresh-process checks |
-| Studio/export UI |10/10 passed |
-| Library/reference UI |9/9 passed |
-| Studio/optics UI |10/10 passed |
-| Room/precision UI |4/5 passed; first room-status check failed |
-| App accessibility and24 original captures |Pending |
+The focused [19f75af room run45769542620](https://github.com/mirzotipi-wq/APP1/actions/runs/45769542620) passed4/5. The changed exact-modifier precision method passed, but the separate ManualRoom outside-status wait failed. Its later label is correct; its earlier10-second deadline is still failed. The status predicate already queries Other with label-only matching.
 
-The [native receipt](validation/source-cd5b461/native-execution-summary.json), [raw native log](validation/source-cd5b461/native-job.log), [exact method ledger](validation/source-cd5b461/native-method-accounting.json) and [worker100 independent runtime review](workers/w100-cd5-native-runtime-review.json) preserve the failed result. All previous134 native methods passed again. New codec/gating passed; the two hosted methods failed with callback-time native frames were still at zero origin and in-process public accessibility traversal returned no elements. The first positive Default iteration threw before AXXXL, growth or the8-point negative fixture: those later substages were unrun. The diagnostic warm-up also actually failed despite its continued wrapper conclusion.
+A direct UIKit window-to-screen conversion is under actual [137-method native validation at6e8179b](https://github.com/mirzotipi-wq/APP1/actions/runs/45772992319). Reviewed, unrun candidates reduce repeated AX queries, read library readiness from one actual snapshot, and give the two-size accessibility workflow100 minutes while preserving each assertion deadline. Both test-export paths preserve incomplete original xcresult directories before checking finalization. A new real hosted-State K→Ke→Kee→Keep regression will increase the native inventory to138 when integrated; the current137-method run cannot validate it.
 
-The [UI progress receipt](validation/source-cd5b461/ui-execution-progress.json) and four original logs retain33 passes and one failure among34 completed methods. Every previous75e library/studio-export failed method now passes freshly; no causal product fix is claimed. The room failure occurred after exact modifier editing, Undo, Redo and Save passed, at the first status predicate after opening the sheet. Later room/crossing checks were not reached. [Worker039's review](workers/w039-cd5-room-status-review.json) and the [original attachment receipt](validation/source-cd5b461/room-status-original/receipt.json) retain the distinction: the224-byte TXT contains only the query chain, not an actual label or hierarchy. Cause is unresolved.
-
-## Focused native harness correction
-
-Diagnostic [source03cfd3c](https://github.com/mirzotipi-wq/APP1/commit/03cfd3c90d2a45e96ee03ad71234363dfc899be7) is executing [run45768421649](https://github.com/mirzotipi-wq/APP1/actions/runs/45768421649). All187 build inputs match cd5 except two reviewed test files. Native observation now retains actual UIView references until layout finishes and preserves strict physical-pixel equality, actual font sizing, Default/AXXXL growth and the undersized8-point negative fixture. Ordinary Save/Cancel/Done leaf Button semantics are checked through external immutable UI snapshots in the existing complete library flow. No production or app-accessibility source changed.
-
-[Implementation](workers/w038-native-harness-correction.json), [normal-value refinement](workers/w038-normal-action-value-correction.json) and [independent review](workers/w100-native-harness-source-review.json) are retained. The [initial workflow review](workers/w097-probe-harness-workflow-initial-review.json) identified a working-file mode/type gap; the [corrected review](workers/w097-probe-harness-workflow-corrected-review.json) verifies all190 admitted files and exact copies of the normal native and library job steps. Both workflow versions and the concrete request are retained under diagnostic-sources. Source review establishes no runtime pass. Full main validation remains required.
-
-The conditional [repeat-stall plan](workers/w050-repeat-stall-diagnostic-plan.json) was not executed because the earlier large-library and AR failures now passed. The updated100-context ledger clarifies that017/018 returned real JSON while their attempted local-file creation was failed/unconfirmed. No additional worker contexts were counted.
-
-The completed-source sections below describe the preceding75e run and retain its failures. Results are not transferred to changed App/test files.
+The [terminal checkpoint](validation/terminal-checkpoint-20261126T0734.json) retains exact source/run accounting and candidate hashes. The [141-object report catalog](workers/exact-report-object-catalog.json) preserves original returned reports, including superseded drafts. Exactly100 distinct workers were created;99 initial specialist assignments are complete and007 remains active. M02 remains complete at retained75e evidence; M03 remains active and M04–M07 remain pending. Full integrated execution and24 recovered, hash-verified, actually viewed original Default/AXXXL PNGs remain required.
 
 ## Completed 75e core verification
 

@@ -1,0 +1,125 @@
+{
+  "worker": "w065",
+  "context_path": "/root/w007_review_coordinator/w065_library_create_name_policy",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Static source/test review of ProjectLibrary.normalizedName, init/create/duplicate/rename, name/count bounds and transactional rejection.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Read startup/acceptance context."
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "inspection": "Full file fetched; focused review of lines 33–114."
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "blob_sha": "eaf1852a0c9507027f7ef27d27f6b863c8288afa",
+      "inspection": "Full file fetched; inspected in-scope tests and test inventory; no execution."
+    }
+  ],
+  "checks": [
+    {
+      "case": "Name normalization and bounds",
+      "result": "Source inspected: trims surrounding whitespace/newlines, rejects empty result, bounds Swift Character count to 80, rejects remaining newline/control scalars except U+200C/U+200D. Previously assigned blank-name production repair is excluded.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:50–62"
+    },
+    {
+      "case": "Create rejection is transactional",
+      "result": "Capacity and duplicate ID guards precede construction. Name and scene validation finish before array insertion and identity assignment. Therefore thrown input validation cannot partially insert or change the current snapshot in this method.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:82–89"
+    },
+    {
+      "case": "Rename rejection is transactional",
+      "result": "Lookup/state guards precede normalization; the name is assigned only after normalizedName returns successfully. Invalid names and missing IDs do not mutate the record.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:103–107"
+    },
+    {
+      "case": "Duplicate shares create policy",
+      "result": "Source lookup/state guards precede copying the source value. Delegation to create applies the same name validation, duplicate-ID rejection, count limit, scene validation and mutation ordering.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:109–114"
+    },
+    {
+      "case": "Count bounds",
+      "result": "create requires count < 64 before adding one; validated requires a nonempty snapshot with count <= 64. duplicate delegates to the guarded create path.",
+      "evidence": "Sources/LightingCore/ProjectLibrary.swift:37,64–74,82–89,109–114"
+    },
+    {
+      "case": "Existing rejection regressions",
+      "result": "Inspected source of testInvalidNamesIDsAndScenesLeaveLibraryUnchanged: invalid rename/create inputs include whitespace-only, embedded newline, NUL and 81 ASCII characters; duplicate ID rejection is exercised and complete snapshot equality is asserted afterward.",
+      "evidence": "Tests/LightingCoreTests/ProjectLibraryTests.swift:118–131"
+    },
+    {
+      "case": "Existing success and capacity regressions",
+      "result": "Inspected source of initial-name trimming/create success, duplicate ID distinction and scene preservation, and creation up to the count limit followed by capacity rejection with complete snapshot equality. These assertions were read, not run.",
+      "evidence": "Tests/LightingCoreTests/ProjectLibraryTests.swift:testFirstSaveAndIndependentProjectsRoundTrip; testDuplicateArchiveRestorePreserveSceneAndActiveIdentity; testCapacityIsBoundedIncludingArchivedProjects"
+    }
+  ],
+  "findings": [],
+  "coverage_notes": [
+    "The assigned test file does not directly isolate duplicate rejection for invalid name, colliding newID and full capacity; static review confirms delegation to the guarded create path.",
+    "The assigned test file lacks a direct positive exact-80-character boundary test and an explicit create-with-invalid-scene unchanged-snapshot test. These are optional coverage improvements, not demonstrated production defects; no claim is made about tests in other files."
+  ],
+  "limitations": [
+    "Host unavailable. No Swift tests, Python startup scripts, native builds, runtime/Unicode probes or CI checks were executed.",
+    "Pinned remote source review only; local branch, working tree and uncommitted changes could not be inspected.",
+    "Archive/active/delete behavior, persistence/CAS and display identity rendering are outside this assignment.",
+    "The already-reviewed U+2800 blank-name production repair is excluded; no duplicate finding is raised.",
+    "No source/tree/ref was modified. This JSON is the sole authorized unreferenced blob artifact."
+  ],
+  "conclusion": "No additional concrete correctness defect found in the assigned name/count and create/duplicate/rename transaction scope.",
+  "status": "complete"
+}

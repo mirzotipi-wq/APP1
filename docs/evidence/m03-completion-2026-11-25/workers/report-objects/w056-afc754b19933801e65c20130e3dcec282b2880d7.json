@@ -1,0 +1,116 @@
+{
+  "worker": "w056",
+  "context_path": "/root/w007_review_coordinator/w056_study_cache_identity",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "StudyRenderEngine.CacheKey: validation before lookup, complete image-affecting scene identity, study subject and effective resolution, display-name exclusion.",
+  "actual_paths": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob_sha": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d",
+      "review": "Source and scoped test review"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob_sha": "224c81401d0d816e41bdcfa91bf9aa90f6fb3853",
+      "review": "Source and scoped test review"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "review": "Source and scoped test review"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "review": "Source and scoped test review"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "review": "Targeted renderer setup/validation and scene-consumption excerpts"
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "blob_sha": "05acc11282db60b07b6cb7e7c9b68c04148803c3",
+      "review": "Targeted renderer setup/validation and scene-consumption excerpts"
+    }
+  ],
+  "startup_documents": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "checks": [
+    {
+      "id": "validation_before_lookup",
+      "result": "No defect identified by source inspection",
+      "evidence": "App/MetalStudyRenderer.swift:131–157 calls scene.validated() before clearing names and before creating any usable cache key. Invalid metadata returns nil key, so no cache lookup can bypass validation; the original scene proceeds through the renderer and preserves its error order. NativeTests/StudyRenderCacheTests.swift:208–264 covers blank/overlong names, duplicate light IDs, bad schema/room metadata, NaN/infinity, and resolution-before-camera-before-scene validation."
+    },
+    {
+      "id": "scene_control_identity",
+      "result": "No defect identified by source inspection",
+      "evidence": "The key retains a LightingScene value and exact synthesized Equatable identity, changing only StudioLight.name. Scene.swift includes schemaVersion, subject, camera, cameraLens, ordered lights, previewSettings and placementRoom; StudioLight includes ID, position, candela, kelvin and optics. StudioOptics.swift includes kind, aimTarget, widthMeters, heightMeters and rollDegrees. NativeTests/StudyRenderCacheTests.swift:143–181 enumerates 15 changes including order/count, optics roll, exposure and white balance, with a cache-hit-sensitive budget."
+    },
+    {
+      "id": "subject_resolution_identity",
+      "result": "No defect identified by source inspection",
+      "evidence": "CacheKey includes StudySubject and effective render width. StudyRenderEngine.render:179 clamps only bust width to PortraitStudyRenderer.maximumWidth, matching the actual submitted bust width; sphere preserves requested width. NativeTests/StudyRenderCacheTests.swift:183–206 checks subject/resolution separation and equivalent clamping at width 192 and Int.max. ReferenceStudy.swift:447–458 and PortraitStudy.swift:162–174 confirm width validation and deterministic height derivation."
+    },
+    {
+      "id": "display_name_exclusion",
+      "result": "No defect identified by source inspection",
+      "evidence": "Every light name is cleared in the retained snapshot only after validation, preventing display-only edits from defeating reuse and avoiding retention of arbitrary combining-character storage. The original valid scene is rendered unchanged. NativeTests/StudyRenderCacheTests.swift:231–239 checks reuse after a valid name containing 4096 combining characters."
+    },
+    {
+      "id": "reopen_identity",
+      "result": "No defect identified by source inspection",
+      "evidence": "NativeTests/StudyRenderCacheTests.swift:63–81 exercises JSON encode/decode reopening with persisted light IDs and expects exact cached image/backend reuse."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host execution was unavailable. No repository scripts, Swift compilation, native tests, simulator, Metal runtime, benchmarks or CI verification were run; test statements above describe inspected test code only.",
+    "Review deliberately excludes cache eviction, cancellation implementation and backend validation, assigned to other reviewers.",
+    "Initial guessed filenames LightingScene.swift, ReferenceStudyRenderer.swift and PortraitStudyRenderer.swift returned 404; the actual Scene.swift, ReferenceStudy.swift and PortraitStudy.swift paths were then located in the pinned tree and fetched.",
+    "This is a scoped source review at the pinned base, not M02/M03 runtime acceptance or release approval."
+  ],
+  "conclusion": "No must-fix issue found in the assigned cache identity scope. Preserve existing native regressions and rely on separately recorded execution for acceptance.",
+  "status": "complete"
+}

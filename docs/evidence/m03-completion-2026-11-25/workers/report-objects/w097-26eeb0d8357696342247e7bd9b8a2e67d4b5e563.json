@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "type": "same-context-third-source-review",
+  "workerCountIncrement": 0,
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "reviewedRevision": "ac05ec6d4a3fc5c0fbf9b98fd9d889bbbcdaf5e1",
+  "priorReportBlobs": [
+    "04faa5da59f053e043f6a1fe41dffe6938c2ce89",
+    "2c450e55777427fd1c626936ed1827e925d3ee4d"
+  ],
+  "status": "source-review-complete",
+  "verdict": "No source-level defect found in the standalone transport logic for the actual initial request. One concrete installation/concurrency caveat requires disposition; ordinary subsequent request-only documentation pushes avoid iOS reruns.",
+  "findings": [
+    {
+      "id": "w097-followup3-installation-trigger",
+      "severity": "P2",
+      "classification": "conditional integration hazard",
+      "title": "Installing the standalone workflow on main still triggers the existing iOS workflow",
+      "paths": [
+        ".github/workflows/review-xctest-evidence.yml",
+        ".github/workflows/ios-prototype.yml"
+      ],
+      "evidence": "ac05 adds .github/workflows/review-xctest-evidence.yml, which does not match the existing iOS paths-ignore entries **/*.md, docs/** or agents/**. The existing iOS concurrency group uses workflow and github.ref and cancel-in-progress=true. At this review, original main run 45745699007 was still in_progress.",
+      "reproduction": "Push ac05 to main while the original main iOS run remains active. Because this push changes a nonignored workflow file, iOS Prototype is eligible and uses the same main concurrency group, so the prior run may be canceled.",
+      "scope": "This caveat concerns initial workflow installation. A later push changing only docs/evidence/m03-completion-2026-11-25/review-request.json is ignored by iOS Prototype and does trigger the new evidence workflow.",
+      "disposition": "Root has communicated a planned temporary m03-evidence-inspection branch with a branch-specific iOS push exclusion and restoration before main integration. That separate mitigation candidate was not fetched in this review and remains unverified here. Do not treat the ac05 installation as automatically isolated."
+    }
+  ],
+  "inspectedFiles": [
+    {
+      "path": ".github/workflows/review-xctest-evidence.yml",
+      "blobSHA": "951dbc2db79f411260d33a972ca516058e47402f"
+    },
+    {
+      "path": "docs/evidence/m03-completion-2026-11-25/review-request.json",
+      "blobSHA": "290b631b3aec575c0f6cb757dcec7df5f94ed673"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blobSHA": "4265d7d23bdc217a3994bebaca2cc0be9a3f28c8"
+    },
+    {
+      "path": "docs/evidence/m03-final-2026-11-25/validation/source-c85544f/native-ui/ax/attachment-manifest.json",
+      "blobSHA": "1eca410cd6eaf89b56b46d1b4ecaa0bf125e8467"
+    }
+  ],
+  "sourceChecks": [
+    {
+      "topic": "Change scope and test preservation",
+      "result": "Fetched candidate commit contains only two new files: the 147-line standalone workflow and the 11-line JSON request. No native/app/test/shard source or existing workflow changes. Existing iOS workflow SHA matches the previously reviewed version."
+    },
+    {
+      "topic": "YAML and Python",
+      "result": "Manual review finds coherent job/step hierarchy, block-scalar/heredoc indentation, Python loops/conditionals, path operations and output statements. Ubuntu shell failure behavior propagates Python failures. No YAML parser or Python interpreter was executed."
+    },
+    {
+      "topic": "Least privilege",
+      "result": "Exactly contents: read and actions: read are granted. Existing github.token is used for same-repository REST reads and cross-run artifact download. No new secret, external endpoint, write operation or credential permission is introduced. Token is not printed by either script."
+    },
+    {
+      "topic": "Request schema",
+      "result": "Initial request is 330 ASCII bytes, requests positive integer run 45745699007, lowercase forty-hex source revision 7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f, and allowed compact UI artifact ui-app-accessibility-evidence-compact. Four distinct explicitly named captures satisfy the ASCII/hyphen name rule and have no prefix ambiguity. General request limit is 8 KiB and capture count is 1-24; duplicates fail."
+    },
+    {
+      "topic": "Source verification",
+      "result": "REST request is restricted to GITHUB_REPOSITORY. Script compares actual run head_sha and repository full_name, chooses exactly one unexpired artifact with the allowed name within that run, and checks artifact workflow_run.head_sha. Artifact identity, digest, archive size, run and source revision are emitted before download. Download action uses validated run ID/name and the existing token."
+    },
+    {
+      "topic": "Actual API corroboration",
+      "result": "Read actual original run and its artifacts. Run head SHA, repository and workflow match the request. The artifacts endpoint returned total_count=11, so its first 100 entries cover this run. Exactly one requested unexpired artifact was present and has the same source revision. This is metadata inspection, not archive download or workflow execution.",
+      "runId": 45745699007,
+      "runHeadSHA": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+      "runStatusAtRead": "in_progress",
+      "repository": "mirzotipi-wq/APP1",
+      "workflowPath": ".github/workflows/ios-prototype.yml",
+      "artifactId": 15085151015,
+      "artifactBytes": 1699678,
+      "artifactDigest": "sha256:edf6f4e55db1c018085afc02af11c8f1e64afaa3da2e9edf9c1e72e6fc01fd2f",
+      "artifactHeadSHA": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+      "artifactExpired": false
+    },
+    {
+      "topic": "Original manifest schema",
+      "result": "Refetched real retained c855 manifest: JSON array, one test record, 53 attachments, including an original PNG failure capture and its TXT hierarchy. suggestedHumanReadableName uses requested-name plus underscore suffix; exportedFileName is UUID.png or UUID.txt. deviceName and timestamp are attachment fields. This verifies schema compatibility and does not prove the newer 7b archive contains all four requested entries."
+    },
+    {
+      "topic": "Selected names and file paths",
+      "result": "Only explicitly requested original names can match, with underscore boundary and PNG/TXT suffix. Exported filenames allow only hexadecimal/hyphen basenames and .png/.txt extensions. Duplicate names or missing/ambiguous file matches fail. Symlink files and resolved paths outside the artifact root fail. Existing required image counts in iOS workflow are unchanged."
+    },
+    {
+      "topic": "Bounds and chunks",
+      "result": "Exactly one manifest at most 512 KiB is required. Selected PNGs use a 1 MiB limit and PNG signature check; TXT files use a 256 KiB limit. Reads include one sentinel byte, oversize captures fail, and all selected captures share an 8 MiB total. Base64 chunks are at most 24,000 characters. Limits apply before encoding/output."
+    },
+    {
+      "topic": "Provenance and completeness",
+      "result": "Per-capture records preserve original filename, bytes, SHA256 of original bytes, declared source revision already verified against the run/artifact, device and timestamp. Chunks use name and zero-based index; final summary reports capture count, bytes and missing requested names. Missing names still fail. This job transports evidence and cannot establish a required test pass or actual visual acceptance."
+    },
+    {
+      "topic": "Request-only trigger",
+      "result": "The new workflow triggers on its own file or the exact request file, plus workflow_dispatch. The existing iOS docs/** exclusion ensures a later request-only docs push avoids full iOS execution. Initial-installation caveat is separately recorded above."
+    }
+  ],
+  "initialCaptureNames": [
+    "Unreachable-studio-content",
+    "Unreachable-studio-hierarchy",
+    "Accessibility-workflow-failure",
+    "Accessibility-workflow-failure-hierarchy"
+  ],
+  "limits": {
+    "request": 8192,
+    "manifest": 524288,
+    "png": 1048576,
+    "text": 262144,
+    "totalCaptures": 8388608,
+    "base64Chunk": 24000,
+    "maximumRequestedCaptures": 24
+  },
+  "observedAPIURLs": [
+    "https://api.github.com/repos/mirzotipi-wq/APP1/actions/runs/45745699007",
+    "https://api.github.com/repos/mirzotipi-wq/APP1/actions/runs/45745699007/artifacts?per_page=100"
+  ],
+  "limitations": [
+    "No local scripts, runtime, tests, builds, YAML parser or Python interpreter ran.",
+    "No candidate standalone job result, archive unpacking, PNG/TXT byte reconstruction, checksum verification against actual selected files, or visual image review was performed.",
+    "The archive download and API response bodies do not have explicit byte caps; the selected manifest/capture transport is bounded. The observed archive is 1,699,678 compressed bytes. No bound on every possible future archive's extraction cost is claimed.",
+    "Artifact enumeration examines the first 100 entries. This covers the observed 11-artifact run; unusually larger runs may fail to locate a valid artifact rather than silently accept a missing one.",
+    "The later communicated temporary-branch mitigation is unverified in this report."
+  ],
+  "mutationScope": "Only this authorized unreferenced JSON report blob is created; no source, branch, ref, tree or test mutations. Both earlier w097 report blobs remain preserved."
+}

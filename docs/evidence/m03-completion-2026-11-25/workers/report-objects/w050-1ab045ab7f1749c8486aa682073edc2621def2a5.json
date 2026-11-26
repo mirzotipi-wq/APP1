@@ -1,0 +1,186 @@
+{
+  "worker_id": "w050",
+  "context_path": "/root/w007_review_coordinator/w050_studio_export_failure_triage",
+  "status": "complete",
+  "task": "Required studio-export CI failure triage; replaces planned entity-graph audit",
+  "repository": "mirzotipi-wq/APP1",
+  "base_commit": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "source_ref": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "run_id": 45745699007,
+  "job_id": 139662471930,
+  "provenance": {
+    "job_log_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45745699007/job/139662471930",
+    "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+    "log_lines": 3444,
+    "checked_out_commit_confirmed": true,
+    "commit_log_time": "2026-11-26T02:59:43.4220840Z",
+    "paths_read": [
+      {
+        "path": "AGENTS.md",
+        "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/AGENTS.md"
+      },
+      {
+        "path": "docs/acceptance/m02-m03-code.md",
+        "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/docs/acceptance/m02-m03-code.md"
+      },
+      {
+        "path": "docs/acceptance/m02-m03-external-evidence.md",
+        "blob_sha": "6191121a55ac24d160baeced6e2fcdc53cb39637",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/docs/acceptance/m02-m03-external-evidence.md"
+      },
+      {
+        "path": ".github/workflows/ios-prototype.yml",
+        "blob_sha": "519256392f21b2ccb21cb770186cf3c4fe8ce9bd",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/.github/workflows/ios-prototype.yml"
+      },
+      {
+        "path": "UITests/LightingPlanExportUITests.swift",
+        "blob_sha": "86816f7210ef7d73001a81a4cbe96eb07bad6134",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/UITests/LightingPlanExportUITests.swift"
+      },
+      {
+        "path": "UITests/StudioSmokeTests.swift",
+        "blob_sha": "b506f6f5ba8f7e6075fd91d00ffc056c7317b2c5",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/UITests/StudioSmokeTests.swift"
+      },
+      {
+        "path": "UITests/StudioContentReachability.swift",
+        "blob_sha": "b0c50c85ba7c85dd644b922586958047a490f0cb",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/UITests/StudioContentReachability.swift"
+      },
+      {
+        "path": "App/ARPlacementView.swift",
+        "blob_sha": "ec10f43d57234af9245bddc2fd90785d6ef21b22",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/App/ARPlacementView.swift"
+      },
+      {
+        "path": "App/ARPlacementController.swift",
+        "blob_sha": "a65a5d09b1e2daf9b2a047cf22158913e87de07f",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/App/ARPlacementController.swift"
+      },
+      {
+        "path": "App/LightingPlanExportView.swift",
+        "blob_sha": "2db6c333853c8f4cab16082cd4d9037cd05feafb",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/App/LightingPlanExportView.swift"
+      },
+      {
+        "path": "scripts/boot_simulator.py",
+        "blob_sha": "4bb1b85aab9ef1f6d6f5f46ecbdf8ed0aabff6c2",
+        "source_url": "https://github.com/mirzotipi-wq/APP1/blob/7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f/scripts/boot_simulator.py"
+      }
+    ]
+  },
+  "verdict": "Required run remains failed: 10 methods executed, 3 failures. Two failures are XCTest screenshot/AX query stalls; one is a failed initial projectStatus readiness assertion. No narrow product fix is established by the inspected evidence.",
+  "observed_failures": [
+    {
+      "method": "LightingPlanExportUITests.testExportPreviewOpensWithoutSavingOrChangingScene",
+      "source": "UITests/LightingPlanExportUITests.swift:151",
+      "duration_seconds": 343.47,
+      "failed_operation": "app.screenshot()",
+      "error": "Failed to get screenshot: Timed out while requesting screenshot.",
+      "failure_time": "2026-11-26T03:19:44.6290320Z",
+      "observations": [
+        "Format chooser cancellation/reopen and initial unchanged-status/history checks ran without a recorded failure.",
+        "The lightingPlanPDFPages existence operation took multiple snapshot retries, then the test reached its two-page assertion and shareLightingPlanPDF existence assertion before app.screenshot().",
+        "Screenshot request spans approximately t=274.34 to t=339.55 (65.21 seconds).",
+        "closePDF and final unchanged-status/history assertions after the screenshot were not reached."
+      ],
+      "interpretation": "Observed screenshot acquisition failure with preceding AX slowness. This does not establish incorrect PDF content, incorrect document preparation, or successful completion of the full workflow."
+    },
+    {
+      "method": "StudioSmokeTests.testMeterBalanceSaveUndoAndRelaunch",
+      "source": "UITests/StudioSmokeTests.swift:242",
+      "duration_seconds": 97.172,
+      "failed_operation": "assertStatus(\"Unsaved changes\", in: app), immediately after app.launch()",
+      "error": "XCTAssertEqual failed: XCTWaiterResult(rawValue: 2) != XCTWaiterResult(rawValue: 1)",
+      "failure_time": "2026-11-26T03:30:56.2665570Z",
+      "observations": [
+        "App idle notification was not received at t=70.50 seconds; XCTest attempted to continue.",
+        "The initial projectStatus predicate began at t=72.54 and its retries/debug-description step reached t=81.81.",
+        "Failure-only status.snapshot() returned identifier projectStatus, label Unsaved changes, enabled true and a nonempty frame; snapshot output was emitted at 03:30:55.9643390Z.",
+        "No meterDisclosure, balance mutation, save, undo or relaunch portion of this test was reached."
+      ],
+      "interpretation": "Readiness failed within its original 10-second wait, with the expected label visible in a later immutable snapshot. The later match does not retroactively pass the required test or establish a meter-balance defect. Underlying cause remains unproved."
+    },
+    {
+      "method": "StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback",
+      "source": "UITests/StudioSmokeTests.swift:96",
+      "duration_seconds": 300.77,
+      "failed_operation": "arTrackingStatus.waitForExistence(timeout: 10)",
+      "error": "Failed to get matching snapshots: Timed out while evaluating UI query.",
+      "failure_time": "2026-11-26T03:37:19.0109420Z",
+      "observations": [
+        "Settings change/reopen, Feet checks, entering 3D, fitStudioSetup, orbit selection and a Studio-3D-fit-feet screenshot attachment completed before failure.",
+        "The screenshot attachment was logged at 03:34:28.9002250Z (t=119.28); its pixels were not inspected by this worker.",
+        "Place in AR was tapped at t=124.04; idle and animation-completion notifications were missing at t=185.68.",
+        "arTrackingStatus query started t=185.71, with ~30-second snapshot retries; it failed at t=288.21.",
+        "Unsupported-status label, absence of camera controls, manual room fallback and arrangement follow-up assertions were not reached."
+      ],
+      "interpretation": "The failure site is AR sheet readiness following Place in AR, not Settings or 3D fit. Source declares a simulator unsupported phase and matching status identifier, but no snapshot content at failure proves whether presentation, app responsiveness or automation service caused the stall."
+    }
+  ],
+  "source_review": [
+    {
+      "path": "App/ARPlacementController.swift",
+      "lines": "50-66, 77-85, 130-142",
+      "finding": "For valid default layout, simulator support is hard false and initialization sets unsupported; statusTitle supplies the expected text. appeared only records visibility/foreground. No camera start is shown in this presentation path."
+    },
+    {
+      "path": "App/ARPlacementView.swift",
+      "lines": "35-40, 80-82, 155-169",
+      "finding": "Status is unconditionally present in the view body and carries arTrackingStatus; camera preview is conditional on cameraEnabled."
+    },
+    {
+      "path": "App/LightingPlanExportView.swift",
+      "lines": "137-148, 175-190, 194-210",
+      "finding": "Page count and ShareLink become available only with a prepared result. PDF creation occurs on MainActor, but the screenshot failure happened after prepared page/share queries. No measured stall sample proves PDF generation or PDFView caused the failure; changing this behavior is not justified by this review."
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "finding": "Required workflows must finish successfully; failed/interrupted/unstarted methods cannot count as passes. Warm-up is diagnostic and neither success nor ignored failure establishes acceptance. Removed external prerequisites do not dismiss these required failures."
+    }
+  ],
+  "host_evidence": {
+    "os": "macOS 26.6.1 (25G76)",
+    "runner_image": "macos-26 20260824.0517.1",
+    "developer_dir": "/Applications/Xcode_26.6.app/Contents/Developer",
+    "simulator": "iPhone 17 Pro; iOS 26.5; 12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+    "startup_observed": [
+      "Preflight succeeded.",
+      "Boot command succeeded.",
+      "bootstatus ran from 03:03:07.6441360Z to 03:07:22.5515590Z and returned 0 (~254.91 seconds).",
+      "Postflight inventory timed out, exit -9.",
+      "Recovery-preflight inventory timed out, exit -9.",
+      "Warm-up failed; selected xcodebuild test-without-building still ran, as required by workflow."
+    ],
+    "observed_warning": "Repeated IDELaunchParametersSnapshot DebuggerVersionStore error 0 / no debugger version; no causal link established.",
+    "unavailable_values": "Workflow redirects vm_stat, sysctl swap/memory, ps CPU/RSS, df and command timing/status output into artifacts/ui-host-before-tests.log and artifacts/ui-host-after-tests.log. The decoded job log contains collection commands, not the resulting samples.",
+    "artifact_metadata_only": {
+      "full_id": 15084859342,
+      "full_name": "ui-studio-export-evidence",
+      "full_size_bytes": 189357467,
+      "full_sha256": "b35e48bb1c201f5186bd4926123a718c5da82f33842ec31dd8c4a7bdc6711f87",
+      "compact_id": 15085925315,
+      "compact_name": "ui-studio-export-evidence-compact",
+      "compact_size_bytes": 1647679,
+      "compact_sha256": "4e579da27f312217e4d289ed07c7754c3dc54563a30fb22f419b0fe6f284fe53",
+      "compact_host_log_exclusion": "Workflow compact artifact paths do not include artifacts/ui-host-*.log."
+    },
+    "interpretation": "Startup inventory and automation timeouts make host/automation responsiveness a plausible investigation direction, not a proven cause. CPU saturation, memory pressure, disk exhaustion and product deadlock are unproved."
+  },
+  "recommended_next_steps": [
+    "Inspect existing full-artifact artifacts/ui-host-before-tests.log and artifacts/ui-host-after-tests.log, preserving command timeouts and sample times. Their before/after timing alone cannot prove resource state at each failure.",
+    "If host execution remains unavailable, a narrow diagnostic-only workflow change can tee the already bounded host collector output to the job log and include artifacts/ui-host-*.log in the compact evidence artifact. Preserve exit statuses and all required test assertions.",
+    "Inspect actual xcresult failure diagnostics/OS hang samples around initial launch, screenshot request and AR presentation; correlate app-main-thread responsiveness with XCTest service behavior before choosing a product change.",
+    "Rerun affected required methods unchanged once diagnostic evidence is available; do not lengthen waits, remove screenshot requirements, skip AR fallback or reinterpret late snapshots as test passes solely on this evidence."
+  ],
+  "limits": [
+    "No local host execution, tests, simulator or device run.",
+    "No artifact ZIP contents, actual screenshot pixels, PDF pages or xcresult internals reviewed.",
+    "Source review is limited to pinned paths and targeted relevant sections; no entity-graph audit performed.",
+    "No source, tree, commit, branch/ref mutation. Only this authorized unreferenced report blob is created.",
+    "No definitive root cause or product fix identified."
+  ]
+}

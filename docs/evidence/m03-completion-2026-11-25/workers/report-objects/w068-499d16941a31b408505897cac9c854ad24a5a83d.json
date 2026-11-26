@@ -1,0 +1,123 @@
+{
+  "worker": "w068",
+  "context_path": "/root/w007_review_coordinator/w068_library_atomic_compare_save",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Core ProjectLibraryFileStore process-wide NSLock, changed-snapshot compare-and-replace, public-entry lock coverage, atomic-write call semantics and concurrent-test correspondence to in-process contract.",
+  "method": "Remote pinned source and test inspection through GitHub tools; no compilation, tests, script or filesystem probe execution.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "scope": "Full file read; substantive review lines 137–176 and 228–260, value equality declarations and all public-entry lock coverage. Recovery/migration domain behavior excluded."
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "blob_sha": "eaf1852a0c9507027f7ef27d27f6b863c8288afa",
+      "scope": "Full file read; substantive review stale save, first save, concurrent changed snapshots, observation collector, malformed/nonregular guards and concurrent-load test structure."
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "scope": "Startup/acceptance context"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "scope": "Startup/acceptance context"
+    }
+  ],
+  "checks": [
+    {
+      "case": "shared_lock_compare_and_replace",
+      "result": "source-consistent",
+      "evidence": "ProjectLibraryFileStore declares private static transactionLock (line 144). save validates its value argument, acquires that shared lock, defers unlock, compares loadWhileLocked() == expected, and writes before unlocking (171–176). Independent instances therefore serialize the full read/compare/write transaction, not just writing. No async suspension or caller callback occurs inside this transaction."
+    },
+    {
+      "case": "read_and_public_writer_coverage",
+      "result": "source-consistent",
+      "evidence": "load (151–154), save (171–176) and both recovery entry points (181–189 and 197–225) take the same static lock. Private loadWhileLocked/readLibrary/write callers remain within those critical sections. Migration is only examined as part of lock coverage, not independently accepted."
+    },
+    {
+      "case": "changed_snapshot_rejection",
+      "result": "source-consistent",
+      "evidence": "ProjectLibrary and LightingProject synthesize value equality from all stored properties, including IDs, names, scenes and archive state. save compares the complete validated stored snapshot. testStaleSnapshotDoesNotOverwriteAnotherWindow (80–93) expects staleSnapshot and confirms the winner persists. No-op or content-restoring saves can share an equal baseline by design; this is content snapshot comparison, not a monotonic revision token."
+    },
+    {
+      "case": "independent_store_concurrent_first_saves",
+      "result": "test-source-consistent; unrun",
+      "evidence": "testConcurrentFirstSavesAllowExactlyOneWriter uses 12 concurrentPerform iterations and constructs a separate ProjectLibraryFileStore per attempt against the same directory. Every candidate differs and expects nil. assertSingleWinner requires one success, 11 stale failures and the winner's persisted name; unexpected errors cannot satisfy these counts."
+    },
+    {
+      "case": "independent_store_concurrent_changed_saves",
+      "result": "test-source-consistent; unrun",
+      "evidence": "testConcurrentEditsFromSameSnapshotAllowExactlyOneWriter uses 12 independent stores sharing one initial value snapshot, with distinct changed names. It requires exactly one success, all others stale, winner name on disk, and unchanged active identity and scene. The observations collector locks only append/snapshot, after each save returns, so it does not provide the store serialization under test."
+    },
+    {
+      "case": "concurrent_load_contract",
+      "result": "test-source-consistent; unrun",
+      "evidence": "testConcurrentLegacyMigrationReturnsOneStableIdentity performs 12 independent-store loads and requires every returned library to equal the persisted value, with the original legacy bytes preserved. Its shape exercises in-process load serialization; broader migration behavior belongs to w069."
+    },
+    {
+      "case": "atomic_commit_boundary",
+      "result": "source-consistent; runtime unverified",
+      "evidence": "write JSON-encodes fully, checks the 8 MiB bound before directory creation/write, and calls Data.write(to:options:.atomic) (228–234). save retains the lock through that call; validation, decoding and stale-comparison failures prevent the replacement call. This establishes the requested atomic-write API usage only, not observed interruption or disk-failure durability."
+    },
+    {
+      "case": "documented_scope",
+      "result": "consistent",
+      "evidence": "Source comments 137–141 and docs/ARCHITECTURE.md describe one in-process lock and explicitly exclude external writers. Concurrent tests use threads in one process and do not claim interprocess protection. Acceptance m02-m03-code-v2 still separately requires actual bounded write-failure and before/after-rename probes."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete must-fix source defect found in the assigned core compare-and-replace/locking scope. The implementation and named concurrent tests align with the documented in-process contract. This review does not supply a runtime persistence acceptance pass.",
+  "limitations": [
+    "Host unavailable: no agent_cycle.py check/next, local git/worktree inspection, Swift tests, native tests, or actual filesystem probes executed.",
+    "ConcurrentPerform test source does not force a specific interleaving; no barrier/hook deterministically opens the compare-to-write interval. The tests' intended assertions are sound, but execution and schedule coverage are unverified.",
+    "No mixed ordinary reader/writer stress method was identified in the scoped test file; load protection was assessed from the shared-lock call graph and concurrent-load test structure.",
+    "External processes and direct writes outside ProjectLibraryFileStore are outside the documented guarantee; the NSLock is not an interprocess filesystem lock.",
+    "No App ProjectStore actor/UI operation/adoption review, migration acceptance, capacity-recovery domain review, or historical filesystem-probe evidence review was performed.",
+    "Created only an unreferenced report blob; no source, tree, commit or ref changes."
+  ],
+  "status": "complete"
+}

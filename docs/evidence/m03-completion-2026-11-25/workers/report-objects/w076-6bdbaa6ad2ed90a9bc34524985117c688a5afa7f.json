@@ -1,0 +1,136 @@
+{
+  "worker": "w076_bounded_reader_toctou",
+  "context_path": "/root/w007_review_coordinator/w076_bounded_reader_toctou",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "BoundedFileReader final-component no-follow open; advisory metadata versus authoritative descriptor checks; replacement and symlink races; file growth/truncation/exact-size boundaries; descriptor cleanup. Excludes cancellation, invalid caller limits, and provider coordination.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "App/BoundedFileReader.swift",
+      "blob_sha": "cb8ffc012386b339e5ca30ff82cf388bb51dfc03",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    },
+    {
+      "path": "NativeTests/BoundedFileReaderTests.swift",
+      "blob_sha": "7afb4c0edc67c310fe1da87e2e79ca7ea9b4e1cb",
+      "inspection": "Full UTF-8 contents read at pinned revision"
+    }
+  ],
+  "contract_basis": [
+    "m02-m03-code-v2 persistence requires malformed/oversized data handling and retained persistence regressions, with actual execution evidence required for acceptance.",
+    "BoundedFileReader documents reading only an opened regular file; final-component metadata preflight is advisory, and an opened descriptor must pass no-follow/type/size checks.",
+    "The reader does not promise an immutable snapshot or rejection of intermediate-directory symlinks; security scope and provider coordination belong to callers."
+  ],
+  "checks": [
+    {
+      "case": "Advisory metadata cannot authorize a changed path",
+      "observation": "rejectKnownNonRegularFile uses lstat and rejects known nonregular final components; read independently performs open and fstat without trusting prior pathname metadata.",
+      "tests_inspected": [
+        "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "testPassingMetadataPreflightCannotAuthorizeAReplacementPath"
+      ],
+      "result": "No concrete defect found by source review; tests not run."
+    },
+    {
+      "case": "Final symlink and nonregular descriptor safety",
+      "observation": "Darwin.open uses O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC. ELOOP maps to notRegularFile. O_NONBLOCK permits a FIFO descriptor to be validated without waiting for a writer; fstat enforces S_IFREG before content reads.",
+      "tests_inspected": [
+        "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+        "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink"
+      ],
+      "result": "No concrete defect found by source review; tests not run."
+    },
+    {
+      "case": "Path replacement after successful open",
+      "observation": "FileHandle reads the descriptor obtained by open, and all subsequent metadata validation uses fstat on that descriptor. Replacing the pathname therefore does not redirect reads to replacement contents.",
+      "tests_inspected": [
+        "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor"
+      ],
+      "result": "No concrete defect found by source review; tests not run."
+    },
+    {
+      "case": "Empty, exact-limit and initially oversized files",
+      "observation": "Descriptor size greater than maximumBytes is rejected before read-loop work; equal-size and empty files may reach EOF successfully. A one-byte EOF probe allows exact-limit files while rejecting an observed excess byte.",
+      "tests_inspected": [
+        "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "testRejectsOversizeBeforeAnyReadCheckpoint"
+      ],
+      "result": "No concrete defect found by source review; tests not run."
+    },
+    {
+      "case": "Growth and truncation during reading",
+      "observation": "Every read is limited to min(65536, maximumBytes + 1 - contents.count), and an accumulated excess byte immediately raises tooLarge. A file that shrinks reaches EOF with its available bytes; no documented snapshot or minimum-size contract is violated by this behavior.",
+      "tests_inspected": [
+        "testGrowthAfterMetadataCheckStillHonorsTheByteLimit"
+      ],
+      "result": "No concrete defect found by source review; growth regression inspected but not run. Truncation analyzed from EOF control flow."
+    },
+    {
+      "case": "Descriptor cleanup on success and failure",
+      "observation": "Immediately after a successful open, FileHandle owns the descriptor with closeOnDealloc: true and a defer invokes close. This covers fstat failure, invalid descriptor type, oversized metadata, oversized observed contents, read errors, and normal EOF return. Failed open produces no owned descriptor requiring close.",
+      "tests_inspected": [],
+      "result": "No concrete defect found by control-flow review; no descriptor-leak runtime probe executed."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Remote source/test review only; host unavailable and no scripts, native tests, runtime race probes, descriptor-count probes, builds, or CI were executed or independently validated.",
+    "Pinned revision was used for every file; current branch/worktree status and latest remote head were outside this bounded review.",
+    "No dedicated truncation or descriptor-cleanup assertion was present in the inspected test file; coverage omissions alone were not classified as defects.",
+    "Task/injected cancellation, invalid caller limits, security-scoped access, and provider coordination were excluded by assignment.",
+    "No source, tree, ref, or branch was changed; the sole authorized write is this unreferenced report blob."
+  ],
+  "status": "complete",
+  "conclusion": "No concrete in-scope defect identified. This completes source review only and does not establish runtime acceptance."
+}

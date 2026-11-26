@@ -1,0 +1,257 @@
+{
+  "schema": 1,
+  "status": "complete",
+  "kind": "reviewable diagnostic plan only; not implemented or executed",
+  "context_path": "/root/w007_review_coordinator/w050_studio_export_failure_triage",
+  "repository": "mirzotipi-wq/APP1",
+  "source_commit": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "current_run": {
+    "id": 45761900201,
+    "scope": "137 native / 35 UI, as supplied by root",
+    "interference": false,
+    "status_checked_in_this_followup": false
+  },
+  "decision": "Only if the current run repeats the known large-library relaunch or AR tracking boundary: root may implement one passive capture on a single subsequent execution of each affected existing shard. No diagnostic execution is authorized by this report.",
+  "source_provenance": [
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blob": "c83e4340e5b0b6d6ec10f6b3439195a648aa9894",
+      "read": "current pinned content; simulator selection, warm-up, host probes, test command, retention"
+    },
+    {
+      "path": "scripts/boot_simulator.py",
+      "blob": "4bb1b85aab9ef1f6d6f5f46ecbdf8ed0aabff6c2",
+      "read": "current pinned content; identity, monotonic deadlines, separate command sessions, cleanup and receipts"
+    },
+    {
+      "path": "scripts/native_test_shards.py",
+      "blob": "71dae8d6a8f445895d273f565ef98bd353598e46",
+      "read": "current pinned selectors and method accounting"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blob": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "read": "current pinned content; second launch and existing readiness assertions"
+    },
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "blob": "d96f26584971d1a785146ea41d4790d8e73b03af",
+      "read": "current pinned lines 1-126; Settings/3D/AR sequence"
+    },
+    {
+      "path": "project.yml",
+      "blob": "a1e016274c267ab045876737965b49fa900b0934",
+      "read": "current pinned content; app bundle identifier com.example.keyandfill"
+    }
+  ],
+  "invariants": {
+    "source": "Pin all app/test blobs to this commit. Record any future diagnostic-harness revision separately; no product or test changes.",
+    "runner": "Use existing macos-26-intel / x86_64 and DEVELOPER_DIR=/Applications/Xcode_26.6.app/Contents/Developer; retain actual runtime/tool versions.",
+    "simulator": "Use only the existing selected SIMULATOR_ID and its recorded iOS-26-5 / iPhone-17-Pro inventory identity. Never use the booted alias.",
+    "tests": "Keep the complete affected shard selector list from native_test_shards.py, existing environment/fixtures, test-without-building command, -parallel-testing-enabled NO, xcresult and method-count checks.",
+    "deadlines": "Keep library-reference UI step 32 minutes/job 85 minutes and studio-export UI step 40 minutes/job 93 minutes. Keep all existing assertion deadlines, including library launch control 30 seconds, subsequent control 15 seconds, and AR tracking existence 10 seconds.",
+    "startup": "Retain the existing pre-test warm-up: default 580-second total script budget under its unchanged 10-minute diagnostic step. Do not invoke boot/recovery/shutdown/reset while tests run.",
+    "outcome": "The sidecar cannot convert a failed required assertion/test/step into success. Sampling adds diagnostic overhead, so this is an instrumented execution."
+  },
+  "minimal_integration": {
+    "approach": "A host-side observer reads the existing live xcodebuild output while the unchanged selected tests run. It never queries XCTest accessibility or drives the app.",
+    "ownership_of_client": "If the wrapper launches xcodebuild directly to retain its PID, preserve its exact argv, stdout/stderr capture, exit status, existing step deadline and workflow cancellation behavior. Diagnostic cleanup must not kill xcodebuild.",
+    "command_runner": "Adapt the small command/receipt pattern from boot_simulator.py to generic argv. Its existing command method prepends xcrun simctl and cannot directly run sample. Do not call SimulatorStartup.run from the observer.",
+    "preflight": "Before the selected-test step, root's implementation checks current local help/man pages once under a shared 30-second budget including 5 seconds for cleanup. Retain these outputs; if tools/options are absent, record unavailable and leave selected tests unchanged.",
+    "preflight_argv": [
+      [
+        "/usr/bin/man",
+        "sample"
+      ],
+      [
+        "/usr/bin/man",
+        "lsof"
+      ],
+      [
+        "xcrun",
+        "simctl",
+        "help",
+        "get_app_container"
+      ],
+      [
+        "/bin/ps",
+        "-L"
+      ]
+    ],
+    "preflight_environment": "Noninteractive stdout pipes; PAGER=cat and MANPAGER=cat. Each command has at most 5 seconds, subject to the shared budget. No sudo or installation."
+  },
+  "triggers": [
+    {
+      "shard": "library-reference",
+      "method": "ProjectLibraryUITests.testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+      "boundary": "The second app launch after the explicit terminate at source line 421; launchStudio at line 424 waits for openProjectLibrary, then save/status/light assertions follow.",
+      "arm": "Within this exact started method, distinguish the second Launch event from the first and from subordinate Launching text. Retain old PID/start identity and require a new app generation after termination.",
+      "capture": "At 5 seconds after observing the second launch event, if the method is still active and its relaunch readiness boundary has not visibly advanced, attempt one ownership check and one paired stack capture.",
+      "disarm": "Disarm when output advances to the subsequent saveProject readiness check, or on method terminal/next-method event, app exit or cancellation."
+    },
+    {
+      "shard": "studio-export",
+      "method": "StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback",
+      "boundary": "Place in AR tap followed by arTrackingStatus existence/label checks, after Settings/Feet/3D Fit and Studio-3D-fit-feet screenshot.",
+      "arm": "Use the existing method-scoped Tap \"Place in AR\" event.",
+      "capture": "At 5 seconds after observing that event, if the method is still active and no progress beyond the tracking checks is visible, attempt one ownership check and one paired stack capture. This catches the known idle/animation wait before a post-timeout failure attachment.",
+      "disarm": "Disarm on subsequent startARCamera/arCameraPreview/manual-measurement query progression, method terminal/next-method event, app exit or cancellation."
+    }
+  ],
+  "trigger_limits": "Only existing output is observed. Producer test elapsed time and observer UTC/monotonic receipt time are both retained. Buffering or delayed scheduling can make the event stale; absent log progress is not proof that the UI remains stuck. Mark such a capture ambiguous, never assert exact boundary timing without supporting timestamps.",
+  "target_identity": {
+    "preparation": "Once the target method has launched its app, resolve its installed container on the exact selected simulator. Read its actual Info.plist with Python plistlib; verify CFBundleIdentifier and derive CFBundleExecutable. Resolve real paths and require the executable to be within that simulator's recorded dataPath/app container. Do not hard-code a guessed executable path.",
+    "container_argv": [
+      "xcrun",
+      "simctl",
+      "get_app_container",
+      "${SIMULATOR_ID}",
+      "com.example.keyandfill",
+      "app"
+    ],
+    "discovery_argv": [
+      "/bin/ps",
+      "-A",
+      "-r",
+      "-o",
+      "pid=,ppid=,uid=,lstart=,pcpu=,rss=,comm="
+    ],
+    "candidate_rule": "Require exactly one live candidate whose complete comm path equals the derived executable path, whose UID equals the runner's UID and whose generation agrees with the method/launch event. An incomplete/truncated inventory, basename-only match, absent/ambiguous PID or failed identity command means no app sample.",
+    "confirmation_argv": [
+      [
+        "/bin/ps",
+        "-p",
+        "${VERIFIED_PID}",
+        "-o",
+        "pid=,ppid=,uid=,lstart=,comm="
+      ],
+      [
+        "/usr/sbin/lsof",
+        "-n",
+        "-P",
+        "-a",
+        "-p",
+        "${VERIFIED_PID}",
+        "-d",
+        "txt",
+        "-F",
+        "pn"
+      ]
+    ],
+    "confirmation": "Require lsof executable-text path evidence matching the same installed executable as well as the ps path/UID/start tuple. Revalidate immediately before and after sampling; compare sample header PID/path with the receipt. Never choose by pgrep/name, newest PID, a historical failure PID, or a similar bundle name.",
+    "automation": "Prefer one UI-test runner only if its actual built Runner.app Info.plist and generated xctestrun identify the runner belonging to this test build, and the same selected-simulator container/path/UID/start checks succeed. Do not assume a runner bundle-ID suffix. If it cannot be proved, optionally sample the directly owned live xcodebuild child instead, explicitly labeled client-only. Never sample arbitrary testmanagerd/CoreSimulator/system daemons.",
+    "race_limit": "PID plus path/start checks are not an atomic process handle. If the app exits or identity changes during capture, mark it invalid/partial and do not retry or attribute the sample to the new process."
+  },
+  "proposed_read_only_capture_commands": {
+    "note": "These are argv shapes for future review, not commands executed in this context. Each placeholder is a validated value passed as an argument, without shell interpolation.",
+    "app": [
+      "/usr/bin/sample",
+      "${VERIFIED_APP_PID}",
+      "5",
+      "10",
+      "-mayDie",
+      "-file",
+      "${EXCLUSIVE_OUTPUT_DIR}/app.sample.txt"
+    ],
+    "automation_if_proved": [
+      "/usr/bin/sample",
+      "${VERIFIED_AUTOMATION_PID}",
+      "5",
+      "10",
+      "-mayDie",
+      "-file",
+      "${EXCLUSIVE_OUTPUT_DIR}/automation.sample.txt"
+    ],
+    "concurrent_host": [
+      [
+        "/usr/bin/vm_stat"
+      ],
+      [
+        "/usr/sbin/sysctl",
+        "vm.swapusage",
+        "hw.memsize"
+      ],
+      [
+        "/bin/ps",
+        "-A",
+        "-r",
+        "-o",
+        "pid=,ppid=,pcpu=,rss=,comm="
+      ]
+    ],
+    "host_handling": "Use the existing host probe's 5-second command limit and elapsed/status metadata. Start stack capture before host probes; run the small host probes alongside it so vm_stat cannot delay the app sample. Keep original before/after vm_stat/sysctl/ps/df probes and logs unchanged.",
+    "stack_scope": "Retain all sampled threads, symbols/image data and raw report. Work on a Swift actor need not occur on the main thread."
+  },
+  "bounds_and_cleanup": {
+    "pre_boundary": "At most one container resolution per role after the first launch, 5 seconds each; at most two roles. No unbounded discovery or tool retry loop.",
+    "per_incident": "One 30-second monotonic budget from the scheduled capture instant, with the last 5 seconds reserved for cleanup. Identity checks share at most 10 seconds. Each sample requests 5 seconds at 10 ms and has at most 10 seconds for collection/report, clipped to the shared work deadline. At most two sample children run concurrently.",
+    "maximum": "One incident capture per affected method/job; at most two affected jobs in one future diagnostic run. No second sample window, new test, automatic rerun or wider test timeout. The observer is disarmed at the existing test step's end even if no trigger occurs.",
+    "output": "Retain at most 4 MiB per sample, 1 MiB for the one process inventory, 64 KiB per other command stream and 12 MiB aggregate new diagnostic data per job. Enforce byte limits during collection, mark truncation and preserve receipts. For the sample -file output, the future child launcher must impose a 4 MiB RLIMIT_FSIZE before exec; apply it only to the diagnostic child, never the app/test client. This is a proposed implementation requirement, not an already verified runner feature.",
+    "cancellation": "Every diagnostic subprocess starts in its own new session, as in boot_simulator.py. On its deadline, output limit, method completion, app identity change, SIGINT/SIGTERM or test-step exit, kill only those newly owned diagnostic process groups and reap direct children within the remaining cleanup reserve (at most 2 seconds per child). Record partial files and cleanup failures. Never kill the sampled app, test runner, xcodebuild or simulator as diagnostic cleanup.",
+    "actual_time": "Record absolute UTC, monotonic start/deadline/finish and elapsed duration separately. Host scheduling can delay timeout handling; the previous host records demonstrate this. Do not claim a guaranteed wall-clock bound or subtract an absolute finish offset as if it were command duration."
+  },
+  "evidence_and_interpretation": {
+    "retention": "Create an exclusive per-run/attempt/job/method directory; never overwrite previous evidence. Retain raw outputs, ownership receipts, trigger log offsets/excerpt, command receipts, partial failures and an atomic manifest. Add the directory to the existing full evidence artifact. Keep original xcresult, original attachments, test logs, startup receipts and before/after host logs; do not substitute compact summaries.",
+    "manifest": [
+      "source and app/test blob SHAs; separately identified harness SHA",
+      "run/attempt/job/artifact/member names",
+      "exact selectors and started/passed/failed method accounting",
+      "runner OS/architecture, Xcode/runtime and selected simulator inventory/UDID",
+      "actual built binary identity and matching symbol/image identifiers when available",
+      "PID/UID/start/path/container identity before and after; automation role",
+      "producer event time, observer time, sample window and boundary ambiguity",
+      "exact argv, configured deadlines, actual elapsed, exit status, timeout/truncation and cleanup status",
+      "byte lengths and SHA-256 of every retained original or explicitly labeled truncated prefix"
+    ],
+    "decisions": [
+      "Repeated app-owned frames or a blocked main thread/actor during a verified pending boundary can direct a source investigation; inspect all threads and symbols before proposing a fix.",
+      "An idle app plus an automation-side wait and normal host command timing is evidence to investigate the UI automation path, not proof that the app is correct.",
+      "Delayed read-only host commands or sampler startup show contemporaneous host responsiveness problems; they do not by themselves establish the cause of the UI assertion.",
+      "If ownership fails, logs are stale, stacks are unavailable/unsymbolicated, or the app has already terminated, record the gap. Post-termination samples cannot answer the in-flight question."
+    ],
+    "repeat_rule": "If the current run passes these boundaries, do not run this diagnostic plan. If a future single instrumented execution captures a repeated failure, inspect those stacks before deciding any next action. If it passes or misses capture, preserve that result and limitation; no blind retry and no success claim for earlier failed required tests."
+  },
+  "option_verification": [
+    {
+      "source": "https://developer.apple.com/library/archive/documentation/Performance/Conceptual/LaunchTime/Articles/MeasuringLaunch.html",
+      "verified": "Apple's retired documentation gives sample duration in seconds, interval in milliseconds, and -mayDie. Its example is 5 seconds/10 ms.",
+      "unverified": "Current runner support, numeric PID selection and -file syntax were not established by that archived page; require the current local man sample preflight. Do not use its name-based -wait example."
+    },
+    {
+      "source": "https://github.com/apple-oss-distributions/adv_cmds/blob/main/ps/ps.1",
+      "verified": "Apple source documents -A, -p, -r, -o, empty column headings and pid/ppid/uid/lstart/comm fields. It warns command information is not infallible.",
+      "unverified": "The runner's exact formatting/path completeness must be observed; ps alone is not accepted as executable identity proof."
+    },
+    {
+      "source": "https://developer.apple.com/documentation/xcode/xcode-command-line-tool-reference",
+      "verified": "Official tool reference directs users to xcrun simctl help.",
+      "unverified": "get_app_container with the app selector, lsof -n/-P/-a/-p/-d txt/-F pn behavior, runner bundle metadata and the proposed file-size limiter were not executed or verified against this runner. Gate them on current local help/man and actual identity output; otherwise skip the diagnostic target."
+    },
+    {
+      "source": "current pinned workflow and scripts listed above",
+      "verified": "Existing simctl inventory/selected-UUID commands, vm_stat/sysctl/ps/df argv, host 5-second limits, warm-up budgets, process-group cleanup and evidence receipt handling.",
+      "unverified": "No newly proposed sampler/observer implementation exists or has been tested in this followup."
+    }
+  ],
+  "preserved_prior_findings": {
+    "authoritative_host_report": "37dc2d7138cf48dde062e3423356b9901f3e58c6",
+    "superseded_host_report": "c4a44453d141a71b7ca0201fddcc2ed216a3db56",
+    "exact_raw_counter_evidence": "2026-11-26T04:10:01.6470610Z ##[error]The action 'Capture host conditions before UI tests' has timed out after 1 minutes.",
+    "reconciliation": "Original job 139682754735/run 45751931160 had a real raw whole-step host timeout under timeout-minutes:1 and continue-on-error:true. API conclusion success is the continued wrapper outcome and does not negate that timeout; four command receipts do not negate it either.",
+    "host_measurements": "Before-UI vm_stat wrapper elapsed 54.692 seconds despite configured timeout 5; ps timed_out at 7.53. Bootstatus start offset 5.911153386, finish offset 328.112134701, duration 322.200981315, deadline offset 287.5. Recovery inventory timed out. After-UI vm_stat 0.401, sysctl 0.06 and ps 2.203 succeeded. These are host stalls outside app commands, without proven causation for later AR/PDF failures.",
+    "original_failure_report": "1ab045ab7f1749c8486aa682073edc2621def2a5",
+    "source_75e_report": "91791f7c09250d58a61bcd1707a00b5d98b3e769",
+    "source_75e_accounting": {
+      "started": 10,
+      "passed": 6,
+      "failed": 4
+    },
+    "source_75e_failed_boundaries": [
+      "Export preview: initial exportLightingPlan enabled-control wait, line 127; 241.539 seconds.",
+      "Full-library editable copy: closeLightingPlanPDF.isHittable, line 175, after page/share assertions; 316.867 seconds.",
+      "Settings/Feet/3D/AR: arTrackingStatus query, line 101, after 3D screenshot and Place in AR tap; 321.417 seconds.",
+      "Following Guide: app.launch failed to terminate prior PID 51396, line 359; 68.624 seconds."
+    ],
+    "limitation": "The prior exact records were reviewed in this same context; this plan does not newly rehash them. The current run outcome is not asserted. No proven source cause, runtime repair, new artifact/image review, or local execution is claimed."
+  }
+}

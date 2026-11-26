@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "type": "same-context-followup",
+  "workerCountIncrement": 0,
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "reviewedRevision": "ee2c4f14e4cd2ad0a287f0d711a342e8a69e8841",
+  "parentReviewedRevision": "aebf0838029ad8807fb9df446d97229bf3d51bfc",
+  "priorReportBlob": "04faa5da59f053e043f6a1fe41dffe6938c2ce89",
+  "scope": "Tiny workflow delta allowing original diagnostic screenshot names only in Default transport and separating requiredImages in summary",
+  "status": "source-review-complete",
+  "findings": [],
+  "recommendation": "No source-level defect found in the scoped delta. Diagnostic images cannot satisfy or replace any required capture. Runtime and actual image review remain unperformed by this reviewer.",
+  "inspected": [
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "revision": "ee2c4f14e4cd2ad0a287f0d711a342e8a69e8841",
+      "blobSHA": "4265d7d23bdc217a3994bebaca2cc0be9a3f28c8"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "revision": "aebf0838029ad8807fb9df446d97229bf3d51bfc",
+      "blobSHA": "1c83e21ee307be3df2379a659ccb01b6fffbc328"
+    },
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "revision": "ee2c4f14e4cd2ad0a287f0d711a342e8a69e8841",
+      "blobSHA": "b0c50c85ba7c85dd644b922586958047a490f0cb"
+    }
+  ],
+  "checks": [
+    {
+      "subject": "Exact scope",
+      "result": "Remote candidate commit diff contains two hunks in only .github/workflows/ios-prototype.yml: seven added lines and two removed lines, net five. Direct parent/candidate source comparison confirms all preceding jobs are byte-for-byte unchanged."
+    },
+    {
+      "subject": "Required names",
+      "result": "wanted remains the same category-prefixed set of twelve unique required suffixes. allowed adds only Accessibility-workflow-failure and Unreachable-studio-content, only for Default. Both diagnostic names are disjoint from every required name and cannot match a required name prefix followed by underscore.",
+      "suffixes": [
+        "Plan-choices",
+        "Plan-selection",
+        "Inspector",
+        "Precision-instructions",
+        "Precision-keyboard",
+        "Meter-preset-selection",
+        "Library-unsaved",
+        "Library-saved",
+        "Project-name-field-keyboard",
+        "Project-name-save-keyboard",
+        "Project-name-cancel-keyboard",
+        "Library-done"
+      ]
+    },
+    {
+      "subject": "Missing and count semantics",
+      "result": "missing is still sorted(wanted - set(selected)); missing still causes SystemExit. New requiredImages uses len(wanted & set(selected)). Therefore a selection containing all fourteen permitted Default names reports images=14 and requiredImages=12; eleven required plus two diagnostics reports requiredImages=11 and fails for the missing required name. Diagnostic-only output cannot pass completeness. These are source-derived set semantics, not executed workflow results."
+    },
+    {
+      "subject": "Diagnostic source",
+      "result": "Candidate UITests/StudioContentReachability.swift lines 223-227 creates XCTAttachment(screenshot: app.screenshot()), names it Unreachable-studio-content, keeps it always and then records XCTFail. Accessibility-workflow-failure was verified as an original app screenshot in the preserved initial review, and no test source changes occur in this candidate."
+    },
+    {
+      "subject": "Limits",
+      "result": "Original-byte read limit remains 1 MiB + 1 sentinel byte; files over 1 MiB fail. The shared cumulative total still includes every selected image, including diagnostics, and rejects totals over 8 MiB per category. The diagnostic addition does not create a separate or bypassed byte allowance. Base64 chunks remain limited to 24,000 characters."
+    },
+    {
+      "subject": "Provenance and file checks",
+      "result": "Manifest selection, hexadecimal/hyphen .png filename check, duplicate rejection, unique path requirement, symlink/root containment, PNG signature, SHA256 of original bytes, filename/byte count/revision/device/timestamp metadata and per-chunk indexes are unchanged. No conversion or replacement image is created."
+    },
+    {
+      "subject": "Permissions and source/test gates",
+      "result": "No source/test files, required test commands, method accounting, artifact export, job dependencies, categories, runners, credentials or permissions are changed. The original same-run compact artifact remains the source."
+    }
+  ],
+  "comparison": {
+    "parentWorkflowBlob": "1c83e21ee307be3df2379a659ccb01b6fffbc328",
+    "candidateWorkflowBlob": "4265d7d23bdc217a3994bebaca2cc0be9a3f28c8",
+    "unchangedPrecedingJobs": true,
+    "adds": 7,
+    "deletes": 2,
+    "unchangedMissingCheck": true,
+    "unchangedBounds": true
+  },
+  "validationMethod": "Remote exact-revision file reads and commit diff; in-memory string/set inspection and manual Python/YAML reasoning only.",
+  "execution": {
+    "workflowRun": false,
+    "pythonOrShell": false,
+    "yamlParser": false,
+    "buildsOrTests": false,
+    "pngReconstruction": false,
+    "actualImageReview": false
+  },
+  "limitations": [
+    "Source review does not establish that diagnostics or required captures exist in a new run.",
+    "The PNG signature check is unchanged; no complete image decoding or actual SHA verification over an image payload was performed.",
+    "Missing required images still prevent transport completeness even when diagnostic output is present."
+  ],
+  "mutationScope": "Only this expressly authorized unreferenced JSON report blob was created. No branch, tree, ref, source or test was modified. The original w097 report remains preserved."
+}

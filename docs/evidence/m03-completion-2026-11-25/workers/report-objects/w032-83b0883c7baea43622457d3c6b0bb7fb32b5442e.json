@@ -1,0 +1,146 @@
+{
+  "worker": "w032_point_photometry_invariants",
+  "context_path": "/root/w007_review_coordinator/w032_point_photometry_invariants",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Point photometry: inverse-square and cosine units, incidence direction, finite/nonnegative output, zero and invalid inputs. Scene schema validation and rectangular integration excluded.",
+  "paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/PhotometryInvariantTests.swift",
+      "blob_sha": "27f611a596501d691a506407efc01daed33ccb19",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/PrototypeTests.swift",
+      "blob_sha": "60bc917c209564a03c8032a90feb839d1f68467f",
+      "access": "actual GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SurfacePhotometryTests.swift",
+      "blob_sha": "f5a69c08d79dc4ccc08664408f3db16e7b6a5350",
+      "access": "actual GitHub fetch_file at base_sha"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Read startup instructions and m02-m03-code-v2 acceptance",
+      "outcome": "Read mandatory startup documents remotely. Existing thresholds and requirement for actual Debug/Release evidence retained."
+    },
+    {
+      "check": "Normal-incidence units and supported scene range",
+      "outcome": "Source-derived: candela divided by squared meter distance gives lux; valid intensity range is 0...100000 cd; finite distance >=0.05 m. Within bounded scene positions distance is <=sqrt(120000) m and accepted normal illuminance remains finite and nonnegative."
+    },
+    {
+      "check": "Point-surface orientation and zero behavior",
+      "outcome": "Source-derived: delta=source-receiver points toward incident light; normalized dot with receiver normal clamped to [0,1] gives projected incidence. Zero intensity and back-facing normal yield zero for otherwise supported geometry; coincident or <5cm separation returns nil before division by distance."
+    },
+    {
+      "check": "Invalid input and UnitDirection",
+      "outcome": "Source-derived: nonfinite/negative/out-of-range candela and nonfinite/too-short distances return nil; invalid source/receiver positions return nil. UnitDirection rejects zero/nonfinite vectors and scales components before normalization to avoid finite-component overflow."
+    },
+    {
+      "check": "Absolute analytic fixture inspection",
+      "outcome": "Inspected SurfacePhotometryTests.testPointCosineAndInverseSquare: 400 cd at 2m is compared with 100*cos(theta) lux at 0/30/60/90/120/180 degrees with backward cosine clamped; 1m case expects 400 lux. Coincident source and negative infinity intensity assert nil. testDirectionNormalizesAndRejectsInvalid covers 3-4-5 direction, greatest-finite inputs, zero, NaN and infinity. Tests were not executed."
+    },
+    {
+      "check": "Point invariant inspection",
+      "outcome": "PhotometryInvariantTests independently builds proper rotations and translations and compares point lux for three surface normals across four transforms at relative/absolute 1e-9 tolerance. Mixed-rig yaw/translation test preserves meter and study outputs; rectangle/BRDF implementations were outside this review."
+    },
+    {
+      "check": "PrototypeTests relevance",
+      "outcome": "PrototypeTests covers valid recipe round trips and persistence; its invalid-light edit test asserts saved data preservation, not direct point-photometry output. No runtime inference made."
+    },
+    {
+      "check": "Standalone helper finite-distance extreme",
+      "outcome": "Found one source-derived arithmetic overflow corner detailed below."
+    }
+  ],
+  "findings": [
+    {
+      "id": "w032-01",
+      "severity": "P3",
+      "title": "Standalone normalIlluminance loses representable positive output when accepted distance squared overflows",
+      "path": "Sources/LightingCore/Scene.swift",
+      "line": 99,
+      "repro": "Call Photometry.normalIlluminance(candela: 100000, distanceMeters: 1e155). The inputs satisfy the function guards. IEEE-754 Double multiplication distanceMeters * distanceMeters overflows to infinity, so the implementation returns 0 instead of the representable mathematical result approximately 1e-305 lux.",
+      "evidence_kind": "Source-derived reproduction; not executed",
+      "impact": "Low priority: affects the public standalone helper's accepted unbounded finite distance range. Scene-based pointIlluminance validates Position coordinates in -100...100 m, so ordinary app scene calculations cannot reach this case.",
+      "suggested_fix": "Compute (candela / distanceMeters) / distanceMeters, or explicitly enforce/document a bounded standalone distance domain; preserve existing normal scene results. Add a focused extreme finite-distance regression if changing the helper.",
+      "must_fix_for_m02_m03": false
+    }
+  ],
+  "limitations": [
+    "Host unavailable: no swift tests, builds, scripts, agent_cycle commands, CI checks or executable reproductions were run.",
+    "Repository status/branch/uncommitted work were not inspected locally; reads were pinned to the provided base commit.",
+    "Only source/test review, not proof that the M02 photometry gate passes at this revision.",
+    "Scene schema validity, rectangular emitter integration and runtime/rendering behavior excluded.",
+    "Attempted supplemental Tests/LightingCoreTests/LightingCoreTests.swift returned 404; no content or coverage was inferred from it.",
+    "Only an unreferenced report blob is created; no source, tree, commit or reference mutation."
+  ],
+  "conclusion": "No must-fix point-photometry defect identified in the supported bounded scene domain. One nonblocking P3 arithmetic corner in the standalone distance helper.",
+  "status": "complete"
+}

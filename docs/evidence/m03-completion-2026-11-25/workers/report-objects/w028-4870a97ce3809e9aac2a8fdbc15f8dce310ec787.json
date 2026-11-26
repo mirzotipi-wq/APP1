@@ -1,0 +1,108 @@
+{
+  "worker": "w028",
+  "context_path": "/root/w007_review_coordinator/w028_display_names_unicode",
+  "review_kind": "same-context second independent fix followup",
+  "distinct_worker_count_increment": 0,
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "3beaac6ac0f20f707d74670ab8af54a772022fa2",
+  "prior_candidate_sha": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+  "task": "Review correction of the native preservation assertion without weakening fallback, identity, or exact stored-scalar checks.",
+  "focus": "NativeTests/ProjectLibraryPresentationTests.swift; testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+  "inspected_commit": {
+    "sha": "3beaac6ac0f20f707d74670ab8af54a772022fa2",
+    "method": "Actual github_fetch_commit diff and changed-file list",
+    "changed_paths": [
+      "NativeTests/ProjectLibraryPresentationTests.swift"
+    ],
+    "actual_change": "Final scalar assertion now compares row.project.name with original.name instead of the unnormalized name input."
+  },
+  "inspected_paths": [
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "ref": "3beaac6ac0f20f707d74670ab8af54a772022fa2",
+      "blob_sha": "1c108acca53243472810eef5cb8570fee99fe674",
+      "inspection": "Full actual remote file; changed method and preserved assertions reviewed"
+    }
+  ],
+  "carried_forward_source_review": [
+    {
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "previously_inspected_ref": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+      "blob_sha": "d5a8f4876b4e81154c6ef9a02cdc190a1b001f9d",
+      "basis": "Current commit diff changes only the one native-test assertion."
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioDisplayNameTests.swift",
+      "previously_inspected_ref": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+      "blob_sha": "653b5a81e5a153d56b309e97af1f62342b273bc8",
+      "basis": "Current commit diff changes only the one native-test assertion; two U+2800 core regressions remain unaffected."
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "previously_inspected_ref": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "basis": "Current commit diff changes only the one native-test assertion; previously reviewed init/normalizedName trimming behavior supplies the corrected expected value."
+    }
+  ],
+  "checks": [
+    {
+      "check": "Exact candidate scope",
+      "method": "Remote commit diff plus in-memory comparison of actual fetched native files",
+      "result": "Candidate native file equals the previously fetched file with only the first matching scalar assertion changed to original.name.",
+      "source_text_comparison_only": true
+    },
+    {
+      "check": "Stored normalized name preservation",
+      "method": "Static assertion and dependency review",
+      "result": "Expected scalar array is taken from original.name, the stored project value supplied to presentation. Leading/trailing input-space normalization no longer creates a false failure; removal or rewriting of stored invisible scalars by presentation would still disagree."
+    },
+    {
+      "check": "Whole-project equality",
+      "method": "Actual native test source review",
+      "result": "XCTAssertEqual(row.project, original) remains immediately before the explicit scalar assertion. Stable project content remains checked."
+    },
+    {
+      "check": "Fallback and identity assertions",
+      "method": "Actual native test source review",
+      "result": "Checks for Unnamed project, expected short identifier, confirmationName, identityValue and matching the unnamed search remain unchanged."
+    },
+    {
+      "check": "Invisible fixtures",
+      "method": "Actual native test source review",
+      "result": "Single and repeated U+2800 and the mixed padded ZWJ/U+2800/VS16 input remain present; no fixture was removed."
+    },
+    {
+      "check": "Visible Unicode coverage",
+      "method": "Actual native test source review",
+      "result": "The visible-script method still compares displayed and stored scalar arrays with original visible inputs, including braille spacing and Key/U+2800/light, and still asserts no added identifier for unique visible names."
+    }
+  ],
+  "historical_findings": [
+    {
+      "id": "w028-F1",
+      "severity": "P2",
+      "original_base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+      "report_blob_sha": "f5f341e40d35b6b4d0e892c992f1ac47faf82f12",
+      "title": "Braille blank-only names bypass empty-name validation and visible fallback",
+      "disposition": "Production source correction reviewed at 61465fb6c1894cc7d508ae3472ba08c0b6d7b644; unaffected by this assertion-only commit; runtime validation remains unperformed."
+    },
+    {
+      "id": "w028-F2",
+      "severity": "P2",
+      "original_base_sha": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+      "report_blob_sha": "442af6045c57b0d869ebe351f7fe0355992a961a",
+      "title": "Expanded native fixture compares normalized stored data to untrimmed input",
+      "disposition": "Corrected in source by 3beaac6ac0f20f707d74670ab8af54a772022fa2. Earlier predicted failed expectation remains in historical report; no executed failure or pass is claimed."
+    }
+  ],
+  "findings": [],
+  "conclusion": "Approve this assertion correction on source review. It tests preservation of the stored normalized name and retains fallback, identity, whole-project equality and explicit scalar checks. No new must-fix finding identified; runtime acceptance remains pending.",
+  "limitations": [
+    "No local checkout or local file created; host unavailable.",
+    "No shell commands, repository scripts, Swift/native tests, builds or runtime rendering executed.",
+    "Only actual remote commit/file content and prior same-context dependency inspection were used.",
+    "No source, tree, commit, branch or ref changes; only this authorized unreferenced JSON report blob is uploaded.",
+    "Whole-suite counts are unchanged by this assertion-only delta, but were not independently enumerated or executed."
+  ],
+  "status": "complete"
+}

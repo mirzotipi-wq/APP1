@@ -1,0 +1,113 @@
+{
+  "worker": "w036_neutral_card_inspector",
+  "context_path": "/root/w007_review_coordinator/w036_neutral_card_inspector",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Neutral-card and exposure labels, unsupported-state meaning, exact accessibility values; general formatter internals excluded.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "App/NeutralCardInspector.swift",
+      "blob_sha": "b4500ce98e61301301954ae4590ab6e61d216572",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "App/StudioMeterReadout.swift",
+      "blob_sha": "a07fed9d71be65f081a0e870cc06768c442d897c",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ExactNumericReadoutTests.swift",
+      "blob_sha": "73d1837822d810575e0d7a570e26f067a5c8f5bd",
+      "read": "complete via fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioAccessibleValueTests.swift",
+      "blob_sha": "9f387943328548b1ca150fcd86c6e100b10bfd91",
+      "read": "complete via fetch_file at base_sha"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Startup and acceptance documents",
+      "result": "Read AGENTS.md, all eight named startup documents, and docs/acceptance/m02-m03-code.md. Applied source-review-only scope; no script or runtime execution."
+    },
+    {
+      "check": "Card scientific meaning and relative exposure",
+      "result": "NeutralCardInspector labels combined direct light and combined ideal illuminance, identifies relative 18% sRGB card and relative exposure, states the 1000 lx reference and calibration/response limitations. No claim of physical exposure calibration found."
+    },
+    {
+      "check": "Unsupported-state presentation",
+      "result": "A completed nil card produces Meter unavailable plus explanatory text that unsupported emitters invalidate the combined estimate. Pending/stale snapshots produce Updating test card instead of presenting obsolete lux. No unsupported-as-zero display found."
+    },
+    {
+      "check": "Exact accessible value wiring",
+      "result": "combinedLux accessibilityValue uses StudioNumericInput.formattedValue(card.totalLux, unit: lx, locale: locale), independent of the compact StudioMeterReadout.lux visible text. White-balance/exposure StudioSlider descriptors likewise use exact formattedValue with K/stops and locale."
+    },
+    {
+      "check": "Compact meter semantics",
+      "result": "StudioMeterReadout rejects negative and nonfinite values as Unavailable, preserves positive sub-resolution values with an explicit less-than bound, and normalizes negative zero in its visible readout."
+    },
+    {
+      "check": "Assigned regression source coverage",
+      "result": "Read all methods in ExactNumericReadoutTests and StudioAccessibleValueTests. Existing assertions cover exact finite bit-pattern round trips, localized digits/separators, signed zero, bounded labels and representative m/mm/K/stops/cd values; source tests do not execute the app view."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Read-only source/test review only; no Swift build, test execution, simulator, accessibility tree, screenshot, VoiceOver, or device validation performed.",
+    "The two assigned test files validate LightingCore formatting and editable-draft behavior; they do not establish app-level neutral-card layout or semantic runtime acceptance.",
+    "General numeric formatter implementation excluded by assignment.",
+    "Supplementary lookup for NeutralCardPreview returned no search results; guessed supporting paths Sources/LightingCore/NeutralCardPreview.swift and App/StudioInspector.swift returned 404 and were not reviewed. Unsupported-model behavior was assessed only from supplied app branch semantics and architecture documentation.",
+    "No local host inspection, source/tree/ref mutation, or milestone-completion claim."
+  ],
+  "status": "complete"
+}

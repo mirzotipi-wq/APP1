@@ -1,0 +1,141 @@
+{
+  "worker": "w055",
+  "context_path": "/root/w007_review_coordinator/w055_portrait_mesh_topology",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "PortraitHeadMesh original synthetic topology, outward normals, bounded BVH, ray minimum distance and degenerate triangles",
+  "review_type": "remote static source and test review",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "Sources/LightingCore/PortraitHeadMesh.swift",
+      "blob_sha": "e7c4fb134d1ecc8e58e06db8ffd12a9db6724ab7"
+    },
+    {
+      "path": "Tests/LightingCoreTests/PortraitHeadMeshTests.swift",
+      "blob_sha": "15559d988863af4d9eaed48027013270e7d15bba"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "checks": [
+    {
+      "id": "startup_contract",
+      "result": "reviewed",
+      "details": "Read AGENTS.md, the eight requested startup documents and m02-m03-code-v2 acceptance contract at the pinned revision. Current state keeps M03 active; this review makes no gate-completion claim."
+    },
+    {
+      "id": "synthetic_topology",
+      "result": "no_issue_identified_by_source_review",
+      "paths": [
+        "Sources/LightingCore/PortraitHeadMesh.swift"
+      ],
+      "details": "Source generates one synthetic head from a fixed profile and local facial displacements. Longitude wraps modulo 64. The 42 latitude bands produce two triangles per quad; coincident pole triangles are rejected. The resulting 5248 nondegenerate faces follows from 2*42*64 - 2*64 and is a source-derived count, not an executed observation. Bottom and top fans retain the same outward orientation as the regular strips."
+    },
+    {
+      "id": "outward_normals",
+      "result": "no_issue_identified_by_source_review",
+      "paths": [
+        "Sources/LightingCore/PortraitHeadMesh.swift",
+        "Tests/LightingCoreTests/PortraitHeadMeshTests.swift"
+      ],
+      "details": "Vertex normals use tangent cross vertical, with explicit lower/upper pole normals. Triangles use matching outward edge winding. Interpolated normals require finite nonzero normalization and agreement with the geometric hemisphere and viewing ray; otherwise the outward geometric normal is used. Interior rays preserve outward normals instead of flipping toward the camera. Test source compares finite unit normals, face hemispheres and interior exit direction."
+    },
+    {
+      "id": "bounded_bvh",
+      "result": "no_issue_identified_by_source_review",
+      "paths": [
+        "Sources/LightingCore/PortraitHeadMesh.swift",
+        "Tests/LightingCoreTests/PortraitHeadMeshTests.swift"
+      ],
+      "details": "Immutable standard mesh and hierarchy are constructed once. Each node bounds its full triangle range before subdivision; median splitting strictly shrinks each non-leaf range until at most eight faces remain. Fixed 5248-face input implies at most ten split levels below the root. AABB intersection handles near-parallel axes and uses conservative 1e-10 padding. Independent oracle test source compares exterior views, misses, poles, seam/shared edges and grazing rays without sharing BVH traversal."
+    },
+    {
+      "id": "minimum_and_maximum_distance",
+      "result": "no_issue_identified_by_source_review",
+      "paths": [
+        "Sources/LightingCore/PortraitHeadMesh.swift",
+        "Tests/LightingCoreTests/PortraitHeadMeshTests.swift"
+      ],
+      "details": "Triangle intersections require t >= minimum and t < maximum. Both nearest-hit and occlusion paths use those bounds. Tie search is clamped to original maximum; the returned distance remains the minimum even when an incident outward face supplies a preferable normal. Test source explicitly brackets independent hit distances, tests empty/reversed intervals, checks excluded upper endpoints and nextUp-sized intervals, and covers coincident silhouette faces."
+    },
+    {
+      "id": "degenerate_triangles",
+      "result": "no_issue_identified_by_source_review",
+      "paths": [
+        "Sources/LightingCore/PortraitHeadMesh.swift",
+        "Tests/LightingCoreTests/PortraitHeadMeshTests.swift"
+      ],
+      "details": "Construction rejects squared area <= 1e-24, including duplicated pole faces. Intersection rejects determinants with magnitude <= 1e-14 before division. Normalization requires finite positive length. Oracle construction independently removes zero-area pole triangles and asserts equal face counts. The private fixed mesh initializer does not expose arbitrary imported topology."
+    },
+    {
+      "id": "test_source_inventory",
+      "result": "reviewed_not_executed",
+      "paths": [
+        "Tests/LightingCoreTests/PortraitHeadMeshTests.swift"
+      ],
+      "methods": [
+        "testBVHMatchesIndependentOracleAcrossExteriorViewsAndMisses",
+        "testSeamPolesSharedEdgesAndNearGrazingRaysMatchOracle",
+        "testInteriorOriginsReturnNearestExitWithOutwardUnitNormals",
+        "testFiniteSegmentsStopAtTheLightAndUseHalfOpenIntervals",
+        "testCoincidentSilhouetteFacesKeepExactSegmentEndpoints"
+      ],
+      "details": "Reviewed assertions for the declared 210 exterior rays, 63 seam/pole/edge/grazing rays, 12 interior rays and 15 finite-segment cases. Counts describe test code only; no passing runtime result is claimed."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host was unavailable. No shell scripts, Swift tests, builds, renderers, benchmarks or native/device runs were executed.",
+    "Remote source and recursive tree were read at the exact assigned revision; local branch, worktree status and uncommitted changes could not be inspected.",
+    "Review is bounded static analysis and does not prove all numerical inputs, photographic fidelity, visual acceptance or milestone acceptance.",
+    "Rendering width, camera framing and photometry were excluded as assigned. The render-level exact-silhouette test was not separately re-reviewed for those excluded concerns.",
+    "The test oracle independently checks intersection/traversal while sharing prescribed mesh vertices and topology; the topology conclusion here additionally relies on direct source inspection."
+  ],
+  "changes": {
+    "source": false,
+    "tests": false,
+    "trees": false,
+    "refs": false,
+    "report_only": "unreferenced Git blob"
+  },
+  "conclusion": "No must-fix defect identified in the assigned source/test scope at the pinned revision.",
+  "status": "complete"
+}

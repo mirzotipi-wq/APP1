@@ -1,0 +1,130 @@
+{
+  "worker": "w031",
+  "context_path": "/root/w007_review_coordinator/w031_surface_clipping_contract",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Source/test review of diagnostic rectangular-emitter partial-positive-incidence clipping, separation safety and bounded quadrature. Study production sampling excluded.",
+  "actual_files": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/SurfacePhotometryTests.swift",
+      "blob_sha": "f5a69c08d79dc4ccc08664408f3db16e7b6a5350",
+      "read": "GitHub fetch_file at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/GrazingStudyContinuityTests.swift",
+      "blob_sha": "027f0db479b89b055977ea3fc07e6aa74439117c",
+      "read": "GitHub fetch_file at base_sha"
+    }
+  ],
+  "checks": [
+    {
+      "name": "startup and acceptance",
+      "method": "Read repository startup documents and m02-m03-code-v2 contract remotely",
+      "result": "Review respects declared numerical-reference tolerance, unchanged test thresholds, and distinction between source inspection and runtime acceptance."
+    },
+    {
+      "name": "positive-incidence region",
+      "method": "Symbolic inspection of affine incidence nx*x + ny*y - offset and rectangle half-plane clipping",
+      "result": "Strict sign changes create intersections; boundary vertices carry zero contribution; wholly nonpositive faces return zero; wholly nonnegative faces retain the original 32x32 midpoint branch."
+    },
+    {
+      "name": "quadrature and work bound",
+      "method": "Inspect convex polygon fan, Duffy map, Jacobian and integrand dimensions",
+      "result": "One half-plane clips a rectangle to at most five vertices and hence three triangles. Fixed 12x12 quadrature gives at most 432 partial-face evaluations. Positive barycentric vertex interpolation avoids signed-projection cancellation inside the clipped sliver. Integrand depth*incidence/r^4 times on-axis candela/area is consistent with the stated Lambertian irradiance model."
+    },
+    {
+      "name": "separation and finite domain",
+      "method": "Trace LambertianRectangle validation, Position bounds, UnitDirection normalization, receiver plane guard and return order",
+      "result": "Finite bounded coordinates, dimensions and intensity precede evaluation. abs(depth) must be at least max(0.05, longestSide/4), even for zero output and backfaces; supported backfaces then return zero. Near-plane inputs abstain."
+    },
+    {
+      "name": "diagnostic regressions",
+      "method": "Read SurfacePhotometryTests.swift",
+      "result": "Existing tests cover analytic parallel cases, independent off-axis Simpson references, narrow positive strips and corners, mirrored strips, tangent/away zero output, partial/full transition, near-plane invalidity, and far-field/intensity scaling. Numerical tests were inspected, not executed."
+    },
+    {
+      "name": "neighboring test contract",
+      "method": "Read GrazingStudyContinuityTests.swift without reviewing Study implementation",
+      "result": "Independent slice reference, retained continuity counterexample and near-field/dark distinction remain represented in source; their runtime results are outside this review."
+    },
+    {
+      "name": "frame integration",
+      "method": "Trace StudioPhotometry rectangle construction and EmitterFrame basis into diagnostic solver",
+      "result": "Caller uses validated optics and frame right/up vectors; right cross up agrees with emitting-normal convention."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Remote source-only review; no available host execution, Swift compilation, XCTest, scripts/agent_cycle.py check/next, benchmark or image review.",
+    "No fresh runtime, Debug/Release, native Metal, physical-device or milestone-acceptance claim.",
+    "Repository status, worktree changes and current branch were not inspectable through a local host; all source reads were pinned to the supplied base SHA.",
+    "Study sampling implementation was excluded; GrazingStudyContinuityTests was read only for adjacent contract context.",
+    "No source, test, tree, commit or ref changes; report upload uses only an unreferenced Git blob."
+  ],
+  "conclusion": "No must-fix defect identified in the assigned diagnostic clipping/separation/quadrature scope by source inspection.",
+  "status": "complete"
+}

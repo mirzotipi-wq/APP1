@@ -1,0 +1,116 @@
+{
+  "worker": "w049",
+  "context_path": "/root/w007_review_coordinator/w049_reality_selection_fallback",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Source/test review of RealityKit orbit/selection adapter, StudioView routing and Intel simulator fallback before RealityKit resource construction. Entity mesh transforms, AR features and already-reviewed SceneKit fit excluded.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "review_scope": "Startup/acceptance contract read"
+    },
+    {
+      "path": "App/RealityStudioPreview.swift",
+      "blob_sha": "83ec7a6992a38404359cf3bbe4211d8253de9963",
+      "review_scope": "Full source review"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "review_scope": "Preview routing, generation guards, Fit action, busy-state context"
+    },
+    {
+      "path": "NativeTests/SpatialPreviewTests.swift",
+      "blob_sha": "4475b46c379e08e4bc8509f75031d1636ce50d83",
+      "review_scope": "Test inventory and adapter coverage boundary"
+    },
+    {
+      "path": "App/SpatialPreview.swift",
+      "blob_sha": "69631a347204a89d1f6e6863ce5d0bec236efd1d",
+      "review_scope": "Fallback coordinator creation, callback refresh and selection only; fit excluded"
+    },
+    {
+      "path": "App/StudioEntityGraph.swift",
+      "blob_sha": "40fb3258161360622f5f2ac0d80d514800cf6d5c",
+      "review_scope": "Selection ID lookup/registry only; mesh transforms excluded"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Intel x86_64 simulator fallback ordering",
+      "result": "Source confirms #if targetEnvironment(simulator) && arch(x86_64) selects SpatialPreview directly, and previewNote uses the corresponding guarded branch. RealityStudioSurface.makeCoordinator and its eager StudioEntityGraph/RealityKit resources are not reached through this route."
+    },
+    {
+      "check": "Selection freshness and project isolation",
+      "result": "Reality coordinator refreshes onSelect on every update, validates currentScene, resolves a hit through the current light-root registry, and checks currentScene membership. StudioView verifies current library generation and live UUID membership; .id(generation) replaces the adapter at project-generation changes. Removed light roots are dropped from the lookup map. Fallback also refreshes its callback before the update early return and verifies live light membership."
+    },
+    {
+      "check": "Orbit state and gesture lifecycle",
+      "result": "Orbit/pan/zoom use incremental finite gesture values and bounded pitch, target and distance. Ordinary scene or selection updates retain orbit; changed fitRequest sets needsFit. Rendering attaches only for active window state; detach clears callbacks, targets, gestures and anchors. Gesture gate rejects invalid scenes and VoiceOver; pan/pinch alone recognize simultaneously."
+    },
+    {
+      "check": "Native test inventory",
+      "result": "SpatialPreviewTests contains three SceneKit-focused methods: translated projection fit, ordinary-edit orbit preservation/explicit Fit, and empty/extreme fit plus physical camera mode. These do not exercise the RealityKit adapter, tap selection, or the compile-time Intel routing branch. Test source was reviewed, not executed."
+    },
+    {
+      "check": "Startup and acceptance",
+      "result": "AGENTS, all named startup documents and m02-m03-code-v2 acceptance contract read remotely at the fixed base SHA. M03 remains active in checked state; source review does not establish native/UI acceptance."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable; no scripts, builds, tests, UI gestures, simulator rendering or device execution performed.",
+    "No runtime pass, native/UI milestone acceptance, physical calibration, performance, platform audit or release-readiness claim.",
+    "The assigned native test file supplies no direct regression coverage for RealityKit callback/gesture lifecycle or compile-time fallback routing; runtime behavior remains unverified by this review.",
+    "Review was scoped to assigned adapter/routing concerns; mesh transforms, AR and SceneKit camera-fit correctness were deliberately excluded.",
+    "RealityStudioSurface does not read SwiftUI isEnabled while the SceneKit fallback does; the StudioView callback blocks busy-state selection, and this review did not establish a material user-visible failure from viewport gestures during busy state."
+  ],
+  "status": "complete",
+  "conclusion": "No concrete must-fix defect identified in the assigned source review. Intel fallback construction ordering and current-scene/generation selection guards are sound by inspection; missing runtime/direct adapter evidence remains explicit."
+}

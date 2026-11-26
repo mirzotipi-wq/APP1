@@ -1,0 +1,145 @@
+{
+  "worker": "w073",
+  "context_path": "/root/w007_review_coordinator/w073_project_nested_integrity",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Source-only review of nested project-document scene/room/light required members, duplicate and unknown structural members, identity and value integrity, and lossy import; outer-envelope policy, lexical/resource mechanics, and provider I/O excluded.",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "Sources/LightingCore/LightingProjectDocument.swift",
+      "blob_sha": "018ee8cf72cb4a854cbf396a54086d3536d9dc3d",
+      "inspection": "Full source read"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectDocumentNestedIntegrityTests.swift",
+      "blob_sha": "acd8a0ca086a223d2f0c8c37a4bba31940aa960a",
+      "inspection": "Full source read"
+    },
+    {
+      "path": "Sources/LightingCore/SceneCodec.swift",
+      "blob_sha": "477f03715b27d3869381779fd8d47a9f2c7c2433",
+      "inspection": "Full source read"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "inspection": "Full source read"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6",
+      "inspection": "LightOptics Codable members/isValid/effective defaults; remaining file received for context"
+    },
+    {
+      "path": "Sources/LightingCore/RoomPlacement.swift",
+      "blob_sha": "669ee6553baadf920f658de86a9d3f37adace8e3",
+      "inspection": "ManualRoom Codable members/isValid and ceiling semantics; remaining file received for context"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Required nested members",
+      "method": "Static trace of synthesized Codable model declarations",
+      "result": "Position x/y/z; LightingScene schemaVersion/subject/camera/lights; StudioLight id/name/position/candela/kelvin; LightOptics kind/widthMeters/heightMeters; ManualRoom widthMeters/depthMeters/subjectX/subjectZ/yawDegrees are nonoptional. Ordinary initializer defaults do not make these decoded required members optional. Nested present objects with missing nonoptional members fail decoding; no generated IDs or substituted required values were found."
+    },
+    {
+      "check": "Optional and legacy fields",
+      "method": "Static trace of Scene.swift validated() and optional member declarations",
+      "result": "Absent/null optics, cameraLens, previewSettings, placementRoom, aimTarget, rollDegrees, and ceilingHeightMeters represent intentional model defaults. Validation rejects optics in v1, a lens before v3, preview settings before v4, and measured-room/roll values before v5. Successful v1-v4 scenes migrate only their schema version to v5."
+    },
+    {
+      "check": "Identity and numeric integrity",
+      "method": "Static trace of LightingProjectDocument.init and LightingScene.validated()",
+      "result": "Document construction validates scene values. Model requires at most 12 lights, unique decoded UUIDs, finite bounded coordinates, valid names and finite bounded light/color/optics/room values. No recognized-value truncation, light filtering, UUID regeneration, or coercive replacement was found in the import path. Lens and preview validity are delegated by LightingScene; their type definitions were not further reviewed."
+    },
+    {
+      "check": "Nested duplicate policy and test coverage",
+      "method": "Review of duplicate-policy invocation and six NestedIntegrity test methods; lexical implementation excluded",
+      "result": "Project decoding calls requireUniqueObjectKeys after model decoding. Tests assert rejection of duplicate scene/light/position/optics/lens/preview fields and escaped-equivalent names, including duplicate members inside ignored metadata; sibling reuse remains accepted. Tests also specify acceptance of unique unknown metadata and Unicode-distinct names. No execution was performed."
+    },
+    {
+      "check": "Current-encoder value round trip",
+      "method": "Static review of encoder/model property symmetry and canonical round-trip assertions",
+      "result": "Envelope encoding writes LightingScene through Codable, retaining its recognized optional settings and light identities. No valid current-encoder document losing recognized scene/room/light values was identified. Existing nested tests assert canonical scene round trip for multiple named rectangular lights, but this worker did not run those tests."
+    },
+    {
+      "check": "Unknown nested names",
+      "method": "Compare outer-envelope closure with nested Codable behavior and metadata acceptance tests",
+      "result": "Outer closure is explicitly scoped to the envelope. Nested synthesized Codable accepts unique unknown names. Tests deliberately accept/discard nested metadata. No inspected contract requires rejecting all unknown nested structural names; permissiveness alone is therefore not classified as a defect."
+    }
+  ],
+  "findings": [],
+  "observations": [
+    {
+      "id": "w073-observation-unknown-optional-fields",
+      "severity": "informational",
+      "case": "In an otherwise valid schema-v5 scene, renaming light optics to optic, placementRoom to placementRooms, or ceilingHeightMeters to ceilingHeightMeter leaves the recognized optional member absent. Synthesized decoding ignores the unknown member, giving the documented nil/default semantics.",
+      "assessment": "Source-derived behavior, not a runtime reproduction. This does not demonstrate loss of recognized fields emitted by the current encoder. The repository explicitly tests unknown-metadata compatibility and no inspected specification requires a closed nested schema. An initial P1 hypothesis was withdrawn after coordinator challenge.",
+      "possible_followup": "If future product requirements demand typo rejection for editable external files, define an explicit nested schema/extension policy and add tests before tightening import; avoid accidentally changing legacy SceneCodec compatibility."
+    }
+  ],
+  "limitations": [
+    "Host/toolchain unavailable as assigned; no Swift, native, UI, scripts/agent_cycle.py check/next, filesystem or provider tests were run.",
+    "Repository status, recent commits, open work and CI were not inspected by this narrow worker; all source reads used the assigned immutable commit.",
+    "Top-level envelope semantics, lexical/resource parser mechanics, provider I/O, and general rendering behavior are outside scope.",
+    "Four guessed related paths returned 404 before tree discovery: Sources/LightingCore/LightingScene.swift, Light.swift, LightOptics.swift, RoomSettings.swift. Actual Scene.swift, StudioOptics.swift and RoomPlacement.swift were subsequently fetched and inspected.",
+    "No source, tree, commit, branch or reference changes were made; the sole authorized write is this unreferenced report blob."
+  ],
+  "conclusion": "No concrete must-fix defect found within the assigned nested-integrity source-review scope. Unknown optional-name typo behavior is an explicit uncertainty/hardening observation, not a confirmed contract violation.",
+  "status": "complete"
+}

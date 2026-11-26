@@ -1,0 +1,3144 @@
+{
+  "schemaVersion": 1,
+  "worker": "worker059",
+  "workerNumber": 59,
+  "context_path": "/root/w007_review_coordinator/w059_core_ci_numerics_probes",
+  "assignment": "Completed core CI numerical, benchmark and Linux persistence evidence reconciliation",
+  "repository": "mirzotipi-wq/APP1",
+  "baseRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "acceptanceContract": "m02-m03-code-v2",
+  "status": "complete",
+  "reviewOutcome": "pass_with_explicit_scope_limits",
+  "conclusion": "The completed core job supports all six shared-kernel numerical fixtures, the eight invoked far-camera/world-translation precision fixtures, the complete optimized host benchmark matrix, and actual Linux EFBIG plus before/after-rename and rename-EIO persistence probes at 75e827f2. No contradictory result was found inside this review scope. This report does not complete native/UI acceptance or certify Metal/device execution.",
+  "executionDisclosure": {
+    "workerExecutedRuntimeTests": false,
+    "workerTriggeredCI": false,
+    "workerCreatedChildren": false,
+    "sourceTreeOrRefMutations": false,
+    "onlyAuthorizedWrite": "One unreferenced GitHub JSON report blob",
+    "observedEvidence": "Independently fetched completed GitHub job decoded logs, run job metadata, artifact metadata, and pinned source files; parsed data and recomputed summary statistics without rerunning application code."
+  },
+  "provenance": {
+    "runID": 45751931160,
+    "jobID": 139681507425,
+    "jobName": "core",
+    "runURL": "https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160",
+    "jobURL": "https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160/job/139681507425",
+    "jobMetadata": {
+      "id": 139681507425,
+      "name": "core",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 45751931160,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Record portable environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Verify agent state and native source syntax",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Portable debug tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Portable release tests",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Verify atomic write failure and commit interruption on Linux",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Upload Linux atomic library write evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8
+        },
+        {
+          "name": "Render portable reference study images",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Verify bounded Study performance workloads",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10
+        },
+        {
+          "name": "Compare shared Float32 kernel math against Swift CPU oracle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Verify far-camera Float32 precision regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27
+        }
+      ]
+    },
+    "decodedLogsTool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+    "decodedLogsToolArguments": {
+      "repo_full_name": "mirzotipi-wq/APP1",
+      "job_id": 139681507425
+    },
+    "decodedLogsCharacters": 411502,
+    "decodedLogsLines": 3795,
+    "decodedLogsUTF8Bytes": 411612,
+    "decodedLogsUTF8SHA256": "dfc6b7e5f0938876156d73bf140192fa4165af76827b73531a0099aa4447f356",
+    "logHashScope": "Exact UTF-8 re-encoding of connector decoded log content, including initial BOM and final newline; not the archive byte hash.",
+    "sourceCheckoutEvidence": [
+      "2026-11-26T03:55:27.5563967Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +75e827f2ee3f99798d619aff62f3a5188b509428:refs/remotes/origin/main",
+      "2026-11-26T03:55:28.9239105Z From https://github.com/mirzotipi-wq/APP1",
+      "2026-11-26T03:55:28.9239832Z  * [new ref]         75e827f2ee3f99798d619aff62f3a5188b509428 -> origin/main",
+      "2026-11-26T03:55:28.9263321Z ##[endgroup]",
+      "2026-11-26T03:55:28.9264249Z ##[group]Determining the checkout info",
+      "2026-11-26T03:55:28.9264723Z ##[endgroup]",
+      "2026-11-26T03:55:28.9265054Z [command]/usr/bin/git sparse-checkout disable",
+      "2026-11-26T03:55:28.9307405Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig",
+      "2026-11-26T03:55:28.9331632Z ##[group]Checking out the ref",
+      "2026-11-26T03:55:28.9334995Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main",
+      "2026-11-26T03:55:29.1412642Z Switched to a new branch 'main'",
+      "2026-11-26T03:55:29.1418705Z branch 'main' set up to track 'origin/main'.",
+      "2026-11-26T03:55:29.1429190Z ##[endgroup]",
+      "2026-11-26T03:55:29.1468180Z [command]/usr/bin/git log -1 --format=%H",
+      "2026-11-26T03:55:29.1487796Z 75e827f2ee3f99798d619aff62f3a5188b509428"
+    ],
+    "environmentEvidence": [
+      "2026-11-26T03:55:29.3423978Z ##[endgroup]",
+      "2026-11-26T03:55:29.3506914Z Linux ip-10-0-129-138 7.0.0-1014-aws #14~24.04.1-Ubuntu SMP PREEMPT Fri Sep 18 21:24:59 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux",
+      "2026-11-26T03:55:29.3515060Z PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"",
+      "2026-11-26T03:55:29.3515442Z NAME=\"Ubuntu\"",
+      "2026-11-26T03:55:29.3515779Z VERSION_ID=\"24.04\"",
+      "2026-11-26T03:55:29.3516102Z VERSION=\"24.04.5 LTS (Noble Numbat)\"",
+      "2026-11-26T03:55:29.3516602Z VERSION_CODENAME=noble",
+      "2026-11-26T03:55:29.3516832Z ID=ubuntu",
+      "2026-11-26T03:55:29.3517024Z ID_LIKE=debian",
+      "2026-11-26T03:55:29.3517346Z HOME_URL=\"https://www.ubuntu.com/\"",
+      "2026-11-26T03:55:29.3517622Z SUPPORT_URL=\"https://help.ubuntu.com/\"",
+      "2026-11-26T03:55:29.3517969Z BUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"",
+      "2026-11-26T03:55:29.3518391Z PRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"",
+      "2026-11-26T03:55:29.3518757Z UBUNTU_CODENAME=noble",
+      "2026-11-26T03:55:29.3519055Z LOGO=ubuntu-logo",
+      "2026-11-26T03:55:42.9475811Z Swift version 6.4.2 (swift-6.4.2-RELEASE)",
+      "2026-11-26T03:55:42.9476401Z Target: x86_64-unknown-linux-gnu",
+      "2026-11-26T03:55:42.9988284Z Python 3.12.3",
+      "2026-11-26T03:55:42.9998808Z 75e827f2ee3f99798d619aff62f3a5188b509428"
+    ],
+    "sourceFiles": [
+      {
+        "path": "scripts/benchmark-study.swift",
+        "blobSHA": "7d2bbba92ac97fcead6ff09a06672ae790e30f28",
+        "contentSHA256": "e3fbbcea0e5b02bfb105298045b69d1727e26f7104765904d715484c471a3a9f",
+        "contentBytes": 15094,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/benchmark-study.swift",
+        "declaredSHA256": null,
+        "matchesDeclaredSHA256": null
+      },
+      {
+        "path": "scripts/prepare-kernel-fixtures.swift",
+        "blobSHA": "be419f64796e72d0523099ca783d0e15d490a293",
+        "contentSHA256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+        "contentBytes": 1866,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/prepare-kernel-fixtures.swift",
+        "declaredSHA256": null,
+        "matchesDeclaredSHA256": null
+      },
+      {
+        "path": "scripts/verify-kernel-host.cpp",
+        "blobSHA": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6",
+        "contentSHA256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+        "contentBytes": 5297,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/verify-kernel-host.cpp",
+        "declaredSHA256": null,
+        "matchesDeclaredSHA256": null
+      },
+      {
+        "path": "scripts/precision-boundary.swift",
+        "blobSHA": "a8260cc021ea45aab5d1649ed8283e36a807e0ae",
+        "contentSHA256": "9125dca07db18c9cf4f029216b1264456e729590ceec7f32de41026d3ca68b45",
+        "contentBytes": 7722,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/precision-boundary.swift",
+        "declaredSHA256": null,
+        "matchesDeclaredSHA256": null
+      },
+      {
+        "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+        "blobSHA": "555677e7baf0931b6c629b635f617a9cc2356800",
+        "contentSHA256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+        "contentBytes": 4323,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/Sources/LightingCore/StudyValidationFixtures.swift",
+        "declaredSHA256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+        "matchesDeclaredSHA256": true
+      },
+      {
+        "path": "scripts/run_atomic_library_write_probe.py",
+        "blobSHA": "534c876610e5e5682558ba6b84dc0a7fb9b275ef",
+        "contentSHA256": "e2ab6c8eafef4ec3634aaf1dc0391a554b4a59abce6af1e5843961a1f55c021a",
+        "contentBytes": 22678,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/run_atomic_library_write_probe.py",
+        "declaredSHA256": "e2ab6c8eafef4ec3634aaf1dc0391a554b4a59abce6af1e5843961a1f55c021a",
+        "matchesDeclaredSHA256": true
+      },
+      {
+        "path": "scripts/probe_atomic_library_write.py",
+        "blobSHA": "34f825d3ce1bbdbfc866b52ba89fd30ec0254730",
+        "contentSHA256": "de458619bfb13f18cefa32517a37276c003a4b4340cd42c10735374a962d02cb",
+        "contentBytes": 12700,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/probe_atomic_library_write.py",
+        "declaredSHA256": "de458619bfb13f18cefa32517a37276c003a4b4340cd42c10735374a962d02cb",
+        "matchesDeclaredSHA256": true
+      },
+      {
+        "path": "scripts/probe_library_commit_interruption.py",
+        "blobSHA": "9149f26bc08089af96886e2583168a8295de7efa",
+        "contentSHA256": "a1d5344fded8681209d39c6723a8a20d25b3b31966eedef03ad1ca160feabd1b",
+        "contentBytes": 26936,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/probe_library_commit_interruption.py",
+        "declaredSHA256": "a1d5344fded8681209d39c6723a8a20d25b3b31966eedef03ad1ca160feabd1b",
+        "matchesDeclaredSHA256": true
+      },
+      {
+        "path": "scripts/probe-atomic-library-write.swift",
+        "blobSHA": "4eadb41b2801bffab2c4abf73644125c01742b65",
+        "contentSHA256": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18",
+        "contentBytes": 14099,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/probe-atomic-library-write.swift",
+        "declaredSHA256": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18",
+        "matchesDeclaredSHA256": true
+      },
+      {
+        "path": "scripts/probe-library-commit-interposer.c",
+        "blobSHA": "01c1936cd613ca1451553ed331c883de29f6d7f5",
+        "contentSHA256": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a",
+        "contentBytes": 9281,
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/scripts/probe-library-commit-interposer.c",
+        "declaredSHA256": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a",
+        "matchesDeclaredSHA256": true
+      },
+      {
+        "path": "Sources/LightingCore/ReferenceStudy.swift",
+        "blobSHA": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/Sources/LightingCore/ReferenceStudy.swift",
+        "scope": "StudyImage stored RGBA and unsupported mask; synthesized Equatable"
+      },
+      {
+        "path": "Sources/LightingCore/ProjectLibrary.swift",
+        "blobSHA": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/Sources/LightingCore/ProjectLibrary.swift",
+        "scope": "ProjectLibraryFileStore save/replacing and production .atomic write path"
+      }
+    ],
+    "startupAndContractDocs": [
+      {
+        "path": "AGENTS.md",
+        "blobSHA": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/AGENTS.md"
+      },
+      {
+        "path": "agents/OPERATING_PROTOCOL.md",
+        "blobSHA": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/OPERATING_PROTOCOL.md"
+      },
+      {
+        "path": "agents/HANDOFF.md",
+        "blobSHA": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/HANDOFF.md"
+      },
+      {
+        "path": "agents/state.json",
+        "blobSHA": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/agents/state.json"
+      },
+      {
+        "path": "docs/PRODUCT.md",
+        "blobSHA": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/PRODUCT.md"
+      },
+      {
+        "path": "docs/ARCHITECTURE.md",
+        "blobSHA": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/ARCHITECTURE.md"
+      },
+      {
+        "path": "docs/ROADMAP.md",
+        "blobSHA": "3e7dd3525c070e76838e20ef5e6529f534130639",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/ROADMAP.md"
+      },
+      {
+        "path": "docs/QUALITY.md",
+        "blobSHA": "203c646d5cef679495eee2c30fed8dddf900317c",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/QUALITY.md"
+      },
+      {
+        "path": "docs/DESIGN.md",
+        "blobSHA": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/DESIGN.md"
+      },
+      {
+        "path": "docs/acceptance/m02-m03-code.md",
+        "blobSHA": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+        "url": "https://github.com/mirzotipi-wq/APP1/blob/75e827f2ee3f99798d619aff62f3a5188b509428/docs/acceptance/m02-m03-code.md"
+      }
+    ],
+    "artifactMetadata": [
+      {
+        "id": 15086245928,
+        "name": "atomic-library-write-linux-evidence",
+        "size_in_bytes": 154417,
+        "url": "https://api.github.com/repos/mirzotipi-wq/APP1/actions/artifacts/15086245928",
+        "archive_download_url": "https://api.github.com/repos/mirzotipi-wq/APP1/actions/artifacts/15086245928/zip",
+        "expired": false,
+        "created_at": "2026-11-26T03:57:42Z",
+        "expires_at": "2027-02-24T03:55:18Z",
+        "updated_at": "2026-11-26T03:57:42Z",
+        "digest": "sha256:57e3c59b144c855b9cb321661eaacc8b627f98562dcf3fe479e125aa3c406f4b",
+        "workflow_run": {
+          "id": 45751931160,
+          "repository_id": 1469230046,
+          "head_repository_id": 1469230046,
+          "head_branch": "main",
+          "head_sha": "75e827f2ee3f99798d619aff62f3a5188b509428"
+        },
+        "webURL": "https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160/artifacts/15086245928",
+        "uploadDigestAppearsInLog": true
+      },
+      {
+        "id": 15085818285,
+        "name": "core-test-log",
+        "size_in_bytes": 97134,
+        "url": "https://api.github.com/repos/mirzotipi-wq/APP1/actions/artifacts/15085818285",
+        "archive_download_url": "https://api.github.com/repos/mirzotipi-wq/APP1/actions/artifacts/15085818285/zip",
+        "expired": false,
+        "created_at": "2026-11-26T03:59:11Z",
+        "expires_at": "2027-02-24T03:55:18Z",
+        "updated_at": "2026-11-26T03:59:11Z",
+        "digest": "sha256:e85af649b1812e1ff792a3f0fe3cddeb2f27e3776f32b5d32f622fa840c85085",
+        "workflow_run": {
+          "id": 45751931160,
+          "repository_id": 1469230046,
+          "head_repository_id": 1469230046,
+          "head_branch": "main",
+          "head_sha": "75e827f2ee3f99798d619aff62f3a5188b509428"
+        },
+        "webURL": "https://github.com/mirzotipi-wq/APP1/actions/runs/45751931160/artifacts/15085818285",
+        "uploadDigestAppearsInLog": true
+      }
+    ],
+    "artifactInspectionLimit": "Artifact inventory, head revision, size and digest independently fetched and matched to upload logs. ZIP payloads were not downloaded or independently rehashed; evidence here is the complete decoded stdout JSON and fixture result lines.",
+    "jsonBlockProvenance": [
+      {
+        "startLine": 2038,
+        "endLine": 2256,
+        "probe": "project_library_atomic_write_EFBIG",
+        "rawDecodedJSONSHA256": "c51a5aa316dc7d95d93c7cf4892d1014ab08634ad5a4ca4be454bf62cb76d87e"
+      },
+      {
+        "startLine": 2258,
+        "endLine": 2913,
+        "probe": "project_library_commit_boundaries_linux",
+        "rawDecodedJSONSHA256": "8914e0dcf5cf32990077c6d41958d9e10dff3405b4eba17b48fb977b9084c600"
+      },
+      {
+        "startLine": 3003,
+        "endLine": 3625,
+        "probe": "wrapper",
+        "rawDecodedJSONSHA256": "3b5a904851597d7f5a61e6eda4863d33a7cd13733cc1b611c0750c92246c45d2"
+      }
+    ]
+  },
+  "host": {
+    "operatingSystem": "Ubuntu 24.04.5 LTS",
+    "kernel": "Linux 7.0.0-1014-aws",
+    "machine": "x86_64",
+    "cpuModel": "Intel(R) Xeon(R) 6975P-C",
+    "reportedProcessors": 4,
+    "reportedActiveProcessors": 4,
+    "swiftCompiler": "Swift version 6.4.2 (swift-6.4.2-RELEASE)",
+    "swiftTarget": "x86_64-unknown-linux-gnu",
+    "swiftCompilerPathObservedInPersistenceWrapper": "/usr/local/bin/swiftc",
+    "python": "3.12.3",
+    "sharedKernelCompilerInvocation": "clang++ -std=c++17 -O2 -Wall -Wextra -Werror scripts/verify-kernel-host.cpp -o \"$RUNNER_TEMP/verify-kernel-host\"",
+    "sharedKernelCompilerVersion": "Not emitted by this completed job; no version inferred from runner image",
+    "persistenceCCompiler": {
+      "path": "/usr/bin/cc",
+      "resolvedPath": "/usr/bin/x86_64-linux-gnu-gcc-13",
+      "version": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+    },
+    "filesystem": {
+      "type": "ext4",
+      "source": "/dev/mapper/cow-root",
+      "mountPoint": "/",
+      "deviceMajorMinor": "252:0",
+      "observedTargetCount": 9
+    }
+  },
+  "checks": [
+    {
+      "id": "core_job_completed_success",
+      "passed": true
+    },
+    {
+      "id": "shared_fixture_set_and_thresholds",
+      "passed": true
+    },
+    {
+      "id": "precision_eight_selected_maximum_one_and_masks",
+      "passed": true
+    },
+    {
+      "id": "benchmark_eight_twelve_four",
+      "passed": true
+    },
+    {
+      "id": "benchmark_seven_samples_and_recomputed_percentiles",
+      "passed": true
+    },
+    {
+      "id": "benchmark_all_frames_supported",
+      "passed": true
+    },
+    {
+      "id": "benchmark_cancellation_observed_and_deadlines_consistent",
+      "passed": true
+    },
+    {
+      "id": "efbig_all_checks_and_matching_prior_control_hashes",
+      "passed": true
+    },
+    {
+      "id": "commit_three_modes_and_expected_preservation",
+      "passed": true
+    },
+    {
+      "id": "source_revision_and_helper_provenance_consistent",
+      "passed": true
+    },
+    {
+      "id": "directly_fetched_declared_source_hashes_match",
+      "passed": true,
+      "directComparisonCount": 6
+    },
+    {
+      "id": "filesystem_receipts_ext4_nine_targets",
+      "passed": true
+    },
+    {
+      "id": "probe_source_binary_diagnostic_cleanup_receipts",
+      "passed": true
+    },
+    {
+      "id": "artifact_head_and_upload_receipts_consistent",
+      "passed": true
+    }
+  ],
+  "sharedKernel": {
+    "scope": "Host C++ harness includes App/StudyKernel.h and compares against shipped Double Swift renderer inputs, at 96x64.",
+    "commandsAndOutcomeLog": [
+      "2026-11-26T03:58:27.0933116Z ##[group]Run set -euo pipefail",
+      "2026-11-26T03:58:27.0933379Z \u001b[36;1mset -euo pipefail\u001b[0m",
+      "2026-11-26T03:58:27.0933985Z \u001b[36;1mswiftc -O Sources/LightingCore/*.swift scripts/prepare-kernel-fixtures.swift -o \"$RUNNER_TEMP/prepare-kernel-fixtures\"\u001b[0m",
+      "2026-11-26T03:58:27.0934497Z \u001b[36;1m\"$RUNNER_TEMP/prepare-kernel-fixtures\" \"$RUNNER_TEMP/kernel-fixtures\"\u001b[0m",
+      "2026-11-26T03:58:27.0934968Z \u001b[36;1mclang++ -std=c++17 -O2 -Wall -Wextra -Werror scripts/verify-kernel-host.cpp -o \"$RUNNER_TEMP/verify-kernel-host\"\u001b[0m",
+      "2026-11-26T03:58:27.0935490Z \u001b[36;1m\"$RUNNER_TEMP/verify-kernel-host\" \"$RUNNER_TEMP\"/kernel-fixtures/*.bin | tee study-kernel.log\u001b[0m",
+      "2026-11-26T03:58:27.0961486Z shell: /usr/bin/bash -e {0}",
+      "2026-11-26T03:58:27.0961701Z ##[endgroup]",
+      "2026-11-26T03:58:50.9501523Z /home/runner/work/_temp/kernel-fixtures/dark.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+      "2026-11-26T03:58:50.9502549Z /home/runner/work/_temp/kernel-fixtures/hard.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+      "2026-11-26T03:58:50.9503366Z /home/runner/work/_temp/kernel-fixtures/near-field.bin: mean=0, max=0, >4 fraction=0, invalid=84/84, invalid-mask-mismatches=0, PASS",
+      "2026-11-26T03:58:50.9504315Z /home/runner/work/_temp/kernel-fixtures/soft.bin: mean=5.42535e-05, max=1, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+      "2026-11-26T03:58:50.9504996Z /home/runner/work/_temp/kernel-fixtures/translated.bin: mean=5.42535e-05, max=1, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+      "2026-11-26T03:58:50.9505793Z /home/runner/work/_temp/kernel-fixtures/warm-rotated.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS"
+    ],
+    "acceptance": {
+      "meanChannelErrorMaximum": 1,
+      "fractionAboveFourMaximum": 0.005,
+      "invalidCountsMustMatch": true,
+      "everyInvalidMaskPositionMustMatch": true,
+      "defaultHarnessMaximumAllowedChannelError": 255,
+      "note": "Maximum error is reported; the six-case parity contract does not impose the precision suite's maximum-one requirement."
+    },
+    "fixtures": [
+      {
+        "logLine": 3718,
+        "fixture": "dark",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 0,
+        "invalidExpected": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:58:50.9501523Z /home/runner/work/_temp/kernel-fixtures/dark.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS"
+      },
+      {
+        "logLine": 3719,
+        "fixture": "hard",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 0,
+        "invalidExpected": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:58:50.9502549Z /home/runner/work/_temp/kernel-fixtures/hard.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS"
+      },
+      {
+        "logLine": 3720,
+        "fixture": "near-field",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 84,
+        "invalidExpected": 84,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:58:50.9503366Z /home/runner/work/_temp/kernel-fixtures/near-field.bin: mean=0, max=0, >4 fraction=0, invalid=84/84, invalid-mask-mismatches=0, PASS"
+      },
+      {
+        "logLine": 3721,
+        "fixture": "soft",
+        "meanChannelError": 0.0000542535,
+        "maximumChannelError": 1,
+        "fractionAboveFour": 0,
+        "invalidActual": 0,
+        "invalidExpected": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:58:50.9504315Z /home/runner/work/_temp/kernel-fixtures/soft.bin: mean=5.42535e-05, max=1, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS"
+      },
+      {
+        "logLine": 3722,
+        "fixture": "translated",
+        "meanChannelError": 0.0000542535,
+        "maximumChannelError": 1,
+        "fractionAboveFour": 0,
+        "invalidActual": 0,
+        "invalidExpected": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:58:50.9504996Z /home/runner/work/_temp/kernel-fixtures/translated.bin: mean=5.42535e-05, max=1, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS"
+      },
+      {
+        "logLine": 3723,
+        "fixture": "warm-rotated",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 0,
+        "invalidExpected": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:58:50.9505793Z /home/runner/work/_temp/kernel-fixtures/warm-rotated.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS"
+      }
+    ],
+    "summary": {
+      "fixtureCount": 6,
+      "allPass": true,
+      "largestObservedMeanChannelError": 0.0000542535,
+      "largestObservedMaximumChannelError": 1,
+      "allFractionAboveFour": 0,
+      "allInvalidMaskMismatches": 0,
+      "nearFieldUnsupportedPixels": 84
+    },
+    "interpretation": "Near-field deliberately contains 84 unsupported pixels in both oracle and candidate, with exact positions. This does not violate the distinct twelve-image zero-unsupported-pixel requirement reviewed by worker058."
+  },
+  "precision": {
+    "scope": "Selected area-camera-* and world-translation-* host fixtures at 192x128.",
+    "commandsAndOutcomeLog": [
+      "2026-11-26T03:58:50.9535187Z ##[group]Run set -euo pipefail",
+      "2026-11-26T03:58:50.9535465Z \u001b[36;1mset -euo pipefail\u001b[0m",
+      "2026-11-26T03:58:50.9535865Z \u001b[36;1mswiftc -O Sources/LightingCore/*.swift scripts/precision-boundary.swift -o \"$RUNNER_TEMP/prepare-precision-boundary\"\u001b[0m",
+      "2026-11-26T03:58:50.9536377Z \u001b[36;1m\"$RUNNER_TEMP/prepare-precision-boundary\" \"$RUNNER_TEMP/precision-boundary\"\u001b[0m",
+      "2026-11-26T03:58:50.9536754Z \u001b[36;1m\"$RUNNER_TEMP/verify-kernel-host\" --maximum-channel-error 1 \\\u001b[0m",
+      "2026-11-26T03:58:50.9537070Z \u001b[36;1m  \"$RUNNER_TEMP\"/precision-boundary/area-camera-*.bin \\\u001b[0m",
+      "2026-11-26T03:58:50.9537432Z \u001b[36;1m  \"$RUNNER_TEMP\"/precision-boundary/world-translation-*.bin | tee study-precision.log\u001b[0m",
+      "2026-11-26T03:58:50.9565709Z shell: /usr/bin/bash -e {0}",
+      "2026-11-26T03:58:50.9565922Z ##[endgroup]",
+      "2026-11-26T03:59:11.1012346Z Prepared 33 held-out fixtures using Double images and actual Float32 compute buffers",
+      "2026-11-26T03:59:11.1356074Z /home/runner/work/_temp/precision-boundary/area-camera-19.0-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=49/49, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1357266Z /home/runner/work/_temp/precision-boundary/area-camera-19.0-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=9/9, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1358012Z /home/runner/work/_temp/precision-boundary/area-camera-19.999999-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1359027Z /home/runner/work/_temp/precision-boundary/area-camera-19.999999-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=13/13, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1359922Z /home/runner/work/_temp/precision-boundary/area-camera-20.0-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1360743Z /home/runner/work/_temp/precision-boundary/area-camera-20.0-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=13/13, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1361445Z /home/runner/work/_temp/precision-boundary/world-translation--77.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS",
+      "2026-11-26T03:59:11.1362157Z /home/runner/work/_temp/precision-boundary/world-translation-77.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS"
+    ],
+    "generatorPreparedFixtures": 33,
+    "invokedFixtures": 8,
+    "uninvokedGeneratedFixtures": 25,
+    "acceptance": {
+      "maximumChannelError": 1,
+      "meanChannelErrorMaximum": 1,
+      "fractionAboveFourMaximum": 0.005,
+      "invalidCountsMustMatch": true,
+      "everyInvalidMaskPositionMustMatch": true
+    },
+    "fixtures": [
+      {
+        "logLine": 3734,
+        "fixture": "area-camera-19.0-lens-200",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 49,
+        "invalidExpected": 49,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1356074Z /home/runner/work/_temp/precision-boundary/area-camera-19.0-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=49/49, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3735,
+        "fixture": "area-camera-19.0-lens-85",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 9,
+        "invalidExpected": 9,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1357266Z /home/runner/work/_temp/precision-boundary/area-camera-19.0-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=9/9, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3736,
+        "fixture": "area-camera-19.999999-lens-200",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 19,
+        "invalidExpected": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1358012Z /home/runner/work/_temp/precision-boundary/area-camera-19.999999-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3737,
+        "fixture": "area-camera-19.999999-lens-85",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 13,
+        "invalidExpected": 13,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1359027Z /home/runner/work/_temp/precision-boundary/area-camera-19.999999-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=13/13, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3738,
+        "fixture": "area-camera-20.0-lens-200",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 19,
+        "invalidExpected": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1359922Z /home/runner/work/_temp/precision-boundary/area-camera-20.0-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3739,
+        "fixture": "area-camera-20.0-lens-85",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 13,
+        "invalidExpected": 13,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1360743Z /home/runner/work/_temp/precision-boundary/area-camera-20.0-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=13/13, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3740,
+        "fixture": "world-translation--77",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 19,
+        "invalidExpected": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1361445Z /home/runner/work/_temp/precision-boundary/world-translation--77.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS"
+      },
+      {
+        "logLine": 3741,
+        "fixture": "world-translation-77",
+        "meanChannelError": 0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0,
+        "invalidActual": 19,
+        "invalidExpected": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "result": "PASS",
+        "rawLine": "2026-11-26T03:59:11.1362157Z /home/runner/work/_temp/precision-boundary/world-translation-77.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS"
+      }
+    ],
+    "summary": {
+      "allPass": true,
+      "allObservedMeanChannelError": 0,
+      "allObservedMaximumChannelError": 0,
+      "allFractionAboveFour": 0,
+      "allInvalidMaskMismatches": 0
+    },
+    "interpretation": "Only the eight fixtures named by the two invoked globs are certified by these comparison lines. The other 25 generated fixtures are not counted as compared or passed."
+  },
+  "benchmark": {
+    "stdoutMarker": "KEYFILL_BENCHMARK",
+    "logLine": 3709,
+    "compactJSONSHA256": "2abd88b1e6c258138bfaa8f091db381d84d5bc607ec4d10b8d355445745d2625",
+    "compileAndInvocation": [
+      "2026-11-26T03:58:04.0009594Z ##[group]Run set -euo pipefail",
+      "2026-11-26T03:58:04.0009974Z \u001b[36;1mset -euo pipefail\u001b[0m",
+      "2026-11-26T03:58:04.0010503Z \u001b[36;1mswiftc -O Sources/LightingCore/*.swift scripts/benchmark-study.swift -o \"$RUNNER_TEMP/benchmark-study\"\u001b[0m",
+      "2026-11-26T03:58:04.0011292Z \u001b[36;1m\"$RUNNER_TEMP/benchmark-study\" --samples 7 --revision \"$GITHUB_SHA\" > study-benchmark.json\u001b[0m",
+      "2026-11-26T03:58:04.0011779Z \u001b[36;1mpython3 - <<'PY'\u001b[0m",
+      "2026-11-26T03:58:04.0012039Z \u001b[36;1mimport json, math\u001b[0m",
+      "2026-11-26T03:58:04.0012338Z \u001b[36;1mreport = json.load(open(\"study-benchmark.json\"))\u001b[0m",
+      "2026-11-26T03:58:04.0012703Z \u001b[36;1massert report[\"optimizedBuild\"] is True\u001b[0m",
+      "2026-11-26T03:58:04.0013082Z \u001b[36;1massert report[\"measuredSamplesPerWorkload\"] >= 7\u001b[0m",
+      "2026-11-26T03:58:04.0013424Z \u001b[36;1massert len(report[\"frames\"]) == 8\u001b[0m",
+      "2026-11-26T03:58:04.0014655Z \u001b[36;1massert len(report[\"cancellation\"]) == 12\u001b[0m",
+      "2026-11-26T03:58:04.0014971Z \u001b[36;1massert len(report[\"visibility\"]) == 4\u001b[0m",
+      "2026-11-26T03:58:04.0015435Z \u001b[36;1massert all(f[\"unsupportedPixels\"] == 0 for f in report[\"frames\"])\u001b[0m",
+      "2026-11-26T03:58:04.0015938Z \u001b[36;1massert all(c[\"cancelled\"] is True for c in report[\"cancellation\"])\u001b[0m",
+      "2026-11-26T03:58:04.0016407Z \u001b[36;1mfor workload in report[\"frames\"] + report[\"visibility\"]:\u001b[0m",
+      "2026-11-26T03:58:04.0016807Z \u001b[36;1m    samples = workload[\"timing\"][\"samplesMilliseconds\"]\u001b[0m",
+      "2026-11-26T03:58:04.0017299Z \u001b[36;1m    assert len(samples) >= 7 and all(math.isfinite(x) and x >= 0 for x in samples)\u001b[0m",
+      "2026-11-26T03:58:04.0017958Z \u001b[36;1mprint(\"Eight deterministic frames, twelve observed cancellations and four visibility workloads passed.\")\u001b[0m",
+      "2026-11-26T03:58:04.0018702Z \u001b[36;1mprint(\"Host timings are diagnostics; no physical-device frame-rate, memory or thermal claim.\")\u001b[0m",
+      "2026-11-26T03:58:04.0019352Z \u001b[36;1mprint(\"KEYFILL_BENCHMARK \" + json.dumps(report, separators=(\",\", \":\")), flush=True)\u001b[0m",
+      "2026-11-26T03:58:04.0019767Z \u001b[36;1mPY\u001b[0m",
+      "2026-11-26T03:58:04.0054846Z shell: /usr/bin/bash -e {0}",
+      "2026-11-26T03:58:04.0055084Z ##[endgroup]",
+      "2026-11-26T03:58:27.0869442Z Eight deterministic frames, twelve observed cancellations and four visibility workloads passed.",
+      "2026-11-26T03:58:27.0870067Z Host timings are diagnostics; no physical-device frame-rate, memory or thermal claim."
+    ],
+    "rawReport": {
+      "architecture": "x86_64",
+      "cancellation": [
+        {
+          "cancelled": true,
+          "checks": 443,
+          "deadlineToReturnMilliseconds": 0.43505600000000033,
+          "finishedAfterMilliseconds": 5.435056,
+          "name": "bust-area3-144",
+          "observedAtMilliseconds": 5.417471,
+          "precedingCheckAtMilliseconds": 4.995389,
+          "requestedAfterMilliseconds": 5
+        },
+        {
+          "cancelled": true,
+          "checks": 443,
+          "deadlineToReturnMilliseconds": 0.38957900000000034,
+          "finishedAfterMilliseconds": 5.389579,
+          "name": "bust-area3-144",
+          "observedAtMilliseconds": 5.388985,
+          "precedingCheckAtMilliseconds": 4.969509,
+          "requestedAfterMilliseconds": 5
+        },
+        {
+          "cancelled": true,
+          "checks": 442,
+          "deadlineToReturnMilliseconds": 0.04551899999999964,
+          "finishedAfterMilliseconds": 5.045519,
+          "name": "bust-area3-144",
+          "observedAtMilliseconds": 5.045018,
+          "precedingCheckAtMilliseconds": 4.904536,
+          "requestedAfterMilliseconds": 5
+        },
+        {
+          "cancelled": true,
+          "checks": 642,
+          "deadlineToReturnMilliseconds": 0.024363000000001023,
+          "finishedAfterMilliseconds": 25.024363,
+          "name": "bust-area3-144",
+          "observedAtMilliseconds": 25.023407,
+          "precedingCheckAtMilliseconds": 24.657303,
+          "requestedAfterMilliseconds": 25
+        },
+        {
+          "cancelled": true,
+          "checks": 643,
+          "deadlineToReturnMilliseconds": 0.476189999999999,
+          "finishedAfterMilliseconds": 25.47619,
+          "name": "bust-area3-144",
+          "observedAtMilliseconds": 25.475304,
+          "precedingCheckAtMilliseconds": 24.849287,
+          "requestedAfterMilliseconds": 25
+        },
+        {
+          "cancelled": true,
+          "checks": 642,
+          "deadlineToReturnMilliseconds": 0.09760299999999944,
+          "finishedAfterMilliseconds": 25.097603,
+          "name": "bust-area3-144",
+          "observedAtMilliseconds": 25.095627,
+          "precedingCheckAtMilliseconds": 24.722075,
+          "requestedAfterMilliseconds": 25
+        },
+        {
+          "cancelled": true,
+          "checks": 390,
+          "deadlineToReturnMilliseconds": 1.6283599999999998,
+          "finishedAfterMilliseconds": 6.62836,
+          "name": "bust-area12-144",
+          "observedAtMilliseconds": 6.627395,
+          "precedingCheckAtMilliseconds": 4.726964,
+          "requestedAfterMilliseconds": 5
+        },
+        {
+          "cancelled": true,
+          "checks": 390,
+          "deadlineToReturnMilliseconds": 1.6104130000000003,
+          "finishedAfterMilliseconds": 6.610413,
+          "name": "bust-area12-144",
+          "observedAtMilliseconds": 6.609302,
+          "precedingCheckAtMilliseconds": 4.710159,
+          "requestedAfterMilliseconds": 5
+        },
+        {
+          "cancelled": true,
+          "checks": 390,
+          "deadlineToReturnMilliseconds": 1.5958310000000004,
+          "finishedAfterMilliseconds": 6.595831,
+          "name": "bust-area12-144",
+          "observedAtMilliseconds": 6.594984,
+          "precedingCheckAtMilliseconds": 4.704348,
+          "requestedAfterMilliseconds": 5
+        },
+        {
+          "cancelled": true,
+          "checks": 461,
+          "deadlineToReturnMilliseconds": 0.003157999999999106,
+          "finishedAfterMilliseconds": 25.003158,
+          "name": "bust-area12-144",
+          "observedAtMilliseconds": 25.001744,
+          "precedingCheckAtMilliseconds": 23.593574,
+          "requestedAfterMilliseconds": 25
+        },
+        {
+          "cancelled": true,
+          "checks": 462,
+          "deadlineToReturnMilliseconds": 2.1780399999999993,
+          "finishedAfterMilliseconds": 27.17804,
+          "name": "bust-area12-144",
+          "observedAtMilliseconds": 27.177424,
+          "precedingCheckAtMilliseconds": 24.897272,
+          "requestedAfterMilliseconds": 25
+        },
+        {
+          "cancelled": true,
+          "checks": 462,
+          "deadlineToReturnMilliseconds": 2.2110249999999994,
+          "finishedAfterMilliseconds": 27.211025,
+          "name": "bust-area12-144",
+          "observedAtMilliseconds": 27.210421,
+          "precedingCheckAtMilliseconds": 24.948864,
+          "requestedAfterMilliseconds": 25
+        }
+      ],
+      "cpuModel": "Intel(R) Xeon(R) 6975P-C",
+      "fixtureDefinition": "No random sampling or seed: fixed midpoint quadrature and stable fixture light UUIDs. Portrait recipe; camera (0,1.60,1.7)m, 85mm full-frame lens, 5600K white balance, +1.25 stops. Point3 uses recipe point emitters. Area3 replaces them with 1x1.2m, 0.8x0.8m and 0.4x0.8m rectangles, 8x8 samples each. Area12 repeats each area light four times at one quarter intensity for cancellation only.",
+      "frames": [
+        {
+          "height": 48,
+          "lightSamplesPerSurface": 3,
+          "name": "sphere-point3-72",
+          "rgbaFNV1a64": "44040625ad4aa562",
+          "timing": {
+            "p50Milliseconds": 0.522659,
+            "p95Milliseconds": 0.539097,
+            "samplesMilliseconds": [
+              0.532535,
+              0.520631,
+              0.521226,
+              0.512146,
+              0.523339,
+              0.522659,
+              0.539097
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 0.545233,
+          "width": 72
+        },
+        {
+          "height": 96,
+          "lightSamplesPerSurface": 3,
+          "name": "sphere-point3-144",
+          "rgbaFNV1a64": "7ee862b85545eb4d",
+          "timing": {
+            "p50Milliseconds": 2.008561,
+            "p95Milliseconds": 2.043645,
+            "samplesMilliseconds": [
+              2.043645,
+              2.01005,
+              2.008545,
+              2.008561,
+              2.013384,
+              2.001249,
+              2.002049
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 2.034607,
+          "width": 144
+        },
+        {
+          "height": 48,
+          "lightSamplesPerSurface": 192,
+          "name": "sphere-area3-72",
+          "rgbaFNV1a64": "eecb7e95fc4eeaae",
+          "timing": {
+            "p50Milliseconds": 13.194632,
+            "p95Milliseconds": 13.278828,
+            "samplesMilliseconds": [
+              13.245365,
+              13.165249,
+              13.278828,
+              13.142605,
+              13.194632,
+              13.146373,
+              13.262318
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 13.128167,
+          "width": 72
+        },
+        {
+          "height": 96,
+          "lightSamplesPerSurface": 192,
+          "name": "sphere-area3-144",
+          "rgbaFNV1a64": "3bbf39c308dfdf7c",
+          "timing": {
+            "p50Milliseconds": 52.417967,
+            "p95Milliseconds": 52.590741,
+            "samplesMilliseconds": [
+              52.520781,
+              52.276801,
+              52.417967,
+              52.590741,
+              52.419189,
+              52.321545,
+              52.239475
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 52.355549,
+          "width": 144
+        },
+        {
+          "height": 48,
+          "lightSamplesPerSurface": 3,
+          "name": "bust-point3-72",
+          "rgbaFNV1a64": "2359c769f1e22b62",
+          "timing": {
+            "p50Milliseconds": 1.488863,
+            "p95Milliseconds": 1.526474,
+            "samplesMilliseconds": [
+              1.496221,
+              1.485208,
+              1.526474,
+              1.525298,
+              1.487902,
+              1.488863,
+              1.469108
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 21.585391,
+          "width": 72
+        },
+        {
+          "height": 96,
+          "lightSamplesPerSurface": 3,
+          "name": "bust-point3-144",
+          "rgbaFNV1a64": "3477fe1a9b3ba564",
+          "timing": {
+            "p50Milliseconds": 5.449021,
+            "p95Milliseconds": 5.524732,
+            "samplesMilliseconds": [
+              5.429475,
+              5.4887,
+              5.524732,
+              5.453512,
+              5.449021,
+              5.437579,
+              5.41021
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 5.448894,
+          "width": 144
+        },
+        {
+          "height": 48,
+          "lightSamplesPerSurface": 192,
+          "name": "bust-area3-72",
+          "rgbaFNV1a64": "e7b6baef44106f88",
+          "timing": {
+            "p50Milliseconds": 31.049518,
+            "p95Milliseconds": 31.707172,
+            "samplesMilliseconds": [
+              31.707172,
+              31.017983,
+              31.036547,
+              31.114614,
+              31.049518,
+              31.099633,
+              31.006087
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 31.105163,
+          "width": 72
+        },
+        {
+          "height": 96,
+          "lightSamplesPerSurface": 192,
+          "name": "bust-area3-144",
+          "rgbaFNV1a64": "56eee9e11d6c9b0b",
+          "timing": {
+            "p50Milliseconds": 122.178125,
+            "p95Milliseconds": 122.95164,
+            "samplesMilliseconds": [
+              122.254995,
+              121.691252,
+              122.178125,
+              122.044554,
+              122.189195,
+              122.95164,
+              122.127061
+            ]
+          },
+          "unsupportedPixels": 0,
+          "warmupMilliseconds": 122.044183,
+          "width": 144
+        }
+      ],
+      "measuredSamplesPerWorkload": 7,
+      "methodology": "One warm-up per workload; monotonic wall time; nearest-rank p50/p95. Deterministic synchronous CPU renders. Cancellation uses monotonic deadlines in the real callback, not asynchronous UI scheduling. Receiver microbenchmarks omit image/color conversion and primary intersections. Short-run shared-host diagnostics, not physical-device, GPU, thermal, memory or sustained frame-rate evidence.",
+      "operatingSystem": "Ubuntu 24.04.5 LTS",
+      "optimizedBuild": true,
+      "reportedActiveProcessors": 4,
+      "reportedProcessors": 4,
+      "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "totalWorkloadMilliseconds": 2250.336329,
+      "visibility": [
+        {
+          "evaluationsPerSample": 1000,
+          "lightSamplesPerSurface": 3,
+          "name": "bust-point3-receivers",
+          "receivers": 34,
+          "signalComponentSum": 265741.3705473256,
+          "timing": {
+            "p50Milliseconds": 0.07174,
+            "p95Milliseconds": 0.079536,
+            "samplesMilliseconds": [
+              0.0765,
+              0.071821,
+              0.071715,
+              0.071721,
+              0.07174,
+              0.079536,
+              0.07149
+            ]
+          },
+          "visibilityEnabled": false
+        },
+        {
+          "evaluationsPerSample": 1000,
+          "lightSamplesPerSurface": 3,
+          "name": "bust-point3-receivers",
+          "receivers": 34,
+          "signalComponentSum": 263414.6483679028,
+          "timing": {
+            "p50Milliseconds": 0.316686,
+            "p95Milliseconds": 0.320899,
+            "samplesMilliseconds": [
+              0.315154,
+              0.318461,
+              0.312273,
+              0.316686,
+              0.320899,
+              0.312591,
+              0.317523
+            ]
+          },
+          "visibilityEnabled": true
+        },
+        {
+          "evaluationsPerSample": 1000,
+          "lightSamplesPerSurface": 192,
+          "name": "bust-area3-receivers",
+          "receivers": 34,
+          "signalComponentSum": 184289.71853325184,
+          "timing": {
+            "p50Milliseconds": 4.242889,
+            "p95Milliseconds": 4.252203,
+            "samplesMilliseconds": [
+              4.24176,
+              4.244324,
+              4.242889,
+              4.239962,
+              4.252203,
+              4.236101,
+              4.246299
+            ]
+          },
+          "visibilityEnabled": false
+        },
+        {
+          "evaluationsPerSample": 1000,
+          "lightSamplesPerSurface": 192,
+          "name": "bust-area3-receivers",
+          "receivers": 34,
+          "signalComponentSum": 181465.9946643823,
+          "timing": {
+            "p50Milliseconds": 21.582779,
+            "p95Milliseconds": 21.642013,
+            "samplesMilliseconds": [
+              21.642013,
+              21.568187,
+              21.610726,
+              21.549018,
+              21.560931,
+              21.605546,
+              21.582779
+            ]
+          },
+          "visibilityEnabled": true
+        }
+      ]
+    },
+    "independentReconciliation": {
+      "timing": [
+        {
+          "name": "sphere-point3-72",
+          "count": 7,
+          "p50Reported": 0.522659,
+          "p50Recomputed": 0.522659,
+          "p95Reported": 0.539097,
+          "p95Recomputed": 0.539097,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "sphere-point3-144",
+          "count": 7,
+          "p50Reported": 2.008561,
+          "p50Recomputed": 2.008561,
+          "p95Reported": 2.043645,
+          "p95Recomputed": 2.043645,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "sphere-area3-72",
+          "count": 7,
+          "p50Reported": 13.194632,
+          "p50Recomputed": 13.194632,
+          "p95Reported": 13.278828,
+          "p95Recomputed": 13.278828,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "sphere-area3-144",
+          "count": 7,
+          "p50Reported": 52.417967,
+          "p50Recomputed": 52.417967,
+          "p95Reported": 52.590741,
+          "p95Recomputed": 52.590741,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-point3-72",
+          "count": 7,
+          "p50Reported": 1.488863,
+          "p50Recomputed": 1.488863,
+          "p95Reported": 1.526474,
+          "p95Recomputed": 1.526474,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-point3-144",
+          "count": 7,
+          "p50Reported": 5.449021,
+          "p50Recomputed": 5.449021,
+          "p95Reported": 5.524732,
+          "p95Recomputed": 5.524732,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-area3-72",
+          "count": 7,
+          "p50Reported": 31.049518,
+          "p50Recomputed": 31.049518,
+          "p95Reported": 31.707172,
+          "p95Recomputed": 31.707172,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-area3-144",
+          "count": 7,
+          "p50Reported": 122.178125,
+          "p50Recomputed": 122.178125,
+          "p95Reported": 122.95164,
+          "p95Recomputed": 122.95164,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-point3-receivers",
+          "visibilityEnabled": false,
+          "count": 7,
+          "p50Reported": 0.07174,
+          "p50Recomputed": 0.07174,
+          "p95Reported": 0.079536,
+          "p95Recomputed": 0.079536,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-point3-receivers",
+          "visibilityEnabled": true,
+          "count": 7,
+          "p50Reported": 0.316686,
+          "p50Recomputed": 0.316686,
+          "p95Reported": 0.320899,
+          "p95Recomputed": 0.320899,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-area3-receivers",
+          "visibilityEnabled": false,
+          "count": 7,
+          "p50Reported": 4.242889,
+          "p50Recomputed": 4.242889,
+          "p95Reported": 4.252203,
+          "p95Recomputed": 4.252203,
+          "samplesFiniteNonnegative": true
+        },
+        {
+          "name": "bust-area3-receivers",
+          "visibilityEnabled": true,
+          "count": 7,
+          "p50Reported": 21.582779,
+          "p50Recomputed": 21.582779,
+          "p95Reported": 21.642013,
+          "p95Recomputed": 21.642013,
+          "samplesFiniteNonnegative": true
+        }
+      ],
+      "cancellation": [
+        {
+          "name": "bust-area3-144/5",
+          "count": 3,
+          "allCancelled": true,
+          "consistentDeadline": true,
+          "lagMin": 0.04551899999999964,
+          "lagMax": 0.43505600000000033
+        },
+        {
+          "name": "bust-area3-144/25",
+          "count": 3,
+          "allCancelled": true,
+          "consistentDeadline": true,
+          "lagMin": 0.024363000000001023,
+          "lagMax": 0.476189999999999
+        },
+        {
+          "name": "bust-area12-144/5",
+          "count": 3,
+          "allCancelled": true,
+          "consistentDeadline": true,
+          "lagMin": 1.5958310000000004,
+          "lagMax": 1.6283599999999998
+        },
+        {
+          "name": "bust-area12-144/25",
+          "count": 3,
+          "allCancelled": true,
+          "consistentDeadline": true,
+          "lagMin": 0.003157999999999106,
+          "lagMax": 2.2110249999999994
+        }
+      ]
+    },
+    "contractReview": {
+      "optimization": "Actual compile command uses swiftc -O; main rejects debug-assert configuration; raw report optimizedBuild=true.",
+      "frameMatrix": "sphere/bust x point3/area3 x widths 72/144 = 8 workloads; heights 48/96; samples per surface 3 or 192.",
+      "frameWarmups": "One actual warm-up render per frame workload; all eight warmupMilliseconds retained.",
+      "frameDeterminism": "Each of seven measured renders is compared directly to its warm-up StudyImage and must have zero unsupported pixels or benchmark throws. StudyImage contains Data RGBA and validity mask and uses synthesized Equatable. FNV1a64 values identify warm-up frame bytes but are not the sole determinism assertion.",
+      "visibilityMatrix": "point3/area3 x occlusion off/on = four workloads, 34 receivers, 1,000 evaluations per sample. Source performs one untimed operation warm-up before seven measured samples; the JSON does not separately time visibility warm-ups.",
+      "cancellationMatrix": "bust-area3-144 and bust-area12-144 at 5 ms and 25 ms thresholds, three repeats for each combination = 12 probes. All twelve catch StudyError.cancelled, report a callback observation at/after deadline and a preceding false poll before deadline.",
+      "percentiles": "All 12 frame/visibility p50/p95 values recomputed from raw seven-sample arrays using nearest-rank rule; all exactly match. With seven samples the p95 is the observed maximum.",
+      "noTimingThreshold": "Timing is diagnostic and the code acceptance contract sets no portable latency threshold."
+    },
+    "diagnosticSummary": {
+      "frameMeasuredRenders": 56,
+      "visibilityMeasuredSamples": 28,
+      "totalWorkloadMilliseconds": 2250.336329,
+      "maximumObservedDeadlineToReturnMilliseconds": 2.2110249999999994,
+      "largestFrameP50Milliseconds": 122.178125
+    },
+    "relevantExistingPortableRegressionReceipts": [
+      {
+        "logLine": 959,
+        "text": "2026-11-26T03:56:41.3796257Z Test Case 'StudyCancellationTests.testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 961,
+        "text": "2026-11-26T03:56:41.3798716Z Test Case 'StudyCancellationTests.testCancellationAtFinalCheckpointCannotPublishCompletedFrame' passed (0.002 seconds)"
+      },
+      {
+        "logLine": 963,
+        "text": "2026-11-26T03:56:41.3801519Z Test Case 'StudyCancellationTests.testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 965,
+        "text": "2026-11-26T03:56:41.3804555Z Test Case 'StudyCancellationTests.testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled' passed (0.006 seconds)"
+      },
+      {
+        "logLine": 1011,
+        "text": "2026-11-26T03:56:41.3856691Z Test Case 'StudyFrameCacheTests.testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1013,
+        "text": "2026-11-26T03:56:41.3858662Z Test Case 'StudyFrameCacheTests.testEntryLimitBoundsZeroCostValues' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1015,
+        "text": "2026-11-26T03:56:41.3860910Z Test Case 'StudyFrameCacheTests.testEquivalentNonHashableKeysReplaceAndFindTheSameEntry' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1017,
+        "text": "2026-11-26T03:56:41.3863216Z Test Case 'StudyFrameCacheTests.testHitPromotesRecencyAndMissDoesNotProtectOldestEntry' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1019,
+        "text": "2026-11-26T03:56:41.3865939Z Test Case 'StudyFrameCacheTests.testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1021,
+        "text": "2026-11-26T03:56:41.3868504Z Test Case 'StudyFrameCacheTests.testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1023,
+        "text": "2026-11-26T03:56:41.3870933Z Test Case 'StudyFrameCacheTests.testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1025,
+        "text": "2026-11-26T03:56:41.3873205Z Test Case 'StudyFrameCacheTests.testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1027,
+        "text": "2026-11-26T03:56:41.4341229Z Test Case 'StudyFrameCacheTests.testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1029,
+        "text": "2026-11-26T03:56:41.4344317Z Test Case 'StudyFrameCacheTests.testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1031,
+        "text": "2026-11-26T03:56:41.4346733Z Test Case 'StudyFrameCacheTests.testReplacementChargesNewCostsOnlyAndBecomesMostRecent' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1033,
+        "text": "2026-11-26T03:56:41.4348860Z Test Case 'StudyFrameCacheTests.testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1869,
+        "text": "2026-11-26T03:57:18.6060502Z Test Case 'StudyCancellationTests.testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1871,
+        "text": "2026-11-26T03:57:18.6061990Z Test Case 'StudyCancellationTests.testCancellationAtFinalCheckpointCannotPublishCompletedFrame' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1873,
+        "text": "2026-11-26T03:57:18.6063451Z Test Case 'StudyCancellationTests.testCancellationImmediatelyAfterFalsePollStopsAfterEightPixelEvaluations' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1875,
+        "text": "2026-11-26T03:57:18.6065159Z Test Case 'StudyCancellationTests.testEveryRendererUsesPixelCheckpointsAndPreservesImageWhenNotCancelled' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1921,
+        "text": "2026-11-26T03:57:18.7094905Z Test Case 'StudyFrameCacheTests.testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1923,
+        "text": "2026-11-26T03:57:18.7095964Z Test Case 'StudyFrameCacheTests.testEntryLimitBoundsZeroCostValues' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1925,
+        "text": "2026-11-26T03:57:18.7097139Z Test Case 'StudyFrameCacheTests.testEquivalentNonHashableKeysReplaceAndFindTheSameEntry' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1927,
+        "text": "2026-11-26T03:57:18.7098374Z Test Case 'StudyFrameCacheTests.testHitPromotesRecencyAndMissDoesNotProtectOldestEntry' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1929,
+        "text": "2026-11-26T03:57:18.7099735Z Test Case 'StudyFrameCacheTests.testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1931,
+        "text": "2026-11-26T03:57:18.7101112Z Test Case 'StudyFrameCacheTests.testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1933,
+        "text": "2026-11-26T03:57:18.7102363Z Test Case 'StudyFrameCacheTests.testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1935,
+        "text": "2026-11-26T03:57:18.7104020Z Test Case 'StudyFrameCacheTests.testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1937,
+        "text": "2026-11-26T03:57:18.7144155Z Test Case 'StudyFrameCacheTests.testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1939,
+        "text": "2026-11-26T03:57:18.7145793Z Test Case 'StudyFrameCacheTests.testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1941,
+        "text": "2026-11-26T03:57:18.7147369Z Test Case 'StudyFrameCacheTests.testReplacementChargesNewCostsOnlyAndBecomesMostRecent' passed (0.002 seconds)"
+      },
+      {
+        "logLine": 1943,
+        "text": "2026-11-26T03:57:18.7148662Z Test Case 'StudyFrameCacheTests.testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency' passed (0.0 seconds)"
+      }
+    ],
+    "regressionReceiptLimit": "Relevant cancellation/cache method outcomes are retained without duplicating worker058's total unit-test accounting. Native publication/cache/backend-routing acceptance is outside this Linux-host review."
+  },
+  "persistence": {
+    "command": [
+      "2026-11-26T03:57:18.8402341Z ##[group]Run set -euo pipefail",
+      "2026-11-26T03:57:18.8402586Z \u001b[36;1mset -euo pipefail\u001b[0m",
+      "2026-11-26T03:57:18.8402878Z \u001b[36;1mpython3 scripts/run_atomic_library_write_probe.py --with-commit-interruption \\\u001b[0m",
+      "2026-11-26T03:57:18.8403371Z \u001b[36;1m  --output \"$RUNNER_TEMP/atomic-library-write-linux\" 2>&1 | tee \"$RUNNER_TEMP/atomic-library-write-linux.log\"\u001b[0m",
+      "2026-11-26T03:57:18.8429822Z shell: /usr/bin/bash -e {0}",
+      "2026-11-26T03:57:18.8430036Z ##[endgroup]",
+      "2026-11-26T03:57:18.8772710Z Running [\"/usr/bin/findmnt\", \"--json\", \"--target\", \"/home/runner/work/_temp/atomic-library-write-linux\", \"--output\", \"TARGET,SOURCE,FSTYPE,MAJ:MIN\", \"--first-only\"]"
+    ],
+    "efbig": {
+      "logStartLine": 2038,
+      "logEndLine": 2256,
+      "rawReport": {
+        "checks": {
+          "activeIdentityPreserved": true,
+          "exactPriorBytesPreserved": true,
+          "freshProcessVerificationSucceeded": true,
+          "injectionReturnedCaughtSaveError": true,
+          "observedPOSIXEFBIG": true,
+          "priorCompleteSnapshotPreserved": true,
+          "setupAndUnrestrictedControlSucceeded": true,
+          "unrelatedRecordsPreserved": true,
+          "unrestrictedControlCandidateReopened": true,
+          "unrestrictedControlExactCandidateBytes": true,
+          "validFixturesBelowApplicationByteLimit": true
+        },
+        "compiledSourceProvenance": {
+          "baseRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+          "helperBinaryMatchesManifest": true,
+          "manifestPath": "/home/runner/work/_temp/atomic-library-write-linux/compile-manifest.json",
+          "manifestSHA256": "efc6fb52ff3df27642afb738e5c89325a32b391bcb5adde41f8dcbb14affea60",
+          "source": "current working tree",
+          "sourceFilesSHA256": {
+            "Sources/LightingCore/ARPlacementLayout.swift": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+            "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+            "Sources/LightingCore/Colorimetry.swift": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+            "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+            "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+            "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+            "Sources/LightingCore/LightingProjectDocument.swift": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+            "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+            "Sources/LightingCore/PortraitHeadMesh.swift": "2d43056a7eab9371126188e6b161000ca3696e812eca51f69945f19d2cf5740f",
+            "Sources/LightingCore/PortraitStudy.swift": "f1b4aadb74c89bcef57a353221ef7a279f13c87284bdf919bcb1fe345034fc71",
+            "Sources/LightingCore/ProjectLibrary.swift": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+            "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+            "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+            "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+            "Sources/LightingCore/RoomPlacement.swift": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+            "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+            "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+            "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+            "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a",
+            "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+            "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+            "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+            "Sources/LightingCore/StudioDisplayName.swift": "0a9c19b880631b485f43089a6f0ab94dac0cfe1b128233099c063a7650badf09",
+            "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+            "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+            "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+            "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+            "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+            "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+            "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+            "Sources/LightingCore/SurfacePhotometry.swift": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+            "scripts/probe-atomic-library-write.swift": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18"
+          },
+          "workingTreePathsDifferingFromCompiledSources": []
+        },
+        "excludedClaims": [
+          "ENOSPC or physical low storage",
+          "abrupt process interruption",
+          "rename-only replacement failure",
+          "physical-device or iOS execution"
+        ],
+        "expectedFailureEvidence": {
+          "errorChainContainsPOSIXEFBIG": false,
+          "resetErrnoCapturedImmediatelyAfterSaveIsEFBIG": true
+        },
+        "files": {
+          "after.json": {
+            "bytes": 3900,
+            "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+          },
+          "candidate.json": {
+            "bytes": 242569,
+            "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+          },
+          "control/projects.json": {
+            "bytes": 242569,
+            "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+          },
+          "library/projects.json": {
+            "bytes": 3900,
+            "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+          },
+          "prior.json": {
+            "bytes": 3900,
+            "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+          }
+        },
+        "helperBinarySHA256": "97e9e816fc1b334942f46e316ca5f669009394235ac30de054264fed2e6658aa",
+        "host": {
+          "machine": "x86_64",
+          "python": "3.12.3",
+          "release": "7.0.0-1014-aws",
+          "system": "Linux"
+        },
+        "injection": {
+          "expectedPOSIXErrno": 27,
+          "expectedPOSIXName": "EFBIG",
+          "fileLimitBytes": 32768,
+          "mechanism": "RLIMIT_FSIZE",
+          "signal": "SIGXFSZ ignored in injection child only"
+        },
+        "parentFileSizeLimitAfter": [
+          -1,
+          -1
+        ],
+        "parentFileSizeLimitBefore": [
+          -1,
+          -1
+        ],
+        "parentLimitAndSignalUnchanged": true,
+        "phases": [
+          {
+            "fileSizeLimitInjected": false,
+            "observed": {
+              "candidateBytes": 242569,
+              "candidateProjects": 64,
+              "candidateValidated": true,
+              "fileLimitBytes": 32768,
+              "fixtureByteCeiling": 1048576,
+              "initialReopenMatchesPrior": true,
+              "libraryByteLimit": 8388608,
+              "phase": "setup",
+              "priorBytes": 3900,
+              "priorProjects": 3,
+              "status": "setup_complete"
+            },
+            "phase": "setup",
+            "returnCode": 0
+          },
+          {
+            "fileSizeLimitInjected": false,
+            "observed": {
+              "phase": "control",
+              "saveReturnedNormally": true,
+              "status": "control_saved"
+            },
+            "phase": "control",
+            "returnCode": 0
+          },
+          {
+            "fileSizeLimitInjected": true,
+            "observed": {
+              "errorChain": [
+                {
+                  "code": 512,
+                  "description": "The operation could not be completed. (NSCocoaErrorDomain error 512.)",
+                  "domain": "NSCocoaErrorDomain"
+                }
+              ],
+              "phase": "inject",
+              "posixErrnoImmediatelyAfterSave": 27,
+              "posixErrnoResetBeforeSave": true,
+              "status": "save_threw",
+              "writeAttempted": true
+            },
+            "phase": "inject",
+            "returnCode": 0
+          },
+          {
+            "fileSizeLimitInjected": false,
+            "observed": {
+              "activeIdentityPreserved": true,
+              "controlCandidateReopened": true,
+              "controlExactCandidateBytes": true,
+              "phase": "verify",
+              "priorCompleteSnapshotPreserved": true,
+              "priorExactBytesPreserved": true,
+              "status": "verification_complete",
+              "unrelatedProjectIDs": [
+                "00000001-0000-4000-8000-000000000002",
+                "00000001-0000-4000-8000-000000000001"
+              ],
+              "unrelatedRecordsPreserved": true
+            },
+            "phase": "verify",
+            "returnCode": 0
+          }
+        ],
+        "probe": "project_library_atomic_write_EFBIG",
+        "schemaVersion": 2,
+        "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+        "status": "passed",
+        "workingTreeFilesSHA256": {
+          "Sources/LightingCore/ARPlacementLayout.swift": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+          "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+          "Sources/LightingCore/Colorimetry.swift": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+          "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+          "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+          "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+          "Sources/LightingCore/LightingProjectDocument.swift": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+          "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+          "Sources/LightingCore/PortraitHeadMesh.swift": "2d43056a7eab9371126188e6b161000ca3696e812eca51f69945f19d2cf5740f",
+          "Sources/LightingCore/PortraitStudy.swift": "f1b4aadb74c89bcef57a353221ef7a279f13c87284bdf919bcb1fe345034fc71",
+          "Sources/LightingCore/ProjectLibrary.swift": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+          "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+          "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+          "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+          "Sources/LightingCore/RoomPlacement.swift": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+          "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+          "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+          "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+          "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a",
+          "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+          "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+          "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+          "Sources/LightingCore/StudioDisplayName.swift": "0a9c19b880631b485f43089a6f0ab94dac0cfe1b128233099c063a7650badf09",
+          "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+          "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+          "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+          "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+          "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+          "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+          "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+          "Sources/LightingCore/SurfacePhotometry.swift": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+          "scripts/probe-atomic-library-write.swift": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18",
+          "scripts/probe_atomic_library_write.py": "de458619bfb13f18cefa32517a37276c003a4b4340cd42c10735374a962d02cb"
+        }
+      },
+      "interpretation": "Real production ProjectLibraryFileStore.save(candidate,replacing:prior) failed under child-only RLIMIT_FSIZE=32768 with SIGXFSZ ignored only in that child. The helper reset errno before save and captured 27 immediately after throw. The NSError chain contains only generic Cocoa code 512, so the POSIX evidence is the reset/captured errno, not an underlying NSError. Unrestricted control and fresh-process reopen passed; exact prior bytes, active identity and unrelated open/archived records survived."
+    },
+    "commitBoundaries": {
+      "logStartLine": 2258,
+      "logEndLine": 2913,
+      "rawReport": {
+        "binariesUnchanged": true,
+        "compile": {
+          "arguments": [
+            "/usr/bin/cc",
+            "-std=c11",
+            "-O2",
+            "-fPIC",
+            "-shared",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "/home/runner/work/APP1/APP1/scripts/probe-library-commit-interposer.c",
+            "-o",
+            "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/probe-library-commit-interposer.so",
+            "-ldl"
+          ],
+          "cwd": "/home/runner/work/APP1/APP1",
+          "elapsedSeconds": 0.316,
+          "processGroupID": 3114,
+          "returnCode": 0,
+          "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/c-compile.stderr.log",
+          "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/c-compile.stdout.log",
+          "timeoutSeconds": 30
+        },
+        "compilerPath": "/usr/bin/cc",
+        "compilerResolvedPath": "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "compilerVersion": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+        "compilerVersionCommand": {
+          "arguments": [
+            "/usr/bin/cc",
+            "--version"
+          ],
+          "cwd": "/home/runner/work/APP1/APP1",
+          "elapsedSeconds": 0.067,
+          "processGroupID": 3113,
+          "returnCode": 0,
+          "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/c-compiler-version.stderr.log",
+          "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/c-compiler-version.stdout.log",
+          "timeoutSeconds": 10
+        },
+        "diagnosticSHA256After": {
+          "scripts/probe-library-commit-interposer.c": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a",
+          "scripts/probe_library_commit_interruption.py": "a1d5344fded8681209d39c6723a8a20d25b3b31966eedef03ad1ca160feabd1b"
+        },
+        "diagnosticSHA256Before": {
+          "scripts/probe-library-commit-interposer.c": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a",
+          "scripts/probe_library_commit_interruption.py": "a1d5344fded8681209d39c6723a8a20d25b3b31966eedef03ad1ca160feabd1b"
+        },
+        "diagnosticsUnchanged": true,
+        "environment": {
+          "LANG": "C.UTF-8",
+          "PATH": "/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+        },
+        "excludedClaims": [
+          "power loss or storage durability",
+          "ENOSPC or physical low storage",
+          "Darwin, iOS, simulator or physical-device execution",
+          "child cleanup after uncatchable SIGKILL of this driver"
+        ],
+        "helperProvenance": {
+          "baseRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+          "manifestSHA256": "efc6fb52ff3df27642afb738e5c89325a32b391bcb5adde41f8dcbb14affea60",
+          "path": "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+          "sha256": "97e9e816fc1b334942f46e316ca5f669009394235ac30de054264fed2e6658aa",
+          "sourceSHA256": {
+            "Sources/LightingCore/ARPlacementLayout.swift": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+            "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+            "Sources/LightingCore/Colorimetry.swift": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+            "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+            "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+            "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+            "Sources/LightingCore/LightingProjectDocument.swift": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+            "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+            "Sources/LightingCore/PortraitHeadMesh.swift": "2d43056a7eab9371126188e6b161000ca3696e812eca51f69945f19d2cf5740f",
+            "Sources/LightingCore/PortraitStudy.swift": "f1b4aadb74c89bcef57a353221ef7a279f13c87284bdf919bcb1fe345034fc71",
+            "Sources/LightingCore/ProjectLibrary.swift": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+            "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+            "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+            "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+            "Sources/LightingCore/RoomPlacement.swift": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+            "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+            "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+            "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+            "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a",
+            "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+            "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+            "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+            "Sources/LightingCore/StudioDisplayName.swift": "0a9c19b880631b485f43089a6f0ab94dac0cfe1b128233099c063a7650badf09",
+            "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+            "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+            "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+            "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+            "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+            "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+            "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+            "Sources/LightingCore/SurfacePhotometry.swift": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+            "scripts/probe-atomic-library-write.swift": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18"
+          }
+        },
+        "host": {
+          "machine": "x86_64",
+          "python": "3.12.3",
+          "release": "7.0.0-1014-aws",
+          "system": "Linux"
+        },
+        "interposerSHA256": "402a9a650b93c4d7c65eeb5ea6f8b30f7f1362abf9119b8529356218d1107300",
+        "output": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption",
+        "ownedChildrenReaped": true,
+        "parentResourceSignalAndGroupUnchanged": true,
+        "probe": "project_library_commit_boundaries_linux",
+        "removedInheritedEnvironmentKeys": [],
+        "scenarios": [
+          {
+            "checks": {
+              "activeIdentityPreserved": true,
+              "exactExpectedBytesAtHook": true,
+              "exactExpectedBytesPreserved": true,
+              "exactTargetRenameWitnessed": true,
+              "freshProcessReopenSucceeded": true,
+              "fullyWrittenCandidateStagedBeforeRename": true,
+              "ownedGroupCleaned": true,
+              "parentKilledOwnedSave": true,
+              "priorCompleteSnapshotPreserved": true,
+              "stoppedAtWitnessedHook": true,
+              "unrelatedRecordsPreserved": true,
+              "unrestrictedControlCandidateReopened": true,
+              "unrestrictedControlExactCandidateBytes": true,
+              "unrestrictedSetupAndControlSucceeded": true
+            },
+            "directory": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename",
+            "files": {
+              "after.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              },
+              "candidate.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "control/projects.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "library/projects.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              },
+              "prior.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              }
+            },
+            "injection": {
+              "arguments": [
+                "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                "save",
+                "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename"
+              ],
+              "elapsedSeconds": 0.024,
+              "environmentOverrides": {
+                "KF_COMMIT_MODE": "before-rename",
+                "KF_COMMIT_TARGET": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+                "KF_COMMIT_WITNESS_FD": "4",
+                "LD_PRELOAD": "/proc/self/fd/5"
+              },
+              "events": [
+                {
+                  "api": "renameat",
+                  "destinationArgument": "projects.json",
+                  "destinationDirFD": 3,
+                  "hit": 1,
+                  "hookState": "before-call",
+                  "mode": "before-rename",
+                  "pid": 3121,
+                  "realRenameCalled": false,
+                  "realReturnCode": null,
+                  "returnedErrno": 0,
+                  "schemaVersion": 1,
+                  "sourceArgument": ".dat.nosyncC31.OaRwUR",
+                  "sourceDirFD": 3,
+                  "targetMatched": true,
+                  "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json"
+                }
+              ],
+              "exactExpectedBytesAtHook": true,
+              "finalReturnCode": -9,
+              "hookCount": 1,
+              "hookWitnessed": true,
+              "interposerPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/probe-library-commit-interposer.so",
+              "mode": "before-rename",
+              "observedStop": {
+                "code": 5,
+                "processID": 3121,
+                "signal": 19
+              },
+              "ownedGroupCleanupComplete": true,
+              "parentIssuedSIGKILL": true,
+              "processGroupID": 3121,
+              "returnCode": -9,
+              "stagedExactCandidateBytes": true,
+              "stagedSourcePath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/.dat.nosyncC31.OaRwUR",
+              "status": "observed",
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json"
+            },
+            "mode": "before-rename",
+            "phases": [
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "setup",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "candidateBytes": 242569,
+                  "candidateProjects": 64,
+                  "candidateValidated": true,
+                  "fileLimitBytes": 32768,
+                  "fixtureByteCeiling": 1048576,
+                  "initialReopenMatchesPrior": true,
+                  "libraryByteLimit": 8388608,
+                  "phase": "setup",
+                  "priorBytes": 3900,
+                  "priorProjects": 3,
+                  "status": "setup_complete"
+                },
+                "processGroupID": 3119,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/setup.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/setup.stdout.log",
+                "timeoutSeconds": 30
+              },
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "control",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "phase": "control",
+                  "saveReturnedNormally": true,
+                  "status": "control_saved"
+                },
+                "processGroupID": 3120,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control.stdout.log",
+                "timeoutSeconds": 30
+              },
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "verify",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "activeIdentityPreserved": true,
+                  "controlCandidateReopened": true,
+                  "controlExactCandidateBytes": true,
+                  "phase": "verify",
+                  "priorCompleteSnapshotPreserved": true,
+                  "priorExactBytesPreserved": true,
+                  "status": "verification_complete",
+                  "unrelatedProjectIDs": [
+                    "00000001-0000-4000-8000-000000000002",
+                    "00000001-0000-4000-8000-000000000001"
+                  ],
+                  "unrelatedRecordsPreserved": true
+                },
+                "processGroupID": 3122,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/verify.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/verify.stdout.log",
+                "timeoutSeconds": 30
+              }
+            ],
+            "status": "passed"
+          },
+          {
+            "checks": {
+              "activeIdentityPreserved": true,
+              "candidateCompleteSnapshotPreserved": true,
+              "candidateExactBytesPreserved": true,
+              "candidateRecordsPreserved": true,
+              "exactExpectedBytesAtHook": true,
+              "exactExpectedBytesPreserved": true,
+              "exactTargetRenameWitnessed": true,
+              "freshProcessReopenSucceeded": true,
+              "ownedGroupCleaned": true,
+              "parentKilledOwnedSave": true,
+              "stoppedAtWitnessedHook": true,
+              "unrelatedRecordsPreserved": true,
+              "unrestrictedControlCandidateReopened": true,
+              "unrestrictedControlExactCandidateBytes": true,
+              "unrestrictedSetupAndControlSucceeded": true
+            },
+            "directory": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+            "files": {
+              "after.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "candidate.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "control/projects.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "library/projects.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "prior.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              }
+            },
+            "injection": {
+              "arguments": [
+                "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                "save",
+                "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+              ],
+              "elapsedSeconds": 0.024,
+              "environmentOverrides": {
+                "KF_COMMIT_MODE": "after-rename",
+                "KF_COMMIT_TARGET": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+                "KF_COMMIT_WITNESS_FD": "4",
+                "LD_PRELOAD": "/proc/self/fd/5"
+              },
+              "events": [
+                {
+                  "api": "renameat",
+                  "destinationArgument": "projects.json",
+                  "destinationDirFD": 3,
+                  "hit": 1,
+                  "hookState": "after-success",
+                  "mode": "after-rename",
+                  "pid": 3125,
+                  "realRenameCalled": true,
+                  "realReturnCode": 0,
+                  "returnedErrno": 0,
+                  "schemaVersion": 1,
+                  "sourceArgument": ".dat.nosyncC35.clBp6s",
+                  "sourceDirFD": 3,
+                  "targetMatched": true,
+                  "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json"
+                }
+              ],
+              "exactExpectedBytesAtHook": true,
+              "finalReturnCode": -9,
+              "hookCount": 1,
+              "hookWitnessed": true,
+              "interposerPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/probe-library-commit-interposer.so",
+              "mode": "after-rename",
+              "observedStop": {
+                "code": 5,
+                "processID": 3125,
+                "signal": 19
+              },
+              "ownedGroupCleanupComplete": true,
+              "parentIssuedSIGKILL": true,
+              "processGroupID": 3125,
+              "returnCode": -9,
+              "status": "observed",
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json"
+            },
+            "mode": "after-rename",
+            "phases": [
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "setup",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "candidateBytes": 242569,
+                  "candidateProjects": 64,
+                  "candidateValidated": true,
+                  "fileLimitBytes": 32768,
+                  "fixtureByteCeiling": 1048576,
+                  "initialReopenMatchesPrior": true,
+                  "libraryByteLimit": 8388608,
+                  "phase": "setup",
+                  "priorBytes": 3900,
+                  "priorProjects": 3,
+                  "status": "setup_complete"
+                },
+                "processGroupID": 3123,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/setup.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/setup.stdout.log",
+                "timeoutSeconds": 30
+              },
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "control",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "phase": "control",
+                  "saveReturnedNormally": true,
+                  "status": "control_saved"
+                },
+                "processGroupID": 3124,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control.stdout.log",
+                "timeoutSeconds": 30
+              },
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "verify-candidate",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "activeIdentityPreserved": true,
+                  "allSnapshotRecordsPreserved": true,
+                  "candidateCompleteSnapshotPreserved": true,
+                  "candidateExactBytesPreserved": true,
+                  "candidateRecordsPreserved": true,
+                  "completeSnapshotPreserved": true,
+                  "controlCandidateReopened": true,
+                  "controlExactCandidateBytes": true,
+                  "exactBytesPreserved": true,
+                  "phase": "verify-candidate",
+                  "priorCompleteSnapshotPreserved": false,
+                  "priorExactBytesPreserved": false,
+                  "reopenedSnapshot": "candidate",
+                  "status": "candidate_verification_complete",
+                  "unrelatedProjectIDs": [
+                    "00000001-0000-4000-8000-000000000002",
+                    "00000001-0000-4000-8000-000000000001"
+                  ],
+                  "unrelatedRecordsPreserved": true
+                },
+                "processGroupID": 3126,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/verify-candidate.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/verify-candidate.stdout.log",
+                "timeoutSeconds": 30
+              }
+            ],
+            "status": "passed"
+          },
+          {
+            "checks": {
+              "activeIdentityPreserved": true,
+              "actualSaveThrew": true,
+              "exactExpectedBytesPreserved": true,
+              "exactTargetRenameWitnessed": true,
+              "freshProcessReopenSucceeded": true,
+              "ownedGroupCleaned": true,
+              "priorCompleteSnapshotPreserved": true,
+              "unrelatedRecordsPreserved": true,
+              "unrestrictedControlCandidateReopened": true,
+              "unrestrictedControlExactCandidateBytes": true,
+              "unrestrictedSetupAndControlSucceeded": true,
+              "witnessedRenameReturnedEIO": true
+            },
+            "directory": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+            "files": {
+              "after.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              },
+              "candidate.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "control/projects.json": {
+                "bytes": 242569,
+                "sha256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213"
+              },
+              "library/projects.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              },
+              "prior.json": {
+                "bytes": 3900,
+                "sha256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac"
+              }
+            },
+            "injection": {
+              "arguments": [
+                "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                "save",
+                "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+              ],
+              "elapsedSeconds": 0.026,
+              "environmentOverrides": {
+                "KF_COMMIT_MODE": "rename-eio",
+                "KF_COMMIT_TARGET": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+                "KF_COMMIT_WITNESS_FD": "4",
+                "LD_PRELOAD": "/proc/self/fd/5"
+              },
+              "events": [
+                {
+                  "api": "renameat",
+                  "destinationArgument": "projects.json",
+                  "destinationDirFD": 3,
+                  "hit": 1,
+                  "hookState": "rejected",
+                  "mode": "rename-eio",
+                  "pid": 3129,
+                  "realRenameCalled": false,
+                  "realReturnCode": null,
+                  "returnedErrno": 5,
+                  "schemaVersion": 1,
+                  "sourceArgument": ".dat.nosyncC39.nuwozv",
+                  "sourceDirFD": 3,
+                  "targetMatched": true,
+                  "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json"
+                }
+              ],
+              "finalReturnCode": 0,
+              "hookCount": 1,
+              "hookWitnessed": true,
+              "interposerPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/probe-library-commit-interposer.so",
+              "mode": "rename-eio",
+              "observed": {
+                "errorChain": [
+                  {
+                    "code": 512,
+                    "description": "The operation could not be completed. (NSCocoaErrorDomain error 512.)",
+                    "domain": "NSCocoaErrorDomain"
+                  }
+                ],
+                "phase": "save",
+                "posixErrnoImmediatelyAfterSave": 5,
+                "posixErrnoResetBeforeSave": true,
+                "status": "save_threw",
+                "writeAttempted": true
+              },
+              "ownedGroupCleanupComplete": true,
+              "processGroupID": 3129,
+              "returnCode": 0,
+              "status": "observed",
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json"
+            },
+            "mode": "rename-eio",
+            "phases": [
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "setup",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "candidateBytes": 242569,
+                  "candidateProjects": 64,
+                  "candidateValidated": true,
+                  "fileLimitBytes": 32768,
+                  "fixtureByteCeiling": 1048576,
+                  "initialReopenMatchesPrior": true,
+                  "libraryByteLimit": 8388608,
+                  "phase": "setup",
+                  "priorBytes": 3900,
+                  "priorProjects": 3,
+                  "status": "setup_complete"
+                },
+                "processGroupID": 3127,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/setup.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/setup.stdout.log",
+                "timeoutSeconds": 30
+              },
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "control",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "phase": "control",
+                  "saveReturnedNormally": true,
+                  "status": "control_saved"
+                },
+                "processGroupID": 3128,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control.stdout.log",
+                "timeoutSeconds": 30
+              },
+              {
+                "arguments": [
+                  "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+                  "verify",
+                  "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio"
+                ],
+                "cwd": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio",
+                "elapsedSeconds": 0.033,
+                "observed": {
+                  "activeIdentityPreserved": true,
+                  "controlCandidateReopened": true,
+                  "controlExactCandidateBytes": true,
+                  "phase": "verify",
+                  "priorCompleteSnapshotPreserved": true,
+                  "priorExactBytesPreserved": true,
+                  "status": "verification_complete",
+                  "unrelatedProjectIDs": [
+                    "00000001-0000-4000-8000-000000000002",
+                    "00000001-0000-4000-8000-000000000001"
+                  ],
+                  "unrelatedRecordsPreserved": true
+                },
+                "processGroupID": 3130,
+                "returnCode": 0,
+                "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/verify.stderr.log",
+                "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/verify.stdout.log",
+                "timeoutSeconds": 30
+              }
+            ],
+            "saveErrorObservation": {
+              "errorChain": [
+                {
+                  "code": 512,
+                  "description": "The operation could not be completed. (NSCocoaErrorDomain error 512.)",
+                  "domain": "NSCocoaErrorDomain"
+                }
+              ],
+              "phase": "save",
+              "posixErrnoImmediatelyAfterSave": 5,
+              "posixErrnoResetBeforeSave": true,
+              "status": "save_threw",
+              "writeAttempted": true
+            },
+            "status": "passed"
+          }
+        ],
+        "schemaVersion": 1,
+        "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+        "sourcesUnchanged": true,
+        "status": "passed",
+        "totalTimeoutSeconds": 119.83534286400004
+      },
+      "independentSnapshotHashReconciliation": [
+        {
+          "mode": "before-rename",
+          "status": "passed",
+          "allChecksTrue": true,
+          "priorHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "candidateHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "afterHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "libraryHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "controlHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "hashesMatchExpected": true,
+          "returnCode": -9,
+          "hookCount": 1,
+          "events": [
+            {
+              "api": "renameat",
+              "destinationArgument": "projects.json",
+              "destinationDirFD": 3,
+              "hit": 1,
+              "hookState": "before-call",
+              "mode": "before-rename",
+              "pid": 3121,
+              "realRenameCalled": false,
+              "realReturnCode": null,
+              "returnedErrno": 0,
+              "schemaVersion": 1,
+              "sourceArgument": ".dat.nosyncC31.OaRwUR",
+              "sourceDirFD": 3,
+              "targetMatched": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json"
+            }
+          ]
+        },
+        {
+          "mode": "after-rename",
+          "status": "passed",
+          "allChecksTrue": true,
+          "priorHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "candidateHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "afterHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "libraryHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "controlHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "hashesMatchExpected": true,
+          "returnCode": -9,
+          "hookCount": 1,
+          "events": [
+            {
+              "api": "renameat",
+              "destinationArgument": "projects.json",
+              "destinationDirFD": 3,
+              "hit": 1,
+              "hookState": "after-success",
+              "mode": "after-rename",
+              "pid": 3125,
+              "realRenameCalled": true,
+              "realReturnCode": 0,
+              "returnedErrno": 0,
+              "schemaVersion": 1,
+              "sourceArgument": ".dat.nosyncC35.clBp6s",
+              "sourceDirFD": 3,
+              "targetMatched": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json"
+            }
+          ]
+        },
+        {
+          "mode": "rename-eio",
+          "status": "passed",
+          "allChecksTrue": true,
+          "priorHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "candidateHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "afterHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "libraryHash": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+          "controlHash": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+          "hashesMatchExpected": true,
+          "returnCode": 0,
+          "hookCount": 1,
+          "events": [
+            {
+              "api": "renameat",
+              "destinationArgument": "projects.json",
+              "destinationDirFD": 3,
+              "hit": 1,
+              "hookState": "rejected",
+              "mode": "rename-eio",
+              "pid": 3129,
+              "realRenameCalled": false,
+              "realReturnCode": null,
+              "returnedErrno": 5,
+              "schemaVersion": 1,
+              "sourceArgument": ".dat.nosyncC39.nuwozv",
+              "sourceDirFD": 3,
+              "targetMatched": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json"
+            }
+          ]
+        }
+      ],
+      "interpretation": "Each mode witnessed exactly one renameat for the exact owned projects.json target. Before rename, realRenameCalled=false and the candidate staging bytes were complete; after successful real rename, realReturnCode=0. Both stopped with SIGSTOP=19 and the owner killed the saved child group with SIGKILL, return code -9. Fresh unrestricted verification reopened prior before rename and complete candidate after rename. rename-eio separately rejected the target call with errno 5 and reopened the prior snapshot. All active identity/unrelated-record/control assertions passed."
+    },
+    "wrapper": {
+      "logStartLine": 3003,
+      "logEndLine": 3625,
+      "rawReport": {
+        "baseRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+        "commitInterruption": {
+          "arguments": [
+            "/usr/bin/python3",
+            "/home/runner/work/APP1/APP1/scripts/probe_library_commit_interruption.py",
+            "--helper",
+            "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+            "--output",
+            "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption",
+            "--source-revision",
+            "75e827f2ee3f99798d619aff62f3a5188b509428",
+            "--compile-manifest",
+            "/home/runner/work/_temp/atomic-library-write-linux/compile-manifest.json",
+            "--timeout-seconds",
+            "119.83534286400004"
+          ],
+          "cwd": "/home/runner/work/APP1/APP1",
+          "elapsedSeconds": 0.816,
+          "gracefulTerminationSeconds": 10,
+          "processGroupID": 3109,
+          "returnCode": 0,
+          "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption.stderr.log",
+          "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption.stdout.log",
+          "timeoutSeconds": 129.83534286400004
+        },
+        "commitInterruptionRequested": true,
+        "compileManifestSHA256": "efc6fb52ff3df27642afb738e5c89325a32b391bcb5adde41f8dcbb14affea60",
+        "diagnosticSHA256AfterProbe": {
+          "scripts/probe-library-commit-interposer.c": "e412914f9bb4c9d83d760e5327c618d5f70772d2111907ecbc8cc917c82fdc2a",
+          "scripts/probe_atomic_library_write.py": "de458619bfb13f18cefa32517a37276c003a4b4340cd42c10735374a962d02cb",
+          "scripts/probe_library_commit_interruption.py": "a1d5344fded8681209d39c6723a8a20d25b3b31966eedef03ad1ca160feabd1b",
+          "scripts/run_atomic_library_write_probe.py": "e2ab6c8eafef4ec3634aaf1dc0391a554b4a59abce6af1e5843961a1f55c021a"
+        },
+        "filesystemProvenance": {
+          "observations": [
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.002,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 2921,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-output-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-output-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644046,
+                "kind": "directory"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.002,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3133,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-probe-library-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-probe-library-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/probe/library/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644081,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3134,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-probe-control-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-probe-control-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/probe/control/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644088,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3135,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-before-rename-library-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-before-rename-library-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/library/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644117,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3136,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-before-rename-control-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-before-rename-control-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/before-rename/control/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644124,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3137,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-after-rename-library-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-after-rename-library-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/library/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644148,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3138,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-after-rename-control-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-after-rename-control-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/after-rename/control/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644146,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3139,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-rename-eio-library-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-rename-eio-library-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/library/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644159,
+                "kind": "regular-file"
+              }
+            },
+            {
+              "commands": [
+                {
+                  "arguments": [
+                    "/usr/bin/findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "cwd": "/home/runner/work/APP1/APP1",
+                  "elapsedSeconds": 0.001,
+                  "environmentOverrides": {
+                    "LANG": "C",
+                    "LC_ALL": "C"
+                  },
+                  "processGroupID": 3140,
+                  "requestedArguments": [
+                    "findmnt",
+                    "--json",
+                    "--target",
+                    "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+                    "--output",
+                    "TARGET,SOURCE,FSTYPE,MAJ:MIN",
+                    "--first-only"
+                  ],
+                  "returnCode": 0,
+                  "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-rename-eio-control-findmnt.stderr.log",
+                  "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/filesystem-commit-interruption-rename-eio-control-findmnt.stdout.log",
+                  "timeoutSeconds": 10
+                }
+              ],
+              "mountStat": {
+                "device": 64512,
+                "inode": 2
+              },
+              "requestedTargetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+              "selectedFilesystem": {
+                "deviceMajorMinor": "252:0",
+                "mountPoint": "/",
+                "source": "/dev/mapper/cow-root",
+                "type": "ext4"
+              },
+              "status": "observed",
+              "targetIdentityUnchangedDuringObservation": true,
+              "targetPath": "/home/runner/work/_temp/atomic-library-write-linux/commit-interruption/rename-eio/control/projects.json",
+              "targetStat": {
+                "device": 64512,
+                "deviceMajor": 252,
+                "deviceMinor": 0,
+                "inode": 2644166,
+                "kind": "regular-file"
+              }
+            }
+          ],
+          "schemaVersion": 1,
+          "scope": "Observed host targets only; no provider or power-loss durability claim"
+        },
+        "host": {
+          "machine": "x86_64",
+          "python": "3.12.3",
+          "system": "Linux"
+        },
+        "output": "/home/runner/work/_temp/atomic-library-write-linux",
+        "probe": {
+          "arguments": [
+            "/usr/bin/python3",
+            "/home/runner/work/APP1/APP1/scripts/probe_atomic_library_write.py",
+            "--helper",
+            "/tmp/atomic-library-write-build-kaqsws5s/atomic-library-write-probe",
+            "--output",
+            "/home/runner/work/_temp/atomic-library-write-linux/probe",
+            "--source-revision",
+            "75e827f2ee3f99798d619aff62f3a5188b509428",
+            "--compile-manifest",
+            "/home/runner/work/_temp/atomic-library-write-linux/compile-manifest.json"
+          ],
+          "cwd": "/home/runner/work/APP1/APP1",
+          "elapsedSeconds": 0.164,
+          "processGroupID": 3104,
+          "returnCode": 0,
+          "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/probe.stderr.log",
+          "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/probe.stdout.log",
+          "timeoutSeconds": 140
+        },
+        "revision": {
+          "arguments": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "/home/runner/work/APP1/APP1",
+          "elapsedSeconds": 0.001,
+          "processGroupID": 2922,
+          "returnCode": 0,
+          "stderrPath": "/home/runner/work/_temp/atomic-library-write-linux/source-revision.stderr.log",
+          "stdoutPath": "/home/runner/work/_temp/atomic-library-write-linux/source-revision.stdout.log",
+          "timeoutSeconds": 10
+        },
+        "schemaVersion": 1,
+        "sourceSHA256AfterProbe": {
+          "Sources/LightingCore/ARPlacementLayout.swift": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+          "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+          "Sources/LightingCore/Colorimetry.swift": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+          "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+          "Sources/LightingCore/LightOutputAdjustment.swift": "e9a6efa44a96d10ee39d0e9db797ad64c866fb61d46e8add98c08bff0b293616",
+          "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+          "Sources/LightingCore/LightingProjectDocument.swift": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+          "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+          "Sources/LightingCore/PortraitHeadMesh.swift": "2d43056a7eab9371126188e6b161000ca3696e812eca51f69945f19d2cf5740f",
+          "Sources/LightingCore/PortraitStudy.swift": "f1b4aadb74c89bcef57a353221ef7a279f13c87284bdf919bcb1fe345034fc71",
+          "Sources/LightingCore/ProjectLibrary.swift": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+          "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+          "Sources/LightingCore/ReferenceStudy.swift": "89410022bd473f40b0c65970715b00ce0639125b934c246513157a679cac6441",
+          "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+          "Sources/LightingCore/RoomPlacement.swift": "410f02c46d49c8b0f0fb2aaa2b25bbd0c93542714c4500f6db07a42d7572138e",
+          "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+          "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+          "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+          "Sources/LightingCore/SceneEditHistory.swift": "e291eab9e8f85341ea7b3c348e1b62ef8be9c73591e9141f3e720663ba4f7d3a",
+          "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+          "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+          "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+          "Sources/LightingCore/StudioDisplayName.swift": "0a9c19b880631b485f43089a6f0ab94dac0cfe1b128233099c063a7650badf09",
+          "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+          "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+          "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+          "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+          "Sources/LightingCore/StudyFloat32Eligibility.swift": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+          "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+          "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+          "Sources/LightingCore/SurfacePhotometry.swift": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+          "scripts/probe-atomic-library-write.swift": "7525763693d3ec3f58378e5fb643e9a1a68f2006fd1285609d52ffd0d0d0aa18"
+        },
+        "sourcesUnchangedDuringProbe": true,
+        "status": "passed"
+      }
+    },
+    "sourceVerification": "Six directly fetched inputs with declared CI SHA256 values were rehashed and match: StudyValidationFixtures.swift, the wrapper, EFBIG driver, commit-interruption driver, Swift helper and C interposer. Remaining compiled source/binary stability is the raw CI manifest/driver assertion, not an independently downloaded binary examination.",
+    "snapshotIdentity": {
+      "priorBytes": 3900,
+      "priorProjects": 3,
+      "priorSHA256": "b8d30a4953b1a2cab5fb29058fa44b5c2ad18ee4562e95489e718526f8c6a4ac",
+      "candidateBytes": 242569,
+      "candidateProjects": 64,
+      "candidateSHA256": "22033ce6a7c674b55735db33158b94075e8d818b54e59837b068a0ae1ec26213",
+      "applicationByteLimit": 8388608,
+      "diagnosticFixtureByteCeiling": 1048576,
+      "unrelatedProjectIDs": [
+        "00000001-0000-4000-8000-000000000002",
+        "00000001-0000-4000-8000-000000000001"
+      ],
+      "afterRenamePriorFlags": "priorCompleteSnapshotPreserved=false and priorExactBytesPreserved=false are expected because the complete candidate is the committed snapshot; candidate preservation flags are true."
+    }
+  },
+  "findings": [
+    {
+      "severity": "none",
+      "statement": "No mismatch between the reviewed completed-core evidence and the numerical/benchmark/Linux probe requirements was found."
+    },
+    {
+      "severity": "informational",
+      "statement": "The actual core host/compiler are Swift 6.4.2, Ubuntu 24.04.5 and Intel Xeon 6975P-C, not settings from prior revisions."
+    },
+    {
+      "severity": "informational",
+      "statement": "EFBIG is explicitly distinguished from ENOSPC; after-rename candidate preservation is explicitly distinguished from prior preservation."
+    },
+    {
+      "severity": "informational",
+      "statement": "The benchmark JSON omits a compiler-version field, but its same-job environment log supplies Swift 6.4.2; the C++ harness compiler version itself is not present."
+    }
+  ],
+  "limits": [
+    "No application or probe runtime was executed by worker059; this is independent completed-CI log/source reconciliation.",
+    "Shared Float32 C++ host math is not Metal execution or a GPU performance result.",
+    "Eight selected precision fixtures passed; generator output for 33 fixtures does not prove comparisons for all 33.",
+    "The benchmark is a short synchronous CPU shared-host diagnostic. It does not prove physical-device FPS, sustained frame rate, thermal behavior, resident memory, async UI cancellation scheduling or photographic calibration.",
+    "Deterministic frame byte equality was asserted by executed source and benchmark completion; raw frame buffers for each of the 56 repeated renders are not independently present in this log.",
+    "The persistence result concerns Linux ext4 and controlled EFBIG/process interruption/rename EIO. It does not establish physical low storage, power-loss storage durability, iOS filesystem/provider behavior or protection against external writers.",
+    "Artifact ZIP payloads were not downloaded in this worker. Metadata/digests were matched to upload receipts, and full emitted JSON is retained here.",
+    "SourceHash matches directly verify six declared source inputs only; all other source and binary stability assertions are preserved as CI-reported evidence.",
+    "Required Apple native and UI acceptance remains pending outside this report (134 native and 35 required UI methods in the assigned current inventory). No native pass, platform accessibility audit, physical calibration, release readiness or milestone promotion is implied.",
+    "Worker058 owns whole-suite unit counts and twelve PPM image-hash reconciliation; those were intentionally not duplicated."
+  ],
+  "recommendation": "Retain this report as current portable numerical/performance/Linux persistence evidence for 75e827f2. Continue independent Apple native/Metal/UI and screenshot accounting before any M03 completion decision."
+}

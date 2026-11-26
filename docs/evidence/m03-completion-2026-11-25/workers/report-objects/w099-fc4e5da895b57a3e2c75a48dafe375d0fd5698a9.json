@@ -1,0 +1,174 @@
+{
+  "worker": "worker099",
+  "context_path": "/root/w007_review_coordinator/w099_optics_repeatability_test_strength",
+  "repository": "mirzotipi-wq/APP1",
+  "base_revision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "status": "complete",
+  "review_type": "remote pinned-source review only",
+  "scope": "Strength of all ten existing StudioOpticsUITests repeatability methods and the actual model-backed optics controls under m02-m03-code-v2. No physical calibration, AR expansion, readiness/budget changes, or current CI reconciliation.",
+  "startup_documents": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "inspected_sources": [
+    {
+      "path": "UITests/StudioOpticsUITests.swift",
+      "blob_sha": "096f1c7b863fa6256f785c5aec077a1f610a115c"
+    },
+    {
+      "path": "App/OpticsInspector.swift",
+      "blob_sha": "b68905731de54246238e1ab48428b7b7aa8ae0d5"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b"
+    },
+    {
+      "path": "App/StudioSlider.swift",
+      "blob_sha": "39f522e3858cd60e94c4af026817bcb1810de818"
+    },
+    {
+      "path": "App/DistanceValueButton.swift",
+      "blob_sha": "4cc7600426fec01fccbe93a750d8c656354b18c8"
+    },
+    {
+      "path": "App/ProjectStore.swift",
+      "blob_sha": "531f967fe2f532b7f68f728bcda677c75d8c0253"
+    },
+    {
+      "path": "App/StudioPreferences.swift",
+      "blob_sha": "05439f428c90b027c476cf889c3d1145f955282f"
+    },
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "blob_sha": "c45ab851966e145c6e4f3b3ac2bee3d5dbd3b1c5"
+    },
+    {
+      "path": "Sources/LightingCore/StudioNumericInput.swift",
+      "blob_sha": "6ea4208e6b787d1c9a418a83f843d16db2d3912a"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+    }
+  ],
+  "required_methods": [
+    "testOpticsEditingUndoRedoAndRelaunch",
+    "testOpticsRepeatability02",
+    "testOpticsRepeatability03",
+    "testOpticsRepeatability04",
+    "testOpticsRepeatability05",
+    "testOpticsRepeatability06",
+    "testOpticsRepeatability07",
+    "testOpticsRepeatability08",
+    "testOpticsRepeatability09",
+    "testOpticsRepeatability10"
+  ],
+  "checks": [
+    {
+      "case": "OPTICS-01",
+      "result": "source check satisfied",
+      "detail": "Exactly ten named XCTest methods each call the same runOpticsEditingUndoRedoAndRelaunch implementation. This is ten independent repetitions of one workflow, as the repeatability names and contract require, rather than ten distinct optics scenarios."
+    },
+    {
+      "case": "OPTICS-02",
+      "result": "source check satisfied",
+      "detail": "Each invocation constructs XCUIApplication with -ui-testing, en/en_US and a newly generated UUID KEYFILL_UI_TEST_ID. ProjectStore uses that UUID in its app-private test directory; StudioPreferences uses the same UUID in its isolated defaults suite. The same application object/environment is retained across terminate/launch within a case, so persistence reloads the same fixture. Different methods do not reuse saved projects or unit preferences. Isolation is DEBUG-gated."
+    },
+    {
+      "case": "OPTICS-03",
+      "result": "source check satisfied",
+      "detail": "The test selects Rectangular softbox, asserts its value, exactly one emitterWidth native slider, label Width in meters and initial value 0.6 m. It adjusts width, waits for a changed readout and enabled Undo, then asserts a nontrivial edited value before undo/redo checks. This prevents no-op width edits from passing the round trip."
+    },
+    {
+      "case": "OPTICS-04",
+      "result": "source check satisfied",
+      "detail": "The width accessibility value is model-backed: StudioTrackingSlider.accessibilityValue reads editing.read(); OpticsInspector supplies DistanceValueButton.formattedValue; StudioView binds optics to the light identified by UUID, validates optics and writes scene.lights[i].optics. It does not use UIKit percent text as the expected model value."
+    },
+    {
+      "case": "OPTICS-05",
+      "result": "source check satisfied",
+      "detail": "Undo must be enabled/hittable and restores the captured initial width while preserving Rectangular softbox, explicitly rejecting undo of the preceding emitter selection. Redo must be enabled/hittable and restores the exact captured edited-width readout. Optics menu and slider edits feed StudioView's shared owner-scoped SceneEditHistory."
+    },
+    {
+      "case": "OPTICS-06",
+      "result": "source check satisfied",
+      "detail": "Save taps the real saveProject control and waits for Saved locally before terminating. StudioView assigns saved only after await store.perform(request) and adoption of the result; ProjectStore performs the real library save. Relaunch waits for Saved locally then checks both persisted emitter kind and width, so default scene reconstruction alone cannot satisfy the edited-width assertion."
+    },
+    {
+      "case": "OPTICS-07",
+      "result": "source check satisfied",
+      "detail": "The normalized 0.5 gesture is approximate input, intentionally not an exact midpoint oracle. Exact comparisons apply to initial 0.6 m and captured model readouts after Undo, Redo and reload. StudioNumericInput.formattedValue uses the stored Double's round-trip digits rather than a rounded compact display. Tests do not claim exact UIKit finger placement or photometric accuracy."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No new concrete defect identified in the requested source/test-strength scope. The ten methods contain meaningful model-backed change, undo/redo and persistence assertions with independent storage scopes. Their supported claim is repeatability of this emitter-kind/width workflow, not complete optics or scene invariant coverage.",
+  "invariant_scope": {
+    "verified_by_these_assertions": [
+      "selected inspector emitter kind",
+      "width readout change",
+      "width undo restores baseline without reverting emitter selection",
+      "redo restores captured edited width",
+      "saved/reopened emitter kind and edited width",
+      "single native width slider accessibility label/value"
+    ],
+    "not_established_by_these_ten_methods": [
+      "ten distinct editing scenarios",
+      "all other light fields and untouched-light invariants",
+      "stable selected UUID across save/relaunch",
+      "aim-target, height or roll editing",
+      "exact slider midpoint mapping",
+      "all precision/locale/bounds/accessibility contracts",
+      "serialized file byte equality",
+      "physical photometry, calibration or AR behavior"
+    ]
+  },
+  "limitations": [
+    "No host filesystem or Apple toolchain was available to this worker. agent_cycle.py check/next, build, native tests and UI tests were not executed.",
+    "No runtime result or screenshot artifact was fetched. Parent-reported optics 10/10 pass is not independently confirmed or presented as this worker's execution.",
+    "Current CI/status reconciliation and known startup readiness/budget issues were explicitly outside this packet.",
+    "Broader precision, scene history, selection, corruption, atomic-write and other M03 workflows must be assessed by their own required suites; their pass/fail status is not inferred here.",
+    "No source, tree, commit, branch or ref was changed. The only authorized write is this unreferenced JSON report blob."
+  ],
+  "suggested_changes": [],
+  "runtime_claims": false,
+  "files_changed": []
+}

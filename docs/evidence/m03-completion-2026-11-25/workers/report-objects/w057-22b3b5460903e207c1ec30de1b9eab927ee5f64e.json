@@ -1,0 +1,150 @@
+{
+  "worker": "w057",
+  "context_path": "/root/w007_review_coordinator/w057_frame_cache_lru_budgets",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "StudyFrameCache LRU recency, count/pixel/mask budgets, replacement accounting, invalid and oversized admission, and overflow safety",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blob_sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "read": "complete remote UTF-8 content at pinned ref"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "blob_sha": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84",
+      "read": "complete remote UTF-8 content at pinned ref"
+    }
+  ],
+  "checks": [
+    {
+      "check": "LRU recency",
+      "result": "Source-reviewed: a successful lookup removes and appends the entry without changing costs; a miss returns before mutation. Count-based admission removes index zero, preserving least-recently-used eviction.",
+      "test_methods": [
+        "testHitPromotesRecencyAndMissDoesNotProtectOldestEntry",
+        "testEntryLimitBoundsZeroCostValues"
+      ]
+    },
+    {
+      "check": "Independent count, pixel and mask limits",
+      "result": "Source-reviewed: positive immutable limits; insertion evicts while count is at capacity or either independently computed remaining byte budget is insufficient. Tests include separate pixel and mask pressure and mixed production-sized payloads.",
+      "test_methods": [
+        "testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts",
+        "testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit",
+        "testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts",
+        "testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes"
+      ]
+    },
+    {
+      "check": "Replacement accounting",
+      "result": "Source-reviewed: admitted replacements remove the old entry and both cost charges before evaluating other evictions, then append as most recent. Smaller and larger replacements have corresponding regression assertions.",
+      "test_methods": [
+        "testReplacementChargesNewCostsOnlyAndBecomesMostRecent",
+        "testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries"
+      ]
+    },
+    {
+      "check": "Invalid and oversized entries",
+      "result": "Source-reviewed: negative or individually oversized pixel/mask costs return false before key lookup/removal, so rejection preserves old value, costs, and recency. Tests inspect both replacement and new-key rejections, Int.min/Int.max boundaries, and subsequent eviction without lookup disturbing the original cache.",
+      "test_methods": [
+        "testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges"
+      ]
+    },
+    {
+      "check": "Overflow safety",
+      "result": "Source-reviewed: guarding 0 <= incoming <= maximum makes maximum - incoming safe. Eviction leaves existing totals <= that remainder before addition; therefore resulting totals remain representable and <= each maximum, including Int.max. Removal subtracts an included nonnegative charge. No capacity reservation occurs for Int.max maximumCount.",
+      "test_methods": [
+        "testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow"
+      ]
+    },
+    {
+      "check": "Selective invalidation",
+      "result": "Source-reviewed: reverse-index removal avoids shifted-index errors, subtracts both byte charges, and preserves survivor ordering. Full removal, empty removal, reuse, and later survivor eviction are asserted.",
+      "test_methods": [
+        "testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency"
+      ]
+    },
+    {
+      "check": "Source test inventory",
+      "result": "Read all 12 XCTest test methods; no tests executed.",
+      "test_methods": [
+        "testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts",
+        "testEntryLimitBoundsZeroCostValues",
+        "testHitPromotesRecencyAndMissDoesNotProtectOldestEntry",
+        "testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit",
+        "testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts",
+        "testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes",
+        "testReplacementChargesNewCostsOnlyAndBecomesMostRecent",
+        "testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries",
+        "testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges",
+        "testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow",
+        "testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency",
+        "testEquivalentNonHashableKeysReplaceAndFindTheSameEntry"
+      ]
+    },
+    {
+      "check": "Instruction and acceptance context",
+      "result": "Read AGENTS.md, all eight mandatory startup documents, and m02-m03-code-v2 acceptance. Review conclusions are scoped to this cache container and its test source; no milestone promotion or runtime evidence is asserted."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete defect found within the assigned source-review scope. The implementation maintains LRU order and independent nonnegative budget totals across admission, replacement, lookup, and selective removal.",
+  "limitations": [
+    "Host unavailable. No scripts, builds, tests, benchmarks, or native execution were run.",
+    "Test source coverage is not a runtime pass; runtime results and CI freshness remain the integration lead's responsibility.",
+    "Owner-supplied payload costs are trusted by this generic container. Engine cost construction, cache-key semantics, render cancellation, and backend integration were excluded by assignment.",
+    "Working-tree, branch, recent commit, and live CI inspection were not performed in this pinned remote-file review.",
+    "No source, tree, commit, or reference mutations were made. This unreferenced report blob is the only authorized write."
+  ],
+  "status": "complete"
+}

@@ -1,0 +1,136 @@
+{
+  "worker": "w064",
+  "context_path": "/root/w007_review_coordinator/w064_reference_png_encoding",
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "ReferencePNG ancillary-chunk filtering, retained-chunk fidelity, malformed framing, bounded input and offset arithmetic; requested image-encoding assumptions assessed for applicability.",
+  "status": "complete",
+  "inspected_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "Sources/LightingCore/ReferencePNG.swift",
+      "blob_sha": "4482337e470a5875d390e9604b101b06c57be295",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    },
+    {
+      "path": "Tests/LightingCoreTests/ReferencePNGTests.swift",
+      "blob_sha": "df2eb64b0f2a37cd1113b56248acd8f99b628a55",
+      "inspection": "Read full returned UTF-8 file at base_sha",
+      "fetch_succeeded": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "Actual component responsibility",
+      "method": "Static source/test review",
+      "result": "ReferencePNG.metadataFree is a filter for freshly encoded single-image PNG derivatives. It is not an encoder or arbitrary-source decoder. Its documented contract delegates pixel and CRC validation to the platform codec."
+    },
+    {
+      "name": "Input size, signature and framing",
+      "method": "Static source review",
+      "result": "Input byte count is limited before the UInt8 copy. Signature is checked, every iteration requires at least 12 remaining bytes, and payload length must fit the remaining bytes before chunk end is computed."
+    },
+    {
+      "name": "Offset overflow bounds",
+      "method": "Static source review for documented 64-bit iOS platform",
+      "result": "Four input bytes form an unsigned 32-bit length representable by 64-bit Int. The length guard proves offset + 12 + length <= bytes.count, and offset advances by at least 12. No unchecked width, height or row-size multiplication exists in these files."
+    },
+    {
+      "name": "Structural rejection and termination",
+      "method": "Static source review",
+      "result": "Requires first chunk IHDR of length 13; rejects duplicate IHDR, nonletter type bytes, incomplete headers/payloads/trailers, missing nonempty IDAT, nonzero IEND payload, absent IEND, trailing bytes and unknown critical chunks. IEND returns only when it ends exactly at input end."
+    },
+    {
+      "name": "Retained bytes and CRC",
+      "method": "Static source review",
+      "result": "Copies complete retained chunks byte-for-byte, including their original CRC bytes. CRC recalculation or verification is deliberately absent under the fresh-platform-encoding contract. Retained color/transparency chunks include sRGB, gAMA, cHRM, iCCP and tRNS. Text/EXIF and unknown ancillary chunks are dropped."
+    },
+    {
+      "name": "Existing test coverage",
+      "method": "Read tests only; not executed",
+      "result": "Three XCTest methods cover removal of eXIf/tEXt/iTXt/zTXt, sRGB preservation, idempotence, six malformed/trailing cases, unknown critical rejection and configured byte-limit rejection. Test fixtures explicitly use synthetic zero CRCs and do not claim valid pixel decoding."
+    },
+    {
+      "name": "Encoding-specific requested checks",
+      "method": "Applicability review",
+      "result": "PNG dimensions, row sizes, scanline filter bytes, Adler checksum and deflate block construction are inapplicable: neither scoped file encodes images, decompresses IDAT or interprets IHDR dimensions."
+    },
+    {
+      "name": "Contract/startup documentation",
+      "method": "Read mandatory startup documents and m02-m03-code-v2",
+      "result": "Preserved scope and evidence limits. M03 remains active in the inspected state; this review makes no milestone or runtime-acceptance claim."
+    }
+  ],
+  "findings": [],
+  "observations": [
+    "The initial task's encoder description does not match these files at base_sha. The coordinator confirmed review of actual filtering behavior and no scope expansion.",
+    "The filter is not a complete PNG validator: dimension semantics, legal color/depth combinations, chunk-order semantics, CRCs and compressed pixel validity remain outside its documented role."
+  ],
+  "limitations": [
+    "Host unavailable. No repository scripts, swift test, compiler, image decoder, application, CI or runtime verification were executed by this worker.",
+    "No local git status, branch, working-tree or recent-commit inspection was available; remote source was pinned to the assigned base_sha.",
+    "No call-site or platform-codec implementation review was performed; only the assigned source/test files and startup/acceptance documents were inspected.",
+    "Source review found no concrete defect within the declared fresh-platform-encoded input contract; this is not evidence that arbitrary hostile PNG files are valid or safely decoded.",
+    "No source, tree, branch or ref changes were made. The sole write is this unreferenced JSON report blob."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "worker": "w007",
+  "context_path": "/root/w007_review_coordinator",
+  "status": "complete_for_source_and_syntax_review",
+  "phase": "Native-only direct coordinate diagnostic workflow admission review",
+  "generated_at_utc": "2026-11-26 07:06:31 UTC",
+  "repository": "mirzotipi-wq/APP1",
+  "authorization": "Root requested coordinator review; unreferenced report only. No ref, source commit, workflow trigger or app change performed.",
+  "base_revision": "19f75af24fc274b44aa0119e4e49071a5aa0b1f9",
+  "workflow_blob_sha": "72650a671be38c94d95d952dd565deb5ae38afe9",
+  "request_blob_sha": "411c77fc45fbfdc9bd85e3155d58000a0057d611",
+  "baseline_focused_workflow_blob_sha": "ae8a924938c405cbf363eab892c69a2fcc39dcab",
+  "checks": {
+    "base_tree": {
+      "entries": 2208,
+      "truncated": false,
+      "source_blobs": 187
+    },
+    "request": {
+      "unique_source_paths": 187,
+      "missing_paths": [],
+      "mode_differences": [],
+      "only_source_difference": {
+        "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+        "before": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae",
+        "after": "06b98da41ac77d64bd4129f7bb3d89876a9ebe30"
+      },
+      "validator_pins": 2,
+      "validator_matches": true,
+      "own_workflow_sha_matches": true,
+      "total_pinned_files": 190
+    },
+    "native_job_body": {
+      "exactly_equal_to_reviewed_V2_after_authorized_substitutions": true,
+      "substitutions": [
+        "request path",
+        "admission purpose",
+        "own workflow path",
+        "scope description"
+      ],
+      "jobs": [
+        "simulator"
+      ],
+      "no_ui_job": true,
+      "job_timeout_minutes": 90,
+      "native_test_step_timeout_minutes": 18,
+      "complete_native_inventory": 137,
+      "unchanged_builds_selectors_assertions_accounting_finalized_export_and_uploads": true
+    },
+    "admission": [
+      "Correct repository and diagnostic branch required",
+      "Request bounds/schema/purpose and unique187 paths required",
+      "Git tracked source path/mode/blob set checked",
+      "Working files must be regular, not symlinks, with matching execution bits and exact Git blob hashes",
+      "Both consumed validators and own workflow pinned",
+      "HEAD must equal GITHUB_SHA",
+      "Exact admitted source/modes retained in harness-inputs.json"
+    ],
+    "trigger": {
+      "branch": "m03-evidence-inspection",
+      "paths": [
+        ".github/workflows/native-coordinate-validation.yml",
+        "docs/evidence/m03-completion-2026-11-25/native-coordinate-request.json"
+      ],
+      "concurrency_group": "keyfill-native-coordinate-${{ github.ref }}",
+      "cancel_in_progress": false,
+      "permissions": {
+        "contents": "read"
+      }
+    },
+    "local_syntax": {
+      "executor_recovered": true,
+      "temp_directory": "/dev/shm/app1-m03-coordinator-review/native-coordinate",
+      "yaml_parse": "passed (BaseLoader, preserving on key)",
+      "bash_n_run_blocks": 12,
+      "embedded_python_ast_blocks": 3,
+      "workflow_git_blob_recomputed": "72650a671be38c94d95d952dd565deb5ae38afe9",
+      "exit_code": 0
+    }
+  },
+  "findings": [],
+  "disposition": "No concrete source or syntax blocker for the focused native-only run. This report does not establish candidate compilation or passing tests.",
+  "limitations": [
+    "No macOS command or workflow was executed in this review.",
+    "The source candidate retains the unresolved Default size/font-fit risk and strict gates; actual137 native execution remains required.",
+    "Copied finalization logic still requires Info.plist and fails an unfinished result; root separately handles broader evidence preservation.",
+    "Focused validation is not final full main acceptance; required35UI and24 original images remain unmet."
+  ],
+  "new_contexts_created": 0
+}

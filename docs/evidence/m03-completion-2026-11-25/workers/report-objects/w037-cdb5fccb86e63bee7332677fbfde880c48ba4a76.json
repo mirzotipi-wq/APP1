@@ -1,0 +1,134 @@
+{
+  "worker": "w037",
+  "context_path": "/root/w007_review_coordinator/w037_camera_inspector_commits",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Camera inspector position and focal controls, exact units, bounds, and editing callbacks; source review excludes camera matrices and the shared numeric parser.",
+  "actual_paths": [
+    {
+      "path": "App/CameraInspector.swift",
+      "blob_sha": "16e7a92479542541203687c30ccfbbb9d21d15d5",
+      "role": "assigned review"
+    },
+    {
+      "path": "UITests/PrecisionEditingUITests.swift",
+      "blob_sha": "d0478631b8569dbf9636607312e812cb7dbbb7a7",
+      "role": "assigned review"
+    },
+    {
+      "path": "Tests/LightingCoreTests/CameraFramingTests.swift",
+      "blob_sha": "12da7cbc4a87e202d7863973c3a9d8e6077e892f",
+      "role": "assigned review"
+    },
+    {
+      "path": "App/DistanceValueButton.swift",
+      "blob_sha": "4cc7600426fec01fccbe93a750d8c656354b18c8",
+      "role": "call-site trace"
+    },
+    {
+      "path": "App/PrecisionValueButton.swift",
+      "blob_sha": "e252af60d0662281814d9efae51892954939fbc5",
+      "role": "call-site trace"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "role": "call-site trace"
+    },
+    {
+      "path": "App/StudioSlider.swift",
+      "blob_sha": "39f522e3858cd60e94c4af026817bcb1810de818",
+      "role": "call-site trace"
+    },
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "role": "startup or acceptance context"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "role": "startup or acceptance context"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Pinned source and instruction review",
+      "method": "Remote GitHub fetch_file at the exact base SHA; read startup documents and m02-m03-code-v2",
+      "result": "completed source inspection"
+    },
+    {
+      "name": "Camera position units and ranges",
+      "method": "Read CameraInspector distanceSlider and DistanceValueButton conversion/binding path",
+      "result": "Position components remain SI; display units are converted for exact input/readout; exact inputs use Position.coordinateRange; slider usual bounds are expanded through the shared helper. No defect identified in this scope."
+    },
+    {
+      "name": "Focal control bounds and presets",
+      "method": "Read CameraInspector slider and preset actions plus cameraLensBinding",
+      "result": "Both focal controls use CameraLens.focalLengthRange; preset values are 24, 35, 50, 85 and 135 mm; same-value presets are no-ops; parent binding validates the resulting lens. No defect identified."
+    },
+    {
+      "name": "Editing callbacks and undo connection",
+      "method": "Trace CameraInspector callbacks to StudioView editHandler/editChanged and cameraPositionBinding/cameraLensBinding",
+      "result": "Sliders forward stable field IDs; presets bracket a mutation with true/false callbacks; parent identity includes project and operation generation; exact-value assignments use the scene binding's remember path outside active edits. No missing callback defect identified."
+    },
+    {
+      "name": "Exact camera test coverage",
+      "method": "Read testExactCameraFocalLengthUndoRedoAndReopen and CameraFramingTests without execution",
+      "result": "UI test asserts 73.125 mm exact entry, slider spoken value, Undo, Redo and saved relaunch. Core tests include invalid focal values, pose/lens persistence, and schema migration. Presence of assertions is not a test pass."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host and Apple runtime unavailable; no scripts, builds, unit tests, UI tests, screenshots or accessibility sessions executed.",
+    "Source-only bounded review; no runtime, CI, milestone acceptance or release-readiness claim.",
+    "Shared numeric parser and camera matrices intentionally excluded.",
+    "The assigned precision UI test covers exact focal editing but does not itself cover camera-coordinate imperial input, imported-coordinate slider bounds or focal preset no-op history; those scenarios may be covered elsewhere and were not exhaustively searched.",
+    "Support files were read only to trace the assigned controls; no source, tree, branch or ref changed."
+  ],
+  "status": "complete"
+}

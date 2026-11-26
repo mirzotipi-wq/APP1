@@ -1,0 +1,163 @@
+{
+  "worker": "w061",
+  "context_path": "/root/w007_review_coordinator/w061_metal_compute_contract",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "MetalStudyRenderer buffer layouts and allocation bounds, dispatch coverage, command completion/error handling, raw compute output validation, and corresponding test source. Backend fixture selection and downgrade policy excluded (w060).",
+  "method": "Read-only GitHub source retrieval at exact pinned commit; static source/test review. No host commands, builds, tests, scripts, or Metal execution.",
+  "actual_paths": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob_sha": "a1d60cd94d0b016bb7e06e5e1a8ad7231135865d"
+    },
+    {
+      "path": "NativeTests/StudyRendererTests.swift",
+      "blob_sha": "20519ae77dc2c97226a2fea40e78388ddeb73836"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    },
+    {
+      "path": "App/ReferenceStudy.metal",
+      "blob_sha": "09fb9ae35ebeb27eac28bec32e27cd18501fd9e4"
+    },
+    {
+      "path": "App/StudyKernel.h",
+      "blob_sha": "df3175546623508b192d29210dcd9b51efce4c37"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+      "blob_sha": "5df398240d096f3fe8499f81fc6be82fde1121a8"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyParityMetricsTests.swift",
+      "blob_sha": "3b290ccb450ad4d1d00a0f10a1b64a8a057441ea"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ReferenceStudyTests.swift",
+      "blob_sha": "6bea31ecac52420612c88c8542ef84b4c99882cd"
+    },
+    {
+      "path": "project.yml",
+      "blob_sha": "a1e016274c267ab045876737965b49fa900b0934"
+    }
+  ],
+  "startup_documents": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "checks": [
+    {
+      "id": "bounded_compute_input",
+      "result": "source-consistent",
+      "evidence": [
+        "Sources/LightingCore/ReferenceStudy.swift: StudySetup.init, StudyComputeInput.init",
+        "Sources/LightingCore/Scene.swift: LightingScene.validated"
+      ],
+      "detail": "Compute input uses interactive quality and validates width 24...192, divisible by 3, before computing height or allocating pixel storage. Height is width * 2 / 3, so maximum output is 192 * 128 * 4 = 98,304 bytes and dimension conversions fit UInt32. Scene validation bounds lights to 12. Interactive rectangular lights contribute at most 64 samples each, making 768 samples / 2,304 float4 rows / 36,864 sample bytes. Areas contribute at most 36 float4 rows / 576 bytes, and parameters contain six float4 rows / 96 bytes. These are payload bounds inferred from source, not device memory measurements."
+    },
+    {
+      "id": "buffer_contract",
+      "result": "source-consistent",
+      "evidence": [
+        "App/MetalStudyRenderer.swift: compute, buffer",
+        "App/ReferenceStudy.metal: keyfillStudy",
+        "App/StudyKernel.h: kfStudyPixel",
+        "Sources/LightingCore/ReferenceStudy.swift: computeSamples, computeAreas, StudyComputeInput"
+      ],
+      "detail": "Host indices 0...4 match shader parameters/samples/areas/output/dimensions. Swift SIMD4<Float> rows and shader float4 rows are consistent; three rows are produced and consumed per sample and per area. Empty sample/area buffers bind one zero row while shader counts remain zero. Output uchar4 indexing matches four bytes per pixel; dimensions use SIMD2<UInt32>/uint2."
+    },
+    {
+      "id": "dispatch_coverage",
+      "result": "source-consistent",
+      "evidence": [
+        "App/MetalStudyRenderer.swift: compute threadgroup arithmetic",
+        "App/ReferenceStudy.metal: keyfillStudy"
+      ],
+      "detail": "Positive group width is bounded by pipeline maximum threads. Group height is at least one and capped by both eight and maximumThreads/groupWidth, keeping the product within the pipeline limit. Rounded-up X/Y group counts cover all validated pixels. Shader rejects either out-of-range gid component before writing rgba[gid.y * width + gid.x], so excess edge threads cannot write outside the output buffer."
+    },
+    {
+      "id": "command_completion",
+      "result": "source-consistent",
+      "evidence": [
+        "App/MetalStudyRenderer.swift: compute"
+      ],
+      "detail": "Nil buffers, command buffers, or encoders throw before submission. The zero-width threadgroup guard ends encoding and throws. The normal path ends encoding, commits, waits for completion, and requires command.status == .completed before copying shared memory. Noncompleted/error commands are rejected with MetalStudyError.command. No post-submission read occurs before the completion check. Detailed Metal error diagnostics are not preserved, but no correctness failure was identified from this."
+    },
+    {
+      "id": "raw_compute_validation",
+      "result": "source-consistent",
+      "evidence": [
+        "Sources/LightingCore/ReferenceStudy.swift: StudyImage.fromComputeRGBA",
+        "App/StudyKernel.h: kfInvalid, kfDisplay, kfStudyPixel"
+      ],
+      "detail": "Decoder rejects invalid dimensions and incorrect byte count before allocating decoded arrays. Alpha 0 is accepted only with exact magenta RGB and is converted to opaque alpha while recording the explicit unsupported mask. Alpha 255 is valid, including ordinary opaque magenta. Other alpha values are rejected. Kernel output paths return either opaque uchar4 values or the defined magenta/alpha-zero flag."
+    },
+    {
+      "id": "test_source_review",
+      "result": "reviewed-not-executed",
+      "evidence": [
+        "NativeTests/StudyRendererTests.swift: testMetalMatchesCPUOnAvailableDevice",
+        "Tests/LightingCoreTests/StudyComputeInputTests.swift",
+        "Tests/LightingCoreTests/StudyParityMetricsTests.swift",
+        "Tests/LightingCoreTests/ReferenceStudyTests.swift"
+      ],
+      "detail": "Native test source invokes the real renderer's raw fixture path and compares CPU parity, explicitly skipping when no device exists. Portable test source checks float4 stride, parameter/sample/area layout, finite packed values, empty lights, invalid widths/camera, malformed raw alpha and flag colors, exact output byte count, Int.max rejection, and explicit mask parity including swapped invalid flags. These source assertions are evidence of intended coverage only; no passing test result is asserted."
+    }
+  ],
+  "findings": [],
+  "conclusion": "No concrete must-fix defect identified in the scoped compute contract at the pinned revision.",
+  "limitations": [
+    "Host/toolchain was unavailable by assignment. agent_cycle.py check/next, repository checkout status, Swift tests, native builds, and Metal execution were not performed.",
+    "No GPU/device performance, physical memory, runtime parity, image fidelity, or milestone completion claim is made.",
+    "Metal allocation/command failure injection and device-specific threadgroup behavior were not executed; the review follows source guards only.",
+    "Native parity source uses width 96; an exhaustive device execution matrix of all permitted resolutions and resource failures was not reviewed or run.",
+    "Backend fixture selection, precision routing, persistent CPU downgrade and cache behavior were excluded as assigned to w060.",
+    "Repository startup documents were read for context; historical evidence and their status claims were not independently revalidated.",
+    "No source, tree, commit, or ref was changed. The only requested write is this unreferenced report blob."
+  ],
+  "status": "complete"
+}

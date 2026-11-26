@@ -1,0 +1,124 @@
+{
+  "worker": "w028",
+  "context_path": "/root/w007_review_coordinator/w028_display_names_unicode",
+  "review_kind": "same-context independent fix followup",
+  "distinct_worker_count_increment": 0,
+  "repository": "mirzotipi-wq/APP1",
+  "base_sha": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+  "original_review_base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "original_report_blob_sha": "f5f341e40d35b6b4d0e892c992f1ac47faf82f12",
+  "task": "Independently review the U+2800 display-content fix and added/expanded core/native regression assertions.",
+  "focus": "Readable fallback for blank-only names; preservation of mixed visible Unicode and legacy stored data; no broader duplicate-name identity policy review.",
+  "inspected_commit": {
+    "sha": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+    "method": "github_fetch_commit; actual returned diff and changed-file list inspected",
+    "changed_paths": [
+      "NativeTests/ProjectLibraryPresentationTests.swift",
+      "Sources/LightingCore/StudioDisplayName.swift",
+      "Tests/LightingCoreTests/StudioDisplayNameTests.swift"
+    ]
+  },
+  "inspected_paths": [
+    {
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "blob_sha": "d5a8f4876b4e81154c6ef9a02cdc190a1b001f9d",
+      "inspection": "Full remote candidate file"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioDisplayNameTests.swift",
+      "blob_sha": "653b5a81e5a153d56b309e97af1f62342b273bc8",
+      "inspection": "Full remote candidate file"
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "blob_sha": "d47bef82721047fda726af47412a7cc07dfee511",
+      "inspection": "Full remote candidate file; scope focused on changed fallback/visible-script methods"
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "inspection": "Full remote candidate file fetched; normalization/init/validation dependency traced"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Production fix minimality",
+      "method": "Actual commit diff and source review",
+      "result": "Only hasDisplayContent behavior changes: U+2800 no longer establishes display content. No scalar is stripped from a name that otherwise has visible content; existing sanitization, truncation and bounds are unchanged."
+    },
+    {
+      "check": "Original reproduction",
+      "method": "Static control-flow tracing; not executed",
+      "result": "For bounded U+2800-only inputs, newInput now reaches NameError.empty, display returns empty and label selects its contextual fallback."
+    },
+    {
+      "check": "New core empty-name regression",
+      "method": "Assertion review",
+      "result": "Covers one blank, repeated blanks and mixtures with ordinary whitespace/ZWJ/VS16, checking rejection, display emptiness and fallback selection."
+    },
+    {
+      "check": "Mixed visible text and legacy preservation",
+      "method": "Assertion and dependency review",
+      "result": "Core tests retain U+2800 in braille, ordinary text and around visible text; legacy test asserts stable ID, exact name scalars, visible fallback and identical sorted JSON round-trip bytes. Existing international/emoji tests remain present."
+    },
+    {
+      "check": "Expanded native fallback regression",
+      "method": "Trace test helper into ProjectLibrary.init and normalizedName",
+      "result": "New padded mixed fixture is normalized before presentation; its final assertion incorrectly compares stored scalars to the pre-normalization input. Concrete source-derived failure recorded as w028-F2."
+    },
+    {
+      "check": "Expanded native visible-script regression",
+      "method": "Assertion review",
+      "result": "Adds braille spacing and ordinary text containing U+2800 to exact displayed/stored scalar checks; no issue identified in those added cases."
+    },
+    {
+      "check": "Inventory scope",
+      "method": "Actual diff inspection",
+      "result": "Two core test methods added; existing native methods expanded. Whole-suite totals supplied as 359 core/134 native were not independently enumerated or executed by this review."
+    }
+  ],
+  "historical_findings": [
+    {
+      "id": "w028-F1",
+      "severity": "P2",
+      "title": "Braille blank-only names bypass empty-name validation and visible fallback",
+      "original_base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+      "status": "addressed_by_candidate_source_pending_runtime_validation",
+      "fix_candidate_sha": "61465fb6c1894cc7d508ae3472ba08c0b6d7b644",
+      "history_preserved": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "w028-F2",
+      "severity": "P2",
+      "must_fix_before_required_test_acceptance": true,
+      "title": "Expanded native fixture compares normalized stored data to untrimmed input",
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "line": 55,
+      "method": "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+      "reproduction": {
+        "type": "Source-derived; not executed",
+        "fixture": "\" \\u{200D}\\u{2800}\\u{FE0F} \"",
+        "steps": [
+          "The native helper calls ProjectLibrary(name: name, scene: .portrait(), id: id).",
+          "ProjectLibrary.init stores Self.normalizedName(name), which trims .whitespacesAndNewlines.",
+          "The presentation retains original.name, which no longer includes the fixture's leading/trailing U+0020.",
+          "The final assertion compares Array(row.project.name.unicodeScalars) against Array(name.unicodeScalars), whose leading/trailing U+0020 remain."
+        ],
+        "predicted_actual": "Stored scalar array is [0x200D, 0x2800, 0xFE0F]; expected array is [0x20, 0x200D, 0x2800, 0xFE0F, 0x20]. The assertion disagrees despite correct presentation preservation."
+      },
+      "impact": "The newly expanded required native method cannot meet this expectation as written; it would report a regression unrelated to the intended display-content fix.",
+      "recommendation": "Compare row.project.name scalars against original.name scalars to test preservation across presentation. If checking normalization too, assert original.name against the explicitly normalized expectation separately. Alternatively remove outer spaces from this native fixture while retaining the whitespace case in the core newInput/display test."
+    }
+  ],
+  "conclusion": "Production change addresses w028-F1 narrowly; request correction of w028-F2 before accepting the regression suite. This is source review, not a runtime pass.",
+  "limitations": [
+    "No host/local checkout or local file was available or created.",
+    "No scripts, Swift tests, native tests, builds, screenshots or runtime rendering were executed.",
+    "Original startup/acceptance guidance was read in the preceding same-context review; this followup uses the candidate diff and actual candidate files.",
+    "No source, tree, commit, branch or ref modifications; only the authorized unreferenced JSON report blob is created.",
+    "Duplicate-name identity-policy implementation remains outside the assigned review scope."
+  ],
+  "status": "complete"
+}

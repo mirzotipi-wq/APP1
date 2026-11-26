@@ -1,0 +1,111 @@
+{
+  "worker": "w072_project_envelope_integrity",
+  "context_path": "/root/w007_review_coordinator/w072_project_envelope_integrity",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "focus": "Editable project envelope schema, required/unknown top-level members, duplicate structural keys, corruption/error treatment and failure-closed decode/import boundary.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "Sources/LightingCore/LightingProjectDocument.swift",
+      "blob_sha": "018ee8cf72cb4a854cbf396a54086d3536d9dc3d",
+      "inspection": "Full content read at pinned revision"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectDocumentEnvelopeIntegrityTests.swift",
+      "blob_sha": "80cece94b245e7a84d3d9599ce7983025cb8ea1e",
+      "inspection": "Full content read at pinned revision"
+    }
+  ],
+  "checks": [
+    {
+      "case": "Closed schema-v1 envelope",
+      "method": "Static source review of private Envelope.init(from:)",
+      "observed": "schemaVersion must decode as Int and equal currentSchemaVersion. The complete allKeys set must equal schemaVersion/name/scene; missing or extra top-level names reject. name and scene are decoded as typed nonoptional values. Envelope is private and public document has no Decodable bypass."
+    },
+    {
+      "case": "Unknown or missing top-level members",
+      "method": "Static branch tracing",
+      "observed": "Missing schemaVersion raises a decoding error translated to invalidDocument. With schemaVersion 1, missing name/scene and any extra top-level member fail the exact key-set guard. Null or wrong-type required values fail typed decoding. Unsupported integer versions fail with unsupportedVersion before scene decoding."
+    },
+    {
+      "case": "Ambiguous duplicate structural keys",
+      "method": "Static source review and authored regression inspection",
+      "observed": "After Foundation accepts the typed closed envelope, requireUniqueObjectKeys scans object scopes, decodes quoted key tokens, and rejects a repeated exact UTF-8 key. Literal and escaped top-level spellings therefore cannot hide duplicate name/scene/schemaVersion fields. Duplicate-envelope tests include reversed version/name order, repeated scene, and escaped equivalent key forms. An unsupported chosen version can reject earlier with unsupportedVersion; both paths fail closed."
+    },
+    {
+      "case": "Structural characters in values",
+      "method": "Static source/test review",
+      "observed": "Scanner consumes complete quoted strings including escapes before structural dispatch. Authored regression verifies quoted member-like text, braces, brackets, slashes, and emoji inside names remain readable, plus deterministic encode/decode."
+    },
+    {
+      "case": "Corruption and failure-closed boundary",
+      "method": "Static source control-flow review",
+      "observed": "Decode checks the byte limit, decodes the private envelope, requires unambiguous keys, then invokes validated value construction. No document is returned following failure and this file performs no library mutations. Foundation decoding failures translate to invalidDocument; documented unsupported-version/name/scene and too-large cases remain distinct."
+    },
+    {
+      "case": "Source regression inventory",
+      "method": "Read only; not executed",
+      "observed": "Inspected all five test methods: duplicate values in either order; escaped equivalent key duplicates; escaped unique keys and structural text; Foundation-supported Unicode encodings; large valid name and exact byte-boundary padding. The focused file does not separately enumerate missing/unknown top-level-member cases or assert exact error categories for all duplicate cases."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host execution was unavailable. No Swift compilation, test execution, native/UI run, agent_cycle.py check/next, or runtime acceptance is claimed.",
+    "Review is limited to the assigned document implementation and envelope-integrity test file, with repository startup and acceptance documentation read for context.",
+    "Nested scene/member integrity, lexical/parser resource bounds, and provider I/O were explicitly excluded and are assigned to other workers.",
+    "End-to-end no-data-loss import behavior depends on callers and persistence operations not inspected here; only the pure decode/value-construction boundary was reviewed.",
+    "Repository branch status, working tree, recent commit history, and CI were not independently checked; all inspected file contents were requested using the supplied pinned commit.",
+    "Existing test bodies are authored regression evidence only, not passing test results."
+  ],
+  "conclusion": "No concrete must-fix finding in the assigned envelope scope. Required/unknown member rejection and duplicate-key rejection appear failure-closed by source inspection. Runtime verification remains unperformed.",
+  "status": "complete"
+}

@@ -1,0 +1,107 @@
+{
+  "worker": "w075",
+  "context_path": "/root/w007_review_coordinator/w075_document_io_coordination",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "ProjectDocumentIO file coordination, security-scoped access lifetime, coordinated URL selection, preservation of source bytes, provider/coordination failures, and service-level import/export result handling.",
+  "contract": "docs/acceptance/m02-m03-code.md — m02-m03-code-v2; persistence/no-data-loss requirements remain required; absence of physical provider execution alone is not a source defect.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "App/ProjectDocumentIO.swift",
+      "blob_sha": "5b2c7eb311527a5bdd201a23e4674cfc816c673b",
+      "inspection": "Remote pinned-revision source read; no execution"
+    },
+    {
+      "path": "NativeTests/ProjectDocumentIOTests.swift",
+      "blob_sha": "96f33253c58ace19d83d02d33791e05351b3b7e7",
+      "inspection": "Remote pinned-revision source read; no execution"
+    }
+  ],
+  "checks": [
+    {
+      "case": "security_scope_lifetime",
+      "result": "No concrete defect found by source review",
+      "evidence": "App/ProjectDocumentIO.swift:73-109. Non-file URLs are rejected before scope access. defer is installed immediately after startAccessingSecurityScopedResource and calls stop only when start returned true; it covers preflight errors, coordination, accessor reads, decoding and thrown outcomes. A false start does not incorrectly reject an otherwise accessible sandbox URL."
+    },
+    {
+      "case": "coordinated_url_and_coordination_failure",
+      "result": "No concrete defect found by source review",
+      "evidence": "App/ProjectDocumentIO.swift:92-109. The accessor reads the coordinator-supplied URL; coordinationError is thrown before a captured result is returned, and a missing accessor result produces unreadable. NativeTests/ProjectDocumentIOTests.swift:137-201 registers HoldingPresenter and checks propagation of the original NSError domain/code plus unchanged bytes."
+    },
+    {
+      "case": "source_bytes_and_detached_value",
+      "result": "No concrete defect found by source review",
+      "evidence": "App/ProjectDocumentIO.swift:65-123 contains no source writes or library mutation. NativeTests/ProjectDocumentIOTests.swift:14-34 checks exact source bytes, unchanged directory contents and continued use of the returned project after removal of its source file; lines 36-49, 81-117 and 119-133 assert rejection/byte preservation for oversized, nonregular, malformed and non-file inputs. These tests were inspected, not executed."
+    },
+    {
+      "case": "import_error_result_mapping",
+      "result": "No concrete defect found by source review",
+      "evidence": "App/ProjectDocumentIO.swift:98-130 captures accessor throws with Result, returns through result.get(), preserves document decode errors, and maps bounded-reader tooLarge/notRegularFile/unreadable into their declared document/import errors."
+    },
+    {
+      "case": "immutable_export_snapshot",
+      "result": "No concrete defect found by source review",
+      "evidence": "App/ProjectDocumentIO.swift:6-31 encodes the project into immutable Data before export; initialization and file-wrapper creation throw on errors. Reading a supplied FileWrapper requires regular-file contents and successful document decoding before retaining original bytes. The prepared document has no project-library mutation."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host execution was unavailable. No agent_cycle.py check/next, compiler, tests, simulator or device runs were performed; this report supplies source-review evidence only.",
+    "Real file-provider materialization, relocated coordinated URLs and security-scoped permission acquisition/release were not exercised at runtime.",
+    "Cancellation state-machine review belongs to w078 and BoundedFileReader descriptor races belong to w076; neither is adjudicated here.",
+    "UI import/export callbacks and project-library state transitions are outside these two assigned files and were not reviewed.",
+    "Repository status, current branch/HEAD and open work were not independently inventoried; all file reads used the coordinator-provided pinned commit."
+  ],
+  "conclusion": "No concrete must-fix finding in the assigned source/test scope. Native/provider execution remains unverified; this is not milestone acceptance.",
+  "status": "complete"
+}

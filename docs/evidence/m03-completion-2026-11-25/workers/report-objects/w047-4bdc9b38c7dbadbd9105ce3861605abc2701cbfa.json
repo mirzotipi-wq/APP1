@@ -1,0 +1,156 @@
+{
+  "worker": "w047_spatial_orbit_fit_projection",
+  "context_path": "/root/w007_review_coordinator/w047_spatial_orbit_fit_projection",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "SceneKit orbit preservation, explicit Fit, empty/extreme camera state, and complete fitted projection; emitter geometry excluded.",
+  "actual_paths": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "README.md",
+      "blob_sha": "3a04b5d2b6f1b483f9df654f01623af4a78fcd81",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "checks": [
+        "Read startup/acceptance source remotely at base_sha; no execution or acceptance inferred."
+      ]
+    },
+    {
+      "path": "App/SpatialPreview.swift",
+      "blob_sha": "69631a347204a89d1f6e6863ce5d0bec236efd1d",
+      "checks": [
+        "Reviewed updateView fit triggers, unchanged-edit early return, independent active pointOfView preservation, atomic nonanimated pose/projection updates, explicit Fit inertia stop and target assignment.",
+        "Reviewed fit sphere radius/distance, near/far clipping, finite validated-coordinate domain and post-layout projection-axis selection. Emitter geometry excluded."
+      ]
+    },
+    {
+      "path": "NativeTests/SpatialPreviewTests.swift",
+      "blob_sha": "4475b46c379e08e4bc8509f75031d1636ce50d83",
+      "checks": [
+        "Read all three test methods: full eight-corner projected bounds in both viewport orientations, user camera/target preservation and explicit Fit restoration, empty extreme finite fit and physical camera FOV.",
+        "Verified projection assertions flush SceneKit transactions before projectPoint; no tests executed."
+      ]
+    },
+    {
+      "path": "Sources/LightingCore/StudioSceneBounds.swift",
+      "blob_sha": "bb8b76a7edf803583470ff0dc3c54709baac1e2c",
+      "checks": [
+        "Reviewed validated scene bounds, authored target/corner inclusion, zero-radius coincident rig, center/half-extent/radius calculations."
+      ]
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "blob_sha": "7d2c50105bda390ca49cdaa75711380cc5047ae7",
+      "checks": [
+        "Reviewed valid lens domain, minimum camera distance, physical vertical field of view and shared camera basis."
+      ]
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "checks": [
+        "Reviewed finite +/-100 meter coordinate bounds and scene validation feeding orbit bounds."
+      ]
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "checks": [
+        "Supplementary caller excerpt review: cameraPreview lines 678–696 guards unavailable CameraFraming and enforces 3:2 viewport; inspected SpatialPreview/CameraFraming call-site excerpts only."
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "Ordinary edit and selection behavior",
+      "result": "Source review: needsFit depends only on initial/mode presentation or changed fitRequest; regular scene/selection updates do not replace active orbit camera or retarget controller."
+    },
+    {
+      "name": "Explicit Fit and projection bounds",
+      "result": "Source review: Fit stops inertia, restores coordinator camera, sets authored bounds center, and chooses the smaller viewport dimension for 48-degree field of view. Radius is bounds.radiusMeters + 1, with distance radius/sin(24 degrees)*1.12; conservative sphere encloses every bounds corner. zFar exceeds the fitted sphere and zNear is below its closest point."
+    },
+    {
+      "name": "Empty/extreme and unavailable physical framing",
+      "result": "Source review: valid +/-100 coordinates and minimum radius give finite empty/extreme orbit fit. StudioView cameraPreview gates CameraFraming failure and uses 3:2 dimensions, avoiding a stale/unconfigured physical camera preview."
+    },
+    {
+      "name": "Native coverage",
+      "result": "Read three existing native tests; execution unavailable. Tests assert actual SceneKit projectPoint for all eight fitted corners in landscape/portrait, orbit preservation, explicit Fit, empty extreme finite state, and physical vertical FOV."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Remote immutable source/test review only. No host, Xcode, simulator, rendering, runtime gestures, screenshots or test execution available.",
+    "Startup script checks, working-tree/branch inspection, and runtime validation were not run, per assigned host-unavailable/no-scripts review scope.",
+    "Native tests inspected do not independently execute all coordinate extremes, zero-sized initial-layout timing, or gesture inertia; this is coverage context, not a demonstrated defect.",
+    "No source, tree, branch, ref or acceptance-ledger mutation. Only this unreferenced JSON blob is created."
+  ],
+  "conclusion": "No actionable correctness defect found in the assigned source/test scope. Native execution remains unverified.",
+  "status": "complete"
+}

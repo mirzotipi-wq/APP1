@@ -1,0 +1,116 @@
+{
+  "worker": "w025_camera_framing_extremes",
+  "context_path": "/root/w007_review_coordinator/w025_camera_framing_extremes",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "task": "Independent source review of CameraFraming.swift and CameraFramingTests.swift",
+  "focus": [
+    "degenerate poses",
+    "vertical-up fallback",
+    "far-coordinate precision",
+    "focal field of view"
+  ],
+  "actual_paths_and_blob_shas": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "blob_sha": "7d2c50105bda390ca49cdaa75711380cc5047ae7"
+    },
+    {
+      "path": "Tests/LightingCoreTests/CameraFramingTests.swift",
+      "blob_sha": "12da7cbc4a87e202d7863973c3a9d8e6077e892f"
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "blob_sha": "0825a683a221da4fd72f11cea9e697f8e0a481ae"
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "blob_sha": "7e0d1cb3235b18c08e8b011f550ecc0ac3ca65e6"
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "blob_sha": "8f61d8640ad47bfab6d8631cc6897ddcaf4ad426"
+    }
+  ],
+  "checks": [
+    {
+      "check": "Mandatory startup documents and m02-m03-code-v2 contract",
+      "result": "Read remotely at the pinned base revision. State claims were treated as reported context, not verified execution."
+    },
+    {
+      "check": "Invalid or degenerate camera poses",
+      "result": "Source review: lens finite/range validation and minimum 0.05 m distance guard precede construction. EmitterFrame independently rejects invalid camera/subject positions and zero direction. Position.isValid limits each finite coordinate to [-100,100]."
+    },
+    {
+      "check": "Vertical view fallback and basis convention",
+      "result": "Source review: EmitterFrame uses horizontal hypot and a deterministic +X emitter-right fallback when horizontal <= 1e-12; camera right is its negative. Cross-product up remains nonzero at straight-up/down views. The near-vertical fallback can introduce at most threshold-sized non-orthogonality; no material projection defect established."
+    },
+    {
+      "check": "Far-coordinate precision",
+      "result": "Source review: position differences and dot products remain Double, valid coordinate differences are bounded to 200 m per axis, and scale-normalized UnitDirection avoids normalization overflow/underflow. No Float narrowing or unbounded arithmetic is present in the reviewed camera projection path."
+    },
+    {
+      "check": "Focal field of view and coverage",
+      "result": "Source review: horizontal and vertical FOV use 2*atan(sensorDimension/(2*focalLength)); plane coverage uses distance*sensorDimension/focalLength, consistent with a 36x24 mm ideal sensor and 14...200 mm lens domain."
+    },
+    {
+      "check": "Existing camera regression assertions",
+      "result": "Read seven test methods covering baseline FOV/coverage, center/edges/off-frame/behind/near/NaN projection, focal/distance scaling, side/overhead views, invalid lenses and coincident/near/minimum-distance poses, legacy lens migration, and persistence. No tests executed."
+    }
+  ],
+  "findings": [],
+  "coverage_opportunities": [
+    "Add direct camera tests for valid focal endpoints 14 and 200 mm.",
+    "Assert basis orientation and projected axes for straight-up, straight-down, and both sides of the near-vertical fallback threshold; existing overhead assertion checks only the subject center.",
+    "Add direct CameraFraming translation-invariance and far-coordinate projection cases; the scoped camera test file has none, and renderer precision tests were not reviewed in this task."
+  ],
+  "limitations": [
+    "No host or local checkout was available; no local file was created or read.",
+    "No startup scripts, Swift tests, build, renderer, GPU, device, CI, or benchmark execution was performed.",
+    "Repository status, branch/HEAD, recent commits, open work, and uncommitted changes were not independently inspected; review used the coordinator-supplied pinned base revision.",
+    "Three initial guessed dependency filenames returned 404; GitHub search for EmitterFrame returned no results. A read-only pinned directory listing identified StudioOptics.swift and SurfacePhotometry.swift, whose actual contents were then fetched.",
+    "This report completes a bounded source-review assignment only; it does not establish milestone acceptance or release readiness.",
+    "No source, tree, commit, or reference changes were made. The sole authorized mutation is this unreferenced JSON report blob."
+  ],
+  "conclusion": "No concrete must-fix defect found in the reviewed camera framing implementation. Coverage opportunities are listed separately and are not claimed as proven defects.",
+  "status": "complete"
+}

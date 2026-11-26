@@ -1,0 +1,143 @@
+{
+  "worker": "w067",
+  "context_path": "/root/w007_review_coordinator/w067_library_decode_validation",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "ProjectLibrary serialized schema/version, duplicate UUIDs, active ID existence and archival, count/name bounds, malformed snapshot rejection, and normalization boundaries. Excludes operational mutations and file/CAS implementation.",
+  "actual_inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Snapshot schema and validation sections, lines 25–75; decode-to-validation call sites observed only. File/CAS and operational mutation logic not audited."
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectLibraryTests.swift",
+      "blob_sha": "eaf1852a0c9507027f7ef27d27f6b863c8288afa",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Test inventory and focused reads of lines 12–77, 118–145, 400–419; no tests executed."
+    },
+    {
+      "path": "Sources/LightingCore/SceneCodec.swift",
+      "blob_sha": "477f03715b27d3869381779fd8d47a9f2c7c2433",
+      "ref": "75e827f2ee3f99798d619aff62f3a5188b509428",
+      "inspection": "Content read remotely."
+    }
+  ],
+  "checks": [
+    {
+      "case": "schema_version",
+      "result": "Source verified only",
+      "evidence": "ProjectLibrary.swift lines 36, 39 and 65 require schemaVersion == 1 when validated() runs. ProjectLibraryTests.swift lines 400–410 decode a schemaVersion 2 snapshot and expect subsequent validation to throw."
+    },
+    {
+      "case": "duplicate_UUID",
+      "result": "Source verified only",
+      "evidence": "ProjectLibrary.swift line 67 compares Set(projects.map(\\.id)).count to projects.count, including archived projects. ProjectLibraryTests.swift lines 412–417 duplicate a serialized project and expect duplicateID from validated()."
+    },
+    {
+      "case": "active_ID_exists_and_not_archived",
+      "result": "Source verified only",
+      "evidence": "activeProject at line 48 matches activeID and requires !isArchived; validated() line 68 rejects nil. The focused metadata test covers a nonexistent activeID. An explicitly archived activeID is not covered in this test file's serialized metadata cases."
+    },
+    {
+      "case": "project_count",
+      "result": "Source verified only",
+      "evidence": "validated() line 66 rejects zero or more than 64 array entries. All entries, including archived projects, contribute. Serialized empty-array rejection is covered; the 64-project test exercises mutation capacity, not serialized 65-entry validation."
+    },
+    {
+      "case": "name_bounds",
+      "result": "Source verified only",
+      "evidence": "normalizedName at lines 50–61 trims whitespace/newlines, then requires 1–80 Swift Characters and rejects remaining control/newline scalars except U+200C/U+200D. validated() line 71 applies this to every project. Existing name tests cover invalid mutation inputs; they do not exercise invalid names injected into serialized records."
+    },
+    {
+      "case": "decoding_boundary",
+      "result": "Source verified only",
+      "evidence": "ProjectLibrary uses synthesized Codable and a distinct validated() stage. ProjectLibraryTests explicitly expects syntactically valid but semantically invalid metadata to decode before validated() throws. SceneCodec.swift likewise decodes LightingScene then calls validated(). Direct JSONDecoder.decode alone is not established as the validation boundary."
+    },
+    {
+      "case": "normalization_and_migration_contract",
+      "result": "Observed behavior; no established defect",
+      "evidence": "A serialized name such as \"\\nPortrait\\n\" would be trimmed to \"Portrait\" by validated(), and its length is checked after trimming. The inspected contract requires malformed/oversized-data handling and no data loss; ARCHITECTURE says \"No silent overwrite on decode failure.\" Neither explicitly prohibits successful display-name normalization. ProjectLibraryTests lines 12–32 expect constructor name normalization, and lines 36–53 expect legacy scene schema migration while preserving legacy bytes. Therefore padded-name normalization is not classified as a must-fix."
+    },
+    {
+      "case": "malformed_snapshot_rejection",
+      "result": "Source verified only",
+      "evidence": "No repair of schemaVersion, duplicate project IDs, empty/excessive count, or invalid active identity occurs in validated(). Malformed JSON goes through JSONDecoder without fallback at the observed decode call sites. Tests lines 56–77 assert corrupt legacy/library data produces errors and retains bytes; those tests were not executed."
+    }
+  ],
+  "findings": [],
+  "observations": [
+    "Potential focused test additions: archived activeID in serialized JSON; serialized 65-project snapshot; serialized blank/control/81-character names; explicit assertions for canonicalization of padded persisted names if this is intended API behavior.",
+    "Initial suspicion about silent name repair was withdrawn as a defect after checking the actual acceptance wording and intentional normalization/migration expectations. It remains a documented behavior, not a demonstrated contract violation."
+  ],
+  "limitations": [
+    "Host execution unavailable. No scripts, swift tests, xcodebuild, git status, local branch/HEAD inspection, or runtime probes were run.",
+    "Static source/test review cannot establish a passing persistence gate or CI outcome.",
+    "Direct raw decoding permits semantically invalid intermediate values by the current two-stage contract; no caller outside the focused sources was audited.",
+    "Nested LightingScene migration internals were outside the assigned scope. SceneCodec.swift was read only to confirm the decode-then-validate convention.",
+    "Attempted Tests/LightingCoreTests/SceneCodecTests.swift returned GitHub 404 and was not inspected.",
+    "Only an unreferenced JSON report blob is created; no source, tree, commit, ref, issue, or PR changes."
+  ],
+  "status": "complete"
+}

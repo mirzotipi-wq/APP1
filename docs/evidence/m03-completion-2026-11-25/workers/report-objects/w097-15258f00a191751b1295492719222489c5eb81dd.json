@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "context": "/root/w007_review_coordinator/w097_native_build_target_coverage",
+  "type": "same-context-fourth-source-followup",
+  "workerCountIncrement": 0,
+  "status": "complete",
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "candidateRevision": "6fb35fa0bf657785d774159b74e2bc7394a3161c",
+  "priorReportBlobs": [
+    "04faa5da59f053e043f6a1fe41dffe6938c2ce89",
+    "2c450e55777427fd1c626936ed1827e925d3ee4d",
+    "26eeb0d8357696342247e7bd9b8a2e67d4b5e563"
+  ],
+  "verdict": "Archive identity, source, size, digest, authorization handling and success-gated upload logic look correct on source inspection. One timing caveat: the claimed 480-second overall deadline is only a cooperative transfer check, not a strict wall-clock bound. No byte preservation or test-integrity defect found.",
+  "inspectedFiles": [
+    {
+      "path": ".github/workflows/preserve-ci-evidence.yml",
+      "blobSHA": "229a4b62f619d2245fa42ef0e7b6b52ef0373c09"
+    },
+    {
+      "path": "docs/evidence/m03-completion-2026-11-25/preserve-request.json",
+      "blobSHA": "5bf7d097c6d2d19ed760431b4d2df5cff03537b7"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "blobSHA": "0baeea7d2ce6e5c627e850500a75cc4a3223a607"
+    }
+  ],
+  "findings": [
+    {
+      "id": "w097-followup4-cooperative-deadline",
+      "severity": "P2",
+      "path": ".github/workflows/preserve-ci-evidence.yml",
+      "title": "480-second check is not an overall hard deadline",
+      "source": "started is initialized after API validation, and elapsed time is checked only before response.read(1 MiB). opener.open and response.read block independently; no elapsed check follows the final EOF read.",
+      "reproductionReasoning": "An operation may begin just below 480 seconds and block past the boundary. In particular, if the final read returns EOF after crossing the limit, the loop breaks and digest verification/receipt generation can succeed without another deadline check. This is static control-flow reasoning, not an executed timing reproduction.",
+      "consequence": "The workflow remains bounded by its 12-minute GitHub job timeout and socket timeouts, but cannot honestly claim a strict 480-second overall duration.",
+      "recommendation": "If 480 seconds is required, enforce a process-level deadline covering the intended phase; otherwise describe this as a cooperative transfer check and the 12-minute job timeout as the hard overall bound.",
+      "communicatedToParent": true
+    }
+  ],
+  "checks": [
+    {
+      "topic": "Exact change scope",
+      "result": "Fetched commit adds only the 129-line preservation workflow and nine-line request. No app/test source is changed by this candidate."
+    },
+    {
+      "topic": "Schema and allowlist",
+      "result": "Request is bounded to 8 KiB; runId must be a positive actual int below 2^63; sourceRevision a forty-hex string; one to four unique artifactNames must exactly match allowlisted UI evidence/full or compact names. Initial request selects two library-reference archives from source 75e827f2ee3f99798d619aff62f3a5188b509428."
+    },
+    {
+      "topic": "Fixed repository and provenance",
+      "result": "REST URL root is fixed to api.github.com/repos/GITHUB_REPOSITORY; request cannot supply a host or arbitrary path. Original run head_sha and repository are checked. The run-scoped listing must fit one 100-item page; exactly one unexpired match is required per requested name, with matching artifact workflow_run.head_sha."
+    },
+    {
+      "topic": "Exact archive identity",
+      "result": "Downloads use each verified artifact ID, not a second name lookup. SHA256 metadata must be present and well-formed. Every streamed byte is hashed; final byte count and SHA256 must exactly equal GitHub metadata before a receipt is produced."
+    },
+    {
+      "topic": "Bytes and filesystem",
+      "result": "Declared sizes must be positive ints <=512 MiB each and <=1 GiB combined. Streams use 1 MiB chunks; bytes exceeding the declared size fail before writing that chunk. A new fixed directory and exclusive-create artifact-ID ZIP filenames are used. No archive extraction, image conversion or content modification occurs."
+    },
+    {
+      "topic": "HTTPS redirects and authorization",
+      "result": "The custom redirect handler rejects non-HTTPS redirect destinations and removes Authorization from the Request returned by the standard redirect handler. The token is only supplied to the original fixed GitHub API call; code does not print it. Actual redirect/network behavior has not been executed by this reviewer."
+    },
+    {
+      "topic": "Only verified ZIPs uploaded",
+      "result": "The upload step has default success gating, with no always() or continue-on-error. Any missing/ambiguous artifact, expiry, size mismatch, digest mismatch, network exception or transfer deadline failure makes the preceding step fail and prevents upload. On success the folder contains exact verified ZIPs and a receipt. compression-level: 0 packages the original files without changing their contents."
+    },
+    {
+      "topic": "Permissions and YAML/Python semantics",
+      "result": "Only contents: read and actions: read are requested. Existing github.token is used; no new secrets or write grants. Source-level indentation, heredoc, loops, context managers and output references are coherent. No parser/interpreter was executed."
+    },
+    {
+      "topic": "Diagnostic branch isolation",
+      "result": "Actually fetched candidate iOS workflow: push has branches-ignore: ['m03-evidence-inspection']; pull_request has no matching branch exemption. This supports a push of the preservation workflow to that diagnostic branch without restarting the main iOS run. Restoration before any main integration remains a future action, not verified here."
+    },
+    {
+      "topic": "Actual original metadata",
+      "result": "Read-only API checks corroborate the requested run and two archives. Run 45751931160 was on main, source 75e827f2ee3f99798d619aff62f3a5188b509428, attempt 1 and in_progress when read. Listing contained 13 artifacts, including one unexpired match for each requested name; both fit all size/digest-format checks. No archive bytes were downloaded or verified here."
+    }
+  ],
+  "initialRequest": {
+    "runId": 45751931160,
+    "sourceRevision": "75e827f2ee3f99798d619aff62f3a5188b509428",
+    "artifactNames": [
+      "ui-library-reference-evidence",
+      "ui-library-reference-evidence-compact"
+    ],
+    "purpose": "Keep the complete original failed library archives independently accessible before a focused same-source job retry."
+  },
+  "metadataChecks": {
+    "requestBytes": 330,
+    "selectedCount": 2,
+    "declaredTotalBytes": 137378152,
+    "withinPerArchiveLimit": true,
+    "withinTotalLimit": true,
+    "sourceMatches": true,
+    "digestMetadataValid": true,
+    "permissions": "permissions:\n  contents: read\n  actions: read\n"
+  },
+  "observedArtifacts": [
+    {
+      "id": 15088005587,
+      "name": "ui-library-reference-evidence-compact",
+      "size_in_bytes": 1143196,
+      "digest": "sha256:e19f9b6401799e196b7299d93c0ba100b78ef0e1f1cb882231358ccc5e84cda0",
+      "expired": false,
+      "workflow_run": {
+        "id": 45751931160,
+        "repository_id": 1469230046,
+        "head_repository_id": 1469230046,
+        "head_branch": "main",
+        "head_sha": "75e827f2ee3f99798d619aff62f3a5188b509428"
+      }
+    },
+    {
+      "id": 15087009325,
+      "name": "ui-library-reference-evidence",
+      "size_in_bytes": 136234956,
+      "digest": "sha256:340fb69725131978d466d58029030f90b4b577484f99ff0c095295ba8f7e0620",
+      "expired": false,
+      "workflow_run": {
+        "id": 45751931160,
+        "repository_id": 1469230046,
+        "head_repository_id": 1469230046,
+        "head_branch": "main",
+        "head_sha": "75e827f2ee3f99798d619aff62f3a5188b509428"
+      }
+    }
+  ],
+  "observedAPIURLs": [
+    "https://api.github.com/repos/mirzotipi-wq/APP1/actions/runs/45751931160",
+    "https://api.github.com/repos/mirzotipi-wq/APP1/actions/runs/45751931160/artifacts?per_page=100"
+  ],
+  "execution": {
+    "candidateTriggered": false,
+    "workflowExecuted": false,
+    "pythonExecuted": false,
+    "yamlParserExecuted": false,
+    "archivesDownloaded": false,
+    "actualSHA256EqualityVerified": false,
+    "archiveExtraction": false,
+    "testsExecuted": false,
+    "imagesReviewed": false
+  },
+  "limitations": [
+    "This is unpublished-candidate source review plus read-only original-run/artifact metadata inspection.",
+    "Successful streaming, GitHub digest equality and independent artifact upload require actual execution; no preservation-success claim is made.",
+    "The 480-second limit is cooperative as described in the finding; the GitHub job timeout remains 12 minutes.",
+    "The planned later main snapshot/restoration and the asserted unchanged set of 190 tested blobs were not independently recomputed in this narrow review.",
+    "Artifact expiry/deletion before the preservation run will cause a visible failure rather than a substituted archive."
+  ],
+  "mutationScope": "Only this authorized unreferenced JSON report blob is created; no source, branch, ref, tree or test mutations. Prior w097 reports and context count are preserved."
+}

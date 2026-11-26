@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "worker": "w097",
+  "context": "/root/w007_review_coordinator/w097_native_build_target_coverage",
+  "type": "same-context-sixth-source-followup",
+  "workerCountIncrement": 0,
+  "status": "complete",
+  "date": "2026-11-26",
+  "repository": "mirzotipi-wq/APP1",
+  "candidateWorkflowBlob": "bf2477dc7a057733980f5ef09a3cf51a4c3dd4ad",
+  "candidateWorkflowPath": ".github/workflows/probe-harness-validation.yml",
+  "baselineRevision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+  "priorReportBlobs": [
+    "04faa5da59f053e043f6a1fe41dffe6938c2ce89",
+    "2c450e55777427fd1c626936ed1827e925d3ee4d",
+    "26eeb0d8357696342247e7bd9b8a2e67d4b5e563",
+    "15258f00a191751b1295492719222489c5eb81dd",
+    "1c26512779e017d24aa3a0a89a0971db48eeb7bc"
+  ],
+  "verdict": "Copied native job and complete nine-method library UI step bodies match the pinned baseline after only the declared changes. One admission gap remains if actual working-file modes/types are promised: the code verifies index modes but not filesystem modes/types. The final request's full mapping has not yet been supplied, so its correctness cannot be approved by this review.",
+  "findings": [
+    {
+      "id": "w097-followup6-working-mode",
+      "severity": "P2",
+      "path": ".github/workflows/probe-harness-validation.yml",
+      "location": "Both Verify exact candidate build inputs steps; first copy lines 42-54",
+      "title": "Admission checks Git index mode, not actual working-file mode/type",
+      "evidence": "mode is read from git ls-files --stage and compared to the request. The only subsequent check of the working file is git hash-object; no lstat or executable-bit check exists.",
+      "reproductionReasoning": "Change an admitted regular working file from non-executable to executable without staging it. Its index mode remains 100644 and its content hash is unchanged, so both existing assertions pass despite the changed working Git mode. This is source-derived reasoning, not an executed reproduction.",
+      "consequence": "The receipt can accurately pin index modes and working content, but cannot substantiate the stronger claim that actual working-file modes/types were admitted.",
+      "recommendation": "Before hashing, use lstat to require a nonsymlink regular file and compare the Git-relevant executable bit to expected mode. Alternatively narrow the claim explicitly to index mode if that is the intended contract.",
+      "communicatedImmediately": true
+    }
+  ],
+  "inspected": [
+    {
+      "path": ".github/workflows/probe-harness-validation.yml",
+      "source": "unreferenced blob",
+      "blobSHA": "bf2477dc7a057733980f5ef09a3cf51a4c3dd4ad"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "blobSHA": "c83e4340e5b0b6d6ec10f6b3439195a648aa9894"
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "revision": "m03-evidence-inspection at read",
+      "blobSHA": "0baeea7d2ce6e5c627e850500a75cc4a3223a607"
+    },
+    {
+      "path": "scripts/native_test_shards.py",
+      "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "blobSHA": "71dae8d6a8f445895d273f565ef98bd353598e46"
+    },
+    {
+      "path": ".gitattributes",
+      "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "blobSHA": "5e03c30b79ee8088b5772eac3eff290688bd927d"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "blobSHA": "6c4b7ee960a61a050a80470810c15439a92d15d7"
+    },
+    {
+      "path": "UITests/ReferenceComparisonUITests.swift",
+      "revision": "cd5b461e9b1e534911ead986bed0a79188e20add",
+      "blobSHA": "908a41c5b143c47e4dbccd119cb30e3d6441c994"
+    },
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "source": "requested unreferenced source blob; method inventory only",
+      "blobSHA": "cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "source": "requested unreferenced source blob; method inventory only",
+      "blobSHA": "618c70bb4677c1d391c54bd3d6b4584e641b21d4"
+    }
+  ],
+  "exactComparison": {
+    "simulatorJobEqualAfterRemovingAddedAdmissionReceiptAndBaselineNeedsCore": true,
+    "uiStepsEqualAfterRemovingAddedAdmissionReceipt": true,
+    "admissionCopiesIdentical": true,
+    "simulatorTimeoutMinutes": 90,
+    "libraryTestTimeoutMinutes": 32,
+    "libraryJobTimeoutMinutes": 85,
+    "libraryRunner": "macos-26-intel",
+    "libraryArchitecture": "x86_64",
+    "UISelectedShard": "library-reference",
+    "UIMaxParallel": 1
+  },
+  "checks": [
+    {
+      "topic": "Exact copied commands",
+      "result": "In-memory source comparison confirms the entire simulator job is identical to baseline after removal of needs: core and candidate admission/receipt additions. UI steps are byte-for-byte identical after the same added admission/receipt lines are removed. Required builds, tests, deadlines, method accounting, Metal checks, original result finalization, host diagnostics and evidence exports are retained."
+    },
+    {
+      "topic": "Complete library selection",
+      "result": "Pinned script maps library-reference to ProjectLibraryUITests and ReferenceComparisonUITests. Baseline contains seven and two test methods respectively. Revised library blob retains all seven original method names. The focused matrix selects the complete nine-method shard; it does not select only previously failing methods."
+    },
+    {
+      "topic": "187-row coverage definition",
+      "result": "A remotely fetched nontruncated baseline tree has exactly 187 tracked blob entries after the admission filter excludes docs/, agents/, .github/ and .md suffixes. All have Git mode 100644. .gitattributes is included and declares no clean/smudge filters. The two changed test blobs retain the same relevant source paths and observed method inventories; final manifest content remains pending."
+    },
+    {
+      "topic": "Admission checks",
+      "result": "Each job verifies exact repository and diagnostic branch, <=64 KiB request, schema/purpose, base revision syntax, 187 unique expected paths, exact tracked path-set equality, stage-zero regular Git index modes, exact expected index mode/blob pairs, working content hash, own workflow hash and HEAD=GITHUB_SHA. Malformed/missing inputs ordinarily fail before builds. No admission error is marked continue-on-error."
+    },
+    {
+      "topic": "Provenance",
+      "result": "Both full evidence artifact lists now include harness-inputs.json. The report records actual HEAD as sourceRevision, declared base revision, own workflow blob, complete expected input rows and focused scope. Compact attachment artifacts are unchanged. Absence of a final request prevents verification that its declared baseline/new hashes are the intended ones."
+    },
+    {
+      "topic": "Trigger and isolation",
+      "result": "New workflow triggers only on pushes to m03-evidence-inspection affecting its own path or probe-harness-request.json. Permissions are contents: read. The dedicated concurrency prefix differs from iOS Prototype and cancel-in-progress is false. The current diagnostic branch's iOS workflow independently excludes pushes to that branch; this exclusion was actually fetched."
+    },
+    {
+      "topic": "Failure semantics",
+      "result": "Admission failure skips default-success builds/tests; always-run accounting/export may produce failed/missing-evidence outputs but cannot convert the job to a pass. Required test execution and finalized-result checks remain unchanged. Focused results cannot replace the pending complete main validation."
+    },
+    {
+      "topic": "YAML/Python source assumptions",
+      "result": "Indentation and both heredocs are coherent on manual inspection. Include-only matrix creates the intended library row. Admission uses assert under normal nonoptimized python3; this workflow does not enable optimization. No parser or interpreter was executed."
+    }
+  ],
+  "qualifications": [
+    "Final probe-harness-request.json has not been provided. Exact rows, expected modes, new NativeTests/StudioTextLayoutDiagnosticsTests.swift hash cd3b8f55cdd2ebb2abbf5819f23e7faa356feaae, new ProjectLibraryUITests.swift hash 618c70bb4677c1d391c54bd3d6b4584e641b21d4, unchanged App/AX hashes, base revision and workflowBlobSHA still require verification against the final candidate.",
+    "baseSourceRevision is syntax-checked and recorded, not independently resolved by the admission code. Expected source provenance depends on the reviewed final request.",
+    "The 187-row definition excludes .github. native_test_shards.py also reads ios-prototype.yml and platform-accessibility-diagnostics.yml in check(); those configuration inputs are outside this manifest. Receipt claims should remain scoped to non-.github tracked inputs plus the separately pinned diagnostic workflow.",
+    "Working modes/types are not checked by this version, as reported in the finding.",
+    "Current diagnostic branch isolation was read at the time of review; final integrated branch/ref status was not mutated or executed.",
+    "Unreferenced revised Swift blobs were inspected for class/method inventory only, not comprehensively reviewed for their test-correction semantics."
+  ],
+  "execution": {
+    "workflowTriggered": false,
+    "workflowExecuted": false,
+    "pythonExecuted": false,
+    "yamlParserExecuted": false,
+    "gitCommandsExecuted": false,
+    "buildsExecuted": false,
+    "testsExecuted": false,
+    "imagesReviewed": false
+  },
+  "limitations": [
+    "No runtime or passing test result is claimed.",
+    "Full main validation remains required.",
+    "Only remote source/blob/tree reads and in-memory text/inventory comparisons were performed."
+  ],
+  "mutationScope": "Only this authorized unreferenced JSON review report is created; no source, tree, branch, ref mutations, launches or child contexts. All prior w097 reports and count are preserved."
+}

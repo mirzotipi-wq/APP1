@@ -1,0 +1,121 @@
+{
+  "worker": "w070",
+  "context_path": "/root/w007_review_coordinator/w070_recovery_capacity_domain",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Project recovery at capacity: complete observed archived-record comparison, capacity recheck, preserved unrelated records and identities, and one atomic committed replacement.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "blob_sha": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "inspection": "full remote source/text read at base_sha"
+    },
+    {
+      "path": "Tests/LightingCoreTests/ProjectRecoveryCapacityTests.swift",
+      "blob_sha": "b8edda4db126c0f770a7b13abc90a186c84062e9",
+      "inspection": "full remote source/text read at base_sha"
+    }
+  ],
+  "checks": [
+    {
+      "case": "complete_observed_candidate",
+      "result": "source-consistent",
+      "details": "LightingProject synthesized Equatable includes id, name, scene and isArchived. At capacity, saveRecoveryCopy(replacingArchived:) compares the latest matching complete record to expected before deletion. Renamed, scene-edited, restored, or removed candidates are rejected as staleSnapshot; the four-case test asserts unchanged disk bytes and latest snapshot."
+    },
+    {
+      "case": "capacity_recheck",
+      "result": "source-consistent",
+      "details": "The latest validated library is read while the process-wide transactionLock is held. If count is below 64, recovery appends directly without removing the selected archive or requiring its stale deletion authorization. Tests cover capacity freed by removal of an unrelated record, preservation of all latest records, and an active selected record that must remain untouched."
+    },
+    {
+      "case": "active_and_unrelated_identities",
+      "result": "source-consistent",
+      "details": "At capacity the candidate must be archived and must not equal latest.activeID. deleteArchived independently enforces both constraints. create allocates a fresh UUID and deliberately selects the new recovery project; existing unrelated project IDs/content are retained. Tests assert preservation of newer unrelated active-project name/scene and reject active or inactive-unarchived replacement candidates."
+    },
+    {
+      "case": "atomic_commit_and_failed_validation",
+      "result": "source-consistent",
+      "details": "Name and scene validate before acquiring the lock. Removal and insertion mutate only local latest. Encoding and the 8 MiB bound precede a single Data.write(.atomic); the returned snapshot is produced only after write succeeds. Oversized recovery and invalid-input tests assert unchanged prior bytes and candidate."
+    },
+    {
+      "case": "missing_or_corrupt_existing_library",
+      "result": "source-consistent",
+      "details": "Replacement uses readLibrary directly rather than migration-capable loadWhileLocked, so disappearance or corruption cannot create a new migrated projects.json or alter portrait.json. Tests check missing/corrupt library behavior and legacy-byte preservation."
+    },
+    {
+      "case": "concurrent_full_library_replacement",
+      "result": "source-consistent",
+      "details": "The same transaction lock covers read, candidate comparison, local deletion/insertion, and atomic write. After the first full-library replacement, the original candidate is absent while capacity remains full; later same-candidate requests throw staleSnapshot. The eight-attempt test asserts exactly one winner, seven stale errors, the winner's active ID, 64 records, and exact equality of unrelated records."
+    },
+    {
+      "case": "test_inventory",
+      "result": "inspected_not_executed",
+      "details": "All nine test methods in ProjectRecoveryCapacityTests.swift were read. Assertions examine disk bytes, loaded snapshots, IDs, counts and contents rather than merely observing no throw."
+    },
+    {
+      "case": "acceptance_scope",
+      "result": "review_only",
+      "details": "Read required startup documents and m02-m03-code-v2. M03 remains active in inspected state; this review neither supplies runtime evidence nor promotes any milestone."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable per assignment; no local repository status, worktree, branch/recent-commit inspection, scripts/agent_cycle.py check or next, compiler invocation, test execution, filesystem probe, or CI verification was performed.",
+    "This is a bounded source/test review at the pinned revision; authored assertions are not reported as executed passes.",
+    "App actor recovery adoption is excluded (assigned to w004); general CAS review is excluded (assigned to w068).",
+    "Cross-process writers remain explicitly outside ProjectLibraryFileStore's documented in-process transaction contract.",
+    "No source, tree, commit, branch/ref, PR or repository-document changes were made. The sole authorized write is this unreferenced JSON report blob."
+  ],
+  "conclusion": "No concrete must-fix defect found within the assigned recovery-capacity domain scope. Existing implementation and the nine inspected tests are consistent with the stated behavior.",
+  "status": "complete"
+}

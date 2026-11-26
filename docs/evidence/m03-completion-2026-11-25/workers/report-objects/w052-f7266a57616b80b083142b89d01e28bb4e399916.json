@@ -1,0 +1,108 @@
+{
+  "worker": "w052_study_area_sampling_visibility",
+  "context_path": "/root/w007_review_coordinator/w052_study_area_sampling_visibility",
+  "base_sha": "7b91c1a47731e17b0ccd4f3bd152a4f62cd42c1f",
+  "focus": "Source-only review of StudyAreaSliceSampling and StudyLighting illuminated-domain clipping, bounded sample counts, and per-sample visibility; diagnostic SurfacePhotometry quadrature and camera intersections excluded.",
+  "actual": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "check": "Read startup/product/acceptance context at the assigned revision."
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blob_sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "check": "Reviewed sampling planes, polygon clipping/column moments, weight normalization, fixed grid bounds, area near-field guards, source-block advancement, emission culling, visibility rays, and material accumulation."
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyEmitterFacingTests.swift",
+      "blob_sha": "af3245c92bc4597b02bd008d3f6d5032686b91fa",
+      "check": "Reviewed regression assertions and fixtures; tests were not executed."
+    },
+    {
+      "path": "Tests/LightingCoreTests/GrazingStudyContinuityTests.swift",
+      "blob_sha": "027f0db479b89b055977ea3fc07e6aa74439117c",
+      "check": "Reviewed regression assertions and fixtures; tests were not executed."
+    }
+  ],
+  "checks": [
+    {
+      "name": "Illuminated-domain clipping",
+      "result": "source_review_no_defect_found",
+      "detail": "Positive-incidence halfplanes are expressed in emitter-normalized coordinates. Sampling clips the square by shading and optional geometric planes, then samples each nonempty column at its area-centroid x and interior vertical midpoints; empty/tangent domains produce no contribution."
+    },
+    {
+      "name": "Weights and bounded work",
+      "result": "source_review_no_defect_found",
+      "detail": "StudyQuality supplies grid 8 or 32. At most grid² body calls occur per area source. A column's normalized area fraction is twiceArea/8; weight=twiceArea*grid/8 with grid rows and candela/grid² reproduces that fraction. Four eight-vertex scratch buffers cover a convex quadrilateral clipped by at most four planes."
+    },
+    {
+      "name": "Full-face continuity",
+      "result": "source_review_no_defect_found",
+      "detail": "Fully illuminated faces retain the original sample positions and accumulation order. Partial columns approach midpoint positions/weights at the full-face limit. GrazingStudyContinuityTests retains internal-grid/clip topology counterexamples, narrow strips/corners, signed slopes and off-center cases with an independent Simpson reference."
+    },
+    {
+      "name": "Per-sample visibility and material",
+      "result": "source_review_no_defect_found",
+      "detail": "Each remapped sample passes through accumulate. It checks geometric and shading incidence and emitter facing, adds unoccluded lux, then tests the offset-origin segment aimed at that actual source sample before adding visible lux and material-scaled XYZ. Requested tests assert 64 visibility calls, remapped endpoints, geometric-normal offset, partial occlusion, blocked dielectric output and material-independent lux."
+    },
+    {
+      "name": "Backface and unsupported separation",
+      "result": "source_review_no_defect_found",
+      "detail": "All finite-area distance guards precede backface culling; point distance guards precede zero-incidence returns. Backface culling advances exactly grid² samples. Requested tests retain near-field boundary, mixed-rig ordering, coplanar depth, translated/rolled emitter and cancellation coverage."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host was unavailable. No scripts, Swift compilation, tests, renderers, benchmarks, native/Metal checks or image review ran.",
+    "Review is limited to actual source/test content fetched at the assigned SHA. It does not independently establish numerical tolerances or milestone/runtime acceptance.",
+    "Diagnostic SurfacePhotometry quadrature and camera intersections were excluded as assigned.",
+    "No source, tree, ref or branch mutations were performed. Only this authorized unreferenced report blob was created."
+  ],
+  "status": "complete"
+}

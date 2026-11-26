@@ -1,0 +1,148 @@
+{
+  "worker": "w085",
+  "context_path": "/root/w007_review_coordinator/w085_library_unsaved_switch_delete",
+  "base_sha": "75e827f2ee3f99798d619aff62f3a5188b509428",
+  "repository": "mirzotipi-wq/APP1",
+  "focus": "Source/test review of project-library unsaved-edit protection for switching, duplicate, archive and deletion; explicit permanent-deletion confirmation; cancellation preserving scene/history; active/last-active action protection; stale deletion-dialog targets.",
+  "status": "complete",
+  "conclusion": "No concrete defect identified in the inspected scope under m02-m03-code-v2. This is source review, not executed acceptance evidence.",
+  "inspected": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "474bac51ab37e4030067b77ebf9b6d81499e21b1",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "87b2dcc5e36ba5608e62f0135c126ad4b949a563",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "inspection": "Startup/acceptance contract read"
+    },
+    {
+      "path": "App/ProjectLibraryView.swift",
+      "blob_sha": "6f24c64f8bc126ea4d5c7ed89f72565570806b89",
+      "inspection": "Dirty-state gating, save boundary, row actions, deletion alert, apply/perform callbacks and name-editor cancellation/submission"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "blob_sha": "bd8600435744a6b7e7d9664a1e836e4a80bec64b",
+      "inspection": "ProjectLibraryView callback wiring and applyLibrary/beginLibraryOperation boundary only; operation-state/store internals excluded"
+    },
+    {
+      "path": "UITests/ProjectLibraryUITests.swift",
+      "blob_sha": "6c4b7ee960a61a050a80470810c15439a92d15d7",
+      "inspection": "Source assertions in create/duplicate/rename/switch/relaunch, archived-delete cancellation/confirmation/relaunch, and unsaved-first-save workflows; neighboring methods only located"
+    }
+  ],
+  "checks": [
+    {
+      "case": "dirty_switch_and_organization",
+      "result": "source_consistent",
+      "evidence": [
+        "App/ProjectLibraryView.swift:39-43,59-67,235-260,299-333",
+        "App/StudioView.swift:238-242,1393-1399"
+      ],
+      "observation": "canMutate requires saved == scene, a library, and no ongoing import/operation; Open, options menus, restore and delete are disabled through it. Every submitted library command rechecks canMutate; StudioView independently requires saved == scene."
+    },
+    {
+      "case": "explicit_destructive_confirmation",
+      "result": "source_consistent",
+      "evidence": [
+        "App/ProjectLibraryView.swift:193-209,312-324",
+        "UITests/ProjectLibraryUITests.swift:143-211"
+      ],
+      "observation": "Only archived rows offer permanent deletion. The alert names the frozen target and explains irreversible removal; only its destructive action invokes deleteArchived. Reversible archive is not given an invented additional confirmation requirement."
+    },
+    {
+      "case": "cancel_preserves_scene_history",
+      "result": "source_consistent",
+      "evidence": [
+        "App/ProjectLibraryView.swift:206,495-505,598-608,612-628",
+        "App/StudioView.swift:1397-1414,1429-1437",
+        "UITests/ProjectLibraryUITests.swift:190-207"
+      ],
+      "observation": "Delete Cancel clears pendingDeletion without onApply; name-editor Cancel only dismisses its local draft. These paths do not call the parent library-operation boundary or reset editHistory. Delete UI test asserts archive remains after Cancel, then confirms deletion and checks retained active project after relaunch."
+    },
+    {
+      "case": "active_and_last_active_actions",
+      "result": "source_consistent",
+      "evidence": [
+        "App/ProjectLibraryView.swift:55-56,223-260,299-327",
+        "UITests/ProjectLibraryUITests.swift:58-62,121-123"
+      ],
+      "observation": "The active project is a selected status row without an Open action; Archive is disabled for that row. Delete exists only in the archived section. The current active record therefore remains protected even when it is the only unarchived project. No independent domain invariant claim is made."
+    },
+    {
+      "case": "stale_deletion_target",
+      "result": "source_consistent",
+      "evidence": [
+        "App/ProjectLibraryView.swift:193-208,312-316,329-333"
+      ],
+      "observation": "Alert state captures the full project record plus displayed identity. Confirmation compares that exact record with the current library before issuing the command; missing, edited or restored targets yield staleSnapshot and no command. apply also rechecks dirty/busy state."
+    },
+    {
+      "case": "first_save_callback_refresh",
+      "result": "test_source_present_not_run",
+      "evidence": [
+        "App/StudioView.swift:83,238-242",
+        "UITests/ProjectLibraryUITests.swift:362-391"
+      ],
+      "observation": "The required test begins with disabled New project while unsaved, saves inside Projects, then creates a project using refreshed ownership without closing the sheet and checks saved status/title."
+    },
+    {
+      "case": "saved_workflow_and_deletion_persistence",
+      "result": "test_source_present_not_run",
+      "evidence": [
+        "UITests/ProjectLibraryUITests.swift:46-141,143-211"
+      ],
+      "observation": "Existing required scenarios assert create, duplicate, rename, switch, relaunch, archive/restore, delete Cancel, confirmed removal and retained active project."
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Host unavailable by assignment. No checkout/worktree status, local branch inspection, scripts/agent_cycle.py check/next, compile, tests, UI execution, screenshot review or runtime validation performed.",
+    "Pinned GitHub tree supplied file blob SHAs; fetched content was inspected remotely at the exact base SHA. No current-main freshness or CI-result claim.",
+    "ProjectLibraryUITests dirty-state case explicitly checks New project; this review does not claim runtime coverage of every disabled switch/duplicate/archive/delete action, cancellation undo-stack preservation, or externally changed dialog targets.",
+    "Root004 actor receipt/CAS internals, domain066, modal timeout053/084 and recovery-capacity083 were excluded.",
+    "No source, tree, commit or ref changes. The only write is this authorized unreferenced JSON report blob."
+  ]
+}
