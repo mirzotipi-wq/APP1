@@ -2,7 +2,7 @@
 
 Source inventory: `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a`.
 
-There are **39 spatial methods across eight classes**: 11 arithmetic/state methods and 28 direct SceneKit methods. The campaign adds 31 methods to the baseline's eight. At the time of this document, 38 passed at predecessor `4e694bc`; the current source's 39-method result is pending. An earlier source pass does not establish the changed source.
+There are **39 spatial methods across eight classes**: 11 arithmetic/state methods and 28 direct SceneKit methods. The campaign adds 31 methods to the baseline's eight. All 39 passed at current source `60059a0`, within the independently accounted 185-method native run. The preceding source4e passed38; its success was not transferred to changed source.
 
 | Class | Methods | Behavior protected |
 |---|---:|---|
@@ -20,4 +20,10 @@ The native tests directly construct SceneKit adapters and use actual SceneKit no
 
 The current native command is the repository's unchanged unit suite selection. Its existing `scripts/native_test_shards.py verify-log unit` verifier requires exactly one ordered start/pass for every expected method and rejects failures, skips, duplicates and omissions. Logs must be checked against the corresponding source inventory.
 
-Follow the exact execution receipts in `validation/NATIVE-*.md`. The complete final result must be recorded for source60059 before treating its new Float regression as executed.
+Follow the exact execution receipts in `validation/NATIVE-*.md`. Source60059 now has its own complete native receipt, including the new Float regression.
+
+## Additional current-source UI evidence
+
+The existing StudioSmokeTests.testSettingsFeet3DFitAndSimulatorARManualFallback method passed at source60059 in run45851365897. It opens3D, tapsFit and checks the selected3Dmode before capturing the full app. The original Studio-3D-fit-feet attachment is retained with archive/PNG hashes in captures/receipt-full-app-60059a0.json. This supports the integrated Fit action and selected-tab continuity, not the resulting camera pose or delivered orbit/pan/pinch gestures. Its containing export shard failed a different method:9passed/1failed.
+
+The disable/dismantle native fixture directly checks view interaction flags and teardown/maps. Its nil callback and absent UIWindow mean its negative delegate assertion does not independently isolate every disabled/offwindow predicate. Inactive/offwindow/VoiceOver delivery gates remain source-reviewed; no manual or full-host gesture acceptance is inferred.

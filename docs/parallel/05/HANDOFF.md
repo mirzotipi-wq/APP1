@@ -4,9 +4,9 @@
 
 Branch: `finish/05-spatial-viewports`. Campaign baseline: `f150f98e35dd735927075aac4d2f8b02295c6a67`.
 
-Latest production/native-test source: `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a`. Later checkpoints contain documentation only unless their receipt says otherwise. The latest source has **185 native methods, including 39 spatial methods**; this is currently inventory. Its core job, simulator test-bundle build and Release build passed; native method execution is still pending at the recorded cutoff. The preceding source `4e694bc` passed **184 native / 38 spatial methods**.
+Latest production/native-test source: `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a`. Later checkpoints contain documentation only unless their receipt says otherwise. The latest source passed **185 / 185 native methods, including all 39 spatial methods**, with exact one-start/one-pass accounting and no failures, skips, duplicates or omissions. Core, simulator test-bundle and Release builds passed. The overall CI run also contains export, optics and accessibility UI failures; it is not all green. See [the exact-source receipt](validation/NATIVE-60059a0.md).
 
-This is a working handoff pending wave 10 and the exact-source native receipt. **90 distinct fresh worker contexts are complete** in the verified aggregate ledger. No milestone is promoted.
+This is a working handoff pending completion of wave 10. **90 distinct fresh worker contexts are complete** in the verified aggregate ledger. No milestone is promoted.
 
 ## Delivered behavior
 
@@ -47,9 +47,9 @@ The fallback uses incremental nodes, authored camera/lens framing, current hit o
 | `68c83cca` | 171 / 25 passed | [Native receipt](validation/NATIVE-68c83.md) |
 | `9725fb1` | 176 / 30 passed | [Native receipt](validation/NATIVE-9725fb1.md) |
 | `4e694bc` | 184 / 38 passed | [Native receipt](validation/NATIVE-4e694bc.md), exact method accounting and original captures |
-| `60059a0` | 185 / 39 inventory; native pending | [Run 45851365897](https://github.com/mirzotipi-wq/APP1/actions/runs/45851365897); core 366 Debug / 366 Release / 100 tooling passed |
+| `60059a0` | 185 / 39 passed | [Exact-source receipt](validation/NATIVE-60059a0.md); core 366 Debug / 366 Release / 100 tooling passed |
 
-Each completed native receipt requires exactly one ordered start/pass for every expected method, with no missing, failed, skipped or duplicate methods. Source-specific success is not transferred to later changed source. The added Float regression still requires its own current-source execution.
+Each completed native receipt requires exactly one ordered start/pass for every expected method, with no missing, failed, skipped or duplicate methods. Source-specific success is not transferred to later changed source. The added Float regression has now executed and passed at source60059. The simulator warm-up diagnostic failed before the successful native run; that sequence is retained in the receipt.
 
 The 39 spatial declarations comprise 11 arithmetic/state tests and 28 direct SceneKit behavior tests. Existing emitter tests supply five of the direct tests. The campaign adds 31 spatial methods to the baseline's eight. See [interaction regressions](INTERACTION_REGRESSIONS.md) and [geometry comparisons](GEOMETRY_COMPARISONS.md).
 
@@ -57,13 +57,19 @@ Native projection coverage includes **26 discrete projected points**, not 26 lay
 
 ### Original native captures
 
-![Ordinary fitted SceneKit portrait rig](captures/ordinary-4e694bc.png)
+![Ordinary fitted SceneKit portrait rig](captures/ordinary-60059a0.png)
 
-![Crowded fitted SceneKit portrait rig](captures/crowded-4e694bc.png)
+![Crowded fitted SceneKit portrait rig](captures/crowded-60059a0.png)
 
-These are original SCNView snapshots in UIWindow during native XCTest. Their archive, source/run/test metadata and exact hashes are retained in [the capture receipt](captures/receipt-4e694bc.json). The newly retrieved 4e images are byte-identical to the earlier 9725 attachments.
+These are original SCNView snapshots in UIWindow during native XCTest. Their archive, source/run/test metadata and exact hashes are retained in [the capture receipt](captures/receipt-60059a0.json). The current native images are byte-identical to the earlier4e originals, with distinct current-run attachment metadata.
 
 Both rigs fit within the viewport. The crowded rig's foreground panels occlude parts of the subject and other fixtures; the selected right-hand rectangle remains outlined. Dark floor/stand contrast and the small camera symbol remain visual limitations. The captures do not establish full-app gesture delivery, physical-device behavior or manual VoiceOver acceptance.
+
+### Integrated Fit action at the current source
+
+The existing UI smoke method opens 3D, taps Fit, checks the selected 3D mode and captures the actual app. It passed at source60059. See the [original full-app capture](captures/full-app-fit-feet-60059a0.png) and [exact receipt](captures/receipt-full-app-60059a0.json). This establishes the integrated Fit action and selected-tab continuity, without asserting camera pose or delivered orbit/pan/pinch. Its containing export shard is9passed/1failed.
+
+The native disable/dismantle fixture checks view flags and teardown/maps. Because it lacks an onSelect callback and UIWindow, its negative delegate assertion does not independently isolate every disabled/offwindow predicate. Inactive/offwindow/VoiceOver delivery gates remain source-reviewed.
 
 ## Integration and ownership
 
@@ -71,18 +77,17 @@ Lane 05 changed four App files and seven native-test files relative to inherited
 
 The branch retains main `9e0e2ba` as an earlier parent, including its explicit-`CGFloat` test compilation repair and historical canonical/evidence updates. All 230 changed paths outside App, NativeTests and this lane's documentation match that parent by Git blob identity. See [scope provenance](validation/INTEGRATION_SCOPE-4e694bc.json). These are inherited changes, not lane-05-authored milestone decisions.
 
-**Composition dependency:** lane 01 source `5ccfbaae821a32d88c12ed8b3abf1600aef25753` implements `.id(session.workspaceResetID)` while retaining captured-generation/live-UUID guards. Its tests assert first-save identity retention and project-create reset. Lane 05 still contains inherited `.id(generation)`; first save can recreate the coordinator. Integrate the owner change and verify hosted/native viewport retention plus deliberate project replacement. No lane 01 source is merged here.
+**Composition dependency:** lane 01 source `5ccfbaae821a32d88c12ed8b3abf1600aef25753` implements `.id(session.workspaceResetID)` while retaining captured-generation/live-UUID guards. Its tests assert first-save identity retention and project-create reset. Root confirmed the same identity/guards at owner revision `7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f`; the session and test blobs are unchanged. Lane 05 still contains inherited `.id(generation)`; first save can recreate the coordinator. Integrate the owner change and verify hosted/native viewport retention plus deliberate project replacement. No lane 01 source is merged here.
 
 Lane 06 owns Core geometry; this lane consumes its frames and extends display bounds only in App. No published finish/06 or finish/20 branch was available at the recorded checks, so the requested default baseline remains in use. See [current owner requests](OWNER_REQUESTS.md) for exact pins, dispositions and historical UI failures.
 
 ## Remaining acceptance boundaries
 
-- Execute the final 185-method source and preserve its source-specific receipt.
 - Integrate lane 01's presentation identity and check first-save retention / replacement with overlapping UUIDs.
 - Exercise RealityKit on a supported runtime/device, including delivered orbit/pan/pinch/tap gestures and parent-scroll arbitration.
 - Check manual VoiceOver, maximum Dynamic Type and SceneKit camera-control behavior with assistive technology. Accessible equipment-list actions exist, but source review is not manual acceptance.
 - Observe extreme SceneKit free-camera navigation, first-hit occlusion behavior and resource usage on device if these become release gates. The bounded RealityKit far-clip proof does not apply to SceneKit's free camera controller.
-- Reconcile UI failures/cancellations through the owning lanes. At 4e, optics, room and export passed; library, accessibility and visual review were cancelled by the successor after native completed. Earlier failure history is preserved.
+- Reconcile current export-chooser, optics-query and Plan openMeter accessibility UI failures through the owning lanes. No viewport cause is established. Other job dispositions are recorded in validation/run-60059a0-jobs.json; the whole workflow is not reported as passing. Earlier failures and cancellations remain preserved.
 
 No device, thermal, frame-rate, measured leak or photometric-calibration claim is made. Acceptance thresholds and canonical milestone status remain unchanged by this lane.
 
@@ -92,6 +97,6 @@ No device, thermal, frame-rate, measured leak or photometric-calibration claim i
 
 The 2,000-token brief / 12,000-token worker / 800-token report / 24,000-token coordinator numbers are planning targets. Token telemetry/enforcement is unavailable; no measured compliance or measured 60% token claim is made. [CHECKPOINT-60.md](CHECKPOINT-60.md) records the explicit planning checkpoint after six waves.
 
-Four executor interruptions were recovered from preserved Git objects, exact report text and hashes. Wave 01's full original reports were lost before publication; its actual context IDs and recovered summaries are retained and labeled. Later reconstruction and native/portable distinctions are explicit in [RECOVERY.md](RECOVERY.md). No lost or unavailable execution is counted as a pass.
+Four executor interruptions were recovered from preserved Git objects, exact report text and hashes. Wave 01's full original reports were lost before publication; its actual context IDs and recovered summaries are retained and labeled. Later reconstruction and native/portable distinctions are explicit in [RECOVERY.md](RECOVERY.md). No lost or unavailable execution is counted as a pass. The final audit also corrected one embedded body-only hash label in a wave-08 report; the original file and its matching whole-file ledger/manifest hashes remain intact. See `validation/worker-evidence-erratum.json`.
 
 Work remains preserved on the requested branch. Final publication must verify the remote SHA, source equality against the tested revision, completed 100-context ledger and clean integration checkout before cleanup.

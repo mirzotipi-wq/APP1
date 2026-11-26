@@ -2,7 +2,7 @@
 
 Campaign baseline: `f150f98e35dd735927075aac4d2f8b02295c6a67`. Latest source: `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a`.
 
-Native receipts are source-specific: 68c83 passed 171 methods, 9725 passed 176, and 4e694bc passed 184. The latest source adds the outward-Float projection regression; its expected 185 native / 39 spatial result is still pending here.
+Native receipts are source-specific: 68c83 passed 171 methods, 9725 passed 176, and 4e694bc passed 184. The latest source adds the outward-Float projection regression and passed all 185 native / 39 spatial methods. See validation/NATIVE-60059a0.md for exact accounting and runtime limits.
 
 ## Authored and represented equipment
 

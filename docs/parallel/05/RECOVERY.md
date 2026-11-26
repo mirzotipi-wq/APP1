@@ -23,3 +23,9 @@ During wave 05, the executor became unavailable after all forty completed contex
 ## Fourth executor interruption
 
 After source4e694bc had been pushed, the executor disconnected during final wave06 packaging and temporary storage was reset again. All ten wave06 contexts had completed their bounded work. The lead preserved34files directly in prepared GitHub commit49dd18c; the final platform report was reconstructed from its complete readiness message and matched the reported SHA256. Root restored a fresh sparse checkout and verified all33manifest entries. Three uncommitted validation receipt updates were reconstructed from retained raw tool results. Production source was already remote and unchanged. No unavailable execution is counted as pass. Wave07 began with pinned remote reads; local builds remained disabled.
+
+## Final audit: embedded report-hash correction
+
+Wave 10's resources worker found that the wave-08 resources report's embedded Findings-body hash is incorrect. Root independently recomputed the exact UTF-8 body after the Findings heading, including its final LF: 2659 bytes, SHA256 `950f0f790e637e5df84cbab78326f45a1759fd7d1f33716fee63b283db5b5cd7`, rather than the embedded `1ee0c18e97d4e38b34c9acbbf87e1824c316e06a85a087b42895b2b86a2da861`.
+
+The original report remains unchanged. Its authoritative whole-file SHA256 `e63216f18b44c5d67d5faeace6d4a5601927c38c9510123b2a81fb2ac1d38b46` matches the ledger, manifest and sidecar. This is an explicit correction to the embedded scoped-hash label, not a claim of changed source, missing context or corrupted report bytes. See validation/worker-evidence-erratum.json and the final-wave audit.
