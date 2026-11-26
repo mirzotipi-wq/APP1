@@ -1,0 +1,517 @@
+{
+  "schema": 1,
+  "worker": "W100",
+  "actual_runtime_id": "/root/wave10/w100_independent_review",
+  "same_context_followup": true,
+  "additional_workers": 0,
+  "reviewed_at_utc": "2026-11-26T17:30:43.517831+00:00",
+  "recommendation": "ACCEPT_SCOPED_TEST_ONLY_OBSERVER_CORRECTION_FOR_NATIVE_REVALIDATION",
+  "native_candidate_execution": "Pending at this review; no execution by W100.",
+  "reviewed_inputs": {
+    "NativeTests/StudyPreviewAdoptionTests.swift": "aa55b156b60529a0aeb144fd9cc1647b702aeda15a02feb8697bb74f27bb536c",
+    "docs/parallel/03/evidence/preview-adoption-observer-correction.patch": "bf729feb94ae83b7b750574cebf7c9a3378baa0e0005fa4a369c9e95a552b147",
+    "App/ReferenceStudyPreview.swift": "9ba7761837c58dde1b973d0740ad97a37ecea2e73ba8c5b69397da625ef805b9",
+    "NativeTests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99"
+  },
+  "original_source": "342e3280e3eb077d55e122c8bfb88b4062b431ed",
+  "original_hosted_test_sha256": "abd3fa97bb0cda6d45e4e9f66b068f1155ea4672b87542a081c33e6d72967f91",
+  "production_change": false,
+  "patch_exact342diff": true,
+  "findings": [
+    {
+      "topic": "Mounted observation and coordinates",
+      "assessment": "Receives the actual host.view from one key-visible UIWindow; requires drawHierarchy completeness. The1x1 scale1 renderer is translated by negative bounds midpoint while drawing the original full-size bounds: a center crop, not a downsample of the complete view. It does not obtain observed bytes from the renderer fixture. The fixed360x240 preview/24x16 image share3:2 aspect and production centers the image with overlays at the bottom. The center is expected to lie inside the uniform image; safe-area/layout and capture reliability remain inferred until Apple execution. The first32 positive control fails rather than treating missing output as success."
+    },
+    {
+      "topic": "sRGB, alpha and tolerance",
+      "assessment": "The snapshot is redrawn into explicit8-bit sRGB premultiplied-last/big-endian RGBA.32\u00b12 and160\u00b12 are disjoint and exclude black/white empty backgrounds; uniform neutral interior reduces interpolation and gamut ambiguity. preferredRange.standard alone does not choose the exact pixel format. Because format.opaque=true, alpha255 is an output-format check, not source-image alpha/validity evidence. No measured color-conversion guarantee is claimed."
+    },
+    {
+      "topic": "Adoption ordering",
+      "assessment": "Visible32 is required beforeB. B establishes its mock downgrade then suspends; A2 suspends on a separate continuation.32 is sampled before releasingA2, and160 only after release. Renderer, continuations,2A/1B counts, one mounted identity and cleanup are unchanged. A successful native run would support consultation and replacement-pixel adoption."
+    },
+    {
+      "topic": "Coverage boundary",
+      "assessment": "Held32 is one checkpoint whileA2 is suspended, not continuous visibility. No handshake waits for resumedB cancellation handling before that checkpoint. The cancellation is injected manually and outputs are synthetic. The pixel test does not assert backend badges, warnings, previous/current AX labels, VoiceOver, real GPU downgrade, pause or reattachment. A current-ticket label regression could survive this observer while pixels remain correct."
+    },
+    {
+      "topic": "Counterfactual",
+      "assessment": "The old cached-A shortcut should fail the preserved secondARequested/two-A checks, but original hook-only production before/fail remains unrun. The source342 AX-positive-control failure is the failed observer version, not that counterfactual baseline."
+    },
+    {
+      "topic": "Deadlines and cleanup",
+      "assessment": "ContinuousClock supplies a monotonic five-second polling budget; synchronous layout/drawHierarchy work is not preempted at exactly five seconds. Awaited20ms sleep yields MainActor and propagates task cancellation. Existing defer detaches/hides the window, clears/resumes pending continuations through close, and restores the previous key window. Close marks the renderer closed and clears continuations before resuming, retaining its existing duplicate-resume protection."
+    }
+  ],
+  "blockers": [],
+  "actual_source342_failure": {
+    "raw_archive": "docs/parallel/03/evidence/ci-native-342-failure.log.gz",
+    "decompressed_bytes": 1021637,
+    "decompressed_sha256": "d75acc9ce611dd28a8e0abdd3ad25fb9d560f6d0c3ad67716404afd98af25513",
+    "native_runtime_lines_inclusive": [
+      4770,
+      5631
+    ],
+    "native_runtime_sha256": "2c446e9a7eca692eb1ccd17dca76c57b55cbaa7abb4f0f835a4f5f1c148c8996",
+    "counts": {
+      "started": 165,
+      "passed": 164,
+      "failed": 1
+    },
+    "skipped": 0,
+    "unstarted": 0,
+    "failed_method": "StudyPreviewAdoptionTests.testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade",
+    "failure": "Initial A is current Metal; identifiers=[] followed by thrown timedOut.",
+    "current_accounting_invalid": [
+      {
+        "events": [
+          {
+            "event": "started",
+            "line": 708
+          },
+          {
+            "event": "failed",
+            "line": 715
+          }
+        ],
+        "method": "StudyPreviewAdoptionTests.testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade",
+        "reason": "Expected exactly one ordered started -> passed sequence",
+        "target": "KeyAndFillTests"
+      }
+    ],
+    "historical_full_log_invalid_count": 785,
+    "historical_full_log_invalid_breakdown": {
+      "Unexpected XCTest target": 782,
+      "Unrecognized Test Case line": 2,
+      "Expected exactly one ordered started -> passed sequence": 1
+    },
+    "historical_step_header_invalid": [
+      {
+        "line": 23,
+        "reason": "Unrecognized Test Case line",
+        "text": "2026-11-26T17:03:21.0430780Z \u001b[36;1mskipped = re.findall(r\"Test Case '-\\[([^\\]]+)\\]' skipped\", log)\u001b[0m"
+      },
+      {
+        "line": 27,
+        "reason": "Unrecognized Test Case line",
+        "text": "2026-11-26T17:03:22.6337810Z \u001b[36;1m    pattern = r\"Test Case '-\\[KeyAndFillTests\\.StudyRendererTests \" + re.escape(method) + r\"\\]' (passed|failed|skipped)\\b\"\u001b[0m"
+      },
+      {
+        "events": [
+          {
+            "event": "started",
+            "line": 747
+          },
+          {
+            "event": "failed",
+            "line": 754
+          }
+        ],
+        "method": "StudyPreviewAdoptionTests.testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade",
+        "reason": "Expected exactly one ordered started -> passed sequence",
+        "target": "KeyAndFillTests"
+      }
+    ],
+    "interpretation": "Source342 native suite failed one hosted observer method; the other164 passed. Analysis-input errors did not add failed native methods. All earlier diagnostic attempts remain preserved."
+  },
+  "accounting_wording_correction": {
+    "reported": "785 means total invalid entries:782 foreign events,2 echoed-script lines,1 genuine failed-method sequence.",
+    "root_followup": "Root retained both earlier attempts and extracted all contiguous runtime lines4770\u20135631 after the echoed header; final accounting retains only the genuine failure sequence.",
+    "verification": "Current extract hash and actual165/164/1 event counts independently confirmed."
+  },
+  "official_api_sources": [
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uiview/drawhierarchy(in:afterscreenupdates:)",
+      "ref": "turn792559068search0",
+      "supports": "Current-context visible hierarchy snapshot, local bounds coordinates and completeness return."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uigraphicsimagerendererformat/preferredrange",
+      "ref": "turn792559068search3",
+      "supports": "Range affects eligible formats; exact format remains system-selected."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/uikit/uigraphicsimagerendererformat/opaque",
+      "ref": "turn792559068search15",
+      "supports": "Opaque context has no alpha channel."
+    }
+  ],
+  "evidence_receipt_hashes": {
+    "docs/parallel/03/evidence/ci-native-342-accounting.json": "310a68b128aeb1d6cd57e48a15f4c1113ecf4157c458776806eb50720e50ba7d",
+    "docs/parallel/03/evidence/ci-native-342-accounting-inputs.json": "2d76999194fe4594c292d6418d64c37cb01dda78c9c43ec2c2bd6a359b6cc7cc",
+    "docs/parallel/03/evidence/ci-native-342-accounting-step-header-attempt.json": "451ccb9815d5d42241296f864e04c6e4e97d3f26f15fd7b74e80ce22ccd99bb9",
+    "docs/parallel/03/evidence/ci-native-342-accounting-full-log-attempt.json": "2506208220000aabe673f91f7c02eed7caea2019416af8502337b21a89d48fc0"
+  },
+  "executed": [
+    "Exact source/patch SHA checks and Git342 diff comparison",
+    "Byte comparisons for renderer, host, output fixture and mount/cleanup sections",
+    "Lossless gzip/raw/native-runtime hashes and method-event accounting",
+    "Official Apple UIKit API documentation lookup",
+    "Frozen manifest/aggregate and all100primary-report hash checks"
+  ],
+  "not_executed": [
+    "Swift/native/UI tests",
+    "Builds",
+    "Renders",
+    "CI polling",
+    "Original hook-only before/fail",
+    "Source/test edits",
+    "Frozen packet edits",
+    "Cleanup",
+    "Commits"
+  ],
+  "review_attempts": [
+    {
+      "attempt": 1,
+      "exit": 1,
+      "reason": "KeyError extract_end_line_one_based while the mutable root accounting sidecar changed to the corrected inclusive-end schema; no report file had been written.",
+      "classification": "Reviewer read/schema race, not product/runtime failure."
+    },
+    {
+      "attempt": 2,
+      "exit": 0,
+      "reason": "Re-read current sidecar, used extract_end_line_one_based_inclusive, verified exact new runtime slice and preserved old attempts."
+    }
+  ],
+  "frozen_files_verified_unchanged": 141,
+  "frozen_hashes": {
+    "docs/parallel/03/workers/W32-geometry.md": "d9020b9ebfb43fa03a5177522b92154639dc685564667f207f0376ff46729d7b",
+    "docs/parallel/03/workers/W90-independent-review.md": "1511de388b3bb34afc55039bff10ba53b8916f7ee49977e7b3855ae0272c931d",
+    "docs/parallel/03/workers/W56-resource.md": "da33f08b0962a16cce03a5608b658e5649a27b0738f83ef3a80bcb2fc76f819d",
+    "docs/parallel/03/workers/W46-resource.md": "a2607863fbaf3ab7c13e64aa69d7b999991936b2c575aa88bd922d99280a62ff",
+    "docs/parallel/03/workers/wave05.json": "99ad1bfadd06a166f831eeff1877169475eebec84713c5df6df08064e3ab92f8",
+    "docs/parallel/03/workers/wave10-evidence/W100-independent-review.json": "06911b735349e20e8f5fd51c893fca7ace9421aaa17944bc2921ceed6b49ec94",
+    "docs/parallel/03/workers/W09-platform-performance.md": "17a21b97bb8ece433d9475457102a397f15b9ceb48cadad1f5e7469a4b265367",
+    "docs/parallel/03/workers/W64-implementation.md": "656d1de22300518c085705ba8b7af253ba4c5cf95b16901aac0e42a95e95425e",
+    "docs/parallel/03/workers/W23-api.md": "6ceb456c3890c52215a6947168520f5327cf7a52c38eebb923bffbf3f7be9e18",
+    "docs/parallel/03/workers/W96-resource.md": "0aa33116e0db0165e13da650f06fac2e660e26d0f441eea278b25d41b784c1be",
+    "docs/parallel/03/workers/W52-geometry.md": "bf74491da895b1fec6bfa374b49b83cc021e88bcac39d13c0363eee695bdab6d",
+    "docs/parallel/03/workers/wave10-evidence/W99-platform-performance.json": "6c828f48920125141a595944cd1df0f2658e778f1e05bc26465eaaa466af6f90",
+    "docs/parallel/03/workers/W51-acceptance.md": "eddd75cad3cf898683c3d12026dc166395e9aabfe1f1e6b546bd289a49a51f9d",
+    "docs/parallel/03/workers/W60-independent-review.md": "7a65f9ab661f38bed33e78a1a4a0fce6b35e1e4d072095e59fb67618735eec4b",
+    "docs/parallel/03/workers/W37-consumer.md": "12c87108a56d5be3d710263aca67b9be86757cf63cbd6d469eff25f3edfab833",
+    "docs/parallel/03/workers/W98-accessibility-privacy.md": "f06a1fa1332bae775af173177dba830fa59d3aa49482e482d32547dc0fcd815e",
+    "docs/parallel/03/workers/wave10-evidence/W93-api.json": "6c3a7d493d2c87d672c4375b60b4b483e74a06b728682b8d0b784af74c669815",
+    "docs/parallel/03/workers/W72-geometry.md": "b73c392a8266d09ce2a179e99b36c5ea3659baeddb6f1dc1b14704e9e79f0a7a",
+    "docs/parallel/03/workers/W02-geometry.md": "46b176e0551cd3beb318c2ac9d11341dd57153baf77e4bd6c3ef1fd7ab701926",
+    "docs/parallel/03/workers/W73-api.md": "af30ee337b0403f3e3d03f68180b0147bf480dd485b708ecff380047ed90d72f",
+    "docs/parallel/03/workers/W88-accessibility-privacy.md": "956ebbff4028ee1688a195204ca19fc556c2a074f232eac8b96df71825f8b7c5",
+    "docs/parallel/03/workers/W08-accessibility-privacy.md": "e8d487d6f8f0f09ca4a12ef7e031cc65599c78b7fe9c93278498f6b63dc235d9",
+    "docs/parallel/03/workers/W04-implementation.md": "43a52e389a33fed3af822b0104815bb6990a9c7bfe280d218a35f46f007cdb74",
+    "docs/parallel/03/workers/wave10-evidence/W96-resource-audit.py": "16ca7d9031e0181e687d9794a05dd48e3151c62c4551c4e4227fb0d3ef04c229",
+    "docs/parallel/03/workers/W11-acceptance.md": "6c2f4fc3e893fd36815c21d624cd0f47f6d90b4bc3cb0171f05a152ee178eb07",
+    "docs/parallel/03/workers/wave10-evidence/OWNER_REQUESTS-reviewed-pending-native.md": "4ed42f6a04d9d7e16cacf08efd4a92bb1116ad0790561139828f58c78276a0d9",
+    "docs/parallel/03/workers/W81-acceptance.md": "985991d9a69718a6bade3e16016bea83834278dd12ee1e2b61a214c554aabcd5",
+    "docs/parallel/03/workers/wave04.json": "bde8fd26c79a85d5a14c72e4de21473c230604c0d5ee41f96bc9f3287919a397",
+    "docs/parallel/03/workers/W26-resource.md": "b71f0dc87b0249b4838e4225326c3d76e9be8ee4950489ee16a2f8356f70ab98",
+    "docs/parallel/03/workers/W58-accessibility-privacy.md": "d69e66628add9000bb729dad1e9f294aaf96e6d0a8ec93ca33e7ec54f339b321",
+    "docs/parallel/03/workers/W48-accessibility-privacy.md": "c8a96193f31cb312465a22d7919b0830c6704d93da56747629c2b28f2dad003c",
+    "docs/parallel/03/workers/W69-platform-performance.md": "0dedcd84d4fb2280f1ddfadbf71aad652da480434a89385a4f0421aea9da8b34",
+    "docs/parallel/03/workers/W66-resource.md": "15af3f274d152fd7ea699b40bf8d8466de2189239105786e2c176c8ca20a4542",
+    "docs/parallel/03/workers/W62-geometry.md": "93438c8c42d2c345c9422a7eecf9c826a95a5d0020595b69047ed1f2e17aedcf",
+    "docs/parallel/03/workers/wave10-evidence/W100-audit.py": "f239da93c152705b1f93cc49666667bb84f57e748bf6f4a925579e9d19505fa3",
+    "docs/parallel/03/workers/wave10.json": "3656310c6a448dfbc02b7fdf0fd0b10e2010731e37fc52023b3c7f4f013b1587",
+    "docs/parallel/03/workers/wave10-evidence/W95-concurrency.json": "85a11a582ac27c79066755670fc0a3a7bf2713ed2645023ba0e05dff2cec1093",
+    "docs/parallel/03/workers/W94-implementation.md": "89bcbfeb817e12c1ab00d89df27067844a3ad4f417f1977fa4e06e2dc860d3cb",
+    "docs/parallel/03/wave10-evidence/W92-geometry.json": "0a22bb0ca91f15b7818d834ada633bc8963d1c52a8b90a89777c31b36fabeba4",
+    "docs/parallel/03/workers/W47-consumer.md": "ab9555217ee71b8118b368d6f737de2a06dccd821ff22da48feb793268125152",
+    "docs/parallel/03/workers/wave10-evidence/W94-handoff-followup.json": "a2566055b50ba2cf09b9eb67ba749b1c5bb837f8ab751c04e8462e2509086428",
+    "docs/parallel/03/workers/W63-api.md": "e4aea182b156a41152ff46a06533d6bbc5deac2bbe165a5fecc7f3ceabe669f3",
+    "docs/parallel/03/workers/wave10-evidence/W99-verify-evidence.py": "55c0466a171308c9be8588b2a285d959ecd3514b469adf8251fe97b4d7e3f297",
+    "docs/parallel/03/workers/wave10-evidence/W91-normalizer-correction.json": "5ad2514f2c6dfdf96badde374409840ed40f8da8be592588324132ba506c32c6",
+    "docs/parallel/03/workers/wave10-evidence/W91-acceptance-checks.json": "0ca0b450262da55efe2de5e3034cd7572eda7e58c606993eea68cfff1a886e30",
+    "docs/parallel/03/workers/wave10-evidence/W100-final-ledger-verification.json": "533810ead0de0a7ea087b0638b5f4b9205e5dafad8463e6fcb1ae8bde5ddfa1e",
+    "docs/parallel/03/workers/W27-consumer.md": "440c7293507298a4942eca7b8a06172f090c6a03accd92e4d4fc2d4859ec8b56",
+    "docs/parallel/03/workers/W83-api.md": "e03456a1815ac5a16683a36ebffd18d5f3fb3a92f62f7aa1f8cac7557e387d27",
+    "docs/parallel/03/workers/W70-independent-review.md": "60a51ebf40e714420c419f5aa3249099ddbac818ffafb065cdd71b830b3c7d9d",
+    "docs/parallel/03/workers/W19-platform-performance.md": "813b33487a55d49d371ceeb7b2433e0cf26d56ca70cf4a920841b9161e903d8c",
+    "docs/parallel/03/workers/W35-concurrency.md": "e78dddb054c79dfc524f2bc4677e3fe63a2eed0c7571ac57732489753442abd2",
+    "docs/parallel/03/workers/wave10-evidence/W98-accessibility-privacy.json": "34951a36aba7627f84bf18da307dc701b4fd9e25fbd3442587c625fe90ab05c9",
+    "docs/parallel/03/workers/wave10-evidence/W94-handoff.json": "9666894659d695458a29893806e3c9bb88570946812daaef6153e8729c2c538e",
+    "docs/parallel/03/workers/W07-consumer.md": "bfd2988db7c016f3e42dc997238bb859f3068e0bcb288e78f12c0eb61dc16213",
+    "docs/parallel/03/workers/W79-platform-performance.md": "f83fec5b1bd7ce3846d09711cb1dfa9c57268a3f212db585cc22b6f110a535f8",
+    "docs/parallel/03/workers/W34-implementation.md": "07427812b00ed29f3d2d82821eaab6adbb15141cd14b8b43b06b7f5d8b84c894",
+    "docs/parallel/03/WORKER_LEDGER.json": "e1ec44adaf5427463581a7a35ca8d46480c3ddd4a9a8f1eed4f3e755d925a0c9",
+    "docs/parallel/03/workers/wave10-evidence/W97-current-ci-followup.json": "28aa30672454aadc0dd5b5eecd714eca9db0d96bfc002a8274e4b4b950d5485f",
+    "docs/parallel/03/workers/W97-consumer.md": "e29a4d0ccfe1d12c1030ea0e187297faa0de781a32f0ce5a3653860d7aca71dc",
+    "docs/parallel/03/workers/W13-api.md": "4a49407e1b4750ff702dcfc42194d00c24f805d43ae59aeceeb00c2ee2e59439",
+    "docs/parallel/03/workers/wave10-artifacts.json": "53c1985150f56d178659b3e48114cb9e3e72e326445058c1720be1ab1af49575",
+    "docs/parallel/03/workers/W78-accessibility-privacy.md": "bbb1e8dbfba53775dc72babce4dd3998b965805a291f0ecf61406e6e036dbb11",
+    "docs/parallel/03/workers/W74-implementation.md": "ae14846054aad1d51072c96f59e26344649b03e2cd0ed2b424c4957ff67c375e",
+    "docs/parallel/03/workers/W03-api.md": "804ff20c82ed3e50316288caddb8e2de3e7bd3a50493bb955ee5b1eb1be54ecb",
+    "docs/parallel/03/workers/W18-accessibility-privacy.md": "e9d0858cbec7c22ca5b8598d2bc9fd6b67bc26d71544c476a291ff88a860094e",
+    "docs/parallel/03/workers/W10-independent-review.md": "43d4573a988c59f52c21d52101f23bebb3f8862e566695e7265868cf490dac63",
+    "docs/parallel/03/workers/wave03.json": "a0d0a13aa36982ae38eaf3e3c5a487f7d28abd1d57e59fb752e7d51028bc48d8",
+    "docs/parallel/03/workers/wave10-evidence/W94-final-count.json": "daaa21b916d30acc5de588bf2d238caa7d0791dc5008e6e19e265654abdbfcd4",
+    "docs/parallel/03/workers/W99-platform-performance.md": "a63299b11b5ec3b86a25429e20b1886a4c063e9dd2ec8455d91566bed23276ea",
+    "docs/parallel/03/workers/wave10-evidence/W97-consumer-check.py": "5d30d356556fca5b9902154712bace1c11dc2432cf70b45cc8ae76c9b37b0117",
+    "docs/parallel/03/workers/W87-consumer.md": "f8d7f61ed461924c24cf5bd0f2d73a0f08ff630ae372568c8f9a6ca7ec48cdea",
+    "docs/parallel/03/workers/wave10.md": "9b4bf38c0040ed2af9d1736dbf8c247bc83eeafac85d53471f5216d1c18a35ef",
+    "docs/parallel/03/workers/W59-platform-performance.md": "5c20f3ebc7614f0e98a8ac4d16c33aa75d4dfdba8de152a154eaf7f4ecc35e01",
+    "docs/parallel/03/workers/W55-concurrency.md": "9b60cddc30e54c6019edcd4f6b61b90d5d423635fc925f41c03b5859696fa5bc",
+    "docs/parallel/03/workers/W61-acceptance.md": "24c2ae1f3e122ac1e4aaf11c22ff53be7eeafd8e9dba5b1dfa34cb99c7e7fa77",
+    "docs/parallel/03/workers/W24-implementation.md": "b62c5779cc3f76df25b68a906de1ebb938eff8721496e25016004757b3176e9e",
+    "docs/parallel/03/wave10-evidence/W92-geometry.py": "ec67d96141e286e33419f3a05b5818edb5b69e4e87c2ddbd48b3deda906d9cc8",
+    "docs/parallel/03/workers/W50-independent-review.md": "9509f2181454ddf810500a761c57939e7ae70fcf2599073bae6321b85da33ed2",
+    "docs/parallel/03/workers/W80-independent-review.md": "fe36ad67596631a2759e6d1bf6edcbf90f09629e0a891d3dc8e2ba38fbce58ec",
+    "docs/parallel/03/workers/W67-consumer.md": "46500d36b224a8dc06101c936ab792bf97107f942583ce6a21be51e3db254442",
+    "docs/parallel/03/workers/W77-consumer.md": "ab3192d064d099a646a342f9411be771ed58d19e7927cede7a442d8175d927e2",
+    "docs/parallel/03/workers/wave10-evidence/W91-private-tree-verification.json": "050d972c41640863cf8f1ec8d21040fea779ebde92e0d8e1e07735835b4eb7d9",
+    "docs/parallel/03/workers/wave10-evidence/W96-resource.json": "06afea1b8af7149282244af49ef5baa977c19662b823b384bc51a3db9d2b845b",
+    "docs/parallel/03/workers/W54-implementation.md": "afbee104069345042c0bc882b5c3312d007582b1199e9deb5a7977c989208361",
+    "docs/parallel/03/workers/wave10-evidence/W91-reviewed-document-snapshots.json": "7571280c304d2f2f6a06e959578f8bb25ca74193ff9956e37eb1467a15ad6fcf",
+    "docs/parallel/03/workers/wave01.json": "a48e0cbe32eb3bdf44a51852ee09f42b4605625573af57d1b65079435e0f1e97",
+    "docs/parallel/03/workers/wave06.json": "8f3e4148358a237e1ee9fb4a2b93e35009d6d2fa09bd53bd1f2d6054b18bf842",
+    "docs/parallel/03/workers/W40-independent-review.md": "d7d14ca9564bac7f9fa94f21e97d75ee774ae9659a5aff6bb49a9bbb29441312",
+    "docs/parallel/03/workers/W12-geometry.md": "4a17b9a91de44e4f7970cbd93c5f326a41f94aab51638572861321357d223511",
+    "docs/parallel/03/workers/wave09.json": "5bc56646900d26e037e26ca0c8cb7138285c977adf8f0f0819fb00353eee2bcc",
+    "docs/parallel/03/workers/W22-geometry.md": "098d2b4efd9f3714632875d2846f992a4df7202901566232b55e52c5646eff83",
+    "docs/parallel/03/workers/W30-independent-review.md": "c4b5dfe71384624f922aa99c15136434b6a1a184ca5a78b7cdcf6bce660fdd43",
+    "docs/parallel/03/workers/W14-implementation.md": "689c33d009f53c326aefdde6af55e04625c8f0ad4debbae3f2cbca25c586e9fa",
+    "docs/parallel/03/workers/W28-accessibility-privacy.md": "b81704086c63ccd12bbbfa926c82048a946c34ce336b00c02230086b477419a1",
+    "docs/parallel/03/workers/W92-geometry.md": "58b485d3efff07a01fa9e2b4dbc2dadd7abb954774961a19dbfc7bb5b0832ca0",
+    "docs/parallel/03/workers/W71-acceptance.md": "3c4f2ddb1dc885d7127653aa62b9755676111c83903753bb664adce9d1665a33",
+    "docs/parallel/03/workers/W53-api.md": "ecce7bec624dfe125874f0d7eb89c48d6ed141e714af8a252ac9e6ec4db0838b",
+    "docs/parallel/03/workers/W20-independent-review.md": "b410dd5f9b2138730acab65864200919e290a6e003c400d8bc88726c33ec2fe2",
+    "docs/parallel/03/workers/W75-concurrency.md": "f2b7d374139b5a6144bb73e8e57c06c525e7c3e2d03076355d79895700044e84",
+    "docs/parallel/03/workers/W39-platform-performance.md": "4cda5d56fb60b0b943a9799f6d5cf59d6bf2c6e11b3aa468a3fb3a7a37104b17",
+    "docs/parallel/03/workers/W05-concurrency.md": "a562f5db40cd4812e1976b8bb8fa73d3794f283881a294c65f87d0af00ba10b3",
+    "docs/parallel/03/workers/W06-resource.md": "017bb15dc3c7519f8d65201d22d6c5a21881bc6cd13029c21508b29fe3f9dcec",
+    "docs/parallel/03/workers/W31-acceptance.md": "4400e38c8d00dd91eaca2fc66c9d5009b480a3e0ce7991b9a93c97e37c793cf6",
+    "docs/parallel/03/workers/wave08.json": "2595045b45bd470222679bcd38cdd60d7eebbcb74499d0678263310d8b38a10f",
+    "docs/parallel/03/workers/W100-independent-review.md": "a22741bf15da4c7c8462008e119aea0b174e94152929c05785c9265c2748bde6",
+    "docs/parallel/03/workers/W84-implementation.md": "4615f6ca80e53ad3e612c1e91e453deb590b76dfd97efa905971da81e85bdc62",
+    "docs/parallel/03/workers/W16-resource.md": "13050db3593182d94e014bced117b6c9e29e8575557aea172da454ec1b4241b5",
+    "docs/parallel/03/workers/W33-api.md": "3fe23da3ff72c17387dab214fa2877e57f37d99c665e9abe1b557a48c9f41374",
+    "docs/parallel/03/workers/W01-acceptance.md": "4d50887c47f24b4cfaa8483a6c5c0361259c7e698940fac23aa37d4d7f5a8d7e",
+    "docs/parallel/03/workers/W85-concurrency.md": "7cb485b3ff87768fea2975dcbaf0c0336ef31c69891e9dddebd97252c4e3a987",
+    "docs/parallel/03/workers/W91-acceptance.md": "47aa104f2c3a660c2dae60161f9b106006f3e32a3294b7a444eef51b57848a75",
+    "docs/parallel/03/workers/W45-concurrency.md": "6e85df2e0c94660784308cea79e9bfa1649fcb1c92527d46458de0bce244a28c",
+    "docs/parallel/03/workers/W76-resource.md": "31bcb149d7b6cf8b98dab5fa6cda55c3a5bffdbfcab697bb398c6f227fe9aee6",
+    "docs/parallel/03/workers/W68-accessibility-privacy.md": "958e6a95f9d59b46be21746e94e99ad32cf652e2312c5e77e35c514817f69de1",
+    "docs/parallel/03/workers/W86-resource.md": "dcf8c8b9a90fc8679fc6197ae5505a722c964d4d635a7dfeef3b30114e8374f8",
+    "docs/parallel/03/workers/W21-acceptance.md": "e3da594c0fd8997a01345f96fd25bada601f7bc20d47db1b48bee1f3bc3d18aa",
+    "docs/parallel/03/workers/W49-platform-performance.md": "4aec3be4cd43252a8f6f11a9378eb841d4f8373e6cd4710127c954f60a08a3bf",
+    "docs/parallel/03/workers/W41-acceptance.md": "20f9ff34f9d59ad19eb9a2e352058c02733a798c18b3a1901cabc7ab15257d87",
+    "docs/parallel/03/workers/W25-concurrency.md": "0f1b7ab5a74b95478f78387955681ff1841cb81aa590ec7eff9e9d2c4e9eec1b",
+    "docs/parallel/03/workers/W57-consumer.md": "7540ecf57a54064987cb83b5dc297ba64a41f128bf697585682c0849fcca14d7",
+    "docs/parallel/03/workers/wave07.json": "29a6a713282a55379841f46fdab06e5eee0f7758ae4ac9ad649814535f54634d",
+    "docs/parallel/03/workers/wave10-evidence/W91-normalize-ledger.py": "9cd0a3e228f03b67859938adb520821b6758dc49dbd48b6d50dbac914353c4b1",
+    "docs/parallel/03/workers/W38-accessibility-privacy.md": "a0f8ab483cea4a6335e9867fd2965b419ca0ad0679ad252936f0316624ca9dbf",
+    "docs/parallel/03/workers/W17-consumer.md": "599102422ecbff2817a12e8265a2eac2df771904d3a56a37ee61a5bce7f3ae48",
+    "docs/parallel/03/workers/W93-api.md": "e5600873fdaa9a52a51dafd3a90415f071e086d494fa7983ce083a906e88be72",
+    "docs/parallel/03/workers/W43-api.md": "03da5990a9151f83e70db6d0e00badd046db9cb69f606bfdc8995afb0c3f8dc5",
+    "docs/parallel/03/workers/W95-concurrency.md": "d25e41aa2972c8c1bd48302fce71c6c975525e21df20194e1114762df0c44d81",
+    "docs/parallel/03/workers/W65-concurrency.md": "b86bf2e896a363edb8b0719323f96ae267e343fbf08c924f18b956df80707b24",
+    "docs/parallel/03/workers/W42-geometry.md": "4f2c5b1a363d5216b5fa97cf07c92a58e07e0c19faccd40d4bb5f689a2f9a11c",
+    "docs/parallel/03/workers/W29-platform-performance.md": "67e55fe1682135156d57ed4563f591603bd76633bb20b3483e33a935ed3592b4",
+    "docs/parallel/03/workers/W36-resource.md": "de3282cd0e37234bfd8f669397180e06b4dea93f31f84c742780c0f35052da85",
+    "docs/parallel/03/workers/wave02.json": "09bd74b267ee926567ba10310633f6181fa929b854a2b257a2d37a71d1f231d3",
+    "docs/parallel/03/workers/wave10-evidence/W93-audit.py": "6d7955cd5ca46d9ea00da403cc991e56da0b72da0653eb729e5a79d5d3bd104c",
+    "docs/parallel/03/WORKER_LEDGER.md": "fb6e500fa5c3376bb7e70bf5823ad6b05b4000f8e92dee653abc2106171c1b47",
+    "docs/parallel/03/workers/W44-implementation.md": "598530030c5d6fad4fcc2adf524ea5b6157e0676596bde2b53d887aba46cc66d",
+    "docs/parallel/03/workers/W89-platform-performance.md": "7c491049785a8b7e519aa585e467b82ccd3e3ea6279b60af53b23df9ddddecf9",
+    "docs/parallel/03/workers/wave10-evidence/HANDOFF-reviewed-pending-native.md": "e3ad0e6d2575da23dba1fcdae144c585c569154b4e81cc061a4162dc4dc7f145",
+    "docs/parallel/03/workers/wave10-evidence/HANDOFF-reviewed-pending-native-ENOSPC.md": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/parallel/03/workers/W15-concurrency.md": "3f745e595d84d0e346be19bc3724a27b86c843b6a127b02661c3786d4bd07ec3",
+    "docs/parallel/03/workers/W82-geometry.md": "ee7f624571d53d479c78db16700cd758b67681e911324ee698d5e3ef73a06d33",
+    "docs/parallel/03/workers/wave10-evidence/W97-consumer.json": "6bbb4f1a2e19a5d2440e9be37a369730ff0a85aa60c2cac9b1ae7a98f1a28052"
+  },
+  "checks": [
+    {
+      "check": "pinned candidate",
+      "passed": true
+    },
+    {
+      "check": "pinned patch",
+      "passed": true
+    },
+    {
+      "check": "pinned preview",
+      "passed": true
+    },
+    {
+      "check": "pinned pipeline_tests",
+      "passed": true
+    },
+    {
+      "check": "git show 342e3280e3eb077d55e122c8bfb88b4062b431ed:NativeTests/StudyPreviewAdoptionTests.swift",
+      "passed": true
+    },
+    {
+      "check": "original342 hosted hash",
+      "passed": true
+    },
+    {
+      "check": "git diff 342e3280e3eb077d55e122c8bfb88b4062b431ed -- NativeTests/StudyPreviewAdoptionTests.swift",
+      "passed": true
+    },
+    {
+      "check": "patch is exact342 candidate diff",
+      "passed": true
+    },
+    {
+      "check": "git show 342e3280e3eb077d55e122c8bfb88b4062b431ed:App/ReferenceStudyPreview.swift",
+      "passed": true
+    },
+    {
+      "check": "preview unchanged from342",
+      "passed": true
+    },
+    {
+      "check": "git show 342e3280e3eb077d55e122c8bfb88b4062b431ed:NativeTests/StudyPreviewPipelineTests.swift",
+      "passed": true
+    },
+    {
+      "check": "pipeline_tests unchanged from342",
+      "passed": true
+    },
+    {
+      "check": "renderer continuation/counter implementation identical",
+      "passed": true
+    },
+    {
+      "check": "mount and cleanup identical",
+      "passed": true
+    },
+    {
+      "check": "fixture generator identical",
+      "passed": true
+    },
+    {
+      "check": "host wrapper identical",
+      "passed": true
+    },
+    {
+      "check": "one host and visible-window activation",
+      "passed": true
+    },
+    {
+      "check": "first positive32 beforeB",
+      "passed": true
+    },
+    {
+      "check": "held32 beforeA2release",
+      "passed": true
+    },
+    {
+      "check": "positive160 afterA2release",
+      "passed": true
+    },
+    {
+      "check": "2A1B counts retained",
+      "passed": true
+    },
+    {
+      "check": "crop original bounds at center",
+      "passed": true
+    },
+    {
+      "check": "complete hierarchy required",
+      "passed": true
+    },
+    {
+      "check": "explicit sRGB RGBA8",
+      "passed": true
+    },
+    {
+      "check": "alpha and channel tolerance",
+      "passed": true
+    },
+    {
+      "check": "monotonic five-second polling",
+      "passed": true
+    },
+    {
+      "check": "throw-on-timeout and cancellation-aware yield",
+      "passed": true
+    },
+    {
+      "check": "AX lookup removed",
+      "passed": true
+    },
+    {
+      "check": "production request/ticket currentness retained",
+      "passed": true
+    },
+    {
+      "check": "fixed3to2 observation fixture",
+      "passed": true
+    },
+    {
+      "check": "lossless raw failure hash",
+      "passed": true
+    },
+    {
+      "check": "latest native-only runtime extraction",
+      "passed": true
+    },
+    {
+      "check": "native165 starts164 pass1failed",
+      "passed": true
+    },
+    {
+      "check": "sole hosted failure",
+      "passed": true
+    },
+    {
+      "check": "actual AXpositivecontrol failure",
+      "passed": true
+    },
+    {
+      "check": "authoritative1genuineinvalid0skip0unstarted",
+      "passed": true
+    },
+    {
+      "check": "historical3diagnostics retained",
+      "passed": true
+    },
+    {
+      "check": "historical785 breakdown",
+      "passed": true
+    },
+    {
+      "check": "aggregate frozen",
+      "passed": true
+    },
+    {
+      "check": "manifest frozen",
+      "passed": true
+    },
+    {
+      "check": "W100 finalledgerreceipt frozen",
+      "passed": true
+    },
+    {
+      "check": "all38frozen manifest hashes",
+      "passed": true
+    },
+    {
+      "check": "all100primary reports unchanged",
+      "passed": true
+    },
+    {
+      "check": "input still stable candidate",
+      "passed": true
+    },
+    {
+      "check": "input still stable patch",
+      "passed": true
+    },
+    {
+      "check": "input still stable preview",
+      "passed": true
+    },
+    {
+      "check": "input still stable pipeline_tests",
+      "passed": true
+    }
+  ],
+  "check_count": 47,
+  "failed_checks": [],
+  "written_paths": [
+    "docs/parallel/03/workers/wave10-evidence/W100-observer-correction-review.json"
+  ],
+  "token_accounting": "Counters unavailable; qualitative checkpoint only.",
+  "limits": "Source review supports candidate integration and native revalidation; it does not establish native success, AX semantics, device behavior, global M02/M03 or release acceptance."
+}

@@ -1,0 +1,5502 @@
+{
+  "worker": "W93-api",
+  "canonicalTask": "/root/wave10/w93_api",
+  "parent": "/root/wave10",
+  "inputCommit": "342e3280e3eb077d55e122c8bfb88b4062b431ed",
+  "privateWorktree": "/tmp/keyfill03-7f4b/workers/W93-api",
+  "cpuEvidenceSourceCommit": "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5",
+  "scope": "Source and retained-byte audit only. No fresh render, build, Swift test, native execution, or physical claim.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W93-api",
+      "exitCode": 0,
+      "stdout": "342e3280e3eb077d55e122c8bfb88b4062b431ed\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W93-api",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5",
+        "HEAD",
+        "--",
+        "Sources/LightingCore",
+        "scripts/render-study-fixtures.swift",
+        "scripts/prepare-kernel-fixtures.swift",
+        "scripts/precision-boundary.swift",
+        "scripts/verify-kernel-host.cpp",
+        "App/StudyKernel.h"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W93-api",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+        "HEAD",
+        "--",
+        "App/ReferenceStudyPreview.swift",
+        "NativeTests"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W93-api",
+      "exitCode": 0,
+      "stdout": "App/ReferenceStudyPreview.swift\nNativeTests/StudyPreviewAdoptionTests.swift\n",
+      "stderr": ""
+    }
+  ],
+  "auditInvocation": [
+    "python3",
+    "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave10-evidence/W93-audit.py"
+  ],
+  "auditScriptSHA256": "6d7955cd5ca46d9ea00da403cc991e56da0b72da0653eb729e5a79d5d3bd104c",
+  "inspectionReadCommands": [
+    "sed -n <scoped ranges> <AGENTS/protocol/acceptance/source files>",
+    "rg -n <API and packing patterns> <scoped source files>",
+    "python3 - <<PY: inspect selected manifest and log fields; sha256 retained inputs"
+  ],
+  "toolReadNotes": [
+    "Two initial combined reads exceeded returned output budgets; targeted bounded reads recovered the needed fields. No subprocess error or missing evidence file occurred."
+  ],
+  "api": {
+    "type": "@MainActor struct ReferenceStudyPreview: View",
+    "visibility": "internal Swift type, app-facing memberwise scene/subject entry",
+    "scene": "LightingScene",
+    "subject": "StudySubject",
+    "defaultSubject": "sphere",
+    "sourceSHA256": "9ba7761837c58dde1b973d0740ad97a37ecea2e73ba8c5b69397da625ef805b9",
+    "ordinaryCallSites": [
+      {
+        "path": "App/StudioView.swift",
+        "line": 504,
+        "text": "else if mode == \"Study\" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }"
+      },
+      {
+        "path": "App/ReferenceComparisonView.swift",
+        "line": 261,
+        "text": "ReferenceStudyPreview(scene: selectedRig?.scene ?? scene).frame(height: 200)"
+      }
+    ],
+    "internalTestingSeam": "renderStudy: @MainActor (LightingScene, StudySubject) async throws -> StudyPreviewOutput",
+    "nativeTypecheckByW93": false
+  },
+  "packing": {
+    "parameterRows": 6,
+    "rowsPerSample": 3,
+    "rowsPerArea": 3,
+    "bytesPerRow": 16,
+    "source": "Sources/LightingCore/ReferenceStudy.swift",
+    "unchangedSince": "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5",
+    "fixtureAlphaScope": "Packed binary references use alpha 0 for unsupported magenta, 255 for supported pixels. This is separate from opaque StudyImage.rgba and the twelve final raw RGBA files."
+  },
+  "sourceManifestComparison": [
+    {
+      "path": "Sources/LightingCore/SceneCodec.swift",
+      "manifestSHA256": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+      "currentSHA256": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "manifestSHA256": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+      "currentSHA256": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "manifestSHA256": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+      "currentSHA256": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "manifestSHA256": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+      "currentSHA256": "eb3e68a3723eab4d1de37b868a6f5cb26fbb1201fca48ee6cb33895c488718ee",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/GuidedLighting.swift",
+      "manifestSHA256": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+      "currentSHA256": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/SceneFileStore.swift",
+      "manifestSHA256": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+      "currentSHA256": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudioPlanLabelLayout.swift",
+      "manifestSHA256": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+      "currentSHA256": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "manifestSHA256": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+      "currentSHA256": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "manifestSHA256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "currentSHA256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "manifestSHA256": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+      "currentSHA256": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "manifestSHA256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "currentSHA256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/ARPlacementLayout.swift",
+      "manifestSHA256": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+      "currentSHA256": "2545951a911f59d57c284c6cf77f894539f5add50309c205b4310904b9f169ee",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/PortraitHeadMesh.swift",
+      "manifestSHA256": "2f4be2a16daf9758d38bb184e735c9ae130797d01327cf78a1563b783826c637",
+      "currentSHA256": "2f4be2a16daf9758d38bb184e735c9ae130797d01327cf78a1563b783826c637",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/RoomPlacementText.swift",
+      "manifestSHA256": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+      "currentSHA256": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/SceneLightCreation.swift",
+      "manifestSHA256": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+      "currentSHA256": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/LightingPlan.swift",
+      "manifestSHA256": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+      "currentSHA256": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/Colorimetry.swift",
+      "manifestSHA256": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+      "currentSHA256": "60898dc1b407679eccf51f94b45080027a36b252ef0ba6c508de23ee717b961e",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudioNumericInput.swift",
+      "manifestSHA256": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+      "currentSHA256": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/RoomPlacement.swift",
+      "manifestSHA256": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+      "currentSHA256": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "manifestSHA256": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+      "currentSHA256": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceTonalSummary.swift",
+      "manifestSHA256": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+      "currentSHA256": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/LightingProjectDocument.swift",
+      "manifestSHA256": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+      "currentSHA256": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/ReferencePNG.swift",
+      "manifestSHA256": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+      "currentSHA256": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/SceneEditHistory.swift",
+      "manifestSHA256": "b74aa78bac2c6940c86177dc74703864e054190950092879e81c64cc7697a767",
+      "currentSHA256": "b74aa78bac2c6940c86177dc74703864e054190950092879e81c64cc7697a767",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/LightingRecipe.swift",
+      "manifestSHA256": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+      "currentSHA256": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudioDisplayName.swift",
+      "manifestSHA256": "56130a2c0a0f6d4cc1003248d3ca341c444723d97cbc36230845cb8401a8a314",
+      "currentSHA256": "56130a2c0a0f6d4cc1003248d3ca341c444723d97cbc36230845cb8401a8a314",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+      "manifestSHA256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+      "currentSHA256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/SceneTransform.swift",
+      "manifestSHA256": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+      "currentSHA256": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "manifestSHA256": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+      "currentSHA256": "2b5c3de52bb8c2b5667607e3d3eb38f5b580dcfc844f918bbb7291871f207c28",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/StudioSceneBounds.swift",
+      "manifestSHA256": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+      "currentSHA256": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "manifestSHA256": "a0f4966a7512e1dba78bed05495169499f06cbb4d1f87c2cde56ba3ed5031e7b",
+      "currentSHA256": "a0f4966a7512e1dba78bed05495169499f06cbb4d1f87c2cde56ba3ed5031e7b",
+      "matches": true
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "manifestSHA256": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+      "currentSHA256": "9ba7761837c58dde1b973d0740ad97a37ecea2e73ba8c5b69397da625ef805b9",
+      "matches": false
+    },
+    {
+      "path": "NativeTests/StudyPreviewPipelineTests.swift",
+      "manifestSHA256": "4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79",
+      "currentSHA256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "matches": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-matrix-probe.swift",
+      "manifestSHA256": "1099abe0d92a23c89bd0d7cd145aa658dcb080696de8c953cf8cf98b10123348",
+      "currentSHA256": "1099abe0d92a23c89bd0d7cd145aa658dcb080696de8c953cf8cf98b10123348",
+      "matches": true
+    },
+    {
+      "path": "scripts/prepare-kernel-fixtures.swift",
+      "manifestSHA256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+      "currentSHA256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+      "matches": true
+    },
+    {
+      "path": "scripts/precision-boundary.swift",
+      "manifestSHA256": "9125dca07db18c9cf4f029216b1264456e729590ceec7f32de41026d3ca68b45",
+      "currentSHA256": "9125dca07db18c9cf4f029216b1264456e729590ceec7f32de41026d3ca68b45",
+      "matches": true
+    },
+    {
+      "path": "scripts/verify-kernel-host.cpp",
+      "manifestSHA256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "currentSHA256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "matches": true
+    },
+    {
+      "path": "App/StudyKernel.h",
+      "manifestSHA256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "currentSHA256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "matches": true
+    }
+  ],
+  "savedSceneAndArchiveSourceHashes": [
+    {
+      "path": "Sources/LightingCore/SceneCodec.swift",
+      "manifestSHA256": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+      "currentSHA256": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/Scene.swift",
+      "manifestSHA256": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+      "currentSHA256": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/ProjectLibrary.swift",
+      "manifestSHA256": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+      "currentSHA256": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/SceneFileStore.swift",
+      "manifestSHA256": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+      "currentSHA256": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+      "matches": true
+    },
+    {
+      "path": "Sources/LightingCore/LightingProjectDocument.swift",
+      "manifestSHA256": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+      "currentSHA256": "bf79fd894a96c7640bbc3802a2f631bcce98c6c2a90167e72e1ef22e05b31938",
+      "matches": true
+    }
+  ],
+  "fixtureGeneratorSHA256": "62ce1ac9552fff2ee8b8f4953d5db43964511ffba899949f37c6432bf3e49763",
+  "unchangedSourceRationale": "All 31 portable-core hashes match the retained source manifest and git diff from db7 to the pinned HEAD is empty for the core, fixture generators and shared host harness. Preview/native changes are excluded from carrying CPU evidence forward.",
+  "ordinarySyntheticImages": [
+    {
+      "name": "soft",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "key",
+        "fill",
+        "rim",
+        "soft-rectangle",
+        "sphere-material",
+        "panel-shadow"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "soft.ppm": {
+          "path": "docs/parallel/03/evidence/final/soft.ppm",
+          "bytes": 28814,
+          "sha256": "4c8bf47989929bdaad8f9bc4843a60588bad94ea727e45b9d8d6ee89b255f9cf",
+          "expectedSHA256": "4c8bf47989929bdaad8f9bc4843a60588bad94ea727e45b9d8d6ee89b255f9cf",
+          "hashMatches": true
+        },
+        "soft.png": {
+          "path": "docs/parallel/03/evidence/final/soft.png",
+          "bytes": 3694,
+          "sha256": "76c97e2764e00e0f190dcde687d860492f6f4410a724132d55e8bf6f7bdac047",
+          "expectedSHA256": "76c97e2764e00e0f190dcde687d860492f6f4410a724132d55e8bf6f7bdac047",
+          "hashMatches": true
+        },
+        "soft.rgba": {
+          "path": "docs/parallel/03/evidence/final/soft.rgba",
+          "bytes": 38400,
+          "sha256": "c29f29f11b37b8af9ff24eff7cdae8a95604c87dd045b224a3728379df5e74f0",
+          "expectedSHA256": "c29f29f11b37b8af9ff24eff7cdae8a95604c87dd045b224a3728379df5e74f0",
+          "hashMatches": true
+        },
+        "soft.mask": {
+          "path": "docs/parallel/03/evidence/final/soft.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "soft.json": {
+          "path": "docs/parallel/03/evidence/final/soft.json",
+          "bytes": 1232,
+          "sha256": "38360c2028b5b2890d4b111f1f28a382a85b52bb6115f1a03b7e99cf0d9ede1f",
+          "expectedSHA256": "38360c2028b5b2890d4b111f1f28a382a85b52bb6115f1a03b7e99cf0d9ede1f",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/soft.ppm",
+          "bytes": 28814,
+          "sha256": "4c8bf47989929bdaad8f9bc4843a60588bad94ea727e45b9d8d6ee89b255f9cf",
+          "expectedSHA256": "4c8bf47989929bdaad8f9bc4843a60588bad94ea727e45b9d8d6ee89b255f9cf",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/soft.png",
+          "bytes": 3694,
+          "sha256": "76c97e2764e00e0f190dcde687d860492f6f4410a724132d55e8bf6f7bdac047",
+          "expectedSHA256": "76c97e2764e00e0f190dcde687d860492f6f4410a724132d55e8bf6f7bdac047",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/soft.json",
+          "bytes": 1232,
+          "sha256": "38360c2028b5b2890d4b111f1f28a382a85b52bb6115f1a03b7e99cf0d9ede1f",
+          "expectedSHA256": "38360c2028b5b2890d4b111f1f28a382a85b52bb6115f1a03b7e99cf0d9ede1f",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "hard",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "key",
+        "fill",
+        "rim",
+        "hard-point",
+        "panel-shadow"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "hard.ppm": {
+          "path": "docs/parallel/03/evidence/final/hard.ppm",
+          "bytes": 28814,
+          "sha256": "2f2efd26caf5f43fc5013e3881b9bca65919c35eb22b3dfcaf1f7fad56913200",
+          "expectedSHA256": "2f2efd26caf5f43fc5013e3881b9bca65919c35eb22b3dfcaf1f7fad56913200",
+          "hashMatches": true
+        },
+        "hard.png": {
+          "path": "docs/parallel/03/evidence/final/hard.png",
+          "bytes": 3666,
+          "sha256": "08d3f863f0ee91385a20226a8a2bd3e829dddb7d36819167fac1da76e1c62d71",
+          "expectedSHA256": "08d3f863f0ee91385a20226a8a2bd3e829dddb7d36819167fac1da76e1c62d71",
+          "hashMatches": true
+        },
+        "hard.rgba": {
+          "path": "docs/parallel/03/evidence/final/hard.rgba",
+          "bytes": 38400,
+          "sha256": "67ab71c536fc4ee4b02ef88169da9449bc249c9ec0e39bc8bc8053c70ecff670",
+          "expectedSHA256": "67ab71c536fc4ee4b02ef88169da9449bc249c9ec0e39bc8bc8053c70ecff670",
+          "hashMatches": true
+        },
+        "hard.mask": {
+          "path": "docs/parallel/03/evidence/final/hard.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "hard.json": {
+          "path": "docs/parallel/03/evidence/final/hard.json",
+          "bytes": 886,
+          "sha256": "40dfbf12ca037cc2b0b377fb42bfe0b7a64867667da6fe49f344c7e2e4738555",
+          "expectedSHA256": "40dfbf12ca037cc2b0b377fb42bfe0b7a64867667da6fe49f344c7e2e4738555",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/hard.ppm",
+          "bytes": 28814,
+          "sha256": "2f2efd26caf5f43fc5013e3881b9bca65919c35eb22b3dfcaf1f7fad56913200",
+          "expectedSHA256": "2f2efd26caf5f43fc5013e3881b9bca65919c35eb22b3dfcaf1f7fad56913200",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/hard.png",
+          "bytes": 3666,
+          "sha256": "08d3f863f0ee91385a20226a8a2bd3e829dddb7d36819167fac1da76e1c62d71",
+          "expectedSHA256": "08d3f863f0ee91385a20226a8a2bd3e829dddb7d36819167fac1da76e1c62d71",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/hard.json",
+          "bytes": 886,
+          "sha256": "40dfbf12ca037cc2b0b377fb42bfe0b7a64867667da6fe49f344c7e2e4738555",
+          "expectedSHA256": "40dfbf12ca037cc2b0b377fb42bfe0b7a64867667da6fe49f344c7e2e4738555",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "warm",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "white-balance-3200K",
+        "exposure-plus-one-stop"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 1,
+          "whiteBalanceKelvin": 3200
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "warm.ppm": {
+          "path": "docs/parallel/03/evidence/final/warm.ppm",
+          "bytes": 28814,
+          "sha256": "7570b922e8d9bdeac90c1749452781a03598f8f2e1521f6dae0dcd67b6ebc9ca",
+          "expectedSHA256": "7570b922e8d9bdeac90c1749452781a03598f8f2e1521f6dae0dcd67b6ebc9ca",
+          "hashMatches": true
+        },
+        "warm.png": {
+          "path": "docs/parallel/03/evidence/final/warm.png",
+          "bytes": 4983,
+          "sha256": "e1db1add2b428db6d201b6c6f735383f003e205f38d15427e6ad624a6e5ffd04",
+          "expectedSHA256": "e1db1add2b428db6d201b6c6f735383f003e205f38d15427e6ad624a6e5ffd04",
+          "hashMatches": true
+        },
+        "warm.rgba": {
+          "path": "docs/parallel/03/evidence/final/warm.rgba",
+          "bytes": 38400,
+          "sha256": "a9cf95fde92c4aa62dc1a67edf9c92780b5d71acf1521c53676e3fedc1e6c5c4",
+          "expectedSHA256": "a9cf95fde92c4aa62dc1a67edf9c92780b5d71acf1521c53676e3fedc1e6c5c4",
+          "hashMatches": true
+        },
+        "warm.mask": {
+          "path": "docs/parallel/03/evidence/final/warm.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "warm.json": {
+          "path": "docs/parallel/03/evidence/final/warm.json",
+          "bytes": 1318,
+          "sha256": "60b3355b5d56da96c0725f5e24f2e0296c997a274c015789698798170737af45",
+          "expectedSHA256": "60b3355b5d56da96c0725f5e24f2e0296c997a274c015789698798170737af45",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/warm.ppm",
+          "bytes": 28814,
+          "sha256": "7570b922e8d9bdeac90c1749452781a03598f8f2e1521f6dae0dcd67b6ebc9ca",
+          "expectedSHA256": "7570b922e8d9bdeac90c1749452781a03598f8f2e1521f6dae0dcd67b6ebc9ca",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/warm.png",
+          "bytes": 4983,
+          "sha256": "e1db1add2b428db6d201b6c6f735383f003e205f38d15427e6ad624a6e5ffd04",
+          "expectedSHA256": "e1db1add2b428db6d201b6c6f735383f003e205f38d15427e6ad624a6e5ffd04",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/warm.json",
+          "bytes": 1318,
+          "sha256": "60b3355b5d56da96c0725f5e24f2e0296c997a274c015789698798170737af45",
+          "expectedSHA256": "60b3355b5d56da96c0725f5e24f2e0296c997a274c015789698798170737af45",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "bust-soft",
+      "subject": "neutral-mannequin",
+      "width": 144,
+      "height": 96,
+      "coverage": [
+        "key",
+        "fill",
+        "rim",
+        "soft-rectangle",
+        "neutral-head-and-clothing"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.6,
+          "z": 1.7
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 1.25,
+          "whiteBalanceKelvin": 5600
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "bust-soft.ppm": {
+          "path": "docs/parallel/03/evidence/final/bust-soft.ppm",
+          "bytes": 41486,
+          "sha256": "7e06db4a71d9e66cb85a97b05cf2835c700fa5bb2a13799ad45b45c5baec0d8f",
+          "expectedSHA256": "7e06db4a71d9e66cb85a97b05cf2835c700fa5bb2a13799ad45b45c5baec0d8f",
+          "hashMatches": true
+        },
+        "bust-soft.png": {
+          "path": "docs/parallel/03/evidence/final/bust-soft.png",
+          "bytes": 3905,
+          "sha256": "96d1253074ed6f25686430e982f2d3a84c029755e06f840f80827e2dd1ebb24b",
+          "expectedSHA256": "96d1253074ed6f25686430e982f2d3a84c029755e06f840f80827e2dd1ebb24b",
+          "hashMatches": true
+        },
+        "bust-soft.rgba": {
+          "path": "docs/parallel/03/evidence/final/bust-soft.rgba",
+          "bytes": 55296,
+          "sha256": "98e0cc96a41034ad5674f26cc7cf8b73d10a95623f39593cc26059b6ae4d148f",
+          "expectedSHA256": "98e0cc96a41034ad5674f26cc7cf8b73d10a95623f39593cc26059b6ae4d148f",
+          "hashMatches": true
+        },
+        "bust-soft.mask": {
+          "path": "docs/parallel/03/evidence/final/bust-soft.mask",
+          "bytes": 13824,
+          "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "expectedSHA256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "hashMatches": true
+        },
+        "bust-soft.json": {
+          "path": "docs/parallel/03/evidence/final/bust-soft.json",
+          "bytes": 1320,
+          "sha256": "4c4935c539c3ddebd65cb8eeb436a46683eb40a99f5d7e08dc1ae40bf2e2ba67",
+          "expectedSHA256": "4c4935c539c3ddebd65cb8eeb436a46683eb40a99f5d7e08dc1ae40bf2e2ba67",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/bust-soft.ppm",
+          "bytes": 41486,
+          "sha256": "7e06db4a71d9e66cb85a97b05cf2835c700fa5bb2a13799ad45b45c5baec0d8f",
+          "expectedSHA256": "7e06db4a71d9e66cb85a97b05cf2835c700fa5bb2a13799ad45b45c5baec0d8f",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/bust-soft.png",
+          "bytes": 3905,
+          "sha256": "96d1253074ed6f25686430e982f2d3a84c029755e06f840f80827e2dd1ebb24b",
+          "expectedSHA256": "96d1253074ed6f25686430e982f2d3a84c029755e06f840f80827e2dd1ebb24b",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/bust-soft.json",
+          "bytes": 1320,
+          "sha256": "4c4935c539c3ddebd65cb8eeb436a46683eb40a99f5d7e08dc1ae40bf2e2ba67",
+          "expectedSHA256": "4c4935c539c3ddebd65cb8eeb436a46683eb40a99f5d7e08dc1ae40bf2e2ba67",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "bust-hard",
+      "subject": "neutral-mannequin",
+      "width": 144,
+      "height": 96,
+      "coverage": [
+        "hard-point",
+        "facial-self-shadow"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.6,
+          "z": 1.7
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 1.25,
+          "whiteBalanceKelvin": 5600
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "bust-hard.ppm": {
+          "path": "docs/parallel/03/evidence/final/bust-hard.ppm",
+          "bytes": 41486,
+          "sha256": "81d1cc1dfe337f48bff09d455e2c09c21213dceb5f63b2725093855513227bcc",
+          "expectedSHA256": "81d1cc1dfe337f48bff09d455e2c09c21213dceb5f63b2725093855513227bcc",
+          "hashMatches": true
+        },
+        "bust-hard.png": {
+          "path": "docs/parallel/03/evidence/final/bust-hard.png",
+          "bytes": 4000,
+          "sha256": "2970147d855ca8f61ac8398f76d29903a7ff4dce7e051af5bf3a2d0034596307",
+          "expectedSHA256": "2970147d855ca8f61ac8398f76d29903a7ff4dce7e051af5bf3a2d0034596307",
+          "hashMatches": true
+        },
+        "bust-hard.rgba": {
+          "path": "docs/parallel/03/evidence/final/bust-hard.rgba",
+          "bytes": 55296,
+          "sha256": "3a404d9d5186463f4cad9a19143b187385e9e5799cf68657d4183d4b90c3c80c",
+          "expectedSHA256": "3a404d9d5186463f4cad9a19143b187385e9e5799cf68657d4183d4b90c3c80c",
+          "hashMatches": true
+        },
+        "bust-hard.mask": {
+          "path": "docs/parallel/03/evidence/final/bust-hard.mask",
+          "bytes": 13824,
+          "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "expectedSHA256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "hashMatches": true
+        },
+        "bust-hard.json": {
+          "path": "docs/parallel/03/evidence/final/bust-hard.json",
+          "bytes": 974,
+          "sha256": "707cfa77ef595db82a22318a5dc9138c2b1284a75446d39da7361d910e316a65",
+          "expectedSHA256": "707cfa77ef595db82a22318a5dc9138c2b1284a75446d39da7361d910e316a65",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/bust-hard.ppm",
+          "bytes": 41486,
+          "sha256": "81d1cc1dfe337f48bff09d455e2c09c21213dceb5f63b2725093855513227bcc",
+          "expectedSHA256": "81d1cc1dfe337f48bff09d455e2c09c21213dceb5f63b2725093855513227bcc",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/bust-hard.png",
+          "bytes": 4000,
+          "sha256": "2970147d855ca8f61ac8398f76d29903a7ff4dce7e051af5bf3a2d0034596307",
+          "expectedSHA256": "2970147d855ca8f61ac8398f76d29903a7ff4dce7e051af5bf3a2d0034596307",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/bust-hard.json",
+          "bytes": 974,
+          "sha256": "707cfa77ef595db82a22318a5dc9138c2b1284a75446d39da7361d910e316a65",
+          "expectedSHA256": "707cfa77ef595db82a22318a5dc9138c2b1284a75446d39da7361d910e316a65",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "bust-side",
+      "subject": "neutral-mannequin",
+      "width": 144,
+      "height": 96,
+      "coverage": [
+        "oblique-camera",
+        "silhouette",
+        "white-balance-4300K"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0.84,
+          "y": 1.63,
+          "z": 1.45
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 1.25,
+          "whiteBalanceKelvin": 4300
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "bust-side.ppm": {
+          "path": "docs/parallel/03/evidence/final/bust-side.ppm",
+          "bytes": 41486,
+          "sha256": "5f1b0ee285acd26c39a7b62d02436490e5ee4033b1c9fbb9ecce5acb6428238f",
+          "expectedSHA256": "5f1b0ee285acd26c39a7b62d02436490e5ee4033b1c9fbb9ecce5acb6428238f",
+          "hashMatches": true
+        },
+        "bust-side.png": {
+          "path": "docs/parallel/03/evidence/final/bust-side.png",
+          "bytes": 5088,
+          "sha256": "81ec9a4a9db38c90dbdedb76619740fe42f2efdb627caf503d837ada7cc1da07",
+          "expectedSHA256": "81ec9a4a9db38c90dbdedb76619740fe42f2efdb627caf503d837ada7cc1da07",
+          "hashMatches": true
+        },
+        "bust-side.rgba": {
+          "path": "docs/parallel/03/evidence/final/bust-side.rgba",
+          "bytes": 55296,
+          "sha256": "49c49f2f5fde8015cee2677fe51d34bb2137f3343d03aef7291928d171727f4c",
+          "expectedSHA256": "49c49f2f5fde8015cee2677fe51d34bb2137f3343d03aef7291928d171727f4c",
+          "hashMatches": true
+        },
+        "bust-side.mask": {
+          "path": "docs/parallel/03/evidence/final/bust-side.mask",
+          "bytes": 13824,
+          "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "expectedSHA256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "hashMatches": true
+        },
+        "bust-side.json": {
+          "path": "docs/parallel/03/evidence/final/bust-side.json",
+          "bytes": 1325,
+          "sha256": "a0248bb2e31360af1b1a29329f0388c2165dd582fc566183b4a771ca682a8f18",
+          "expectedSHA256": "a0248bb2e31360af1b1a29329f0388c2165dd582fc566183b4a771ca682a8f18",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/bust-side.ppm",
+          "bytes": 41486,
+          "sha256": "5f1b0ee285acd26c39a7b62d02436490e5ee4033b1c9fbb9ecce5acb6428238f",
+          "expectedSHA256": "5f1b0ee285acd26c39a7b62d02436490e5ee4033b1c9fbb9ecce5acb6428238f",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/bust-side.png",
+          "bytes": 5088,
+          "sha256": "81ec9a4a9db38c90dbdedb76619740fe42f2efdb627caf503d837ada7cc1da07",
+          "expectedSHA256": "81ec9a4a9db38c90dbdedb76619740fe42f2efdb627caf503d837ada7cc1da07",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/bust-side.json",
+          "bytes": 1325,
+          "sha256": "a0248bb2e31360af1b1a29329f0388c2165dd582fc566183b4a771ca682a8f18",
+          "expectedSHA256": "a0248bb2e31360af1b1a29329f0388c2165dd582fc566183b4a771ca682a8f18",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "key-only-hard",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "key-only",
+        "hard-point",
+        "panel-shadow"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          }
+        ],
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "key-only-hard.ppm": {
+          "path": "docs/parallel/03/evidence/final/key-only-hard.ppm",
+          "bytes": 28814,
+          "sha256": "2bfcc7d9f4562c7d79a9d41f2817d34f82cdee47ab0f5b63dbad5329017e1d5f",
+          "expectedSHA256": "2bfcc7d9f4562c7d79a9d41f2817d34f82cdee47ab0f5b63dbad5329017e1d5f",
+          "hashMatches": true
+        },
+        "key-only-hard.png": {
+          "path": "docs/parallel/03/evidence/final/key-only-hard.png",
+          "bytes": 2120,
+          "sha256": "063e04fd46f49fa1b6c1b257d1caa45eea0aeb4aaf433967ae6aa6432920d15d",
+          "expectedSHA256": "063e04fd46f49fa1b6c1b257d1caa45eea0aeb4aaf433967ae6aa6432920d15d",
+          "hashMatches": true
+        },
+        "key-only-hard.rgba": {
+          "path": "docs/parallel/03/evidence/final/key-only-hard.rgba",
+          "bytes": 38400,
+          "sha256": "2eb5f02b07cc123b292fb36cb9162b54e85c9a3a34de208a5abffe13e972119d",
+          "expectedSHA256": "2eb5f02b07cc123b292fb36cb9162b54e85c9a3a34de208a5abffe13e972119d",
+          "hashMatches": true
+        },
+        "key-only-hard.mask": {
+          "path": "docs/parallel/03/evidence/final/key-only-hard.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "key-only-hard.json": {
+          "path": "docs/parallel/03/evidence/final/key-only-hard.json",
+          "bytes": 446,
+          "sha256": "6443f14dde9aa3fe52bc2502917c1f25ed58b6a2b7379501fdd4615b3761502f",
+          "expectedSHA256": "6443f14dde9aa3fe52bc2502917c1f25ed58b6a2b7379501fdd4615b3761502f",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/key-only-hard.ppm",
+          "bytes": 28814,
+          "sha256": "2bfcc7d9f4562c7d79a9d41f2817d34f82cdee47ab0f5b63dbad5329017e1d5f",
+          "expectedSHA256": "2bfcc7d9f4562c7d79a9d41f2817d34f82cdee47ab0f5b63dbad5329017e1d5f",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/key-only-hard.png",
+          "bytes": 2120,
+          "sha256": "063e04fd46f49fa1b6c1b257d1caa45eea0aeb4aaf433967ae6aa6432920d15d",
+          "expectedSHA256": "063e04fd46f49fa1b6c1b257d1caa45eea0aeb4aaf433967ae6aa6432920d15d",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/key-only-hard.json",
+          "bytes": 446,
+          "sha256": "6443f14dde9aa3fe52bc2502917c1f25ed58b6a2b7379501fdd4615b3761502f",
+          "expectedSHA256": "6443f14dde9aa3fe52bc2502917c1f25ed58b6a2b7379501fdd4615b3761502f",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "fill-only-soft",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "fill-only",
+        "soft-rectangle",
+        "panel-shadow"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          }
+        ],
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "fill-only-soft.ppm": {
+          "path": "docs/parallel/03/evidence/final/fill-only-soft.ppm",
+          "bytes": 28814,
+          "sha256": "0d000a5c13c6a74d8ffeb1edbe7a0c8957421e2f503e3304e85c048542aa748b",
+          "expectedSHA256": "0d000a5c13c6a74d8ffeb1edbe7a0c8957421e2f503e3304e85c048542aa748b",
+          "hashMatches": true
+        },
+        "fill-only-soft.png": {
+          "path": "docs/parallel/03/evidence/final/fill-only-soft.png",
+          "bytes": 1659,
+          "sha256": "2d2e3b140cb0038ba68cf001b37f86942fc9e6117dcbba98c36aced787816234",
+          "expectedSHA256": "2d2e3b140cb0038ba68cf001b37f86942fc9e6117dcbba98c36aced787816234",
+          "hashMatches": true
+        },
+        "fill-only-soft.rgba": {
+          "path": "docs/parallel/03/evidence/final/fill-only-soft.rgba",
+          "bytes": 38400,
+          "sha256": "9e1b364fbd268274c41bfa2745df71fb2c31c0db326be9e64c3c39a812efaae1",
+          "expectedSHA256": "9e1b364fbd268274c41bfa2745df71fb2c31c0db326be9e64c3c39a812efaae1",
+          "hashMatches": true
+        },
+        "fill-only-soft.mask": {
+          "path": "docs/parallel/03/evidence/final/fill-only-soft.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "fill-only-soft.json": {
+          "path": "docs/parallel/03/evidence/final/fill-only-soft.json",
+          "bytes": 562,
+          "sha256": "902e9b6daad76f80bdc6a293c835d81c516160e6ff2dee729e0991da5fcd4d6e",
+          "expectedSHA256": "902e9b6daad76f80bdc6a293c835d81c516160e6ff2dee729e0991da5fcd4d6e",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/fill-only-soft.ppm",
+          "bytes": 28814,
+          "sha256": "0d000a5c13c6a74d8ffeb1edbe7a0c8957421e2f503e3304e85c048542aa748b",
+          "expectedSHA256": "0d000a5c13c6a74d8ffeb1edbe7a0c8957421e2f503e3304e85c048542aa748b",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/fill-only-soft.png",
+          "bytes": 1659,
+          "sha256": "2d2e3b140cb0038ba68cf001b37f86942fc9e6117dcbba98c36aced787816234",
+          "expectedSHA256": "2d2e3b140cb0038ba68cf001b37f86942fc9e6117dcbba98c36aced787816234",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/fill-only-soft.json",
+          "bytes": 562,
+          "sha256": "902e9b6daad76f80bdc6a293c835d81c516160e6ff2dee729e0991da5fcd4d6e",
+          "expectedSHA256": "902e9b6daad76f80bdc6a293c835d81c516160e6ff2dee729e0991da5fcd4d6e",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "bust-rim-only",
+      "subject": "neutral-mannequin",
+      "width": 144,
+      "height": 96,
+      "coverage": [
+        "rim-only",
+        "soft-rectangle",
+        "silhouette",
+        "facial-self-shadow"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.6,
+          "z": 1.7
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 1.25,
+          "whiteBalanceKelvin": 5600
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "bust-rim-only.ppm": {
+          "path": "docs/parallel/03/evidence/final/bust-rim-only.ppm",
+          "bytes": 41486,
+          "sha256": "1409312ccbbcf3fb1839baef9fb2807b573fcdb4d75f76772384d0c48a9e5c4b",
+          "expectedSHA256": "1409312ccbbcf3fb1839baef9fb2807b573fcdb4d75f76772384d0c48a9e5c4b",
+          "hashMatches": true
+        },
+        "bust-rim-only.png": {
+          "path": "docs/parallel/03/evidence/final/bust-rim-only.png",
+          "bytes": 2726,
+          "sha256": "98744aa462f2be3dcc673be893e8f750b7dfcbc4d3a64f50c1ddccc3c96977c3",
+          "expectedSHA256": "98744aa462f2be3dcc673be893e8f750b7dfcbc4d3a64f50c1ddccc3c96977c3",
+          "hashMatches": true
+        },
+        "bust-rim-only.rgba": {
+          "path": "docs/parallel/03/evidence/final/bust-rim-only.rgba",
+          "bytes": 55296,
+          "sha256": "5c9ca62c3f369bc210a1ef891cf79f1ed4d7fff54e1308d47606b05d407508f1",
+          "expectedSHA256": "5c9ca62c3f369bc210a1ef891cf79f1ed4d7fff54e1308d47606b05d407508f1",
+          "hashMatches": true
+        },
+        "bust-rim-only.mask": {
+          "path": "docs/parallel/03/evidence/final/bust-rim-only.mask",
+          "bytes": 13824,
+          "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "expectedSHA256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "hashMatches": true
+        },
+        "bust-rim-only.json": {
+          "path": "docs/parallel/03/evidence/final/bust-rim-only.json",
+          "bytes": 650,
+          "sha256": "5fd686ceb8927617371637fca868aac751a66d79d68cb6318dc6b081834b6469",
+          "expectedSHA256": "5fd686ceb8927617371637fca868aac751a66d79d68cb6318dc6b081834b6469",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/bust-rim-only.ppm",
+          "bytes": 41486,
+          "sha256": "1409312ccbbcf3fb1839baef9fb2807b573fcdb4d75f76772384d0c48a9e5c4b",
+          "expectedSHA256": "1409312ccbbcf3fb1839baef9fb2807b573fcdb4d75f76772384d0c48a9e5c4b",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/bust-rim-only.png",
+          "bytes": 2726,
+          "sha256": "98744aa462f2be3dcc673be893e8f750b7dfcbc4d3a64f50c1ddccc3c96977c3",
+          "expectedSHA256": "98744aa462f2be3dcc673be893e8f750b7dfcbc4d3a64f50c1ddccc3c96977c3",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/bust-rim-only.json",
+          "bytes": 650,
+          "sha256": "5fd686ceb8927617371637fca868aac751a66d79d68cb6318dc6b081834b6469",
+          "expectedSHA256": "5fd686ceb8927617371637fca868aac751a66d79d68cb6318dc6b081834b6469",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "bust-roll-90",
+      "subject": "neutral-mannequin",
+      "width": 144,
+      "height": 96,
+      "coverage": [
+        "non-square-key-rectangle",
+        "emitter-roll-90-degrees"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.6,
+          "z": 1.7
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "rollDegrees": 90,
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 1.25,
+          "whiteBalanceKelvin": 5600
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "bust-roll-90.ppm": {
+          "path": "docs/parallel/03/evidence/final/bust-roll-90.ppm",
+          "bytes": 41486,
+          "sha256": "4abd80e93f40fb170a91e7bb94377dd93e421c7e403998eb4a942c784f092d91",
+          "expectedSHA256": "4abd80e93f40fb170a91e7bb94377dd93e421c7e403998eb4a942c784f092d91",
+          "hashMatches": true
+        },
+        "bust-roll-90.png": {
+          "path": "docs/parallel/03/evidence/final/bust-roll-90.png",
+          "bytes": 3926,
+          "sha256": "6c78053968c72c82af06e99e1594bb7169ca36e1a4d82b4ebdb6231047507fd1",
+          "expectedSHA256": "6c78053968c72c82af06e99e1594bb7169ca36e1a4d82b4ebdb6231047507fd1",
+          "hashMatches": true
+        },
+        "bust-roll-90.rgba": {
+          "path": "docs/parallel/03/evidence/final/bust-roll-90.rgba",
+          "bytes": 55296,
+          "sha256": "91e26f26c85f74fdd261e987b525922d6ecde6ce4b2e0d303303a4d226b61918",
+          "expectedSHA256": "91e26f26c85f74fdd261e987b525922d6ecde6ce4b2e0d303303a4d226b61918",
+          "hashMatches": true
+        },
+        "bust-roll-90.mask": {
+          "path": "docs/parallel/03/evidence/final/bust-roll-90.mask",
+          "bytes": 13824,
+          "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "expectedSHA256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+          "hashMatches": true
+        },
+        "bust-roll-90.json": {
+          "path": "docs/parallel/03/evidence/final/bust-roll-90.json",
+          "bytes": 1348,
+          "sha256": "123066c213c451fcb5387b6a9151cce0efba7d5038100dbd4f6f1ebec7be9b58",
+          "expectedSHA256": "123066c213c451fcb5387b6a9151cce0efba7d5038100dbd4f6f1ebec7be9b58",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/bust-roll-90.ppm",
+          "bytes": 41486,
+          "sha256": "4abd80e93f40fb170a91e7bb94377dd93e421c7e403998eb4a942c784f092d91",
+          "expectedSHA256": "4abd80e93f40fb170a91e7bb94377dd93e421c7e403998eb4a942c784f092d91",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/bust-roll-90.png",
+          "bytes": 3926,
+          "sha256": "6c78053968c72c82af06e99e1594bb7169ca36e1a4d82b4ebdb6231047507fd1",
+          "expectedSHA256": "6c78053968c72c82af06e99e1594bb7169ca36e1a4d82b4ebdb6231047507fd1",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/bust-roll-90.json",
+          "bytes": 1348,
+          "sha256": "123066c213c451fcb5387b6a9151cce0efba7d5038100dbd4f6f1ebec7be9b58",
+          "expectedSHA256": "123066c213c451fcb5387b6a9151cce0efba7d5038100dbd4f6f1ebec7be9b58",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "exposure-minus-two",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "isolated-exposure-minus-two-stops"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": -2,
+          "whiteBalanceKelvin": 5600
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "exposure-minus-two.ppm": {
+          "path": "docs/parallel/03/evidence/final/exposure-minus-two.ppm",
+          "bytes": 28814,
+          "sha256": "89cccda9f306fd778be13322e1e0198d59a8be1c2075c9b453feddf3da6a5b89",
+          "expectedSHA256": "89cccda9f306fd778be13322e1e0198d59a8be1c2075c9b453feddf3da6a5b89",
+          "hashMatches": true
+        },
+        "exposure-minus-two.png": {
+          "path": "docs/parallel/03/evidence/final/exposure-minus-two.png",
+          "bytes": 3132,
+          "sha256": "0c0a3e3ed1032c06ef8b0214a89ac1307515ba8ff1f5395bd606834a47593102",
+          "expectedSHA256": "0c0a3e3ed1032c06ef8b0214a89ac1307515ba8ff1f5395bd606834a47593102",
+          "hashMatches": true
+        },
+        "exposure-minus-two.rgba": {
+          "path": "docs/parallel/03/evidence/final/exposure-minus-two.rgba",
+          "bytes": 38400,
+          "sha256": "4a34f88c8d36c3e0cacc88b929d716e3fdeddeee5fa5f70ef784f2091761b272",
+          "expectedSHA256": "4a34f88c8d36c3e0cacc88b929d716e3fdeddeee5fa5f70ef784f2091761b272",
+          "hashMatches": true
+        },
+        "exposure-minus-two.mask": {
+          "path": "docs/parallel/03/evidence/final/exposure-minus-two.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "exposure-minus-two.json": {
+          "path": "docs/parallel/03/evidence/final/exposure-minus-two.json",
+          "bytes": 1319,
+          "sha256": "5c6aafaa236a349b0c038d0fd59e7c40dca08a7e61df6b92104931e70cea3afd",
+          "expectedSHA256": "5c6aafaa236a349b0c038d0fd59e7c40dca08a7e61df6b92104931e70cea3afd",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/exposure-minus-two.ppm",
+          "bytes": 28814,
+          "sha256": "89cccda9f306fd778be13322e1e0198d59a8be1c2075c9b453feddf3da6a5b89",
+          "expectedSHA256": "89cccda9f306fd778be13322e1e0198d59a8be1c2075c9b453feddf3da6a5b89",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/exposure-minus-two.png",
+          "bytes": 3132,
+          "sha256": "0c0a3e3ed1032c06ef8b0214a89ac1307515ba8ff1f5395bd606834a47593102",
+          "expectedSHA256": "0c0a3e3ed1032c06ef8b0214a89ac1307515ba8ff1f5395bd606834a47593102",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/exposure-minus-two.json",
+          "bytes": 1319,
+          "sha256": "5c6aafaa236a349b0c038d0fd59e7c40dca08a7e61df6b92104931e70cea3afd",
+          "expectedSHA256": "5c6aafaa236a349b0c038d0fd59e7c40dca08a7e61df6b92104931e70cea3afd",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    },
+    {
+      "name": "white-balance-3200",
+      "subject": "sphere",
+      "width": 120,
+      "height": 80,
+      "coverage": [
+        "isolated-white-balance-3200K"
+      ],
+      "savedSceneConfiguration": {
+        "camera": {
+          "x": 0,
+          "y": 1.66,
+          "z": 2.3
+        },
+        "cameraLens": {
+          "focalLengthMillimeters": 85
+        },
+        "lights": [
+          {
+            "candela": 900,
+            "id": "00000000-0000-4000-8000-000000000001",
+            "kelvin": 5600,
+            "name": "Key",
+            "optics": {
+              "heightMeters": 1.2,
+              "kind": "rectangle",
+              "widthMeters": 1
+            },
+            "position": {
+              "x": -1.5,
+              "y": 2.1,
+              "z": 1.2
+            }
+          },
+          {
+            "candela": 300,
+            "id": "00000000-0000-4000-8000-000000000002",
+            "kelvin": 5600,
+            "name": "Fill",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.8
+            },
+            "position": {
+              "x": 1.5,
+              "y": 1.7,
+              "z": 1.5
+            }
+          },
+          {
+            "candela": 450,
+            "id": "00000000-0000-4000-8000-000000000003",
+            "kelvin": 3200,
+            "name": "Rim",
+            "optics": {
+              "heightMeters": 0.8,
+              "kind": "rectangle",
+              "widthMeters": 0.4
+            },
+            "position": {
+              "x": 0.8,
+              "y": 2.2,
+              "z": -1.2
+            }
+          }
+        ],
+        "previewSettings": {
+          "exposureStops": 0,
+          "whiteBalanceKelvin": 3200
+        },
+        "schemaVersion": 5,
+        "subject": {
+          "x": 0,
+          "y": 1.5,
+          "z": 0
+        }
+      },
+      "artifacts": {
+        "white-balance-3200.ppm": {
+          "path": "docs/parallel/03/evidence/final/white-balance-3200.ppm",
+          "bytes": 28814,
+          "sha256": "a2ee418cff3044ae9f3530c83c5d1db658362b7120e9e0277ed4a59f5acf7a78",
+          "expectedSHA256": "a2ee418cff3044ae9f3530c83c5d1db658362b7120e9e0277ed4a59f5acf7a78",
+          "hashMatches": true
+        },
+        "white-balance-3200.png": {
+          "path": "docs/parallel/03/evidence/final/white-balance-3200.png",
+          "bytes": 4689,
+          "sha256": "9b1c0db6e4ef08cbfb2857d7a1a954ba08ae489dae9a65a44dfd3a930dcbde6c",
+          "expectedSHA256": "9b1c0db6e4ef08cbfb2857d7a1a954ba08ae489dae9a65a44dfd3a930dcbde6c",
+          "hashMatches": true
+        },
+        "white-balance-3200.rgba": {
+          "path": "docs/parallel/03/evidence/final/white-balance-3200.rgba",
+          "bytes": 38400,
+          "sha256": "e6b8bc51e37792e737b7ff99a746691761d7ee6d195a211e2a46f962811e5de5",
+          "expectedSHA256": "e6b8bc51e37792e737b7ff99a746691761d7ee6d195a211e2a46f962811e5de5",
+          "hashMatches": true
+        },
+        "white-balance-3200.mask": {
+          "path": "docs/parallel/03/evidence/final/white-balance-3200.mask",
+          "bytes": 9600,
+          "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "expectedSHA256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+          "hashMatches": true
+        },
+        "white-balance-3200.json": {
+          "path": "docs/parallel/03/evidence/final/white-balance-3200.json",
+          "bytes": 1318,
+          "sha256": "964fa6ab2176a6ecdc7f139d06415a941eb537a64a58ae678800f11eee44e87f",
+          "expectedSHA256": "964fa6ab2176a6ecdc7f139d06415a941eb537a64a58ae678800f11eee44e87f",
+          "hashMatches": true
+        }
+      },
+      "originalArtifacts": {
+        "ppm": {
+          "path": "docs/parallel/03/evidence/original/white-balance-3200.ppm",
+          "bytes": 28814,
+          "sha256": "a2ee418cff3044ae9f3530c83c5d1db658362b7120e9e0277ed4a59f5acf7a78",
+          "expectedSHA256": "a2ee418cff3044ae9f3530c83c5d1db658362b7120e9e0277ed4a59f5acf7a78",
+          "hashMatches": true
+        },
+        "png": {
+          "path": "docs/parallel/03/evidence/original/white-balance-3200.png",
+          "bytes": 4689,
+          "sha256": "9b1c0db6e4ef08cbfb2857d7a1a954ba08ae489dae9a65a44dfd3a930dcbde6c",
+          "expectedSHA256": "9b1c0db6e4ef08cbfb2857d7a1a954ba08ae489dae9a65a44dfd3a930dcbde6c",
+          "hashMatches": true
+        },
+        "json": {
+          "path": "docs/parallel/03/evidence/original/white-balance-3200.json",
+          "bytes": 1318,
+          "sha256": "964fa6ab2176a6ecdc7f139d06415a941eb537a64a58ae678800f11eee44e87f",
+          "expectedSHA256": "964fa6ab2176a6ecdc7f139d06415a941eb537a64a58ae678800f11eee44e87f",
+          "hashMatches": true
+        }
+      },
+      "originalRawAbsent": {
+        "rgba": true,
+        "mask": true
+      },
+      "finalRGBAAlphaValues": [
+        255
+      ],
+      "finalRawMaskValues": [
+        0
+      ],
+      "unsupportedPixels": 0,
+      "originalRawRGBAOrMaskByteEqualityEstablished": false
+    }
+  ],
+  "requiredHostParity": [
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/dark.bin",
+      "bytes": 24696,
+      "sha256": "3c4fa06af0faa0bf3ab3e501c258280db50384497efaef47aafb0f6f7565f8c2",
+      "expectedSHA256": "3c4fa06af0faa0bf3ab3e501c258280db50384497efaef47aafb0f6f7565f8c2",
+      "hashMatches": true,
+      "width": 96,
+      "height": 64,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 6144
+      },
+      "name": "dark",
+      "retainedHostResult": {
+        "name": "dark",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 0,
+        "expectedUnsupported": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/hard.bin",
+      "bytes": 24840,
+      "sha256": "c4024aa87d4e7905dfde32af6747e447decc1a22a914f2acfc3dc21235c36a49",
+      "expectedSHA256": "c4024aa87d4e7905dfde32af6747e447decc1a22a914f2acfc3dc21235c36a49",
+      "hashMatches": true,
+      "width": 96,
+      "height": 64,
+      "parameterRows": 6,
+      "sampleRows": 9,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 6144
+      },
+      "name": "hard",
+      "retainedHostResult": {
+        "name": "hard",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 0,
+        "expectedUnsupported": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/near-field.bin",
+      "bytes": 24744,
+      "sha256": "ee821c30159b7ca19f6944bce48991667a253be72ab9ad41e5ecf6f998c96b55",
+      "expectedSHA256": "ee821c30159b7ca19f6944bce48991667a253be72ab9ad41e5ecf6f998c96b55",
+      "hashMatches": true,
+      "width": 96,
+      "height": 64,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 84,
+      "referencePayloadAlphaCounts": {
+        "0": 84,
+        "255": 6060
+      },
+      "name": "near-field",
+      "retainedHostResult": {
+        "name": "near-field",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 84,
+        "expectedUnsupported": 84,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/soft.bin",
+      "bytes": 34056,
+      "sha256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "expectedSHA256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "hashMatches": true,
+      "width": 96,
+      "height": 64,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 6144
+      },
+      "name": "soft",
+      "retainedHostResult": {
+        "name": "soft",
+        "meanChannelError": 5.42535e-05,
+        "maximumChannelError": 1,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 0,
+        "expectedUnsupported": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/translated.bin",
+      "bytes": 34056,
+      "sha256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "expectedSHA256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "hashMatches": true,
+      "width": 96,
+      "height": 64,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 6144
+      },
+      "name": "translated",
+      "retainedHostResult": {
+        "name": "translated",
+        "meanChannelError": 5.42535e-05,
+        "maximumChannelError": 1,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 0,
+        "expectedUnsupported": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/warm-rotated.bin",
+      "bytes": 30984,
+      "sha256": "10817bf4e983fcc48cd9303802121ec524c57590d765559cb68c58f6a9f68b7b",
+      "expectedSHA256": "10817bf4e983fcc48cd9303802121ec524c57590d765559cb68c58f6a9f68b7b",
+      "hashMatches": true,
+      "width": 96,
+      "height": 64,
+      "parameterRows": 6,
+      "sampleRows": 387,
+      "areaRows": 6,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 6144
+      },
+      "name": "warm-rotated",
+      "retainedHostResult": {
+        "name": "warm-rotated",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 0,
+        "expectedUnsupported": 0,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": null,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      }
+    }
+  ],
+  "requiredPrecision": [
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.0-lens-200.bin",
+      "bytes": 107784,
+      "sha256": "9c02a2b42063934c348e5da6a6a70479a291f77263c629c980f8c786cded4a19",
+      "expectedSHA256": "9c02a2b42063934c348e5da6a6a70479a291f77263c629c980f8c786cded4a19",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 49,
+      "referencePayloadAlphaCounts": {
+        "0": 49,
+        "255": 24527
+      },
+      "name": "area-camera-19.0-lens-200",
+      "retainedHostResult": {
+        "name": "area-camera-19.0-lens-200",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 49,
+        "expectedUnsupported": 49,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.0-lens-200.scene.json",
+        "bytes": 1231,
+        "sha256": "7d36820fbd63518a6570b42560f0e1d32da8d2ce0174ed47cd26bfa5d850914b"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19,
+        "doubleUnsupportedPixels": 49,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "area-camera-19.0-lens-200",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.0-lens-85.bin",
+      "bytes": 107784,
+      "sha256": "3e433438d060f17f91fa27402a0cd5fd4fa43d2447273da3dfe59166465910bb",
+      "expectedSHA256": "3e433438d060f17f91fa27402a0cd5fd4fa43d2447273da3dfe59166465910bb",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 9,
+      "referencePayloadAlphaCounts": {
+        "0": 9,
+        "255": 24567
+      },
+      "name": "area-camera-19.0-lens-85",
+      "retainedHostResult": {
+        "name": "area-camera-19.0-lens-85",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 9,
+        "expectedUnsupported": 9,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.0-lens-85.scene.json",
+        "bytes": 1230,
+        "sha256": "1945673bd01111737a96648d000780b1dd8d284e74214e6a4928974710611f9f"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19,
+        "doubleUnsupportedPixels": 9,
+        "focalLengthMillimeters": 85,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "area-camera-19.0-lens-85",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.999999-lens-200.bin",
+      "bytes": 107784,
+      "sha256": "5e4f010d0642082e9192bfa528ff8762980edd261f87dab25da1ab15be88a80d",
+      "expectedSHA256": "5e4f010d0642082e9192bfa528ff8762980edd261f87dab25da1ab15be88a80d",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 19,
+      "referencePayloadAlphaCounts": {
+        "0": 19,
+        "255": 24557
+      },
+      "name": "area-camera-19.999999-lens-200",
+      "retainedHostResult": {
+        "name": "area-camera-19.999999-lens-200",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 19,
+        "expectedUnsupported": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.999999-lens-200.scene.json",
+        "bytes": 1238,
+        "sha256": "03c6cefc5c81820a8ccb885e0408decb7a6086ca8af8151251bc1460e276512a"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19.999999,
+        "doubleUnsupportedPixels": 19,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "area-camera-19.999999-lens-200",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.999999-lens-85.bin",
+      "bytes": 107784,
+      "sha256": "4322cbaaad3f64a667070ddf514c0ddbdd38676d103558eb78d851ca12507c1e",
+      "expectedSHA256": "4322cbaaad3f64a667070ddf514c0ddbdd38676d103558eb78d851ca12507c1e",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 13,
+      "referencePayloadAlphaCounts": {
+        "0": 13,
+        "255": 24563
+      },
+      "name": "area-camera-19.999999-lens-85",
+      "retainedHostResult": {
+        "name": "area-camera-19.999999-lens-85",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 13,
+        "expectedUnsupported": 13,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-19.999999-lens-85.scene.json",
+        "bytes": 1237,
+        "sha256": "3fc180205e436bcf2029943bdb1d282c215492ab041942f879dbc3835ffc81b5"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19.999999,
+        "doubleUnsupportedPixels": 13,
+        "focalLengthMillimeters": 85,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "area-camera-19.999999-lens-85",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-20.0-lens-200.bin",
+      "bytes": 107784,
+      "sha256": "e9224772c871470b07ca4eba82b03a2743d42edfbb3a62b042b289e42993b709",
+      "expectedSHA256": "e9224772c871470b07ca4eba82b03a2743d42edfbb3a62b042b289e42993b709",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 19,
+      "referencePayloadAlphaCounts": {
+        "0": 19,
+        "255": 24557
+      },
+      "name": "area-camera-20.0-lens-200",
+      "retainedHostResult": {
+        "name": "area-camera-20.0-lens-200",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 19,
+        "expectedUnsupported": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-20.0-lens-200.scene.json",
+        "bytes": 1231,
+        "sha256": "be20f8946504d810e7186b01447e9904f7da23ac564b08acaafbd4464703c92f"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 19,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "area-camera-20.0-lens-200",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-20.0-lens-85.bin",
+      "bytes": 107784,
+      "sha256": "c8289ab5abe23e9f4d36357a0c0b05c4699cc774eb33a6a4a8349a09bc7f5e43",
+      "expectedSHA256": "c8289ab5abe23e9f4d36357a0c0b05c4699cc774eb33a6a4a8349a09bc7f5e43",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 13,
+      "referencePayloadAlphaCounts": {
+        "0": 13,
+        "255": 24563
+      },
+      "name": "area-camera-20.0-lens-85",
+      "retainedHostResult": {
+        "name": "area-camera-20.0-lens-85",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 13,
+        "expectedUnsupported": 13,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/area-camera-20.0-lens-85.scene.json",
+        "bytes": 1230,
+        "sha256": "13d09a97baa0b080c624493df4f50b2809eaa878a85d5339701523b052b10ded"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 13,
+        "focalLengthMillimeters": 85,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "area-camera-20.0-lens-85",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/world-translation--77.bin",
+      "bytes": 107784,
+      "sha256": "e9224772c871470b07ca4eba82b03a2743d42edfbb3a62b042b289e42993b709",
+      "expectedSHA256": "e9224772c871470b07ca4eba82b03a2743d42edfbb3a62b042b289e42993b709",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 19,
+      "referencePayloadAlphaCounts": {
+        "0": 19,
+        "255": 24557
+      },
+      "name": "world-translation--77",
+      "retainedHostResult": {
+        "name": "world-translation--77",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 19,
+        "expectedUnsupported": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/world-translation--77.scene.json",
+        "bytes": 1258,
+        "sha256": "e947949b202e3d76fec4bc50395a8ad6b4019a0ce63418d3491f3fc688bda93a"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 19,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "world-translation--77",
+        "width": 192
+      }
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/world-translation-77.bin",
+      "bytes": 107784,
+      "sha256": "e9224772c871470b07ca4eba82b03a2743d42edfbb3a62b042b289e42993b709",
+      "expectedSHA256": "e9224772c871470b07ca4eba82b03a2743d42edfbb3a62b042b289e42993b709",
+      "hashMatches": true,
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 576,
+      "areaRows": 9,
+      "referenceUnsupportedPixels": 19,
+      "referencePayloadAlphaCounts": {
+        "0": 19,
+        "255": 24557
+      },
+      "name": "world-translation-77",
+      "retainedHostResult": {
+        "name": "world-translation-77",
+        "meanChannelError": 0.0,
+        "maximumChannelError": 0,
+        "fractionAboveFour": 0.0,
+        "actualUnsupported": 19,
+        "expectedUnsupported": 19,
+        "invalidMaskMismatches": 0,
+        "maximumLimit": 1,
+        "status": "PASS",
+        "execution": "retained root-owned host harness; not rerun by W93"
+      },
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/world-translation-77.scene.json",
+        "bytes": 1243,
+        "sha256": "f3a9fcb2c270383f00322d844caa89f01247b2e538270ef08cd7f7d1cd9c1d71"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 19,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 2.130727575266252,
+        "name": "world-translation-77",
+        "width": 192
+      }
+    }
+  ],
+  "supplementalPrecisionDiagnostics": [
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+      "bytes": 98424,
+      "sha256": "651c42fbd4267636c869081779558b75ba9a41d9194e6a3babf3d9b771133cc0",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-1.0-scale-0.9999999",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-1.0-scale-0.9999999.scene.json",
+        "bytes": 239,
+        "sha256": "d2a6160e8fd26c235e0bdc2c469b2e3018a3f54bc8e1e6facb15e838a1d5e901"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 71.0852189153037,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-1.0-scale-0.9999999",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-1.0-scale-1.0.bin",
+      "bytes": 98424,
+      "sha256": "48ba67a66043ec9c81442295645848c7896232a8abe902e0a5473078f35151ba",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-1.0-scale-1.0",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-1.0-scale-1.0.scene.json",
+        "bytes": 239,
+        "sha256": "362abff92f8397e5e9956d20033f8f02f42546bd25f1ad4aeaf32752db934281"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 71.0852260238263,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-1.0-scale-1.0",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+      "bytes": 98424,
+      "sha256": "40413b7244721947d4139d8ee8cf7b9108a1f713901126235c04e6889cac3f10",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-1.0-scale-1.0000001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-1.0-scale-1.0000001.scene.json",
+        "bytes": 239,
+        "sha256": "77bdf155f1235e0b5836b3b1408ef8df5e477f112fff7248c16444e6fdb979ae"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 71.0852331323489,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-1.0-scale-1.0000001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+      "bytes": 98424,
+      "sha256": "7b6260f1dd4cc9d3c71750bca305c8470090b98c0266a614e0ec9823d505803e",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-19.999999-scale-0.9999999",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-19.999999-scale-0.9999999.scene.json",
+        "bytes": 249,
+        "sha256": "163d6ce682ee3e289d87893d8e64f8e7eb6b4920766e8c86f03ac8968a8e438e"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19.999999,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 145.12801280562883,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-19.999999-scale-0.9999999",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-19.999999-scale-1.0.bin",
+      "bytes": 98424,
+      "sha256": "0841bb00c80f9ec09a7730423dd664b2200ceff4c91fd06e326f9d5beafdecfc",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-19.999999-scale-1.0",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-19.999999-scale-1.0.scene.json",
+        "bytes": 249,
+        "sha256": "132bb096edd16395874110fb498de669d8a306b46a1f4abb40c44d3d08194e31"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19.999999,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 145.12802731843155,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-19.999999-scale-1.0",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+      "bytes": 98424,
+      "sha256": "dbaf97c3e0a1478d510c19e4f095c9daec7df064f4a04ebe2121725a02e5d2df",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-19.999999-scale-1.0000001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-19.999999-scale-1.0000001.scene.json",
+        "bytes": 248,
+        "sha256": "ca10fb9f2c703afcec88dcc1db544a34085a3124090d9668b4a8c3b0db4aaa77"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 19.999999,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 145.1280418312343,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-19.999999-scale-1.0000001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+      "bytes": 98424,
+      "sha256": "cfa8746c5882b0016f790a96da25d0d94b12dbe6c64032304a3f07a4c4c36f62",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-20.0-scale-0.9999999",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-20.0-scale-0.9999999.scene.json",
+        "bytes": 242,
+        "sha256": "3156e1df0f1aa7d0911ede4c1d59554340939c55ca0d38276e8c9ee02389898d"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 145.12802006290798,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-20.0-scale-0.9999999",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-20.0-scale-1.0.bin",
+      "bytes": 98424,
+      "sha256": "9172043deba4b8b1b3f1eff28165f85ea940b4eb4262d2472d97b2c8121920c1",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-20.0-scale-1.0",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-20.0-scale-1.0.scene.json",
+        "bytes": 242,
+        "sha256": "103adfd7ef81a293b91d0a6246cbbf40bb87e41325aff06030c57b7d1f07fd8b"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 145.12803457571144,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-20.0-scale-1.0",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+      "bytes": 98424,
+      "sha256": "476e969ad7ffe9004199cfdb37d85075badd8139b3a7a6eac187f13a5e2b1268",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 0,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "tangent-20.0-scale-1.0000001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/tangent-20.0-scale-1.0000001.scene.json",
+        "bytes": 241,
+        "sha256": "a734671114078dff6c76703d4ae001192a99557673ad30bc85a7800f9a741e4e"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 145.1280490885149,
+        "height": 128,
+        "maximumLightDistanceMeters": 0,
+        "name": "tangent-20.0-scale-1.0000001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+      "bytes": 98472,
+      "sha256": "d58cf083c65a305dbb96827cfb05c2176c63112630fe1adf6cf6747e055e7f5d",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 45,
+      "referencePayloadAlphaCounts": {
+        "0": 45,
+        "255": 24531
+      },
+      "name": "near-mask-camera-1.0-epsilon--0.0001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.scene.json",
+        "bytes": 508,
+        "sha256": "56d112ba37c7f4a8405249a20aa798583c3504105fc0569f39dec9ddb7c85769"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 45,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.2699000000000003,
+        "name": "near-mask-camera-1.0-epsilon--0.0001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+      "bytes": 98472,
+      "sha256": "addd904b72ad017efb49d37672ef4aa6f93b4b38c58a6f9aa73ca684f799493d",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-1.0-epsilon--1e-06",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.scene.json",
+        "bytes": 508,
+        "sha256": "1eba585638a5333504815f510b615ef73ede4aee0ae79ff22ad5f71105caa448"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.2699990000000003,
+        "name": "near-mask-camera-1.0-epsilon--1e-06",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+      "bytes": 98472,
+      "sha256": "d4494644194b7de54bc531d08b4fe9fe3ad779d8f8110e6a337a005e5814fe1b",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-1.0-epsilon--1e-08",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.scene.json",
+        "bytes": 509,
+        "sha256": "2ebc65a6a68d3d735f853c3f27d5e8f5520652098b3db75b2c748325c3470d46"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.2699999900000003,
+        "name": "near-mask-camera-1.0-epsilon--1e-08",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+      "bytes": 98472,
+      "sha256": "962cbbe9cb2151787bc0c20383b5017b384f9710864400ae8f609b036e2e39a5",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-1.0-epsilon-0.0",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-0.0.scene.json",
+        "bytes": 509,
+        "sha256": "db6a23b04c2398dabc7bceb88d04b4421f335000b26f5dbb7c5f215a07f1f816"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.2700000000000003,
+        "name": "near-mask-camera-1.0-epsilon-0.0",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+      "bytes": 98472,
+      "sha256": "4b0e6067ab0b4c3ce9c1b6d8becdea9e7fa501eafd38e5cbf9bd034806d13f5c",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "near-mask-camera-1.0-epsilon-1e-08",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.scene.json",
+        "bytes": 510,
+        "sha256": "4ae776df0f14ef0c5958417ab27ff478b7f02562edc6cec146b96fb0b6f38ccd"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.27000001000000035,
+        "name": "near-mask-camera-1.0-epsilon-1e-08",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+      "bytes": 98472,
+      "sha256": "8c8ecd2cfceeeda87125e35ad0dde8e213288cb0a8bfcf5bf7cc84d308c63841",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "near-mask-camera-1.0-epsilon-1e-06",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.scene.json",
+        "bytes": 506,
+        "sha256": "22651733b07aefcc0547668695caa294c9ed2785e8d8d31028fcb02bcfd4b9fe"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.27000100000000027,
+        "name": "near-mask-camera-1.0-epsilon-1e-06",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+      "bytes": 98472,
+      "sha256": "4c225ec0587755a9ab4a19acdccaf9f94c26e4392da617eeb09fd0b7d48615e4",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "near-mask-camera-1.0-epsilon-0.0001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.scene.json",
+        "bytes": 510,
+        "sha256": "19bac663e3b375066a73ff05918cd9f8d9b726165cbe6e4d8ecd363e6036bf48"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 1,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.27010000000000034,
+        "name": "near-mask-camera-1.0-epsilon-0.0001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+      "bytes": 98472,
+      "sha256": "05ea80a2112b8e1120e705b980f7843c8d699ed81ebce4b06dc7f1ad1b8a8b7a",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-20.0-epsilon--0.0001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.scene.json",
+        "bytes": 508,
+        "sha256": "5aab7418c77ddcae36eec716036fc3a8ad04dcec6f4b5713af1b195cc379c059"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.26990000000014713,
+        "name": "near-mask-camera-20.0-epsilon--0.0001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+      "bytes": 98472,
+      "sha256": "59c700ea3b7fb835677ec12fe2bdd3340634af2dc6e5ea53438ecb6a47b6c9e4",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-20.0-epsilon--1e-06",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.scene.json",
+        "bytes": 509,
+        "sha256": "60ed49071136d1da53bdbf01bf43eb473ca04043ae0e2b8962e3ed235f6daf4f"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.26999900000014704,
+        "name": "near-mask-camera-20.0-epsilon--1e-06",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+      "bytes": 98472,
+      "sha256": "5c639e9ea6f2ae2c9c835cfa1a290d693f0b5ab0e4fc9ee64795946e2b2c3773",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-20.0-epsilon--1e-08",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.scene.json",
+        "bytes": 507,
+        "sha256": "f48456a4bf7ad24790ca02ac1bc31410bc83d86b3b15c93198cca19ab693ba4d"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.26999999000014707,
+        "name": "near-mask-camera-20.0-epsilon--1e-08",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+      "bytes": 98472,
+      "sha256": "9e87eeddd6cfdc79b331cf43b1dea97fa4d7514065cb8044e07e6f6e6cefbb6e",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 1,
+      "referencePayloadAlphaCounts": {
+        "0": 1,
+        "255": 24575
+      },
+      "name": "near-mask-camera-20.0-epsilon-0.0",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-0.0.scene.json",
+        "bytes": 507,
+        "sha256": "54d942736c26d334d6ed99894d913b54b27c2aff7fe5cb681b252088613a6f26"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 1,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.27000000000014707,
+        "name": "near-mask-camera-20.0-epsilon-0.0",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+      "bytes": 98472,
+      "sha256": "e0091d12e08f2e43416f8040859351148acd4d7453b970d2f6b03a60c42a7c6d",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "near-mask-camera-20.0-epsilon-1e-08",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.scene.json",
+        "bytes": 508,
+        "sha256": "db2ed7e66e43701a57da902a3e2ded5e46e925fd7aca190f9158556b27d30c3f"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.27000001000014706,
+        "name": "near-mask-camera-20.0-epsilon-1e-08",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+      "bytes": 98472,
+      "sha256": "5c39dbc7ad4219fdde3d7c81fa36c2d54912b0f9385b15e8d8beff2a47a363ec",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "near-mask-camera-20.0-epsilon-1e-06",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.scene.json",
+        "bytes": 508,
+        "sha256": "9666ba7ad49a96af55466ff0327479b8e6cae337fc0b27ea23fccc1bb5a84f83"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.2700010000001471,
+        "name": "near-mask-camera-20.0-epsilon-1e-06",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+      "bytes": 98472,
+      "sha256": "aca791845d3a6bdd924c53b0a8d3e5b8676f21e2b2fc1af70b404e9544a5ad6f",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "near-mask-camera-20.0-epsilon-0.0001",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.scene.json",
+        "bytes": 507,
+        "sha256": "23ab1e14daad03dc4bfa7d552d938fe02413f9760621d9fb6371c84e58aee385"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 20,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 200,
+        "height": 128,
+        "maximumLightDistanceMeters": 0.2701000000001471,
+        "name": "near-mask-camera-20.0-epsilon-0.0001",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/light-distance-19.999999.bin",
+      "bytes": 98472,
+      "sha256": "b8ba6b8502d8a895536e0e9b3bf3f0ff2f8b5bd96ecd7bccf26c40147cf01d5a",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "light-distance-19.999999",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/light-distance-19.999999.scene.json",
+        "bytes": 464,
+        "sha256": "9b1eece22adf58ee12f6e1aa9bd426606b5c3abd89697d8b0825e8aaef898590"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 2.443358344574123,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 85,
+        "height": 128,
+        "maximumLightDistanceMeters": 19.999999,
+        "name": "light-distance-19.999999",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/light-distance-20.0.bin",
+      "bytes": 98472,
+      "sha256": "dc5fa46ffb8db2624ecfa26eca4bae97841128c0bc3156afdb688b3fb026b20a",
+      "width": 192,
+      "height": 128,
+      "parameterRows": 6,
+      "sampleRows": 3,
+      "areaRows": 0,
+      "referenceUnsupportedPixels": 0,
+      "referencePayloadAlphaCounts": {
+        "0": 0,
+        "255": 24576
+      },
+      "name": "light-distance-20.0",
+      "savedScene": {
+        "path": "docs/parallel/03/evidence/final-parity/precision/light-distance-20.0.scene.json",
+        "bytes": 457,
+        "sha256": "29ab6b30cc9216151e05fe4e8ad35a6e353867571533425fbe5593ce9d025b0d"
+      },
+      "generatorManifestRecord": {
+        "cameraDistanceMeters": 2.443358344574123,
+        "doubleUnsupportedPixels": 0,
+        "focalLengthMillimeters": 85,
+        "height": 128,
+        "maximumLightDistanceMeters": 20,
+        "name": "light-distance-20.0",
+        "width": 192
+      },
+      "requiredGateCase": false,
+      "executionResultClaimed": false
+    }
+  ],
+  "supplementalScope": "25 additional generated records (9 tangent, 14 near-mask, 2 light-distance) are inventoried only; they are not the eight required precision gates and are not claimed to pass.",
+  "evidenceReceipts": [
+    {
+      "path": "docs/parallel/03/evidence/final-source-manifest.json",
+      "bytes": 4400,
+      "sha256": "106dbea66efbcd46b5ebcb0f88610a581c997d962528f7fe3037f6be28f9a78e"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-comparison.json",
+      "bytes": 13432,
+      "sha256": "b08442f3a56ba5f31bc97d5b7f88ea2f9aff22c3ddb528b76fca41a60c97011b"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity-inputs.json",
+      "bytes": 14369,
+      "sha256": "d9e54e530769c684affc77afd5bdc38e7d9e0523c0c1debbd1a629219348dda2"
+    },
+    {
+      "path": "docs/parallel/03/evidence/original/manifest.json",
+      "bytes": 8407,
+      "sha256": "2c2fcede125a85f1e96d30174050c0ddf131c771d92cf332d7139b8c883b2e99"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/manifest.json",
+      "bytes": 3232,
+      "sha256": "0d9aedb52004364797755b1bdea1c340395eda9eee1f20228026cacfc7ee075f"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/precision/manifest.json",
+      "bytes": 8344,
+      "sha256": "cd15837fc0627daa7f7d2f786a17a1c20140b368fad8985b863d38852e6840a3"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-matrix-render.log",
+      "bytes": 415,
+      "sha256": "58ebcfc0bf938e8ebe92c3b68d9847e5fe356184eae1eb5145e9a3f4e40e61f6"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-kernel.log",
+      "bytes": 1092,
+      "sha256": "407394efc13e51ccb34d281a89597e8ed26f6f5f3b1cc4e2d886a4e264d702df"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-precision.log",
+      "bytes": 1708,
+      "sha256": "56a4fc4f92e0f5f3c34ba9efda6bf27835ba27f19cbe231221ff553cb2821812"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-precision-boundary.swift-generate.log",
+      "bytes": 85,
+      "sha256": "434edb4d4627979cc230423565f69d02879450ed8c26208d7398241f1396ef8e"
+    },
+    {
+      "path": "docs/parallel/03/evidence/ci-core-342.json",
+      "bytes": 3613,
+      "sha256": "769350fe9f93510749e527de81e89c9c08f79e3cedb54e09be2b6298c7c85a2f"
+    },
+    {
+      "path": "docs/parallel/03/evidence/ci-native-36.json",
+      "bytes": 2893,
+      "sha256": "3b4c1d7d94d7a3090d0d7ae0ba52cfa5c720a23a01c9b5b32102278bfd9ce056"
+    }
+  ],
+  "latestRootOwnedCoreExecution": {
+    "receipt": {
+      "schema": 1,
+      "source": "342e3280e3eb077d55e122c8bfb88b4062b431ed",
+      "run_id": 45857561126,
+      "job_id": 140039890668,
+      "result": "success",
+      "raw_log": "docs/parallel/03/evidence/ci-core-342.log",
+      "raw_log_sha256": "126ab3bcfa0ec05f7b2c5c9ab410d68cded5073aa2c5a9d7fefe311769097384",
+      "debug": {
+        "tests": 391,
+        "failures": 0,
+        "seconds": 13.234
+      },
+      "standard_release": {
+        "tests": 391,
+        "failures": 0,
+        "seconds": 5.368
+      },
+      "gate_results": [
+        "2026-11-26T16:22:48.5157694Z /home/runner/work/_temp/kernel-fixtures/dark.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+        "2026-11-26T16:22:48.5158846Z /home/runner/work/_temp/kernel-fixtures/hard.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+        "2026-11-26T16:22:48.5159768Z /home/runner/work/_temp/kernel-fixtures/near-field.bin: mean=0, max=0, >4 fraction=0, invalid=84/84, invalid-mask-mismatches=0, PASS",
+        "2026-11-26T16:22:48.5160461Z /home/runner/work/_temp/kernel-fixtures/soft.bin: mean=5.42535e-05, max=1, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+        "2026-11-26T16:22:48.5161108Z /home/runner/work/_temp/kernel-fixtures/translated.bin: mean=5.42535e-05, max=1, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+        "2026-11-26T16:22:48.5161838Z /home/runner/work/_temp/kernel-fixtures/warm-rotated.bin: mean=0, max=0, >4 fraction=0, invalid=0/0, invalid-mask-mismatches=0, PASS",
+        "2026-11-26T16:23:10.3604798Z /home/runner/work/_temp/precision-boundary/area-camera-19.0-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=49/49, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3606279Z /home/runner/work/_temp/precision-boundary/area-camera-19.0-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=9/9, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3607373Z /home/runner/work/_temp/precision-boundary/area-camera-19.999999-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3608489Z /home/runner/work/_temp/precision-boundary/area-camera-19.999999-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=13/13, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3609312Z /home/runner/work/_temp/precision-boundary/area-camera-20.0-lens-200.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3610090Z /home/runner/work/_temp/precision-boundary/area-camera-20.0-lens-85.bin: mean=0, max=0, >4 fraction=0, invalid=13/13, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3610986Z /home/runner/work/_temp/precision-boundary/world-translation--77.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS",
+        "2026-11-26T16:23:10.3611736Z /home/runner/work/_temp/precision-boundary/world-translation-77.bin: mean=0, max=0, >4 fraction=0, invalid=19/19, invalid-mask-mismatches=0, max-limit=1, PASS"
+      ],
+      "benchmark": "Eight deterministic frames, twelve observed cancellations and four visibility workloads passed; exact additional raw samples remain in this CI log. The named final-benchmark.json remains the separately source-bound local db7 measurement.",
+      "scope": "Portable CPU/source gates passed on the exact final preview source commit. Linux syntax does not typecheck UIKit/SwiftUI and this core job does not execute the new hosted native test.",
+      "native_job_id": 140042273149,
+      "native_status_at_receipt": "queued"
+    },
+    "rawLog": {
+      "path": "docs/parallel/03/evidence/ci-core-342.log",
+      "bytes": 435820,
+      "sha256": "126ab3bcfa0ec05f7b2c5c9ab410d68cded5073aa2c5a9d7fefe311769097384",
+      "expectedSHA256": "126ab3bcfa0ec05f7b2c5c9ab410d68cded5073aa2c5a9d7fefe311769097384",
+      "hashMatches": true
+    },
+    "executedByW93": false
+  },
+  "nativeBoundary": {
+    "priorSource": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+    "priorNativeTests": 164,
+    "priorNativeFailures": 0,
+    "priorRawLog": {
+      "path": "docs/parallel/03/evidence/ci-native-36.log",
+      "bytes": 992245,
+      "sha256": "019f50cd8b9a949c8f5c2e7c93e79a77826cd3cd7b41a6c234c0c3b1f2ef4bf1",
+      "expectedSHA256": "019f50cd8b9a949c8f5c2e7c93e79a77826cd3cd7b41a6c234c0c3b1f2ef4bf1",
+      "hashMatches": true
+    },
+    "currentExpectedTests": 165,
+    "status": "pending at assignment; latest core receipt records native queued",
+    "newHostedTest": "testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade",
+    "newHostedTestSHA256": "abd3fa97bb0cda6d45e4e9f66b068f1155ea4672b87542a081c33e6d72967f91",
+    "prior164DoesNotExecuteNewHostedTest": true,
+    "liveStatusCheckedByW93": false
+  },
+  "validation": {
+    "assertionsPassed": 487,
+    "failedAssertions": 0,
+    "checks": [
+      {
+        "check": "command exit: git rev-parse HEAD",
+        "passed": true
+      },
+      {
+        "check": "pinned HEAD",
+        "passed": true
+      },
+      {
+        "check": "command exit: git status --short",
+        "passed": true
+      },
+      {
+        "check": "private source tree clean",
+        "passed": true
+      },
+      {
+        "check": "command exit: git diff --name-only db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5 HEAD -- Sources/LightingCore scripts/render-study-fixtures.swift scripts/prepare-kernel-fixtures.swift scripts/precision-boundary.swift scripts/verify-kernel-host.cpp App/StudyKernel.h",
+        "passed": true
+      },
+      {
+        "check": "CPU/generators/shared harness unchanged since db7",
+        "passed": true
+      },
+      {
+        "check": "command exit: git diff --name-only 36ed6a1455dee7ca52b55f46d1a47262f5c98cc1 HEAD -- App/ReferenceStudyPreview.swift NativeTests",
+        "passed": true
+      },
+      {
+        "check": "31 CPU manifest hashes",
+        "passed": true
+      },
+      {
+        "check": "only expected preview/pipeline manifest differences",
+        "passed": true
+      },
+      {
+        "check": "scene/subject/default-sphere entry retained",
+        "passed": true
+      },
+      {
+        "check": "both ordinary caller shapes retained",
+        "passed": true
+      },
+      {
+        "check": "exact twelve ordinary definitions/manifests",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/soft.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/soft.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/soft.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/soft.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/soft.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/soft.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/soft.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/soft.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: soft",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: soft",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: soft",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: soft",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/hard.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/hard.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/hard.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/hard.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/hard.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/hard.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/hard.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/hard.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: hard",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: hard",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: hard",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: hard",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/warm.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/warm.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/warm.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/warm.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/warm.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/warm.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/warm.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/warm.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: warm",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: warm",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: warm",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: warm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-soft.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-soft.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-soft.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-soft.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-soft.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-soft.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-soft.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-soft.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: bust-soft",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: bust-soft",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: bust-soft",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: bust-soft",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-hard.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-hard.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-hard.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-hard.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-hard.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-hard.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-hard.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-hard.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: bust-hard",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: bust-hard",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: bust-hard",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: bust-hard",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-side.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-side.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-side.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-side.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-side.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-side.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-side.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-side.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: bust-side",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: bust-side",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: bust-side",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: bust-side",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/key-only-hard.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/key-only-hard.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/key-only-hard.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/key-only-hard.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/key-only-hard.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/key-only-hard.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/key-only-hard.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/key-only-hard.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: key-only-hard",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: key-only-hard",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: key-only-hard",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: key-only-hard",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/fill-only-soft.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/fill-only-soft.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/fill-only-soft.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/fill-only-soft.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/fill-only-soft.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/fill-only-soft.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/fill-only-soft.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/fill-only-soft.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: fill-only-soft",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: fill-only-soft",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: fill-only-soft",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: fill-only-soft",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-rim-only.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-rim-only.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-rim-only.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-rim-only.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-rim-only.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-rim-only.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-rim-only.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-rim-only.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: bust-rim-only",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: bust-rim-only",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: bust-rim-only",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: bust-rim-only",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-roll-90.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-roll-90.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-roll-90.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-roll-90.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/bust-roll-90.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-roll-90.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-roll-90.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/bust-roll-90.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: bust-roll-90",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: bust-roll-90",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: bust-roll-90",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: bust-roll-90",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/exposure-minus-two.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/exposure-minus-two.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/exposure-minus-two.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/exposure-minus-two.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/exposure-minus-two.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/exposure-minus-two.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/exposure-minus-two.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/exposure-minus-two.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: exposure-minus-two",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: exposure-minus-two",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: exposure-minus-two",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: exposure-minus-two",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/white-balance-3200.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/white-balance-3200.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/white-balance-3200.rgba",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/white-balance-3200.mask",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final/white-balance-3200.json",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/white-balance-3200.ppm",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/white-balance-3200.png",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/original/white-balance-3200.json",
+        "passed": true
+      },
+      {
+        "check": "original/final JSON PNG PPM byte correspondence: white-balance-3200",
+        "passed": true
+      },
+      {
+        "check": "opaque RGBA, all-zero raw mask, RGB projection: white-balance-3200",
+        "passed": true
+      },
+      {
+        "check": "zero-unsupported manifests: white-balance-3200",
+        "passed": true
+      },
+      {
+        "check": "original raw payloads absent: white-balance-3200",
+        "passed": true
+      },
+      {
+        "check": "six parity definitions",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/kernel/dark.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/kernel/hard.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/kernel/near-field.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/kernel/soft.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/kernel/translated.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/kernel/warm-rotated.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/area-camera-19.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/area-camera-19.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/area-camera-19.999999-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/area-camera-19.999999-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/area-camera-20.0-lens-200.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/area-camera-20.0-lens-85.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/world-translation--77.bin",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/world-translation-77.bin",
+        "passed": true
+      },
+      {
+        "check": "exact six parity hashes",
+        "passed": true
+      },
+      {
+        "check": "exact eight required precision hashes",
+        "passed": true
+      },
+      {
+        "check": "near-field 84 reference flags; five ordinary parity cases zero",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-kernel.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-kernel.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-kernel.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-kernel.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-kernel.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-kernel.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "parse log line: final-precision.log",
+        "passed": true
+      },
+      {
+        "check": "retained gate log exact inventory",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: dark",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: hard",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: near-field",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: soft",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: translated",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: warm-rotated",
+        "passed": true
+      },
+      {
+        "check": "retained gate log exact inventory",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: area-camera-19.0-lens-200",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: area-camera-19.0-lens-200",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: area-camera-19.0-lens-85",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: area-camera-19.0-lens-85",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: area-camera-19.999999-lens-200",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: area-camera-19.999999-lens-200",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: area-camera-19.999999-lens-85",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: area-camera-19.999999-lens-85",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: area-camera-20.0-lens-200",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: area-camera-20.0-lens-200",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: area-camera-20.0-lens-85",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: area-camera-20.0-lens-85",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: world-translation--77",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: world-translation--77",
+        "passed": true
+      },
+      {
+        "check": "retained numerical gate: world-translation-77",
+        "passed": true
+      },
+      {
+        "check": "strict precision limit: world-translation-77",
+        "passed": true
+      },
+      {
+        "check": "33 generated precision records, including required eight",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: area-camera-19.0-lens-85",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: area-camera-19.0-lens-200",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: area-camera-19.999999-lens-85",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: area-camera-19.999999-lens-200",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: area-camera-20.0-lens-85",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: area-camera-20.0-lens-200",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-1.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-1.0-scale-0.9999999",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-1.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-1.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-1.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-1.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-1.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-1.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-1.0-scale-1.0",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-1.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-1.0-scale-1.0000001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-19.999999-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-19.999999-scale-0.9999999",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-19.999999-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-19.999999-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-19.999999-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-19.999999-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-19.999999-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-19.999999-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-19.999999-scale-1.0",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-19.999999-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-19.999999-scale-1.0000001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-20.0-scale-0.9999999.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-20.0-scale-0.9999999",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-20.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-20.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-20.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-20.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-20.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-20.0-scale-1.0.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-20.0-scale-1.0",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/tangent-20.0-scale-1.0000001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: tangent-20.0-scale-1.0000001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon--0.0001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon--1e-06",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon--1e-08",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon-0.0",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon-1e-08",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon-1e-06",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-1.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-1.0-epsilon-0.0001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon--0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon--0.0001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon--1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon--1e-06",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon--1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon--1e-08",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon-0.0.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon-0.0",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon-1e-08.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon-1e-08",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon-1e-06.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon-1e-06",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/near-mask-camera-20.0-epsilon-0.0001.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: near-mask-camera-20.0-epsilon-0.0001",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/light-distance-19.999999.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/light-distance-19.999999.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/light-distance-19.999999.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/light-distance-19.999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/light-distance-19.999999.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/light-distance-19.999999.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: light-distance-19.999999",
+        "passed": true
+      },
+      {
+        "check": "binary dimensions/packing: final-parity/precision/light-distance-20.0.bin",
+        "passed": true
+      },
+      {
+        "check": "binary size: final-parity/precision/light-distance-20.0.bin",
+        "passed": true
+      },
+      {
+        "check": "finite packed values: final-parity/precision/light-distance-20.0.bin",
+        "passed": true
+      },
+      {
+        "check": "packed sample/area counts: final-parity/precision/light-distance-20.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference flag values/count: final-parity/precision/light-distance-20.0.bin",
+        "passed": true
+      },
+      {
+        "check": "reference invalid RGB: final-parity/precision/light-distance-20.0.bin",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: light-distance-20.0",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: world-translation-77",
+        "passed": true
+      },
+      {
+        "check": "precision manifest reference count: world-translation--77",
+        "passed": true
+      },
+      {
+        "check": "25 separate supplemental probes",
+        "passed": true
+      },
+      {
+        "check": "current core receipt source/result",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/ci-core-342.log",
+        "passed": true
+      },
+      {
+        "check": "391 Debug and Release receipt/raw summaries",
+        "passed": true
+      },
+      {
+        "check": "current 6+8 raw gate result correspondence",
+        "passed": true
+      },
+      {
+        "check": "hash: docs/parallel/03/evidence/ci-native-36.log",
+        "passed": true
+      },
+      {
+        "check": "new hosted test differs from prior native source",
+        "passed": true
+      }
+    ],
+    "result": "retained source/artifact correspondence verified",
+    "executionErrors": [],
+    "freshRuntimeTests": 0,
+    "tokenCountersAvailable": false
+  },
+  "limitations": [
+    "Original raw RGBA and masks are absent. Do not infer original/final raw-mask byte equality from zero counts or identical PPM/PNG.",
+    "The final probe copied original scene bytes; equality verifies preservation, not an independent re-encoding.",
+    "Host shared-Float32 parity is not actual Metal execution; prior native evidence remains source-specific.",
+    "No visual rereview or new image generation was performed by W93; retained render evidence is carried forward only for unchanged CPU source."
+  ]
+}

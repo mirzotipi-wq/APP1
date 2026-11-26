@@ -1,0 +1,12 @@
+# W99 — final platform/performance accounting
+
+**Input source:** `342e3280e3eb077d55e122c8bfb88b4062b431ed`; immutable private tree, current durable receipts. **Result:** retained-evidence reconciliation passes; current native execution remains pending. No builds, tests, benchmarks, renders, CI polling, cleanup or commits ran.
+
+- **Source 342:** independently verified core-log SHA-256 `126ab3bcfa0ec05f7b2c5c9ab410d68cded5073aa2c5a9d7fefe311769097384`: 391 Debug/0 in 13.234 s; 391 standard Release/0 in 5.368 s; six host parity and eight precision passes. Ubuntu/Swift 6.4.2 syntax parsing does not establish UIKit runtime behavior.
+- **Apple source 342:** full-scheme Debug build-for-testing succeeded at 16:32:46 UTC. The retained raw log explicitly compiles the hosted adoption test. Optics job 140042273238 subsequently failed: **zero starts, ten unstarted** after recovery-preflight timeout/exit −9 and XCTDaemonError18 AX-loaded timeout. No product assertion executed. Native job 140042273149 is in progress; no 165-method pass is claimed. W94 received the stale-log/status correction.
+- **Source 36:** source inventory and raw events independently reconcile 164 starts/passes, zero failures/skips/duplicates/omissions, ten pipeline methods and six actual simulator Metal fixtures. macOS portable 391 and Debug app/native-bundle plus Release app builds passed. Historical ace9 remains separately 163 methods. Source-36 UI retains seven ProjectLibrary methods/two failures, two passing **ReferenceComparisonUITests** methods and two missing-artifact visual failures; no completed visual review.
+- **Benchmark:** four sidecar hashes and all 31 core hashes match current source; db7→342 CPU inputs are unchanged. Recomputed all twelve nearest-rank distributions: eight frames plus four visibility workloads, one warm-up each, seven samples each = **84 timings**. Twelve cancellation probes are separate; all observe cancellation; maximum deadline-to-return **1.606625 ms**. Raw parent-74f revision remains preserved with exact db7 binding. Debian 13/EPYC 9V74/Swift 6.2.1 local per-file `-O` differs from standard CI Release.
+
+Signal-9 builds, empty exit-1 retry, ambiguous-pow compilation and failed camera probes remain retained. Hosted identity/continuations/AX positive control use synthetic outputs; original before/fail remains unrun. No device FPS/RSS/thermal, platform-audit or global M02/M03 promotion follows.
+
+[Exact checks and provenance](wave10-evidence/W99-platform-performance.json) · [Read-only parser](wave10-evidence/W99-verify-evidence.py)
