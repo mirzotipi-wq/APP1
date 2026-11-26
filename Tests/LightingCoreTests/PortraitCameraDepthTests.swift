@@ -77,4 +77,17 @@ final class PortraitCameraDepthTests: XCTestCase {
             }
         }
     }
+
+    func testOpenPanelCanClipToBackgroundWithoutRejectingTheCamera() throws {
+        var input = scene(distance: 1, axis: 2)
+        // W40's independent panel-ray witness: this pixel reaches the open
+        // panel before the 5 cm camera-depth plane, far outside the bust.
+        input.camera = .init(x: 1, y: -0.5549, z: 0)
+        input.cameraLens = .init(focalLengthMillimeters: 14)
+        let image = try PortraitStudyRenderer.render(scene: input, width: 24)
+        XCTAssertEqual(image.unsupportedPixels, 0)
+        let pixel = 15 * 24 + 11
+        XCTAssertEqual(Array(image.rgba[(4 * pixel)..<(4 * pixel + 4)]), [18, 20, 24, 255])
+        XCTAssertEqual(image.unsupportedPixelMask[pixel], 0)
+    }
 }

@@ -208,6 +208,7 @@ public struct StudyLighting: Sendable {
         let candela: Double
         let xyz: SIMD3<Double>
         let areaIndex: Int?
+        var outputScale = 1.0
     }
     private struct AreaGuard: Sendable {
         let center: SIMD3<Double>
@@ -237,16 +238,21 @@ public struct StudyLighting: Sendable {
             guard let color = PreviewColorimetry.blackbody(kelvin: light.kelvin) else { throw StudyError.invalidEmitter }
             let xyz = SIMD3<Double>(color.x, color.y, color.z)
             let optics = light.effectiveOptics, center = vec(light.position)
+            // Subnormal sample output can vanish before distance or BRDF amplification.
+            // Integrate these emitters at unit intensity and restore their output once.
+            let count = optics.kind == .rectangle ? quality.grid * quality.grid : 1
+            let outputScale = light.candela / Double(count) < Double.leastNormalMagnitude ? light.candela : 1
+            let candela = outputScale == 1 ? light.candela : 1
             if optics.kind == .point {
-                result.append(.init(position: center, emittingNormal: nil, candela: light.candela, xyz: xyz, areaIndex: nil))
+                result.append(.init(position: center, emittingNormal: nil, candela: candela, xyz: xyz, areaIndex: nil, outputScale: outputScale))
             } else {
                 guard let frame = StudioPhotometry.frame(for: light, subject: scene.subject) else { throw StudyError.invalidEmitter }
                 let axis = vec(frame.normal)
                 if optics.kind == .directional {
-                    result.append(.init(position: center, emittingNormal: axis, candela: light.candela, xyz: xyz, areaIndex: nil))
+                    result.append(.init(position: center, emittingNormal: axis, candela: candela, xyz: xyz, areaIndex: nil, outputScale: outputScale))
                 } else {
                     let grid = quality.grid, right = vec(frame.right), up = vec(frame.up)
-                    let perCell = light.candela / Double(grid * grid)
+                    let perCell = candela / Double(grid * grid)
                     let areaIndex = guards.count
                     guards.append(.init(center: center, right: right, up: up,
                                         halfWidth: optics.widthMeters / 2, halfHeight: optics.heightMeters / 2,
@@ -256,7 +262,7 @@ public struct StudyLighting: Sendable {
                         for col in 0..<grid {
                             let x = ((Double(col) + 0.5) / Double(grid) - 0.5) * optics.widthMeters
                             result.append(.init(position: center + right * x + up * y, emittingNormal: axis,
-                                                candela: perCell, xyz: xyz, areaIndex: areaIndex))
+                                                candela: perCell, xyz: xyz, areaIndex: areaIndex, outputScale: outputScale))
                         }
                     }
                 }
@@ -271,7 +277,7 @@ public struct StudyLighting: Sendable {
     // Translate positions to the subject center to reduce Float32 roundoff.
     fileprivate func computeSamples(relativeTo center: SIMD3<Double>) -> [SIMD4<Float>] {
         samples.flatMap { s in
-            [pack(s.position - center, s.candela), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),
+            [pack(s.position - center, s.candela * s.outputScale), pack(s.emittingNormal ?? .zero, s.emittingNormal == nil ? 0 : 1),
              pack(s.xyz, s.areaIndex.map { Double($0 + 1) } ?? 0)]
         }
     }
@@ -330,6 +336,17 @@ public struct StudyLighting: Sendable {
         var index = 0
         while index < samples.count {
             let sample = samples[index]
+            let previousTotal = total, previousVisible = visible, previousXYZ = xyz
+            if sample.outputScale != 1 { total = 0; visible = 0; xyz = .zero }
+            // A point/directional sample or one contiguous rectangle is one emitter.
+            // Keep ordinary accumulation untouched; rescale only the completed tiny group.
+            defer {
+                if sample.outputScale != 1 {
+                    total = previousTotal + total * sample.outputScale
+                    visible = previousVisible + visible * sample.outputScale
+                    xyz = previousXYZ + xyz * sample.outputScale
+                }
+            }
             guard let areaIndex = sample.areaIndex else {
                 try accumulate(position: sample.position, candela: sample.candela, sample: sample)
                 index += 1

@@ -1,0 +1,84 @@
+{
+  "worker": "W46-resource",
+  "task": "/root/wave05/w46_resource",
+  "base_sha": "c9ff1a71c173774e7b7c794e475f8bdf5d633853",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W46-resource",
+  "checks_are_static_only": true,
+  "checks": {
+    "persisted_candidate_matches_in_memory_application_of_source_patch": true,
+    "patch_applies_to_immutable_base": true,
+    "scene_validation_still_requires_at_most_12_lights": true,
+    "pre_lighting_source_including_8_32_grid_and_slice_sampling_unchanged": true,
+    "three_existing_sample_append_sites_preserved": true,
+    "positive_light_filter_preserved": true,
+    "sample_count_is_stored_count": true,
+    "group_traversal_after_new_defer_is_byte_identical": true,
+    "image_compute_setup_render_and_pixel_cancellation_tail_unchanged": true,
+    "mannequin_cap_144_and_interactive_quality_present": true,
+    "cache_eviction_precedes_append_and_checks_both_costs": true,
+    "patch_touches_only_reference_study_and_its_new_test": true
+  },
+  "sha256": {
+    "/tmp/keyfill03-7f4b/workers/W46-resource/Sources/LightingCore/ReferenceStudy.swift": "86ca1199487d567af8e444e714eabca8252b500bc33b40763d7b258d505977cf",
+    "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave05-evidence/W44-ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave05-evidence/W44-implementation.patch": "b6f355709bbf68f51c738c95ba15770c6d4f01c5a2133e1c35f283afd983c3a8",
+    "/tmp/keyfill03-7f4b/workers/W46-resource/Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "/tmp/keyfill03-7f4b/workers/W46-resource/Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "/tmp/keyfill03-7f4b/workers/W46-resource/Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave05-evidence/W44-implementation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "rg",
+        "-n",
+        "StudyFrameCache|maximumCount: 4|maximumPixelBytes:|maximumMaskBytes:|preparedSample|256 \\* 1024|64 \\* 1024",
+        "App",
+        "Sources/LightingCore"
+      ],
+      "exit_code": 0,
+      "selected_output": [
+        "Sources/LightingCore/ProjectLibrary.swift:255:            guard let chunk = try handle.read(upToCount: min(64 * 1024, limit - data.count)),",
+        "Sources/LightingCore/SceneFileStore.swift:32:            guard let chunk = try handle.read(upToCount: min(64 * 1024, limit - data.count)),",
+        "Sources/LightingCore/StudyFrameCache.swift:5:public struct StudyFrameCache<Key: Equatable & Sendable, Value: Sendable>: Sendable {",
+        "Sources/LightingCore/StudyFrameCache.swift:7:    public let maximumPixelBytes: Int",
+        "Sources/LightingCore/StudyFrameCache.swift:8:    public let maximumMaskBytes: Int",
+        "Sources/LightingCore/StudyFrameCache.swift:27:    public init(maximumCount: Int, maximumPixelBytes: Int, maximumMaskBytes: Int) {",
+        "App/BoundedFileReader.swift:72:            do { chunk = try handle.read(upToCount: min(64 * 1024, remaining)) }",
+        "App/MetalStudyRenderer.swift:128:    static let maximumCachedPixelBytes = 256 * 1024",
+        "App/MetalStudyRenderer.swift:129:    static let maximumCachedMaskBytes = 64 * 1024",
+        "App/MetalStudyRenderer.swift:162:    private var frameCache = StudyFrameCache<CacheKey, StudyRenderedFrame>(",
+        "App/MetalStudyRenderer.swift:164:        maximumPixelBytes: StudyRenderEngine.maximumCachedPixelBytes,",
+        "App/MetalStudyRenderer.swift:165:        maximumMaskBytes: StudyRenderEngine.maximumCachedMaskBytes)"
+      ]
+    }
+  ],
+  "bounds": {
+    "max_lights": 12,
+    "interactive_samples_per_rectangle": 64,
+    "reference_samples_per_rectangle": 1024,
+    "max_interactive_samples": 768,
+    "max_reference_samples": 12288,
+    "new_logical_double_field_bytes_at_interactive_max": 6144,
+    "new_logical_double_field_bytes_at_reference_max": 98304,
+    "max_groups_per_receiver": 12,
+    "max_extra_rescale_component_multiplications_per_receiver": 60,
+    "max_extra_rescale_component_additions_per_receiver": 60,
+    "extra_packing_multiplications_per_reference_max": 12288,
+    "extra_live_group_snapshots": "2 Double plus 1 SIMD3<Double>; one loop scope; no claimed byte stride",
+    "occupied_element_storage_delta_formula": "N * (S_new - S_old), N <= 12288; array capacity, alignment, allocator/compiler overhead and peak allocation unmeasured"
+  },
+  "execution": "No Swift, build, runtime layout, allocation, timing, device or cache test executed by W46. All checks are source/hash/patch inspections.",
+  "interruption": "Parent reported root full-Debug compile terminated with signal 9 before tests and was retrying -j1; cause unestablished. W46 had no execution interruption and used the persisted W44 candidate.",
+  "decision": "Accept resource structure for the narrow intensity candidate; no runtime performance or milestone-gate pass claimed."
+}
