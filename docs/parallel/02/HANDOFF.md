@@ -40,7 +40,7 @@ A separate oblique37°rolled partial-face fixture compares production133.7867018
 - First candidate:372 Debug tests passed locally;10 targeted solver checks passed after the explanatory wording update.
 - Current code inputs at58b3ca4:374 full Debug tests passed locally, zero failures,13.441s test execution;26 targeted photometry checks also passed. Source/test SHA256 manifests and full logs are in evidence/.
 - CI at earlier f75aa27:372 Debug,372 Release,100 tooling tests and six shared-kernel parity fixtures passed. macOS core372 also passed. This is earlier-source evidence, not a substitute for revalidating the rolled-normal correction.
-- Current-source [run45819324337](https://github.com/mirzotipi-wq/APP1/actions/runs/45819324337) was in progress at the outage closure. Inspect its terminal result before claiming current Release/CI acceptance.
+- Current-source [run45819324337](https://github.com/mirzotipi-wq/APP1/actions/runs/45819324337), core job139907153110, completed successfully during cloud-only closure:374 Debug,374 Release,100 tooling tests, six shared-kernel parity fixtures and eight precision fixtures passed. CI used Swift6.4.2. Twelve generated PPM byte hashes match earlier f75 exactly. Native jobs were still queued at verification, so full workflow/native acceptance remains unverified.
 - Earlier native job failed `UITests/StudioAppAccessibilityUITests.swift:95`, ambiguous greatestFiniteMagnitude inherited from f150. Main's b0d25ee supplies the explicit CGFloat correction; lane 20 should retain it during integration. This branch does not claim a passing native/UI run.
 
 Local platform: Debian13 x86_64, portable Swift6.0.3. Package builds used one job and private outputs; small worker probes used an immutable compiled module, private executables and a shared build lock. No local Apple SDK, GPU execution or physical-device validation was performed.
@@ -60,6 +60,6 @@ Working token budgets were briefing targets; exact consumption was not instrumen
 3. Finish W02R09's small platform/performance probe and W02R10's independent CIE1nm reference table. The official CSV checksum/provenance is published, but the requested worker/table is not complete.
 4. Execute all ten distinct roles in each remaining wave03–10 using [WAVE-TASKS.md](WAVE-TASKS.md). Root can schedule three workers concurrently once no separate coordinator is active, respecting the four-slot total. Record actual IDs only.
 5. Review the R08 request for clearer recovery actions in three generic error messages. Reconcile the [consumer requests](CONSUMER-REQUESTS.md), including the out-of-scope Scene.normalIlluminance distance overflow and renderer tiny-intensity behavior.
-6. Complete current-source Debug/Release and independent challenge evidence, preserve numerical limits, then issue the final completed campaign handoff. Do not promote canonical milestones from this partial lane result.
+6. Reconcile the completed current-source Debug/Release CI evidence and complete independent challenge evidence, preserve numerical limits, then issue the final completed campaign handoff. Do not promote canonical milestones from this partial lane result.
 
 All accuracy claims concern ideal models. No physical calibration, measured equipment/camera response, release readiness or finished100-worker campaign is claimed.
