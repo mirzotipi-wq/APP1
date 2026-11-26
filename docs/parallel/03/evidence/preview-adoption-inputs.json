@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "parent_commit": "372f0818761aeedd5a4adba987b3de7ee88df84c",
+  "original_source_commit": "a7c93be58a04154748c951b3d485b05300e9692c",
+  "owner04_proposal_commit": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "preview_sha256": "e04832818b9b7619799ba1cab4db279e51cf0e93e7be201ac3cd2fb367a8f338",
+  "new_hosted_test_sha256": "abd3fa97bb0cda6d45e4e9f66b068f1155ea4672b87542a081c33e6d72967f91",
+  "pipeline_test_sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+  "existing_pipeline_body_byte_identical": true,
+  "all_ten_pipeline_test_bodies_byte_identical": true,
+  "discovered_native_methods": 165,
+  "new_native_methods": [
+    "testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade"
+  ],
+  "local_checks": [
+    {
+      "command": "swiftc -frontend -parse App/ReferenceStudyPreview.swift NativeTests/StudyPreviewAdoptionTests.swift NativeTests/StudyPreviewPipelineTests.swift",
+      "exit_code": 0,
+      "scope": "Syntax only; Linux cannot typecheck SwiftUI/UIKit"
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "exit_code": 0,
+      "scope": "Existing UI shard structure"
+    },
+    {
+      "command": "native_test_shards.discover_methods(\"NativeTests\")",
+      "expected_count": 165,
+      "scope": "Discovery only, not execution"
+    },
+    {
+      "command": "git diff --check -- App/ReferenceStudyPreview.swift NativeTests/StudyPreviewAdoptionTests.swift",
+      "exit_code": 0
+    }
+  ],
+  "source_reviewers": [
+    "W84 implementation",
+    "W85 independent concurrency followup",
+    "W81 acceptance",
+    "root integration"
+  ],
+  "root_review": "Preserves previous-count cue, default scene/subject callers, guarded publication and cancellation; each activation consults engine and labels retained pixels previous until a new ticket adopts output. Internal render closure defaults to unchanged engine call.",
+  "pending": [
+    "Apple typecheck and actual hosted test execution",
+    "Actual virtual accessibility node exposure/foreground hosting",
+    "Independent W90 review",
+    "An original hook-only native before/fail run has not been executed"
+  ],
+  "cpu_changed": false,
+  "gpu_engine_or_cache_changed": false,
+  "hosted_fixture_scope": "Synthetic controlled Metal/CPU outputs reproduce consumer sequencing; no real backend-failure or physical-device claim."
+}
