@@ -3,7 +3,7 @@ import SwiftUI
 
 struct SceneArrangementView: View {
     let scene: LightingScene
-    let onApply: (LightingScene) -> Void
+    let onApply: (LightingScene) -> Bool
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -19,7 +19,7 @@ struct SceneArrangementView: View {
             : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
     }
 
-    init(scene: LightingScene, onApply: @escaping (LightingScene) -> Void) {
+    init(scene: LightingScene, onApply: @escaping (LightingScene) -> Bool) {
         self.scene = scene
         self.onApply = onApply
         _destination = State(initialValue: scene.subject)
@@ -100,10 +100,14 @@ struct SceneArrangementView: View {
             let next = try SceneTransform.arranged(scene, subjectAt: destination,
                                                   rotatingLightsByDegrees: yaw,
                                                   mirroringLights: mirror)
-            // Close the transaction before invoking the parent, which can
-            // synchronously update the scene or dismiss this editor.
+            // Block reentrant taps while the parent decides whether this draft
+            // still belongs to the open project. A rejection keeps it editable.
             didFinish = true
-            onApply(next)
+            guard onApply(next) else {
+                didFinish = false
+                error = "The arrangement could not be applied. Your changes are still here. Try again, or cancel and reopen Arrange setup."
+                return
+            }
             dismiss()
         } catch let error as SceneTransformError {
             self.error = error.localizedDescription

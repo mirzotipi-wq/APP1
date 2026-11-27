@@ -35,7 +35,29 @@ final class StudioSession {
     private(set) var workspaceResetID = UUID()
     private(set) var planDrag: PlanDrag?
     private(set) var feature: StudioFeaturePresentation?
-    var message: String?
+    private struct MessageReceipt {
+        let text: String
+        let savedRevision: UUID?
+        let projectID: UUID?
+    }
+    private var messageReceipt: MessageReceipt?
+    /// A completed save describes one editor revision, not later edits. Keep
+    /// errors independent of revision so editing cannot hide a failed write.
+    var message: String? {
+        get {
+            guard let receipt = messageReceipt else { return nil }
+            if let savedRevision = receipt.savedRevision {
+                guard savedRevision == revision, receipt.projectID == library?.activeID,
+                      saved == scene else { return nil }
+            }
+            return receipt.text
+        }
+        set {
+            messageReceipt = newValue.map {
+                MessageReceipt(text: $0, savedRevision: nil, projectID: nil)
+            }
+        }
+    }
     var showRecoveryCapacity = false
 
     private let store: ProjectStore
@@ -429,12 +451,12 @@ final class StudioSession {
                 saveConflict = false
                 switch operation {
                 case .load, .change: message = nil
-                case .save: message = "Project saved on this device."
-                case .reload: message = "Latest saved library opened."
-                case .recover: message = "Your setup was saved as a recovery project."
+                case .save: showSavedMessage("Project saved on this device.")
+                case .reload: showSavedMessage("Latest saved library opened.")
+                case .recover: showSavedMessage("Your setup was saved as a recovery project.")
                 case .recoverUnreadable:
                     showRecoveryCapacity = false
-                    message = "A new library was created. Original saved files were kept on this device."
+                    showSavedMessage("A new library was created. Original saved files were kept on this device.")
                 }
             } catch {
                 if libraryOperation.finish(request) {
@@ -461,6 +483,14 @@ final class StudioSession {
         operationTaskID = request.id
         operationTask = task
         return task
+    }
+
+    private func showSavedMessage(_ text: String) {
+        // A committed receipt may describe an earlier scene if future callers
+        // permit editing during a write. Never label those newer edits saved.
+        guard saved == scene else { message = nil; return }
+        messageReceipt = MessageReceipt(text: text, savedRevision: revision,
+                                        projectID: library?.activeID)
     }
 
     func recoveryProjects() async throws -> [LightingProject] {

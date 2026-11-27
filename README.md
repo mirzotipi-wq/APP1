@@ -4,7 +4,7 @@
 
 Key & Fill is a native iOS lighting workspace for photographers and filmmakers: explore a reference, edit a plausible rig, preview its geometry, place it in a room, and export a practical plan.
 
-**Status: beta engineering work in progress; beta acceptance remains unverified.** The [current campaign](docs/evidence/beta-progress-2026-11-27-0eff52f/README.md) starts from `804c2c7` with 100 new actual subagent runs scheduled in bounded batches. Its first independently reviewed candidate fixes malformed ignored JSON numbers and insufficient large-text navigation travel, and records focused diagnostics for an unresolved library transition. Local Debug and Release each pass 599 tests. The next candidate adds focused native input tracing and a reversible CI output-location experiment; current Apple/UI execution remains required. The [tester guide](docs/BETA_TESTER_GUIDE.md), [handoff](agents/HANDOFF.md) and [release gates](docs/QUALITY.md) distinguish code evidence from device and distribution acceptance.
+**Status: beta engineering in progress; distribution readiness remains unverified.** The [current development packet](docs/evidence/beta-development-2026-11-27-16f31723/README.md) tracks a new 100-agent request with actual identities and completion states. The first checkpoint preserves rejected reference/arrangement/lux drafts, keeps save feedback accurate and reachable, prevents stale AR sheet reopening, and adapts PDF export controls for large text. See the [tester guide](docs/BETA_TESTER_GUIDE.md), [handoff](agents/HANDOFF.md), and [release gates](docs/QUALITY.md) for the distinction between implemented features and verified beta acceptance.
 
 ## Current implementation
 
@@ -47,13 +47,11 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-The [source manifest](docs/evidence/beta-progress-2026-11-27-0eff52f/validation/candidate-02-source.json) binds the current candidate. Local Debug and Release each passed 599 portable methods; 11 actual pure geometry XCTest methods also passed on Linux. The [local receipt](docs/evidence/beta-progress-2026-11-27-0eff52f/validation/candidate-02-local-results.json) retains commands and logs. These observations do not establish Apple UI or physical-device acceptance.
+The current source changes have independent review and passing repository structure, UI class partition, privacy-manifest, app-icon and whitespace checks. Swift and Xcode are unavailable in this development environment. Three focused save-feedback regressions were added; changed-source compilation, native execution and Default/AXXXL layout verification remain required. No new passing Swift or device result is inferred from source inspection.
 
-The baseline [9d18 run](https://github.com/mirzotipi-wq/APP1/actions/runs/46037214333) passed 594 Debug, 594 Release and 120 tooling tests. Its studio, optics and room UI groups passed all 24 required methods. Library/reference and PDF preview have failed accessibility queries, and app accessibility failed after 14 Default and 6 AXXXL original captures. The native suite started all 335 methods but one focus method failed two assertions, one pass event was interleaved with system output, and the command failed to finalize. The current source requires fresh affected-gate validation. Every previous failure and missing image remains explicit.
+Baseline `14d33cd` passed its portable CI job and built the first five UI bundles before this checkpoint; other baseline jobs were pending when inspected. Its results remain specific to that source. [Current implementation and worker evidence](docs/evidence/beta-development-2026-11-27-16f31723/README.md) records fresh outcomes as they become available. [The earlier campaign](docs/evidence/beta-progress-2026-11-27-0eff52f/README.md) retains its 599-test local results, failures, diagnostics and previous worker identities separately.
 
-The candidate inventory is 338 native methods and 44 required UI methods across 9 groups. The 28 required Default/AXXXL originals and 8 supplemental beta originals remain required. All protected criteria, individual assertion deadlines and actual visibility requirements are unchanged. A 100-run request is tracked through real task identities in the [new ledger](docs/evidence/beta-progress-2026-11-27-0eff52f/worker-ledger.json); a planned worker is not a completed worker.
-
-The opt-in DEBUG input trace records bounded metadata without typed text or system uptime. The [privacy inventory](docs/PRIVACY.md) describes its retention and ephemeral purchase correlation token. Signed Release inspection and configured StoreKit transactions remain unverified.
+M01 remains active while the combined source is revalidated. Physical-device behavior, held-out inference review, configured StoreKit transactions, customer validation, signing and owner distribution approval remain outstanding under the existing contracts. Unsaved edits still require Save; a separate process-crash recovery journal has been designed but is not implemented.
 
 ### Historical checkpoints
 

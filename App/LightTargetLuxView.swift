@@ -5,7 +5,7 @@ import SwiftUI
 struct LightTargetLuxView: View {
     let light: StudioLight
     let scene: LightingScene
-    let onApply: (StudioLight) -> Void
+    let onApply: (StudioLight) -> Bool
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @State private var draft = LightTargetLuxDraft()
@@ -107,10 +107,14 @@ struct LightTargetLuxView: View {
         guard !didApply, !draft.rejectedOversizedDraft, let target else { return }
         do {
             let adjusted = try LightOutputAdjustment.light(light, targetingLux: target, in: scene)
-            // Set before the callback so reentrant or queued taps cannot
-            // create duplicate scene/history mutations during dismissal.
+            // Block reentrant taps while the parent decides whether this draft
+            // still belongs to the selected light. Keep the entry on rejection.
             didApply = true
-            onApply(adjusted)
+            guard onApply(adjusted) else {
+                didApply = false
+                error = "The light could not be updated. Your entry is still here. Try again, or cancel and reopen Set ideal lux."
+                return
+            }
             dismiss()
         } catch {
             self.error = error.localizedDescription

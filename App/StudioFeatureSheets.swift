@@ -42,23 +42,19 @@ struct StudioFeatureSheets: ViewModifier {
         case .reference:
             ReferenceComparisonView(scene: context.scene) { next in
                 guard session.applyFeatureScene(next, from: context) else {
-                    reportLegacyRejection(from: context)
-                    return
+                    return false
                 }
                 onReferenceApplied()
+                return true
             }
         case .arrangement:
             SceneArrangementView(scene: context.scene) { next in
-                if !session.applyFeatureScene(next, from: context) {
-                    reportLegacyRejection(from: context)
-                }
+                session.applyFeatureScene(next, from: context)
             }
         case let .targetLux(lightID):
             if let light = context.scene.lights.first(where: { $0.id == lightID }) {
                 LightTargetLuxView(light: light, scene: context.scene) { adjusted in
-                    if !session.applyFeatureLight(adjusted, from: context) {
-                        reportLegacyRejection(from: context)
-                    }
+                    session.applyFeatureLight(adjusted, from: context)
                 }
             }
         case .room:
@@ -76,11 +72,4 @@ struct StudioFeatureSheets: ViewModifier {
         }
     }
 
-    private func reportLegacyRejection(from context: StudioFeatureContext) {
-        guard let current = session.feature,
-              current.id == context.id, current.isPresented else { return }
-        // These Void producers consume their drafts even when admission fails.
-        // Feedback must not imply retention or affect a later presentation.
-        session.message = "The change was not applied. Reopen this editor and try again."
-    }
 }

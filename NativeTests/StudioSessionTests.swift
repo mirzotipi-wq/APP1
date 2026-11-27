@@ -36,6 +36,77 @@ final class StudioSessionTests: XCTestCase {
         try await session.beginLibraryOperation(.load, from: session.generation).value
     }
 
+    func testSavedFeedbackFollowsRevisionButKeepsSelectionAndNoOpFeedback() async throws {
+        let base = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: base) }
+        let session = StudioSession(store: ProjectStore(applicationSupportDirectory: base,
+                                                        arguments: [], environment: [:]))
+        try await open(session)
+        try await session.beginLibraryOperation(.save, from: session.generation).value
+        let savedRevision = session.revision
+        let savedMessage = try XCTUnwrap(session.message)
+        let id = session.scene.lights[0].id
+        let intensity = session.scene.lights[0].candela
+
+        XCTAssertTrue(session.select(session.scene.lights[1].id, from: session.generation))
+        XCTAssertFalse(session.apply(.lightValue(id: id, field: .candela, value: intensity),
+                                     from: session.generation))
+        XCTAssertFalse(session.replace(session.scene, from: session.generation))
+        XCTAssertFalse(session.update(session.scene, from: session.generation))
+        XCTAssertFalse(session.undo(from: session.generation))
+        XCTAssertFalse(session.redo(from: session.generation))
+        XCTAssertEqual(session.revision, savedRevision)
+        XCTAssertEqual(session.message, savedMessage)
+
+        XCTAssertTrue(session.apply(.lightValue(id: id, field: .candela, value: intensity + 1),
+                                    from: session.generation))
+        XCTAssertNil(session.message, "A receipt must not claim later edits are saved")
+        XCTAssertTrue(session.undo(from: session.generation))
+        XCTAssertEqual(session.scene, session.saved)
+        XCTAssertNil(session.message, "Returning to equal content must not revive an old receipt")
+
+        try await session.beginLibraryOperation(.save, from: session.generation).value
+        XCTAssertEqual(session.message, savedMessage)
+        XCTAssertTrue(session.redo(from: session.generation))
+        XCTAssertNil(session.message, "Redo after saving is a new unsaved revision")
+    }
+
+    func testSaveFailureFeedbackSurvivesLaterEdits() async throws {
+        let session = StudioSession(execute: { request in
+            if case .load = request.operation { return nil }
+            throw CocoaError(.fileWriteOutOfSpace)
+        })
+        try await open(session)
+        do {
+            try await session.beginLibraryOperation(.save, from: session.generation).value
+            XCTFail("The injected write failure must propagate")
+        } catch {
+            XCTAssertEqual((error as NSError).code, CocoaError.Code.fileWriteOutOfSpace.rawValue)
+        }
+        let failure = try XCTUnwrap(session.message)
+        XCTAssertNil(session.saved)
+        var changed = session.scene
+        changed.camera.x += 0.5
+        XCTAssertTrue(session.update(changed, from: session.generation))
+        XCTAssertEqual(session.message, failure, "Editing must not hide a failed disk write")
+    }
+
+    func testSavedFeedbackDoesNotDescribeADifferentCurrentScene() async throws {
+        let original = LightingScene.portrait()
+        var earlier = original
+        earlier.camera.x += 0.5
+        let receipt = try ProjectLibrary(name: "Earlier saved scene", scene: earlier)
+        let session = StudioSession(editor: try .init(scene: original), execute: { request in
+            if case .load = request.operation { return nil }
+            return receipt
+        })
+        try await open(session)
+        try await session.beginLibraryOperation(.save, from: session.generation).value
+        XCTAssertEqual(session.saved, earlier)
+        XCTAssertEqual(session.scene, original)
+        XCTAssertNil(session.message, "Receipt adoption may keep newer edits dirty")
+    }
+
     func testTypedCommandsRequireCurrentLoadedEditorAndUseTheAddressedLight() async throws {
         let session = StudioSession(execute: { _ in nil })
         let initial = session.editor

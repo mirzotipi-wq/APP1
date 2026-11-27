@@ -101,6 +101,7 @@ struct LightingPlanExportView: View {
     let scene: LightingScene
     let title: String
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var units: PlanUnits
     @State private var paper = PlanPaper.letter
     @State private var prepared: Prepared?
@@ -123,42 +124,22 @@ struct LightingPlanExportView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 12) {
-                HStack {
-                    Picker("Paper", selection: $paper) {
-                        ForEach(PlanPaper.allCases, id: \.self) { Text($0.title).tag($0) }
-                    }.accessibilityIdentifier("exportPaper")
-                    Spacer()
-                    Picker("Units", selection: $units) {
-                        Text("Meters").tag(PlanUnits.metric)
-                        Text("Feet").tag(PlanUnits.imperial)
-                    }.accessibilityIdentifier("exportUnits")
-                }.padding(.horizontal)
-                if let prepared, prepared.options == options {
-                    LightingPlanPDFPreview(data: prepared.item.data)
-                        .accessibilityLabel("Lighting plan PDF preview")
-                        .accessibilityIdentifier("lightingPlanPDFPreview")
-                    Text("\(prepared.pages) pages · Vector diagram & equipment list")
-                        .font(.footnote).foregroundStyle(.secondary)
-                        .accessibilityIdentifier("lightingPlanPDFPages")
-                    ShareLink(item: prepared.item, preview: SharePreview("Key & Fill lighting plan")) {
-                        Label("Share PDF", systemImage: "square.and.arrow.up")
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }.buttonStyle(.borderedProminent).padding(.horizontal)
-                        .accessibilityIdentifier("shareLightingPlanPDF")
-                } else if failedOptions == options {
-                    ContentUnavailableView {
-                        Label("PDF could not be created", systemImage: "doc.text")
-                    } description: {
-                        Text("Your project has not been changed.")
-                    } actions: {
-                        Button("Try again") { retry += 1 }
+            GeometryReader { geometry in
+                VStack(spacing: 12) {
+                    // Keep controls independently scrollable when large text or
+                    // a short window needs more room. PDFView retains its own
+                    // scrolling surface instead of nesting inside this scroll.
+                    ViewThatFits(in: .vertical) {
+                        exportControls.fixedSize(horizontal: false, vertical: true)
+                        ScrollView {
+                            exportControls.fixedSize(horizontal: false, vertical: true)
+                        }
                     }
-                } else {
-                    Spacer(); ProgressView("Preparing lighting plan"); Spacer()
+                    .frame(maxHeight: max(0, geometry.size.height * 0.45))
+                    .layoutPriority(1)
+                    documentPreview
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                Text("Only scene settings and geometry are included. No reference photos or network processing.")
-                    .font(.footnote).foregroundStyle(.secondary).padding([.horizontal, .bottom])
             }
             .navigationTitle("Export lighting plan")
             .navigationBarTitleDisplayMode(.inline)
@@ -169,6 +150,80 @@ struct LightingPlanExportView: View {
                 }
             }
             .task(id: options) { await prepare(options) }
+        }
+    }
+
+    private var exportControls: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ViewThatFits(in: .horizontal) {
+                if !dynamicTypeSize.isAccessibilitySize {
+                    HStack(spacing: 16) {
+                        paperPicker
+                        Spacer(minLength: 0)
+                        unitsPicker
+                    }
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    paperPicker
+                    unitsPicker
+                }
+            }
+            if let prepared, prepared.options == options {
+                Text("\(prepared.pages) pages · Vector diagram & equipment list")
+                    .font(.footnote).foregroundStyle(.secondary)
+                    .accessibilityIdentifier("lightingPlanPDFPages")
+                ShareLink(item: prepared.item, preview: SharePreview("Key & Fill lighting plan")) {
+                    Label("Share PDF", systemImage: "square.and.arrow.up")
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("shareLightingPlanPDF")
+            } else if failedOptions == options {
+                Label("PDF could not be created", systemImage: "exclamationmark.triangle")
+                Text("Your project has not been changed.")
+                    .font(.subheadline).foregroundStyle(.secondary)
+                Button("Try again") { retry += 1 }
+                    .frame(minHeight: 44)
+            }
+            Text("Only scene settings and geometry are included. No reference photos or network processing.")
+                .font(.footnote).foregroundStyle(.secondary)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+
+    private var paperPicker: some View {
+        Picker("Paper", selection: $paper) {
+            ForEach(PlanPaper.allCases, id: \.self) { Text($0.title).tag($0) }
+        }
+        .pickerStyle(.menu)
+        .fixedSize(horizontal: true, vertical: false)
+        .frame(minHeight: 44)
+        .accessibilityIdentifier("exportPaper")
+    }
+
+    private var unitsPicker: some View {
+        Picker("Units", selection: $units) {
+            Text("Meters").tag(PlanUnits.metric)
+            Text("Feet").tag(PlanUnits.imperial)
+        }
+        .pickerStyle(.menu)
+        .fixedSize(horizontal: true, vertical: false)
+        .frame(minHeight: 44)
+        .accessibilityIdentifier("exportUnits")
+    }
+
+    @ViewBuilder private var documentPreview: some View {
+        if let prepared, prepared.options == options {
+            LightingPlanPDFPreview(data: prepared.item.data)
+                .accessibilityLabel("Lighting plan PDF preview")
+                .accessibilityIdentifier("lightingPlanPDFPreview")
+        } else if failedOptions == options {
+            Image(systemName: "doc.text")
+                .font(.largeTitle).foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+        } else {
+            ProgressView("Preparing lighting plan")
         }
     }
 

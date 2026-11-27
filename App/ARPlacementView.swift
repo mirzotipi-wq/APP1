@@ -85,8 +85,11 @@ struct ARPlacementView: View {
 
     private func manualPresentationBinding(for owner: UUID) -> Binding<Bool> {
         Binding(get: { showingManual && manualOwner == owner }, set: { presented in
-            guard manualOwner == owner else { return }
-            showingManual = presented
+            // Only the explicit manual action may open a fresh owner. A late
+            // true write from the presentation must not reopen a retired sheet
+            // and make its callbacks eligible again before onDismiss runs.
+            guard !presented, manualOwner == owner else { return }
+            showingManual = false
         })
     }
 

@@ -7,7 +7,9 @@ import UIKit
 /// the original in Photos and the saved lighting project remain unchanged.
 struct ReferenceComparisonView: View {
     let scene: LightingScene
-    let onApply: (LightingScene) -> Void
+    /// The session must admit the proposal before this view consumes its photo
+    /// and draft. A stale or busy workspace may reject an otherwise valid rig.
+    let onApply: (LightingScene) -> Bool
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicType
     @Environment(\.scenePhase) private var scenePhase
@@ -29,9 +31,11 @@ struct ReferenceComparisonView: View {
     @State private var candidates: [GuidedRig] = []
     @State private var previewID: String?
     @State private var rigError: String?
+    @State private var applyFailure: String?
     @State private var confirmApply = false
     @State private var showPhotoComparison = false
     @State private var sessionClosed = false
+    @State private var isApplying = false
 
     private var selectedRig: GuidedRig? { candidates.first { $0.id == previewID } }
 
@@ -114,11 +118,17 @@ struct ReferenceComparisonView: View {
             }
             .alert("Replace the current lights?", isPresented: $confirmApply) {
                 Button("Apply rig") {
-                    guard !sessionClosed, let rig = selectedRig else { return }
-                    // Invalidate asynchronous work and consume Apply before the
-                    // parent callback can change this presentation's identity.
+                    guard !sessionClosed, !isApplying, let rig = selectedRig else { return }
+                    confirmApply = false
+                    isApplying = true
+                    guard onApply(rig.scene) else {
+                        isApplying = false
+                        applyFailure = "The rig could not be applied. Your reference photo and selected rig are still open."
+                        return
+                    }
+                    // Admission and cleanup run synchronously on the UI actor.
+                    // Only an accepted edit consumes this session's photo/draft.
                     closeSession()
-                    onApply(rig.scene)
                     dismiss()
                 }
                 Button("Cancel", role: .cancel) {}
@@ -130,8 +140,10 @@ struct ReferenceComparisonView: View {
             }
             .onChange(of: observations) { _, _ in
                 candidates = []; previewID = nil; rigError = nil
+                applyFailure = nil
                 confirmApply = false
             }
+            .onChange(of: previewID) { _, _ in applyFailure = nil }
             .onChange(of: selection) { _, item in
                 guard !sessionClosed, let item else { return }
                 let token = UUID()
@@ -328,6 +340,7 @@ struct ReferenceComparisonView: View {
                 ForEach(ReferenceObservations.Rim.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }.accessibilityIdentifier("referenceRim")
             Button("Build starting rigs", systemImage: "lightbulb.2") {
+                applyFailure = nil
                 do {
                     candidates = try GuidedLighting.candidates(from: observations, in: scene)
                     previewID = candidates.first?.id
@@ -374,7 +387,13 @@ struct ReferenceComparisonView: View {
                 if let selectedRig { rigBasis(selectedRig.basis) }
                 Button("Preview current setup") { previewID = nil }.frame(minHeight: 44)
                     .disabled(previewID == nil)
-                Button("Apply selected rig") { confirmApply = true }
+                if let applyFailure {
+                    Label(applyFailure, systemImage: "exclamationmark.triangle")
+                        .font(.subheadline).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("referenceApplyError")
+                }
+                Button("Apply selected rig") { applyFailure = nil; confirmApply = true }
                     .buttonStyle(.borderedProminent).frame(minHeight: 44)
                     .disabled(selectedRig == nil)
                     .accessibilityIdentifier("applyReferenceRig")
@@ -447,6 +466,7 @@ struct ReferenceComparisonView: View {
                 reference = image
                 tones = photo.tones
                 observations = .init(); candidates = []; previewID = nil; rigError = nil
+                applyFailure = nil
                 confirmApply = false
                 sizeDescription = "\(photo.width) × \(photo.height) px · session only"
                 loading = false
@@ -523,6 +543,7 @@ struct ReferenceComparisonView: View {
         reference = nil
         tones = nil
         observations = .init(); candidates = []; previewID = nil; rigError = nil
+        applyFailure = nil
         confirmApply = false
         sizeDescription = ""
     }

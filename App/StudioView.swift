@@ -31,6 +31,8 @@ struct StudioView: View {
     @State private var confirmRemove = false
     @State private var removalTarget: RemovalTarget?
     @State private var confirmReloadConflict = false
+    @State private var showMessageDetails = false
+    @State private var messageDetails = ""
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
@@ -124,7 +126,6 @@ struct StudioView: View {
                                 Text("Illustrative 3D shading. Lux estimates describe an ideal camera-facing plane, not measured skin exposure or a calibrated fixture.")
                                     .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                             }
-                            if let message, !saveConflict { Text(message).font(.footnote).accessibilityIdentifier("saveMessage") }
                         }
                         .padding(16).frame(maxWidth: 820).frame(maxWidth: .infinity)
                     }
@@ -231,6 +232,11 @@ struct StudioView: View {
             } message: {
                 Text("Only the unsaved changes in this window will be discarded. The latest saved library will be opened.")
             }
+            .alert("Project status", isPresented: $showMessageDetails) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(messageDetails)
+            }
             .task { if !loaded { load(from: generation) } }
             .onChange(of: session.workspaceResetID) { _, _ in
                 dismissSceneEditors()
@@ -256,38 +262,65 @@ struct StudioView: View {
         let layout = dynamicTypeSize.isAccessibilitySize
             ? AnyLayout(VStackLayout(alignment: .trailing, spacing: 4))
             : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
-        return layout {
-            if loaded && !saveBlocked {
-                HStack(spacing: 12) {
-                    Text("Edit history")
-                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+        return VStack(alignment: .leading, spacing: 4) {
+            if let message {
+                HStack(spacing: 8) {
+                    // Bound the sticky bar at large text sizes. VoiceOver and
+                    // the explicit Details action retain the complete message.
+                    Text(message)
+                        .font(.footnote)
+                        .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 0)
-                    Button(action: sceneAction { undo() }) {
-                        Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityLabel(Text(message))
+                        .accessibilityIdentifier("saveMessage")
+                    Button {
+                        // Capture the actual displayed message; a later receipt
+                        // must not replace the details the user chose to read.
+                        messageDetails = message
+                        showMessageDetails = true
+                    } label: {
+                        Image(systemName: "info.circle")
                             .frame(width: 44, height: 44)
                     }
-                    .disabled(libraryOperation.isBusy || !editHistory.canUndo || editHistory.isEditing || planDrag != nil).accessibilityLabel("Undo").accessibilityIdentifier("undo")
-                    Button(action: sceneAction { redo() }) {
-                        Label("Redo", systemImage: "arrow.uturn.forward").labelStyle(.iconOnly)
-                            .frame(width: 44, height: 44)
-                    }
-                    .disabled(libraryOperation.isBusy || !editHistory.canRedo || editHistory.isEditing || planDrag != nil).accessibilityLabel("Redo").accessibilityIdentifier("redo")
+                    .accessibilityLabel("Project message details")
+                    .accessibilityHint("Read the complete status or error message")
+                    .accessibilityIdentifier("saveMessageDetails")
                 }
-                .frame(maxWidth: .infinity)
             }
-            Button { save(from: generation) } label: {
-                Text("Save")
-                    .font(.body.weight(.semibold))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 12)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle())
+            layout {
+                if loaded && !saveBlocked {
+                    HStack(spacing: 12) {
+                        Text("Edit history")
+                            .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                        Button(action: sceneAction { undo() }) {
+                            Label("Undo", systemImage: "arrow.uturn.backward").labelStyle(.iconOnly)
+                                .frame(width: 44, height: 44)
+                        }
+                        .disabled(libraryOperation.isBusy || !editHistory.canUndo || editHistory.isEditing || planDrag != nil).accessibilityLabel("Undo").accessibilityIdentifier("undo")
+                        Button(action: sceneAction { redo() }) {
+                            Label("Redo", systemImage: "arrow.uturn.forward").labelStyle(.iconOnly)
+                                .frame(width: 44, height: 44)
+                        }
+                        .disabled(libraryOperation.isBusy || !editHistory.canRedo || editHistory.isEditing || planDrag != nil).accessibilityLabel("Redo").accessibilityIdentifier("redo")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                Button { save(from: generation) } label: {
+                    Text("Save")
+                        .font(.body.weight(.semibold))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 12)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(StudioPalette.action)
+                .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
+                .accessibilityIdentifier("saveProject")
             }
-            .buttonStyle(.plain)
-            .foregroundStyle(StudioPalette.action)
-            .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
-            .accessibilityIdentifier("saveProject")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
