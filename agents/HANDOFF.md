@@ -1,3 +1,7 @@
+## Targeted CI repair — 27 November 2026
+
+See [source-bound repair evidence](../docs/evidence/ci-repair-2026-11-27-b5379ee.md). Baseline `b5379ee` run 46047691385 passed portable and native simulator jobs, but room-precision, app-accessibility and beta-workflow failed. Original compact artifacts establish delayed room input delivery and the AXXXL offscreen Save action. Candidate adjusts the exact observation bound and moves the required Save action ahead of the explanation; the UI test reveals the real row before checking it. Beta-workflow failed at XCTest Accessibility initialization, so fresh hosted execution is required. Existing campaign, method inventory, quality gates and historical evidence remain intact. Only changed snippets were syntax-parsed locally; new-source CI is not yet verified.
+
 ## Active beta progress — 27 November 2026, separate request
 
 This request starts from `804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42` and has its own [actual worker ledger](../docs/evidence/beta-progress-2026-11-27-0eff52f/worker-ledger.json). Root owns integration; one real coordinator schedules 99 fresh specialists under the runtime limit. Prior campaign identities are not counted again.

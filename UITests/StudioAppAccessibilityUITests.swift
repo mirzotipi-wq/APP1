@@ -262,11 +262,15 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         let projects = app.buttons["openProjectLibrary"]
         try control(projects, label: "Projects", in: app, towardBottom: false)
         projects.tap()
-        let librarySave = app.buttons["librarySaveCurrent"]
-        waitForEnabledStudioControl(librarySave)
+        // The AXXXL failure screenshot proves the sheet opened, but its
+        // scrolling Save row was not yet exposed. Await the fixed sheet
+        // control, then use bounded scrolling before requiring Save semantics.
+        XCTAssertTrue(app.buttons["projectLibraryDone"].waitForExistence(timeout: 30),
+                      "Projects sheet must open before inspecting its scrolling content")
         measured["libraryWarning"] = try text(app.staticTexts["Unsaved lighting setup"],
                                               equals: "Unsaved lighting setup", style: .headline,
                                               category: category, in: app, towardBottom: false)
+        let librarySave = app.buttons["librarySaveCurrent"]
         try control(librarySave, label: "Save current setup", in: app)
         capture(name + "-Library-unsaved", in: app)
         let create = app.buttons["newProject"], importProject = app.buttons["importEditableProject"]

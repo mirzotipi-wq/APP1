@@ -85,11 +85,13 @@ struct ProjectLibraryView: View {
                     Section {
                         Label("Unsaved lighting setup", systemImage: "exclamationmark.circle")
                             .font(.headline)
-                        Text("Save your current edits before creating, opening or organizing projects. Nothing is discarded automatically.")
-                            .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
+                        // Keep the required recovery action ahead of the long
+                        // explanation, particularly at accessibility text sizes.
                         Button("Save current setup") { perform { try onSave() } }
                             .disabled(isImporting || isCommittingImport || isWorking || isPerformingOperation)
                             .accessibilityIdentifier("librarySaveCurrent")
+                        Text("Save your current edits before creating, opening or organizing projects. Nothing is discarded automatically.")
+                            .font(.subheadline).foregroundStyle(StudioPalette.secondaryText)
                     }
                 }
                 if let errorMessage {

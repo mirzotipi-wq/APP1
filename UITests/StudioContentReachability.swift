@@ -300,9 +300,15 @@ extension XCTestCase {
         XCTAssertEqual(readyResult, .completed, "The numeric keyboard must be ready before typing",
                        file: file, line: line)
         field.typeText(text)
-        let entered = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "exists == true AND value == %@", text), object: field)
-        let enteredResult = XCTWaiter.wait(for: [entered], timeout: 10)
+        // In run 46047691385 the roomWidth edit reached the native delegate
+        // about 41 seconds after typeText returned. Wait for the actual exact
+        // value with one AX snapshot per observation; never send a second edit.
+        let entered = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let snapshot = try? field.snapshot() else { return false }
+            return snapshot.identifier == id && snapshot.elementType == .textField &&
+                (snapshot.value as? String) == text
+        }, object: field)
+        let enteredResult = XCTWaiter.wait(for: [entered], timeout: 60)
         if enteredResult != .completed { recordRoomInputFailure("Draft did not match " + text, field: field, in: app) }
         XCTAssertEqual(enteredResult, .completed, "Exact measurement draft must be entered",
                        file: file, line: line)
