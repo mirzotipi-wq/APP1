@@ -406,7 +406,9 @@ final class BetaWorkflowUITests: XCTestCase {
     }
 
     private func openFeedbackFromSettings(in app: XCUIApplication) {
-        tapContent(app.buttons["openBetaFeedback"], in: app)
+        // The final Settings row can sit below the generic 100-point inset.
+        // Require its full frame inside the observed sheet viewport instead.
+        tapContent(app.buttons["openBetaFeedback"], in: app, avoidingKeyboard: true)
         waitForEnabledStudioControl(app.buttons["closeBetaFeedback"])
         XCTAssertFalse(app.buttons["shareBetaFeedbackReport"].exists,
                        "The exact report must be reviewed before sharing is available")

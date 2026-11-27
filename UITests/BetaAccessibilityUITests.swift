@@ -37,7 +37,12 @@ final class BetaAccessibilityUITests: XCTestCase {
 
         healthy.launch()
         waitForEnabledStudioControl(healthy.buttons["openProjectLibrary"])
-        let title = healthy.staticTexts["studioWelcomeTitle"]
+        // The opted-in layout value can expose an empty-label AX wrapper.
+        // Select the actual labeled title and reject ambiguous real matches.
+        let titles = healthy.staticTexts.matching(NSPredicate(
+            format: "identifier == %@ AND label == %@", "studioWelcomeTitle", "Start your first portrait"))
+        XCTAssertEqual(titles.count, 1, "Expected one actual labeled welcome title")
+        let title = titles.firstMatch
         revealStudioContent(title, in: healthy, towardBottom: false, fullyVisible: true)
         try assertWelcomeTitleFitsLargestFont(title, in: healthy)
         try control(healthy.buttons["dismissStudioWelcome"], label: "Dismiss welcome", in: healthy,
@@ -54,7 +59,9 @@ final class BetaAccessibilityUITests: XCTestCase {
         let dismiss = healthy.buttons["dismissStudioWelcome"]
         try control(dismiss, label: "Dismiss welcome", in: healthy, towardBottom: false)
         dismiss.tap()
-        expectGone(title)
+        // Dismissal must remove every title identity, including the wrapper.
+        expectGone(healthy.staticTexts.matching(NSPredicate(
+            format: "identifier == %@", "studioWelcomeTitle")).firstMatch)
 
         // Settings is only the entry route; this smoke exercises the new sheet.
         let tools = healthy.buttons["studioTools"]

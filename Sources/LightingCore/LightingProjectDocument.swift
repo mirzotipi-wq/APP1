@@ -112,8 +112,9 @@ public struct LightingProjectDocument: Equatable, Sendable {
                     // Unescaped ASCII was validated during the scan. For other
                     // unescaped values, reject malformed UTF-8 without invoking
                     // a JSON decoder for each ignored metadata value. This strict
-                    // initializer must not repair invalid byte sequences.
-                    guard String(validating: bytes[(start + 1)..<index], as: UTF8.self) != nil else {
+                    // Foundation initializer supports our deployment targets
+                    // and must not repair invalid byte sequences.
+                    guard String(bytes: bytes[(start + 1)..<index], encoding: .utf8) != nil else {
                         throw DocumentError.invalidDocument
                     }
                 }
