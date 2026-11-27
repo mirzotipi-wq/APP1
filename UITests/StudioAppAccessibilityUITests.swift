@@ -10,20 +10,22 @@ final class StudioAppAccessibilityUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     override func tearDownWithError() throws {
-        if let app = runningApp {
-            capture("Accessibility-workflow-failure", in: app)
-            let hierarchy = XCTAttachment(string: String(app.debugDescription.prefix(24_000)))
-            hierarchy.name = "Accessibility-workflow-failure-hierarchy"
-            hierarchy.lifetime = .keepAlways
-            add(hierarchy)
-            app.terminate()
-        }
+        // Preserve observations before a diagnostic screenshot/hierarchy request
+        // can fail against an interrupted or terminated application.
         let text = observations.joined(separator: "\n")
         print("Studio-app-accessibility-observations:\n" + text)
         let attachment = XCTAttachment(string: text)
         attachment.name = "Studio-app-accessibility-observed-frames"
         attachment.lifetime = .keepAlways
         add(attachment)
+        if let app = runningApp {
+            capture("Accessibility-workflow-failure", in: app, requiresForeground: false)
+            let hierarchy = XCTAttachment(string: String(app.debugDescription.prefix(24_000)))
+            hierarchy.name = "Accessibility-workflow-failure-hierarchy"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+            app.terminate()
+        }
     }
 
     func testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize() throws {
@@ -506,8 +508,16 @@ final class StudioAppAccessibilityUITests: XCTestCase {
                             "frame=\(state.frame) | enabled=\(state.isEnabled) | selected=\(state.isSelected)")
     }
 
-    private func capture(_ name: String, in app: XCUIApplication) {
-        let screenshot = XCTAttachment(screenshot: app.screenshot())
+    private func capture(_ name: String, in app: XCUIApplication, requiresForeground: Bool = true) {
+        // Capture the actual display without another application-element
+        // screenshot request. Run 45979992218 passed the preceding layout
+        // assertions, then timed out in app.screenshot() at its first capture.
+        // Keep the foreground requirement and original, unmodified pixels.
+        if requiresForeground {
+            XCTAssertEqual(app.state, .runningForeground,
+                           "Required layout captures must show the foreground app")
+        }
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         screenshot.name = name
         screenshot.lifetime = .keepAlways
         add(screenshot)

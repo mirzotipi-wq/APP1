@@ -11,6 +11,7 @@ struct StudioView: View {
     @State private var planNeedsLabelNotice = false
     @State private var planGridTitle = StudioPlanGridTitleKey.defaultValue
     @State private var showProjects = false
+    @State private var libraryRecovery: LibraryRecoveryPresentation?
     @State private var showSubject = false
     @State private var renamingLightID: UUID?
     @State private var lightNameDraft = ""
@@ -58,6 +59,11 @@ struct StudioView: View {
         let generation: UUID
     }
 
+    private struct LibraryRecoveryPresentation: Identifiable {
+        let id = UUID()
+        let generation: UUID
+    }
+
     var body: some View {
         let generation = libraryOperation.generation
         return NavigationStack {
@@ -70,22 +76,41 @@ struct StudioView: View {
                                 ContentUnavailableView {
                                     Label("Saved project unavailable", systemImage: "externaldrive.badge.exclamationmark")
                                 } description: {
-                                    Text("Your saved data is protected. Editing and export are unavailable until the library can be opened.")
+                                    Text("Your saved data is protected. Retry opening it, or review recovery options that keep the original files before starting again.")
                                 } actions: {
-                                    Button { load(from: generation) } label: {
-                                        Text("Retry loading saved project")
-                                            .foregroundStyle(StudioPalette.prominentActionText)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                            .frame(minWidth: 44, minHeight: 44)
-                                    }
+                                    VStack(spacing: 12) {
+                                        Button { load(from: generation) } label: {
+                                            Text("Retry loading saved project")
+                                                .foregroundStyle(StudioPalette.prominentActionText)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .frame(minWidth: 44, minHeight: 44)
+                                        }
                                         .buttonStyle(.borderedProminent)
-                                        .disabled(libraryOperation.isBusy)
+                                        Button {
+                                            guard loaded, saveBlocked, !libraryOperation.isBusy else { return }
+                                            libraryRecovery = LibraryRecoveryPresentation(generation: generation)
+                                        } label: {
+                                            Text("Review recovery options")
+                                                .fixedSize(horizontal: false, vertical: true)
+                                                .frame(minWidth: 44, minHeight: 44)
+                                        }
+                                        .buttonStyle(.bordered)
+                                        .accessibilityIdentifier("openLibraryRecovery")
+                                    }
+                                    .disabled(libraryOperation.isBusy)
                                 }
                             } else if !loaded {
                                 ProgressView("Opening projects…")
                                     .frame(maxWidth: .infinity, minHeight: 160)
                             } else {
                                 if saveConflict { conflictRecoveryPanel.disabled(libraryOperation.isBusy) }
+                                if library == nil && saved == nil && !saveConflict {
+                                    StudioWelcomeView(
+                                        onSaveCurrent: { save(from: generation) },
+                                        onOpenGuide: sceneAction { showStudioGuide = true },
+                                        onOpenProjects: sceneAction { showProjects = true })
+                                        .disabled(libraryOperation.isBusy || editHistory.isEditing)
+                                }
                                 workflowActions.disabled(libraryOperation.isBusy)
                                 workspace.disabled(libraryOperation.isBusy)
                                 meter.id("meterPanel").disabled(libraryOperation.isBusy)
@@ -130,6 +155,15 @@ struct StudioView: View {
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
             .sheet(isPresented: $showSettings) { StudioSettingsView(store: entitlements) }
+            .sheet(item: $libraryRecovery) { presentation in
+                // Recovery success resets the workspace, but this presentation
+                // remains alive until its own Done action acknowledges the result.
+                ProjectLibraryRecoveryView(onInspect: {
+                    try await session.inspectUnreadableLibrary(from: presentation.generation)
+                }, onRecover: { snapshot in
+                    try session.recoverUnreadableLibrary(snapshot, from: presentation.generation)
+                })
+            }
             .modifier(StudioFeatureSheets(session: session, onReferenceApplied: {
                 mode = "Study"
             }))
@@ -169,6 +203,7 @@ struct StudioView: View {
                                    scene: Binding(get: { session.scene }, set: { _ in }),
                                    saved: Binding(get: { session.saved }, set: { _ in }),
                                    isWorking: libraryOperation.isBusy,
+                                   canCreateInitialProject: session.canCreateInitialProject,
                                    onSave: { try persistScene(from: generation) },
                                    onApply: { try applyLibrary($0, from: generation) })
             }

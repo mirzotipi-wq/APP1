@@ -395,5 +395,63 @@ class NativeTestShardTests(unittest.TestCase):
             native_test_shards.discover_methods("UITests")
 
 
+class RepositoryBetaWorkflowShardTests(unittest.TestCase):
+    """The real beta workflows must be selected and accounted for by existing CI."""
+
+    methods = {
+        "testWelcomeDismissalPersistsAndInitialActionsNeedNoDefaultSave",
+        "testInitialProjectNameEditorSavesOnlyRequestedProjectAndReopens",
+        "testUnreadableLibraryRecoveryNeedsConfirmationAndSurvivesRelaunch",
+        "testFeedbackExactReviewBackAndDiscardExcludePrivateProjectData",
+    }
+
+    def test_beta_workflows_are_required_in_the_existing_studio_export_shard(self):
+        self.assertIn("BetaWorkflowUITests", native_test_shards.check())
+        self.assertEqual(native_test_shards.SHARDS["studio-export"],
+                         ("StudioSmokeTests", "LightingPlanExportUITests", "BetaWorkflowUITests"))
+        self.assertEqual(native_test_shards.discover_methods("UITests")["BetaWorkflowUITests"], self.methods)
+        output = io.StringIO()
+        with patch("sys.argv", [str(SCRIPT), "studio-export"]), contextlib.redirect_stdout(output):
+            native_test_shards.main()
+        self.assertEqual(output.getvalue().splitlines(), [
+            "-only-testing:KeyAndFillUITests/StudioSmokeTests",
+            "-only-testing:KeyAndFillUITests/LightingPlanExportUITests",
+            "-only-testing:KeyAndFillUITests/BetaWorkflowUITests",
+        ])
+
+    def test_studio_export_execution_cannot_omit_the_beta_methods(self):
+        inventory = native_test_shards.discover_methods("UITests")
+        selected = native_test_shards.SHARDS["studio-export"]
+        beta = {f"BetaWorkflowUITests.{method}" for method in self.methods}
+        existing = {f"{name}.{method}" for name in selected if name != "BetaWorkflowUITests"
+                    for method in inventory[name]}
+
+        def events(methods):
+            # Synthetic log fixtures test accounting only, never native execution.
+            return "\n".join(
+                f"Test Case '-[KeyAndFillUITests.{name} {method}]' {event}."
+                for item in sorted(methods) for name, method in [item.split(".", 1)]
+                for event in ("started", "passed")
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "synthetic-studio-export.log"
+            report_path = Path(directory) / "accounting.json"
+            log.write_text(events(existing), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                native_test_shards.verify_log("studio-export", log, report_path)
+            report = json.loads(report_path.read_text())
+            self.assertEqual(report["status"], "failed")
+            self.assertEqual(set(report["expected"]), existing | beta)
+            self.assertEqual(set(report["passed"]), existing)
+            self.assertEqual(set(report["unstarted"]), beta)
+
+            log.write_text(events(existing | beta), encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                verified = native_test_shards.verify_log("studio-export", log, report_path)
+            self.assertEqual(verified, existing | beta)
+            self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -130,10 +130,11 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     needs: core
-    # 12 Metal + 25 Debug/test build + 15 Release + 10 boot + 18 test minutes,
-    # with 10 minutes for setup, the macOS package check and evidence export.
+    # 6 host probe + 12 Metal + 25 Debug/test build + 15 Release + 10 boot
+    # + 24 native command minutes, with 8 minutes for setup, the macOS package
+    # check and evidence export.
     # Boot and compilation must not consume the test/finalization deadline.
-    timeout-minutes: 90
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v4
       - name: Record Apple toolchain and test the portable package on macOS
@@ -251,12 +252,24 @@ jobs:
             --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \
             --output simulator-startup 2>&1 | tee simulator-boot.log
       - name: Run native unit tests
-        timeout-minutes: 18
+        # Run 45979992218 passed all 261 methods, then printed Xcode success
+        # 48 seconds before the 18-minute step timeout. Allow six more minutes
+        # for command finalization; normal process exit and all checks remain required.
+        timeout-minutes: 24
         env:
           TEST_SHARD: unit
           SIMULATOR_WARMUP_OUTCOME: ${{ steps.simulator_warmup.outcome }}
         run: |
           set -euo pipefail
+          native_phase=selection
+          record_native_exit() {
+            native_exit_code=$?
+            set +e
+            printf 'Native shell exit: utc=%s phase=%s status=%s\n' \
+              "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$native_phase" "$native_exit_code"
+            exit "$native_exit_code"
+          }
+          trap record_native_exit EXIT
           echo "Simulator warm-up outcome: $SIMULATOR_WARMUP_OUTCOME (diagnostic only)"
           selectors=$(python3 scripts/native_test_shards.py "$TEST_SHARD")
           tests=()
@@ -264,10 +277,14 @@ jobs:
             tests+=("$selector")
           done <<< "$selectors"
           [ "${#tests[@]}" -gt 0 ]
+          native_phase=xcodebuild
+          printf 'Native command start: utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+          native_phase=metal-checks
+          printf 'Native command exit: utc=%s status=0\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -287,6 +304,7 @@ jobs:
                   raise SystemExit(f"Required Metal test {method}: expected one pass; observed {outcomes}")
           print("Required Metal methods executed and passed; no native methods skipped.")
           PY
+          native_phase=complete
       - name: Verify required native method accounting
         if: always()
         run: |

@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "product": "Key & Fill",
+  "release": "1.0",
+  "milestones": [
+    {
+      "id": "M01",
+      "name": "Foundation and reproducible iOS build",
+      "depends": [],
+      "gates": [
+        "core_tests",
+        "native_build",
+        "persistence_smoke"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "M02",
+      "name": "Photometry and interactive 3D studio",
+      "depends": [
+        "M01"
+      ],
+      "gates": [
+        "photometry",
+        "rendering",
+        "performance"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M03",
+      "name": "Professional editing and project library",
+      "depends": [
+        "M02"
+      ],
+      "gates": [
+        "editing",
+        "accessibility",
+        "persistence"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M04",
+      "name": "Reference analysis and comparison",
+      "depends": [
+        "M03"
+      ],
+      "gates": [
+        "inference",
+        "reference_privacy"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M05",
+      "name": "AR placement and export",
+      "depends": [
+        "M03",
+        "M04"
+      ],
+      "gates": [
+        "ar_device",
+        "export"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M06",
+      "name": "Entitlements and product validation",
+      "depends": [
+        "M05"
+      ],
+      "gates": [
+        "commerce",
+        "customer_validation",
+        "privacy"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "M07",
+      "name": "Release candidate",
+      "depends": [
+        "M06"
+      ],
+      "gates": [
+        "regression",
+        "device_matrix",
+        "release_review",
+        "owner_approval"
+      ],
+      "status": "pending"
+    }
+  ],
+  "lastCycle": {
+    "date": "2026-11-27",
+    "baseRevision": "9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318",
+    "sourceRevision": "660b50a251f662b0207d0e5aab70fda748a77664",
+    "destinationBranch": "main",
+    "scope": "Consolidate every published development branch without losing source, tests or historical evidence",
+    "status": "All eight audited remote branch tips verified in published main; combined portable/numerical tests pass; fresh Apple acceptance running",
+    "report": "docs/evidence/branch-consolidation-2026-11-27/README.md",
+    "priorCycle": "agents/history/2026-11-27-before-branch-consolidation-state.json",
+    "remainingRequiredWork": [
+      "Complete combined-source Apple build/native/UI validation without transferring isolated branch passes",
+      "Revalidate affected milestone gates and retain prior failures",
+      "If branches receive new commits, repeat the remote ancestry audit before deleting their labels"
+    ],
+    "physicalValidationClaimed": false,
+    "candidateWorkflow": "https://github.com/mirzotipi-wq/APP1/actions/runs/45979992218"
+  },
+  "activeRequest": {
+    "date": "2026-11-26",
+    "scope": "M02 then M03; m02-m03-code-v2",
+    "ownerAuthorization": "Remove requirements depending on unavailable outside factors; implement code, repair CI, commit and push to main.",
+    "acceptanceContract": "docs/acceptance/m02-m03-code.md",
+    "requestedWorkers": 100,
+    "workerLedger": "docs/evidence/m03-closeout-2026-11-26/worker-ledger.json",
+    "physicalValidationClaimed": false,
+    "currentReport": "docs/evidence/m03-closeout-2026-11-26/README.md"
+  },
+  "branchConsolidation": {
+    "date": "2026-11-27",
+    "sourceRevision": "660b50a251f662b0207d0e5aab70fda748a77664",
+    "baselineRevision": "9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318",
+    "auditedNonMainBranches": 8,
+    "alreadyMergedBranches": 3,
+    "mergedFinishBranches": 5,
+    "retainedPreviouslyUnmergedCommits": 100,
+    "branchDeletionPerformed": false,
+    "previousMilestoneStatuses": {
+      "M01": "complete",
+      "M02": "complete",
+      "M03": "active",
+      "M04": "pending",
+      "M05": "pending",
+      "M06": "pending",
+      "M07": "pending"
+    },
+    "milestoneStatusReason": "Fresh combined-source acceptance is pending after production changes; earlier accepted revisions remain preserved. This is revalidation, not removal of completed implementation.",
+    "report": "docs/evidence/branch-consolidation-2026-11-27/README.md",
+    "publishedMainVerified": "660b50a251f662b0207d0e5aab70fda748a77664",
+    "remoteVerification": "docs/evidence/branch-consolidation-2026-11-27/remote-branch-verification.json",
+    "safeToDeleteAuditedBranchTips": true
+  }
+}

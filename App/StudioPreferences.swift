@@ -4,6 +4,8 @@ import LightingCore
 enum StudioPreferences {
     static let unitsKey = "keyfill.measurementUnits"
     static let appearanceKey = "keyfill.appearance"
+    /// Only an explicit dismissal hides first-use guidance across launches.
+    static let welcomeDismissedKey = "keyfill.welcomeDismissed"
 
     /// UI automation never changes the user's actual preferences.
     static let defaults: UserDefaults = {

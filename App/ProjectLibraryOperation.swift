@@ -31,6 +31,7 @@ enum ProjectLibraryOperation: Sendable {
     case change(ProjectLibraryCommand)
     case reload
     case recover(name: String, replacing: LightingProject?)
+    case recoverUnreadable(snapshot: ProjectLibraryRecoverySnapshot)
 
     var progressTitle: String {
         switch self {
@@ -38,6 +39,7 @@ enum ProjectLibraryOperation: Sendable {
         case .save: return "Saving lighting setup…"
         case .change: return "Updating projects…"
         case .recover: return "Saving recovery project…"
+        case .recoverUnreadable: return "Keeping saved files and creating a new library…"
         }
     }
 }
@@ -123,7 +125,7 @@ struct ProjectLibraryOperationState {
             let switching = active.id != request.projectID
             adoption = .init(library: result, scene: switching ? active.scene : currentScene,
                              saved: active.scene, resetsHistory: switching, resetsPresentation: switching)
-        case .reload, .recover:
+        case .reload, .recover, .recoverUnreadable:
             guard let active = result?.activeProject else { throw ProjectLibraryError.invalidLibrary }
             adoption = .init(library: result, scene: active.scene, saved: active.scene,
                              resetsHistory: true, resetsPresentation: true)

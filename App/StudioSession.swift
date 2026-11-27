@@ -12,6 +12,7 @@ import LightingCore
 #endif
 final class StudioSession {
     typealias Executor = @Sendable (ProjectLibraryRequest) async throws -> ProjectLibrary?
+    typealias RecoveryInspector = @Sendable () async throws -> ProjectLibraryRecoverySnapshot
 
     /// The Plan gesture uses cumulative translation, so its origin and scale
     /// must remain fixed until that exact gesture ends.
@@ -38,6 +39,11 @@ final class StudioSession {
 
     private let store: ProjectStore
     private let execute: Executor
+    private let inspectUnreadable: RecoveryInspector
+    /// Only the session-created starter may be replaced before its first save.
+    /// An actual edit changes the revision even when a gesture returns to its
+    /// starting values and leaves no undo entry.
+    private var initialProjectRevision: UUID?
     // Observation is the native SwiftUI adapter. Portable tests execute this
     // same orchestration without depending on a Linux Observation runtime.
     // Keep each ignored attribute on its complete native declaration so the
@@ -50,11 +56,16 @@ final class StudioSession {
     private var operationTaskID: UUID?
     #endif
 
-    init(editor: StudioEditorState = .init(), store: ProjectStore = ProjectStore(),
-         execute: Executor? = nil) {
-        self.editor = editor
+    init(editor: StudioEditorState? = nil, store: ProjectStore = ProjectStore(),
+         execute: Executor? = nil, inspectUnreadable: RecoveryInspector? = nil) {
+        let initialEditor = editor ?? StudioEditorState()
+        self.editor = initialEditor
+        // A caller-supplied editor may already contain an unsaved draft, even
+        // when its history is empty. It never receives the starter exception.
+        initialProjectRevision = editor == nil ? initialEditor.revision : nil
         self.store = store
         self.execute = execute ?? { request in try await store.perform(request) }
+        self.inspectUnreadable = inspectUnreadable ?? { try await store.inspectUnreadableLibrary() }
     }
 
     var scene: LightingScene { editor.scene }
@@ -64,6 +75,12 @@ final class StudioSession {
     var revision: UUID { editor.revision }
     var isBusy: Bool { libraryOperation.isBusy }
     var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
+
+    var canCreateInitialProject: Bool {
+        loaded && !saveBlocked && !saveConflict && library == nil && saved == nil &&
+            !isBusy && !history.isEditing && !history.canUndo && !history.canRedo &&
+            planDrag == nil && feature == nil && initialProjectRevision == revision
+    }
 
     func allowsMutation(from generation: UUID) -> Bool {
         loaded && !saveBlocked && libraryOperation.allowsSceneMutation(from: generation)
@@ -280,8 +297,34 @@ final class StudioSession {
     }
 
     func applyLibrary(_ command: ProjectLibraryCommand, from generation: UUID) throws -> Task<Void, Error> {
-        guard saved == scene, library != nil else { throw ProjectLibraryError.staleSnapshot }
-        return try beginLibraryOperation(.change(command), from: generation)
+        try beginLibraryOperation(.change(command), from: generation)
+    }
+
+    /// Inspection may suspend while another callback retries loading or starts
+    /// recovery. A returned observation must still belong to this blocked editor.
+    func inspectUnreadableLibrary(from generation: UUID) async throws -> ProjectLibraryRecoverySnapshot {
+        try requireUnreadableRecovery(from: generation)
+        try Task.checkCancellation()
+        let snapshot = try await inspectUnreadable()
+        try Task.checkCancellation()
+        try requireUnreadableRecovery(from: generation)
+        return snapshot
+    }
+
+    func recoverUnreadableLibrary(_ snapshot: ProjectLibraryRecoverySnapshot,
+                                  from generation: UUID) throws -> Task<Void, Error> {
+        try beginLibraryOperation(.recoverUnreadable(snapshot: snapshot), from: generation)
+    }
+
+    private func requireUnreadableRecovery(from generation: UUID) throws {
+        guard generation == self.generation else { throw ProjectLibraryOperationState.OperationError.staleEditor }
+        guard !isBusy else { throw ProjectLibraryOperationState.OperationError.busy }
+        guard loaded, saveBlocked else { throw ProjectLibraryError.recoveryNotNeeded }
+        // A failed initial load is not permission to discard a supplied draft.
+        // Only the session's untouched starter can become the new library.
+        guard library == nil, saved == nil, !saveConflict, initialProjectRevision == revision,
+              !history.isEditing, !history.canUndo, !history.canRedo,
+              planDrag == nil, feature == nil else { throw ProjectLibraryError.staleSnapshot }
     }
 
     /// Reserve first. A stale Save callback must not end a newer drag or split
@@ -289,12 +332,22 @@ final class StudioSession {
     func beginLibraryOperation(_ operation: ProjectLibraryOperation,
                                from generation: UUID) throws -> Task<Void, Error> {
         switch operation {
+        case .recoverUnreadable:
+            try requireUnreadableRecovery(from: generation)
         case .load:
             // Initial load and a protected-data retry are allowed. Re-running
             // initial load on a healthy editor must not discard a dirty document.
             guard !loaded || saveBlocked else { throw ProjectLibraryError.staleSnapshot }
         default:
             guard loaded, !saveBlocked else { throw ProjectLibraryError.invalidLibrary }
+        }
+        if case let .change(command) = operation {
+            switch command {
+            case .create where canCreateInitialProject:
+                break
+            default:
+                guard saved == scene, library != nil else { throw ProjectLibraryError.staleSnapshot }
+            }
         }
         let request = try libraryOperation.reserve(operation, library: library, scene: scene, from: generation)
         editor.endEditing()
@@ -325,6 +378,13 @@ final class StudioSession {
                 var nextEditor = editor
                 try nextEditor.adopt(adoption.scene, resettingHistory: adoption.resetsHistory)
                 let nextSaved = try adoption.saved?.validated()
+                if case .load = operation, result == nil, initialProjectRevision == editor.revision {
+                    // Initial load resets editor history/revision. Carry the
+                    // pristine marker only across that healthy empty receipt.
+                    initialProjectRevision = nextEditor.revision
+                } else {
+                    initialProjectRevision = nil
+                }
                 libraryOperation = nextOperation
                 editor = nextEditor
                 library = adoption.library
@@ -341,6 +401,9 @@ final class StudioSession {
                 case .save: message = "Project saved on this device."
                 case .reload: message = "Latest saved library opened."
                 case .recover: message = "Your setup was saved as a recovery project."
+                case .recoverUnreadable:
+                    showRecoveryCapacity = false
+                    message = "A new library was created. Original saved files were kept on this device."
                 }
             } catch {
                 if libraryOperation.finish(request) {
@@ -352,6 +415,8 @@ final class StudioSession {
                     case .recover:
                         message = "Could not save a recovery copy. Your edits remain in this window. \(error.localizedDescription)"
                         if (error as? ProjectLibraryError) == .capacity { showRecoveryCapacity = true }
+                    case .recoverUnreadable:
+                        message = "The saved library remains blocked. Check the saved files again before starting over."
                     case .reload:
                         message = "Could not reload. Your edits remain in this window. \(error.localizedDescription)"
                     case .save, .change:

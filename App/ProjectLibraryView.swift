@@ -3,12 +3,14 @@ import LightingCore
 import UniformTypeIdentifiers
 
 /// Explicit save boundary: browsing is allowed while dirty, but mutations and
-/// switches must wait until the current scene is saved successfully.
+/// switches must wait until the current scene is saved successfully. The parent
+/// can explicitly authorize replacing its untouched first-use starter.
 struct ProjectLibraryView: View {
     @Binding var library: ProjectLibrary?
     @Binding var scene: LightingScene
     @Binding var saved: LightingScene?
     let isWorking: Bool
+    let canCreateInitialProject: Bool
     let onSave: () throws -> Task<Void, Error>
     let onApply: (ProjectLibraryCommand) throws -> Task<Void, Error>
     @Environment(\.dismiss) private var dismiss
@@ -28,6 +30,20 @@ struct ProjectLibraryView: View {
     @State private var importMessage: String?
     @State private var acceptingImports = true
 
+    init(library: Binding<ProjectLibrary?>, scene: Binding<LightingScene>,
+         saved: Binding<LightingScene?>, isWorking: Bool,
+         canCreateInitialProject: Bool = false,
+         onSave: @escaping () throws -> Task<Void, Error>,
+         onApply: @escaping (ProjectLibraryCommand) throws -> Task<Void, Error>) {
+        _library = library
+        _scene = scene
+        _saved = saved
+        self.isWorking = isWorking
+        self.canCreateInitialProject = canCreateInitialProject
+        self.onSave = onSave
+        self.onApply = onApply
+    }
+
     private struct Naming: Identifiable {
         enum Kind { case create, rename(UUID), duplicate(UUID) }
         let id = UUID()
@@ -37,13 +53,22 @@ struct ProjectLibraryView: View {
     }
 
     private var hasUnsavedChanges: Bool { saved != scene }
-    private var canMutate: Bool {
-        !hasUnsavedChanges && library != nil && !isImporting && !isCommittingImport &&
-            !isWorking && !isPerformingOperation
+    private var allowsInitialCreate: Bool {
+        canCreateInitialProject && library == nil && saved == nil
     }
+    private var isAvailable: Bool {
+        !isImporting && !isCommittingImport && !isWorking && !isPerformingOperation
+    }
+    private var canMutate: Bool {
+        !hasUnsavedChanges && library != nil && isAvailable
+    }
+    private var hasCreateDestination: Bool {
+        (allowsInitialCreate || (!hasUnsavedChanges && library != nil)) &&
+            (library?.projects.count ?? 0) < ProjectLibrary.maximumProjects
+    }
+    private var canCreate: Bool { hasCreateDestination && isAvailable }
     private var canImport: Bool {
-        acceptingImports && canMutate &&
-            (library?.projects.count ?? ProjectLibrary.maximumProjects) < ProjectLibrary.maximumProjects
+        acceptingImports && canCreate
     }
 
     var body: some View {
@@ -56,7 +81,7 @@ struct ProjectLibraryView: View {
         let archivedProjects = visibleProjects.filter { $0.project.isArchived }
         NavigationStack {
             List {
-                if hasUnsavedChanges {
+                if hasUnsavedChanges && !allowsInitialCreate {
                     Section {
                         Label("Unsaved lighting setup", systemImage: "exclamationmark.circle")
                             .font(.headline)
@@ -108,13 +133,15 @@ struct ProjectLibraryView: View {
                         Text("No saved projects yet.").foregroundStyle(StudioPalette.secondaryText)
                     }
                     Button {
+                        guard canCreate else { return }
                         naming = Naming(kind: .create, title: "New project", initial: "Portrait setup")
                     } label: {
                         Label("New project", systemImage: "plus.circle")
                     }
-                    .disabled(!canMutate || (library?.projects.count ?? 0) >= ProjectLibrary.maximumProjects)
+                    .disabled(!canCreate)
                     .accessibilityIdentifier("newProject")
                     Button {
+                        guard canImport else { return }
                         importMessage = nil
                         errorMessage = nil
                         showImporter = true
@@ -328,10 +355,24 @@ struct ProjectLibraryView: View {
         }
     }
 
-    private func apply(_ command: ProjectLibraryCommand) throws -> Task<Void, Error> {
-        guard canMutate else { throw ProjectLibraryError.staleSnapshot }
+    private func apply(_ command: ProjectLibraryCommand,
+                       completingImport request: UUID? = nil) throws -> Task<Void, Error> {
+        // The matching import may reserve while its read gate remains closed.
+        // Every other callback must wait, including a stale naming sheet.
+        let completesCurrentImport = request != nil && request == importRequest && acceptingImports && isImporting
+        guard !isCommittingImport, !isWorking, !isPerformingOperation,
+              (!isImporting && request == nil) || completesCurrentImport else {
+            throw ProjectLibraryError.staleSnapshot
+        }
+        switch command {
+        case .create:
+            guard hasCreateDestination else { throw ProjectLibraryError.staleSnapshot }
+        default:
+            guard request == nil, canMutate else { throw ProjectLibraryError.staleSnapshot }
+        }
         // The parent reserves synchronously; validation and mutation happen on
-        // the worker, including a possibly large imported scene or legacy name.
+        // the worker. Its live session guard also rejects an edited-and-reverted
+        // starter, even if this presentation captured earlier authorization.
         return try onApply(command)
     }
 
@@ -387,6 +428,7 @@ struct ProjectLibraryView: View {
         }
         cancelImport()
         let request = UUID()
+        let sourceScene = scene
         importRequest = request
         isImporting = true
         importMessage = nil
@@ -402,14 +444,14 @@ struct ProjectLibraryView: View {
             do {
                 let document = try await ProjectDocumentIO.read(from: url)
                 guard !Task.isCancelled, acceptingImports, request == importRequest else { return }
-                guard !hasUnsavedChanges, library != nil, !isWorking,
-                      (library?.projects.count ?? ProjectLibrary.maximumProjects) < ProjectLibrary.maximumProjects else {
+                guard scene == sourceScene else {
                     throw ProjectLibraryError.staleSnapshot
                 }
                 // Reserve the parent while the provider-read gate is still
                 // closed. From here the commit belongs to Studio, and closing
                 // Projects must not turn a successful write into a cancellation.
-                let commit = try onApply(.create(name: document.name, scene: document.scene))
+                let commit = try apply(.create(name: document.name, scene: document.scene),
+                                       completingImport: request)
                 isCommittingImport = true
                 isImporting = false
                 try await commit.value

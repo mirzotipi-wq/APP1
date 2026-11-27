@@ -1,3 +1,9 @@
+# Current beta campaign — 27 November 2026
+
+User requested 100 actual agents and beta engineering. [Live packet](../docs/evidence/beta-campaign-2026-11-27/README.md) records the actual contexts and source-specific evidence. This checkpoint has 26 created and 23 completed workers; more assignments continue. Integrated preserved-file recovery, first-project New/Import, dismissible welcome, bounded local feedback, four beta UI workflows and seven native analysis boundary tests. Local 550 Debug/550 Release and 102 tooling tests pass; native inventory is 298, required UI 40 plus two diagnostics and 28 original layout captures.
+
+The baseline Apple run is terminal and failed: all 261 native methods passed but the command exceeded its outer deadline; library/reference passed 8/9 (archive-delete label deadline); accessibility failed on its first screenshot request. Fresh CI must validate the changed app and the bounded native finalization/display-capture candidates. M01 remains active and M02–M07 remain pending, with original accepted evidence preserved. No physical, customer, commerce, signing or owner distribution approval is claimed.
+
 # Current handoff
 
 ## Branch consolidation — 27 November 2026

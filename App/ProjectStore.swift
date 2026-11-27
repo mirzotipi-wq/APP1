@@ -49,8 +49,17 @@ actor ProjectStore {
             try save(next, replacing: request.expected, in: store)
             return next
         case let .change(command):
-            guard var next = request.expected else { throw ProjectLibraryError.invalidLibrary }
-            try command.apply(to: &next)
+            var next: ProjectLibrary
+            if let expected = request.expected {
+                next = expected
+                try command.apply(to: &next)
+            } else if case let .create(name, scene) = command {
+                next = try ProjectLibrary(name: name, scene: scene)
+            } else {
+                throw ProjectLibraryError.invalidLibrary
+            }
+            // The nil expectation is still a compare-and-save: another
+            // window's first save wins without being overwritten here.
             try save(next, replacing: request.expected, in: store)
             return next
         case let .recover(name, candidate):
@@ -58,7 +67,19 @@ actor ProjectStore {
                 return try store.saveRecoveryCopy(name: name, scene: request.scene, replacingArchived: candidate)
             }
             return try store.saveRecoveryCopy(name: name, scene: request.scene)
+        case let .recoverUnreadable(snapshot):
+            let replacement = try ProjectLibrary(name: "Portrait setup", scene: .portrait())
+            // Preservation, observation validation and the atomic replacement
+            // form one transaction. A returned receipt is already committed.
+            return try store.recoverUnreadableLibrary(replacement, replacing: snapshot).library
         }
+    }
+
+    /// A read-only observation never migrates a legacy file or adopts it into
+    /// the editor. The core also rejects healthy or merely inaccessible files.
+    func inspectUnreadableLibrary() throws -> ProjectLibraryRecoverySnapshot {
+        try Task.checkCancellation()
+        return try prepareStore().inspectUnreadableLibrary()
     }
 
     /// Reading choices must never adopt the latest library over the unsaved

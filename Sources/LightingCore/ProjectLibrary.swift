@@ -4,6 +4,7 @@ public enum ProjectLibraryError: Error, Equatable, LocalizedError {
     case invalidName, invalidLibrary, unsupportedVersion, duplicateID, capacity
     case notFound, archived, activeCannotArchive, staleSnapshot, notRegularFile, tooLarge
     case mustArchiveBeforeDeletion
+    case recoveryNotNeeded, recoveryReadFailed, recoveryArchiveFailed, recoveryWriteFailed
 
     public var errorDescription: String? {
         switch self {
@@ -19,6 +20,10 @@ public enum ProjectLibraryError: Error, Equatable, LocalizedError {
         case .staleSnapshot: return "The library changed in another window. Your edits have not been overwritten."
         case .notRegularFile: return "The saved library is not a regular file. Existing data has been protected."
         case .tooLarge: return "The project library exceeds the supported storage size."
+        case .recoveryNotNeeded: return "The saved library can be opened, or there is no saved library to recover. Reload it before continuing."
+        case .recoveryReadFailed: return "The saved files could not be read safely. Recovery has not changed them."
+        case .recoveryArchiveFailed: return "A protected copy of the saved files could not be completed. Recovery has not changed the library."
+        case .recoveryWriteFailed: return "The new library could not be saved. A protected copy of the original files remains in the recovery folder."
         }
     }
 }
@@ -134,6 +139,40 @@ public struct ProjectLibrary: Codable, Equatable, Sendable {
     }
 }
 
+/// A read-only observation for an explicit recovery confirmation. Only the file
+/// store can create this token; it binds all saved bytes and file identities to
+/// their directory, including an absent library or legacy file.
+public struct ProjectLibraryRecoverySnapshot: Equatable, Sendable {
+    fileprivate let directory: URL
+    fileprivate let library: ProjectLibraryRecoveryFile?
+    fileprivate let legacy: ProjectLibraryRecoveryFile?
+
+    public var fileCount: Int { (library == nil ? 0 : 1) + (legacy == nil ? 0 : 1) }
+    public var byteCount: Int { (library?.bytes.count ?? 0) + (legacy?.bytes.count ?? 0) }
+}
+
+/// Returned only after the new library has been committed. The archive contains
+/// byte-for-byte originals, with their original filenames, and is never removed
+/// or reused by the store.
+public struct ProjectLibraryRecoveryResult: Equatable, Sendable {
+    public let library: ProjectLibrary
+    public let archiveDirectory: URL
+}
+
+fileprivate struct ProjectLibraryRecoveryFile: Equatable, Sendable {
+    let bytes: Data
+    let fileNumber: UInt64?
+    let volumeNumber: UInt64?
+    let modificationDate: Date?
+
+    init(bytes: Data, attributes: [FileAttributeKey: Any]) {
+        self.bytes = bytes
+        fileNumber = (attributes[.systemFileNumber] as? NSNumber)?.uint64Value
+        volumeNumber = (attributes[.systemNumber] as? NSNumber)?.uint64Value
+        modificationDate = attributes[.modificationDate] as? Date
+    }
+}
+
 /// A library is atomically replaced only after validating its previous snapshot.
 /// The legacy portrait.json is deliberately left untouched after migration.
 /// A process-wide transaction lock protects the comparison and replacement,
@@ -223,6 +262,162 @@ public struct ProjectLibraryFileStore: Sendable {
         try latest.create(name: name, scene: scene)
         try write(latest)
         return latest
+    }
+
+    /// Inspects without migrating or writing. Only a definite decode/validation
+    /// failure permits recovery; missing, valid, inaccessible, oversized and
+    /// nonregular files cannot authorize a replacement.
+    public func inspectUnreadableLibrary() throws -> ProjectLibraryRecoverySnapshot {
+        Self.transactionLock.lock()
+        defer { Self.transactionLock.unlock() }
+        let snapshot = try recoverySnapshotWhileLocked()
+        guard isUnreadable(snapshot) else { throw ProjectLibraryError.recoveryNotNeeded }
+        return snapshot
+    }
+
+    /// Explicitly recover a previously inspected unreadable library. Validate
+    /// the replacement first, compare the complete observation under the normal
+    /// save lock, and preserve every original before the one atomic replacement.
+    /// Partial archives are retained on failure. The legacy source is untouched.
+    public func recoverUnreadableLibrary(_ replacement: ProjectLibrary,
+                                         replacing expected: ProjectLibraryRecoverySnapshot) throws -> ProjectLibraryRecoveryResult {
+        let validated = try replacement.validated()
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let bytes = try encoder.encode(validated)
+        guard bytes.count <= Self.maximumBytes else { throw ProjectLibraryError.tooLarge }
+
+        Self.transactionLock.lock()
+        defer { Self.transactionLock.unlock() }
+        guard try recoverySnapshotWhileLocked() == expected else { throw ProjectLibraryError.staleSnapshot }
+        guard isUnreadable(expected) else { throw ProjectLibraryError.recoveryNotNeeded }
+        let archive = try preserveRecoverySnapshot(expected)
+        // A final check also protects against a changed source during archival.
+        // As with normal saves, direct writes by other processes are not locked.
+        guard try recoverySnapshotWhileLocked() == expected else { throw ProjectLibraryError.staleSnapshot }
+        do {
+            try bytes.write(to: url, options: .atomic)
+        } catch {
+            throw ProjectLibraryError.recoveryWriteFailed
+        }
+        return ProjectLibraryRecoveryResult(library: validated, archiveDirectory: archive)
+    }
+
+    private func recoverySnapshotWhileLocked() throws -> ProjectLibraryRecoverySnapshot {
+        do {
+            guard directory.isFileURL else { throw ProjectLibraryError.recoveryReadFailed }
+            if let attributes = try recoveryAttributes(at: directory) {
+                guard attributes[.type] as? FileAttributeType == .typeDirectory else {
+                    throw ProjectLibraryError.notRegularFile
+                }
+            }
+            return try ProjectLibraryRecoverySnapshot(
+                directory: directory.standardizedFileURL,
+                library: readRecoveryFile(at: url, maximumBytes: Self.maximumBytes),
+                legacy: readRecoveryFile(at: legacyURL, maximumBytes: SceneCodec.maximumBytes))
+        } catch let error as ProjectLibraryError {
+            throw error
+        } catch {
+            // Cocoa errors can contain private paths. Recovery surfaces only
+            // fixed, actionable messages and never treats I/O as corruption.
+            throw ProjectLibraryError.recoveryReadFailed
+        }
+    }
+
+    private func isUnreadable(_ snapshot: ProjectLibraryRecoverySnapshot) -> Bool {
+        if let library = snapshot.library {
+            do {
+                _ = try JSONDecoder().decode(ProjectLibrary.self, from: library.bytes).validated()
+                return false
+            } catch { return true }
+        }
+        if let legacy = snapshot.legacy {
+            do {
+                _ = try SceneCodec.decode(legacy.bytes)
+                return false
+            } catch { return true }
+        }
+        return false
+    }
+
+    private func preserveRecoverySnapshot(_ snapshot: ProjectLibraryRecoverySnapshot) throws -> URL {
+        do {
+            let manager = FileManager.default
+            let root = directory.appendingPathComponent("Recovery", isDirectory: true)
+            if let attributes = try recoveryAttributes(at: root) {
+                guard attributes[.type] as? FileAttributeType == .typeDirectory else {
+                    throw ProjectLibraryError.recoveryArchiveFailed
+                }
+            } else {
+                try manager.createDirectory(at: root, withIntermediateDirectories: false,
+                                            attributes: [.posixPermissions: 0o700])
+            }
+            let archive = root.appendingPathComponent(UUID().uuidString, isDirectory: true)
+            // Do not merge with or overwrite an existing archive, even in the
+            // improbable event of an identifier collision.
+            guard try recoveryAttributes(at: archive) == nil else {
+                throw ProjectLibraryError.recoveryArchiveFailed
+            }
+            try manager.createDirectory(at: archive, withIntermediateDirectories: false,
+                                        attributes: [.posixPermissions: 0o700])
+            let originals = [("projects.json", snapshot.library), ("portrait.json", snapshot.legacy)]
+            for (name, original) in originals {
+                guard let original else { continue }
+                let destination = archive.appendingPathComponent(name)
+                try original.bytes.write(to: destination, options: .withoutOverwriting)
+                let handle = try FileHandle(forWritingTo: destination)
+                do {
+                    try handle.synchronize()
+                    try handle.close()
+                } catch {
+                    try? handle.close()
+                    throw error
+                }
+                guard try readRecoveryFile(at: destination, maximumBytes: Self.maximumBytes)?.bytes == original.bytes else {
+                    throw ProjectLibraryError.recoveryArchiveFailed
+                }
+            }
+            return archive
+        } catch {
+            throw ProjectLibraryError.recoveryArchiveFailed
+        }
+    }
+
+    private func recoveryAttributes(at location: URL) throws -> [FileAttributeKey: Any]? {
+        do {
+            return try FileManager.default.attributesOfItem(atPath: location.path)
+        } catch let error as NSError where error.domain == NSCocoaErrorDomain &&
+            (error.code == NSFileNoSuchFileError || error.code == NSFileReadNoSuchFileError) {
+            return nil
+        }
+    }
+
+    private func readRecoveryFile(at location: URL, maximumBytes: Int) throws -> ProjectLibraryRecoveryFile? {
+        guard let attributes = try recoveryAttributes(at: location) else { return nil }
+        guard attributes[.type] as? FileAttributeType == .typeRegular else {
+            throw ProjectLibraryError.notRegularFile
+        }
+        guard let size = attributes[.size] as? NSNumber,
+              size.uint64Value <= UInt64(maximumBytes) else { throw ProjectLibraryError.tooLarge }
+        let handle = try FileHandle(forReadingFrom: location)
+        defer { try? handle.close() }
+        var data = Data()
+        let limit = maximumBytes + 1
+        while data.count < limit {
+            guard let chunk = try handle.read(upToCount: min(64 * 1024, limit - data.count)),
+                  !chunk.isEmpty else { break }
+            data.append(chunk)
+        }
+        guard data.count <= maximumBytes else { throw ProjectLibraryError.tooLarge }
+        let observed = ProjectLibraryRecoveryFile(bytes: data, attributes: attributes)
+        guard let current = try recoveryAttributes(at: location),
+              current[.type] as? FileAttributeType == .typeRegular,
+              size.uint64Value == UInt64(data.count),
+              (current[.size] as? NSNumber)?.uint64Value == UInt64(data.count),
+              observed == ProjectLibraryRecoveryFile(bytes: data, attributes: current) else {
+            throw ProjectLibraryError.staleSnapshot
+        }
+        return observed
     }
 
     private func write(_ library: ProjectLibrary) throws {

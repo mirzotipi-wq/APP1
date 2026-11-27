@@ -9,6 +9,7 @@ struct StudioSettingsView: View {
     @AppStorage(StudioPreferences.appearanceKey, store: StudioPreferences.defaults)
     private var appearance = "system"
     @State private var showPurchase = false
+    @State private var showBetaFeedback = false
 
     var body: some View {
         NavigationStack {
@@ -49,6 +50,13 @@ struct StudioSettingsView: View {
                 Section("About") {
                     LabeledContent("Version", value: version)
                     Text("Lighting previews and reference suggestions are planning aids. Confirm the result using your equipment, a light meter and test photographs.")
+                    Button {
+                        showBetaFeedback = true
+                    } label: {
+                        Label("Beta feedback", systemImage: "text.bubble")
+                    }
+                    .accessibilityIdentifier("openBetaFeedback")
+                    .accessibilityHint("Create and review a local feedback report, then choose whether and where to share it.")
                 }
             }
             .navigationTitle("Settings")
@@ -57,6 +65,7 @@ struct StudioSettingsView: View {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
             .sheet(isPresented: $showPurchase) { ProFeaturesView(store: store) }
+            .sheet(isPresented: $showBetaFeedback) { BetaFeedbackView() }
         }
         .tint(StudioPalette.action)
     }
