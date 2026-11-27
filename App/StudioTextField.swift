@@ -560,7 +560,7 @@ final class StudioTextInputTrace {
         let version = 1
         let sequence, control: Int
         let lifecycle: UUID
-        let uptime, epochSeconds: TimeInterval
+        let epochSeconds: TimeInterval
         let field: String
         let event: Event
         let state: State?
@@ -598,7 +598,6 @@ final class StudioTextInputTrace {
         processCount += 1
         controlCounts[control] = count + 1
         let record = Record(sequence: processCount, control: control, lifecycle: lifecycle,
-                            uptime: ProcessInfo.processInfo.systemUptime,
                             epochSeconds: Date().timeIntervalSince1970,
                             field: Self.fieldName(identifier), event: emitted,
                             state: emitted == .processLimit || emitted == .controlLimit ? nil : state())

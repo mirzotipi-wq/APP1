@@ -102,7 +102,7 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertFalse(lines.joined().contains("injected=true"))
         XCTAssertTrue(lines.allSatisfy { !$0.contains("\n") })
         XCTAssertFalse(lines.joined().contains(oversized))
-        let allowed = Set(["version", "sequence", "control", "lifecycle", "uptime", "epochSeconds", "field", "event", "state"])
+        let allowed = Set(["version", "sequence", "control", "lifecycle", "epochSeconds", "field", "event", "state"])
         for record in records {
             XCTAssertTrue(Set(record.keys).isSubset(of: allowed))
             XCTAssertEqual(record["field"] as? String, "other")
