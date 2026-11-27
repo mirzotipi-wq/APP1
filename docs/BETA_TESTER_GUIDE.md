@@ -1,6 +1,6 @@
 # Key & Fill beta tester guide
 
-This guide describes implemented behavior at `f94c0e6cb9cd072286d6e4414eb2c1f8974d4ce5` (27 November 2026). It is a checklist for an **engineering candidate**, not evidence that these steps passed on a device. Required UI acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
+This guide is a checklist for an **engineering candidate** (27 November 2026), not evidence that these steps passed on a device. Record the version/build under test. Required UI acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [current hardening status](evidence/beta-hardening-2026-11-27/README.md), [earlier campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
 
 ## 1. Create, edit and reopen a local project
 
@@ -11,11 +11,13 @@ Use a disposable setup for testing. Open **Studio tools** (the sliders icon) →
 3. Select a light, change one setting, and try **Undo** and **Redo**. Choose **Save** and check that the project status becomes **Saved locally**. Close and relaunch the app, then verify the same project and setting reopen. Record what actually happens.
 4. In **Projects**, try search, **Rename** and **Duplicate** through a project's options menu. Switch to another saved project before archiving the first; the current project cannot be archived. **Restore** returns an archived project. Permanent deletion requires its own confirmation and cannot be undone in the library.
 
+Set iOS to its largest accessibility text size, scroll through the light list and check that each light's name, type, distance, temperature, output and selection mark remain readable in its stacked row. Select a light and tap the value with the pencil for **Horizontal** (**Enter exact horizontal** with VoiceOver). Replace the value with a decimal within the displayed **Allowed** range, using your current decimal separator. Check the complete draft before choosing **Apply value**, then check the result, **Undo** and **Redo**. Reopen the editor, change the draft and choose **Cancel**; the accepted value should remain. With the keyboard open, check that the field, **Apply value** and **Cancel** remain reachable by scrolling. Record clipped text, missing digits or unreachable controls.
+
 For a selected light, open **Light actions** → **Set ideal lux**. Enter a nonnegative target using your current decimal separator, then choose **Apply to light**. The calculation changes that light's modeled output while retaining its geometry. If the number format changes while the editor is open, the app keeps the text and asks you to edit it before Apply becomes available. Try **Undo** and **Redo**, then **Save** to retain the accepted output. See the [target-lux editor](../App/LightTargetLuxView.swift).
 
 If **Unsaved lighting setup** appears in Projects, choose **Save current setup** before creating, importing, switching or organizing projects. Saving is explicit; leaving an editor or exporting a copy is not a project save. If **Saved library changed** appears, **Save setup as new project** preserves your open setup separately. **Reload latest saved library** asks before discarding this window's unsaved edits.
 
-Source: [studio](../App/StudioView.swift), [project library](../App/ProjectLibraryView.swift), [initial-project eligibility](../App/StudioSession.swift).
+Source: [studio](../App/StudioView.swift), [exact-value editor](../App/PrecisionValueButton.swift), [project library](../App/ProjectLibraryView.swift), [initial-project eligibility](../App/StudioSession.swift).
 
 ## 2. If the saved library cannot open
 
@@ -47,6 +49,8 @@ Source: [reference workflow](../App/ReferenceComparisonView.swift), [photo handl
 
 For AR, open **Studio tools** → **Place in AR** → **Start AR camera** and respond to camera permission. On supported hardware, follow tracking guidance, aim at the physical floor, and choose **Place subject on this floor point** when available. Adjust **Setup direction** as needed. Test **Stop camera** and **Reset and scan again**; after tracking recovery, check the physical placement before choosing **I checked the recovered placement** when shown.
 
+On a physical device, also try denying camera access when iOS asks, or turn off Key & Fill's camera access in iOS Settings. Return to **Place in AR** → **Start AR camera** and check the denial guidance and **Use manual room measurements**. Then choose **Open Camera Settings**, allow camera access, return and start again. If iOS restrictions or hardware prevent a branch, record it as unavailable.
+
 Use **Use manual room measurements** when AR is unavailable, permission is denied, or tracking is unsuitable. The simulator cannot place a setup in a real room. AR distances come from the authored plan, not a measurement of equipment or tracking accuracy; no placement-accuracy result is established here. Camera frames/maps are not saved, and anchors clear when leaving or pausing the camera.
 
 Source: [manual room controls](../App/ManualRoomPlacementView.swift), [AR controls](../App/ARPlacementView.swift), [capability guidance](../App/ARPlacementController.swift).
@@ -57,8 +61,8 @@ Choose **Export lighting plan** (the share icon beside Projects). Exports captur
 
 | Choice | Tester check |
 |---|---|
-| **Lighting plan (PDF)** | Choose paper and units, inspect the preview, then **Share PDF**. Open the resulting file and check labels, equipment and distances. |
-| **Editable project copy** | Choose **Save editable copy**, select a file location, and check the success message. Reimport the `.json` through Projects and compare its settings. |
+| **Lighting plan (PDF)** | Choose paper and units, inspect the preview, then **Share PDF** → **Save to Files**. Save to a local location and open that PDF in Files. Check every page for readable labels, equipment, distances and the selected units. Return to the app, open **Share PDF** again and dismiss system sharing without selecting a destination; check that the preview remains available. |
+| **Editable project copy** | Choose **Save editable copy**, cancel the file picker once and check that no success is reported. Repeat, select a file location, and check the success message. Reimport the `.json` through Projects and compare its settings. |
 | **Share text settings** | Review the text at your chosen destination for readable settings and units. |
 
 Export leaves the local project and undo history unchanged. Editable copies retain scene settings and committed room measurements; photographs and edit history are excluded. Keep a separate JSON copy of work you want to retain. A PDF is a plan, not an editable project backup.
@@ -68,6 +72,12 @@ Source: [export choices](../App/LightingPlanExportView.swift), [editable copy](.
 ## 6. Review and share feedback
 
 Open **Studio tools** → **Settings** → **Beta feedback**. Enter **Problem or observation**, **Steps to reproduce** and **Expected result**; all three are optional. Choose **Review report** and read the complete preview. **Share report** opens system sharing: you choose a destination or cancel. Key & Fill does not select a recipient or send automatically.
+
+Use brief disposable notes for these local checks:
+
+1. Choose **Share report**, then dismiss system sharing without selecting a destination. Check that the same report preview remains available.
+2. Choose **Share report** → **Copy**, paste into an unsent local note, and compare the complete copied text with the preview. Record a missing Copy action or a mismatch.
+3. Use the navigation back control to return to **Beta feedback**. Check that your notes remain, edit one, then choose **Review report** again. Repeat **Copy** and check that the new preview and copied report contain the edit; the previously pasted copy should remain unchanged.
 
 The app adds version/build, OS version and device family. It adds no photographs, project/scene contents, accounts, identifiers or logs. Review notices about shortened or cleaned text. If a paste is rejected as too long, edit it or choose **Keep previous text** / **Keep field blank** before reviewing. Notes remain in memory only; **Close** asks to **Discard draft** or **Keep editing** when notes exist. A previously shared copy remains at its destination.
 

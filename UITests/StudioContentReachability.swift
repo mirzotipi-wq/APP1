@@ -155,6 +155,17 @@ extension XCTestCase {
             let appFrame = observation?.applicationFrame ?? app.frame
             let viewport = observation?.viewport ?? appFrame.insetBy(dx: 0, dy: 100)
             var down = towardBottom
+            var remainingVerticalOffset: CGFloat?
+            if fullyVisible {
+                guard viewport.height >= 48, viewport.width > 0,
+                      appFrame.width > 0, appFrame.height > 0,
+                      [viewport.minX, viewport.maxX, viewport.minY, viewport.maxY,
+                       appFrame.minX, appFrame.maxX, appFrame.minY, appFrame.maxY]
+                        .allSatisfy({ $0.isFinite }), appFrame.contains(viewport) else {
+                    geometry.append("Invalid scroll viewport: \(viewport), application: \(appFrame)")
+                    break revealAttempts
+                }
+            }
             if targetExists {
                 let frame: CGRect
                 if fullyVisible {
@@ -162,6 +173,17 @@ extension XCTestCase {
                     frame = state.frame
                 } else { frame = target.frame }
                 if fullyVisible { geometry.append("target=\(frame), visibleContent=\(viewport)") }
+                if fullyVisible {
+                    // Vertical scrolling cannot repair invalid, oversized, or
+                    // horizontally clipped content. Keep those failures visible.
+                    guard !frame.isEmpty,
+                          [frame.minX, frame.maxX, frame.minY, frame.maxY].allSatisfy({ $0.isFinite }),
+                          frame.height <= viewport.height,
+                          frame.minX >= viewport.minX, frame.maxX <= viewport.maxX else {
+                        geometry.append("Target cannot fit fully by vertical scrolling")
+                        break revealAttempts
+                    }
+                }
                 if !frame.isEmpty, frame.midX.isFinite, frame.midY.isFinite {
                     let contained = fullyVisible ? viewport.contains(frame)
                         : viewport.contains(CGPoint(x: frame.midX, y: frame.midY))
@@ -169,8 +191,13 @@ extension XCTestCase {
                         return
                     }
                     // Use actual position when AX provides a meaningful frame.
-                    if (fullyVisible ? frame.minY : frame.midY) <= viewport.minY { down = false }
-                    else if (fullyVisible ? frame.maxY : frame.midY) >= viewport.maxY { down = true }
+                    if fullyVisible {
+                        // Centering uses the available slack on both sides of a
+                        // tall row; each new snapshot supplies the remaining move.
+                        remainingVerticalOffset = frame.midY - viewport.midY
+                        down = frame.midY > viewport.midY
+                    } else if frame.midY <= viewport.minY { down = false }
+                    else if frame.midY >= viewport.maxY { down = true }
                 }
             }
             // Drag on the edge so an ordinary scroll cannot adjust a slider.
@@ -178,10 +205,16 @@ extension XCTestCase {
             let endY: CGFloat
             if fullyVisible {
                 // Keep the gesture itself above the keyboard/fixed controls.
-                // A full-window drag could begin on a key instead of the Form.
-                guard viewport.height >= 48, appFrame.height > 0 else { break }
-                startY = (viewport.minY - appFrame.minY + viewport.height * (down ? 0.78 : 0.30)) / appFrame.height
-                endY = (viewport.minY - appFrame.minY + viewport.height * (down ? 0.30 : 0.78)) / appFrame.height
+                // Near the target, a fixed 48% drag can skip its entire valid
+                // placement interval. Bound the drag by the observed offset.
+                let maximumDistance = viewport.height * 0.48
+                let distance = min(maximumDistance, abs(remainingVerticalOffset ?? maximumDistance))
+                guard distance > 0 else { break revealAttempts }
+                let start = viewport.minY + viewport.height * (down ? 0.78 : 0.30)
+                let end = start + (down ? -distance : distance)
+                startY = (start - appFrame.minY) / appFrame.height
+                endY = (end - appFrame.minY) / appFrame.height
+                geometry.append("dragDistance=\(distance), towardBottom=\(down)")
             } else {
                 startY = down ? 0.78 : 0.30
                 endY = down ? 0.30 : 0.78
@@ -190,7 +223,13 @@ extension XCTestCase {
                 ? (viewport.minX - appFrame.minX + viewport.width * 0.97) / appFrame.width : 0.97
             let start = app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: startY))
             let end = app.coordinate(withNormalizedOffset: CGVector(dx: x, dy: endY))
-            start.press(forDuration: 0.05, thenDragTo: end)
+            if fullyVisible {
+                // End the drag at rest instead of releasing with fling velocity.
+                start.press(forDuration: 0.05, thenDragTo: end,
+                            withVelocity: .slow, thenHoldForDuration: 0.2)
+            } else {
+                start.press(forDuration: 0.05, thenDragTo: end)
+            }
         }
         if !geometry.isEmpty {
             let details = geometry.joined(separator: "\n")

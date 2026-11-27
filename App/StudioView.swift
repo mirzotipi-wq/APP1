@@ -885,20 +885,9 @@ struct StudioView: View {
                     guard scene.lights.contains(where: { $0.id == light.id }) else { return }
                     selected = light.id
                 }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: lightIcon(light)).foregroundStyle(StudioPalette.selection).frame(width: 36, height: 36)
-                            .background(StudioPalette.selection.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
-                            Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
-                            Text("\(displayUnits.fromMeters(light.position.distance(to: scene.subject)), specifier: "%.2f") \(displayUnits.symbol) · \(light.kelvin, specifier: "%.0f") K")
-                                .font(.caption).foregroundStyle(StudioPalette.secondaryText)
-                        }
-                        Spacer()
-                        Text(StudioMeterReadout.candela(light.candela, locale: locale)).font(.caption.monospacedDigit())
-                        Image(systemName: selected == light.id ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(selected == light.id ? StudioPalette.selection : StudioPalette.secondaryText)
-                    }.padding(8).frame(minHeight: 52)
+                    lightRowLabel(light)
+                        .padding(8).frame(minHeight: 52)
+                        .contentShape(Rectangle())
                         .background(selected == light.id ? StudioPalette.selection.opacity(0.12) : Color(uiColor: .tertiarySystemGroupedBackground),
                                     in: RoundedRectangle(cornerRadius: 12))
                 }.buttonStyle(.plain).accessibilityIdentifier("light-\(lightDisplayName(light))")
@@ -906,6 +895,49 @@ struct StudioView: View {
             }
         }.padding(14)
             .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    /// Scaled text needs the card's full width instead of competing with the
+    /// output and selection columns, which fragment words at accessibility sizes.
+    @ViewBuilder private func lightRowLabel(_ light: StudioLight) -> some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 12) {
+                    Image(systemName: lightIcon(light)).foregroundStyle(StudioPalette.selection)
+                        .frame(minWidth: 36, minHeight: 36)
+                        .background(StudioPalette.selection.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
+                    Spacer()
+                    Image(systemName: selected == light.id ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(selected == light.id ? StudioPalette.selection : StudioPalette.secondaryText)
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
+                    Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
+                    Text("\(displayUnits.fromMeters(light.position.distance(to: scene.subject)), specifier: "%.2f") \(displayUnits.symbol)")
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+                    Text("\(light.kelvin, specifier: "%.0f") K")
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+                    Text(StudioMeterReadout.candela(light.candela, locale: locale)).font(.caption.monospacedDigit())
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            HStack(spacing: 12) {
+                Image(systemName: lightIcon(light)).foregroundStyle(StudioPalette.selection).frame(width: 36, height: 36)
+                    .background(StudioPalette.selection.opacity(0.13), in: RoundedRectangle(cornerRadius: 9))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(lightDisplayName(light)).font(.subheadline.weight(.semibold))
+                    Text(light.effectiveOptics.kind.title).font(.caption.weight(.medium))
+                    Text("\(displayUnits.fromMeters(light.position.distance(to: scene.subject)), specifier: "%.2f") \(displayUnits.symbol) · \(light.kelvin, specifier: "%.0f") K")
+                        .font(.caption).foregroundStyle(StudioPalette.secondaryText)
+                }
+                Spacer()
+                Text(StudioMeterReadout.candela(light.candela, locale: locale)).font(.caption.monospacedDigit())
+                Image(systemName: selected == light.id ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(selected == light.id ? StudioPalette.selection : StudioPalette.secondaryText)
+            }
+        }
     }
 
     private func inspector(_ light: StudioLight) -> some View {

@@ -36,9 +36,10 @@ final class EntitlementStore: ObservableObject {
     @Published private(set) var product: Product?
     @Published private(set) var activity: Activity = .idle
     @Published private(set) var lastOutcome: Outcome?
-    @Published private(set) var isPurchasePending = false
+    @Published private var purchaseAttempt: EntitlementPurchaseAttempt?
 
     var isConfigured: Bool { productID != nil }
+    var isPurchasePending: Bool { purchaseAttempt?.isPending == true }
     var isBusy: Bool { activity != .idle }
     var hasLifetimeAccess: Bool { entitlement == .purchased }
     var displayPrice: String? { product?.displayPrice }
@@ -52,7 +53,6 @@ final class EntitlementStore: ObservableObject {
     private var startupTask: Task<Void, Never>?
     private var isLoadingProduct = false
     private var entitlementRevision = UUID()
-    private var purchaseResolutionRevision = UUID()
     private var finishingTransactions: Set<UInt64> = []
 
     init(productID: String? = EntitlementStore.configuredProductID) {
@@ -105,13 +105,19 @@ final class EntitlementStore: ObservableObject {
         if hasLifetimeAccess { return record(.purchased) }
         if isPurchasePending { return record(.pending) }
         guard canPurchase, let product else { return record(.unavailable) }
-        let resolutionRevision = purchaseResolutionRevision
+        // This account-free flow uses a request token to distinguish a completed
+        // approval from an older refunded purchase of the same product.
+        let attemptToken = UUID()
+        purchaseAttempt = EntitlementPurchaseAttempt(token: attemptToken)
 
         activity = .purchasing
         lastOutcome = nil
-        defer { activity = .idle }
+        defer {
+            activity = .idle
+            if !isPurchasePending { purchaseAttempt = nil }
+        }
         do {
-            switch try await product.purchase() {
+            switch try await product.purchase(options: [.appAccountToken(attemptToken)]) {
             case .success(let result):
                 return record(await processPurchase(result))
             case .userCancelled:
@@ -120,12 +126,8 @@ final class EntitlementStore: ObservableObject {
                 // Approval may have arrived through updates while purchase awaited.
                 // A subsequent revocation must not let this older result reopen
                 // an approval that the store has already observed completing.
-                if resolutionRevision != purchaseResolutionRevision {
-                    isPurchasePending = false
-                    return record(currentPurchaseOutcome)
-                }
-                isPurchasePending = !hasLifetimeAccess
-                return record(isPurchasePending ? .pending : .purchased)
+                purchaseAttempt?.receivePendingResult()
+                return record(isPurchasePending ? .pending : currentPurchaseOutcome)
             @unknown default:
                 return record(.failed("The App Store returned an unsupported purchase result. Try again."))
             }
@@ -191,12 +193,14 @@ final class EntitlementStore: ObservableObject {
             // A purchase, restore or another refresh may have overtaken this read.
             // Re-read current facts rather than publishing the older snapshot.
             guard revision == entitlementRevision else { continue }
-            entitlement = current
+            entitlement = current.entitlement
             // A restore or refresh that finds no entitlement cannot establish
             // that an outstanding approval was declined or cancelled.
-            if current == .purchased {
-                purchaseResolutionRevision = UUID()
-                isPurchasePending = false
+            if current.entitlement == .purchased {
+                purchaseAttempt?.observePurchasedEntitlement()
+            }
+            for token in current.verifiedTransactionTokens {
+                purchaseAttempt?.observeVerifiedTransaction(token: token)
             }
             return
         }
@@ -234,6 +238,10 @@ final class EntitlementStore: ObservableObject {
         // It is not stored on self, and never waits on the endless updates stream.
         let handling = Task<Outcome, Never> { @MainActor [self] in
             await refreshEntitlements()
+            // Publish current facts before resolving approval, so a late pending
+            // result cannot return a stale outcome or admit a purchase early.
+            // An older handler can resolve only its own matching request token.
+            purchaseAttempt?.observeVerifiedTransaction(token: transaction.appAccountToken)
             guard entitlement == .purchased || entitlement == .revoked else {
                 return currentPurchaseOutcome
             }
@@ -282,24 +290,29 @@ final class EntitlementStore: ObservableObject {
         }
     }
 
-    nonisolated private static func readEntitlement(productID: String) async -> Entitlement {
+    nonisolated private static func readEntitlement(productID: String) async
+        -> (entitlement: Entitlement, verifiedTransactionTokens: Set<UUID>) {
         var sawUnverified = false
         var sawRevoked = false
+        var verifiedTransactionTokens: Set<UUID> = []
         for await result in Transaction.currentEntitlements {
-            guard !Task.isCancelled else { return .checking }
+            guard !Task.isCancelled else { return (.checking, verifiedTransactionTokens) }
             switch result {
             case .verified(let transaction):
                 guard transaction.productID == productID,
                       transaction.productType == .nonConsumable else { continue }
-                if transaction.revocationDate == nil { return .purchased }
+                if let token = transaction.appAccountToken {
+                    verifiedTransactionTokens.insert(token)
+                }
+                if transaction.revocationDate == nil { return (.purchased, verifiedTransactionTokens) }
                 sawRevoked = true
             case .unverified(let transaction, _):
                 if transaction.productID == productID { sawUnverified = true }
             }
         }
-        if sawUnverified { return .unverified }
-        if sawRevoked { return .revoked }
-        guard !Task.isCancelled else { return .checking }
+        if sawUnverified { return (.unverified, verifiedTransactionTokens) }
+        if sawRevoked { return (.revoked, verifiedTransactionTokens) }
+        guard !Task.isCancelled else { return (.checking, verifiedTransactionTokens) }
 
         // Refunded/revoked products are absent from currentEntitlements. History
         // distinguishes revocation from never purchased; it never grants access.
@@ -308,12 +321,17 @@ final class EntitlementStore: ObservableObject {
             case .verified(let transaction):
                 if transaction.productID == productID,
                    transaction.productType == .nonConsumable,
-                   transaction.revocationDate != nil { return .revoked }
+                   transaction.revocationDate != nil {
+                    if let token = transaction.appAccountToken {
+                        verifiedTransactionTokens.insert(token)
+                    }
+                    return (.revoked, verifiedTransactionTokens)
+                }
             case .unverified(let transaction, _):
-                if transaction.productID == productID { return .unverified }
+                if transaction.productID == productID { return (.unverified, verifiedTransactionTokens) }
             }
         }
-        return .notPurchased
+        return (.notPurchased, verifiedTransactionTokens)
     }
 
     nonisolated private static func normalizedProductID(_ value: String?) -> String? {

@@ -20,6 +20,7 @@ let package = Package(
                 "CameraInspector.swift",
                 "DistanceValueButton.swift",
                 "EntitlementStore.swift",
+                "EntitlementPurchaseAttempt.swift",
                 "KeyAndFillApp.swift",
                 "LightTargetLuxView.swift",
                 "LightingPlanExportView.swift",

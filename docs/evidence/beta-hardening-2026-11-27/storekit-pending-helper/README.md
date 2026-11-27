@@ -1,0 +1,7 @@
+# Pending purchase resolution witness
+
+Source review found a pending approval could become revoked before the store observed purchased access, leaving the old boolean pending indefinitely. The production helper correlates one admitted request with its verified transaction token and makes completion sticky. Older or absent tokens cannot resolve a replacement request. Current entitlement facts are published before resolution, preserving verification as the access authority.
+
+Apple documents [the unchanged token round trip](https://developer.apple.com/documentation/storekit/product/purchaseoption/appaccounttoken(_:).md) and [optional reuse across transactions](https://developer.apple.com/documentation/appstoreserverapi/set-app-account-token.md). A per-attempt token is this account-free nonconsumable design choice, not an Apple prescription for account systems. No token is logged and sales remain unconfigured.
+
+Root compiled the actual Foundation-only production helper with six new native regression method bodies copied byte-for-byte into `main.swift`. All six portable XCTest cases passed; receipt.json records exact hashes and commands. This is not execution of EntitlementStore, StoreKit, UIKit or the native app. The actual native suite and sandbox commerce scenarios remain required. Independent048 review rejected an initial early-resolution race; the retained final code resolves only after snapshot publication.

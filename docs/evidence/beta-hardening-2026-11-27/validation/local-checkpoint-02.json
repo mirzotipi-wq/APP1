@@ -1,0 +1,57 @@
+{
+  "sourceBase": "835343d4c2fe18a6881aca7bd13df987d5741843",
+  "candidateRevision": null,
+  "sourceInputs": 258,
+  "sourceManifest": "source-manifest-02.json",
+  "sourceManifestSHA256": "4e75ff53615a99bd5cacd0a8880914752357c5dc0b04d31c1b6a4639029c5da6",
+  "changedSinceFirstLocalManifest": [
+    "App/EntitlementPurchaseAttempt.swift",
+    "App/EntitlementStore.swift",
+    "App/StudioView.swift",
+    "NativeTests/EntitlementStoreConfigurationTests.swift",
+    "Package.swift",
+    "UITests/StudioContentReachability.swift"
+  ],
+  "platform": "Linux x86_64 Swift6.0.3; no Apple SDK/runtime",
+  "checks": [
+    {
+      "command": "swift test --jobs 2 --cache-path /workspace/scratch/b25ffdc7aed8/cache/swiftpm",
+      "exitCode": 0,
+      "testsPassed": 594,
+      "artifact": "final-checkpoint-swift-debug.log"
+    },
+    {
+      "command": "swift test -c release --jobs 2 --cache-path /workspace/scratch/b25ffdc7aed8/cache/swiftpm",
+      "exitCode": 0,
+      "testsPassed": 594,
+      "artifact": "final-checkpoint-swift-release.log"
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts/tests -v",
+      "exitCode": 0,
+      "testsPassed": 120,
+      "artifact": "integrated-tooling.log",
+      "binding": "No scripts or scripts/tests inputs changed from the prior exact manifest; retained completed execution, not a claimed rerun."
+    },
+    {
+      "command": "swiftc -frontend -parse (-D DEBUG and without it) App/*.swift NativeTests/*.swift UITests/*.swift",
+      "exitCode": 0,
+      "artifact": "final-checkpoint-native-syntax.json",
+      "limitation": "Syntax only, no Apple API type checking."
+    },
+    {
+      "command": "Compiled actual EntitlementPurchaseAttempt.swift with six exact XCTest method bodies in portable witness",
+      "exitCode": 0,
+      "testsPassed": 6,
+      "artifact": "../storekit-pending-helper/receipt.json",
+      "limitation": "No StoreKit/EntitlementStore/Apple integration executed."
+    }
+  ],
+  "inventory": {
+    "native": 335,
+    "requiredUI": 44,
+    "diagnosticUI": 2
+  },
+  "AppleCandidateExecution": "unverified",
+  "distribution": "unperformed"
+}

@@ -1,0 +1,295 @@
+{
+  "schema": 1,
+  "worker": "APP1betaactualworker055",
+  "reviewed_at_utc": "2026-11-27T15:43:03Z",
+  "repository": "mirzotipi-wq/APP1",
+  "run_id": 46019722045,
+  "job_id": 140578197518,
+  "job_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/46019722045/job/140578197518",
+  "source_revision": "2fc7647314d3ae6fa22d95284e778c6c5badbe4a",
+  "source_tree": "22d3beb8cc672dba4227ca8dbe0a7aa7499ad206",
+  "decoded_job_log": {
+    "sha256": "7f010d605a32055ba57a9106879f71a4b4e006d82ec6e16dec6995bd4b88d850",
+    "utf8_bytes": 1344269
+  },
+  "methodology": "Independently fetched decoded job log and current jobs API; parsed only timestamped runtime XCTest events, excluded echoed shell script from runtime evidence; compared exact 327 observed method names to git-show source inventory at the checked-out revision.",
+  "environment": {
+    "host": "macOS 26.6.1 (25G76), x86_64 Intel standard hosted runner",
+    "runner_image": "macos-26 / 20260824.0517.1",
+    "xcode": "26.6 (17F113)",
+    "swift": "6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)",
+    "sdk": "iOS / iOS Simulator 26.5",
+    "simulator": "iPhone 17 Pro / iOS 26.5",
+    "simulator_id": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+  },
+  "macos_tests": {
+    "command": "swift test --jobs 2",
+    "configuration": "Debug",
+    "unique_methods": 591,
+    "starts": 591,
+    "passes": 591,
+    "failures": 0,
+    "skips": 0,
+    "duplicates": 0,
+    "normal_exit": "Inferred from successful set -euo pipefail CI step; runtime all-tests summary corroborates."
+  },
+  "native_tests": {
+    "configuration": "Debug",
+    "command_runtime_line": 5549,
+    "unique_expected": 327,
+    "starts": 327,
+    "passes": 327,
+    "failures": 0,
+    "skips": 0,
+    "duplicates": 0,
+    "missing": [],
+    "unexpected": [],
+    "expected_inventory_sha256": "0b1ed93a2d8832a49d82cea64340fceeebe0f2d9559a9487556feaa7a9774aa1",
+    "normal_command_exit": {
+      "status": 0,
+      "utc": "2026-11-27T15:11:52Z",
+      "line": 6868
+    },
+    "normal_shell_exit": {
+      "status": 0,
+      "phase": "complete",
+      "utc": "2026-11-27T15:11:53Z",
+      "line": 6870
+    },
+    "test_execute_succeeded_line": 6865,
+    "exact_accounting_runtime_line": 6879
+  },
+  "required_actual_metal": [
+    {
+      "method": "testMetalMatchesCPUOnAvailableDevice",
+      "started": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "method": "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+      "started": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "method": "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+      "started": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "metal_support": {
+    "source_file_sha256": "2ab0a71b0996035e853b379f4b281128a58532d386356a604e3a2c42bfa80299",
+    "inspection": "At tested source, all three methods require a real Metal device; parity directly constructs MetalStudyRenderer, routing/cancellation assert .metal. Passed runtime events therefore cannot be satisfied by a CPU-only fallback.",
+    "parity_cases": 6,
+    "precision_cases": 8,
+    "precision_maximum_channel_error": 0
+  },
+  "builds": {
+    "unsigned_simulator_debug": {
+      "command_line": 2752,
+      "success_line": 4449,
+      "action": "build-for-testing"
+    },
+    "unsigned_simulator_release": {
+      "command_line": 4497,
+      "success_line": 5441,
+      "action": "build"
+    },
+    "unsigned_arm64_device_release": {
+      "command_line": 7099,
+      "success_line": 7701,
+      "action": "build",
+      "observed_architectures": [
+        "arm64"
+      ],
+      "device_execution": false
+    }
+  },
+  "finalized_result": {
+    "evidence": "The successful export step checks NativeTests.xcresult/Info.plist then invokes xcresulttool; actual exporter output follows; original bundle archive upload finalized. Echoed failure branch is not a runtime failure.",
+    "path": "NativeTests.xcresult",
+    "api_step": "Export finalized XCTest result bundle and genuine attachments",
+    "api_conclusion": "success",
+    "locally_opened": false
+  },
+  "artifacts": [
+    {
+      "id": 15210366157,
+      "name": "native-unit-and-build-evidence",
+      "bytes": 64451039,
+      "sha256_reported_by_runner": "a4e680f1d7b551886209d82f9fc2ed3a94c8b48c482eeac29226e8ad4e7f56d9",
+      "downloaded": false
+    },
+    {
+      "id": 15210765652,
+      "name": "native-unit-and-build-evidence-compact",
+      "bytes": 641185,
+      "sha256_reported_by_runner": "bf3e5df84835953c9dd2a953dc4f722738ab3f288e20217d4c07de00513b4d88",
+      "downloaded": false
+    }
+  ],
+  "job_api": {
+    "id": 140578197518,
+    "name": "simulator",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 46019722045,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Record Apple toolchain and test the portable package on macOS",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Verify bounded atomic library write failure on macOS host",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Upload macOS atomic library write evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Verify Metal compiler component",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Generate project",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Select available iPhone simulator",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Build unsigned simulator app and native unit test bundle",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Upload simulator application",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10
+      },
+      {
+        "name": "Build unsigned release simulator application",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11
+      },
+      {
+        "name": "Upload unsigned release simulator application",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12
+      },
+      {
+        "name": "Warm selected iPhone simulator (diagnostic)",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Run native unit tests",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14
+      },
+      {
+        "name": "Verify required native method accounting",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15
+      },
+      {
+        "name": "Export finalized XCTest result bundle and genuine attachments",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16
+      },
+      {
+        "name": "Upload original XCTest bundle after archive failure",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 17
+      },
+      {
+        "name": "Upload native result and test evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 18
+      },
+      {
+        "name": "Upload compact native attachments",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19
+      },
+      {
+        "name": "Build required unsigned arm64 device Release application",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20
+      },
+      {
+        "name": "Upload arm64 device Release build evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 42
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 43
+      }
+    ]
+  },
+  "startup_checks": {
+    "state_check": "pass; structural references only",
+    "next": "M01 gates outstanding: core_tests, native_build, persistence_smoke"
+  },
+  "limits": [
+    "Source-specific historical success at 2fc7647314d3ae6fa22d95284e778c6c5badbe4a only.",
+    "Changed current candidate with parent-reported 335 native methods remains unrun; no result transferred.",
+    "No artifact archives downloaded; no direct local xcresult-content inspection.",
+    "No builds, CI reruns, source changes, spawned workers, commits or pushes performed."
+  ],
+  "excerpts_file": "job-140578197518-excerpts.log"
+}

@@ -1,0 +1,253 @@
+Independent APP1betaactualworker055 evidence excerpts
+Source: GitHub fetch_workflow_job_logs; run 46019722045, job 140578197518
+Numbers refer to one-based lines in the complete decoded job log, whose UTF-8 SHA-256 is 7f010d605a32055ba57a9106879f71a4b4e006d82ec6e16dec6995bd4b88d850.
+Echoed script lines are labeled context and are not independently counted as execution results.
+
+## Environment and exact checked-out revision
+10: 2026-11-27T14:56:24.4385770Z ##[group]Operating System
+11: 2026-11-27T14:56:24.4386470Z macOS
+12: 2026-11-27T14:56:24.4387030Z 26.6.1
+13: 2026-11-27T14:56:24.4387580Z 25G76
+14: 2026-11-27T14:56:24.4388140Z ##[endgroup]
+15: 2026-11-27T14:56:24.4388740Z ##[group]Runner Image
+16: 2026-11-27T14:56:24.4389390Z Image: macos-26
+17: 2026-11-27T14:56:24.4390000Z Version: 20260824.0517.1
+18: 2026-11-27T14:56:24.4391490Z Included Software: https://github.com/actions/runner-images/blob/macos-26/20260824.0517/images/macos/macos-26-Readme.md
+19: 2026-11-27T14:56:24.4393500Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-26%2F20260824.0517
+20: 2026-11-27T14:56:24.4394770Z ##[endgroup]
+173: 2026-11-27T14:56:33.2277620Z 2fc7647314d3ae6fa22d95284e778c6c5badbe4a
+174: 2026-11-27T14:56:33.2545890Z ##[group]Run set -euo pipefail
+175: 2026-11-27T14:56:33.2546530Z [36;1mset -euo pipefail[0m
+176: 2026-11-27T14:56:33.2546930Z [36;1m{[0m
+177: 2026-11-27T14:56:33.2547240Z [36;1m  sw_vers[0m
+178: 2026-11-27T14:56:33.2547950Z [36;1m  uname -a[0m
+179: 2026-11-27T14:56:33.2548300Z [36;1m  swift --version[0m
+180: 2026-11-27T14:56:33.2548700Z [36;1m  xcodebuild -version[0m
+181: 2026-11-27T14:56:33.2549130Z [36;1m  xcodebuild -showsdks[0m
+182: 2026-11-27T14:56:33.2549750Z [36;1m  git rev-parse HEAD[0m
+183: 2026-11-27T14:56:33.2550200Z [36;1m} | tee macos-environment.log[0m
+184: 2026-11-27T14:56:33.2550980Z [36;1m[ "$(uname -m)" = x86_64 ] || { echo "::error::Expected the standard Intel runner"; exit 1; }[0m
+185: 2026-11-27T14:56:33.2552700Z [36;1m[ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }[0m
+186: 2026-11-27T14:56:33.2554260Z [36;1mswift test --jobs 2 2>&1 | tee macos-core-tests.log[0m
+187: 2026-11-27T14:56:33.2631340Z shell: /bin/bash -e {0}
+188: 2026-11-27T14:56:33.2631730Z env:
+189: 2026-11-27T14:56:33.2632220Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+190: 2026-11-27T14:56:33.2632850Z ##[endgroup]
+191: 2026-11-27T14:56:33.3018910Z ProductName:		macOS
+192: 2026-11-27T14:56:33.3020350Z ProductVersion:		26.6.1
+193: 2026-11-27T14:56:33.3020830Z BuildVersion:		25G76
+194: 2026-11-27T14:56:33.3054900Z Darwin sjc20-cw759-3901a366-5ff3-421e-9fb3-9e6748a2bd73-8A34ECC358D1.local 25.6.0 Darwin Kernel Version 25.6.0: Sat Jul 11 15:22:40 PDT 2026; root:xnu-12377.161.13~4/RELEASE_X86_64 x86_64
+195: 2026-11-27T14:56:38.6242540Z Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+196: 2026-11-27T14:56:38.6243360Z Target: x86_64-apple-macosx26.0
+197: 2026-11-27T14:56:38.7787340Z Xcode 26.6
+198: 2026-11-27T14:56:38.7811950Z Build version 17F113
+230: 2026-11-27T14:56:40.3305130Z 2fc7647314d3ae6fa22d95284e778c6c5badbe4a
+2730: 2026-11-27T14:59:38.8693590Z {'runtime': 'com.apple.CoreSimulator.SimRuntime.iOS-26-5', 'device': {'dataPath': '/Users/runner/Library/Developer/CoreSimulator/Devices/12FCFD0F-7FCF-463F-A605-132A7E18B5D5/data', 'dataPathSize': 18362368, 'logPath': '/Users/runner/Library/Logs/CoreSimulator/12FCFD0F-7FCF-463F-A605-132A7E18B5D5', 'udid': '12FCFD0F-7FCF-463F-A605-132A7E18B5D5', 'isAvailable': True, 'deviceTypeIdentifier': 'com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro', 'state': 'Shutdown', 'name': 'iPhone 17 Pro'}}
+
+## macOS XCTest summary
+1972: 2026-11-27T14:58:26.5914510Z Test Suite 'LightingCorePackageTests.xctest' passed at 2026-11-27 14:58:26.487.
+1973: 2026-11-27T14:58:26.5915690Z 	 Executed 591 tests, with 0 failures (0 unexpected) in 25.407 (25.538) seconds
+1974: 2026-11-27T14:58:26.5916780Z Test Suite 'All tests' passed at 2026-11-27 14:58:26.487.
+1975: 2026-11-27T14:58:26.5917570Z 	 Executed 591 tests, with 0 failures (0 unexpected) in 25.407 (25.542) seconds
+
+## Unsigned Debug simulator test-bundle build: actual invocation/result
+2751: 2026-11-27T14:59:40.6875360Z Command line invocation:
+2752: 2026-11-27T14:59:40.7880190Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO "-only-testing:KeyAndFillTests" build-for-testing
+2753: 2026-11-27T14:59:40.8881250Z 
+2754: 2026-11-27T14:59:40.9598420Z Build settings from command line:
+2755: 2026-11-27T14:59:40.9706090Z     CODE_SIGNING_ALLOWED = NO
+2756: 2026-11-27T14:59:40.9837150Z 
+4449: 2026-11-27T15:01:15.2723440Z ** TEST BUILD SUCCEEDED **
+4450: 2026-11-27T15:01:15.2724180Z 
+4451: 2026-11-27T15:01:15.5065260Z Source AppIcon: 1024x1024, opaque RGB8 sRGB, valid PNG checksums and decoded scanlines, 34615 bytes
+4452: 2026-11-27T15:01:15.5274520Z Bundle AppIcon metadata and Assets.car present: KeyAndFill.app; ['iPhoneSimulator']; iOS 17.0
+4453: 2026-11-27T15:01:15.5966770Z Source privacy manifest: no declared tracking or collection; app preferences and scoped file metadata reasons
+4454: 2026-11-27T15:01:15.5968710Z Verified app bundle privacy manifest: /Users/runner/work/_temp/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app/PrivacyInfo.xcprivacy
+
+## Unsigned Release simulator build: actual invocation/result
+4496: 2026-11-27T15:01:21.5566790Z Command line invocation:
+4497: 2026-11-27T15:01:21.5604810Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO build
+4498: 2026-11-27T15:01:21.5609260Z 
+4499: 2026-11-27T15:01:21.5610370Z Build settings from command line:
+4500: 2026-11-27T15:01:21.5611750Z     CODE_SIGNING_ALLOWED = NO
+5441: 2026-11-27T15:03:47.6015770Z ** BUILD SUCCEEDED **
+5442: 2026-11-27T15:03:47.6017190Z 
+5443: 2026-11-27T15:03:47.7849690Z Source AppIcon: 1024x1024, opaque RGB8 sRGB, valid PNG checksums and decoded scanlines, 34615 bytes
+5444: 2026-11-27T15:03:47.8589860Z Bundle AppIcon metadata and Assets.car present: KeyAndFill.app; ['iPhoneSimulator']; iOS 17.0
+5445: 2026-11-27T15:03:47.8828740Z Source privacy manifest: no declared tracking or collection; app preferences and scoped file metadata reasons
+5446: 2026-11-27T15:03:47.8910450Z Verified app bundle privacy manifest: /Users/runner/work/_temp/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app/PrivacyInfo.xcprivacy
+
+## Native command setup (echoed script; context only)
+5493: 2026-11-27T15:07:15.7021180Z ##[group]Run set -euo pipefail
+5494: 2026-11-27T15:07:15.7022490Z [36;1mset -euo pipefail[0m
+5495: 2026-11-27T15:07:15.7023470Z [36;1mnative_phase=selection[0m
+5496: 2026-11-27T15:07:15.7024360Z [36;1mrecord_native_exit() {[0m
+5497: 2026-11-27T15:07:15.7367500Z [36;1m  native_exit_code=$?[0m
+5498: 2026-11-27T15:07:15.7368100Z [36;1m  set +e[0m
+5499: 2026-11-27T15:07:15.7368780Z [36;1m  printf 'Native shell exit: utc=%s phase=%s status=%s\n' \[0m
+5500: 2026-11-27T15:07:15.7369760Z [36;1m    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$native_phase" "$native_exit_code"[0m
+5501: 2026-11-27T15:07:15.7370580Z [36;1m  exit "$native_exit_code"[0m
+5502: 2026-11-27T15:07:15.7371330Z [36;1m}[0m
+5503: 2026-11-27T15:07:15.7372260Z [36;1mtrap record_native_exit EXIT[0m
+5511: 2026-11-27T15:07:15.7436810Z [36;1mnative_phase=xcodebuild[0m
+5512: 2026-11-27T15:07:15.7460910Z [36;1mprintf 'Native command start: utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"[0m
+5513: 2026-11-27T15:07:15.7464790Z [36;1mxcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \[0m
+5514: 2026-11-27T15:07:15.7466370Z [36;1m  -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \[0m
+5515: 2026-11-27T15:07:15.7468220Z [36;1m  -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \[0m
+5516: 2026-11-27T15:07:15.7470110Z [36;1m  CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log[0m
+5517: 2026-11-27T15:07:15.7471530Z [36;1mnative_phase=metal-checks[0m
+5518: 2026-11-27T15:07:15.7473130Z [36;1mprintf 'Native command exit: utc=%s status=0\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"[0m
+
+## Native command runtime
+5547: 2026-11-27T15:07:18.9770740Z Native command start: utc=2026-11-27T15:07:18Z
+5548: 2026-11-27T15:07:38.5882500Z Command line invocation:
+5549: 2026-11-27T15:07:38.6892300Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO "-only-testing:KeyAndFillTests" test-without-building
+5571: 2026-11-27T15:09:35.2397070Z Test Suite 'All tests' started at 2026-11-27 15:09:34.928.
+5572: 2026-11-27T15:09:35.3399630Z Test Suite 'KeyAndFillTests.xctest' started at 2026-11-27 15:09:34.929.
+6821: 2026-11-27T15:10:36.0529150Z Test Suite 'KeyAndFillTests.xctest' passed at 2026-11-27 15:10:36.050.
+6822: 2026-11-27T15:10:36.0531480Z 	 Executed 327 tests, with 0 failures (0 unexpected) in 56.319 (61.121) seconds
+6823: 2026-11-27T15:10:36.0559790Z Test Suite 'All tests' passed at 2026-11-27 15:10:36.052.
+6824: 2026-11-27T15:10:36.0563170Z 	 Executed 327 tests, with 0 failures (0 unexpected) in 56.319 (61.124) seconds
+6858: 2026-11-27T15:11:42.7925260Z 2026-11-27 15:11:42.748 xcodebuild[14699:50070] [MT] IDETestOperationsObserverDebug: 169.501 elapsed -- Testing started completed.
+6859: 2026-11-27T15:11:42.8927490Z 2026-11-27 15:11:42.748 xcodebuild[14699:50070] [MT] IDETestOperationsObserverDebug: 0.002 sec, +0.002 sec -- start
+6860: 2026-11-27T15:11:42.9978170Z 2026-11-27 15:11:42.748 xcodebuild[14699:50070] [MT] IDETestOperationsObserverDebug: 169.501 sec, +169.499 sec -- end
+6861: 2026-11-27T15:11:43.0979750Z 
+6862: 2026-11-27T15:11:43.1981820Z Test session results, code coverage, and logs:
+6863: 2026-11-27T15:11:43.2984620Z 	/Users/runner/work/APP1/APP1/NativeTests.xcresult
+6864: 2026-11-27T15:11:43.3986970Z 
+6865: 2026-11-27T15:11:43.4988840Z ** TEST EXECUTE SUCCEEDED **
+6866: 2026-11-27T15:11:43.5991170Z 
+6867: 2026-11-27T15:11:52.9592170Z Testing started
+6868: 2026-11-27T15:11:53.0608900Z Native command exit: utc=2026-11-27T15:11:52Z status=0
+6869: 2026-11-27T15:11:53.2229790Z Required Metal methods executed and passed; no native methods skipped.
+6870: 2026-11-27T15:11:53.3254910Z Native shell exit: utc=2026-11-27T15:11:53Z phase=complete status=0
+6879: 2026-11-27T15:11:54.0474540Z Verified 327 unit methods: one start and one pass each; no failures, skips, duplicates or omissions.
+
+## Required real Metal runtime events and observed comparisons
+6630: 2026-11-27T15:10:10.8874930Z Test Case '-[KeyAndFillTests.StudyPrecisionMatrixTests testMetalMatchesCPUForEightRequiredPrecisionFixtures]' started.
+6636: 2026-11-27T15:10:14.1632560Z Metal precision area-camera-19.0-lens-85: mean 0.0, max 0, outliers 0.0, mask true
+6637: 2026-11-27T15:10:14.9169210Z Metal precision area-camera-19.0-lens-200: mean 0.0, max 0, outliers 0.0, mask true
+6638: 2026-11-27T15:10:15.1226700Z Metal precision area-camera-19.999999-lens-85: mean 0.0, max 0, outliers 0.0, mask true
+6639: 2026-11-27T15:10:15.9050790Z Metal precision area-camera-19.999999-lens-200: mean 0.0, max 0, outliers 0.0, mask true
+6640: 2026-11-27T15:10:16.1984830Z Metal precision area-camera-20.0-lens-85: mean 0.0, max 0, outliers 0.0, mask true
+6641: 2026-11-27T15:10:16.9240420Z Metal precision area-camera-20.0-lens-200: mean 0.0, max 0, outliers 0.0, mask true
+6642: 2026-11-27T15:10:17.5065160Z Metal precision world-translation-77: mean 0.0, max 0, outliers 0.0, mask true
+6643: 2026-11-27T15:10:18.1101060Z Metal precision world-translation--77: mean 0.0, max 0, outliers 0.0, mask true
+6644: 2026-11-27T15:10:18.2104110Z Test Case '-[KeyAndFillTests.StudyPrecisionMatrixTests testMetalMatchesCPUForEightRequiredPrecisionFixtures]' passed (7.704 seconds).
+6645: 2026-11-27T15:10:18.3481720Z Test Suite 'StudyPrecisionMatrixTests' passed at 2026-11-27 15:10:18.077.
+6646: 2026-11-27T15:10:18.4493350Z 	 Executed 1 test, with 0 failures (0 unexpected) in 7.704 (7.705) seconds
+6777: 2026-11-27T15:10:28.4152670Z Test Case '-[KeyAndFillTests.StudyRendererTests testCancelledInitialParityValidationCanRetryMetalOnSameEngine]' started.
+6778: 2026-11-27T15:10:28.5155710Z Reload Package ‘app1’
+6779: 2026-11-27T15:10:28.5891450Z 
+6780: 2026-11-27T15:10:28.6894470Z Test Case '-[KeyAndFillTests.StudyRendererTests testCancelledInitialParityValidationCanRetryMetalOnSameEngine]' passed (1.146 seconds).
+6790: 2026-11-27T15:10:29.4269510Z Validated engine selected Metal compute
+6791: 2026-11-27T15:10:29.5526120Z Test Case '-[KeyAndFillTests.StudyRendererTests testEnginePublishesRealFrameWithEitherBackend]' passed (1.312 seconds).
+6802: 2026-11-27T15:10:31.1059490Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalMatchesCPUOnAvailableDevice]' started.
+6803: 2026-11-27T15:10:31.1150460Z Metal hard: mean 0.0, max 0, outliers 0.0, invalid match true
+6804: 2026-11-27T15:10:31.2153730Z Reload Package ‘app1’
+6805: 2026-11-27T15:10:31.2797930Z 
+6806: 2026-11-27T15:10:32.6338910Z Metal soft: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true
+6807: 2026-11-27T15:10:33.3887050Z Metal warm-rotated: mean 0.0, max 0, outliers 0.0, invalid match true
+6808: 2026-11-27T15:10:33.3898010Z Metal dark: mean 0.0, max 0, outliers 0.0, invalid match true
+6809: 2026-11-27T15:10:33.4327920Z Metal near-field: mean 0.0, max 0, outliers 0.0, invalid match true
+6810: 2026-11-27T15:10:34.9860660Z Metal translated: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true
+6811: 2026-11-27T15:10:35.0087090Z Test Case '-[KeyAndFillTests.StudyRendererTests testMetalMatchesCPUOnAvailableDevice]' passed (4.123 seconds).
+6814: 2026-11-27T15:10:35.2872090Z Test Case '-[KeyAndFillTests.StudyRendererTests testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal]' started.
+6815: 2026-11-27T15:10:35.3246390Z Reload Package ‘app1’
+6816: 2026-11-27T15:10:35.4248530Z 
+6817: 2026-11-27T15:10:36.0501750Z Reload Package ‘app1’
+6818: 2026-11-27T15:10:36.0506610Z Test Case '-[KeyAndFillTests.StudyRendererTests testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal]' passed (1.017 seconds).
+6819: 2026-11-27T15:10:36.0511630Z Test Suite 'StudyRendererTests' passed at 2026-11-27 15:10:36.049.
+6820: 2026-11-27T15:10:36.0513420Z 	 Executed 12 tests, with 0 failures (0 unexpected) in 9.369 (9.382) seconds
+
+## Finalization guard and export command (echoed script; gate corroborated by successful API step and subsequent actual exporter output)
+6880: 2026-11-27T15:11:54.1467240Z ##[group]Run set -euo pipefail
+6881: 2026-11-27T15:11:54.1467960Z [36;1mset -euo pipefail[0m
+6882: 2026-11-27T15:11:54.1468560Z [36;1mmkdir -p artifacts[0m
+6883: 2026-11-27T15:11:54.1469570Z [36;1m# Preserve any original bundle before checking finalization. A timed-out[0m
+6884: 2026-11-27T15:11:54.1470840Z [36;1m# command must retain its raw evidence without passing this required gate.[0m
+6885: 2026-11-27T15:11:54.1473230Z [36;1mif [ -d NativeTests.xcresult ]; then[0m
+6886: 2026-11-27T15:11:54.1474410Z [36;1m  ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip || {[0m
+6887: 2026-11-27T15:11:54.1475460Z [36;1m    native_archive_exit_code=$?[0m
+6888: 2026-11-27T15:11:54.1476200Z [36;1m    printf 'archive_failed=true\n' >> "$GITHUB_OUTPUT"[0m
+6889: 2026-11-27T15:11:54.1477870Z [36;1m    echo "::error::XCTest archive failed; preserve the original bundle separately"[0m
+6890: 2026-11-27T15:11:54.1478890Z [36;1m    exit "$native_archive_exit_code"[0m
+6891: 2026-11-27T15:11:54.1480560Z [36;1m  }[0m
+6892: 2026-11-27T15:11:54.1481120Z [36;1mfi[0m
+6893: 2026-11-27T15:11:54.1481670Z [36;1mif [ ! -f NativeTests.xcresult/Info.plist ]; then[0m
+6894: 2026-11-27T15:11:54.1484050Z [36;1m  echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"[0m
+6895: 2026-11-27T15:11:54.1485690Z [36;1m  exit 1[0m
+6896: 2026-11-27T15:11:54.1486330Z [36;1mfi[0m
+6897: 2026-11-27T15:11:54.1486890Z [36;1mmkdir -p artifacts/native-attachments[0m
+6898: 2026-11-27T15:11:54.1488830Z [36;1mxcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments[0m
+6899: 2026-11-27T15:11:54.1564670Z shell: /bin/bash -e {0}
+6900: 2026-11-27T15:11:54.1565400Z env:
+6901: 2026-11-27T15:11:54.1566260Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+6902: 2026-11-27T15:11:54.1567510Z   SIMULATOR_ID: 12FCFD0F-7FCF-463F-A605-132A7E18B5D5
+6903: 2026-11-27T15:11:54.1568410Z ##[endgroup]
+6904: 2026-11-27T15:12:10.1904070Z Skipped export for BoundedFileReaderTests/testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData(): no matching attachments
+6956: 2026-11-27T15:12:15.4077650Z Skipped export for LightTargetLuxDraftTests/testValidDecimalIsBlockedUntilEditedForTheNewLocale(): no matching attachments
+6957: 2026-11-27T15:12:15.5128580Z 
+6958: 2026-11-27T15:12:15.6133440Z Skipped export for LightTargetLuxDraftTests/testWrongGroupingAndNegativeTargetsRemainRejectedInTheirCapturedLocale(): no matching attachments
+
+## Uploaded original and compact artifact receipts (runtime)
+6993: 2026-11-27T15:12:25.5120590Z With the provided path, there will be 37 files uploaded
+6994: 2026-11-27T15:12:25.7130700Z Artifact name is valid!
+6995: 2026-11-27T15:12:25.8139470Z Root directory input is valid!
+7004: 2026-11-27T15:12:28.2842660Z Uploaded bytes 64451039
+7005: 2026-11-27T15:12:28.3852560Z Finished uploading artifact content to blob storage!
+7006: 2026-11-27T15:12:28.4855320Z SHA256 digest of uploaded artifact zip is a4e680f1d7b551886209d82f9fc2ed3a94c8b48c482eeac29226e8ad4e7f56d9
+7007: 2026-11-27T15:12:28.5860700Z Finalizing artifact upload
+7008: 2026-11-27T15:12:29.2013900Z Artifact native-unit-and-build-evidence.zip successfully finalized. Artifact ID 15210366157
+7009: 2026-11-27T15:12:29.3017600Z Artifact native-unit-and-build-evidence has been successfully uploaded! Final size is 64451039 bytes. Artifact ID is 15210366157
+7010: 2026-11-27T15:12:29.4021550Z Artifact download URL: https://github.com/mirzotipi-wq/APP1/actions/runs/46019722045/artifacts/15210366157
+7031: 2026-11-27T15:12:31.8436540Z With the provided path, there will be 9 files uploaded
+7032: 2026-11-27T15:12:32.0440510Z Artifact name is valid!
+7033: 2026-11-27T15:12:32.1442060Z Root directory input is valid!
+7035: 2026-11-27T15:12:33.7513280Z Uploaded bytes 641185
+7036: 2026-11-27T15:12:33.8515660Z Finished uploading artifact content to blob storage!
+7037: 2026-11-27T15:12:33.9518470Z SHA256 digest of uploaded artifact zip is bf3e5df84835953c9dd2a953dc4f722738ab3f288e20217d4c07de00513b4d88
+7038: 2026-11-27T15:12:34.0521320Z Finalizing artifact upload
+7039: 2026-11-27T15:12:34.5551830Z Artifact native-unit-and-build-evidence-compact.zip successfully finalized. Artifact ID 15210765652
+7040: 2026-11-27T15:12:34.6557670Z Artifact native-unit-and-build-evidence-compact has been successfully uploaded! Final size is 641185 bytes. Artifact ID is 15210765652
+7041: 2026-11-27T15:12:34.7567600Z Artifact download URL: https://github.com/mirzotipi-wq/APP1/actions/runs/46019722045/artifacts/15210765652
+
+## Unsigned arm64 device Release: actual invocation and outcome
+7093: 2026-11-27T15:12:35.1164810Z 2fc7647314d3ae6fa22d95284e778c6c5badbe4a
+7094: 2026-11-27T15:12:35.3696670Z Xcode 26.6
+7095: 2026-11-27T15:12:35.4699810Z Build version 17F113
+7096: 2026-11-27T15:12:35.5715180Z /Applications/Xcode_26.6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.5.sdk
+7097: 2026-11-27T15:12:38.3816100Z 26.5
+7098: 2026-11-27T15:12:42.4298650Z Command line invocation:
+7099: 2026-11-27T15:12:42.5306630Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release -sdk iphoneos -destination generic/platform=iOS -derivedDataPath /Users/runner/work/_temp/keyfill-device-release-build ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO build
+7100: 2026-11-27T15:12:42.6312190Z 
+7101: 2026-11-27T15:12:42.7330230Z Build settings from command line:
+7102: 2026-11-27T15:12:42.8333830Z     ARCHS = arm64
+7103: 2026-11-27T15:12:42.9336230Z     CODE_SIGNING_ALLOWED = NO
+7104: 2026-11-27T15:12:43.0338730Z     ONLY_ACTIVE_ARCH = NO
+7105: 2026-11-27T15:12:43.1345370Z     SDKROOT = iphoneos26.5
+7701: 2026-11-27T15:27:29.8428890Z ** BUILD SUCCEEDED **
+7702: 2026-11-27T15:27:29.9431840Z 
+7703: 2026-11-27T15:27:32.2228670Z /Users/runner/work/_temp/keyfill-device-release-build/Build/Products/Release-iphoneos/KeyAndFill.app/Info.plist: OK
+7704: 2026-11-27T15:27:57.7943000Z {
+7705: 2026-11-27T15:27:57.9024900Z   "architectures": [
+7706: 2026-11-27T15:27:58.0029000Z     "arm64"
+7707: 2026-11-27T15:27:58.1049240Z   ],
+7708: 2026-11-27T15:27:58.2052370Z   "configuration": "Release",
+7709: 2026-11-27T15:27:58.3055160Z   "bundle": {
+7710: 2026-11-27T15:27:58.4071290Z     "CFBundleExecutable": "KeyAndFill",
+7711: 2026-11-27T15:27:58.5072000Z     "CFBundlePackageType": "APPL",
+7712: 2026-11-27T15:27:58.6078090Z     "CFBundleSupportedPlatforms": [
+7713: 2026-11-27T15:27:58.7083440Z       "iPhoneOS"
+7714: 2026-11-27T15:27:58.8095940Z     ],
+7715: 2026-11-27T15:27:58.9096900Z     "DTPlatformName": "iphoneos",
+7716: 2026-11-27T15:27:59.0101260Z     "DTSDKName": "iphoneos26.5"
+7717: 2026-11-27T15:27:59.1106160Z   },
+7718: 2026-11-27T15:27:59.2110240Z   "deviceExecution": false
+7719: 2026-11-27T15:27:59.3115290Z }
+7720: 2026-11-27T15:27:59.4131530Z Source AppIcon: 1024x1024, opaque RGB8 sRGB, valid PNG checksums and decoded scanlines, 34615 bytes
+7721: 2026-11-27T15:27:59.5133070Z Bundle AppIcon metadata and Assets.car present: KeyAndFill.app; ['iPhoneOS']; iOS 17.0
+7722: 2026-11-27T15:28:00.0177510Z Source privacy manifest: no declared tracking or collection; app preferences and scoped file metadata reasons
+7723: 2026-11-27T15:28:00.1178390Z Verified app bundle privacy manifest: /Users/runner/work/_temp/keyfill-device-release-build/Build/Products/Release-iphoneos/KeyAndFill.app/PrivacyInfo.xcprivacy
+7724: 2026-11-27T15:28:00.2342460Z Unsigned device compile/link and bundle checks passed; no physical-device execution.
+
