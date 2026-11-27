@@ -271,6 +271,15 @@ A completed synthesis request and visible keyboard did not prove delivered text.
 
 The earlier cancelled accessibility run emitted 14 capture names but retained no original PNGs; the current failed attempt retained five required Default originals and one diagnostic. Emissions, recovered originals and the required 28-image gate remain distinct. Selected evidence archives explicitly identify excluded large provider archives and recordings; hashes are not substitutes for files claimed to be retained. Worker 099 also separated worker 059's assigned checkout from its actually reviewed patch/preimage, preserving the original report and both revisions.
 
+
+## 2026-11-27 — Follow-up from recovered original UI evidence
+
+- The recovery completion Label's inherited identifier resolved to its decorative checkmark Image (Selected). Expose one explicit meaningful status element, and retain the later snapshot timing rather than infer a storage failure from the preceding waiter.
+- An AX StaticText rectangle is not an intrinsic SwiftUI Text-layout measurement. The original 587<591 physical-pixel result remains failed; measure the actual Text before frame expansion and keep the exact font-fit/viewport requirements. A video derivative can help interpret visible glyphs but is not an original reached XCTest screenshot.
+- The 19-method export/beta command hit its bounded 40-minute capacity after 14 starts. Split the existing 11 and new 8 methods into separately required jobs while proving the same 44-method union and preserving assertions, accounting, finalization and evidence transport.
+- Diagnostic caps must bound work as well as output: unchanged view/focus updates must not consume input-event capacity, and exhausted/disabled recorders must not collect UIKit state. Observe no additional binding getters, log no typed text, and retain unknown equality for strings beyond the bounded diagnostic comparison. Source/recorder witnesses do not establish native keyboard execution.
+- Scope milestone evidence to the actual contract. A verified individual corrupt-file relaunch smoke can satisfy M01 with its other finalized evidence; the explicit full-command/finalized-result requirements still block M03 when its broader shard fails. Revalidate affected checks after a new source change.
+
 ## 27 November 2026 — ignored JSON values, evidence consumers and concurrent source
 
 Foundation may defer decoding ignored strings, so successful typed envelope decoding did not validate all imported Unicode. A016 reproduced47 failing assertions; strict validation plus six regression methods repairs this boundary. A023 then measured a2.39s dense valid8MiB regression; A027 preserved strict behavior while removing per-value decoder allocation for unescaped strings. Independent035/038 reviews verified semantics and matched raw receipts. Measure representative and bounded worst-case valid inputs before declaring a validation repair complete.
@@ -278,3 +287,5 @@ Foundation may defer decoding ignored strings, so successful typed envelope deco
 Changing UI shards also changes downstream artifact names. A014 caught the missed review allowlist; A015 repaired it, and integration retained both historical beta-workflows and current beta-workflow names. Exact required-method accounting and finalized result requirements remain intact.
 
 Concurrent main supplied stronger input diagnostics plus recovery/layout corrections. Preserve it as the base, retain one recorder, archive the superseded patch and independently compare original method identities and behavior. A036 verified44requiredUI identities and every upstream native input method remained. Diagnostic size limits must count Unicode scalars before reflection; grapheme prefixes alone admit an arbitrarily large combining cluster. Failure-only capture is not evidence that the underlying app defect is repaired.
+
+Worker045 reconciled recovered original method evidence against M01: do not add the entire combined19-method M03 suite as a new M01 requirement. Historical narrow acceptance and current changed-source revalidation can coexist; preserve both source identities and every full-suite failure.

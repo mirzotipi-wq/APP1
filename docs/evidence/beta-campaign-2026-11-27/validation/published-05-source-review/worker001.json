@@ -1,0 +1,174 @@
+{
+  "worker": "001",
+  "kind": "independent-read-only-followup-review",
+  "baselineRevision": "f94c0e6cb9cd072286d6e4414eb2c1f8974d4ce5",
+  "reviewedRevision": "85f428e4395a2435f639c60fe4ab8c88300af62d",
+  "parentRevision": "52fbadd55ff67ef2e9eabbf8ef7e103228536c11",
+  "worktree": "/workspace/scratch/4633a14a0d5b/worktrees/096",
+  "worktreeClean": true,
+  "filesSHA256": {
+    "App/StudioTextField.swift": "728f5f82bd580216e936f22914824d967eb51c8723070b6b617488253bec11ac",
+    "NativeTests/StudioTextFieldTests.swift": "7ef2bc173dd2f711b3b69ae9ebd88bae3ecc4aa8f6bf02d367e6b975e37281da",
+    "UITests/BetaWorkflowUITests.swift": "a234541eb70f6786a669eb27fe607b30518a7d05b66cb4f202decd35f53ecf73",
+    "UITests/ManualRoomPlacementUITests.swift": "2d28a2f4dc8a813701ab5ce3b22d64ceea3f96f1c0a24e6fc7e528dac8312e7a",
+    "UITests/StudioAppAccessibilityUITests.swift": "03d7664df4b6eae3d95cabd533746fb882bb788c2b0d092fc45693e25bb00eee"
+  },
+  "recommendation": "No blocking source-visible findings after diagnostic budget correction; proceed to fresh Apple CI.",
+  "environment": "Debian 13 x86_64; Swift 6.4.3 (swift-6.4.3-RELEASE); no Apple SDK",
+  "checks": [
+    {
+      "name": "Final file hashes match actual validation inputs",
+      "result": "passed"
+    },
+    {
+      "name": "DEBUG source syntax parse",
+      "result": "passed",
+      "exitCode": 0,
+      "cwd": "/workspace/scratch/4633a14a0d5b/worktrees/096",
+      "command": [
+        "swiftc",
+        "-frontend",
+        "-parse",
+        "-D",
+        "DEBUG",
+        "App/StudioTextField.swift",
+        "NativeTests/StudioTextFieldTests.swift",
+        "UITests/BetaWorkflowUITests.swift",
+        "UITests/ManualRoomPlacementUITests.swift",
+        "UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "log": "debug-parse.log"
+    },
+    {
+      "name": "Release source syntax parse",
+      "result": "passed",
+      "exitCode": 0,
+      "cwd": "/workspace/scratch/4633a14a0d5b/worktrees/096",
+      "command": [
+        "swiftc",
+        "-frontend",
+        "-parse",
+        "App/StudioTextField.swift",
+        "NativeTests/StudioTextFieldTests.swift",
+        "UITests/BetaWorkflowUITests.swift",
+        "UITests/ManualRoomPlacementUITests.swift",
+        "UITests/StudioAppAccessibilityUITests.swift"
+      ],
+      "log": "release-parse.log"
+    },
+    {
+      "name": "Exact extracted Foundation-only recorder compilation",
+      "result": "passed",
+      "exitCode": 0,
+      "command": [
+        "swiftc",
+        "-swift-version",
+        "5",
+        "-strict-concurrency=complete",
+        "-warnings-as-errors",
+        "-D",
+        "DEBUG",
+        "-parse-as-library",
+        "-module-cache-path",
+        "/workspace/scratch/4633a14a0d5b/campaign/evidence/001/followup/module-cache",
+        "/workspace/scratch/4633a14a0d5b/campaign/evidence/001/followup/recorder-extracted.swift",
+        "/workspace/scratch/4633a14a0d5b/campaign/evidence/001/followup/recorder-witness.swift",
+        "-o",
+        "/workspace/scratch/4633a14a0d5b/campaign/evidence/001/followup/recorder-witness"
+      ],
+      "log": "recorder-compile.log"
+    },
+    {
+      "name": "Executable recorder witness",
+      "result": "passed",
+      "exitCode": 0,
+      "command": [
+        "/workspace/scratch/4633a14a0d5b/campaign/evidence/001/followup/recorder-witness"
+      ],
+      "log": "recorder-witness.log",
+      "assertions": [
+        "512 process / 256 control records including terminal markers",
+        "600 distinct controls still capped at 512",
+        "510 state-provider calls for two capped controls, excluding both markers and all later attempts",
+        "511 state-provider calls for distributed-control process cap",
+        "zero output and provider calls when disabled",
+        "unknown-identifier canary redacted",
+        "approved scalar-only schema"
+      ]
+    },
+    {
+      "name": "Release DEBUG-block stripping and lexical comparison",
+      "result": "passed",
+      "qualification": "Ignoring whitespace/comments/semicolon separators and normalizing only the equivalent weak-self/lifecycle guard split, tokens match f94. All trace calls, properties and recorder types excluded."
+    },
+    {
+      "name": "Original binding accesses",
+      "result": "passed",
+      "orderedAccessExpressions": [
+        "next.text.wrappedValue",
+        "configuration.isFocused.wrappedValue",
+        "configuration.isFocused.wrappedValue",
+        "configuration.isFocused.wrappedValue",
+        "configuration.isFocused.wrappedValue",
+        "configuration.text.wrappedValue",
+        "configuration.text.wrappedValue",
+        "currentConfiguration.text.wrappedValue",
+        "configuration.isFocused.wrappedValue"
+      ]
+    },
+    {
+      "name": "UI source delta",
+      "result": "passed",
+      "detail": "Only four trace environment opt-in assignments across three UI files; all prior test statements retained verbatim."
+    },
+    {
+      "name": "Native test inventory delta",
+      "result": "passed",
+      "removed": [],
+      "added": [
+        "testInputTraceCapsIncludeMarkersAndDisabledRecorderEmitsNothing",
+        "testInputTraceLeavesAcceptedRejectedAndExternalResetBehaviorIdentical",
+        "testInputTraceOmitsPrivateDraftsLabelsHintsAndUnknownIdentifiers",
+        "testUnchangedReconfigurationPreservesTraceBudgetForTheNextNativeEdit"
+      ]
+    },
+    {
+      "name": "git diff --check",
+      "result": "passed",
+      "exitCode": 0,
+      "log": "diff-check.log"
+    },
+    {
+      "name": "Private worktree shard check",
+      "result": "passed",
+      "exitCode": 0,
+      "command": [
+        "python3",
+        "scripts/native_test_shards.py",
+        "check"
+      ],
+      "log": "shard-check.log",
+      "qualification": "Root separately integrates newer shard split."
+    }
+  ],
+  "manualReview": [
+    "85f428e fixes initial52fbadd no-op-event budget exhaustion and continued post-cap state capture.",
+    "All delegate/edit/publish/reset/lifecycle event paths retained; only unchanged configure/scheduled-focus/unchanged-focus events suppressed.",
+    "Missing-window trace coalescing resets on lifecycle/window transitions or inactive focus, and controls only diagnostics.",
+    "Precollection capacity guard and lazy provider prevent native-state reads at caps and markers.",
+    "Length observations capped at257 UTF16; equality is exact for values <=256, false for just one longer value, unknown for two longer values.",
+    "No new binding getter/setter, product callback, keyboard action, selection mutation, text reassignment or parser policy introduced.",
+    "Only eight fixed field labels or other are emitted; lifecycle UUID and sequential control number are local ephemeral correlation values, not application/user/device identities.",
+    "Four native tests cover privacy/oversize restoration, both budgets/lazy state, traced/untraced edits/reset/focus callback and getter counts, and100 unchanged updates before a genuine next edit.",
+    "Tests inject independent recorder/sink instances and invalidate local controls; no shared recorder resets or process-environment mutation."
+  ],
+  "reviewHarnessNotes": [
+    "A preliminary literal-line comparison rejected only guard reformatting (inline return versus expanded block). Ordered binding-access expression comparison and whole-Release lexical comparison establish the intended invariant; no product defect was found."
+  ],
+  "limitations": [
+    "No UIKit/SwiftUI SDK typecheck available.",
+    "Four new native test methods not executed locally.",
+    "No keyboard/responder/accessibility/UI runtime pass claimed.",
+    "No full Swift package suite or repository edit/commit/push performed by reviewer."
+  ]
+}

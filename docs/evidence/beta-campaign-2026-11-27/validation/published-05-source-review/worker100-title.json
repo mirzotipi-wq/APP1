@@ -1,0 +1,60 @@
+{
+  "worker": "/root/a100_independent_beta_readiness",
+  "candidate": "84ade7af5f8563d43d31b1e83931f58af4644821",
+  "parent": "f94c0e6cb9cd072286d6e4414eb2c1f8974d4ce5",
+  "files": [
+    "App/StudioWelcomeView.swift",
+    "UITests/BetaAccessibilityUITests.swift"
+  ],
+  "diffSHA256": "cfada7dff53e34285c4bca5d9d2dc59961eb79e2b7a87b78aea38657671aaf26",
+  "candidateSourceHashes": {
+    "App/StudioWelcomeView.swift": "cce40e89e57d08315567d307257c0843e8afedb39f3ddda0187d4ddcf5cb9088",
+    "UITests/BetaAccessibilityUITests.swift": "ffb2494d4054d0a08837173e701a428e30627bd53aa1cea0a3c5a3758db668c7",
+    "App/StudioTextLayoutDiagnostics.swift": "ef4d92e980902f7e56fcef6fba13803685d3fd2154ec51a98c542df88a1399cd",
+    "UITests/StudioViewportObservation.swift": "f172cfa12a320e984cf59b9496def656fc9464306e6c011d1b6fe461c0a7f297"
+  },
+  "unchangedSupplementalCaptureNames": [
+    "Feedback-editor-keyboard",
+    "Feedback-review-keyboard-dismissed",
+    "Feedback-reviewed-share-control",
+    "Recovery-confirmation",
+    "Recovery-inspection",
+    "Recovery-success",
+    "Welcome-actions",
+    "Welcome-heading"
+  ],
+  "captureCountBefore": 8,
+  "captureCountAfter": 8,
+  "viewedImage": {
+    "path": "/workspace/scratch/4633a14a0d5b/campaign/evidence/061/followup-title/derived-recording-frame-at-or-after-112s.png",
+    "sha256": "71daee0e49b8120af33cb3c4387da4296e08e91c53e0a15def7505aec420ec93",
+    "kind": "Video-derived frame, not an original XCTest screenshot",
+    "observed": "Complete Start your / first / portrait title visible with no ellipsis or visibly cut glyphs; no exact Text layout metric established."
+  },
+  "originalFailure": {
+    "observedAXPixels": 587,
+    "requiredLineBoxPixels": 591,
+    "preserved": true,
+    "intrinsicGeometryNotPreviouslyCaptured": true
+  },
+  "findings": [
+    "Probe attaches to the actual Text after title3 semibold and fixedSize, before expanding frame and ancestor padding.",
+    "Existing helper records GeometryReader global frame through a preference and tags the owning element value. Release and normal-launch branches return self; no production layout/font/spacing/style change.",
+    "Test queries studioWelcomeTitle as staticText, checks exact label, obtains the same snapshot value and requires bounded JSON with exact kind/probe and valid finite nonempty frame; no fallback to parent/card bounds.",
+    "Both semantic AX rectangle and recorded Text frame must fit the target viewport.",
+    "Expected UIFont title3/semibold, largest category and width-to-physical-pixel normalization remain; rounded observed physical height must still be >= ceil required physical height, with no tolerance added.",
+    "Welcome-heading screenshot moved before the assertion so failures retain reached output. All eight original supplemental names occur once; none replace the 28 mandatory app-layout originals.",
+    "Observed AX and actual Text measurements are separately logged. The additional input-trace launch opt-in does not replace or relax title assertions."
+  ],
+  "recommendation": "No source-level blocker; approve integration as a measurement correction pending actual Apple compile/execution and finalized required UI evidence. Do not label the earlier threshold failure repaired or passing yet.",
+  "notPerformed": [
+    "source edits",
+    "tests",
+    "builds",
+    "CI reruns",
+    "native execution",
+    "threshold changes",
+    "new image generation"
+  ],
+  "pending": "Final runtime/readiness and root-summary review remain outstanding under this same worker identity."
+}

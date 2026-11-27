@@ -2,7 +2,40 @@
 
 User request: launch 100 actual agents and bring APP1 to beta. Starting main was `664e404d1bddf6d19724760139592da30c799418`. Root integrates on `main`; three specialist slots run alongside root. The ledger records only actually created contexts, not planned workers. This packet is an active checkpoint, not a beta/release acceptance declaration.
 
-## Current published source: 100 workers and verified native builds
+## Current published source: targeted UI follow-up
+
+All **100 distinct worker contexts** have been created and all initial scoped reports received. Follow-ups reuse those identities; the [ledger](worker-ledger.json) records checkpoint completion and review provenance. No additional worker was counted for a follow-up.
+
+Current production/test source is **`2fc7647314d3ae6fa22d95284e778c6c5badbe4a`**, with the identical complete tree as local `b79ff3294ef6743a660c27e372fe4cab798f1e1a`. [Publication](validation/published-05-source-review/publish-05.json) and [ref/tree verification](validation/published-05-source-review/publication-verification.json) preserve the guarded update from `9e2313c`. The [source bundle](validation/local-ui-followup-source.bundle) retains the original root and worker061/096 follow-up commits. [Fresh run 46019722045](https://github.com/mirzotipi-wq/APP1/actions/runs/46019722045) has passed its core job: **588 Debug, 588 Release and 104 tooling checks**, with twelve original image/scene pairs byte-identical to prior reviewed outputs. [Current core reconciliation](validation/published-05-core/reconciliation.json) and [retained originals](validation/published-05-core-evidence.zip) verify exact methods, six parity/eight precision cases and all benchmark records on the actual AMD EPYC 9V45 / Swift 6.4.3 host. Apple builds and UI execution are in progress at this checkpoint. No fresh native/UI pass is inferred from source review.
+
+The new source addresses four observed problems:
+
+- **Recovery status semantics:** the original app tree showed the saved local setup and open recovery sheet, but `libraryRecoverySuccess` matched the decorative Image labeled “Selected.” The completion label now exposes one explicit status header. The original response followed the failed waiter, so this finding does not prove operation timing or a failed storage commit.
+- **Title measurement:** the original largest-text check compared an AX rectangle with a font-layout bound: 587 versus 591 physical pixels. The original recording shows the complete three-line title. The revised check reads the actual SwiftUI Text geometry before frame expansion and preserves the same pixel inequality and viewport requirements. No font, padding, spacing or threshold changed; actual new geometry still requires Apple execution.
+- **Input diagnosis:** three independent runners retained unchanged/empty fields after typing. No causal binding/delivery repair is claimed. The opt-in DEBUG trace records callbacks, binding/reset boundaries and focus/lifecycle transitions without raw typed text, labels or hints. Its 512/process and 256/control limits include markers; unchanged rendering does not consume the budget and capped/disabled tracing stops state collection. Four new native methods remain required, raising the native inventory to **327**. An independent extracted-recorder witness passes on Linux; it is not UIKit execution.
+- **Execution capacity:** the previous combined studio/export command hit 40 minutes with methods still running. The original 11 studio/export methods and eight beta/Plan methods now have separate required shards. All **44 exact UI method identities**, every assertion and per-test deadline remain. There are six required UI shards, with maximum parallelism five and unchanged bounded command caps. Original/compact evidence transport includes the new shard.
+
+[Independent source-review evidence](validation/published-05-source-review.json) and its [selected original archive](validation/published-05-source-review.zip) record syntax, source equivalence, privacy/cap witnesses and 104 local tooling passes. Apple typechecking and native/UI results remain necessary. A proposed unchanged failed-job retry was not performed: newly recovered export evidence justified these targeted changes before a new source run.
+
+### Completed previous-source outcome: f94, attempt 1
+
+| Verification at exact f94 | Actual outcome |
+| --- | --- |
+| Portable and tooling | 588 Debug + 588 Release; 104 tooling; 591 macOS package tests |
+| Native and builds | 323 native passes, three actual Metal methods, normal command exit and finalized result; unsigned Debug/test and Release simulator builds plus arm64 iPhoneOS Release compile/link passed |
+| Library/reference | Nine of nine passed with finalized result |
+| Room/precision | Four of five passed; width-entry assertion failed |
+| App accessibility | One failed exact-value entry; five Default originals, zero AXXXL; 23 of 28 mandatory originals absent |
+| Optics | Zero of ten started; runner AX initialization failed, then command timeout; no finalized result |
+| Combined studio/export | 19 expected: nine passed, four failed, one interrupted, five unstarted; 40-minute timeout and unfinished result |
+| All required UI methods | **22 passed, six failed, one interrupted, 15 unstarted**; no required skip or invented pass |
+| Supplemental beta images | **Zero of eight** reached; separate from the mandatory 28 |
+
+[Final UI reconciliation](validation/published-03-ui-attempt-1-final/reconciliation.json), [original-payload recovery](validation/published-03-ui-attempt-1-final/recovered-attachment-reconciliation.json), [selected evidence index](validation/published-03-optics-export-attempt-1-evidence.json) and [archive](validation/published-03-optics-export-attempt-1-evidence.zip) retain the originals and explicit exclusions. Four original export/camera/meter PNGs and 13 completed method summaries were recovered from the unfinished result; that does not make the overall result finalized. The title video and its inspected derivative have distinct provenance. [Independent integrity supplement03](validation/worker-099/supplement-03.json) verifies 201 retained files and the publication04 checkpoint.
+
+The existing corrupt-file relaunch smoke genuinely passed, corroborated by its original ActionTestSummary. Together with finalized library/native/core evidence, independent review supports narrow **M01 and then M02 revalidation at f94** under their unchanged contracts. It does not require all 19 M03 export methods as a new M01 condition. The changed current source is undergoing regression revalidation; canonical current gates remain conservative until its affected checks finish. M03 still requires complete command/method/layout evidence. M04–M07, physical reference/AR/device trials, commerce/customer validation, signing and owner distribution approval remain outside the passing evidence. The following sections preserve earlier checkpoints, not current runtime status.
+
+## Retained f94 intermediate checkpoint: 100 workers and verified native builds
 
 All **100 distinct worker contexts** have been created. At this checkpoint, 98 assignments are complete; worker 098 is finishing current UI reconciliation and worker 100 awaits the final readiness-summary delta on their existing identities. The [ledger](worker-ledger.json) distinguishes those follow-ups from new workers. Twenty-six scoped writer commits and their original source objects are preserved.
 
@@ -35,7 +68,7 @@ M01 still needs its current corrupt-file UI smoke. M02's code evidence is ready 
 
 The target-lux editor now binds unfinished text to immutable locale values. A locale change blocks preview/Apply until a changed bounded edit, with visible guidance; switching back or an unchanged binding echo cannot reactivate it. Nine new regressions and an independent 45-assertion probe cover the original counterexample and boundary cases. The existing dirty-library UI workflow now makes and proves a real scene edit before testing save gating; all of its previous assertions and deadlines remain.
 
-Published [run 45999974158](https://github.com/mirzotipi-wq/APP1/actions/runs/45999974158) at `134f9ad` passed core579/579 and104 tooling. Its [original core archive](validation/published-02-core-original.zip), [independent reconciliation](validation/published-02-core-reconciliation.json), and [actual twelve-image review](validation/published-02-core-visual-review.json) are retained. All five Apple UI build-for-testing steps passed, verifying the earlier expression repair. Runtime remains in progress at this snapshot; the native simulator job is queued. This run will be superseded by the current locale/library-test candidate, and partial outcomes must remain separate from acceptance.
+Published [run 45999974158](https://github.com/mirzotipi-wq/APP1/actions/runs/45999974158) at `134f9ad` passed core579/579 and 104 tooling. Its [original core archive](validation/published-02-core-original.zip), [independent reconciliation](validation/published-02-core-reconciliation.json), and [actual twelve-image review](validation/published-02-core-visual-review.json) are retained. All five Apple UI build-for-testing steps passed, verifying the earlier expression repair. Runtime remains in progress at this snapshot; the native simulator job is queued. This run will be superseded by the current locale/library-test candidate, and partial outcomes must remain separate from acceptance.
 
 The newly required recovery-fault CI step also passed on its actual Linux ext4 host. [Independent hosted reconciliation](validation/published-02-recovery-reconciliation.json) verifies40 pinned inputs, raw witnesses,19 interruption checks,18 EIO checks, seven filesystem receipts and distinct retry/reopen processes. Its earlier local missing-hook negative control is not mislabeled as hosted execution.
 
