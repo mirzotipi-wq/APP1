@@ -1,0 +1,159 @@
+{
+  "worker": "A042",
+  "utc": "2026-11-27T15:28:30.856694+00:00",
+  "revision_observed": "2fc7647314d3ae6fa22d95284e778c6c5badbe4a",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14",
+  "scope": "Fixture generation and filesystem/hash checks only; no Swift compilation or benchmark execution",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/b25ffdc7aed8/APP1/docs/evidence/beta-hardening-2026-11-27/reproduce-parser-benchmark/reconstruct_inputs.py",
+    "--output-dir",
+    "/tmp/a042-parser-fixtures-xb6c4ax5/fixtures"
+  ],
+  "working_directory": "/workspace/scratch/b25ffdc7aed8/APP1",
+  "private_output": "/tmp/a042-parser-fixtures-xb6c4ax5",
+  "generation_exit_code": 0,
+  "fixture_count": 9,
+  "total_input_bytes": 37748877,
+  "verified_against": [
+    {
+      "manifest": "unicode-performance-before/manifest.json",
+      "verified_inputs": 9
+    },
+    {
+      "manifest": "unicode-performance-after/manifest.json",
+      "verified_inputs": 9
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "ordinary",
+      "shape": "ordinary",
+      "path": "inputs/ordinary.json",
+      "bytes": 141,
+      "sha256": "ef13bd4559b4c51e7fb566d12698fe37c038e3e8d90559c3a20cb7c0c3777bc1",
+      "metadata_members": 0,
+      "metadata_string_tokens": 0,
+      "padding_bytes": 0
+    },
+    {
+      "id": "long_string_1mib",
+      "shape": "long_string",
+      "path": "inputs/long_string_1mib.json",
+      "bytes": 1048576,
+      "sha256": "b712c608f350d1273b653c7910e7cae2153b474a779c0427ced432bd8a070417",
+      "metadata_members": 1,
+      "metadata_string_tokens": 1,
+      "padding_bytes": 0
+    },
+    {
+      "id": "empty_strings_1mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "9d177f6d4c9ad38ea31f496903f0540f433d6a494724097840908bbd1108175b",
+      "metadata_members": 349474,
+      "metadata_string_tokens": 349474,
+      "padding_bytes": 0
+    },
+    {
+      "id": "escaped_strings_1mib",
+      "shape": "escaped_strings",
+      "path": "inputs/escaped_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "a86beea81f7bc5a6e8d61ffc1255850aac2672a1f27cab61c9fc0c9abe505082",
+      "metadata_members": 33820,
+      "metadata_string_tokens": 33820,
+      "padding_bytes": 2
+    },
+    {
+      "id": "wide_object_1mib",
+      "shape": "wide_object",
+      "path": "inputs/wide_object_1mib.json",
+      "bytes": 1048576,
+      "sha256": "1198cf0cfd6da3b9d411b72609682ebdfdfa43622aa1006e81ad8f7c47e9d4e1",
+      "metadata_members": 69894,
+      "metadata_string_tokens": 139788,
+      "padding_bytes": 12
+    },
+    {
+      "id": "long_string_8mib",
+      "shape": "long_string",
+      "path": "inputs/long_string_8mib.json",
+      "bytes": 8388608,
+      "sha256": "43839b6173f20249042cd4aa72f984ef2226569cfdc687fa7d9a30848df8533f",
+      "metadata_members": 1,
+      "metadata_string_tokens": 1,
+      "padding_bytes": 0
+    },
+    {
+      "id": "empty_strings_8mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_8mib.json",
+      "bytes": 8388608,
+      "sha256": "f109b82dcec1fe45b95e1b01a0ee50daf7c5f3a4c24e4530b56f4221770fe69d",
+      "metadata_members": 2796151,
+      "metadata_string_tokens": 2796151,
+      "padding_bytes": 1
+    },
+    {
+      "id": "escaped_strings_8mib",
+      "shape": "escaped_strings",
+      "path": "inputs/escaped_strings_8mib.json",
+      "bytes": 8388608,
+      "sha256": "6a6a45d8ba8c12e3144ff9d7aad7001ccfbad9dc74e134e03c71372fccef7377",
+      "metadata_members": 270595,
+      "metadata_string_tokens": 270595,
+      "padding_bytes": 9
+    },
+    {
+      "id": "wide_object_8mib",
+      "shape": "wide_object",
+      "path": "inputs/wide_object_8mib.json",
+      "bytes": 8388608,
+      "sha256": "ee4f7912b6553e0ce1be0674f3c979d342d2ee4494546ab393f20e8992f33198",
+      "metadata_members": 559230,
+      "metadata_string_tokens": 1118460,
+      "padding_bytes": 4
+    }
+  ],
+  "existing_destination": {
+    "exit_code": 1,
+    "stderr": "error: Output already exists; choose a fresh directory: /tmp/a042-parser-fixtures-xb6c4ax5/fixtures",
+    "files_unchanged": true
+  },
+  "protected_destinations": [
+    {
+      "relative_target": "unicode-performance-before/a042-protected-output-must-not-exist",
+      "exit_code": 1,
+      "stderr": "error: Output must be outside the preserved evidence tree",
+      "created": false
+    },
+    {
+      "relative_target": "unicode-performance-after/a042-protected-output-must-not-exist",
+      "exit_code": 1,
+      "stderr": "error: Output must be outside the preserved evidence tree",
+      "created": false
+    }
+  ],
+  "dangling_symlink_destination": {
+    "exit_code": 1,
+    "stderr": "error: Output already exists; choose a fresh directory: /tmp/a042-parser-fixtures-xb6c4ax5/existing-output-link",
+    "target_created": false
+  },
+  "originals_preserved": {
+    "file_count": 114,
+    "all_hashes_unchanged": true,
+    "inventory_sha256": "b7088da38d817f719ce76064e58fc04e5ff463a7cd81ed4c5de0e221d1dabef3"
+  },
+  "source_sha256": {
+    "reconstruct_inputs.py": "56131c949d7063e7e0798c95e349cb46b0fae8c468c1bb1c0c9e12d5548236e4",
+    "run_benchmark.py": "f1e911824400a832134917db5cf9ec5c3ac9fa741141bc8025c17565fffcd490"
+  },
+  "python_syntax": {
+    "reconstruct_inputs.py": "parsed; not byte-compiled",
+    "run_benchmark.py": "parsed; not byte-compiled"
+  },
+  "benchmark_runner_executed": false
+}
