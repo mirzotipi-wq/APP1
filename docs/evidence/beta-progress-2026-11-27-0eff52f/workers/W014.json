@@ -1,0 +1,49 @@
+{
+  "actual_task_id": "/root/beta_campaign/w014_provider_coordination",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed",
+  "findings": [
+    "No demonstrated coordination deadlock or stale-import publication defect in reviewed source.",
+    "Security scope remains balanced through coordination/read/decode; coordinator-supplied relocated URLs are validated by the authoritative reader.",
+    "Cancellation is sticky before coordinator installation and calls coordinator.cancel outside the lock, avoiding source-level reentrant lock deadlock.",
+    "Absent accessor result and coordination errors prevent publication; a repeated accessor could replace only the local result, with no project mutation inside the accessor.",
+    "Main-actor request/acceptance/scene guards protect the pre-reservation import boundary; after reservation Studio owns the commit and dismissed UI suppresses stale feedback.",
+    "Nine native methods cover relevant local/presenter scenarios but were not executed by this worker."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git log -3 --oneline",
+      "result": "Observed base 804c2c7 with root candidate edits; reviewed provider/import sources unchanged."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "Passed structural and evidence-reference validation only."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 outstanding core_tests, native_build and persistence_smoke during root candidate update."
+    },
+    {
+      "command": "Targeted reads of ProjectDocumentIO, ProjectLibraryView, StudioView wiring and ProjectDocumentIOTests; rg call-site/test inventory",
+      "result": "Source invariants and nine native method inventory described in report; no demonstrated defect."
+    },
+    {
+      "command": "git diff -- App/ProjectDocumentIO.swift App/ProjectLibraryView.swift NativeTests/ProjectDocumentIOTests.swift; git diff --check",
+      "result": "Reviewed source diff empty; shared diff check passed."
+    }
+  ],
+  "source_bindings": {
+    "App/ProjectDocumentIO.swift": "84c163b88c41cb9b3535ac4c74d0c0dae3c5ce7628c5890b70b4656ce3167f85",
+    "App/ProjectLibraryView.swift": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe",
+    "App/StudioView.swift": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+    "NativeTests/ProjectDocumentIOTests.swift": "c97fa8adce643b32cc759e1c260e805a27aba9dcce82670e5f840e8c14fa3a39"
+  },
+  "limitations": [
+    "No Apple frameworks, native-provider or UI tests executed.",
+    "No bounded wall-clock cancellation claim for a blocked filesystem/provider operation.",
+    "Actual cloud relocation, security-scoped provider lifetime and SwiftUI picker/dismissal callback delivery require native execution.",
+    "Repeated accessor behavior was considered hypothetically from source; no provider or Foundation callback multiplicity was simulated."
+  ],
+  "integration": "No source patch. Execute the delayed provider cancellation/replacement witness before accepting provider behavior."
+}

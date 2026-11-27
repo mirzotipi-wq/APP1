@@ -48,7 +48,7 @@ public struct LightingProjectDocument: Equatable, Sendable {
         do { envelope = try JSONDecoder().decode(Envelope.self, from: data) }
         catch let error as DocumentError { throw error }
         catch { throw DocumentError.invalidDocument }
-        try requireValidStringsAndUniqueObjectKeys(in: data)
+        try requireValidTokensAndUniqueObjectKeys(in: data)
         return try .init(name: envelope.name, scene: envelope.scene)
     }
 
@@ -64,11 +64,12 @@ public struct LightingProjectDocument: Equatable, Sendable {
     }
 
     /// Foundation has accepted the JSON structure and closed envelope, but may
-    /// defer decoding ignored string values. Validate every string with the same
-    /// Unicode rules as typed values, and reject duplicate decoded object names.
+    /// defer decoding ignored string and number values. Validate every string
+    /// with the same Unicode rules as typed values, require complete JSON number
+    /// grammar, and reject duplicate decoded object names.
     /// This policy applies only to external project documents; legacy stored
     /// library decoding and valid unknown scene metadata are unchanged.
-    private static func requireValidStringsAndUniqueObjectKeys(in data: Data) throws {
+    private static func requireValidTokensAndUniqueObjectKeys(in data: Data) throws {
         let bytes = try envelopeUTF8(data)
         let stringDecoder = JSONDecoder()
         var index = 0
@@ -118,6 +119,9 @@ public struct LightingProjectDocument: Equatable, Sendable {
                         throw DocumentError.invalidDocument
                     }
                 }
+            case 0x2d, 0x30...0x39: // Number: Foundation may not decode ignored values.
+                index = try endOfValidNumber(in: bytes, startingAt: index)
+                continue // The next iteration still visits the delimiter.
             case 0x7b, 0x5b: // Object or array.
                 scopes.append(ObjectKeyScope(isObject: bytes[index] == 0x7b))
             case 0x7d, 0x5d:
@@ -139,10 +143,48 @@ public struct LightingProjectDocument: Equatable, Sendable {
         throw DocumentError.invalidDocument
     }
 
+    /// Validate number spelling without converting it to a bounded numeric type.
+    /// Unknown metadata may contain valid JSON values outside Double's range.
+    private static func endOfValidNumber(in bytes: [UInt8], startingAt start: Int) throws -> Int {
+        var index = start
+        if bytes[index] == 0x2d { index += 1 }
+        guard index < bytes.count else { throw DocumentError.invalidDocument }
+        if bytes[index] == 0x30 {
+            index += 1
+        } else {
+            guard (0x31...0x39).contains(bytes[index]) else { throw DocumentError.invalidDocument }
+            repeat { index += 1 } while index < bytes.count && (0x30...0x39).contains(bytes[index])
+        }
+        if index < bytes.count, bytes[index] == 0x2e {
+            index += 1
+            guard index < bytes.count, (0x30...0x39).contains(bytes[index]) else {
+                throw DocumentError.invalidDocument
+            }
+            repeat { index += 1 } while index < bytes.count && (0x30...0x39).contains(bytes[index])
+        }
+        if index < bytes.count, bytes[index] == 0x65 || bytes[index] == 0x45 {
+            index += 1
+            if index < bytes.count, bytes[index] == 0x2b || bytes[index] == 0x2d { index += 1 }
+            guard index < bytes.count, (0x30...0x39).contains(bytes[index]) else {
+                throw DocumentError.invalidDocument
+            }
+            repeat { index += 1 } while index < bytes.count && (0x30...0x39).contains(bytes[index])
+        }
+        // Reject leading zeroes and suffixes. Foundation still owns structural
+        // validation, so this need only recognize the legal number terminators.
+        if index < bytes.count {
+            switch bytes[index] {
+            case 0x20, 0x09, 0x0a, 0x0d, 0x2c, 0x5d, 0x7d: break
+            default: throw DocumentError.invalidDocument
+            }
+        }
+        return index
+    }
+
     /// Preserve the decoder's Unicode JSON inputs. The first ASCII structural
     /// or whitespace character identifies UTF-16/32 byte order without a BOM;
     /// UTF-8 stays on the direct bounded-byte path. JSON structure has already
-    /// been checked; the token scan also validates ignored string values.
+    /// been checked; the token scan also validates ignored scalar values.
     private static func envelopeUTF8(_ data: Data) throws -> [UInt8] {
         let prefix = Array(data.prefix(4))
         let encoding: String.Encoding

@@ -297,16 +297,19 @@ jobs:
           [ "${#tests[@]}" -gt 0 ]
           native_phase=xcodebuild
           printf 'Native command start: utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # Keep live result/log writes outside the local Swift package root.
+          # The following always-run step restores the original artifact layout.
+          mkdir -p "$RUNNER_TEMP/keyfill-test-output"
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
-            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
-            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+            -parallel-testing-enabled NO -resultBundlePath "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee "$RUNNER_TEMP/keyfill-test-output/native-tests.log"
           native_phase=metal-checks
           printf 'Native command exit: utc=%s status=0\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           python3 - <<'PY'
           from pathlib import Path
-          import re
-          log = Path("native-tests.log").read_text(encoding="utf-8", errors="replace")
+          import os, re
+          log = (Path(os.environ["RUNNER_TEMP"]) / "keyfill-test-output/native-tests.log").read_text(encoding="utf-8", errors="replace")
           required_metal = {
               "testMetalMatchesCPUOnAvailableDevice",
               "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
@@ -323,6 +326,25 @@ jobs:
           print("Required Metal methods executed and passed; no native methods skipped.")
           PY
           native_phase=complete
+      - name: Collect original test output after the command
+        if: always()
+        run: |
+          set -euo pipefail
+          # Move only after xcodebuild exits or its step is terminated. Missing
+          # or unfinished results still fail the existing accounting/export gates.
+          # Keep archive paths unchanged for every downstream evidence consumer.
+          if [ -f "$RUNNER_TEMP/keyfill-test-output/native-tests.log" ]; then
+            test ! -L "$RUNNER_TEMP/keyfill-test-output/native-tests.log"
+            test ! -e native-tests.log
+            test ! -L native-tests.log
+            mv "$RUNNER_TEMP/keyfill-test-output/native-tests.log" native-tests.log
+          fi
+          if [ -d "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" ]; then
+            test ! -L "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult"
+            test ! -e NativeTests.xcresult
+            test ! -L NativeTests.xcresult
+            mv "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" NativeTests.xcresult
+          fi
       - name: Verify required native method accounting
         if: always()
         run: |
@@ -662,10 +684,32 @@ jobs:
             exit "$studio_test_exit_code"
           }
           trap record_studio_trace_end EXIT
+          # Keep live result/log writes outside the local Swift package root.
+          # The following always-run step restores the original artifact layout.
+          mkdir -p "$RUNNER_TEMP/keyfill-test-output"
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
-            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
-            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee native-tests.log
+            -parallel-testing-enabled NO -resultBundlePath "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" \
+            CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee "$RUNNER_TEMP/keyfill-test-output/native-tests.log"
+      - name: Collect original test output after the command
+        if: always()
+        run: |
+          set -euo pipefail
+          # Move only after xcodebuild exits or its step is terminated. Missing
+          # or unfinished results still fail the existing accounting/export gates.
+          # Keep archive paths unchanged for every downstream evidence consumer.
+          if [ -f "$RUNNER_TEMP/keyfill-test-output/native-tests.log" ]; then
+            test ! -L "$RUNNER_TEMP/keyfill-test-output/native-tests.log"
+            test ! -e native-tests.log
+            test ! -L native-tests.log
+            mv "$RUNNER_TEMP/keyfill-test-output/native-tests.log" native-tests.log
+          fi
+          if [ -d "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" ]; then
+            test ! -L "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult"
+            test ! -e NativeTests.xcresult
+            test ! -L NativeTests.xcresult
+            mv "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" NativeTests.xcresult
+          fi
       - name: Verify required UI method accounting
         if: always()
         env:

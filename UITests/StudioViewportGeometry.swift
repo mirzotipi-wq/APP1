@@ -1,5 +1,33 @@
 import Foundation
 
+/// Bounded interaction travel, independent of the visibility acceptance check.
+/// Large Dynamic Type content can put a valid control many screens away. The
+/// first measured position sets a fixed horizon; later observations never move
+/// that horizon or substitute for actual containment and hittability.
+struct StudioScrollTravelBudget {
+    static let defaultDrags = 12
+    static let absoluteMaximumDrags = 64
+
+    static func maximumDrags(target: CGRect, viewport: CGRect) -> Int {
+        guard !target.isEmpty, !target.isNull, !target.isInfinite,
+              !viewport.isEmpty, !viewport.isNull, !viewport.isInfinite,
+              [target.minX, target.maxX, target.minY, target.maxY,
+               viewport.minX, viewport.maxX, viewport.minY, viewport.maxY]
+                .allSatisfy({ $0.isFinite }), viewport.height > 0 else { return 0 }
+        // Gestures span at most 48% of the viewport. Use 40% when budgeting
+        // travel to allow for the recognizer's initial touch slop, then reserve
+        // four corrections. This is a gesture count, never a layout tolerance.
+        let distance = abs(target.midY - viewport.midY)
+        let estimatedDrags = ceil(distance / (viewport.height * 0.40))
+        // Clamp before conversion: finite AX coordinates may still overflow
+        // during arithmetic or exceed the representable Int range.
+        guard estimatedDrags.isFinite, estimatedDrags < Double(absoluteMaximumDrags - 4) else {
+            return absoluteMaximumDrags
+        }
+        return min(absoluteMaximumDrags, max(defaultDrags, Int(estimatedDrags) + 4))
+    }
+}
+
 /// Pure geometry over one immutable accessibility snapshot. The UI adapter
 /// supplies live fixed-control hittability separately; no result survives a scroll.
 struct StudioViewportGeometry {

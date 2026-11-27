@@ -1,0 +1,184 @@
+{
+  "actual_task_id": "/root/beta_campaign/w020_smoke_original_images",
+  "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "All eight original PNGs are 1206 x 2622 and visually show light app chrome. Every PNG and the attachment manifest byte-match the verified ZIP.",
+    "P3 visible guide spacing: Studio-guide-overview renders little/no visual separation after the comma in its heading; rows 5 and 6 have visibly tighter number/title spacing than rows 1-4, and row 5 title/summary spacing is crowded. Current StudioGuideView literal includes a space; no missing-source-character cause is asserted.",
+    "Studio-light-study capture shows only the top of its canvas before the fixed footer. It is insufficient for whole sphere-frame visual acceptance; this is an evidence-framing limitation, not proof that rendering failed.",
+    "Studio-3D-fit-feet visibly presents geometry in meters within the viewport while the footer says Feet. This is a minor terminology ambiguity; no incorrect unit conversion is established.",
+    "Camera, Plan, meter/test-card, arrangement and mannequin captures contain visible meaningful controls, units and content. Meter and mannequin copy explicitly limits calibration claims; the 3D viewport says illustrative lighting.",
+    "No saved-library list, standalone AR/manual-fallback screen, dark appearance, welcome-screen overview or error-state image is exported in this manifest. The AR-named test attaches 3D and arrangement screenshots only."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git branch --show-current; git log -3 --oneline",
+      "result": "Observed main at 4694b6224ddc54b56d664089a3aa340d09210d01; preexisting workflow/native-test changes and campaign evidence remained untouched."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift version 6.2 (swift-6.2-RELEASE), x86_64-unknown-linux-gnu; no build/test execution needed for image review."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "result": "Exit 0. Structural references valid; M01 active with core_tests, native_build and persistence_smoke outstanding; not acceptance evidence."
+    },
+    {
+      "command": "tools.view_image for all eight original attachment PNG paths listed in image_inventory",
+      "result": "All eight originals visually inspected; no synthesized, resized or substituted image used."
+    },
+    {
+      "command": "sha256sum /tmp/app1-artifacts-0eff52f/baseline-ui-15223030088.zip",
+      "result": "ef991ea2d922cc00fa1f7a15f2a11d5dfc9dc3a82fac747e8bbfb1021fcfebde"
+    },
+    {
+      "command": "Python ZipFile exact-byte comparison of all manifest-listed PNGs and native-attachments/manifest.json against local extracted originals",
+      "result": "8/8 PNG byte matches and manifest byte match; dimensions read from PNG IHDR; SHA256 inventory recorded."
+    },
+    {
+      "command": "git diff -- App/StudioGuideView.swift App/RealityStudioPreview.swift UITests/StudioSmokeTests.swift",
+      "result": "No pending diff in the reviewed production/test paths."
+    }
+  ],
+  "source_bindings": {
+    "AGENTS.md": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+    "agents/OPERATING_PROTOCOL.md": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6",
+    "agents/HANDOFF.md": "139a8f73c6903a7e6d53ac7ccbc7553e0b5246c0f1cc7040ed83f52a90162915",
+    "agents/state.json": "361adf09a80a61ecdcc7dc0c00e4fb2f3e6ea5377b13cbf4f612d3c67351a17d",
+    "docs/PRODUCT.md": "1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628",
+    "docs/ARCHITECTURE.md": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a",
+    "docs/QUALITY.md": "af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336",
+    "docs/DESIGN.md": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117",
+    "docs/ROADMAP.md": "038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678",
+    "App/StudioGuideView.swift": "5158e7ecef6edb1f798893ec3d4ff7ea6a11654689aa07be56c0676163c351e4",
+    "App/RealityStudioPreview.swift": "3a95ef21338a212765f9ff13692adebf5d116b3779e9d4bc93d085134714ac07",
+    "UITests/StudioSmokeTests.swift": "963ea1efbf72a1b365a6bf339c5031a9a163e396c791173726032692c4d36b23"
+  },
+  "limitations": [
+    "Screenshots bind to tested baseline 9d18d762f204ed060af5309554d97841ea70ea03, not current checkout 4694b6224ddc54b56d664089a3aa340d09210d01 or pending changes.",
+    "Run/source/job metadata supplied by coordinator from root verification; archive hash and original-image byte identity independently verified here. Full ordered method accounting intentionally not repeated.",
+    "Still images cannot establish gestures, focus, persistence, physical AR accuracy, device performance, hit targets or current-patch UI acceptance.",
+    "No saved-library, standalone AR fallback, dark or error-state image available in assigned artifact; no native Apple rerun performed."
+  ],
+  "integration": "No patch. Root should track guide visual spacing and units wording, and require a fully visible Study viewport plus missing visual states in subsequent source-bound capture; root owns gates.",
+  "artifact_binding": {
+    "source_revision": "9d18d762f204ed060af5309554d97841ea70ea03",
+    "run_id": 46037214333,
+    "job_id": 140637959405,
+    "artifact_id": 15223030088,
+    "artifact_name": "ui-studio-smoke-evidence",
+    "archive_path": "/tmp/app1-artifacts-0eff52f/baseline-ui-15223030088.zip",
+    "archive_bytes": 6175116,
+    "archive_sha256": "ef991ea2d922cc00fa1f7a15f2a11d5dfc9dc3a82fac747e8bbfb1021fcfebde",
+    "run_binding_provenance": "Root verified metadata, relayed by /root/beta_campaign; W020 independently verified archive hash and image membership",
+    "manifest_sha256": "fa9bbf73f724e0b42431a83d852ee0c4969093400a5f1ee31b430ec6fc264908",
+    "image_directory": "/tmp/app1-artifacts-0eff52f/passed-ui/studio-smoke/artifacts/native-attachments"
+  },
+  "image_inventory": [
+    {
+      "filename": "C58FA67E-19E8-47BC-84BD-D0F5A67C7DE7.png",
+      "human_readable_name": "Studio-camera_0_D17824E9-4D27-4CDB-9AFD-75E0DA82D2C1.png",
+      "test_identifier": "StudioSmokeTests/testCameraFocalLengthUndoAndRelaunch()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 273851,
+      "sha256": "a9b2246ff67bb45f35500323a7bda01d4136b4f4c52b04595c1d314754dda704",
+      "archive_entry": "artifacts/native-attachments/C58FA67E-19E8-47BC-84BD-D0F5A67C7DE7.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "A89488CF-236F-4E42-9185-9921208DE211.png",
+      "human_readable_name": "Studio-test-card_0_C03A5A6E-4CC3-424B-854C-5183B40EBAFE.png",
+      "test_identifier": "StudioSmokeTests/testMeterBalanceSaveUndoAndRelaunch()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 273792,
+      "sha256": "f01d6ed62e7f86de32bd5d894063c491ee71375e483d8c4a0ac2e7558ee744d0",
+      "archive_entry": "artifacts/native-attachments/A89488CF-236F-4E42-9185-9921208DE211.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "831C4179-645A-4FC7-A987-8BD29359E14E.png",
+      "human_readable_name": "Studio-plan_0_33077428-ED7D-4B73-ACDA-A6633F02F1F8.png",
+      "test_identifier": "StudioSmokeTests/testRecipeEditSaveAndReopen()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 245006,
+      "sha256": "eeffa75c12721c9a107ad6bba05135ceae66082ab7e176c7f9b58c5462566bdd",
+      "archive_entry": "artifacts/native-attachments/831C4179-645A-4FC7-A987-8BD29359E14E.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "1A5CD4F4-90F5-4603-B426-BFD70CE34643.png",
+      "human_readable_name": "Studio-arrangement-feet_0_D5C266C8-6128-43A8-B675-A2B11F8A3E51.png",
+      "test_identifier": "StudioSmokeTests/testSettingsFeet3DFitAndSimulatorARManualFallback()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 223226,
+      "sha256": "a55deef87da8d18227a8d0d0548e86cb519c4ab661052d3b7f0d99e633238262",
+      "archive_entry": "artifacts/native-attachments/1A5CD4F4-90F5-4603-B426-BFD70CE34643.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "3DCAF07C-3F4A-4EC3-A049-D894930393EC.png",
+      "human_readable_name": "Studio-3D-fit-feet_0_B35BE72A-E801-465F-BDA7-8F23B2A407DF.png",
+      "test_identifier": "StudioSmokeTests/testSettingsFeet3DFitAndSimulatorARManualFallback()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 348772,
+      "sha256": "abe40a0889d812b25ed155bc657a1c5b548c6096a6e89a25ce605d7ddeeff665",
+      "archive_entry": "artifacts/native-attachments/3DCAF07C-3F4A-4EC3-A049-D894930393EC.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "5D96D7BB-BB67-43B8-A354-AC98570F9CFF.png",
+      "human_readable_name": "Studio-guide-overview_0_AFD7A325-3214-4080-AD8D-48249A8C1076.png",
+      "test_identifier": "StudioSmokeTests/testStudioGuideKeepsUnsavedSetupSelectionAndHistory()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 239980,
+      "sha256": "85ef6f0c84c38da42e00ecb7738fa5a7f33c730ed3e4720ddf77235e6cf37a23",
+      "archive_entry": "artifacts/native-attachments/5D96D7BB-BB67-43B8-A354-AC98570F9CFF.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "34CF8E7B-56C3-464D-BD99-F45BD192C8CA.png",
+      "human_readable_name": "Studio-light-study_0_989EC73B-6406-4F91-9B91-1A2C480B04E0.png",
+      "test_identifier": "StudioSmokeTests/testStudyRendersActualReferenceFrame()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 298272,
+      "sha256": "d07c26c77960e8524ae59455fee846d21b5fe7f8c60247b9fbd78ac4cef73beb",
+      "archive_entry": "artifacts/native-attachments/34CF8E7B-56C3-464D-BD99-F45BD192C8CA.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    },
+    {
+      "filename": "F549B9CB-88C9-4623-87BE-5D8A6A2248F7.png",
+      "human_readable_name": "Studio-mannequin-study_0_44B9C8FE-6B29-4638-BBBB-AC96AF2A2C5F.png",
+      "test_identifier": "StudioSmokeTests/testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene()",
+      "device": "iPhone 17 Pro",
+      "width_px": 1206,
+      "height_px": 2622,
+      "bytes": 313660,
+      "sha256": "fe853218fe8eef17cc7e45694f494537dda22541fb08c2e6a686ae95816070bf",
+      "archive_entry": "artifacts/native-attachments/F549B9CB-88C9-4623-87BE-5D8A6A2248F7.png",
+      "archive_bytes_match": true,
+      "visually_inspected_with": "tools.view_image"
+    }
+  ]
+}

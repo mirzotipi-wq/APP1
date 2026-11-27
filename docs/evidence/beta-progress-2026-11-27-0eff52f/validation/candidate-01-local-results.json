@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "baselineRevision": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "sourceManifest": "candidate-01-source.json",
+  "environment": "Debian 13, x86_64, Swift 6.2, Linux; no Apple SDK",
+  "tests": [
+    {
+      "command": "swift test --jobs 2",
+      "configuration": "Debug",
+      "executed": 599,
+      "failures": 0,
+      "exitStatus": 0,
+      "log": "candidate-01-debug.log"
+    },
+    {
+      "command": "swift test -c release --jobs 2",
+      "configuration": "Release",
+      "executed": 599,
+      "failures": 0,
+      "exitStatus": 0,
+      "log": "candidate-01-release.log"
+    },
+    {
+      "command": "swiftc UITests/StudioViewportGeometry.swift NativeTests/StudioViewportGeometryTests.swift <scratch XCTest entry point> -o <scratch executable>; execute",
+      "configuration": "actual pure geometry XCTest methods",
+      "executed": 11,
+      "failures": 0,
+      "exitStatus": 0,
+      "log": "viewport-tests.log"
+    }
+  ],
+  "limitations": [
+    "Working-tree source is bound by per-file SHA-256, not an invented future commit.",
+    "Linux execution does not establish native app or Apple UI acceptance.",
+    "The initial geometry run failed one null/infinite-input expectation before the explicit CGRect guards were added; viewport-tests-initial-failure.log is retained.",
+    "Baseline Apple accessibility and library failures remain unresolved at the current native runtime."
+  ],
+  "logs": {
+    "candidate-01-debug.log": {
+      "sha256": "21a0a506798eb51b647ceac6cc837f4abbc438893582c1e216bc49d3c11f37ba",
+      "bytes": 167736
+    },
+    "candidate-01-release.log": {
+      "sha256": "724dd7c8b16d4d14f064b1cd85aa9c1b99271f6b100b98912aac64ecc74f0d20",
+      "bytes": 167333
+    },
+    "viewport-tests.log": {
+      "sha256": "8aa05dca012858aad1103d0712a2d600ba6e13a1c76413ae78785d2169e88436",
+      "bytes": 3370
+    },
+    "viewport-tests-initial-failure.log": {
+      "sha256": "03e74c7f42f89ce443ef22ff497d64191f3f6164ec38ed92dd6adb3aa353da42",
+      "bytes": 3568
+    }
+  }
+}

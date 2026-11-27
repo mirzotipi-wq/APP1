@@ -1,0 +1,30 @@
+{
+  "platform": "Linux; bash and mv witness, not macOS execution",
+  "root": "/tmp/APP1-W019-yb0nu0js",
+  "cases": [
+    {
+      "case": "dangling-log-destination",
+      "exit": 0,
+      "stderr": "",
+      "destination_symlink": false,
+      "destination_exists": true,
+      "destination_contents": "original"
+    },
+    {
+      "case": "dangling-bundle-destination",
+      "exit": 1,
+      "stderr": "mv: cannot overwrite non-directory 'NativeTests.xcresult' with directory 'output/NativeTests.xcresult'\n",
+      "destination_symlink": true,
+      "destination_exists": false,
+      "destination_contents": null
+    },
+    {
+      "case": "source-log-symlink",
+      "exit": 0,
+      "stderr": "",
+      "destination_symlink": true,
+      "destination_exists": true,
+      "destination_contents": "not an original log"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "actual_task_id": "/root/beta_campaign/w018_text_plan_units",
+  "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "No confirmed product defect found in this bounded plain-text export review; no source changes made.",
+    "44 held-out assertions pass against a standalone executable compiled directly from every current LightingCore source; source hashes unchanged before/after.",
+    "A 0.0000005-meter projected overhang remains a wall-crossing warning and is rendered as less than 0.000001 m or 0.000002 ft, with signed outside-center coordinates retained.",
+    "Probe passes SI scene preservation, 3D subject distances, unit conversion, cd/K precision, emitter kinds, explicit zero rectangular roll, manual/follow-subject aim, duplicate Unicode identity, bidi sanitization and immutable snapshots.",
+    "Studio text follows displayUnits. Standalone room notes intentionally use localized meters and label this in their review screen. Notes share the exact immutable displayed string; PDF preview and share use the same prepared data.",
+    "Initial probe failed because its camera was outside a too-shallow synthetic room; preserving the failure, increasing only fixture depth from 4 to 8 m made the intended single-outside-center assertions pass.",
+    "Pending diff observed: NativeTests/StudioTextFieldTests.swift and campaign ledger/evidence; reviewed production/test inputs have no pending diff."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift version 6.2 (swift-6.2-RELEASE); x86_64-unknown-linux-gnu"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+      "result": "State structure/evidence references valid; M01 outstanding core_tests, native_build, persistence_smoke. This is not gate acceptance."
+    },
+    {
+      "command": [
+        "/tmp/swift-0eff52f/usr/bin/swiftc",
+        "-module-name",
+        "W018Probe",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ARPlacementLayout.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/BetaFeedbackReport.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/CameraFraming.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/Colorimetry.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/GuidedLighting.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightOutputAdjustment.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightingPlan.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightingProjectDocument.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightingRecipe.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/PortraitHeadMesh.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/PortraitStudy.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ProjectLibrary.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ReferencePNG.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ReferenceStudy.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ReferenceTonalSummary.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/RoomPlacement.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/RoomPlacementText.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/Scene.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneCodec.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneEditHistory.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneFileStore.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneLightCreation.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneTransform.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioDisplayName.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioEditorState.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioFeatureContext.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioFeaturePresentation.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioFieldCommand.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioNumericInput.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioOptics.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioPlanLabelLayout.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioSceneBounds.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudyFloat32Eligibility.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudyFrameCache.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudyValidationFixtures.swift",
+        "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SurfacePhotometry.swift",
+        "/tmp/W018-text-plan-units.swift",
+        "-o",
+        "/tmp/W018-text-plan-units"
+      ],
+      "result": "Exit 0; direct-source standalone build. No shared .build mutation."
+    },
+    {
+      "command": "/tmp/W018-text-plan-units (initial 4 m room-depth fixture)",
+      "result": "Exit 1: FAIL subprecision outside preserved; fixture also placed camera outside. Original source/log retained."
+    },
+    {
+      "command": "/tmp/W018-text-plan-units (corrected 8 m room-depth fixture)",
+      "result": "PASS: 44 held-out text/units/identity/snapshot assertions\nmetric: Emitting-face projection crosses left wall boundaries. Projected wall overhang: less than 0.000001 m.\nimperial: Emitting-face projection crosses left wall boundaries. Projected wall overhang: 0.000002 ft."
+    },
+    {
+      "command": "SHA256 comparison of all direct-compiled LightingCore sources before and after execution",
+      "result": "All identical."
+    }
+  ],
+  "source_bindings": {
+    "Sources/LightingCore/ARPlacementLayout.swift": "4a0c8994149001e09a34ba38774e678d67cdce115dc5b252619dc4d861d28838",
+    "Sources/LightingCore/BetaFeedbackReport.swift": "41b92fba0d77d48be12051dc6ce93583528cfef4590e3d09c120e62a40d67331",
+    "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+    "Sources/LightingCore/Colorimetry.swift": "059589eebc77120df5a5715f9b8b708c08da6701a55383a665312d3fda1e3a84",
+    "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+    "Sources/LightingCore/LightOutputAdjustment.swift": "370c40ad50745889e3eabc51a57e8822f8a5008be9b076a89f06ca619e887d6a",
+    "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+    "Sources/LightingCore/LightingProjectDocument.swift": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17",
+    "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+    "Sources/LightingCore/PortraitHeadMesh.swift": "2f4be2a16daf9758d38bb184e735c9ae130797d01327cf78a1563b783826c637",
+    "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "Sources/LightingCore/ProjectLibrary.swift": "c3a69fee485a59d4608b2c972834d8e2879de33732e2aa5208d93f02881e4c39",
+    "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+    "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+    "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+    "Sources/LightingCore/RoomPlacement.swift": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+    "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+    "Sources/LightingCore/SceneEditHistory.swift": "b74aa78bac2c6940c86177dc74703864e054190950092879e81c64cc7697a767",
+    "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+    "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+    "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+    "Sources/LightingCore/StudioDisplayName.swift": "56130a2c0a0f6d4cc1003248d3ca341c444723d97cbc36230845cb8401a8a314",
+    "Sources/LightingCore/StudioEditorState.swift": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668",
+    "Sources/LightingCore/StudioFeatureContext.swift": "d41a1a24be70ca09ce51c2f97f5ec47cea480d58a10ab88ef40b121c65358704",
+    "Sources/LightingCore/StudioFeaturePresentation.swift": "220a85ac575460d54e0a39c5a9ada9f894556b849018ee5e21a2099cf6a472f0",
+    "Sources/LightingCore/StudioFieldCommand.swift": "f130b2819e6e29beb83c0222da72eab9f0237131c90a33c6f07d9297beefc1ac",
+    "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+    "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+    "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+    "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+    "Sources/LightingCore/StudyFloat32Eligibility.swift": "cbb9fb57923d269120d75db70ea4fe0a5e8dfe0a185fe8aab5b0c1ce764a6c51",
+    "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+    "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+    "Sources/LightingCore/SurfacePhotometry.swift": "8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f",
+    "App/LightingPlanExportView.swift": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+    "App/ManualRoomPlacementView.swift": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+    "App/StudioView.swift": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+    "Tests/LightingCoreTests/LightingPlanTests.swift": "b5b7ea1e45f4ef278ba6871820cb2acc9f8f5784d44a97ebda01e5e658618ae5",
+    "Tests/LightingCoreTests/RoomPlacementTextTests.swift": "5b9111c9ea4bde5ede586273a965cb9a12030a64087c3e7d55d20433f3277f08"
+  },
+  "artifact_bindings": {
+    "/tmp/W018-text-plan-units.swift": "8ef4ac69550a629df4459f3750409775a247ed3d0965d9ae3c2bea12f0cbdac9",
+    "/tmp/W018-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/W018-probe.log": "e9b6b650ba821b6a75b9b5d9db4fdc570c860c095615b6bc786e47686bffd6c7",
+    "/tmp/W018-probe-initial.swift": "ebb6f95be978161721a6ba0aad16c747e6ab6392661df0c505f317d205e318a3",
+    "/tmp/W018-probe-initial.log": "77cc8efdec3ffcc8b16d141f1fb3d458c1b8d6b23a7a929c5edc6ddbe080fa0c",
+    "/tmp/W018-source-bindings.json": "62c5933eb06cfcb074f004850da51e648466ce7ecf3e3694c3a50ab7ce640520",
+    "/tmp/W018-text-plan-units": "739ecc8eff1fdb6f2762990ba1f38cd5c9cf0854abdb7e027fbd723b8e50b837"
+  },
+  "limitations": [
+    "Linux Swift standalone execution only; native SwiftUI/ShareLink/PDF runtime unavailable and not claimed.",
+    "Existing 14 LightingPlanTests and 5 RoomPlacementTextTests methods inspected, not rerun as XCTest; no full suite or physical calibration claim.",
+    "The held-out probe is bounded evidence, not complete export or release acceptance."
+  ],
+  "integration": "No patch. Root may retain the unique /tmp/W018-* probe/log/source-binding artifacts; root owns gates and commits.",
+  "persisted_artifact_bindings": {
+    "workers/W018-text-plan-units.swift": "8ef4ac69550a629df4459f3750409775a247ed3d0965d9ae3c2bea12f0cbdac9",
+    "workers/W018-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "workers/W018-probe.log": "e9b6b650ba821b6a75b9b5d9db4fdc570c860c095615b6bc786e47686bffd6c7",
+    "workers/W018-probe-initial.swift": "ebb6f95be978161721a6ba0aad16c747e6ab6392661df0c505f317d205e318a3",
+    "workers/W018-probe-initial.log": "77cc8efdec3ffcc8b16d141f1fb3d458c1b8d6b23a7a929c5edc6ddbe080fa0c",
+    "workers/W018-source-bindings.json": "62c5933eb06cfcb074f004850da51e648466ce7ecf3e3694c3a50ab7ce640520"
+  }
+}

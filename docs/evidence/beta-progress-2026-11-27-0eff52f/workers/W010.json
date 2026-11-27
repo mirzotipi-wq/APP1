@@ -1,0 +1,59 @@
+{
+  "actual_task_id": "/root/beta_campaign/w010_library_raw_diagnostics",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed",
+  "findings": [
+    "Actual app main-thread responsiveness at17:16:59 precedes an explicitly logged380.82-second AX hierarchy capture.",
+    "Initial60-second quiescence failure and subsequent hierarchy stall have no demonstrated source root cause.",
+    "UIKit delayed gesture-gate diagnostic spans approximately back to the Duplicate transition; correlation is not proof.",
+    "Both attempted spindumps returned unsupported/no data; no app-specific input trace or sampled main-thread stack closes attribution."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "passed structural validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 native_build and persistence_smoke outstanding"
+    },
+    {
+      "command": "Targeted rg/sed/Python reading of original session, app stdout, host snapshots and baseline CI job log; SHA256 binding",
+      "result": "chronology and source/run/artifact association verified; small original excerpts retained"
+    },
+    {
+      "command": "Native/Apple/device execution",
+      "result": "not run"
+    }
+  ],
+  "source_bindings": {
+    "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/Session-KeyAndFillUITests-2026-11-27_171143-6Zcljv.log": "0c7683d10e89032bdda79c69059b1b84c2a7a5757fb87a789fa98e43f966cc1e",
+    "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/StandardOutputAndStandardError-com.example.keyandfill.txt": "7efcb3a2feb22086f297aea303630c4e4f314822149d0fcda2732131aafd2106",
+    "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/testmanagerd.log": "82c9a432a0eef54698a948c46b4f79620a2dd70753bbf57683fbaabe2b44f332",
+    "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/scheduling.log": "d3dfcc354974b3871f6b5aa17ba9b52bf38dda9a96db2ac82ac7f046c661b06f",
+    "docs/evidence/beta-progress-2026-11-27-0eff52f/validation/baseline-library-reference.log": "2e4624703bf02d6204669831735b977a8c58fa632ddb5330682bd843e5787a5f",
+    "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+    "UITests/ProjectLibraryUITests.swift": "384db05389dcd30d422772bb3388e80b0519456f35dae0033b5b2a4eedf088a6",
+    "docs/evidence/beta-progress-2026-11-27-0eff52f/workers/W010-excerpts.txt": "a558d2482eafa0fcc647612736b17fd7dfa6b624db723062236cbf9b19222954"
+  },
+  "artifact_context": {
+    "source_revision": "9d18d762f204ed060af5309554d97841ea70ea03",
+    "run_id": 46037214333,
+    "artifact_id": 15220551550,
+    "artifact_name": "ui-library-reference-evidence",
+    "advertised_zip_sha256": "c90a10be91ae5e8ec482e9e0b0299de074ee2d6c54b070d9661e1e862a0eb562",
+    "session_id": "29AE1554-E307-4904-9A0F-F28E1EB3AD83",
+    "simulator_id": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+    "app_pid": 18728,
+    "runner_pid": 14269,
+    "test": "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch"
+  },
+  "limitations": [
+    "Advertised artifact zip digest read from original CI log; this worker hashed extracted logs, not a fresh network download.",
+    "No sampled stack or bounded app input recorder output in original failure.",
+    "After-test hostCPU sample is not contemporaneous with initial failure.",
+    "Root source has uncommitted changes; this worker performed no product/source mutation."
+  ],
+  "integration": "No production patch. Existing root trace and failure-only screen capture are a justified next discriminating observation; do not increase deadlines or relax assertions."
+}

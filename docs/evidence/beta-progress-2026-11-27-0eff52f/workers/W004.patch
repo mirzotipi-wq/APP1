@@ -1,0 +1,164 @@
+diff --git a/Sources/LightingCore/LightingProjectDocument.swift b/Sources/LightingCore/LightingProjectDocument.swift
+index 5850ee1..e8bc921 100644
+--- a/Sources/LightingCore/LightingProjectDocument.swift
++++ b/Sources/LightingCore/LightingProjectDocument.swift
+@@ -48,7 +48,7 @@ public struct LightingProjectDocument: Equatable, Sendable {
+         do { envelope = try JSONDecoder().decode(Envelope.self, from: data) }
+         catch let error as DocumentError { throw error }
+         catch { throw DocumentError.invalidDocument }
+-        try requireValidStringsAndUniqueObjectKeys(in: data)
++        try requireValidTokensAndUniqueObjectKeys(in: data)
+         return try .init(name: envelope.name, scene: envelope.scene)
+     }
+ 
+@@ -64,11 +64,12 @@ public struct LightingProjectDocument: Equatable, Sendable {
+     }
+ 
+     /// Foundation has accepted the JSON structure and closed envelope, but may
+-    /// defer decoding ignored string values. Validate every string with the same
+-    /// Unicode rules as typed values, and reject duplicate decoded object names.
++    /// defer decoding ignored string and number values. Validate every string
++    /// with the same Unicode rules as typed values, require complete JSON number
++    /// grammar, and reject duplicate decoded object names.
+     /// This policy applies only to external project documents; legacy stored
+     /// library decoding and valid unknown scene metadata are unchanged.
+-    private static func requireValidStringsAndUniqueObjectKeys(in data: Data) throws {
++    private static func requireValidTokensAndUniqueObjectKeys(in data: Data) throws {
+         let bytes = try envelopeUTF8(data)
+         let stringDecoder = JSONDecoder()
+         var index = 0
+@@ -118,6 +119,9 @@ public struct LightingProjectDocument: Equatable, Sendable {
+                         throw DocumentError.invalidDocument
+                     }
+                 }
++            case 0x2d, 0x30...0x39: // Number: Foundation may not decode ignored values.
++                index = try endOfValidNumber(in: bytes, startingAt: index)
++                continue // The next iteration still visits the delimiter.
+             case 0x7b, 0x5b: // Object or array.
+                 scopes.append(ObjectKeyScope(isObject: bytes[index] == 0x7b))
+             case 0x7d, 0x5d:
+@@ -139,10 +143,48 @@ public struct LightingProjectDocument: Equatable, Sendable {
+         throw DocumentError.invalidDocument
+     }
+ 
++    /// Validate number spelling without converting it to a bounded numeric type.
++    /// Unknown metadata may contain valid JSON values outside Double's range.
++    private static func endOfValidNumber(in bytes: [UInt8], startingAt start: Int) throws -> Int {
++        var index = start
++        if bytes[index] == 0x2d { index += 1 }
++        guard index < bytes.count else { throw DocumentError.invalidDocument }
++        if bytes[index] == 0x30 {
++            index += 1
++        } else {
++            guard (0x31...0x39).contains(bytes[index]) else { throw DocumentError.invalidDocument }
++            repeat { index += 1 } while index < bytes.count && (0x30...0x39).contains(bytes[index])
++        }
++        if index < bytes.count, bytes[index] == 0x2e {
++            index += 1
++            guard index < bytes.count, (0x30...0x39).contains(bytes[index]) else {
++                throw DocumentError.invalidDocument
++            }
++            repeat { index += 1 } while index < bytes.count && (0x30...0x39).contains(bytes[index])
++        }
++        if index < bytes.count, bytes[index] == 0x65 || bytes[index] == 0x45 {
++            index += 1
++            if index < bytes.count, bytes[index] == 0x2b || bytes[index] == 0x2d { index += 1 }
++            guard index < bytes.count, (0x30...0x39).contains(bytes[index]) else {
++                throw DocumentError.invalidDocument
++            }
++            repeat { index += 1 } while index < bytes.count && (0x30...0x39).contains(bytes[index])
++        }
++        // Reject leading zeroes and suffixes. Foundation still owns structural
++        // validation, so this need only recognize the legal number terminators.
++        if index < bytes.count {
++            switch bytes[index] {
++            case 0x20, 0x09, 0x0a, 0x0d, 0x2c, 0x5d, 0x7d: break
++            default: throw DocumentError.invalidDocument
++            }
++        }
++        return index
++    }
++
+     /// Preserve the decoder's Unicode JSON inputs. The first ASCII structural
+     /// or whitespace character identifies UTF-16/32 byte order without a BOM;
+     /// UTF-8 stays on the direct bounded-byte path. JSON structure has already
+-    /// been checked; the token scan also validates ignored string values.
++    /// been checked; the token scan also validates ignored scalar values.
+     private static func envelopeUTF8(_ data: Data) throws -> [UInt8] {
+         let prefix = Array(data.prefix(4))
+         let encoding: String.Encoding
+diff --git a/Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift b/Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift
+new file mode 100644
+index 0000000..87a9470
+--- /dev/null
++++ b/Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift
+@@ -0,0 +1,69 @@
++import Foundation
++import XCTest
++@testable import LightingCore
++
++final class ProjectEnvelopeBetaTests: XCTestCase {
++    private let scene = #"{"schemaVersion":5,"subject":{"x":0,"y":1.5,"z":0},"camera":{"x":0,"y":1.5,"z":3},"lights":[]}"#
++
++    private func wire(metadata: String) -> Data {
++        let body = String(scene.dropLast()) + #", "metadata":"# + metadata + "}"
++        return Data((#"{"schemaVersion":1,"name":"Imported","scene":"# + body + "}").utf8)
++    }
++
++    func testMalformedIgnoredNumberGrammarCannotImport() {
++        // Foundation can defer numeric conversion for ignored scene metadata.
++        // These tokens must fail the JSON boundary even though no Double or Int
++        // property asks the decoder to interpret them.
++        for token in ["-", "--1", "00", "01", "-01", "1.", "-0.",
++                      "1e", "1e+", "1e-", "1E", "1E+", "1E-", "1.e2",
++                      "1e+-2", "1e--2", "0x1", "+1", ".1"] {
++            for metadata in [token, #"{"value":"# + token + "}",
++                             "[0," + token + ",2]", #"[{"nested":["# + token + "]}]"] {
++                XCTAssertThrowsError(try LightingProjectDocument.decode(wire(metadata: metadata)), metadata) {
++                    XCTAssertEqual($0 as? LightingProjectDocument.DocumentError, .invalidDocument)
++                }
++            }
++        }
++    }
++
++    func testCompleteIgnoredNumbersRetainGrammarWithoutArtificialMagnitudeLimits() throws {
++        let expected = try LightingProjectDocument.decode(wire(metadata: "null"))
++        let tokens = ["0", "-0", "10", "-10", "0.0", "-0.125", "1e0", "1E+0",
++                      "1e-9999", "-1e9999", "1e9999", "1.00e+0",
++                      String(repeating: "9", count: 1_024)]
++        for token in tokens {
++            for metadata in [token, #"{"value":"# + token + "}",
++                             "[" + token + ",0]", "[0," + token + "]",
++                             "[ \n\t" + token + "\r\n ]"] {
++                XCTAssertEqual(try LightingProjectDocument.decode(wire(metadata: metadata)), expected, metadata)
++            }
++        }
++    }
++
++    func testNumberLikeStringsAndEscapedDigitsRemainOrdinaryMetadata() throws {
++        let expected = try LightingProjectDocument.decode(wire(metadata: "null"))
++        let metadata = #"{"1e":"--1","01":["1.","-","1e+","\u0031e-",{"\u0030x1":"0x1"}]}"#
++        XCTAssertEqual(try LightingProjectDocument.decode(wire(metadata: metadata)), expected)
++    }
++
++    func testNumberValidationCrossesSupportedUnicodeEncodings() throws {
++        let valid = String(decoding: wire(metadata: #"[1e9999,{"value":-0.125e-99}]"#), as: UTF8.self)
++        let invalid = String(decoding: wire(metadata: #"[0,{"value":1e+}]"#), as: UTF8.self)
++        let expected = try LightingProjectDocument.decode(Data(valid.utf8))
++        for encoding: String.Encoding in [.utf8, .utf16BigEndian, .utf16LittleEndian,
++                                           .utf32BigEndian, .utf32LittleEndian] {
++            XCTAssertEqual(try LightingProjectDocument.decode(XCTUnwrap(valid.data(using: encoding))), expected)
++            XCTAssertThrowsError(try LightingProjectDocument.decode(XCTUnwrap(invalid.data(using: encoding)))) {
++                XCTAssertEqual($0 as? LightingProjectDocument.DocumentError, .invalidDocument)
++            }
++        }
++    }
++
++    func testInvalidNumericSuffixesAndIncompleteLiteralsCannotBecomePadding() {
++        for token in ["1false", "1null", "1true", "1x", "1_0", "1 2", "false1", "null1", "true1"] {
++            XCTAssertThrowsError(try LightingProjectDocument.decode(wire(metadata: token)), token) {
++                XCTAssertEqual($0 as? LightingProjectDocument.DocumentError, .invalidDocument)
++            }
++        }
++    }
++}

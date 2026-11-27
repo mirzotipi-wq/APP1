@@ -139,7 +139,14 @@ extension XCTestCase {
                              fullyVisible: Bool = false,
                              file: StaticString = #filePath, line: UInt = #line) {
         var geometry: [String] = []
-        revealAttempts: for _ in 0..<12 {
+        var performedDrags = 0
+        var maximumDrags = StudioScrollTravelBudget.defaultDrags
+        var measuredTravel = false
+        var previousRelativeOffset: CGFloat?
+        var stationaryObservations = 0
+        // Observe once more after the last permitted drag. Ending immediately
+        // after an input would discard the final real visibility observation.
+        revealAttempts: while performedDrags <= maximumDrags {
             let targetExists = target.exists
             let expected = fullyVisible && targetExists ? try? target.snapshot() : nil
             let observation: StudioViewportObservation?
@@ -196,9 +203,29 @@ extension XCTestCase {
                         // tall row; each new snapshot supplies the remaining move.
                         remainingVerticalOffset = frame.midY - viewport.midY
                         down = frame.midY > viewport.midY
+                        if !measuredTravel {
+                            maximumDrags = min(StudioScrollTravelBudget.absoluteMaximumDrags,
+                                performedDrags + StudioScrollTravelBudget.maximumDrags(target: frame, viewport: viewport))
+                            measuredTravel = true
+                            geometry.append("Measured travel budget: at most \(maximumDrags) drags total")
+                        }
+                        if previousRelativeOffset == remainingVerticalOffset {
+                            stationaryObservations += 1
+                        } else {
+                            stationaryObservations = 0
+                        }
+                        previousRelativeOffset = remainingVerticalOffset
+                        if stationaryObservations >= 3 {
+                            geometry.append("Three drags made no observed progress toward the target")
+                            break revealAttempts
+                        }
                     } else if frame.midY <= viewport.minY { down = false }
                     else if frame.midY >= viewport.maxY { down = true }
                 }
+            }
+            guard performedDrags < maximumDrags else {
+                geometry.append("Exhausted \(maximumDrags) drags after observing the final position")
+                break revealAttempts
             }
             // Drag on the edge so an ordinary scroll cannot adjust a slider.
             let startY: CGFloat
@@ -230,6 +257,7 @@ extension XCTestCase {
             } else {
                 start.press(forDuration: 0.05, thenDragTo: end)
             }
+            performedDrags += 1
         }
         if !geometry.isEmpty {
             let details = geometry.joined(separator: "\n")

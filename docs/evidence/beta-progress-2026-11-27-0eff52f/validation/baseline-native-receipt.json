@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "sourceRevision": "9d18d762f204ed060af5309554d97841ea70ea03",
+  "runID": 46037214333,
+  "jobID": 140637959164,
+  "artifact": {
+    "id": 15221654399,
+    "name": "native-unit-and-build-evidence",
+    "bytes": 62820656,
+    "sha256": "56a38d340a4ce771535df9b9862b13a75b59704ade15001812fddbcc226629d1",
+    "verified": true
+  },
+  "native": {
+    "required": 335,
+    "started": 335,
+    "orderedCleanPasses": 333,
+    "failedMethods": [
+      "StudioTextFieldTests.testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration"
+    ],
+    "skipped": [],
+    "unstarted": [],
+    "invalidEvents": [
+      {
+        "line": 56,
+        "reason": "Unrecognized Test Case line",
+        "text": "Test Case '-[KeyAndFillTests.BoundedFileReaderTests tes2026-11-27 17:39:34.371001+0000 KeyAndFill[41743:119248] [Client] XPC connection interrupted"
+      },
+      {
+        "events": [
+          {
+            "event": "started",
+            "line": 55
+          }
+        ],
+        "method": "BoundedFileReaderTests.testRejectsOversizeBeforeAnyReadCheckpoint",
+        "reason": "Expected exactly one ordered started -> passed sequence",
+        "target": "KeyAndFillTests"
+      },
+      {
+        "events": [
+          {
+            "event": "started",
+            "line": 984
+          },
+          {
+            "event": "failed",
+            "line": 1010
+          }
+        ],
+        "method": "StudioTextFieldTests.testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration",
+        "reason": "Expected exactly one ordered started -> passed sequence",
+        "target": "KeyAndFillTests"
+      }
+    ],
+    "suiteSummary": "335 tests, 2 failed assertions; one failed method. One other pass event is interrupted mid-name by an unrelated XPC log and is not admitted as a clean ordered pass.",
+    "commandOutcome": "Outer step failed; original xcresult lacks finalization; acceptance is failed."
+  },
+  "failureInterpretation": {
+    "assertions": [
+      "StudioTextFieldTests.swift:775 field.isFirstResponder after the first clear",
+      "StudioTextFieldTests.swift:822 field.isFirstResponder after the first rapid-edit sequence"
+    ],
+    "observed": "Both K, Ke, Kee, Keep sequences retain exact native text, model, selection and write sequence; the first branch has false focus and the second true. A keyboard-queue timeout precedes the failure. These observations do not prove the cause.",
+    "repairStatus": "Under investigation; no assertion weakened or focus repaired after failure."
+  },
+  "macOSPackageSummary": [
+    "Executed 597 tests, with 0 failures (0 unexpected) in 88.194 (88.631) seconds",
+    "Executed 597 tests, with 0 failures (0 unexpected) in 88.194 (88.640) seconds"
+  ],
+  "builds": {
+    "debugSimulator": true,
+    "releaseSimulator": true,
+    "device": "Job still active; not inferred"
+  },
+  "retainedOriginalFiles": {
+    "native-tests.log": {
+      "bytes": 199227,
+      "sha256": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b"
+    },
+    "native-method-accounting.json": {
+      "bytes": 93369,
+      "sha256": "983ccafbd2b6102f51ddaab540b56720c570cc424d62073b6096423337c890fa"
+    },
+    "macos-core-tests.log": {
+      "bytes": 202548,
+      "sha256": "e1558d624e052458d824c585bb65c4ac70dc890b06da62dcc14511b6db4ce3e2"
+    },
+    "simulator-startup/report.json": {
+      "bytes": 11139,
+      "sha256": "0d28aa1486cb82bbf0fdc9b78c9db0eea87854d4061ddc9728ae692909594d4b"
+    }
+  },
+  "limitations": [
+    "Current candidate has changed source and requires fresh native/UI execution.",
+    "The original ZIP is retained in the workflow artifact and local scratch; only the listed original files are committed here.",
+    "Live job/device/remaining UI outcomes will be reconciled separately."
+  ]
+}

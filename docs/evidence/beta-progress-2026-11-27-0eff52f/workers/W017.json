@@ -1,0 +1,94 @@
+{
+  "actual_task_id": "/root/beta_campaign/w017_package_reload_diagnosis",
+  "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "Local LightingCore package root overlaps repository outputs; observed directly in original native log and current project.yml.",
+    "Original native log has 72 reload lines, including 30 after final suite summary; no TEST EXECUTE completion banner.",
+    "335 starts include 333 clean passes, one failed method with two assertions, and one log-interleaved terminal event; this is failed acceptance.",
+    "Studio-optics logs 12 reloads yet completes TEST EXECUTE SUCCEEDED: reload occurrence is not sufficient to explain nonfinalization.",
+    "Retrieved reports support an output-isolation experiment, not a demonstrated tee append feedback cause."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git branch --show-current; git log -2 --oneline (separate calls)",
+      "result": "main at 4694b6224ddc54b56d664089a3aa340d09210d01; evidence/ledger changes only at inspection; source files not modified by W017."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "exit 0; structural references valid only."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "exit 0; M01 core_tests/native_build/persistence_smoke outstanding."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift 6.2 (swift-6.2-RELEASE), x86_64-unknown-linux-gnu."
+    },
+    {
+      "command": "Python Path/read_text and regex count of /tmp/app1-artifacts-0eff52f/native/native-tests.log; head/tail original logs",
+      "result": "1368 lines; 72 reloads, 30 after line1305; 335 starts/333 clean passes/1 failed method; no skipped records or terminal Xcode banner; optics contains TEST EXECUTE SUCCEEDED."
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py verify-log unit /tmp/app1-artifacts-0eff52f/native/native-tests.log",
+      "result": "exit 1 expected: interrupted BoundedFileReader pass, failed StudioTextField method, and three candidate geometry methods absent from historical baseline."
+    },
+    {
+      "command": "git show 9d18d762f204ed060af5309554d97841ea70ea03:Package.swift",
+      "result": "exit 128: baseline tree path unavailable locally; no source-equivalence assertion made."
+    }
+  ],
+  "source_bindings": {
+    "AGENTS.md": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+    "agents/OPERATING_PROTOCOL.md": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6",
+    "agents/HANDOFF.md": "325dd8728c8d969e80a443e9f74f873e208be6c3cd3535a9969d0b75ea557a88",
+    "agents/state.json": "447d9c978b986657f38140063b8ffe25dac32e4ca56a944db095d93b9b981cb6",
+    "docs/PRODUCT.md": "1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628",
+    "docs/ARCHITECTURE.md": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a",
+    "docs/QUALITY.md": "af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336",
+    "docs/DESIGN.md": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117",
+    "docs/ROADMAP.md": "038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678",
+    "Package.swift": "b310183d99e93d72892137b32daa94bd18abec76bb8e814a035c067c7e4d1f54",
+    "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+    ".github/workflows/ios-prototype.yml": "34a0b4bb9f6e657a0a66b1f5f1d834d6d903611af9cd5b170206db13c26ba891",
+    ".github/workflows/platform-accessibility-diagnostics.yml": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9",
+    ".github/workflows/accessibility-control.yml": "15eee60e05abfda7a3e7028a05fd679fca05b198940ac8b7f208e4a472710854",
+    "scripts/native_test_shards.py": "10dcb98096b78f0337830b06e858665491a7b2693045f9f91b1ad2d6eefa6959",
+    "docs/evidence/beta-progress-2026-11-27-0eff52f/validation/baseline-native-receipt.json": "86d7080e8d6e5380eb8a7dbd17b83a3c00a29dc814e1e698966c06259638723f"
+  },
+  "artifact_bindings": {
+    "/tmp/app1-artifacts-0eff52f/native/native-tests.log": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b",
+    "/tmp/app1-artifacts-0eff52f/passed-ui/studio-optics/native-tests.log": "c7fe0c92b33bf911d1b286f4925d401bdeb983df3aa81564614c968e36d5cef0",
+    "/tmp/app1-artifacts-0eff52f/passed-ui/room-precision/native-tests.log": "a2a288c9ed641c0c42f17e8a19b7802aefa0fdb2e7f60bfe89ae27177056320d",
+    "/tmp/app1-artifacts-0eff52f/passed-ui/studio-smoke/native-tests.log": "59d8127f466e6a325f36965eb8ec37481e97fac6f324b253d02585401ad71165"
+  },
+  "primary_sources": [
+    {
+      "url": "https://forums.swift.org/t/help-me-understanding-troubleshooting-steps-for-spm/57291",
+      "ref": "turn131132963view0",
+      "lines": "35\u201349",
+      "assessment": "Explicit conjecture about manifest/resolved or added/removed files; no tee append demonstration."
+    },
+    {
+      "url": "https://developer.apple.com/forums/thread/773478",
+      "ref": "turn196187673view1",
+      "lines": "95\u2013100",
+      "assessment": "Accepted reporter answer identifies Package.resolved count mismatch; Apple staff requested sysdiagnose, not confirmation of watcher theory."
+    },
+    {
+      "url": "https://note.com/reality_eng/n/n4d7f6e7757a6?hl=en",
+      "ref": "turn196187673view2",
+      "lines": "88\u2013118,130\u2013191",
+      "assessment": "Firsthand stabilization; mechanistic inference expressly qualified, translated by AI, different crash symptom."
+    }
+  ],
+  "limitations": [
+    "No Apple runtime available; watcher path/event causality cannot be observed here.",
+    "No controlled A/B proof that log appends trigger package reloads.",
+    "The historical native log does not timestamp its deadline; supplied deadline not independently established from it.",
+    "Current candidate differs from historical native source; old git tree unavailable locally."
+  ],
+  "integration": "Root-only recommendation: isolate live native log and xcresult under RUNNER_TEMP; update checks/export/upload to external stage preserving legacy artifact hierarchy; leave all deadlines and gates intact. No patch."
+}

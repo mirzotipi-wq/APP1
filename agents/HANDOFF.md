@@ -1,3 +1,15 @@
+## Active beta progress — 27 November 2026, separate request
+
+This request starts from `804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42` and has its own [actual worker ledger](../docs/evidence/beta-progress-2026-11-27-0eff52f/worker-ledger.json). Root owns integration; one real coordinator schedules 99 fresh specialists under the runtime limit. Prior campaign identities are not counted again.
+
+The first reviewed candidate rejects malformed ignored JSON numbers without imposing artificial magnitude limits on valid metadata. Actual baseline regression produced 69 failed assertions; the fix passed 35 focused document tests and independent 72,766-case differential review. The AXXXL Meter failure is causally explained by original geometry: 12 progressing drags cannot cover the recorded distance; the helper now derives one fixed capped travel budget and observes after the final drag, with unchanged containment/hittability requirements. The actual 11 pure geometry XCTest methods pass locally. The library Menu→Duplicate transition remains unresolved; existing bounded content-free input diagnostics and failure screenshots are now enabled for that workflow. W015 adds a failure-only native focus trace after the actual hosted naming test lost focus while preserving every typed character. W017/W019 reviewed moving live test logs and result bundles outside the local package root; the workflow restores unchanged original artifact paths only after the test command ends. This is an unverified finalization hypothesis, with unchanged gates and deadlines.
+
+Local integrated Debug and Release each pass 599 methods. Current-source Apple/native/UI verification is required. The baseline 9d18 run 46037214333 remains active: library/reference has a query failure and was interrupted; app accessibility failed after 14 Default and 6 AXXXL originals; studio, optics and room groups passed 24 methods. The native command started all 335 methods, with one focus failure and one interrupted pass line; it did not finalize. PDF preview also failed an accessibility query. This does not establish combined acceptance. Source hashes and originals are retained in the new packet. M01 remains active; later gates and owner distribution requirements remain unchanged.
+
+Next: finish first integrated validation and publish a reviewed checkpoint, reconcile exact-source CI, continue the 100 actual-run campaign, then update this note and the canonical evidence together. No signed archive, TestFlight upload, physical-device run, configured StoreKit transaction or beta acceptance is claimed.
+
+The following sections preserve prior source-specific observations.
+
 ## Current published candidate — 27 November 2026
 
 Source `9d18d762f204ed060af5309554d97841ea70ea03`, exact tree `960230420018e740f3fd8ff669f6c98104059e60`, is published on main. Local equivalent `488a459` remains on its backup branch. `validation/published-source-05.json` binds all 258 inputs; only the PDF native test metadata-key expression changed from `af6`. All production, package, deployment and portable-test inputs remain identical.

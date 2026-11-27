@@ -1,0 +1,53 @@
+{
+  "actual_task_id": "/root/beta_campaign/w012_bounded_file_boundary",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed",
+  "findings": [
+    "No demonstrated no-follow, descriptor identity, byte-growth, integer-boundary or cancellation-publication defect.",
+    "Read requests are bounded by remaining maximum plus one; zero/exact limits and growth preserve the payload bound.",
+    "Opened handles reach deferred cleanup on all subsequent code paths; metadata preflight is not authorization.",
+    "Thirteen existing native reader methods cover the reviewed boundaries; they were not rerun.",
+    "Real slow-provider cancellation latency is unverified because checkpoints occur between synchronous operations."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "Passed structural/evidence reference validation only."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 core_tests, native_build and persistence_smoke outstanding."
+    },
+    {
+      "command": "git diff -- App/BoundedFileReader.swift App/ProjectDocumentIO.swift App/ReferencePhoto.swift NativeTests/BoundedFileReaderTests.swift",
+      "result": "Empty targeted source diff; other root-owned changes retained."
+    },
+    {
+      "command": "git diff --check",
+      "result": "Passed."
+    },
+    {
+      "command": "Source/caller/test reads and rg cross-reference inventory",
+      "result": "Verified descriptor cleanup, bounded-read arithmetic and 13 native reader method definitions; no execution claim."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift 6.2; x86_64-unknown-linux-gnu. Native Darwin/Foundation tests not run."
+    }
+  ],
+  "source_bindings": {
+    "App/BoundedFileReader.swift": "f420bf7876ee9d556c69b1682300e402640046983f7cf34cabe8d0508469e36c",
+    "NativeTests/BoundedFileReaderTests.swift": "748cacfa66e0a9ace34e7ba1bf4c8fe05a1093bac8d7d6612b319ffae1a22dc8",
+    "App/ProjectDocumentIO.swift": "84c163b88c41cb9b3535ac4c74d0c0dae3c5ce7628c5890b70b4656ce3167f85",
+    "NativeTests/ProjectDocumentIOTests.swift": "c97fa8adce643b32cc759e1c260e805a27aba9dcce82670e5f840e8c14fa3a39",
+    "App/ReferencePhoto.swift": "1b1b1ea05833fd591fe05fbe6d9fd3f9dacfe3bdd08ad7093ed8c5c08d25792a"
+  },
+  "limitations": [
+    "No Apple/native/provider execution by this worker.",
+    "No fresh runtime descriptor-leak or slow-provider cancellation measurement.",
+    "The reader limits payload bytes; allocator capacity and total process memory are not measured.",
+    "A regular descriptor does not guarantee a coherent snapshot against external in-place mutation."
+  ],
+  "integration": "No source patch. Retain actual-provider cancellation/materialization and native descriptor tests as unverified."
+}

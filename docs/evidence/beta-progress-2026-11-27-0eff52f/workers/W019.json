@@ -1,0 +1,59 @@
+{
+  "actual_task_id": "/root/beta_campaign/w019_ci_output_transport",
+  "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "Initial dangling destination log symlink was silently overwritten; source log symlink was accepted. Both were reported immediately and root corrected both collectors.",
+    "Corrected exact workflow SHA e9cfd2916e920dcb14dc2e9691f1ac4a7e1106e6fd4a93cc91447560dd78d0a3 rejected six independent actual-collector symlink cases while retaining originals.",
+    "Native/UI collectors are identical and directly precede unchanged accounting. Existing job configuration and all other steps are unchanged.",
+    "Live log and xcresult move under RUNNER_TEMP; Metal checker follows live log; later consumers, artifact names, selectors, deadlines, failure propagation and finalization gates retain existing semantics.",
+    "No remaining blocking defect found within bounded review. W017 evidence supports a reversible hypothesis experiment, not proven cause."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git branch --show-current; git log -3 --oneline",
+      "result": "Observed main HEAD 4694b6224ddc54b56d664089a3aa340d09210d01 with root-owned uncommitted workflow and native-test changes."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift 6.2 RELEASE; x86_64-unknown-linux-gnu."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+      "result": "Structural check passed; M01 active with core_tests, native_build, persistence_smoke outstanding."
+    },
+    {
+      "command": "python3 docs/evidence/beta-progress-2026-11-27-0eff52f/workers/W019-symlink-witness.py",
+      "result": "Exit 0. Exact initial YAML reproduced overwrite/accepted source symlink in both jobs; corrected YAML rejected all six cases and retained originals."
+    },
+    {
+      "command": "PyYAML HEAD/current step comparison and bash -n of both collector run strings",
+      "result": "Both syntax exits 0; collector parity, order, always conditions, test controls and all other existing steps/configurations unchanged; W019-exact-parity.json."
+    }
+  ],
+  "source_bindings": {
+    ".github/workflows/ios-prototype.yml": "e9cfd2916e920dcb14dc2e9691f1ac4a7e1106e6fd4a93cc91447560dd78d0a3",
+    "scripts/native_test_shards.py": "10dcb98096b78f0337830b06e858665491a7b2693045f9f91b1ad2d6eefa6959",
+    "docs/evidence/beta-progress-2026-11-27-0eff52f/workers/W017.md": "4c6d63add16dedde166f62975f899df975c8cb5cf973f7b90b229672f2fff0c8"
+  },
+  "limitations": [
+    "Linux Bash transport witnesses only; no macOS/Xcode/native/UI execution.",
+    "Hard cancellation/runner loss and actual descendant process shutdown were not executed; always() does not establish that these situations retain evidence.",
+    "Top-level static path guards do not guarantee protection against hostile concurrent filesystem mutation or untrusted RUNNER_TEMP ancestry.",
+    "Missing/unfinalized-output rejection was source-reviewed through unchanged gates; root owns full transport and tooling verification.",
+    "W017 reload observations have a successful optics counterexample; output-location causality remains unproved."
+  ],
+  "integration": {
+    "patch": "none; root implemented guards",
+    "recommendation": "Proceed with corrected source-bound experiment and actual Apple validation; no acceptance claim from this review.",
+    "evidence": [
+      "W019-initial-witness.json",
+      "W019-initial-workflow.yml",
+      "W019-symlink-witness.py",
+      "W019-symlink-recheck.json",
+      "W019-exact-parity.json",
+      "W019-reviewed-workflow.diff"
+    ]
+  }
+}

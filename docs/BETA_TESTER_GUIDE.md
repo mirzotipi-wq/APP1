@@ -1,6 +1,6 @@
 # Key & Fill beta tester guide
 
-This guide is a checklist for an **engineering candidate** (27 November 2026), not evidence that these steps passed on a device. Record the version/build under test. Required UI acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [current hardening status](evidence/beta-hardening-2026-11-27/README.md), [earlier campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
+This guide is a checklist for an **engineering candidate** (27 November 2026), not evidence that these steps passed on a device. Record the version/build under test. Required UI acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [current beta progress](evidence/beta-progress-2026-11-27-0eff52f/README.md), [earlier campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
 
 ## 1. Create, edit and reopen a local project
 

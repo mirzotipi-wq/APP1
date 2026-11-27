@@ -1,0 +1,52 @@
+{
+  "actual_task_id": "/root/beta_campaign/w004_document_envelope",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed_patch_ready",
+  "findings": [
+    "Demonstrated malformed ignored JSON number acceptance in external project documents on actual baseline LightingCore / Swift 6.2.",
+    "Added byte-linear complete JSON number grammar validation without numeric conversion or magnitude limits.",
+    "Baseline five regression methods yielded 69 failed assertions; patched 35 targeted document methods passed."
+  ],
+  "affected_files": [
+    "Sources/LightingCore/LightingProjectDocument.swift",
+    "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift"
+  ],
+  "validations": [
+    {
+      "command": "swiftc -I /tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/Modules Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift /tmp/w004-xctest-main.swift /tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/*.swift.o -o /tmp/w004-baseline-tests; /tmp/w004-baseline-tests",
+      "result": "Baseline actual-module regression: 5 methods, 69 expected failed assertions; W004-baseline.log."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift test -j 2 --filter 'ProjectEnvelopeBetaTests|ProjectDocument.*Tests|LightingProjectDocumentTests'",
+      "result": "35 methods passed, zero failures; Linux x86_64 Swift 6.2; W004-fixed.log."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+      "result": "Structural validation passed; M01 still requires native_build and persistence_smoke."
+    }
+  ],
+  "source_bindings": {
+    "baseline_document_sha256": "f82fa22d3f3018919ddaea22c22de148268b1a3f1bff43d7232c2a58e90481ce",
+    "fixed_document_sha256": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17",
+    "new_test_sha256": "727983a0e761c7a773b8ffabb8343b053a7cd1aa91483e3d76e99cb5de8102ac",
+    "baseline_log_sha256": "1ce4738eff4615346577118bbd7bdd77fc02a8b26fb49b945aeeba58711b0ca4",
+    "fixed_log_sha256": "04bd13c7c3d1fd9a1c90627b6670f4995ad8f827ccb701c0e2d631149509c035"
+  },
+  "limitations": [
+    "Independent review and integrated full-suite validation pending.",
+    "No Apple/native/simulator/device/provider execution.",
+    "Scene/name model stubs used for an initial exploratory probe; final reproduction and regression execution use actual LightingCore.",
+    "Unsupported UTF32LE+BOM behavior unchanged."
+  ],
+  "integration": {
+    "worktree": "/tmp/app1-worktrees-0eff52f/w002",
+    "patch": "/tmp/w004-document-envelope.patch",
+    "new_untracked_test": "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift",
+    "committed": false,
+    "pushed": false
+  }
+}

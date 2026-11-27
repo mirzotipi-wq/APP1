@@ -1,0 +1,369 @@
+{
+  "attempts": [
+    {
+      "deadlineElapsedSeconds": 287.4999999999998,
+      "failure": {
+        "message": "attempt-1-bootstatus did not complete successfully before its deadline (status=timed_out, exit=-9)",
+        "type": "StartupFailure"
+      },
+      "finishedElapsedSeconds": 287.5981762009999,
+      "initialState": "Shutdown",
+      "number": 1,
+      "startedElapsedSeconds": 0.6525261599999794,
+      "status": "failed"
+    },
+    {
+      "deadlineElapsedSeconds": 574.9999999999998,
+      "failure": {
+        "message": "attempt-2-bootstatus did not complete successfully before its deadline (status=timed_out, exit=-9)",
+        "type": "StartupFailure"
+      },
+      "finishedElapsedSeconds": 575.2219276119997,
+      "initialState": "Shutdown",
+      "number": 2,
+      "startedElapsedSeconds": 309.04616873300006,
+      "status": "failed"
+    }
+  ],
+  "budgetSeconds": 580.0,
+  "cleanupReserveSeconds": 5.0,
+  "commands": [
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "list",
+        "devices",
+        "available",
+        "-j"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 29185,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 29185,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 20.038022227999818,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 0.6483349519999138,
+      "name": "preflight",
+      "processGroupID": 29185,
+      "returnCode": 0,
+      "startedElapsedSeconds": 0.03803517599999395,
+      "status": "exited",
+      "stderrPath": "01-preflight.stderr.log",
+      "stdoutPath": "01-preflight.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "boot",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 29190,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 29190,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 287.4999999999998,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 6.943067946999918,
+      "name": "attempt-1-boot",
+      "processGroupID": 29190,
+      "returnCode": 0,
+      "startedElapsedSeconds": 0.6536395240000274,
+      "status": "exited",
+      "stderrPath": "02-attempt-1-boot.stderr.log",
+      "stdoutPath": "02-attempt-1-boot.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "bootstatus",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "-b"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "processGroupID": 29229,
+        "signal": "SIGKILL",
+        "signalSent": true
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "processGroupID": 29229,
+          "signal": "SIGKILL",
+          "signalSent": true
+        }
+      ],
+      "deadlineElapsedSeconds": 287.4999999999998,
+      "deadlineExceeded": true,
+      "finishedElapsedSeconds": 287.59227149899993,
+      "name": "attempt-1-bootstatus",
+      "processGroupID": 29229,
+      "returnCode": -9,
+      "startedElapsedSeconds": 6.986187758999904,
+      "status": "timed_out",
+      "stderrPath": "03-attempt-1-bootstatus.stderr.log",
+      "stdoutPath": "03-attempt-1-bootstatus.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "list",
+        "devices",
+        "available",
+        "-j"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 32523,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 32523,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 307.60142037599985,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 299.51897994900014,
+      "name": "recovery-preflight",
+      "processGroupID": 32523,
+      "returnCode": 0,
+      "startedElapsedSeconds": 287.6014365379999,
+      "status": "exited",
+      "stderrPath": "04-recovery-preflight.stderr.log",
+      "stdoutPath": "04-recovery-preflight.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "shutdown",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 32640,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 32640,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 329.5325479569999,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 308.2828536549998,
+      "name": "recovery-shutdown",
+      "processGroupID": 32640,
+      "returnCode": 0,
+      "startedElapsedSeconds": 299.53256922100013,
+      "status": "exited",
+      "stderrPath": "05-recovery-shutdown.stderr.log",
+      "stdoutPath": "05-recovery-shutdown.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "list",
+        "devices",
+        "available",
+        "-j"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 32870,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 32870,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 328.28554688400004,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 309.04000378299975,
+      "name": "recovery-postflight",
+      "processGroupID": 32870,
+      "returnCode": 0,
+      "startedElapsedSeconds": 308.285561553,
+      "status": "exited",
+      "stderrPath": "06-recovery-postflight.stderr.log",
+      "stdoutPath": "06-recovery-postflight.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "boot",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "groupAlreadyExited": true,
+        "processGroupID": 32893,
+        "signal": "SIGKILL"
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "groupAlreadyExited": true,
+          "processGroupID": 32893,
+          "signal": "SIGKILL"
+        }
+      ],
+      "deadlineElapsedSeconds": 574.9999999999998,
+      "deadlineExceeded": false,
+      "finishedElapsedSeconds": 313.458202649,
+      "name": "attempt-2-boot",
+      "processGroupID": 32893,
+      "returnCode": 0,
+      "startedElapsedSeconds": 309.0472883259997,
+      "status": "exited",
+      "stderrPath": "07-attempt-2-boot.stderr.log",
+      "stdoutPath": "07-attempt-2-boot.stdout.log"
+    },
+    {
+      "arguments": [
+        "/usr/bin/xcrun",
+        "simctl",
+        "bootstatus",
+        "12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "-b"
+      ],
+      "cleanup": {
+        "directChildReaped": true,
+        "processGroupID": 33000,
+        "signal": "SIGKILL",
+        "signalSent": true
+      },
+      "cleanupAttempts": [
+        {
+          "directChildReaped": true,
+          "processGroupID": 33000,
+          "signal": "SIGKILL",
+          "signalSent": true
+        }
+      ],
+      "deadlineElapsedSeconds": 574.9999999999998,
+      "deadlineExceeded": true,
+      "finishedElapsedSeconds": 575.1880865729997,
+      "name": "attempt-2-bootstatus",
+      "processGroupID": 33000,
+      "returnCode": -9,
+      "startedElapsedSeconds": 313.4613082899998,
+      "status": "timed_out",
+      "stderrPath": "08-attempt-2-bootstatus.stderr.log",
+      "stdoutPath": "08-attempt-2-bootstatus.stdout.log"
+    }
+  ],
+  "elapsedSeconds": 575.2255227899998,
+  "exitCode": 1,
+  "expectedDevice": {
+    "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "udid": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+  },
+  "failure": {
+    "message": "Both simulator startup attempts failed",
+    "type": "StartupFailure"
+  },
+  "inventories": [
+    {
+      "command": "preflight",
+      "device": {
+        "dataPath": "/Users/runner/Library/Developer/CoreSimulator/Devices/12FCFD0F-7FCF-463F-A605-132A7E18B5D5/data",
+        "dataPathSize": 18362368,
+        "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+        "isAvailable": true,
+        "logPath": "/Users/runner/Library/Logs/CoreSimulator/12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "name": "iPhone 17 Pro",
+        "state": "Shutdown",
+        "udid": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      },
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+    },
+    {
+      "command": "recovery-preflight",
+      "device": {
+        "dataPath": "/Users/runner/Library/Developer/CoreSimulator/Devices/12FCFD0F-7FCF-463F-A605-132A7E18B5D5/data",
+        "dataPathSize": 365727744,
+        "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+        "isAvailable": true,
+        "lastBootedAt": "2026-11-27T17:17:54Z",
+        "logPath": "/Users/runner/Library/Logs/CoreSimulator/12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "logPathSize": 16384,
+        "name": "iPhone 17 Pro",
+        "state": "Booted",
+        "udid": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      },
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+    },
+    {
+      "command": "recovery-postflight",
+      "device": {
+        "dataPath": "/Users/runner/Library/Developer/CoreSimulator/Devices/12FCFD0F-7FCF-463F-A605-132A7E18B5D5/data",
+        "dataPathSize": 368459776,
+        "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+        "isAvailable": true,
+        "lastBootedAt": "2026-11-27T17:17:54Z",
+        "logPath": "/Users/runner/Library/Logs/CoreSimulator/12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "logPathSize": 16384,
+        "name": "iPhone 17 Pro",
+        "state": "Shutdown",
+        "udid": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+      },
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+    }
+  ],
+  "maximumAttempts": 2,
+  "recovery": {
+    "finishedElapsedSeconds": 309.04484287599985,
+    "startedElapsedSeconds": 287.59981867500005,
+    "status": "shutdown_verified"
+  },
+  "recoveryEnvironment": {
+    "GITHUB_ACTIONS": "true",
+    "RUNNER_ENVIRONMENT": "github-hosted"
+  },
+  "schema": 1,
+  "startedAtUTC": "2026-11-27T17:17:50.053654+00:00",
+  "status": "failed",
+  "xcrun": "/usr/bin/xcrun"
+}

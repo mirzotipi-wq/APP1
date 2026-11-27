@@ -1,0 +1,113 @@
+{
+  "actual_task_id": "/root/beta_campaign/w013_store_completion_races",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "completion_head": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "No demonstrated app-level commit ownership defect in the reviewed sources.",
+    "Four real-store rename/duplicate receipt interleavings with observer/session cancellation passed 130 invariant checks.",
+    "A second window's intervening saved bytes survived cancelled receipt adoption and the subsequent rejected stale save.",
+    "Stale-save failure preserved current scene/history and dirty state; recovery retained both window scenes and released busy/task ownership."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "passed structural validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 core_tests, native_build and persistence_smoke outstanding at observation"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift 6.2; x86_64-unknown-linux-gnu"
+    },
+    {
+      "command": "swiftc command saved in compile_argv; /tmp/w013-completion-probe",
+      "result": "compile exit 0; probe exit 0; four real-store interleavings, 130 invariant checks passed"
+    },
+    {
+      "command": "SHA-256 comparison of all linked objects/modules before and after probe",
+      "result": "all unchanged; no build-cache mutation"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "compile_argv": [
+    "/tmp/swift-0eff52f/usr/bin/swiftc",
+    "-parse-as-library",
+    "-I",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/Modules",
+    "/tmp/w013-completion-probe.swift",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ARPlacementLayout.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/BetaFeedbackReport.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/CameraFraming.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/Colorimetry.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/GuidedLighting.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightOutputAdjustment.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightingPlan.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightingProjectDocument.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightingRecipe.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/PortraitHeadMesh.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/PortraitStudy.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ProjectLibrary.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ReferencePNG.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ReferenceStudy.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ReferenceTonalSummary.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/RoomPlacement.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/RoomPlacementText.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/Scene.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneCodec.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneEditHistory.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneFileStore.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneLightCreation.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneTransform.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioDisplayName.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioEditorState.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioFeatureContext.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioFeaturePresentation.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioFieldCommand.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioNumericInput.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioOptics.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioPlanLabelLayout.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioSceneBounds.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudyFloat32Eligibility.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudyFrameCache.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudyValidationFixtures.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SurfacePhotometry.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/LightTargetLuxDraft.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/ProjectLibraryOperation.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/ProjectStore.swift.o",
+    "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/StudioSession.swift.o",
+    "-o",
+    "/tmp/w013-completion-probe"
+  ],
+  "run_argv": [
+    "/tmp/w013-completion-probe"
+  ],
+  "source_bindings": {
+    "App/ProjectStore.swift": "acd218f4913d136a5f6e0d3a8727d59c1ead873003eecb4ef77392c435add5d8",
+    "App/ProjectLibraryOperation.swift": "ddd0a97ab7bf274f78135bd5578dba3e9db451bafd0e7f662cc997d40e68150a",
+    "App/StudioSession.swift": "132e815d355beb448255af982b0b3b82cbc3a8e3f31815aa7317b35cb9a55363",
+    "App/StudioView.swift": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+    "App/ProjectLibraryView.swift": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe",
+    "Sources/LightingCore/ProjectLibrary.swift": "c3a69fee485a59d4608b2c972834d8e2879de33732e2aa5208d93f02881e4c39",
+    "Sources/LightingCore/StudioEditorState.swift": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668",
+    "NativeTests/StudioCommittedSaveTests.swift": "11fe4dd72f5f534f2bfcb270db1e731e0fc79824e9c08fd8280fb0cfe4cca70c",
+    "NativeTests/StudioSessionTests.swift": "d4380aeff9009694a84bbdbc6925df3740ae0a425c2c7699d405c1a23704d6f3",
+    "NativeTests/StudioLibraryRecoveryTests.swift": "dd34cba9dd06c86bacae1b69fa6d2f405a1d2cbf665d3e57a646503a4830b30c",
+    "NativeTests/StudioFeatureSessionTests.swift": "61e8a74fe474328bcc6d6127a9832e8950173b813be83785ee60442695d7693a"
+  },
+  "probe_source_sha256": "a864b7a3b4afc5a4eb8c16a205049147cd48276b14116cc822e173bffba57d9f",
+  "object_bindings_file": "W013-probe-objects.json",
+  "probe_output_file": "W013-probe.log",
+  "limitations": [
+    "No Apple/native SwiftUI Observation or dismissal execution.",
+    "No physical-device, provider-interruption, power-loss or complete persistence-gate claim.",
+    "Objects were read from the root's existing Debug build; their exact bytes are preserved by hashes."
+  ],
+  "integration": "No source patch. Retain independent held-out orchestration evidence."
+}

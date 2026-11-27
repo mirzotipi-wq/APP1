@@ -1,0 +1,50 @@
+{
+  "actual_task_id": "/root/beta_campaign/w007_scroll_patch_challenge",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed",
+  "findings": [
+    "No material defect or acceptance weakening found in the concrete scroll patch.",
+    "First observed target determines a fixed horizon; final position is observed; total drags capped at64.",
+    "Full containment and live hittability remain mandatory; invalid, oversized and horizontally clipped targets still fail.",
+    "Exact stagnation detection permits jitter/oscillation to consume the bounded cap but cannot create an infinite loop or false pass.",
+    "Captured failure receives25drags; numeric conversion is bounded before Int."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "passed structural validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 native_build and persistence_smoke outstanding"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift6.2, x86_64-unknown-linux-gnu"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swiftc UITests/StudioViewportGeometry.swift /tmp/w007-budget-probe.swift -o /tmp/w007-budget-probe && /tmp/w007-budget-probe",
+      "result": "1,281 actual-source numeric/symmetry checks passed; captured budget25; no Apple/UI execution"
+    }
+  ],
+  "source_bindings": {
+    "UITests/StudioContentReachability.swift": "03c37d793c7b0217771e421d067561ae3ddb155f69f20aebf522d75ad50a7afb",
+    "UITests/StudioViewportGeometry.swift": "f2dfc89293340720090332566460d77bfbe5db8c3a7df7905537fd4fbf3a0c3f",
+    "NativeTests/StudioViewportGeometryTests.swift": "966ae92a06f8e7a0454424ff54c4dfa5929999e5f85d1eca993977ce5208b32b",
+    "UITests/StudioViewportObservation.swift": "f172cfa12a320e984cf59b9496def656fc9464306e6c011d1b6fe461c0a7f297"
+  },
+  "limitations": [
+    "No XCTest UI or Apple execution by this worker.",
+    "Exact equality detects stationary offsets; jitter and oscillation rely on the64-drag hard cap.",
+    "Current native rerun must establish actual gesture success."
+  ],
+  "integration": "No worker source changes. No source-review blocker to root patch; retain native acceptance as unverified.",
+  "probe_sha256": "ce9768d67454d6245790d912bbd2b5b25112e92d348acbf26be5de4a36a13555",
+  "probe_source": "import Foundation\n\n@main struct W007BudgetProbe {\n    static func main() {\n        var cases = 0\n        let origins: [CGFloat] = [-.greatestFiniteMagnitude, -1e308, -1e100, -10000, -1000, -1, 0, 1, 10, 50, 100, 10000, 1e100, 1e308, .greatestFiniteMagnitude, .nan, .infinity, -.infinity]\n        let heights: [CGFloat] = [-1, 0, .leastNonzeroMagnitude, 1e-300, 1, 47, 48, 100, 600, 1e100, 1e308, .infinity, .nan]\n        let normalViewport = CGRect(x: 0, y: 100, width: 390, height: 600)\n        for y in origins {\n            for height in heights {\n                let target = CGRect(x: 20, y: y, width: 100, height: height)\n                let budget = StudioScrollTravelBudget.maximumDrags(target: target, viewport: normalViewport)\n                precondition(budget == 0 || (12...64).contains(budget), \"target boundary produced \\(budget)\")\n                cases += 1\n            }\n        }\n        let normalTarget = CGRect(x: 20, y: -5000, width: 100, height: 44)\n        for y in origins {\n            for height in heights {\n                let viewport = CGRect(x: 0, y: y, width: 390, height: height)\n                let budget = StudioScrollTravelBudget.maximumDrags(target: normalTarget, viewport: viewport)\n                precondition(budget == 0 || (12...64).contains(budget), \"viewport boundary produced \\(budget)\")\n                cases += 1\n            }\n        }\n        for distance in stride(from: 0.0, through: 30000.0, by: 37.0) {\n            let above = CGRect(x: 20, y: 400 - distance - 22, width: 100, height: 44)\n            let below = CGRect(x: 20, y: 400 + distance - 22, width: 100, height: 44)\n            precondition(StudioScrollTravelBudget.maximumDrags(target: above, viewport: normalViewport) == StudioScrollTravelBudget.maximumDrags(target: below, viewport: normalViewport), \"asymmetric travel\")\n            cases += 1\n        }\n        let viewport = CGRect(x: 0, y: 116, width: 402, height: 597.333333333333)\n        let captured = CGRect(x: 30, y: -4583, width: 212, height: 62)\n        let capturedBudget = StudioScrollTravelBudget.maximumDrags(target: captured, viewport: viewport)\n        precondition(capturedBudget == 25)\n        precondition(StudioScrollTravelBudget.maximumDrags(target: CGRect(x: 20, y: 1e308, width: 100, height: 44), viewport: CGRect(x: 0, y: -1e308, width: 390, height: 600)) == 64)\n        cases += 2\n        print(\"W007 passed \\(cases) actual-source numeric/symmetry checks; captured budget=\\(capturedBudget); no Apple/UI execution.\")\n    }\n}\n",
+  "probe_stdout": "W007 passed 1281 actual-source numeric/symmetry checks; captured budget=25; no Apple/UI execution.\n"
+}

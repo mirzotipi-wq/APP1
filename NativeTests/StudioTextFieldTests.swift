@@ -742,6 +742,24 @@ final class StudioTextFieldTests: XCTestCase {
         await drainMainQueue()
         XCTAssertEqual(nativeFields(in: host.view).count, 1)
         let field = try XCTUnwrap(nativeFields(in: host.view).first)
+#if DEBUG
+        // Observe the first focus request and both Clear/edit cycles without
+        // writing bindings, requesting focus again, or querying accessibility.
+        // The existing recorder caps this control at 256 content-free records;
+        // keep output until failure so logging cannot interrupt the edit burst.
+        var inputTraceLines: [String] = []
+        field.inputTrace = StudioTextInputTrace(isEnabled: true, sink: { inputTraceLines.append($0) })
+        defer {
+            if (testRun?.totalFailureCount ?? 0) > 0 {
+                let attachment = XCTAttachment(string: inputTraceLines.joined(separator: "\n"))
+                attachment.name = "Hosted-name-draft-input-trace"
+                attachment.lifetime = .keepAlways
+                add(attachment)
+                print("Hosted name input trace: \(inputTraceLines.count) bounded records")
+                for line in inputTraceLines { print(line) }
+            }
+        }
+#endif
         let model = try XCTUnwrap(observation.model)
         let clear = try XCTUnwrap(observation.clear)
         let requestFocus = try XCTUnwrap(observation.requestFocus)

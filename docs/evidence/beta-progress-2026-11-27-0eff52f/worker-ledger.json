@@ -1,0 +1,1611 @@
+{
+  "schema_version": 1,
+  "campaign": "beta-progress-2026-11-27-0eff52f",
+  "requested_new_contexts_including_coordinator": 100,
+  "expected_fresh_specialists": 99,
+  "baseline_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "counting_rule": "Only distinct task IDs returned by collaboration.spawn_agent during this campaign count. Coordinator counts once; root, historical contexts and follow-ups do not count. No specialist may spawn nested contexts.",
+  "created_at": "2026-11-27T17:35:26.149382+00:00",
+  "workers": [
+    {
+      "sequence": 0,
+      "actual_task_id": "/root/beta_campaign",
+      "role": "campaign coordinator",
+      "task": "Coordinate 99 fresh specialist contexts, source-scoped integration reports and independent beta risk review.",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "running",
+      "started_at": "2026-11-27T17:35:26.149382+00:00",
+      "findings": [
+        "Current agent_cycle check is structurally valid; M01 still requires native_build and persistence_smoke. Historical campaigns do not count toward this request."
+      ],
+      "affected_files": [
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/worker-ledger.json",
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/README.md",
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/workers/"
+      ],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation; no readiness claim"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 outstanding native_build, persistence_smoke"
+        }
+      ]
+    },
+    {
+      "sequence": 1,
+      "actual_task_id": "/root/beta_campaign/w001_reference_ingestion",
+      "role": "specialist",
+      "task": "Reference image ingestion, privacy, cancellation and stale-task correctness",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:35:26.149382+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w001",
+      "allowed_paths": [
+        "App/ReferencePhoto.swift",
+        "App/ReferenceAnalysisService.swift",
+        "App/ReferenceComparisonView.swift",
+        "App/PhotoComparisonView.swift",
+        "NativeTests/ReferencePhotoTests.swift",
+        "NativeTests/ReferenceAnalysisServiceTests.swift"
+      ],
+      "findings": [
+        "No new demonstrated ingestion/lifecycle defect",
+        "Photos provider/privacy behavior remains unverified"
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "git diff --check; git status --short",
+          "result": "passed; no changes"
+        },
+        {
+          "command": "command -v swift",
+          "result": "not on PATH; Apple/native tests not run"
+        },
+        {
+          "command": "targeted rg cross-reference and side-effect searches",
+          "result": "reference data absent from persistence; reviewed files contain no network/logging/persistent writes"
+        }
+      ],
+      "completed_at": "2026-11-27T17:37:03.865928+00:00",
+      "report": "workers/W001.md"
+    },
+    {
+      "sequence": 2,
+      "actual_task_id": "/root/beta_campaign/w002_ar_lifecycle",
+      "role": "specialist",
+      "task": "AR tracking/session lifecycle, interruptions, placement reset and manual fallback",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:35:26.149382+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w002",
+      "allowed_paths": [
+        "App/ARPlacementController.swift",
+        "App/ARPlacementView.swift",
+        "App/ManualRoomPlacementView.swift"
+      ],
+      "findings": [
+        "No new demonstrated lifecycle/fallback defect",
+        "Physical anchor-unanchored status sequence is an unverified device challenge"
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "git diff --check; git status --short",
+          "result": "passed; no changes"
+        },
+        {
+          "command": "command -v swift",
+          "result": "not on PATH; Apple/native tests not run"
+        }
+      ],
+      "completed_at": "2026-11-27T17:37:03.866397+00:00",
+      "report": "workers/W002.md"
+    },
+    {
+      "sequence": 3,
+      "actual_task_id": "/root/beta_campaign/w003_library_atomicity",
+      "role": "specialist",
+      "task": "Challenge unreadable/concurrently changed project snapshot replacement",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:37:03.865356+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w001",
+      "allowed_paths": [
+        "Sources/LightingCore/ProjectLibrary.swift",
+        "Sources/LightingCore/SceneFileStore.swift",
+        "Tests/LightingCoreTests/LibraryAtomicityBetaTests.swift"
+      ],
+      "findings": [
+        "No demonstrated corrupt/stale overwrite defect",
+        "Standalone SceneFileStore save is not called by production app",
+        "External direct writers/physical power-loss guarantees remain outside established evidence"
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "structure valid; M01 native_build/persistence_smoke outstanding"
+        },
+        {
+          "command": "python3 -m unittest discover -s scripts/tests -p 'test_atomic_library_probe_filesystem.py' -v",
+          "result": "12 tests passed (probe tooling only)"
+        },
+        {
+          "command": "git diff --check; git status --short",
+          "result": "clean"
+        },
+        {
+          "command": "command -v swift",
+          "result": "unavailable on PATH at execution; Swift not rerun"
+        }
+      ],
+      "completed_at": "2026-11-27T17:37:49.349911+00:00",
+      "report": "workers/W003.md"
+    },
+    {
+      "sequence": 4,
+      "actual_task_id": "/root/beta_campaign/w004_document_envelope",
+      "role": "specialist",
+      "task": "Challenge JSON import envelope collisions, ignored values and Unicode validation",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:37:03.865634+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w002",
+      "allowed_paths": [
+        "Sources/LightingCore/LightingProjectDocument.swift",
+        "Sources/LightingCore/SceneCodec.swift",
+        "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift"
+      ],
+      "findings": [
+        "Demonstrated malformed ignored JSON number acceptance in external project documents on actual baseline LightingCore / Swift 6.2.",
+        "Added byte-linear complete JSON number grammar validation without numeric conversion or magnitude limits.",
+        "Baseline five regression methods yielded 69 failed assertions; patched 35 targeted document methods passed."
+      ],
+      "affected_files": [
+        "Sources/LightingCore/LightingProjectDocument.swift",
+        "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift"
+      ],
+      "validations": [
+        {
+          "command": "swiftc -I /tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/Modules Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift /tmp/w004-xctest-main.swift /tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/*.swift.o -o /tmp/w004-baseline-tests; /tmp/w004-baseline-tests",
+          "result": "Baseline actual-module regression: 5 methods, 69 expected failed assertions; W004-baseline.log."
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift test -j 2 --filter 'ProjectEnvelopeBetaTests|ProjectDocument.*Tests|LightingProjectDocumentTests'",
+          "result": "35 methods passed, zero failures; Linux x86_64 Swift 6.2; W004-fixed.log."
+        },
+        {
+          "command": "git diff --check",
+          "result": "passed"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "Structural validation passed; M01 still requires native_build and persistence_smoke."
+        }
+      ],
+      "source_bindings": {
+        "baseline_document_sha256": "f82fa22d3f3018919ddaea22c22de148268b1a3f1bff43d7232c2a58e90481ce",
+        "fixed_document_sha256": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17",
+        "new_test_sha256": "727983a0e761c7a773b8ffabb8343b053a7cd1aa91483e3d76e99cb5de8102ac",
+        "baseline_log_sha256": "1ce4738eff4615346577118bbd7bdd77fc02a8b26fb49b945aeeba58711b0ca4",
+        "fixed_log_sha256": "04bd13c7c3d1fd9a1c90627b6670f4995ad8f827ccb701c0e2d631149509c035"
+      },
+      "limitations": [
+        "Independent review and integrated full-suite validation pending.",
+        "No Apple/native/simulator/device/provider execution.",
+        "Scene/name model stubs used for an initial exploratory probe; final reproduction and regression execution use actual LightingCore.",
+        "Unsupported UTF32LE+BOM behavior unchanged."
+      ],
+      "integration": {
+        "worktree": "/tmp/app1-worktrees-0eff52f/w002",
+        "patch": "/tmp/w004-document-envelope.patch",
+        "new_untracked_test": "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift",
+        "committed": false,
+        "pushed": false
+      },
+      "completed_at": "2026-11-27T17:42:08.164603+00:00",
+      "report": "workers/W004.md",
+      "structured_report": "workers/W004.json",
+      "patch": "workers/W004.patch",
+      "integration_status": "integrated in root checkout; root owns committed revision and current-source validation",
+      "worker_report_status": "completed_patch_ready",
+      "independent_review": "workers/W008.json",
+      "integrated_source_sha256": {
+        "Sources/LightingCore/LightingProjectDocument.swift": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17"
+      }
+    },
+    {
+      "sequence": 5,
+      "actual_task_id": "/root/beta_campaign/w005_scroll_budget_review",
+      "role": "specialist",
+      "task": "Independent review of distance-derived accessibility scroll budget and original failure trace",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:37:49.349480+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "Original failure causally explained by12-drag horizon,17required",
+        "Derived budget must preserve containment/hittability and final observation",
+        "No concrete root patch independently reviewed yet"
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "Python parse/calculation of original geometry trace; hierarchy/manifest/log crosscheck",
+          "result": "11 intervals of276.6667pt; final y-1263matches prediction;17drags needed"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "structure valid; M01 native_build/persistence_smoke outstanding"
+        },
+        {
+          "command": "Apple/UI execution",
+          "result": "not run"
+        }
+      ],
+      "completed_at": "2026-11-27T17:39:52.013084+00:00",
+      "report": "workers/W005.md"
+    },
+    {
+      "sequence": 6,
+      "actual_task_id": "/root/beta_campaign/w006_library_sheet_stall",
+      "role": "specialist",
+      "task": "Investigate original Menu\u2192Duplicate\u2192naming-sheet idle stall without timeout changes",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:39:52.012455+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w001",
+      "allowed_paths": [
+        "App/ProjectLibraryView.swift"
+      ],
+      "findings": [
+        "Stall occurs after Duplicate Menu event during UI idleness, before duplicate naming input or persistence submission.",
+        "No source-demonstrated focus deadlock or reentrant loop; Menu/sheet platform behavior remains unverified.",
+        "Failing library UI method lacks KEYFILL_UI_TEXT_INPUT_TRACE opt-in; existing bounded sanitized recorder should observe the transition in a current native run."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "Targeted source/log reading and rg recorder opt-in search",
+          "result": "verified pre-submission stall and absent library-method trace opt-in"
+        },
+        {
+          "command": "git diff --check; git status --short",
+          "result": "passed; worktree clean"
+        }
+      ],
+      "source_bindings": {
+        "App/ProjectLibraryView.swift": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe",
+        "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+        "UITests/ProjectLibraryUITests.swift": "87df4c2b8e13d305d5973a8d96c5f6c1216aebbb6c12c2b4d4621dfc209e1477",
+        "NativeTests/StudioTextFieldTests.swift": "eccb18c8f0e491d0b5d3ba75ea2b21be6c5d9afce6157c5df62dbc22fc102bba",
+        "NativeTests/ProjectNameEditorTests.swift": "9d561fe79d2958170aa840ce66e1470ed7451bbdf1b793197d81d63a325c30f9",
+        "validation/baseline-library-reference.log": "2e4624703bf02d6204669831735b977a8c58fa632ddb5330682bd843e5787a5f"
+      },
+      "limitations": [
+        "No Apple/native/device execution available.",
+        "Original log has no post-Duplicate successful snapshot or field trace.",
+        "Product versus SwiftUI/UIKit/automation infrastructure cause remains unresolved."
+      ],
+      "integration": "No production patch; root owns recommended test-only recorder opt-in; no timeout or acceptance relaxation.",
+      "completed_at": "2026-11-27T17:41:54.604924+00:00",
+      "report": "workers/W006.md",
+      "structured_report": "workers/W006.json"
+    },
+    {
+      "sequence": 7,
+      "actual_task_id": "/root/beta_campaign/w007_scroll_patch_challenge",
+      "role": "specialist",
+      "task": "Independently challenge concrete distance-derived scroll budget, final observation and stationary stopping",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:41:54.605483+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No material defect or acceptance weakening found in the concrete scroll patch.",
+        "First observed target determines a fixed horizon; final position is observed; total drags capped at64.",
+        "Full containment and live hittability remain mandatory; invalid, oversized and horizontally clipped targets still fail.",
+        "Exact stagnation detection permits jitter/oscillation to consume the bounded cap but cannot create an infinite loop or false pass.",
+        "Captured failure receives25drags; numeric conversion is bounded before Int."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "git diff --check",
+          "result": "passed"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift6.2, x86_64-unknown-linux-gnu"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swiftc UITests/StudioViewportGeometry.swift /tmp/w007-budget-probe.swift -o /tmp/w007-budget-probe && /tmp/w007-budget-probe",
+          "result": "1,281 actual-source numeric/symmetry checks passed; captured budget25; no Apple/UI execution"
+        }
+      ],
+      "source_bindings": {
+        "UITests/StudioContentReachability.swift": "03c37d793c7b0217771e421d067561ae3ddb155f69f20aebf522d75ad50a7afb",
+        "UITests/StudioViewportGeometry.swift": "f2dfc89293340720090332566460d77bfbe5db8c3a7df7905537fd4fbf3a0c3f",
+        "NativeTests/StudioViewportGeometryTests.swift": "966ae92a06f8e7a0454424ff54c4dfa5929999e5f85d1eca993977ce5208b32b",
+        "UITests/StudioViewportObservation.swift": "f172cfa12a320e984cf59b9496def656fc9464306e6c011d1b6fe461c0a7f297"
+      },
+      "limitations": [
+        "No XCTest UI or Apple execution by this worker.",
+        "Exact equality detects stationary offsets; jitter and oscillation rely on the64-drag hard cap.",
+        "Current native rerun must establish actual gesture success."
+      ],
+      "integration": "No worker source changes. No source-review blocker to root patch; retain native acceptance as unverified.",
+      "probe_sha256": "ce9768d67454d6245790d912bbd2b5b25112e92d348acbf26be5de4a36a13555",
+      "probe_source": "import Foundation\n\n@main struct W007BudgetProbe {\n    static func main() {\n        var cases = 0\n        let origins: [CGFloat] = [-.greatestFiniteMagnitude, -1e308, -1e100, -10000, -1000, -1, 0, 1, 10, 50, 100, 10000, 1e100, 1e308, .greatestFiniteMagnitude, .nan, .infinity, -.infinity]\n        let heights: [CGFloat] = [-1, 0, .leastNonzeroMagnitude, 1e-300, 1, 47, 48, 100, 600, 1e100, 1e308, .infinity, .nan]\n        let normalViewport = CGRect(x: 0, y: 100, width: 390, height: 600)\n        for y in origins {\n            for height in heights {\n                let target = CGRect(x: 20, y: y, width: 100, height: height)\n                let budget = StudioScrollTravelBudget.maximumDrags(target: target, viewport: normalViewport)\n                precondition(budget == 0 || (12...64).contains(budget), \"target boundary produced \\(budget)\")\n                cases += 1\n            }\n        }\n        let normalTarget = CGRect(x: 20, y: -5000, width: 100, height: 44)\n        for y in origins {\n            for height in heights {\n                let viewport = CGRect(x: 0, y: y, width: 390, height: height)\n                let budget = StudioScrollTravelBudget.maximumDrags(target: normalTarget, viewport: viewport)\n                precondition(budget == 0 || (12...64).contains(budget), \"viewport boundary produced \\(budget)\")\n                cases += 1\n            }\n        }\n        for distance in stride(from: 0.0, through: 30000.0, by: 37.0) {\n            let above = CGRect(x: 20, y: 400 - distance - 22, width: 100, height: 44)\n            let below = CGRect(x: 20, y: 400 + distance - 22, width: 100, height: 44)\n            precondition(StudioScrollTravelBudget.maximumDrags(target: above, viewport: normalViewport) == StudioScrollTravelBudget.maximumDrags(target: below, viewport: normalViewport), \"asymmetric travel\")\n            cases += 1\n        }\n        let viewport = CGRect(x: 0, y: 116, width: 402, height: 597.333333333333)\n        let captured = CGRect(x: 30, y: -4583, width: 212, height: 62)\n        let capturedBudget = StudioScrollTravelBudget.maximumDrags(target: captured, viewport: viewport)\n        precondition(capturedBudget == 25)\n        precondition(StudioScrollTravelBudget.maximumDrags(target: CGRect(x: 20, y: 1e308, width: 100, height: 44), viewport: CGRect(x: 0, y: -1e308, width: 390, height: 600)) == 64)\n        cases += 2\n        print(\"W007 passed \\(cases) actual-source numeric/symmetry checks; captured budget=\\(capturedBudget); no Apple/UI execution.\")\n    }\n}\n",
+      "probe_stdout": "W007 passed 1281 actual-source numeric/symmetry checks; captured budget=25; no Apple/UI execution.\n",
+      "completed_at": "2026-11-27T17:44:30.124430+00:00",
+      "report": "workers/W007.md",
+      "structured_report": "workers/W007.json"
+    },
+    {
+      "sequence": 8,
+      "actual_task_id": "/root/beta_campaign/w008_number_grammar_review",
+      "role": "specialist",
+      "task": "Independent adversarial differential review of numeric JSON grammar patch",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:42:08.165999+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w002",
+      "allowed_paths": [],
+      "findings": [
+        "Recommend accepting W004 numeric grammar patch; independent actual-module corpus of 72766 cases has zero disagreements with corrected separate ASCII JSON number grammar oracle.",
+        "Initial 120 mismatches were an oracle error excluding legal edge JSON whitespace; initial and corrected evidence preserved without production changes.",
+        "Exact 8 MiB ignored-integer document accepted; 8 MiB plus 1 byte rejected as tooLarge. Dense arrays through 65536 numbers accepted.",
+        "Scanner advances monotonically, requires fraction/exponent digits, validates terminators, revisits delimiters, and imposes no value magnitude conversion."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "Structural validation passed; M01 native_build and persistence_smoke still outstanding."
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift version 6.2 (swift-6.2-RELEASE); x86_64-unknown-linux-gnu."
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swiftc -I .build/x86_64-unknown-linux-gnu/debug/Modules /tmp/w008-number-review/probe.swift .build/x86_64-unknown-linux-gnu/debug/LightingCore.build/*.swift.o -o /tmp/w008-number-review/probe",
+          "result": "Compiled separate executable against actual patched LightingCore objects."
+        },
+        {
+          "command": "python3 /tmp/w008-number-review/generate.py && /tmp/w008-number-review/probe /tmp/w008-number-review/cases.json /tmp/w008-number-review/results.json",
+          "result": "72766 cases, 7981 accepted, 0 disagreements; eight additional size/density boundary records passed expected outcomes."
+        },
+        {
+          "command": "git diff --check",
+          "result": "Passed. No W008 source changes."
+        }
+      ],
+      "source_bindings": {
+        "Sources/LightingCore/LightingProjectDocument.swift": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17",
+        "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift": "727983a0e761c7a773b8ffabb8343b053a7cd1aa91483e3d76e99cb5de8102ac"
+      },
+      "compiled_object_sha256": "1a14e73d479a1bd23f6bf718f8fc0c28bcde965dd3ab954ac3dc26347c6f716f",
+      "artifact_sha256": {
+        "W008-initial-results-with-oracle-padding-error.json": "a028ce8f9abcaffb4c4a6d512b075aa82ea6c7ddeb954c9f0dbdb114c8f2aa8d",
+        "W008-initial-generator-with-oracle-padding-error.py": "513556ddc732541abd5eb7dd23cea659a4c3229c82d57edd97f28895c381ea34",
+        "W008-generator-summary.json": "ff60b68c84c10252ab50ea1892bbfc3a9b432f93c251235431b1f8623cff83e3",
+        "W008-results.json": "68fd78bdccb6a0f77266c4c7b24118c64c2483678feff1bd662c59f147982884",
+        "W008-probe.swift": "af777277226360aa695ef7624c6457b0dfdcf76249873613e5a33a8a4f241cf7",
+        "W008-generate.py": "61edfae1f0218b7bbf1b397a9df0c0b4e5ca3e9dad26eaf15a2eb63285bb2610",
+        "regenerable-cases.json": "e7751ed8d384b99f120a9aa2c5bcb1c8ac7b622fe127616d8acde7e4be4f7523"
+      },
+      "limitations": [
+        "Linux Debug host execution only; timings are observations, not device performance acceptance.",
+        "No full-suite, Apple compilation, UI, physical-device or provider execution.",
+        "Corpus is bounded independent falsification, not proof over all possible JSON."
+      ],
+      "integration": "Accept /tmp/w004-document-envelope.patch at the recorded hashes; root owns integrated validation and publication. No additional patch.",
+      "completed_at": "2026-11-27T17:46:12.632545+00:00",
+      "report": "workers/W008.md",
+      "structured_report": "workers/W008.json"
+    },
+    {
+      "sequence": 9,
+      "actual_task_id": "/root/beta_campaign/w009_original_capture_review",
+      "role": "specialist",
+      "task": "Visual review of22original captured UI PNGs, source/manifest binding and missing AXXXL evidence",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:44:30.125708+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "22 original PNGs:14 Default,6 AXXXL,2 failure images, all1206x2622 and associated with the same named simulator workflow.",
+        "Default and AXXXL exact entry visibly contains4321.5; essential precision controls remain above keyboard.",
+        "AXXXL Exact value heading visibly bleeds beneath Intensity navigation title; visual polish observation, no demonstrated functional blocker.",
+        "14 Default capture files represent11 distinct hashes; repeated naming-target captures and header/choices have identical pixels.",
+        "8 required AXXXL capture categories remain absent."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "Python/Pillow manifest association, PNG dimensions and SHA256 inventory",
+          "result": "22 originals verified;19 distinct total file hashes;14Default/6AXXXL/2failure"
+        },
+        {
+          "command": "view_image on4derivedcontact sheets and9full-resolution originals",
+          "result": "All22 originals visually reviewed; targeted9 originals inspected full resolution; title overlap observation sent to root"
+        },
+        {
+          "command": "Read capture sequence in UITests/StudioAppAccessibilityUITests.swift and precision editor source",
+          "result": "Duplicate pixel states explained by separate target assertions; no source change"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "Structure valid; M01 native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "git diff --check",
+          "result": "Passed shared pending diff check; worker changed no source"
+        },
+        {
+          "command": "Native/UI/device execution",
+          "result": "Not run"
+        }
+      ],
+      "source_bindings": {
+        "App/PrecisionValueButton.swift": "21f57df7d2424426e2ce50d3af8627aa54ac32ce6da05c100c043284ec149bc8",
+        "UITests/StudioAppAccessibilityUITests.swift": "03d7664df4b6eae3d95cabd533746fb882bb788c2b0d092fc45693e25bb00eee",
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/validation/baseline-app-accessibility.log": "1ff74a12145139e11bd2ece6ce965f84eb94f9a5bc064dfa4f2a4c6b65abc38a",
+        "/tmp/app1-artifacts-0eff52f/accessibility/native-attachments/manifest.json": "0400f01bb1b9baf132e680baf42e2026d6ad79ea697b642395275ad146228283"
+      },
+      "artifact_source_sha": "9d18d762f204ed060af5309554d97841ea70ea03",
+      "artifact_directory": "/tmp/app1-artifacts-0eff52f/accessibility/native-attachments",
+      "artifact_bindings": [
+        {
+          "filename": "DE02989A-43AC-4565-95E4-3B5A28947CA3.png",
+          "capture": "Default-Workspace-header",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "fea66093385da91f59896ba5fff8754d39d600f667d2e653983731b426058d22",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799585.271
+        },
+        {
+          "filename": "14DA6422-24EA-4558-8E9C-B83814AB6967.png",
+          "capture": "Default-Plan-choices",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "fea66093385da91f59896ba5fff8754d39d600f667d2e653983731b426058d22",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799608.654
+        },
+        {
+          "filename": "F244C2B3-7A53-4BF4-B8F5-9529C3CADA80.png",
+          "capture": "Default-Plan-selection",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "5eeb81a086391c0450ce7cb390078ccddfe5861c81e3659fe3fb9270136872b9",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799632.029
+        },
+        {
+          "filename": "5D781120-B9FF-41A0-93D3-618338DA9596.png",
+          "capture": "Default-Inspector",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "c24e46d7e0e5491e539de53fee70c4f478b7cfb0dd892858f897ae663a4fe5ce",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799700.656
+        },
+        {
+          "filename": "D7174774-CB9F-4CB6-8788-29BECD68A7C0.png",
+          "capture": "Default-Precision-instructions",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "34e0de4eba6d65862b98134ffdd27835bf18264cdd9ad641e9e8a1b811e7511c",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799730.294
+        },
+        {
+          "filename": "20BD6A2A-D959-44D6-8E15-1F09F82FD982.png",
+          "capture": "Default-Precision-keyboard",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "294dda0bffcca10ed8963244495865a3f4d96cfad9c68dce25a4f63279f46f80",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799760.553
+        },
+        {
+          "filename": "5F5E5E63-29F9-4FC1-A077-6904800DA189.png",
+          "capture": "Default-Meter-preset-selection",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "c2f4d7b135277b338bd73020590207bbffc5cf9b5868fed1f8fe809336ad476e",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799881.977
+        },
+        {
+          "filename": "27441D8B-E9BA-494A-BEE5-AC8BB93EA956.png",
+          "capture": "Default-Camera-preset-selection",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "f92dcb785a4b6e83791f9bfa14c3e2f709c7610b61b2b1eed244936d61a76e01",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795799980.162
+        },
+        {
+          "filename": "BF178486-07F9-4F03-9BD4-40F049368BEC.png",
+          "capture": "Default-Library-unsaved",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "6e600bc58ec11fe01621d031b4feab537a1e44f663b6e847dbb76075ec055741",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800043.648
+        },
+        {
+          "filename": "9C4BE4A6-7FE4-4CC8-B764-890A10A70EF3.png",
+          "capture": "Default-Library-saved",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "3f3e1682436d2b712d7810932edd130fe67adab751ed6c968e79c84c7049ed81",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800079.407
+        },
+        {
+          "filename": "661D1C64-AA11-4C6F-91CD-9DA8C39DC393.png",
+          "capture": "Default-Project-name-field-keyboard",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "edaa22efc3e393e0b2effd55110a736b4fa27579bc273a689da7e9855ad41e3c",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800099.306
+        },
+        {
+          "filename": "E1CC7CA6-80B8-4A4E-85B9-9C478E9D2BBE.png",
+          "capture": "Default-Project-name-save-keyboard",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "edaa22efc3e393e0b2effd55110a736b4fa27579bc273a689da7e9855ad41e3c",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800107.341
+        },
+        {
+          "filename": "0C95F5B2-5ED5-462C-8240-3835CB5A51D9.png",
+          "capture": "Default-Project-name-cancel-keyboard",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "edaa22efc3e393e0b2effd55110a736b4fa27579bc273a689da7e9855ad41e3c",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800115.316
+        },
+        {
+          "filename": "15B33C4B-5DDF-402D-870C-46204543EF98.png",
+          "capture": "Default-Library-done",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "e11130bb8b054d713366be14305ab555d948a2f98f96970dfd4ae641d4847df6",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800122.102
+        },
+        {
+          "filename": "E09608F8-5604-4BCC-A0DB-25142539AF0B.png",
+          "capture": "AXXXL-Workspace-header",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "95446e0b8ecb8aad94d60e740c7818f37fe07b95d429b1c67b5e15c57d61fcb7",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800206.944
+        },
+        {
+          "filename": "ABE1CA18-B7D4-4F0F-B862-917686CC7252.png",
+          "capture": "AXXXL-Plan-choices",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "4349d68248b35a829f5086bff1ac95bade7fbbe39dd2cb604adfe578c04f2568",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800223.647
+        },
+        {
+          "filename": "0F9DD25F-3484-4CC5-B688-2783CA635591.png",
+          "capture": "AXXXL-Plan-selection",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "fc378af9d5b664048f69bb656ad32bc5afea688037a20cf23f56b853fd050522",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800240.705
+        },
+        {
+          "filename": "3CCEB449-65BD-4E6C-830F-5A483DA46342.png",
+          "capture": "AXXXL-Inspector",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "f819a565547cd19669e343d3a4da670f35c0dc6ff465655368a90cb552fefe23",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800352.829
+        },
+        {
+          "filename": "4F345FDD-F1C9-4B52-80F9-1B72C263688F.png",
+          "capture": "AXXXL-Precision-instructions",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "02292c466df2dcd6b17585c930d0a4a17d4ea52ba82f399df1b1d63b85f0da07",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800375.655
+        },
+        {
+          "filename": "DD8A4D6F-1B29-4EDE-B5C0-D68461AA59C3.png",
+          "capture": "AXXXL-Precision-keyboard",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "1996d2a3da79e1b6cc94241b4c9504896ab62c4792e3bb3da80dfb34bb3ac487",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800389.446
+        },
+        {
+          "filename": "8F715E52-8D63-4C39-9D80-F8A1715D6911.png",
+          "capture": "Unreachable-studio-content",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "97b1f064c462107b4a5c52833354cc221f50f76ea10c61da758a40b145689a4b",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800481.022
+        },
+        {
+          "filename": "58D7427E-7249-4CB1-8BEC-F6A2DC210EF0.png",
+          "capture": "Accessibility-workflow-failure",
+          "dimensions": [
+            1206,
+            2622
+          ],
+          "sha256": "6e11fb8447571a5abc829b82b2bd096f6e2660ecb40d7d31df570c632a710289",
+          "test_identifier": "StudioAppAccessibilityUITests/testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize()",
+          "device": "iPhone 17 Pro",
+          "timestamp": 1795800483.363
+        }
+      ],
+      "missing_required_captures": [
+        "AXXXL-Meter-preset-selection",
+        "AXXXL-Camera-preset-selection",
+        "AXXXL-Library-unsaved",
+        "AXXXL-Library-saved",
+        "AXXXL-Project-name-field-keyboard",
+        "AXXXL-Project-name-save-keyboard",
+        "AXXXL-Project-name-cancel-keyboard",
+        "AXXXL-Library-done"
+      ],
+      "limitations": [
+        "Original captures predate pending root scroll correction.",
+        "Images do not establish hit testing, persistence, completed workflow, quantitative contrast or physical-device behavior.",
+        "No native/Apple UI rerun;8AXXXL categories absent."
+      ],
+      "integration": "Reports only. Native review can assess opaque navigation background for AXXXL title bleed; no speculative implementation or gate change.",
+      "completed_at": "2026-11-27T17:47:37.917051+00:00",
+      "report": "workers/W009.md",
+      "structured_report": "workers/W009.json"
+    },
+    {
+      "sequence": 10,
+      "actual_task_id": "/root/beta_campaign/w010_library_raw_diagnostics",
+      "role": "specialist",
+      "task": "Independent raw library idle/AX stall chronology and product-versus-infrastructure evidence",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:46:12.633603+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "Actual app main-thread responsiveness at17:16:59 precedes an explicitly logged380.82-second AX hierarchy capture.",
+        "Initial60-second quiescence failure and subsequent hierarchy stall have no demonstrated source root cause.",
+        "UIKit delayed gesture-gate diagnostic spans approximately back to the Duplicate transition; correlation is not proof.",
+        "Both attempted spindumps returned unsupported/no data; no app-specific input trace or sampled main-thread stack closes attribution."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "Targeted rg/sed/Python reading of original session, app stdout, host snapshots and baseline CI job log; SHA256 binding",
+          "result": "chronology and source/run/artifact association verified; small original excerpts retained"
+        },
+        {
+          "command": "Native/Apple/device execution",
+          "result": "not run"
+        }
+      ],
+      "source_bindings": {
+        "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/Session-KeyAndFillUITests-2026-11-27_171143-6Zcljv.log": "0c7683d10e89032bdda79c69059b1b84c2a7a5757fb87a789fa98e43f966cc1e",
+        "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/StandardOutputAndStandardError-com.example.keyandfill.txt": "7efcb3a2feb22086f297aea303630c4e4f314822149d0fcda2732131aafd2106",
+        "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/testmanagerd.log": "82c9a432a0eef54698a948c46b4f79620a2dd70753bbf57683fbaabe2b44f332",
+        "/tmp/app1-artifacts-0eff52f/library/raw-diagnostics/scheduling.log": "d3dfcc354974b3871f6b5aa17ba9b52bf38dda9a96db2ac82ac7f046c661b06f",
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/validation/baseline-library-reference.log": "2e4624703bf02d6204669831735b977a8c58fa632ddb5330682bd843e5787a5f",
+        "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+        "UITests/ProjectLibraryUITests.swift": "384db05389dcd30d422772bb3388e80b0519456f35dae0033b5b2a4eedf088a6",
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/workers/W010-excerpts.txt": "a558d2482eafa0fcc647612736b17fd7dfa6b624db723062236cbf9b19222954"
+      },
+      "artifact_context": {
+        "source_revision": "9d18d762f204ed060af5309554d97841ea70ea03",
+        "run_id": 46037214333,
+        "artifact_id": 15220551550,
+        "artifact_name": "ui-library-reference-evidence",
+        "advertised_zip_sha256": "c90a10be91ae5e8ec482e9e0b0299de074ee2d6c54b070d9661e1e862a0eb562",
+        "session_id": "29AE1554-E307-4904-9A0F-F28E1EB3AD83",
+        "simulator_id": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5",
+        "app_pid": 18728,
+        "runner_pid": 14269,
+        "test": "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch"
+      },
+      "limitations": [
+        "Advertised artifact zip digest read from original CI log; this worker hashed extracted logs, not a fresh network download.",
+        "No sampled stack or bounded app input recorder output in original failure.",
+        "After-test hostCPU sample is not contemporaneous with initial failure.",
+        "Root source has uncommitted changes; this worker performed no product/source mutation."
+      ],
+      "integration": "No production patch. Existing root trace and failure-only screen capture are a justified next discriminating observation; do not increase deadlines or relax assertions.",
+      "completed_at": "2026-11-27T17:50:38.885513+00:00",
+      "report": "workers/W010.md",
+      "structured_report": "workers/W010.json"
+    },
+    {
+      "sequence": 11,
+      "actual_task_id": "/root/beta_campaign/w011_purchase_ordering",
+      "role": "specialist",
+      "task": "Challenge purchase approval/revocation/refresh ordering and pending attempt token invariants",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:47:37.919100+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No demonstrated purchase ordering defect or commerce source change.",
+        "Actual pure purchase-attempt model matches declarative history invariants across137257distinct histories of seven event types through length six.",
+        "Matching verified/purchased facts remain terminal under delayed pending; previous/unrelated/nil tokens do not resolve replacement attempts.",
+        "Store source filters verified product/type, re-reads entitlement facts for unverified updates, revision-checks publication and decouples verified reconciliation from caller cancellation.",
+        "Blank product configuration still disables sales; no policy/configuration changes."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 core_tests, native_build, persistence_smoke outstanding during integration"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift6.2; x86_64-unknown-linux-gnu"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swiftc App/EntitlementPurchaseAttempt.swift /tmp/w011-purchase-ordering-probe.swift -o /tmp/w011-purchase-ordering-probe && /tmp/w011-purchase-ordering-probe",
+          "result": "137257distinct histories;549028invariant checks passed; no StoreKit service execution"
+        },
+        {
+          "command": "git diff --check; git diff --stat -- App/EntitlementStore.swift App/EntitlementPurchaseAttempt.swift NativeTests/EntitlementStoreConfigurationTests.swift project.yml",
+          "result": "diff check passed; reviewed commerce paths unchanged"
+        }
+      ],
+      "source_bindings": {
+        "App/EntitlementStore.swift": "fd0e693a959d9d6d22aa91b1fb1a2551ec1469c7d933d3946daaf9c1604d539d",
+        "App/EntitlementPurchaseAttempt.swift": "7134edfa34a6e0c23eb3301477de46231d764b3c4f2460f0d7ffec0caaaa51d2",
+        "NativeTests/EntitlementStoreConfigurationTests.swift": "b8d525be1a79b21e70c570c777be19155cf419aff4b431573585cbc73b625b99",
+        "App/ProFeaturesView.swift": "6b43d11bbe4e4badd7762e875509213c1942de32da2075da064469d1029ce532",
+        "App/KeyAndFillApp.swift": "40638244f7f65ac622c891ea4e3d2462679975a8f314981d685d64d0d0c61a4e",
+        "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+      },
+      "limitations": [
+        "Pure model probe does not execute StoreKit or cancellation delivery.",
+        "Real overlapping entitlement snapshots, refunds/revocation, offline behavior, configured sandbox transactions and native UI remain unverified.",
+        "Current root working tree includes unrelated integration changes; exact commerce hashes bind this review."
+      ],
+      "integration": "No patch; retain StoreKit sandbox/device acceptance as outstanding.",
+      "probe_source": "W011-probe.swift",
+      "probe_source_sha256": "765d6c590c1d0e2e3d3e85fd175b86365e083623f646d98ce0cd5cb58fd54886",
+      "probe_output": "W011-probe.log",
+      "probe_output_sha256": "30fed9d7f73a670c3548c65ad8ec5df5811f642b52427e65d9a583e426a4d45f",
+      "probe_histories": 137257,
+      "probe_invariant_evaluations": 549028,
+      "probe_maximum_event_depth": 6,
+      "completed_at": "2026-11-27T17:51:01.263727+00:00",
+      "report": "workers/W011.md",
+      "structured_report": "workers/W011.json"
+    },
+    {
+      "sequence": 12,
+      "actual_task_id": "/root/beta_campaign/w012_bounded_file_boundary",
+      "role": "specialist",
+      "task": "Challenge descriptor type/size/EOF/cancellation boundaries in bounded file import",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:50:38.886451+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No demonstrated no-follow, descriptor identity, byte-growth, integer-boundary or cancellation-publication defect.",
+        "Read requests are bounded by remaining maximum plus one; zero/exact limits and growth preserve the payload bound.",
+        "Opened handles reach deferred cleanup on all subsequent code paths; metadata preflight is not authorization.",
+        "Thirteen existing native reader methods cover the reviewed boundaries; they were not rerun.",
+        "Real slow-provider cancellation latency is unverified because checkpoints occur between synchronous operations."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "Passed structural/evidence reference validation only."
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 core_tests, native_build and persistence_smoke outstanding."
+        },
+        {
+          "command": "git diff -- App/BoundedFileReader.swift App/ProjectDocumentIO.swift App/ReferencePhoto.swift NativeTests/BoundedFileReaderTests.swift",
+          "result": "Empty targeted source diff; other root-owned changes retained."
+        },
+        {
+          "command": "git diff --check",
+          "result": "Passed."
+        },
+        {
+          "command": "Source/caller/test reads and rg cross-reference inventory",
+          "result": "Verified descriptor cleanup, bounded-read arithmetic and 13 native reader method definitions; no execution claim."
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift 6.2; x86_64-unknown-linux-gnu. Native Darwin/Foundation tests not run."
+        }
+      ],
+      "source_bindings": {
+        "App/BoundedFileReader.swift": "f420bf7876ee9d556c69b1682300e402640046983f7cf34cabe8d0508469e36c",
+        "NativeTests/BoundedFileReaderTests.swift": "748cacfa66e0a9ace34e7ba1bf4c8fe05a1093bac8d7d6612b319ffae1a22dc8",
+        "App/ProjectDocumentIO.swift": "84c163b88c41cb9b3535ac4c74d0c0dae3c5ce7628c5890b70b4656ce3167f85",
+        "NativeTests/ProjectDocumentIOTests.swift": "c97fa8adce643b32cc759e1c260e805a27aba9dcce82670e5f840e8c14fa3a39",
+        "App/ReferencePhoto.swift": "1b1b1ea05833fd591fe05fbe6d9fd3f9dacfe3bdd08ad7093ed8c5c08d25792a"
+      },
+      "limitations": [
+        "No Apple/native/provider execution by this worker.",
+        "No fresh runtime descriptor-leak or slow-provider cancellation measurement.",
+        "The reader limits payload bytes; allocator capacity and total process memory are not measured.",
+        "A regular descriptor does not guarantee a coherent snapshot against external in-place mutation."
+      ],
+      "integration": "No source patch. Retain actual-provider cancellation/materialization and native descriptor tests as unverified.",
+      "completed_at": "2026-11-27T17:53:05.686651+00:00",
+      "report": "workers/W012.md",
+      "structured_report": "workers/W012.json"
+    },
+    {
+      "sequence": 13,
+      "actual_task_id": "/root/beta_campaign/w013_store_completion_races",
+      "role": "specialist",
+      "task": "Challenge app persistence completion ownership after cancellation, dismissal and newer edits",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:51:01.265411+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No demonstrated app-level commit ownership defect in the reviewed sources.",
+        "Four real-store rename/duplicate receipt interleavings with observer/session cancellation passed 130 invariant checks.",
+        "A second window's intervening saved bytes survived cancelled receipt adoption and the subsequent rejected stale save.",
+        "Stale-save failure preserved current scene/history and dirty state; recovery retained both window scenes and released busy/task ownership."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 core_tests, native_build and persistence_smoke outstanding at observation"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift 6.2; x86_64-unknown-linux-gnu"
+        },
+        {
+          "command": "swiftc command saved in compile_argv; /tmp/w013-completion-probe",
+          "result": "compile exit 0; probe exit 0; four real-store interleavings, 130 invariant checks passed"
+        },
+        {
+          "command": "SHA-256 comparison of all linked objects/modules before and after probe",
+          "result": "all unchanged; no build-cache mutation"
+        },
+        {
+          "command": "git diff --check",
+          "result": "passed"
+        }
+      ],
+      "completion_head": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "compile_argv": [
+        "/tmp/swift-0eff52f/usr/bin/swiftc",
+        "-parse-as-library",
+        "-I",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/Modules",
+        "/tmp/w013-completion-probe.swift",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ARPlacementLayout.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/BetaFeedbackReport.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/CameraFraming.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/Colorimetry.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/GuidedLighting.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightOutputAdjustment.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightingPlan.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightingProjectDocument.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/LightingRecipe.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/PortraitHeadMesh.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/PortraitStudy.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ProjectLibrary.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ReferencePNG.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ReferenceStudy.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/ReferenceTonalSummary.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/RoomPlacement.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/RoomPlacementText.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/Scene.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneCodec.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneEditHistory.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneFileStore.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneLightCreation.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SceneTransform.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioDisplayName.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioEditorState.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioFeatureContext.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioFeaturePresentation.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioFieldCommand.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioNumericInput.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioOptics.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioPlanLabelLayout.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudioSceneBounds.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudyFloat32Eligibility.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudyFrameCache.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/StudyValidationFixtures.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/LightingCore.build/SurfacePhotometry.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/LightTargetLuxDraft.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/ProjectLibraryOperation.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/ProjectStore.swift.o",
+        "/tmp/APP1-0eff52f4731c/.build/x86_64-unknown-linux-gnu/debug/StudioComposition.build/StudioSession.swift.o",
+        "-o",
+        "/tmp/w013-completion-probe"
+      ],
+      "run_argv": [
+        "/tmp/w013-completion-probe"
+      ],
+      "source_bindings": {
+        "App/ProjectStore.swift": "acd218f4913d136a5f6e0d3a8727d59c1ead873003eecb4ef77392c435add5d8",
+        "App/ProjectLibraryOperation.swift": "ddd0a97ab7bf274f78135bd5578dba3e9db451bafd0e7f662cc997d40e68150a",
+        "App/StudioSession.swift": "132e815d355beb448255af982b0b3b82cbc3a8e3f31815aa7317b35cb9a55363",
+        "App/StudioView.swift": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+        "App/ProjectLibraryView.swift": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe",
+        "Sources/LightingCore/ProjectLibrary.swift": "c3a69fee485a59d4608b2c972834d8e2879de33732e2aa5208d93f02881e4c39",
+        "Sources/LightingCore/StudioEditorState.swift": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668",
+        "NativeTests/StudioCommittedSaveTests.swift": "11fe4dd72f5f534f2bfcb270db1e731e0fc79824e9c08fd8280fb0cfe4cca70c",
+        "NativeTests/StudioSessionTests.swift": "d4380aeff9009694a84bbdbc6925df3740ae0a425c2c7699d405c1a23704d6f3",
+        "NativeTests/StudioLibraryRecoveryTests.swift": "dd34cba9dd06c86bacae1b69fa6d2f405a1d2cbf665d3e57a646503a4830b30c",
+        "NativeTests/StudioFeatureSessionTests.swift": "61e8a74fe474328bcc6d6127a9832e8950173b813be83785ee60442695d7693a"
+      },
+      "probe_source_sha256": "a864b7a3b4afc5a4eb8c16a205049147cd48276b14116cc822e173bffba57d9f",
+      "object_bindings_file": "W013-probe-objects.json",
+      "probe_output_file": "W013-probe.log",
+      "limitations": [
+        "No Apple/native SwiftUI Observation or dismissal execution.",
+        "No physical-device, provider-interruption, power-loss or complete persistence-gate claim.",
+        "Objects were read from the root's existing Debug build; their exact bytes are preserved by hashes."
+      ],
+      "integration": "No source patch. Retain independent held-out orchestration evidence.",
+      "completed_at": "2026-11-27T17:56:54.091843+00:00",
+      "report": "workers/W013.md",
+      "structured_report": "workers/W013.json"
+    },
+    {
+      "sequence": 14,
+      "actual_task_id": "/root/beta_campaign/w014_provider_coordination",
+      "role": "specialist",
+      "task": "Challenge provider coordination/security-scope cancellation and stale import ownership",
+      "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+      "status": "completed",
+      "started_at": "2026-11-27T17:53:05.688920+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No demonstrated coordination deadlock or stale-import publication defect in reviewed source.",
+        "Security scope remains balanced through coordination/read/decode; coordinator-supplied relocated URLs are validated by the authoritative reader.",
+        "Cancellation is sticky before coordinator installation and calls coordinator.cancel outside the lock, avoiding source-level reentrant lock deadlock.",
+        "Absent accessor result and coordination errors prevent publication; a repeated accessor could replace only the local result, with no project mutation inside the accessor.",
+        "Main-actor request/acceptance/scene guards protect the pre-reservation import boundary; after reservation Studio owns the commit and dismissed UI suppresses stale feedback.",
+        "Nine native methods cover relevant local/presenter scenarios but were not executed by this worker."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "git status --short; git rev-parse HEAD; git log -3 --oneline",
+          "result": "Observed base 804c2c7 with root candidate edits; reviewed provider/import sources unchanged."
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "Passed structural and evidence-reference validation only."
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 outstanding core_tests, native_build and persistence_smoke during root candidate update."
+        },
+        {
+          "command": "Targeted reads of ProjectDocumentIO, ProjectLibraryView, StudioView wiring and ProjectDocumentIOTests; rg call-site/test inventory",
+          "result": "Source invariants and nine native method inventory described in report; no demonstrated defect."
+        },
+        {
+          "command": "git diff -- App/ProjectDocumentIO.swift App/ProjectLibraryView.swift NativeTests/ProjectDocumentIOTests.swift; git diff --check",
+          "result": "Reviewed source diff empty; shared diff check passed."
+        }
+      ],
+      "source_bindings": {
+        "App/ProjectDocumentIO.swift": "84c163b88c41cb9b3535ac4c74d0c0dae3c5ce7628c5890b70b4656ce3167f85",
+        "App/ProjectLibraryView.swift": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe",
+        "App/StudioView.swift": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+        "NativeTests/ProjectDocumentIOTests.swift": "c97fa8adce643b32cc759e1c260e805a27aba9dcce82670e5f840e8c14fa3a39"
+      },
+      "limitations": [
+        "No Apple frameworks, native-provider or UI tests executed.",
+        "No bounded wall-clock cancellation claim for a blocked filesystem/provider operation.",
+        "Actual cloud relocation, security-scoped provider lifetime and SwiftUI picker/dismissal callback delivery require native execution.",
+        "Repeated accessor behavior was considered hypothetically from source; no provider or Foundation callback multiplicity was simulated."
+      ],
+      "integration": "No source patch. Execute the delayed provider cancellation/replacement witness before accepting provider behavior.",
+      "completed_at": "2026-11-27T17:56:54.093502+00:00",
+      "report": "workers/W014.md",
+      "structured_report": "workers/W014.json"
+    },
+    {
+      "sequence": 15,
+      "actual_task_id": "/root/beta_campaign/w015_native_focus_failure",
+      "role": "specialist",
+      "task": "Diagnose actual hosted text-field first-responder failure and implement justified bounded diagnostic/repair",
+      "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "status": "completed",
+      "started_at": "2026-11-27T17:56:54.098340+00:00",
+      "worktree": "/tmp/app1-worktrees-0eff52f/w001",
+      "allowed_paths": [
+        "App/StudioTextField.swift",
+        "NativeTests/StudioTextFieldTests.swift"
+      ],
+      "findings": [
+        "Original failure is two first-responder assertions after a keyboard queue timeout; logged native/model/write invariants retain every edit.",
+        "No causal product defect or safe focus repair established from source and original evidence.",
+        "Added an existing bounded test-local trace before first focus; failure-only buffered output preserves all assertions, waits, responder actions and method count.",
+        "Root independently reviewed and accepted the diagnostic-only patch; native rerun remains required."
+      ],
+      "affected_files": [
+        "NativeTests/StudioTextFieldTests.swift"
+      ],
+      "validations": [
+        {
+          "command": "git diff --check",
+          "result": "passed"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swiftc -frontend -parse -D DEBUG NativeTests/StudioTextFieldTests.swift",
+          "result": "passed syntax parse only; no Apple typecheck/runtime"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swiftc -frontend -parse NativeTests/StudioTextFieldTests.swift",
+          "result": "passed Release syntax parse only"
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swiftc -typecheck /tmp/w015-xctest-api.swift",
+          "result": "passed installed Linux XCTest totalFailureCount API typecheck"
+        },
+        {
+          "command": "Python byte comparison of original and patched hosted method after removing added DEBUG block",
+          "result": "byte-identical original method; test method inventory unchanged"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "structure valid; checkpoint state reports M01 core_tests/native_build/persistence_smoke outstanding; not execution evidence"
+        }
+      ],
+      "source_bindings": {
+        "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+        "NativeTests/StudioTextFieldTests.swift": "b3fb59aa7283ee3ae082caffc749b6d869d365ccbf7750bcd7520891e23cb11d"
+      },
+      "baseline_source_bindings": {
+        "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+        "NativeTests/StudioTextFieldTests.swift": "eccb18c8f0e491d0b5d3ba75ea2b21be6c5d9afce6157c5df62dbc22fc102bba"
+      },
+      "artifact_bindings": {
+        "/tmp/app1-artifacts-0eff52f/native/native-tests.log": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b",
+        "workers/W015-native-excerpts.txt": "05b2f10689540a707899d21b1fc24a959b225761dda67c358cb7a6e9834a4895",
+        "workers/W015.patch": "be2a07f81366a7c940ab5454127f51222268cc614672db9f5262a218842e3fee"
+      },
+      "limitations": [
+        "Apple UIKit/XCTest typecheck and native execution unavailable on Linux.",
+        "Underlying first-branch responder failure remains unresolved; diagnostic patch is not a claimed fix.",
+        "Initial keyboard timeout and earlier window warnings do not establish causality.",
+        "Observer encoding/buffering adds bounded diagnostic work; actual native behavior still requires the next run."
+      ],
+      "integration": "Apply workers/W015.patch or /tmp/w015-native-focus.patch to root. Root already independently accepted diagnostic-only scope; no production changes or gate relaxation.",
+      "patch": "workers/W015.patch",
+      "report_word_count": 303,
+      "completed_at": "2026-11-27T18:00:47.284544+00:00",
+      "report": "workers/W015.md",
+      "structured_report": "workers/W015.json",
+      "integration_status": "integrated in root checkout; root owns committed revision and current-source validation",
+      "integrated_source_sha256": {
+        "NativeTests/StudioTextFieldTests.swift": "b3fb59aa7283ee3ae082caffc749b6d869d365ccbf7750bcd7520891e23cb11d"
+      }
+    },
+    {
+      "sequence": 16,
+      "actual_task_id": "/root/beta_campaign/w016_pdf_export_review",
+      "role": "specialist",
+      "task": "Review PDF maximum-text/layout/privacy invariants and source-bound original native pass evidence",
+      "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "status": "completed",
+      "started_at": "2026-11-27T17:56:54.134487+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No demonstrated PDF/export source defect; no production changes.",
+        "Bounded scene/name inputs and fixed row budgets fit declared Letter/A4 page geometry; maximum names intentionally may truncate while numbered identities/settings remain separately checked.",
+        "PDF preview and ShareLink use identical immutable prepared Data; stale option preparations are fenced.",
+        "Five original PDF native methods have complete ordered start/pass pairs and zero-failure suite summary; seven reviewed inputs match tested 9d18 source manifest.",
+        "No exported PDF available among inspected extracted native files; no new raster visual or external share-open evidence."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "passed structural validation only"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "M01 core_tests, native_build and persistence_smoke outstanding"
+        },
+        {
+          "command": "git diff --check -- App/LightingPlanPDF.swift App/LightingPlanExportView.swift NativeTests/LightingPlanPDFTests.swift Sources/LightingCore/LightingPlan.swift",
+          "result": "passed; reviewed source unchanged"
+        },
+        {
+          "command": "Python verify published-source-05 manifest checksum, compare seven PDF/core SHA256 values, and check ordered PDF method start/pass pairs",
+          "result": "manifest checksum matches; all seven source hashes match tested 9d18 inputs; five ordered PDF passes found"
+        },
+        {
+          "command": "rg --files /tmp/app1-artifacts-0eff52f/native | rg PDF/manifest/xcresult names",
+          "result": "no exported .pdf among inspected extracted files; no original PDF rendered"
+        }
+      ],
+      "source_bindings": {
+        "App/LightingPlanPDF.swift": "6ed5b44341d5ac873f9ac84ff16458527b5b38c2bdb12667d9c860e36b220027",
+        "App/LightingPlanExportView.swift": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+        "NativeTests/LightingPlanPDFTests.swift": "b339d3f0270b2406603d792696577b6a2a6830520b150c6c23c6082144223732",
+        "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+        "Sources/LightingCore/StudioDisplayName.swift": "56130a2c0a0f6d4cc1003248d3ca341c444723d97cbc36230845cb8401a8a314",
+        "Sources/LightingCore/RoomPlacement.swift": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+        "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898"
+      },
+      "limitations": [
+        "No Apple/PDFKit/native test executed by this worker.",
+        "Original overall xcresult unfinalized and another native method failed; isolated PDF log passes do not establish combined native acceptance.",
+        "Text extraction and selected boxes do not establish raster glyph appearance or external share destination behavior.",
+        "Maximum names may intentionally truncate; tests require identity and recognizable glyphs, not full name retention."
+      ],
+      "integration": "No patch; preserve original native PDF attachments when recoverable and obtain visual/share-open runtime evidence.",
+      "native_evidence": {
+        "tested_source": "9d18d762f204ed060af5309554d97841ea70ea03",
+        "run_id": 46037214333,
+        "manifest": "docs/evidence/beta-hardening-2026-11-27/validation/source-manifest-05.json",
+        "manifest_sha256": "ea9ecf830e892be1ffe30ca096f3c51f85adf89388047d100b346d9fb285b2d2",
+        "log_path": "/tmp/app1-artifacts-0eff52f/native/native-tests.log",
+        "log_sha256": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b",
+        "ordered_methods": 5,
+        "excerpts": [
+          "Test Suite 'LightingPlanPDFTests' started at 2026-11-27 17:39:46.544.",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames]' started.",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames]' passed (4.981 seconds).",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testEmptySceneStillProducesReadableDiagramAndSchedule]' started.",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testEmptySceneStillProducesReadableDiagramAndSchedule]' passed (0.034 seconds).",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits]' started.",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits]' passed (3.529 seconds).",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes]' started.",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes]' passed (0.713 seconds).",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits]' started.",
+          "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits]' passed (0.480 seconds).",
+          "Test Suite 'LightingPlanPDFTests' passed at 2026-11-27 17:39:56.290."
+        ]
+      },
+      "completed_at": "2026-11-27T18:00:03.511573+00:00",
+      "report": "workers/W016.md",
+      "structured_report": "workers/W016.json"
+    },
+    {
+      "sequence": 17,
+      "actual_task_id": "/root/beta_campaign/w017_package_reload_diagnosis",
+      "role": "specialist",
+      "task": "Assess local SwiftPM package reload/output-write feedback with primary sources and original native log",
+      "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "status": "completed",
+      "started_at": "2026-11-27T18:00:03.515382+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "Local LightingCore package root overlaps repository outputs; observed directly in original native log and current project.yml.",
+        "Original native log has 72 reload lines, including 30 after final suite summary; no TEST EXECUTE completion banner.",
+        "335 starts include 333 clean passes, one failed method with two assertions, and one log-interleaved terminal event; this is failed acceptance.",
+        "Studio-optics logs 12 reloads yet completes TEST EXECUTE SUCCEEDED: reload occurrence is not sufficient to explain nonfinalization.",
+        "Retrieved reports support an output-isolation experiment, not a demonstrated tee append feedback cause."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "git status --short; git rev-parse HEAD; git branch --show-current; git log -2 --oneline (separate calls)",
+          "result": "main at 4694b6224ddc54b56d664089a3aa340d09210d01; evidence/ledger changes only at inspection; source files not modified by W017."
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check",
+          "result": "exit 0; structural references valid only."
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py next",
+          "result": "exit 0; M01 core_tests/native_build/persistence_smoke outstanding."
+        },
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift 6.2 (swift-6.2-RELEASE), x86_64-unknown-linux-gnu."
+        },
+        {
+          "command": "Python Path/read_text and regex count of /tmp/app1-artifacts-0eff52f/native/native-tests.log; head/tail original logs",
+          "result": "1368 lines; 72 reloads, 30 after line1305; 335 starts/333 clean passes/1 failed method; no skipped records or terminal Xcode banner; optics contains TEST EXECUTE SUCCEEDED."
+        },
+        {
+          "command": "python3 scripts/native_test_shards.py verify-log unit /tmp/app1-artifacts-0eff52f/native/native-tests.log",
+          "result": "exit 1 expected: interrupted BoundedFileReader pass, failed StudioTextField method, and three candidate geometry methods absent from historical baseline."
+        },
+        {
+          "command": "git show 9d18d762f204ed060af5309554d97841ea70ea03:Package.swift",
+          "result": "exit 128: baseline tree path unavailable locally; no source-equivalence assertion made."
+        }
+      ],
+      "source_bindings": {
+        "AGENTS.md": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+        "agents/OPERATING_PROTOCOL.md": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6",
+        "agents/HANDOFF.md": "325dd8728c8d969e80a443e9f74f873e208be6c3cd3535a9969d0b75ea557a88",
+        "agents/state.json": "447d9c978b986657f38140063b8ffe25dac32e4ca56a944db095d93b9b981cb6",
+        "docs/PRODUCT.md": "1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628",
+        "docs/ARCHITECTURE.md": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a",
+        "docs/QUALITY.md": "af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336",
+        "docs/DESIGN.md": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117",
+        "docs/ROADMAP.md": "038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678",
+        "Package.swift": "b310183d99e93d72892137b32daa94bd18abec76bb8e814a035c067c7e4d1f54",
+        "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+        ".github/workflows/ios-prototype.yml": "34a0b4bb9f6e657a0a66b1f5f1d834d6d903611af9cd5b170206db13c26ba891",
+        ".github/workflows/platform-accessibility-diagnostics.yml": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9",
+        ".github/workflows/accessibility-control.yml": "15eee60e05abfda7a3e7028a05fd679fca05b198940ac8b7f208e4a472710854",
+        "scripts/native_test_shards.py": "10dcb98096b78f0337830b06e858665491a7b2693045f9f91b1ad2d6eefa6959",
+        "docs/evidence/beta-progress-2026-11-27-0eff52f/validation/baseline-native-receipt.json": "86d7080e8d6e5380eb8a7dbd17b83a3c00a29dc814e1e698966c06259638723f"
+      },
+      "artifact_bindings": {
+        "/tmp/app1-artifacts-0eff52f/native/native-tests.log": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b",
+        "/tmp/app1-artifacts-0eff52f/passed-ui/studio-optics/native-tests.log": "c7fe0c92b33bf911d1b286f4925d401bdeb983df3aa81564614c968e36d5cef0",
+        "/tmp/app1-artifacts-0eff52f/passed-ui/room-precision/native-tests.log": "a2a288c9ed641c0c42f17e8a19b7802aefa0fdb2e7f60bfe89ae27177056320d",
+        "/tmp/app1-artifacts-0eff52f/passed-ui/studio-smoke/native-tests.log": "59d8127f466e6a325f36965eb8ec37481e97fac6f324b253d02585401ad71165"
+      },
+      "primary_sources": [
+        {
+          "url": "https://forums.swift.org/t/help-me-understanding-troubleshooting-steps-for-spm/57291",
+          "ref": "turn131132963view0",
+          "lines": "35\u201349",
+          "assessment": "Explicit conjecture about manifest/resolved or added/removed files; no tee append demonstration."
+        },
+        {
+          "url": "https://developer.apple.com/forums/thread/773478",
+          "ref": "turn196187673view1",
+          "lines": "95\u2013100",
+          "assessment": "Accepted reporter answer identifies Package.resolved count mismatch; Apple staff requested sysdiagnose, not confirmation of watcher theory."
+        },
+        {
+          "url": "https://note.com/reality_eng/n/n4d7f6e7757a6?hl=en",
+          "ref": "turn196187673view2",
+          "lines": "88\u2013118,130\u2013191",
+          "assessment": "Firsthand stabilization; mechanistic inference expressly qualified, translated by AI, different crash symptom."
+        }
+      ],
+      "limitations": [
+        "No Apple runtime available; watcher path/event causality cannot be observed here.",
+        "No controlled A/B proof that log appends trigger package reloads.",
+        "The historical native log does not timestamp its deadline; supplied deadline not independently established from it.",
+        "Current candidate differs from historical native source; old git tree unavailable locally."
+      ],
+      "integration": "Root-only recommendation: isolate live native log and xcresult under RUNNER_TEMP; update checks/export/upload to external stage preserving legacy artifact hierarchy; leave all deadlines and gates intact. No patch.",
+      "completed_at": "2026-11-27T18:03:34.239446+00:00",
+      "report": "workers/W017.md",
+      "structured_report": "workers/W017.json"
+    },
+    {
+      "sequence": 18,
+      "actual_task_id": "/root/beta_campaign/w018_text_plan_units",
+      "role": "specialist",
+      "task": "Challenge plain text export units, terminology, stable identity and immutable sharing snapshot",
+      "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "status": "completed",
+      "started_at": "2026-11-27T18:00:47.288748+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [
+        "No confirmed product defect found in this bounded plain-text export review; no source changes made.",
+        "44 held-out assertions pass against a standalone executable compiled directly from every current LightingCore source; source hashes unchanged before/after.",
+        "A 0.0000005-meter projected overhang remains a wall-crossing warning and is rendered as less than 0.000001 m or 0.000002 ft, with signed outside-center coordinates retained.",
+        "Probe passes SI scene preservation, 3D subject distances, unit conversion, cd/K precision, emitter kinds, explicit zero rectangular roll, manual/follow-subject aim, duplicate Unicode identity, bidi sanitization and immutable snapshots.",
+        "Studio text follows displayUnits. Standalone room notes intentionally use localized meters and label this in their review screen. Notes share the exact immutable displayed string; PDF preview and share use the same prepared data.",
+        "Initial probe failed because its camera was outside a too-shallow synthetic room; preserving the failure, increasing only fixture depth from 4 to 8 m made the intended single-outside-center assertions pass.",
+        "Pending diff observed: NativeTests/StudioTextFieldTests.swift and campaign ledger/evidence; reviewed production/test inputs have no pending diff."
+      ],
+      "affected_files": [],
+      "validations": [
+        {
+          "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+          "result": "Swift version 6.2 (swift-6.2-RELEASE); x86_64-unknown-linux-gnu"
+        },
+        {
+          "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+          "result": "State structure/evidence references valid; M01 outstanding core_tests, native_build, persistence_smoke. This is not gate acceptance."
+        },
+        {
+          "command": [
+            "/tmp/swift-0eff52f/usr/bin/swiftc",
+            "-module-name",
+            "W018Probe",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ARPlacementLayout.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/BetaFeedbackReport.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/CameraFraming.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/Colorimetry.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/GuidedLighting.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightOutputAdjustment.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightingPlan.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightingProjectDocument.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/LightingRecipe.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/PortraitHeadMesh.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/PortraitStudy.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ProjectLibrary.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ReferencePNG.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ReferenceStudy.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/ReferenceTonalSummary.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/RoomPlacement.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/RoomPlacementText.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/Scene.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneCodec.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneEditHistory.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneFileStore.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneLightCreation.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SceneTransform.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioDisplayName.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioEditorState.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioFeatureContext.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioFeaturePresentation.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioFieldCommand.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioNumericInput.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioOptics.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioPlanLabelLayout.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudioSceneBounds.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudyFloat32Eligibility.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudyFrameCache.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/StudyValidationFixtures.swift",
+            "/tmp/APP1-0eff52f4731c/Sources/LightingCore/SurfacePhotometry.swift",
+            "/tmp/W018-text-plan-units.swift",
+            "-o",
+            "/tmp/W018-text-plan-units"
+          ],
+          "result": "Exit 0; direct-source standalone build. No shared .build mutation."
+        },
+        {
+          "command": "/tmp/W018-text-plan-units (initial 4 m room-depth fixture)",
+          "result": "Exit 1: FAIL subprecision outside preserved; fixture also placed camera outside. Original source/log retained."
+        },
+        {
+          "command": "/tmp/W018-text-plan-units (corrected 8 m room-depth fixture)",
+          "result": "PASS: 44 held-out text/units/identity/snapshot assertions\nmetric: Emitting-face projection crosses left wall boundaries. Projected wall overhang: less than 0.000001 m.\nimperial: Emitting-face projection crosses left wall boundaries. Projected wall overhang: 0.000002 ft."
+        },
+        {
+          "command": "SHA256 comparison of all direct-compiled LightingCore sources before and after execution",
+          "result": "All identical."
+        }
+      ],
+      "source_bindings": {
+        "Sources/LightingCore/ARPlacementLayout.swift": "4a0c8994149001e09a34ba38774e678d67cdce115dc5b252619dc4d861d28838",
+        "Sources/LightingCore/BetaFeedbackReport.swift": "41b92fba0d77d48be12051dc6ce93583528cfef4590e3d09c120e62a40d67331",
+        "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3",
+        "Sources/LightingCore/Colorimetry.swift": "059589eebc77120df5a5715f9b8b708c08da6701a55383a665312d3fda1e3a84",
+        "Sources/LightingCore/GuidedLighting.swift": "bbf2414e437bd550dff5a0c6a456913c02fce2d413064216ea41e95756652198",
+        "Sources/LightingCore/LightOutputAdjustment.swift": "370c40ad50745889e3eabc51a57e8822f8a5008be9b076a89f06ca619e887d6a",
+        "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+        "Sources/LightingCore/LightingProjectDocument.swift": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17",
+        "Sources/LightingCore/LightingRecipe.swift": "d30d5b8bc2983491ed45189c502f08774049d4d324ab234af07246c498337d27",
+        "Sources/LightingCore/PortraitHeadMesh.swift": "2f4be2a16daf9758d38bb184e735c9ae130797d01327cf78a1563b783826c637",
+        "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+        "Sources/LightingCore/ProjectLibrary.swift": "c3a69fee485a59d4608b2c972834d8e2879de33732e2aa5208d93f02881e4c39",
+        "Sources/LightingCore/ReferencePNG.swift": "a4c9a478de099976d7ef7b6d7292493559f81821476c0ccf582773960ca3df64",
+        "Sources/LightingCore/ReferenceStudy.swift": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+        "Sources/LightingCore/ReferenceTonalSummary.swift": "9e02a860c74ab296a38b15eaee57c1dee4b85df1efbe3aba7c9baf03d8672863",
+        "Sources/LightingCore/RoomPlacement.swift": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+        "Sources/LightingCore/RoomPlacementText.swift": "f48861f14e4d7a50be84aa223de59277559f83f4476acc584e1751a17d638a1a",
+        "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+        "Sources/LightingCore/SceneCodec.swift": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee",
+        "Sources/LightingCore/SceneEditHistory.swift": "b74aa78bac2c6940c86177dc74703864e054190950092879e81c64cc7697a767",
+        "Sources/LightingCore/SceneFileStore.swift": "4e1411ae2633433a173f6c49a0d36a3e99248794c83a8865b297d7377dcd5d83",
+        "Sources/LightingCore/SceneLightCreation.swift": "be618a19b6274c926e0df35d5bd3a0daca62c823d3b2533d3278843e61c0233c",
+        "Sources/LightingCore/SceneTransform.swift": "4856f233d16d524fe1b87bcd9b155fdeba568f62ec578838f8612d5fe1ab7504",
+        "Sources/LightingCore/StudioDisplayName.swift": "56130a2c0a0f6d4cc1003248d3ca341c444723d97cbc36230845cb8401a8a314",
+        "Sources/LightingCore/StudioEditorState.swift": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668",
+        "Sources/LightingCore/StudioFeatureContext.swift": "d41a1a24be70ca09ce51c2f97f5ec47cea480d58a10ab88ef40b121c65358704",
+        "Sources/LightingCore/StudioFeaturePresentation.swift": "220a85ac575460d54e0a39c5a9ada9f894556b849018ee5e21a2099cf6a472f0",
+        "Sources/LightingCore/StudioFieldCommand.swift": "f130b2819e6e29beb83c0222da72eab9f0237131c90a33c6f07d9297beefc1ac",
+        "Sources/LightingCore/StudioNumericInput.swift": "5fedf41ac12ae247767b110cae2ad6119b8a6872283f3257fe1b130fb8a6aadf",
+        "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+        "Sources/LightingCore/StudioPlanLabelLayout.swift": "3b77ad53e9f0e9d7621267fd3a1466a4abc852a18e5591c0b9b18ffea268c2ae",
+        "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+        "Sources/LightingCore/StudyFloat32Eligibility.swift": "cbb9fb57923d269120d75db70ea4fe0a5e8dfe0a185fe8aab5b0c1ce764a6c51",
+        "Sources/LightingCore/StudyFrameCache.swift": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+        "Sources/LightingCore/StudyValidationFixtures.swift": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+        "Sources/LightingCore/SurfacePhotometry.swift": "8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f",
+        "App/LightingPlanExportView.swift": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+        "App/ManualRoomPlacementView.swift": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+        "App/StudioView.swift": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+        "Tests/LightingCoreTests/LightingPlanTests.swift": "b5b7ea1e45f4ef278ba6871820cb2acc9f8f5784d44a97ebda01e5e658618ae5",
+        "Tests/LightingCoreTests/RoomPlacementTextTests.swift": "5b9111c9ea4bde5ede586273a965cb9a12030a64087c3e7d55d20433f3277f08"
+      },
+      "artifact_bindings": {
+        "/tmp/W018-text-plan-units.swift": "8ef4ac69550a629df4459f3750409775a247ed3d0965d9ae3c2bea12f0cbdac9",
+        "/tmp/W018-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "/tmp/W018-probe.log": "e9b6b650ba821b6a75b9b5d9db4fdc570c860c095615b6bc786e47686bffd6c7",
+        "/tmp/W018-probe-initial.swift": "ebb6f95be978161721a6ba0aad16c747e6ab6392661df0c505f317d205e318a3",
+        "/tmp/W018-probe-initial.log": "77cc8efdec3ffcc8b16d141f1fb3d458c1b8d6b23a7a929c5edc6ddbe080fa0c",
+        "/tmp/W018-source-bindings.json": "62c5933eb06cfcb074f004850da51e648466ce7ecf3e3694c3a50ab7ce640520",
+        "/tmp/W018-text-plan-units": "739ecc8eff1fdb6f2762990ba1f38cd5c9cf0854abdb7e027fbd723b8e50b837"
+      },
+      "limitations": [
+        "Linux Swift standalone execution only; native SwiftUI/ShareLink/PDF runtime unavailable and not claimed.",
+        "Existing 14 LightingPlanTests and 5 RoomPlacementTextTests methods inspected, not rerun as XCTest; no full suite or physical calibration claim.",
+        "The held-out probe is bounded evidence, not complete export or release acceptance."
+      ],
+      "integration": "No patch. Root may retain the unique /tmp/W018-* probe/log/source-binding artifacts; root owns gates and commits.",
+      "completed_at": "2026-11-27T18:04:27.688762+00:00",
+      "report": "workers/W018.md",
+      "structured_report": "workers/W018.json",
+      "persisted_artifact_bindings": {
+        "workers/W018-text-plan-units.swift": "8ef4ac69550a629df4459f3750409775a247ed3d0965d9ae3c2bea12f0cbdac9",
+        "workers/W018-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "workers/W018-probe.log": "e9b6b650ba821b6a75b9b5d9db4fdc570c860c095615b6bc786e47686bffd6c7",
+        "workers/W018-probe-initial.swift": "ebb6f95be978161721a6ba0aad16c747e6ab6392661df0c505f317d205e318a3",
+        "workers/W018-probe-initial.log": "77cc8efdec3ffcc8b16d141f1fb3d458c1b8d6b23a7a929c5edc6ddbe080fa0c",
+        "workers/W018-source-bindings.json": "62c5933eb06cfcb074f004850da51e648466ce7ecf3e3694c3a50ab7ce640520"
+      }
+    },
+    {
+      "sequence": 19,
+      "actual_task_id": "/root/beta_campaign/w019_ci_output_transport",
+      "role": "specialist",
+      "task": "Independently challenge exact native/UI external-output relocation and strict original artifact transport",
+      "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "status": "running",
+      "started_at": "2026-11-27T18:03:34.244746+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [],
+      "affected_files": [],
+      "validations": []
+    },
+    {
+      "sequence": 20,
+      "actual_task_id": "/root/beta_campaign/w020_smoke_original_images",
+      "role": "specialist",
+      "task": "Review actual source-bound smoke UI screenshot originals for visible beta usability defects",
+      "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+      "status": "running",
+      "started_at": "2026-11-27T18:04:27.697125+00:00",
+      "worktree": "/tmp/APP1-0eff52f4731c",
+      "allowed_paths": [],
+      "findings": [],
+      "affected_files": [],
+      "validations": []
+    }
+  ]
+}

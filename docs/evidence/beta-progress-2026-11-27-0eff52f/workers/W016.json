@@ -1,0 +1,74 @@
+{
+  "actual_task_id": "/root/beta_campaign/w016_pdf_export_review",
+  "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "No demonstrated PDF/export source defect; no production changes.",
+    "Bounded scene/name inputs and fixed row budgets fit declared Letter/A4 page geometry; maximum names intentionally may truncate while numbered identities/settings remain separately checked.",
+    "PDF preview and ShareLink use identical immutable prepared Data; stale option preparations are fenced.",
+    "Five original PDF native methods have complete ordered start/pass pairs and zero-failure suite summary; seven reviewed inputs match tested 9d18 source manifest.",
+    "No exported PDF available among inspected extracted native files; no new raster visual or external share-open evidence."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "passed structural validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 core_tests, native_build and persistence_smoke outstanding"
+    },
+    {
+      "command": "git diff --check -- App/LightingPlanPDF.swift App/LightingPlanExportView.swift NativeTests/LightingPlanPDFTests.swift Sources/LightingCore/LightingPlan.swift",
+      "result": "passed; reviewed source unchanged"
+    },
+    {
+      "command": "Python verify published-source-05 manifest checksum, compare seven PDF/core SHA256 values, and check ordered PDF method start/pass pairs",
+      "result": "manifest checksum matches; all seven source hashes match tested 9d18 inputs; five ordered PDF passes found"
+    },
+    {
+      "command": "rg --files /tmp/app1-artifacts-0eff52f/native | rg PDF/manifest/xcresult names",
+      "result": "no exported .pdf among inspected extracted files; no original PDF rendered"
+    }
+  ],
+  "source_bindings": {
+    "App/LightingPlanPDF.swift": "6ed5b44341d5ac873f9ac84ff16458527b5b38c2bdb12667d9c860e36b220027",
+    "App/LightingPlanExportView.swift": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+    "NativeTests/LightingPlanPDFTests.swift": "b339d3f0270b2406603d792696577b6a2a6830520b150c6c23c6082144223732",
+    "Sources/LightingCore/LightingPlan.swift": "4c352a3dfa2dd05196d8cba4a77f55a8320118db8b181ccd2d4691377b465a6c",
+    "Sources/LightingCore/StudioDisplayName.swift": "56130a2c0a0f6d4cc1003248d3ca341c444723d97cbc36230845cb8401a8a314",
+    "Sources/LightingCore/RoomPlacement.swift": "1b6059503d8d22c06480d9d272281b34003361d5592dde5433e09fb60a1ccdeb",
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898"
+  },
+  "limitations": [
+    "No Apple/PDFKit/native test executed by this worker.",
+    "Original overall xcresult unfinalized and another native method failed; isolated PDF log passes do not establish combined native acceptance.",
+    "Text extraction and selected boxes do not establish raster glyph appearance or external share destination behavior.",
+    "Maximum names may intentionally truncate; tests require identity and recognizable glyphs, not full name retention."
+  ],
+  "integration": "No patch; preserve original native PDF attachments when recoverable and obtain visual/share-open runtime evidence.",
+  "native_evidence": {
+    "tested_source": "9d18d762f204ed060af5309554d97841ea70ea03",
+    "run_id": 46037214333,
+    "manifest": "docs/evidence/beta-hardening-2026-11-27/validation/source-manifest-05.json",
+    "manifest_sha256": "ea9ecf830e892be1ffe30ca096f3c51f85adf89388047d100b346d9fb285b2d2",
+    "log_path": "/tmp/app1-artifacts-0eff52f/native/native-tests.log",
+    "log_sha256": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b",
+    "ordered_methods": 5,
+    "excerpts": [
+      "Test Suite 'LightingPlanPDFTests' started at 2026-11-27 17:39:46.544.",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames]' started.",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames]' passed (4.981 seconds).",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testEmptySceneStillProducesReadableDiagramAndSchedule]' started.",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testEmptySceneStillProducesReadableDiagramAndSchedule]' passed (0.034 seconds).",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits]' started.",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits]' passed (3.529 seconds).",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes]' started.",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes]' passed (0.713 seconds).",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits]' started.",
+      "Test Case '-[KeyAndFillTests.LightingPlanPDFTests testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits]' passed (0.480 seconds).",
+      "Test Suite 'LightingPlanPDFTests' passed at 2026-11-27 17:39:56.290."
+    ]
+  }
+}

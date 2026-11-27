@@ -1,0 +1,54 @@
+{
+  "actual_task_id": "/root/beta_campaign/w008_number_grammar_review",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed",
+  "findings": [
+    "Recommend accepting W004 numeric grammar patch; independent actual-module corpus of 72766 cases has zero disagreements with corrected separate ASCII JSON number grammar oracle.",
+    "Initial 120 mismatches were an oracle error excluding legal edge JSON whitespace; initial and corrected evidence preserved without production changes.",
+    "Exact 8 MiB ignored-integer document accepted; 8 MiB plus 1 byte rejected as tooLarge. Dense arrays through 65536 numbers accepted.",
+    "Scanner advances monotonically, requires fraction/exponent digits, validates terminators, revisits delimiters, and imposes no value magnitude conversion."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+      "result": "Structural validation passed; M01 native_build and persistence_smoke still outstanding."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift version 6.2 (swift-6.2-RELEASE); x86_64-unknown-linux-gnu."
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swiftc -I .build/x86_64-unknown-linux-gnu/debug/Modules /tmp/w008-number-review/probe.swift .build/x86_64-unknown-linux-gnu/debug/LightingCore.build/*.swift.o -o /tmp/w008-number-review/probe",
+      "result": "Compiled separate executable against actual patched LightingCore objects."
+    },
+    {
+      "command": "python3 /tmp/w008-number-review/generate.py && /tmp/w008-number-review/probe /tmp/w008-number-review/cases.json /tmp/w008-number-review/results.json",
+      "result": "72766 cases, 7981 accepted, 0 disagreements; eight additional size/density boundary records passed expected outcomes."
+    },
+    {
+      "command": "git diff --check",
+      "result": "Passed. No W008 source changes."
+    }
+  ],
+  "source_bindings": {
+    "Sources/LightingCore/LightingProjectDocument.swift": "7e9bd39518dad8c64b2f9992ad5750974aad1d0b2cdb352862ee0566e0da4b17",
+    "Tests/LightingCoreTests/ProjectEnvelopeBetaTests.swift": "727983a0e761c7a773b8ffabb8343b053a7cd1aa91483e3d76e99cb5de8102ac"
+  },
+  "compiled_object_sha256": "1a14e73d479a1bd23f6bf718f8fc0c28bcde965dd3ab954ac3dc26347c6f716f",
+  "artifact_sha256": {
+    "W008-initial-results-with-oracle-padding-error.json": "a028ce8f9abcaffb4c4a6d512b075aa82ea6c7ddeb954c9f0dbdb114c8f2aa8d",
+    "W008-initial-generator-with-oracle-padding-error.py": "513556ddc732541abd5eb7dd23cea659a4c3229c82d57edd97f28895c381ea34",
+    "W008-generator-summary.json": "ff60b68c84c10252ab50ea1892bbfc3a9b432f93c251235431b1f8623cff83e3",
+    "W008-results.json": "68fd78bdccb6a0f77266c4c7b24118c64c2483678feff1bd662c59f147982884",
+    "W008-probe.swift": "af777277226360aa695ef7624c6457b0dfdcf76249873613e5a33a8a4f241cf7",
+    "W008-generate.py": "61edfae1f0218b7bbf1b397a9df0c0b4e5ca3e9dad26eaf15a2eb63285bb2610",
+    "regenerable-cases.json": "e7751ed8d384b99f120a9aa2c5bcb1c8ac7b622fe127616d8acde7e4be4f7523"
+  },
+  "limitations": [
+    "Linux Debug host execution only; timings are observations, not device performance acceptance.",
+    "No full-suite, Apple compilation, UI, physical-device or provider execution.",
+    "Corpus is bounded independent falsification, not proof over all possible JSON."
+  ],
+  "integration": "Accept /tmp/w004-document-envelope.patch at the recorded hashes; root owns integrated validation and publication. No additional patch."
+}

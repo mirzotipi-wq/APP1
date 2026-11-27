@@ -1,6 +1,17 @@
 import XCTest
 
 final class ProjectLibraryUITests: XCTestCase {
+    override func tearDownWithError() throws {
+        guard let testRun, !testRun.hasSucceeded else { return }
+        // A stalled app AX query cannot describe its own failure reliably.
+        // Capture the real display through the screen service, without another
+        // application hierarchy query or a retry of the failed assertion.
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "Project-library-failure-screen"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+    }
+
     private func waitUntilEnabled(_ element: XCUIElement, timeout: TimeInterval = 15,
                                   file: StaticString = #filePath, line: UInt = #line) {
         // Resolve one immutable accessibility snapshot for both presence and
@@ -84,6 +95,10 @@ final class ProjectLibraryUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        // Preserve the existing bounded, content-free focus/lifecycle trace for
+        // the observed Menu -> Duplicate -> naming-sheet stall. Layout probes
+        // remain off, so normal AX semantics are still checked independently.
+        app.launchEnvironment["KEYFILL_UI_TEXT_INPUT_TRACE"] = "1"
         XCTAssertNil(app.launchEnvironment["KEYFILL_UI_TEXT_LAYOUT_PROBES"],
                      "This workflow verifies normal, uninstrumented accessibility")
         launchStudio(app)

@@ -1,0 +1,56 @@
+{
+  "actual_task_id": "/root/beta_campaign/w011_purchase_ordering",
+  "base_sha": "804c2c7ae21cdc9a4f7da9c68ea19b0cd3c7db42",
+  "status": "completed",
+  "findings": [
+    "No demonstrated purchase ordering defect or commerce source change.",
+    "Actual pure purchase-attempt model matches declarative history invariants across137257distinct histories of seven event types through length six.",
+    "Matching verified/purchased facts remain terminal under delayed pending; previous/unrelated/nil tokens do not resolve replacement attempts.",
+    "Store source filters verified product/type, re-reads entitlement facts for unverified updates, revision-checks publication and decouples verified reconciliation from caller cancellation.",
+    "Blank product configuration still disables sales; no policy/configuration changes."
+  ],
+  "affected_files": [],
+  "validations": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "result": "passed structural validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "result": "M01 core_tests, native_build, persistence_smoke outstanding during integration"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swift --version",
+      "result": "Swift6.2; x86_64-unknown-linux-gnu"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swiftc App/EntitlementPurchaseAttempt.swift /tmp/w011-purchase-ordering-probe.swift -o /tmp/w011-purchase-ordering-probe && /tmp/w011-purchase-ordering-probe",
+      "result": "137257distinct histories;549028invariant checks passed; no StoreKit service execution"
+    },
+    {
+      "command": "git diff --check; git diff --stat -- App/EntitlementStore.swift App/EntitlementPurchaseAttempt.swift NativeTests/EntitlementStoreConfigurationTests.swift project.yml",
+      "result": "diff check passed; reviewed commerce paths unchanged"
+    }
+  ],
+  "source_bindings": {
+    "App/EntitlementStore.swift": "fd0e693a959d9d6d22aa91b1fb1a2551ec1469c7d933d3946daaf9c1604d539d",
+    "App/EntitlementPurchaseAttempt.swift": "7134edfa34a6e0c23eb3301477de46231d764b3c4f2460f0d7ffec0caaaa51d2",
+    "NativeTests/EntitlementStoreConfigurationTests.swift": "b8d525be1a79b21e70c570c777be19155cf419aff4b431573585cbc73b625b99",
+    "App/ProFeaturesView.swift": "6b43d11bbe4e4badd7762e875509213c1942de32da2075da064469d1029ce532",
+    "App/KeyAndFillApp.swift": "40638244f7f65ac622c891ea4e3d2462679975a8f314981d685d64d0d0c61a4e",
+    "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+  },
+  "limitations": [
+    "Pure model probe does not execute StoreKit or cancellation delivery.",
+    "Real overlapping entitlement snapshots, refunds/revocation, offline behavior, configured sandbox transactions and native UI remain unverified.",
+    "Current root working tree includes unrelated integration changes; exact commerce hashes bind this review."
+  ],
+  "integration": "No patch; retain StoreKit sandbox/device acceptance as outstanding.",
+  "probe_source": "W011-probe.swift",
+  "probe_source_sha256": "765d6c590c1d0e2e3d3e85fd175b86365e083623f646d98ce0cd5cb58fd54886",
+  "probe_output": "W011-probe.log",
+  "probe_output_sha256": "30fed9d7f73a670c3548c65ad8ec5df5811f642b52427e65d9a583e426a4d45f",
+  "probe_histories": 137257,
+  "probe_invariant_evaluations": 549028,
+  "probe_maximum_event_depth": 6
+}

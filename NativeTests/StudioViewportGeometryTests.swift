@@ -5,6 +5,38 @@ final class StudioViewportGeometryTests: XCTestCase {
     private typealias Node = StudioViewportGeometry.Node
     private let screen = CGRect(x: 0, y: 0, width: 390, height: 844)
 
+    func testLargestTextObservedMeterTravelFitsWithinTheFixedBudget() {
+        // Original 9d18 CI trace: every drag moved the 62pt target by 276 2/3pt.
+        // Twelve drags left it at -1263; a seventeenth actually reveals it.
+        let viewport = CGRect(x: 0, y: 116, width: 402, height: 597.333333333333)
+        let initial = CGRect(x: 30, y: -4583, width: 212, height: 62)
+        let twelveDrags = initial.offsetBy(dx: 0, dy: 12 * (276.0 + 2.0 / 3.0))
+        let seventeenDrags = initial.offsetBy(dx: 0, dy: 17 * (276.0 + 2.0 / 3.0))
+        XCTAssertFalse(viewport.contains(twelveDrags))
+        XCTAssertTrue(viewport.contains(seventeenDrags))
+        XCTAssertGreaterThanOrEqual(StudioScrollTravelBudget.maximumDrags(target: initial, viewport: viewport), 17)
+        XCTAssertLessThanOrEqual(StudioScrollTravelBudget.maximumDrags(target: initial, viewport: viewport), 64)
+    }
+
+    func testScrollTravelBudgetIsSymmetricAndKeepsShortSearchesBounded() {
+        let viewport = CGRect(x: 0, y: 100, width: 390, height: 600)
+        let nearby = CGRect(x: 20, y: 300, width: 100, height: 44)
+        XCTAssertEqual(StudioScrollTravelBudget.maximumDrags(target: nearby, viewport: viewport), 12)
+        let above = CGRect(x: 20, y: -4622, width: 100, height: 44)
+        let below = CGRect(x: 20, y: 5378, width: 100, height: 44)
+        XCTAssertEqual(StudioScrollTravelBudget.maximumDrags(target: above, viewport: viewport),
+                       StudioScrollTravelBudget.maximumDrags(target: below, viewport: viewport))
+    }
+
+    func testScrollTravelBudgetCapsExtremeGeometryBeforeIntegerConversion() {
+        let viewport = CGRect(x: 0, y: 100, width: 390, height: 600)
+        let distant = CGRect(x: 20, y: -1e100, width: 100, height: 1e90)
+        XCTAssertEqual(StudioScrollTravelBudget.maximumDrags(target: distant, viewport: viewport), 64)
+        XCTAssertEqual(StudioScrollTravelBudget.maximumDrags(target: .null, viewport: viewport), 0)
+        XCTAssertEqual(StudioScrollTravelBudget.maximumDrags(target: .infinite, viewport: viewport), 0)
+        XCTAssertEqual(StudioScrollTravelBudget.maximumDrags(target: screen, viewport: .zero), 0)
+    }
+
     func testNavigationAndNestedScrollSurfacesAllBoundTheTarget() throws {
         let nodes = fixture() + [
             Node(kind: .scrollView, identifier: "nested", frame: CGRect(x: 20, y: 180, width: 350, height: 400), parent: 3),

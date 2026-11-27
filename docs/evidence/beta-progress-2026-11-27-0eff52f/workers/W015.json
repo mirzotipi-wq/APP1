@@ -1,0 +1,62 @@
+{
+  "actual_task_id": "/root/beta_campaign/w015_native_focus_failure",
+  "base_sha": "4694b6224ddc54b56d664089a3aa340d09210d01",
+  "status": "completed",
+  "findings": [
+    "Original failure is two first-responder assertions after a keyboard queue timeout; logged native/model/write invariants retain every edit.",
+    "No causal product defect or safe focus repair established from source and original evidence.",
+    "Added an existing bounded test-local trace before first focus; failure-only buffered output preserves all assertions, waits, responder actions and method count.",
+    "Root independently reviewed and accepted the diagnostic-only patch; native rerun remains required."
+  ],
+  "affected_files": [
+    "NativeTests/StudioTextFieldTests.swift"
+  ],
+  "validations": [
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swiftc -frontend -parse -D DEBUG NativeTests/StudioTextFieldTests.swift",
+      "result": "passed syntax parse only; no Apple typecheck/runtime"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swiftc -frontend -parse NativeTests/StudioTextFieldTests.swift",
+      "result": "passed Release syntax parse only"
+    },
+    {
+      "command": "/tmp/swift-0eff52f/usr/bin/swiftc -typecheck /tmp/w015-xctest-api.swift",
+      "result": "passed installed Linux XCTest totalFailureCount API typecheck"
+    },
+    {
+      "command": "Python byte comparison of original and patched hosted method after removing added DEBUG block",
+      "result": "byte-identical original method; test method inventory unchanged"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check; python3 scripts/agent_cycle.py next",
+      "result": "structure valid; checkpoint state reports M01 core_tests/native_build/persistence_smoke outstanding; not execution evidence"
+    }
+  ],
+  "source_bindings": {
+    "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+    "NativeTests/StudioTextFieldTests.swift": "b3fb59aa7283ee3ae082caffc749b6d869d365ccbf7750bcd7520891e23cb11d"
+  },
+  "baseline_source_bindings": {
+    "App/StudioTextField.swift": "171120846991377faa9691cafe2147e1d68a96e417df9e065174aff0d5e88350",
+    "NativeTests/StudioTextFieldTests.swift": "eccb18c8f0e491d0b5d3ba75ea2b21be6c5d9afce6157c5df62dbc22fc102bba"
+  },
+  "artifact_bindings": {
+    "/tmp/app1-artifacts-0eff52f/native/native-tests.log": "cbd77622533a2f1cd4990dee257c6fecbfc4eb2b701529c0a9116f2d2bdd9f7b",
+    "workers/W015-native-excerpts.txt": "05b2f10689540a707899d21b1fc24a959b225761dda67c358cb7a6e9834a4895",
+    "workers/W015.patch": "be2a07f81366a7c940ab5454127f51222268cc614672db9f5262a218842e3fee"
+  },
+  "limitations": [
+    "Apple UIKit/XCTest typecheck and native execution unavailable on Linux.",
+    "Underlying first-branch responder failure remains unresolved; diagnostic patch is not a claimed fix.",
+    "Initial keyboard timeout and earlier window warnings do not establish causality.",
+    "Observer encoding/buffering adds bounded diagnostic work; actual native behavior still requires the next run."
+  ],
+  "integration": "Apply workers/W015.patch or /tmp/w015-native-focus.patch to root. Root already independently accepted diagnostic-only scope; no production changes or gate relaxation.",
+  "patch": "workers/W015.patch",
+  "report_word_count": 303
+}
