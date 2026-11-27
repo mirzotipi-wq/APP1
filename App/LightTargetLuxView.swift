@@ -8,18 +8,13 @@ struct LightTargetLuxView: View {
     let onApply: (StudioLight) -> Void
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
-    @State private var draft = ""
+    @State private var draft = LightTargetLuxDraft()
     @State private var error: String?
-    @State private var rejectedOversizedDraft = false
     @State private var didApply = false
     @State private var inputFocused = false
 
-    private var target: Double? {
-        // Bound pasted input before the shared parser trims or scans it.
-        guard draft.utf8.prefix(97).count <= 96 else { return nil }
-        return StudioNumericInput.parse(draft, decimalSeparator: locale.decimalSeparator ?? ".",
-                                        in: 0...Double.greatestFiniteMagnitude)
-    }
+    private var inputLocale: LightTargetLuxDraft.LocaleContext { .init(locale: locale) }
+    private var target: Double? { draft.target(in: inputLocale) }
 
     var body: some View {
         NavigationStack {
@@ -37,7 +32,11 @@ struct LightTargetLuxView: View {
                                 hint: "Enter zero to switch this light off."), keyboardType: .decimalPad)
                         Text("lx").foregroundStyle(StudioPalette.secondaryText)
                     }
-                    if !draft.isEmpty && target == nil {
+                    if draft.requiresLocaleEdit(in: inputLocale) {
+                        Text("Your number format changed. Edit the value before applying.")
+                            .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
+                            .accessibilityIdentifier("targetLuxLocaleError")
+                    } else if !draft.text.isEmpty && target == nil {
                         Text("Enter zero or a positive decimal number using up to 32 characters.")
                             .font(.footnote).foregroundStyle(StudioPalette.secondaryText)
                     }
@@ -65,7 +64,7 @@ struct LightTargetLuxView: View {
                             .frame(minWidth: 44, minHeight: 44)
                             .contentShape(Rectangle())
                     }
-                        .disabled(target == nil || rejectedOversizedDraft || didApply)
+                        .disabled(target == nil || draft.rejectedOversizedDraft || didApply)
                         .accessibilityIdentifier("applyTargetLux")
                 }
             }
@@ -81,32 +80,31 @@ struct LightTargetLuxView: View {
                 }
             }
             .onAppear {
-                if draft.isEmpty, let current = StudioPhotometry.illuminance(for: light, in: scene) {
-                    draft = StudioNumericInput.editableText(current, decimalSeparator: locale.decimalSeparator ?? ".") ?? ""
-                }
+                draft.initialize(value: StudioPhotometry.illuminance(for: light, in: scene), in: inputLocale)
+            }
+            .onChange(of: inputLocale) { _, next in
+                draft.invalidate(ifChangedTo: next)
+                if draft.requiresLocaleEdit(in: next) { inputFocused = false }
             }
         }
         .tint(StudioPalette.action)
     }
 
     private var boundedDraft: Binding<String> {
-        Binding(get: { draft }, set: { replacement in
+        Binding(get: { draft.text }, set: { replacement in
             // Reject the entire replacement before storing it. Truncating a
             // pasted number could silently select a different light output.
-            guard StudioNumericInput.isWithinDraftLimit(replacement) else {
-                rejectedOversizedDraft = true
+            let changed = draft.replaceText(with: replacement, in: inputLocale)
+            if draft.rejectedOversizedDraft {
                 error = "That entry is too long. Your previous entry was kept. Edit the value before applying."
-                return
+            } else if changed {
+                error = nil
             }
-            guard replacement != draft else { return }
-            draft = replacement
-            rejectedOversizedDraft = false
-            error = nil
         })
     }
 
     private func apply() {
-        guard !didApply, !rejectedOversizedDraft, let target else { return }
+        guard !didApply, !draft.rejectedOversizedDraft, let target else { return }
         do {
             let adjusted = try LightOutputAdjustment.light(light, targetingLux: target, in: scene)
             // Set before the callback so reentrant or queued taps cannot

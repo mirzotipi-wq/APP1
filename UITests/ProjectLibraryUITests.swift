@@ -409,7 +409,19 @@ final class ProjectLibraryUITests: XCTestCase {
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
         launchStudio(app)
+        // A pristine starter may create its first project without saving.
+        // Make and verify a real edit before exercising the dirty-library gate.
+        let add = app.buttons["addLightShortcut"]
+        revealStudioContent(add, in: app, towardBottom: false, fullyVisible: true)
+        waitUntilEnabled(add)
+        add.tap()
+        let light = app.buttons["light-Light 1"]
+        XCTAssertTrue(light.waitForExistence(timeout: 15), "The unsaved setup must actually contain the new light")
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "light-")).count, 4)
         let projects = app.buttons["openProjectLibrary"]
+        revealStudioContent(projects, in: app, towardBottom: false, fullyVisible: true)
+        XCTAssertEqual(app.staticTexts["projectStatus"].label, "Unsaved changes")
+        waitUntilEnabled(app.buttons["undo"])
         waitUntilEnabled(projects)
         projects.tap()
         XCTAssertTrue(app.buttons["librarySaveCurrent"].waitForExistence(timeout: 10))

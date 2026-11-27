@@ -2,7 +2,17 @@
 
 User request: launch 100 actual agents and bring APP1 to beta. Starting main was `664e404d1bddf6d19724760139592da30c799418`. Root integrates on `main`; three specialist slots run alongside root. The ledger records only actually created contexts, not planned workers. This packet is an active checkpoint, not a beta/release acceptance declaration.
 
-## Current checkpoint: session safety and fresh Apple validation
+## Current checkpoint: locale-safe drafts and current Apple execution
+
+82 actual worker contexts have been created; 79 assignments are complete. [Checkpoint 07](validation/checkpoint-07.json) pins candidate `700486b`: **588 Debug and 588 Release tests** pass (86 composition + 502 domain), together with 104 tooling tests, source syntax and shard checks. Required inventory is now **323 native and 44 UI methods**, plus two opt-in diagnostics. The existing 28 original layout captures and eight supplemental beta capture sites remain distinct; capture sites alone do not prove retained images.
+
+The target-lux editor now binds unfinished text to immutable locale values. A locale change blocks preview/Apply until a changed bounded edit, with visible guidance; switching back or an unchanged binding echo cannot reactivate it. Nine new regressions and an independent 45-assertion probe cover the original counterexample and boundary cases. The existing dirty-library UI workflow now makes and proves a real scene edit before testing save gating; all of its previous assertions and deadlines remain.
+
+Published [run 45999974158](https://github.com/mirzotipi-wq/APP1/actions/runs/45999974158) at `134f9ad` passed core579/579 and104 tooling. Its [original core archive](validation/published-02-core-original.zip), [independent reconciliation](validation/published-02-core-reconciliation.json), and [actual twelve-image review](validation/published-02-core-visual-review.json) are retained. All five Apple UI build-for-testing steps passed, verifying the earlier expression repair. Runtime remains in progress at this snapshot; the native simulator job is queued. This run will be superseded by the current locale/library-test candidate, and partial outcomes must remain separate from acceptance.
+
+The newly required recovery-fault CI step also passed on its actual Linux ext4 host. [Independent hosted reconciliation](validation/published-02-recovery-reconciliation.json) verifies40 pinned inputs, raw witnesses,19 interruption checks,18 EIO checks, seven filesystem receipts and distinct retry/reopen processes. Its earlier local missing-hook negative control is not mislabeled as hosted execution.
+
+## Published second checkpoint: session safety and fresh Apple validation
 
 67 actual contexts have been created; 64 assignments are complete. [Checkpoint 06](validation/checkpoint-06.json) pins candidate `6661170`: production, portable and native unit inputs remain unchanged from the 579 Debug/579 Release source `2e35eb0`. The updated tooling suite passes 104 tests; source syntax and shard accounting pass. Required inventory is **314 native and 44 UI methods**, plus two diagnostic methods. The **28 original layout captures** remain mandatory. The new largest-text beta workflow adds eight supplemental original screenshot call sites; none has executed yet.
 

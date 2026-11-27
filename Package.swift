@@ -66,6 +66,7 @@ let package = Package(
                 "SubjectInspector.swift",
             ],
             sources: [
+                "LightTargetLuxDraft.swift",
                 "ProjectLibraryOperation.swift",
                 "ProjectStore.swift",
                 "StudioSession.swift",
@@ -105,6 +106,7 @@ let package = Package(
                 "StudyRendererTests.swift",
             ],
             sources: [
+                "LightTargetLuxDraftTests.swift",
                 "StudioSessionTests.swift",
                 "StudioInitialProjectTests.swift",
                 "StudioLibraryRecoveryTests.swift",
