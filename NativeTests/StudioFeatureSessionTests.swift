@@ -66,7 +66,8 @@ final class StudioFeatureSessionTests: XCTestCase {
         try await session.beginLibraryOperation(.load, from: oldGeneration).value
         let original = session.scene
         let generation = session.generation
-        XCTAssertTrue(session.dragLight(original.lights[0].id, translationX: 20,
+        let token = try XCTUnwrap(session.beginPlanDrag(original.lights[0].id, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(original.lights[0].id, token: token, translationX: 20,
                                         translationZ: 0, scale: 100, from: generation))
         let editing = session.editor
         let drag = session.planDrag
@@ -126,7 +127,8 @@ final class StudioFeatureSessionTests: XCTestCase {
             XCTAssertTrue(session.undo(from: session.generation))
             let context = try XCTUnwrap(session.openFeature(destination, from: session.generation))
             let id = session.scene.lights[0].id
-            XCTAssertFalse(session.dragLight(id, translationX: 0, translationZ: 0,
+            let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: session.generation))
+            XCTAssertFalse(session.dragLight(id, token: token, translationX: 0, translationZ: 0,
                                              scale: 100, from: session.generation))
             let drag = try XCTUnwrap(session.planDrag)
             let editor = session.editor
@@ -138,7 +140,7 @@ final class StudioFeatureSessionTests: XCTestCase {
             XCTAssertFalse(session.acceptsFeature(context))
             XCTAssertFalse(session.applyFeatureScene(edited, from: context))
             XCTAssertEqual(session.editor, editor)
-            session.finishPlanDrag(lightID: id, generation: session.generation)
+            session.finishPlanDrag(token: token, lightID: id, generation: session.generation)
             XCTAssertTrue(session.redo(from: session.generation))
             XCTAssertEqual(session.scene, edited)
         }
@@ -150,7 +152,9 @@ final class StudioFeatureSessionTests: XCTestCase {
         let id = original.lights[0].id
         let context = try XCTUnwrap(session.openFeature(.targetLux(lightID: id), from: session.generation))
         XCTAssertTrue(session.select(original.lights[2].id, from: session.generation))
-        XCTAssertFalse(session.dragLight(original.lights[2].id, translationX: 0, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(original.lights[2].id, scale: 100,
+                                                       from: session.generation))
+        XCTAssertFalse(session.dragLight(original.lights[2].id, token: token, translationX: 0, translationZ: 0,
                                          scale: 100, from: session.generation))
         let drag = try XCTUnwrap(session.planDrag)
         let editor = session.editor
@@ -180,11 +184,13 @@ final class StudioFeatureSessionTests: XCTestCase {
         XCTAssertEqual(session.feature?.acceptedRevision, session.revision)
         XCTAssertNil(session.planDrag)
         XCTAssertFalse(session.applyFeatureLight(adjusted, from: context))
-        XCTAssertTrue(session.dragLight(original.lights[2].id, translationX: 20, translationZ: 0,
+        let nextToken = try XCTUnwrap(session.beginPlanDrag(original.lights[2].id, scale: 200,
+                                                           from: session.generation))
+        XCTAssertTrue(session.dragLight(original.lights[2].id, token: nextToken, translationX: 20, translationZ: 0,
                                         scale: 200, from: session.generation))
         XCTAssertEqual(session.scene.lights[2].position.x,
                        expected.lights[2].position.x + 0.1, accuracy: 1e-12)
-        session.finishPlanDrag(lightID: original.lights[2].id, generation: session.generation)
+        session.finishPlanDrag(token: nextToken, lightID: original.lights[2].id, generation: session.generation)
         XCTAssertTrue(session.undo(from: session.generation))
         XCTAssertEqual(session.scene, expected)
         XCTAssertTrue(session.undo(from: session.generation))
@@ -196,7 +202,8 @@ final class StudioFeatureSessionTests: XCTestCase {
         let session = try await loadedSession()
         let light = session.scene.lights[0]
         let context = try XCTUnwrap(session.openFeature(.targetLux(lightID: light.id), from: session.generation))
-        XCTAssertFalse(session.dragLight(light.id, translationX: 0, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(light.id, scale: 100, from: session.generation))
+        XCTAssertFalse(session.dragLight(light.id, token: token, translationX: 0, translationZ: 0,
                                          scale: 100, from: session.generation))
         let drag = try XCTUnwrap(session.planDrag)
         let editor = session.editor
@@ -435,7 +442,9 @@ final class StudioFeatureSessionTests: XCTestCase {
     func testRepeatedHealthyLoadRejectsBeforeReservationOrEndingGesture() async throws {
         let session = try await loadedSession()
         let context = try XCTUnwrap(session.openFeature(.reference, from: session.generation))
-        XCTAssertTrue(session.dragLight(session.scene.lights[0].id, translationX: 25,
+        let token = try XCTUnwrap(session.beginPlanDrag(session.scene.lights[0].id, scale: 100,
+                                                       from: session.generation))
+        XCTAssertTrue(session.dragLight(session.scene.lights[0].id, token: token, translationX: 25,
                                         translationZ: 0, scale: 100, from: session.generation))
         let editor = session.editor
         let drag = session.planDrag
@@ -477,7 +486,8 @@ final class StudioFeatureSessionTests: XCTestCase {
             let context = try XCTUnwrap(session.openFeature(room ? .room : .arrangement,
                                                            from: session.generation))
             let id = session.scene.lights[0].id
-            XCTAssertFalse(session.dragLight(id, translationX: 0, translationZ: 0,
+            let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: session.generation))
+            XCTAssertFalse(session.dragLight(id, token: token, translationX: 0, translationZ: 0,
                                              scale: 100, from: session.generation))
             let idleDrag = try XCTUnwrap(session.planDrag)
             let editor = session.editor
@@ -501,11 +511,12 @@ final class StudioFeatureSessionTests: XCTestCase {
             }
             XCTAssertNil(session.planDrag)
             let accepted = session.scene
-            XCTAssertTrue(session.dragLight(id, translationX: 20, translationZ: 0,
+            let nextToken = try XCTUnwrap(session.beginPlanDrag(id, scale: 200, from: session.generation))
+            XCTAssertTrue(session.dragLight(id, token: nextToken, translationX: 20, translationZ: 0,
                                             scale: 200, from: session.generation))
             XCTAssertEqual(session.scene.lights[0].position.x,
                            accepted.lights[0].position.x + 0.1, accuracy: 1e-12)
-            session.finishPlanDrag(lightID: id, generation: session.generation)
+            session.finishPlanDrag(token: nextToken, lightID: id, generation: session.generation)
             XCTAssertTrue(session.undo(from: session.generation))
             XCTAssertEqual(session.scene, accepted)
         }

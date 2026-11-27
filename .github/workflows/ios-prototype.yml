@@ -63,6 +63,22 @@ jobs:
             ${{ runner.temp }}/atomic-library-write-linux.log
             ${{ runner.temp }}/atomic-library-write-linux/
           if-no-files-found: warn
+      - name: Verify recovery commit failure and retry on Linux
+        timeout-minutes: 6
+        run: |
+          set -euo pipefail
+          python3 scripts/probe_library_recovery_failure.py --timeout-seconds 300 \
+            --output "$RUNNER_TEMP/library-recovery-linux" 2>&1 | tee "$RUNNER_TEMP/library-recovery-linux.log"
+      - name: Upload Linux library recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: library-recovery-linux-evidence
+          path: |
+            ${{ runner.temp }}/library-recovery-linux.log
+            ${{ runner.temp }}/library-recovery-linux/
+            !${{ runner.temp }}/library-recovery-linux/build/**
+          if-no-files-found: warn
       - name: Render portable reference study images
         run: |
           set -euo pipefail
@@ -130,11 +146,13 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
     needs: core
-    # 6 host probe + 12 Metal + 25 Debug/test build + 15 Release + 10 boot
-    # + 24 native command minutes, with 8 minutes for setup, the macOS package
-    # check and evidence export.
+    # 6 host probe + 12 Metal + 25 Debug/test build + 15 simulator Release
+    # + 10 boot + 24 native command + 20 device Release minutes, with the same
+    # 8 minutes for setup, the macOS package check and evidence export.
+    # The added 20-minute cap covers a separate arm64 device build/check only;
+    # existing native/UI deadlines and their required checks are unchanged.
     # Boot and compilation must not consume the test/finalization deadline.
-    timeout-minutes: 100
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - name: Record Apple toolchain and test the portable package on macOS
@@ -375,6 +393,69 @@ jobs:
             artifacts/native-attachments/*.txt
             artifacts/native-attachments/*.ips
             artifacts/native-attachments/*.pdf
+          if-no-files-found: warn
+      - name: Build required unsigned arm64 device Release application
+        id: device_release_build
+        timeout-minutes: 20
+        # Intel simulator builds exclude the device branches in
+        # RealityStudioPreview and ARPlacementController. Cross-compiling on
+        # this same runner checks them without a signing team or another host.
+        # Run after native evidence so device failure cannot suppress the suite;
+        # still collect device evidence when an earlier native check failed.
+        if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          device_evidence="$RUNNER_TEMP/keyfill-device-release-evidence"
+          mkdir -p "$device_evidence"
+          {
+            git rev-parse HEAD
+            xcodebuild -version
+            xcrun --sdk iphoneos --show-sdk-path
+            xcrun --sdk iphoneos --show-sdk-version
+          } 2>&1 | tee "$device_evidence/environment.log"
+          [ "$(xcrun --sdk iphoneos --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 device SDK"; exit 1; }
+          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/keyfill-device-release-build" \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO build \
+            2>&1 | tee "$device_evidence/build.log"
+          device_app="$RUNNER_TEMP/keyfill-device-release-build/Build/Products/Release-iphoneos/KeyAndFill.app"
+          cp "$device_app/Info.plist" "$device_evidence/Info.plist"
+          plutil -lint "$device_app/Info.plist" 2>&1 | tee "$device_evidence/plist.log"
+          python3 - "$device_app" <<'PY' 2>&1 | tee "$device_evidence/bundle-check.log"
+          import json, plistlib, subprocess, sys
+          from pathlib import Path
+          bundle = Path(sys.argv[1])
+          with (bundle / "Info.plist").open("rb") as stream:
+              info = plistlib.load(stream)
+          expected = {
+              "CFBundleExecutable": "KeyAndFill",
+              "CFBundlePackageType": "APPL",
+              "CFBundleSupportedPlatforms": ["iPhoneOS"],
+              "DTPlatformName": "iphoneos",
+              "DTSDKName": "iphoneos26.5",
+          }
+          for key, value in expected.items():
+              if info.get(key) != value:
+                  raise SystemExit(f"Device bundle {key}: expected {value!r}, observed {info.get(key)!r}")
+          architectures = subprocess.check_output(
+              ["xcrun", "lipo", "-archs", str(bundle / info["CFBundleExecutable"])],
+              text=True, timeout=30).split()
+          if architectures != ["arm64"]:
+              raise SystemExit(f"Expected only arm64 in the device executable; observed {architectures}")
+          print(json.dumps({"architectures": architectures, "configuration": "Release",
+                            "bundle": expected, "deviceExecution": False}, indent=2))
+          PY
+          python3 scripts/verify_app_icon.py --bundle "$device_app" 2>&1 | tee "$device_evidence/icon.log"
+          python3 scripts/verify_privacy_manifest.py --bundle "$device_app" 2>&1 | tee "$device_evidence/privacy.log"
+          echo "Unsigned device compile/link and bundle checks passed; no physical-device execution."
+      - name: Upload arm64 device Release build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm64-device-release-build-evidence
+          # Logs and generated metadata only; no device app or archive is uploaded.
+          path: ${{ runner.temp }}/keyfill-device-release-evidence/
           if-no-files-found: warn
   ui:
     # Independent class-level shards retain all scenarios and avoid losing an

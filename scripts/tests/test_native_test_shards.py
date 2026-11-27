@@ -408,7 +408,7 @@ class RepositoryBetaWorkflowShardTests(unittest.TestCase):
     def test_beta_workflows_are_required_in_the_existing_studio_export_shard(self):
         self.assertIn("BetaWorkflowUITests", native_test_shards.check())
         self.assertEqual(native_test_shards.SHARDS["studio-export"],
-                         ("StudioSmokeTests", "LightingPlanExportUITests", "BetaWorkflowUITests"))
+                         ("StudioSmokeTests", "LightingPlanExportUITests", "BetaWorkflowUITests", "PlanGestureUITests", "BetaAccessibilityUITests"))
         self.assertEqual(native_test_shards.discover_methods("UITests")["BetaWorkflowUITests"], self.methods)
         output = io.StringIO()
         with patch("sys.argv", [str(SCRIPT), "studio-export"]), contextlib.redirect_stdout(output):
@@ -417,6 +417,8 @@ class RepositoryBetaWorkflowShardTests(unittest.TestCase):
             "-only-testing:KeyAndFillUITests/StudioSmokeTests",
             "-only-testing:KeyAndFillUITests/LightingPlanExportUITests",
             "-only-testing:KeyAndFillUITests/BetaWorkflowUITests",
+            "-only-testing:KeyAndFillUITests/PlanGestureUITests",
+            "-only-testing:KeyAndFillUITests/BetaAccessibilityUITests",
         ])
 
     def test_studio_export_execution_cannot_omit_the_beta_methods(self):
@@ -450,6 +452,54 @@ class RepositoryBetaWorkflowShardTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 verified = native_test_shards.verify_log("studio-export", log, report_path)
             self.assertEqual(verified, existing | beta)
+            self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
+
+
+class RepositoryPlanGestureShardTests(unittest.TestCase):
+    """Real marker drags belong to the required suite and its exact accounting."""
+
+    methods = {
+        "testShortFastSelectedMarkerDragChangesPositionAndUndoRedoRestoresExactly",
+        "testFreshDragAfterCompletionCreatesASeparateUndoableEdit",
+        "testFreshDragAfterBackgroundResumeKeepsPriorPositionAndHistory",
+    }
+
+    def test_plan_gestures_are_required_in_the_existing_studio_export_shard(self):
+        self.assertIn("PlanGestureUITests", native_test_shards.check())
+        self.assertEqual(native_test_shards.discover_methods("UITests")["PlanGestureUITests"], self.methods)
+        self.assertIn("PlanGestureUITests", native_test_shards.SHARDS["studio-export"])
+
+    def test_studio_export_execution_cannot_omit_a_plan_gesture(self):
+        inventory = native_test_shards.discover_methods("UITests")
+        expected = {f"{name}.{method}" for name in native_test_shards.SHARDS["studio-export"]
+                    for method in inventory[name]}
+
+        def events(methods):
+            # These fixtures exercise log accounting, never native touch delivery.
+            return "\n".join(
+                f"Test Case '-[KeyAndFillUITests.{name} {method}]' {event}."
+                for item in sorted(methods) for name, method in [item.split(".", 1)]
+                for event in ("started", "passed")
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "synthetic-plan-gesture-accounting.log"
+            report_path = Path(directory) / "accounting.json"
+            for method in sorted(self.methods):
+                missing = f"PlanGestureUITests.{method}"
+                with self.subTest(missing=missing):
+                    log.write_text(events(expected - {missing}), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                        native_test_shards.verify_log("studio-export", log, report_path)
+                    report = json.loads(report_path.read_text())
+                    self.assertEqual(report["status"], "failed")
+                    self.assertEqual(set(report["expected"]), expected)
+                    self.assertEqual(set(report["passed"]), expected - {missing})
+                    self.assertEqual(report["unstarted"], [missing])
+
+            log.write_text(events(expected), encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(native_test_shards.verify_log("studio-export", log, report_path), expected)
             self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
 
 

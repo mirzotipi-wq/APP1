@@ -166,9 +166,17 @@ public struct ARPlacementLayout: Equatable, Sendable {
                                     origin: Position, cosine: Double, sine: Double) -> Position? {
         guard position.isValid else { return nil }
         let x = position.x - subject.x, z = position.z - subject.z
-        let result = Position(x: origin.x + cosine * x + sine * z,
+        // With no rotation, an axis whose anchor equals the authored subject
+        // coordinate is unchanged. Subtracting and readding that coordinate
+        // can round an exact endpoint outside the supported range.
+        let isUnrotated = cosine == 1 && sine == 0
+        let worldX = isUnrotated && origin.x == subject.x
+            ? position.x : origin.x + cosine * x + sine * z
+        let worldZ = isUnrotated && origin.z == subject.z
+            ? position.z : origin.z - sine * x + cosine * z
+        let result = Position(x: worldX,
                               y: origin.y + position.y,
-                              z: origin.z - sine * x + cosine * z)
+                              z: worldZ)
         return result.isValid ? result : nil
     }
 }

@@ -73,6 +73,7 @@ let package = Package(
         .testTarget(name: "StudioCompositionTests", dependencies: ["StudioComposition", "LightingCore"],
             path: "NativeTests", exclude: [
                 "BoundedFileReaderTests.swift",
+                "EntitlementStoreConfigurationTests.swift",
                 "LightingPlanPDFTests.swift",
                 "ProjectDocumentIOTests.swift",
                 "ProjectLibraryPresentationTests.swift",
@@ -108,6 +109,7 @@ let package = Package(
                 "StudioInitialProjectTests.swift",
                 "StudioLibraryRecoveryTests.swift",
                 "StudioPlanSessionTests.swift",
+                "StudioPlanGestureLifetimeTests.swift",
                 "StudioFeatureSessionTests.swift",
                 "StudioFeatureWindowTests.swift",
                 "StudioCommittedSaveTests.swift",

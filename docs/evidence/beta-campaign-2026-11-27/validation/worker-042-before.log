@@ -1,0 +1,105 @@
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 211]
+[Planning deferred tasks]
+[26 / 87] LightingCoreTests-test-runner
+[46 / 98] LightingCore
+[53 / 98] LightingCore
+[54 / 98] StudioComposition
+[55 / 98] StudioComposition
+[57 / 98] LightingCore
+[58 / 98] LightingCore
+[58 / 98]
+[61 / 105] LightingCoreTests-product
+[61 / 114] StudioComposition
+[62 / 114] LightingCore
+[65 / 115] StudioComposition
+[70 / 115] StudioComposition
+[72 / 115] StudioComposition
+[77 / 116] StudioComposition
+[78 / 116] LightingCoreTests-product
+[80 / 116] LightingCoreTests-test-runner
+[82 / 116] LightingCoreTests-product
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/LightOutputBoundaryTests.swift:116:54: warning: '1e-320' underflows and loses precision during conversion to 'Double'
+114 | 
+115 |     func testAlreadyAchievedSubnormalTargetPreservesExactSourceDespiteInverseRounding() throws {
+116 |         let (source, scene) = fixture(candela: 499 * 1e-320)
+    |                                                      `- warning: '1e-320' underflows and loses precision during conversion to 'Double'
+117 |         let target = try XCTUnwrap(StudioPhotometry.illuminance(for: source, in: scene))
+118 |         XCTAssertGreaterThan(target, 0)
+[84 / 116] LightingCoreTests-product
+[85 / 116] LightingCoreTests-product
+[88 / 116]
+[91 / 127] StudioCompositionTests-product
+[93 / 127] LightingCoreTests-product
+[98 / 128] StudioCompositionTests-product
+[101 / 128] StudioCompositionTests-product
+[102 / 128] StudioCompositionTests-product
+/workspace/scratch/4633a14a0d5b/worktrees/042/NativeTests/StudioSessionTests.swift:380:18: warning: weak variable 'weakSession' was never mutated; consider changing to 'let' constant [#VariableNeverMutated::WeakMutability]
+378 |         })
+379 |         try await open(try XCTUnwrap(session))
+380 |         weak var weakSession = session
+    |                  `- warning: weak variable 'weakSession' was never mutated; consider changing to 'let' constant [#VariableNeverMutated::WeakMutability]
+381 |         var task: Task<Void, Error>? = try session!.beginLibraryOperation(.save, from: session!.generation)
+382 |         await gate.waitUntilEntered()
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[#WeakMutability]: <https://docs.swift.org/compiler/documentation/diagnostics/weak-mutability>
+[104 / 128] LightingCoreTests-product
+[112 / 129]
+[113 / 129]
+[117 / 132] LightingCoreTests-product
+[125 / 135] LightingCoreTests-test-runner
+[125 / 135] StudioCompositionTests-test-runner
+[132 / 136] AllIncludingTests
+[133 / 136] AllIncludingTests
+[133 / 136] LightingCoreTests-test-runner
+[137 / 137] LightingCoreTests-test-runner
+Build complete! (34.75 secs)
+Test Suite 'Selected tests' started at 2026-11-27 03:48:59.986
+Test Suite 'Selected tests' passed at 2026-11-27 03:48:59.990
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+Test Suite 'Selected tests' started at 2026-11-27 03:49:00.000
+Test Suite 'ARPlacementIdentityRegressionTests' started at 2026-11-27 03:49:00.001
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityPreservesBoundaryAimTargetsAndModifierCorners' started at 2026-11-27 03:49:00.001
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:82: error: ARPlacementIdentityRegressionTests.testIdentityPreservesBoundaryAimTargetsAndModifierCorners : XCTAssertNoThrow failed: threw error "outsideSupportedScene" - 
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:94: error: ARPlacementIdentityRegressionTests.testIdentityPreservesBoundaryAimTargetsAndModifierCorners : failed - Identity modifier touching -100.0 rejected: outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:82: error: ARPlacementIdentityRegressionTests.testIdentityPreservesBoundaryAimTargetsAndModifierCorners : XCTAssertNoThrow failed: threw error "outsideSupportedScene" - 
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:94: error: ARPlacementIdentityRegressionTests.testIdentityPreservesBoundaryAimTargetsAndModifierCorners : failed - Identity modifier touching 100.0 rejected: outsideSupportedScene
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityPreservesBoundaryAimTargetsAndModifierCorners' failed (0.002 seconds)
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly' started at 2026-11-27 03:49:00.003
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:29: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : failed - Valid identity placement rejected (subject 99.8, markers -100.0, yaw 0.0): outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:29: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : failed - Valid identity placement rejected (subject 99.8, markers -100.0, yaw 360.0): outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:29: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : failed - Valid identity placement rejected (subject 99.8, markers -100.0, yaw -360.0): outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:26: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : XCTAssertEqual failed: ("[LightingCore.Position(x: -100.0, y: 1.5, z: -100.0), LightingCore.Position(x: 99.80000000000001, y: 1.5, z: 99.80000000000001), LightingCore.Position(x: 99.80000000000001, y: 2.0, z: 99.80000000000001)]") is not equal to ("[LightingCore.Position(x: -100.0, y: 1.5, z: -100.0), LightingCore.Position(x: 99.8, y: 1.5, z: 99.8), LightingCore.Position(x: 99.8, y: 2.0, z: 99.8)]") - subject -100.0, markers 99.8, yaw 0.0
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:26: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : XCTAssertEqual failed: ("[LightingCore.Position(x: -100.0, y: 1.5, z: -100.0), LightingCore.Position(x: 99.80000000000001, y: 1.5, z: 99.80000000000001), LightingCore.Position(x: 99.80000000000001, y: 2.0, z: 99.80000000000001)]") is not equal to ("[LightingCore.Position(x: -100.0, y: 1.5, z: -100.0), LightingCore.Position(x: 99.8, y: 1.5, z: 99.8), LightingCore.Position(x: 99.8, y: 2.0, z: 99.8)]") - subject -100.0, markers 99.8, yaw 360.0
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:26: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : XCTAssertEqual failed: ("[LightingCore.Position(x: -100.0, y: 1.5, z: -100.0), LightingCore.Position(x: 99.80000000000001, y: 1.5, z: 99.80000000000001), LightingCore.Position(x: 99.80000000000001, y: 2.0, z: 99.80000000000001)]") is not equal to ("[LightingCore.Position(x: -100.0, y: 1.5, z: -100.0), LightingCore.Position(x: 99.8, y: 1.5, z: 99.8), LightingCore.Position(x: 99.8, y: 2.0, z: 99.8)]") - subject -100.0, markers 99.8, yaw -360.0
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:29: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : failed - Valid identity placement rejected (subject -99.8, markers 100.0, yaw 0.0): outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:29: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : failed - Valid identity placement rejected (subject -99.8, markers 100.0, yaw 360.0): outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:29: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : failed - Valid identity placement rejected (subject -99.8, markers 100.0, yaw -360.0): outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:26: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : XCTAssertEqual failed: ("[LightingCore.Position(x: 100.0, y: 1.5, z: 100.0), LightingCore.Position(x: -99.80000000000001, y: 1.5, z: -99.80000000000001), LightingCore.Position(x: -99.80000000000001, y: 2.0, z: -99.80000000000001)]") is not equal to ("[LightingCore.Position(x: 100.0, y: 1.5, z: 100.0), LightingCore.Position(x: -99.8, y: 1.5, z: -99.8), LightingCore.Position(x: -99.8, y: 2.0, z: -99.8)]") - subject 100.0, markers -99.8, yaw 0.0
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:26: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : XCTAssertEqual failed: ("[LightingCore.Position(x: 100.0, y: 1.5, z: 100.0), LightingCore.Position(x: -99.80000000000001, y: 1.5, z: -99.80000000000001), LightingCore.Position(x: -99.80000000000001, y: 2.0, z: -99.80000000000001)]") is not equal to ("[LightingCore.Position(x: 100.0, y: 1.5, z: 100.0), LightingCore.Position(x: -99.8, y: 1.5, z: -99.8), LightingCore.Position(x: -99.8, y: 2.0, z: -99.8)]") - subject 100.0, markers -99.8, yaw 360.0
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:26: error: ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly : XCTAssertEqual failed: ("[LightingCore.Position(x: 100.0, y: 1.5, z: 100.0), LightingCore.Position(x: -99.80000000000001, y: 1.5, z: -99.80000000000001), LightingCore.Position(x: -99.80000000000001, y: 2.0, z: -99.80000000000001)]") is not equal to ("[LightingCore.Position(x: 100.0, y: 1.5, z: 100.0), LightingCore.Position(x: -99.8, y: 1.5, z: -99.8), LightingCore.Position(x: -99.8, y: 2.0, z: -99.8)]") - subject 100.0, markers -99.8, yaw -360.0
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityPreservesSubjectCameraAndLightCoordinatesExactly' failed (0.001 seconds)
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityStillRejectsInvalidSourceCoordinatesAndModifierOverhang' started at 2026-11-27 03:49:00.004
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityStillRejectsInvalidSourceCoordinatesAndModifierOverhang' passed (0.001 seconds)
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityTransformsEndpointPointsExactly' started at 2026-11-27 03:49:00.005
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:43: error: ARPlacementIdentityRegressionTests.testIdentityTransformsEndpointPointsExactly : XCTAssertEqual failed: ("nil") is not equal to ("Optional(LightingCore.Position(x: -100.0, y: -100.0, z: -100.0))") - 
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:43: error: ARPlacementIdentityRegressionTests.testIdentityTransformsEndpointPointsExactly : XCTAssertEqual failed: ("nil") is not equal to ("Optional(LightingCore.Position(x: 100.0, y: 100.0, z: 100.0))") - 
+Test Case 'ARPlacementIdentityRegressionTests.testIdentityTransformsEndpointPointsExactly' failed (0.001 seconds)
+Test Case 'ARPlacementIdentityRegressionTests.testNonzeroYawStillRotatesAndRejectsOutOfBounds' started at 2026-11-27 03:49:00.006
+Test Case 'ARPlacementIdentityRegressionTests.testNonzeroYawStillRotatesAndRejectsOutOfBounds' passed (0.0 seconds)
+Test Case 'ARPlacementIdentityRegressionTests.testTranslationKeepsExactContactAndRejectsOneStepOfOverhang' started at 2026-11-27 03:49:00.006
+Test Case 'ARPlacementIdentityRegressionTests.testTranslationKeepsExactContactAndRejectsOneStepOfOverhang' passed (0.0 seconds)
+Test Case 'ARPlacementIdentityRegressionTests.testUnchangedAxisStaysExactWhileOtherAxisAndHeightTranslate' started at 2026-11-27 03:49:00.006
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:67: error: ARPlacementIdentityRegressionTests.testUnchangedAxisStaysExactWhileOtherAxisAndHeightTranslate : failed - Unchanged X endpoint -100.0 rejected: outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:67: error: ARPlacementIdentityRegressionTests.testUnchangedAxisStaysExactWhileOtherAxisAndHeightTranslate : failed - Unchanged Z endpoint -100.0 rejected: outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:67: error: ARPlacementIdentityRegressionTests.testUnchangedAxisStaysExactWhileOtherAxisAndHeightTranslate : failed - Unchanged X endpoint 100.0 rejected: outsideSupportedScene
+/workspace/scratch/4633a14a0d5b/worktrees/042/Tests/LightingCoreTests/ARPlacementIdentityRegressionTests.swift:67: error: ARPlacementIdentityRegressionTests.testUnchangedAxisStaysExactWhileOtherAxisAndHeightTranslate : failed - Unchanged Z endpoint 100.0 rejected: outsideSupportedScene
+Test Case 'ARPlacementIdentityRegressionTests.testUnchangedAxisStaysExactWhileOtherAxisAndHeightTranslate' failed (0.0 seconds)
+Test Suite 'ARPlacementIdentityRegressionTests' failed at 2026-11-27 03:49:00.007
+	 Executed 7 tests, with 22 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'Selected tests' failed at 2026-11-27 03:49:00.007
+	 Executed 7 tests, with 22 failures (0 unexpected) in 0.005 (0.005) seconds
+Note: Some test targets reported failures:
+  - LightingCoreTests (XCTest)

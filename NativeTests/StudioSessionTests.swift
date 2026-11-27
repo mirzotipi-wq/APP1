@@ -76,7 +76,8 @@ final class StudioSessionTests: XCTestCase {
         let current = session.generation
         XCTAssertNotEqual(current, stale)
         let lightID = scene.lights[0].id
-        XCTAssertTrue(session.dragLight(lightID, translationX: 20, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(lightID, scale: 100, from: current))
+        XCTAssertTrue(session.dragLight(lightID, token: token, translationX: 20, translationZ: 0,
                                         scale: 100, from: current))
         let editor = session.editor
         let drag = session.planDrag
@@ -86,12 +87,12 @@ final class StudioSessionTests: XCTestCase {
         XCTAssertEqual(session.editor, editor)
         XCTAssertEqual(session.planDrag, drag)
         XCTAssertTrue(session.history.isEditing)
-        XCTAssertTrue(session.dragLight(lightID, translationX: 40, translationZ: 0,
+        XCTAssertTrue(session.dragLight(lightID, token: token, translationX: 40, translationZ: 0,
                                         scale: 999, from: current))
         XCTAssertEqual(session.scene.lights[0].position.x,
                        scene.lights[0].position.x + 0.4, accuracy: 1e-12,
                        "Cumulative translation keeps its original origin and scale")
-        session.finishPlanDrag(lightID: lightID, generation: current)
+        session.finishPlanDrag(token: token, lightID: lightID, generation: current)
         XCTAssertNil(session.planDrag)
         XCTAssertTrue(session.undo(from: current))
         XCTAssertEqual(session.scene, scene)
@@ -106,7 +107,8 @@ final class StudioSessionTests: XCTestCase {
         let original = session.scene
         let id = original.lights[0].id
         let oldGeneration = session.generation
-        XCTAssertTrue(session.dragLight(id, translationX: 20, translationZ: -10,
+        let oldToken = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: oldGeneration))
+        XCTAssertTrue(session.dragLight(id, token: oldToken, translationX: 20, translationZ: -10,
                                         scale: 100, from: oldGeneration))
         let savedScene = session.scene
         let save = try session.beginLibraryOperation(.save, from: oldGeneration)
@@ -116,13 +118,14 @@ final class StudioSessionTests: XCTestCase {
         XCTAssertEqual(session.saved, savedScene)
         let generation = session.generation
         XCTAssertNotEqual(generation, oldGeneration)
-        XCTAssertTrue(session.dragLight(id, translationX: 10, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 10, translationZ: 0,
                                         scale: 100, from: generation))
         let currentDrag = session.planDrag
-        session.finishPlanDrag(lightID: id, generation: oldGeneration)
+        session.finishPlanDrag(token: oldToken, lightID: id, generation: oldGeneration)
         XCTAssertEqual(session.planDrag, currentDrag)
         XCTAssertTrue(session.history.isEditing)
-        session.finishPlanDrag(lightID: id, generation: generation)
+        session.finishPlanDrag(token: token, lightID: id, generation: generation)
         XCTAssertTrue(session.undo(from: generation))
         XCTAssertEqual(session.scene, savedScene)
         XCTAssertTrue(session.undo(from: generation))

@@ -812,10 +812,16 @@ struct StudioView: View {
                                  guard scene.lights.contains(where: { $0.id == light.id }) else { return }
                                  selected = light.id
                              },
-                             onDragChanged: selected == light.id ? { translation in
-                                 dragLight(light.id, translation: translation, scale: Double(scale), generation: generation)
+                             onDragBegan: selected == light.id ? {
+                                 session.beginPlanDrag(light.id, scale: Double(scale), from: generation)
                              } : nil,
-                             onDragEnded: { finishPlanDrag(lightID: light.id, generation: generation) })
+                             onDragChanged: selected == light.id ? { token, translation in
+                                 dragLight(light.id, token: token, translation: translation,
+                                           scale: Double(scale), generation: generation)
+                             } : nil,
+                             onDragEnded: { token in
+                                 session.finishPlanDrag(token: token, lightID: light.id, generation: generation)
+                             })
         }
         return markers
     }
@@ -1227,13 +1233,13 @@ struct StudioView: View {
         selected = copy.id
     }
 
-    private func dragLight(_ id: UUID, translation: CGSize, scale: Double, generation: UUID) {
-        session.dragLight(id, translationX: Double(translation.width),
+    private func dragLight(_ id: UUID, token: UUID, translation: CGSize, scale: Double, generation: UUID) {
+        session.dragLight(id, token: token, translationX: Double(translation.width),
                           translationZ: Double(translation.height), scale: scale, from: generation)
     }
 
-    private func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {
-        session.finishPlanDrag(lightID: lightID, generation: generation)
+    private func finishPlanDrag() {
+        session.finishPlanDrag()
     }
     private func load(from generation: UUID) {
         guard !libraryOperation.isBusy else { return }

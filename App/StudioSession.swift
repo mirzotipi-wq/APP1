@@ -17,6 +17,7 @@ final class StudioSession {
     /// The Plan gesture uses cumulative translation, so its origin and scale
     /// must remain fixed until that exact gesture ends.
     struct PlanDrag: Equatable {
+        let token: UUID
         let lightID: UUID
         let generation: UUID
         let scene: LightingScene
@@ -114,8 +115,10 @@ final class StudioSession {
         do {
             var candidate = editor
             if let feature { candidate.endEditing(owner: feature.context.owner) }
+            if let drag = planDrag { candidate.endEditing(owner: drag.owner) }
             guard try candidate.update(with: next) else { return false }
             editor = candidate
+            planDrag = nil
             return true
         }
         catch { return false }
@@ -127,12 +130,14 @@ final class StudioSession {
     func apply(_ command: StudioFieldCommand, from generation: UUID) -> Bool {
         guard allowsMutation(from: generation) else { return false }
         do {
-            // An unrelated command cannot silently join an open room/AR group.
+            // An unrelated command cannot silently join an open Plan/room/AR group.
             // Stage its boundary too: invalid/no-op commands leave that group intact.
             var candidate = editor
             if let feature { candidate.endEditing(owner: feature.context.owner) }
+            if let drag = planDrag { candidate.endEditing(owner: drag.owner) }
             guard try candidate.apply(command) else { return false }
             editor = candidate
+            planDrag = nil
             return true
         }
         catch { return false }
@@ -238,41 +243,67 @@ final class StudioSession {
             if let drag = planDrag, drag.owner != owner { finishPlanDrag() }
             editor.beginEditing(owner: owner)
         } else {
+            endEditing(owner: owner)
+        }
+    }
+
+    func endEditing(owner: String? = nil) {
+        if let drag = planDrag, owner == nil || owner == drag.owner {
+            finishPlanDrag()
+        } else {
             editor.endEditing(owner: owner)
         }
     }
 
-    func endEditing(owner: String? = nil) { editor.endEditing(owner: owner) }
+    /// Only a newly recognized gesture may begin a transaction. A retired
+    /// callback can never rebase its cumulative translation onto the live scene.
+    func beginPlanDrag(_ id: UUID, scale: Double, from generation: UUID) -> UUID? {
+        guard allowsMutation(from: generation), selection == id,
+              scene.lights.contains(where: { $0.id == id }), planDrag == nil,
+              scale.isFinite, scale > 0 else { return nil }
+        let token = UUID()
+        let owner = editOwner("plan.\(id.uuidString).\(token.uuidString)")
+        editor.beginEditing(owner: owner)
+        planDrag = PlanDrag(token: token, lightID: id, generation: generation, scene: scene,
+                            pointsPerMeter: scale, owner: owner)
+        return token
+    }
 
     @discardableResult
-    func dragLight(_ id: UUID, translationX: Double, translationZ: Double,
+    func dragLight(_ id: UUID, token: UUID, translationX: Double, translationZ: Double,
                    scale: Double, from generation: UUID) -> Bool {
         guard allowsMutation(from: generation), selection == id,
-              scene.lights.contains(where: { $0.id == id }),
+              let light = scene.lights.first(where: { $0.id == id }),
               scale.isFinite, scale > 0,
-              translationX.isFinite, translationZ.isFinite else { return false }
-        if planDrag == nil {
-            let owner = editOwner("plan.\(id.uuidString)")
-            editor.beginEditing(owner: owner)
-            planDrag = PlanDrag(lightID: id, generation: generation, scene: scene,
-                                pointsPerMeter: scale, owner: owner)
-        }
-        guard let drag = planDrag, drag.lightID == id, drag.generation == generation,
+              translationX.isFinite, translationZ.isFinite,
+              let drag = planDrag, drag.token == token,
+              drag.lightID == id, drag.generation == generation,
               let source = drag.scene.lights.first(where: { $0.id == id }) else { return false }
         let range = Position.coordinateRange
-        var position = source.position
+        // Plan owns x/z only. Keep the live height rather than restoring an
+        // unrelated coordinate from the frozen cumulative-translation origin.
+        var position = light.position
         position.x = min(range.upperBound, max(range.lowerBound,
             source.position.x + translationX / drag.pointsPerMeter))
         position.z = min(range.upperBound, max(range.lowerBound,
             source.position.z + translationZ / drag.pointsPerMeter))
         guard position.isValid else { return false }
-        return apply(.lightPosition(id: id, position: position), from: generation)
+        // This command belongs to the active Plan transaction. Public apply
+        // closes that transaction for unrelated discrete control commands.
+        do { return try editor.apply(.lightPosition(id: id, position: position)) }
+        catch { return false }
     }
 
-    func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {
-        guard let drag = planDrag,
-              lightID == nil || lightID == drag.lightID,
-              generation == nil || generation == drag.generation else { return }
+    func finishPlanDrag(token: UUID, lightID: UUID, generation: UUID) {
+        guard let drag = planDrag, drag.token == token,
+              lightID == drag.lightID, generation == drag.generation else { return }
+        finishPlanDrag()
+    }
+
+    /// Parent lifecycle boundaries retire whichever gesture currently owns Plan.
+    /// Value/end callbacks must use the token-qualified overload instead.
+    func finishPlanDrag() {
+        guard let drag = planDrag else { return }
         if drag.generation == self.generation { editor.endEditing(owner: drag.owner) }
         planDrag = nil
     }

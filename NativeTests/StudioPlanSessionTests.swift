@@ -41,23 +41,25 @@ final class StudioPlanSessionTests: XCTestCase {
         let idle = session.editor
 
         for (id, callbackGeneration) in rejected {
-            XCTAssertFalse(session.dragLight(id, translationX: 20, translationZ: -10,
+            XCTAssertNil(session.beginPlanDrag(id, scale: 100, from: callbackGeneration))
+            XCTAssertFalse(session.dragLight(id, token: UUID(), translationX: 20, translationZ: -10,
                                              scale: 100, from: callbackGeneration))
             assertUnchanged(session, editor: idle, drag: nil)
         }
 
-        XCTAssertTrue(session.dragLight(selected, translationX: 20, translationZ: -10,
+        let token = try XCTUnwrap(session.beginPlanDrag(selected, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(selected, token: token, translationX: 20, translationZ: -10,
                                         scale: 100, from: generation))
         let editing = session.editor
         let drag = try XCTUnwrap(session.planDrag)
         XCTAssertTrue(session.history.isEditing)
         for (id, callbackGeneration) in rejected {
-            XCTAssertFalse(session.dragLight(id, translationX: 80, translationZ: 60,
+            XCTAssertFalse(session.dragLight(id, token: token, translationX: 80, translationZ: 60,
                                              scale: 50, from: callbackGeneration))
             assertUnchanged(session, editor: editing, drag: drag)
         }
 
-        session.finishPlanDrag(lightID: selected, generation: generation)
+        session.finishPlanDrag(token: token, lightID: selected, generation: generation)
         XCTAssertNil(session.planDrag)
         XCTAssertFalse(session.history.isEditing)
         XCTAssertTrue(session.undo(from: generation))
@@ -83,24 +85,28 @@ final class StudioPlanSessionTests: XCTestCase {
             (20, .nan, 100), (20, .infinity, 100), (20, -.infinity, 100)
         ]
         for input in invalid {
-            XCTAssertFalse(session.dragLight(id, translationX: input.x, translationZ: input.z,
+            if !input.scale.isFinite || input.scale <= 0 {
+                XCTAssertNil(session.beginPlanDrag(id, scale: input.scale, from: generation))
+            }
+            XCTAssertFalse(session.dragLight(id, token: UUID(), translationX: input.x, translationZ: input.z,
                                              scale: input.scale, from: generation))
             assertUnchanged(session, editor: idle, drag: nil)
         }
 
-        XCTAssertTrue(session.dragLight(id, translationX: 20, translationZ: -10,
+        let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 20, translationZ: -10,
                                         scale: 100, from: generation))
         let editing = session.editor
         let drag = try XCTUnwrap(session.planDrag)
         XCTAssertTrue(session.history.isEditing)
         XCTAssertTrue(session.history.canRedo)
         for input in invalid {
-            XCTAssertFalse(session.dragLight(id, translationX: input.x, translationZ: input.z,
+            XCTAssertFalse(session.dragLight(id, token: token, translationX: input.x, translationZ: input.z,
                                              scale: input.scale, from: generation))
             assertUnchanged(session, editor: editing, drag: drag)
         }
 
-        XCTAssertTrue(session.dragLight(id, translationX: 40, translationZ: -20,
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 40, translationZ: -20,
                                         scale: 999, from: generation))
         XCTAssertEqual(session.scene.lights[0].position.x,
                        original.lights[0].position.x + 0.4, accuracy: 1e-12)
@@ -108,7 +114,7 @@ final class StudioPlanSessionTests: XCTestCase {
                        original.lights[0].position.z - 0.2, accuracy: 1e-12)
         XCTAssertEqual(session.planDrag, drag, "Rejected inputs preserve the frozen origin and scale")
         XCTAssertNotEqual(session.revision, editing.revision)
-        session.finishPlanDrag(lightID: id, generation: generation)
+        session.finishPlanDrag(token: token, lightID: id, generation: generation)
         XCTAssertNil(session.planDrag)
         XCTAssertFalse(session.history.isEditing)
         XCTAssertFalse(session.history.canRedo)
@@ -123,9 +129,10 @@ final class StudioPlanSessionTests: XCTestCase {
         let generation = session.generation
         let id = try XCTUnwrap(session.selection)
         let nextID = original.lights[1].id
-        XCTAssertTrue(session.dragLight(id, translationX: 10, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 10, translationZ: 0,
                                         scale: 100, from: generation))
-        XCTAssertTrue(session.dragLight(id, translationX: 30, translationZ: -20,
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 30, translationZ: -20,
                                         scale: 100, from: generation))
         let editing = session.editor
         let drag = try XCTUnwrap(session.planDrag)
@@ -141,7 +148,7 @@ final class StudioPlanSessionTests: XCTestCase {
         XCTAssertTrue(session.history.canUndo)
         let committed = session.editor
         XCTAssertFalse(session.select(nextID, from: generation))
-        session.finishPlanDrag(lightID: id, generation: generation)
+        session.finishPlanDrag(token: token, lightID: id, generation: generation)
         assertUnchanged(session, editor: committed, drag: nil)
 
         XCTAssertTrue(session.undo(from: generation))
@@ -161,23 +168,25 @@ final class StudioPlanSessionTests: XCTestCase {
         let generation = session.generation
         let firstID = original.lights[0].id
         let secondID = original.lights[1].id
-        XCTAssertTrue(session.dragLight(firstID, translationX: 20, translationZ: 0,
+        let firstToken = try XCTUnwrap(session.beginPlanDrag(firstID, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(firstID, token: firstToken, translationX: 20, translationZ: 0,
                                         scale: 100, from: generation))
         let firstResult = session.scene
         XCTAssertTrue(session.select(secondID, from: generation))
-        XCTAssertTrue(session.dragLight(secondID, translationX: 0, translationZ: 30,
+        let secondToken = try XCTUnwrap(session.beginPlanDrag(secondID, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(secondID, token: secondToken, translationX: 0, translationZ: 30,
                                         scale: 100, from: generation))
         let editing = session.editor
         let drag = try XCTUnwrap(session.planDrag)
         XCTAssertEqual(drag.lightID, secondID)
         XCTAssertTrue(session.history.isEditing)
 
-        session.finishPlanDrag(lightID: firstID, generation: generation)
+        session.finishPlanDrag(token: firstToken, lightID: firstID, generation: generation)
         assertUnchanged(session, editor: editing, drag: drag)
-        session.finishPlanDrag(lightID: secondID, generation: UUID())
+        session.finishPlanDrag(token: secondToken, lightID: secondID, generation: UUID())
         assertUnchanged(session, editor: editing, drag: drag)
 
-        session.finishPlanDrag(lightID: secondID, generation: generation)
+        session.finishPlanDrag(token: secondToken, lightID: secondID, generation: generation)
         XCTAssertNil(session.planDrag)
         XCTAssertFalse(session.history.isEditing)
         XCTAssertEqual(session.revision, editing.revision)
@@ -194,7 +203,8 @@ final class StudioPlanSessionTests: XCTestCase {
         let original = session.scene
         let generation = session.generation
         let id = try XCTUnwrap(session.selection)
-        XCTAssertTrue(session.dragLight(id, translationX: 25, translationZ: -10,
+        let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 25, translationZ: -10,
                                         scale: 100, from: generation))
         let dragged = session.scene
         let dragRevision = session.revision
@@ -210,7 +220,7 @@ final class StudioPlanSessionTests: XCTestCase {
         XCTAssertNil(session.planDrag)
         XCTAssertFalse(session.history.isEditing)
         let replaced = session.editor
-        session.finishPlanDrag(lightID: id, generation: generation)
+        session.finishPlanDrag(token: token, lightID: id, generation: generation)
         assertUnchanged(session, editor: replaced, drag: nil)
 
         XCTAssertTrue(session.undo(from: generation))
@@ -231,7 +241,8 @@ final class StudioPlanSessionTests: XCTestCase {
         let original = session.scene
         let generation = session.generation
         let id = try XCTUnwrap(session.selection)
-        XCTAssertTrue(session.dragLight(id, translationX: 20, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: generation))
+        XCTAssertTrue(session.dragLight(id, token: token, translationX: 20, translationZ: 0,
                                         scale: 100, from: generation))
         let drag = try XCTUnwrap(session.planDrag)
         let dragged = session.scene
@@ -250,7 +261,7 @@ final class StudioPlanSessionTests: XCTestCase {
         let editing = session.editor
         XCTAssertNotEqual(editing.revision, dragRevision)
 
-        session.finishPlanDrag(lightID: id, generation: generation)
+        session.finishPlanDrag(token: token, lightID: id, generation: generation)
         session.editChanged(false, owner: drag.owner, from: generation)
         assertUnchanged(session, editor: editing, drag: nil)
         XCTAssertTrue(session.history.isEditing, "The intensity control still owns the active edit")

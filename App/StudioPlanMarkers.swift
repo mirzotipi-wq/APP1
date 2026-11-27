@@ -12,8 +12,9 @@ struct StudioPlanMarker: Identifiable {
     let accessibilityLabel: String
     var accessibilityIdentifier = ""
     var action: (() -> Void)?
-    var onDragChanged: ((CGSize) -> Void)? = nil
-    var onDragEnded: (() -> Void)? = nil
+    var onDragBegan: (() -> UUID?)? = nil
+    var onDragChanged: ((UUID, CGSize) -> Void)? = nil
+    var onDragEnded: ((UUID) -> Void)? = nil
 }
 
 struct StudioPlanLabelNoticeKey: PreferenceKey {
@@ -151,10 +152,12 @@ struct StudioPlanMarkers: View {
 private struct StudioPlanMarkerControl: View {
     let marker: StudioPlanMarker
     @Environment(\.isEnabled) private var isEnabled
-    @GestureState private var dragRecognized = false
+    @GestureState private var dragRecognition: UUID?
+    @State private var attemptedRecognition: UUID?
     @State private var dragInProgress = false
-    @State private var dragChange: ((CGSize) -> Void)?
-    @State private var dragCompletion: (() -> Void)?
+    @State private var dragToken: UUID?
+    @State private var dragChange: ((UUID, CGSize) -> Void)?
+    @State private var dragCompletion: ((UUID) -> Void)?
 
     var body: some View {
         control
@@ -162,7 +165,7 @@ private struct StudioPlanMarkerControl: View {
             .accessibilityIdentifier(marker.accessibilityIdentifier)
             .accessibilityAddTraits(marker.selected ? .isSelected : [])
             .allowsHitTesting(isEnabled)
-            .onChange(of: dragInProgress && !dragRecognized) { _, needsCompletion in
+            .onChange(of: dragInProgress && dragRecognition == nil) { _, needsCompletion in
                 // GestureState also resets when the system cancels a gesture;
                 // include ownership so a start and cancel in one render still
                 // closes the transaction even if no true state was rendered.
@@ -204,21 +207,33 @@ private struct StudioPlanMarkerControl: View {
         // Global translation stays stable while the projected marker itself
         // moves. The parent converts this cumulative offset using a frozen scale.
         DragGesture(minimumDistance: 10, coordinateSpace: .global)
-            .updating($dragRecognized) { _, recognized, _ in recognized = true }
+            .updating($dragRecognition) { _, recognition, _ in
+                if recognition == nil { recognition = UUID() }
+            }
             .onChanged { value in
-                guard isEnabled else { finishDrag(); return }
-                if !dragInProgress {
-                    guard let changed = marker.onDragChanged else { return }
+                guard let recognition = dragRecognition else { return }
+                if attemptedRecognition != recognition {
+                    finishDrag()
+                    // Attempt begin once for this recognized gesture, including
+                    // a rejection while another owner or save is active. Local
+                    // cancellation never permits the same recognition to retry.
+                    attemptedRecognition = recognition
                     dragInProgress = true
+                    guard isEnabled else { return }
                     // A project copy can retain these marker IDs. Keep value
                     // writes paired with the generation captured at drag begin.
-                    dragChange = changed
+                    let begin = marker.onDragBegan
+                    dragChange = marker.onDragChanged
                     dragCompletion = marker.onDragEnded
+                    dragToken = begin?()
                 }
-                dragChange?(value.translation)
+                guard isEnabled else { finishDrag(); return }
+                if let token = dragToken { dragChange?(token, value.translation) }
             }
             .onEnded { value in
-                if isEnabled && dragInProgress { dragChange?(value.translation) }
+                if isEnabled && dragInProgress, let token = dragToken {
+                    dragChange?(token, value.translation)
+                }
                 finishDrag()
             }
     }
@@ -228,10 +243,12 @@ private struct StudioPlanMarkerControl: View {
         // Clear ownership before invoking the parent: completion may remove this
         // marker, disable dragging, or change the scene synchronously.
         dragInProgress = false
+        let token = dragToken
         let completion = dragCompletion
+        dragToken = nil
         dragChange = nil
         dragCompletion = nil
-        completion?()
+        if let token { completion?(token) }
     }
 
     private var markerIcon: some View {

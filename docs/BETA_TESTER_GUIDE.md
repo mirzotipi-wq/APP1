@@ -1,0 +1,76 @@
+# Key & Fill beta tester guide
+
+This guide describes implemented behavior at `b0624cc6feb741ba2b21090710ea6c9ac12e8ace` (27 November 2026). It is a checklist for an **engineering candidate**, not evidence that these steps passed on a device. Fresh native acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
+
+## 1. Create, edit and reopen a local project
+
+Use a disposable setup for testing. Open **Studio tools** (the sliders icon) → **Settings** to check **Version**, **Distance units** and **Appearance**. The **Studio guide** question-mark button remains available after dismissing the welcome card.
+
+1. On a fresh, untouched first-use setup, either choose **Save current setup** to keep the displayed portrait, or open **Projects** → **New project**, enter a **Name**, and choose **Save project name**. New project creates a named portrait setup.
+2. To start from a backup instead, choose **Projects** → **Import editable project** and select one Key & Fill editable `.json` file. A valid import creates a separate project and keeps existing saved projects. An untouched first-use starter need not be saved first.
+3. Select a light, change one setting, and try **Undo** and **Redo**. Choose **Save** and check that the project status becomes **Saved locally**. Close and relaunch the app, then verify the same project and setting reopen. Record what actually happens.
+4. In **Projects**, try search, **Rename** and **Duplicate** through a project's options menu. Switch to another saved project before archiving the first; the current project cannot be archived. **Restore** returns an archived project. Permanent deletion requires its own confirmation and cannot be undone in the library.
+
+If **Unsaved lighting setup** appears in Projects, choose **Save current setup** before creating, importing, switching or organizing projects. Saving is explicit; leaving an editor or exporting a copy is not a project save. If **Saved library changed** appears, **Save setup as new project** preserves your open setup separately. **Reload latest saved library** asks before discarding this window's unsaved edits.
+
+Source: [studio](../App/StudioView.swift), [project library](../App/ProjectLibraryView.swift), [initial-project eligibility](../App/StudioSession.swift).
+
+## 2. If the saved library cannot open
+
+**Saved project unavailable** disables saving to protect existing data. Try **Retry loading saved project**; a newer authorized app version may be needed if the files came from a newer version.
+
+If loading still fails, open **Review recovery options**. The **Recover saved library** screen checks the saved files without changing them. Read the file count and size, then choose **Review starting again** only if you want a fresh library. **Cancel** leaves that confirmation without starting recovery. **Keep files and start again** explicitly confirms the operation.
+
+Recovery keeps copies of the original files on this device before creating a new library. **It does not repair the files or restore the old projects.** Wait for the displayed result. After **New library is ready**, choose **Done** → **Projects** → **Import editable project** to restore a project from your separate JSON backup. Preserved original files are not a substitute for that backup or an in-app restore feature.
+
+If files changed after inspection, check them again before confirming. If checking or recovery fails, record the exact message; do not treat it as success or deliberately damage a real library to test recovery.
+
+Source: [recovery screen](../App/ProjectLibraryRecoveryView.swift), [preservation implementation](../Sources/LightingCore/ProjectLibrary.swift).
+
+## 3. Reference photos and manual lighting
+
+Choose **Reference photo** → **Choose photo** and select a still image you are authorized to use. Review the on-device key-side check and its limitations. **Use suggested side** accepts only that tentative cue. You can choose **Key side**, **Shadow edges**, **Shadow fill** and **Rim highlight** yourself, then choose **Build starting rigs**. If a suggestion or starting rig is unavailable, continue editing lights manually in the studio.
+
+Select a candidate, review its assumptions, then choose **Apply selected rig** → **Apply rig**. This replaces lights while retaining camera and subject positions. **Undo** restores the previous lights; **Save** is still required. **Compare a test shot** opens side-by-side/wipe comparison of two photographs.
+
+These are plausible starting arrangements, not exact photo reconstruction. Plan/3D/Camera views are illustrative; Study and lux values are idealized planning aids, not calibrated equipment, skin exposure or camera measurements. Check real results with your equipment, a light meter and test photographs.
+
+Reduced, metadata-stripped photo copies stay in memory for open comparison views and are excluded from projects and exports. Closing a view or removing its photo discards its copy; originals in Photos are unchanged. Key & Fill does not upload photographs for analysis. Apple's picker may retrieve an iCloud original.
+
+Source: [reference workflow](../App/ReferenceComparisonView.swift), [photo handling disclosure](../App/StudioSettingsView.swift).
+
+## 4. Room placement and AR fallback
+
+**Room placement** works without AR. Enter measured dimensions and subject floor offsets; press **Set** for each changed field. Use **Keep room with setup** if the displayed values already match your room, then **Save** in the studio to retain committed measurements. Unfinished field text is excluded. The room checks describe centers and ideal emitting faces; physically check stands, housings, cables and clearance.
+
+For AR, open **Studio tools** → **Place in AR** → **Start AR camera** and respond to camera permission. On supported hardware, follow tracking guidance, aim at the physical floor, and choose **Place subject on this floor point** when available. Adjust **Setup direction** as needed. Test **Stop camera** and **Reset and scan again**; after tracking recovery, check the physical placement before choosing **I checked the recovered placement** when shown.
+
+Use **Use manual room measurements** when AR is unavailable, permission is denied, or tracking is unsuitable. The simulator cannot place a setup in a real room. AR distances come from the authored plan, not a measurement of equipment or tracking accuracy; no placement-accuracy result is established here. Camera frames/maps are not saved, and anchors clear when leaving or pausing the camera.
+
+Source: [manual room controls](../App/ManualRoomPlacementView.swift), [AR controls](../App/ARPlacementView.swift), [capability guidance](../App/ARPlacementController.swift).
+
+## 5. Export a plan and keep an editable backup
+
+Choose **Export lighting plan** (the share icon beside Projects). Exports capture the current studio settings, including unsaved changes, when the export sheet opens.
+
+| Choice | Tester check |
+|---|---|
+| **Lighting plan (PDF)** | Choose paper and units, inspect the preview, then **Share PDF**. Open the resulting file and check labels, equipment and distances. |
+| **Editable project copy** | Choose **Save editable copy**, select a file location, and check the success message. Reimport the `.json` through Projects and compare its settings. |
+| **Share text settings** | Review the text at your chosen destination for readable settings and units. |
+
+Export leaves the local project and undo history unchanged. Editable copies retain scene settings and committed room measurements; photographs and edit history are excluded. Keep a separate JSON copy of work you want to retain. A PDF is a plan, not an editable project backup.
+
+Source: [export choices](../App/LightingPlanExportView.swift), [editable copy](../App/ProjectBackupView.swift).
+
+## 6. Review and share feedback
+
+Open **Studio tools** → **Settings** → **Beta feedback**. Enter **Problem or observation**, **Steps to reproduce** and **Expected result**; all three are optional. Choose **Review report** and read the complete preview. **Share report** opens system sharing: you choose a destination or cancel. Key & Fill does not select a recipient or send automatically.
+
+The app adds version/build, OS version and device family. It adds no photographs, project/scene contents, accounts, identifiers or logs. Review notices about shortened or cleaned text. If a paste is rejected as too long, edit it or choose **Keep previous text** / **Keep field blank** before reviewing. Notes remain in memory only; **Close** asks to **Discard draft** or **Keep editing** when notes exist. A previously shared copy remains at its destination.
+
+Report the exact screen/action, smallest repeatable steps, expected versus observed result, frequency, and whether it survived relaunch. Mention relevant units, appearance, text size, VoiceOver, permission state and physical device versus simulator. Prioritize missing/changed saved work, crashes, blocked workflows, misleading measurements, unreadable exports and inaccessible controls. Record failures and unavailable checks honestly.
+
+**Do not attach or upload reference/test photographs with feedback.** Keep personal information and private project details out of notes; if sharing a screenshot separately, remove any private photo or identifying content first. Use only the feedback destination supplied for your authorized test; this guide does not specify a contact.
+
+Source: [feedback editor and preview](../App/BetaFeedbackView.swift), [report contents](../Sources/LightingCore/BetaFeedbackReport.swift).

@@ -57,10 +57,20 @@ final class ReferenceAnalysisServiceTests: XCTestCase {
         }
         XCTAssertTrue(bytes.prefix(3).allSatisfy { abs(Int($0) - 128) <= 1 },
                       "Allow only color-rounding noise around the authored mid-gray", file: file, line: line)
-        XCTAssertTrue(stride(from: 0, to: bytes.count, by: 4).allSatisfy {
-            bytes[$0] == bytes[0] && bytes[$0 + 1] == bytes[1] &&
-                bytes[$0 + 2] == bytes[2] && bytes[$0 + 3] == 255
-        }, "The decoded fixture must be uniformly gray and fully opaque", file: file, line: line)
+        let allPixelsAreUniformAndOpaque: Bool = stride(from: 0, to: bytes.count, by: 4).allSatisfy {
+            (offset: Int) -> Bool in
+            let red: UInt8 = bytes[offset]
+            let green: UInt8 = bytes[offset + 1]
+            let blue: UInt8 = bytes[offset + 2]
+            let alpha: UInt8 = bytes[offset + 3]
+            let redMatches: Bool = red == bytes[0]
+            let greenMatches: Bool = green == bytes[1]
+            let blueMatches: Bool = blue == bytes[2]
+            let isOpaque: Bool = alpha == UInt8(255)
+            return redMatches && greenMatches && blueMatches && isOpaque
+        }
+        XCTAssertTrue(allPixelsAreUniformAndOpaque,
+                      "The decoded fixture must be uniformly gray and fully opaque", file: file, line: line)
     }
 
     private func assertUnsupportedManualFallback(_ result: ReferenceAnalysisResult,

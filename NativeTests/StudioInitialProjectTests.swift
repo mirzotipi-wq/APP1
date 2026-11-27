@@ -212,7 +212,8 @@ final class StudioInitialProjectTests: XCTestCase {
         XCTAssertTrue(session.canCreateInitialProject)
 
         let id = try XCTUnwrap(session.selection)
-        XCTAssertFalse(session.dragLight(id, translationX: 0, translationZ: 0,
+        let token = try XCTUnwrap(session.beginPlanDrag(id, scale: 100, from: session.generation))
+        XCTAssertFalse(session.dragLight(id, token: token, translationX: 0, translationZ: 0,
                                          scale: 100, from: session.generation))
         XCTAssertNotNil(session.planDrag)
         XCTAssertFalse(session.canCreateInitialProject)
