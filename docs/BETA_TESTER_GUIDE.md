@@ -1,6 +1,6 @@
 # Key & Fill beta tester guide
 
-This guide describes implemented behavior at `b0624cc6feb741ba2b21090710ea6c9ac12e8ace` (27 November 2026). It is a checklist for an **engineering candidate**, not evidence that these steps passed on a device. Fresh native acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
+This guide describes implemented behavior at `f94c0e6cb9cd072286d6e4414eb2c1f8974d4ce5` (27 November 2026). It is a checklist for an **engineering candidate**, not evidence that these steps passed on a device. Required UI acceptance remains pending. The campaign has not supplied signing or owner distribution approval; unsigned simulator builds do not establish a signed, released tester build. Use an owner-authorized test build when one is provided. See the [campaign status](evidence/beta-campaign-2026-11-27/README.md) and [release gates](QUALITY.md).
 
 ## 1. Create, edit and reopen a local project
 
@@ -10,6 +10,8 @@ Use a disposable setup for testing. Open **Studio tools** (the sliders icon) →
 2. To start from a backup instead, choose **Projects** → **Import editable project** and select one Key & Fill editable `.json` file. A valid import creates a separate project and keeps existing saved projects. An untouched first-use starter need not be saved first.
 3. Select a light, change one setting, and try **Undo** and **Redo**. Choose **Save** and check that the project status becomes **Saved locally**. Close and relaunch the app, then verify the same project and setting reopen. Record what actually happens.
 4. In **Projects**, try search, **Rename** and **Duplicate** through a project's options menu. Switch to another saved project before archiving the first; the current project cannot be archived. **Restore** returns an archived project. Permanent deletion requires its own confirmation and cannot be undone in the library.
+
+For a selected light, open **Light actions** → **Set ideal lux**. Enter a nonnegative target using your current decimal separator, then choose **Apply to light**. The calculation changes that light's modeled output while retaining its geometry. If the number format changes while the editor is open, the app keeps the text and asks you to edit it before Apply becomes available. Try **Undo** and **Redo**, then **Save** to retain the accepted output. See the [target-lux editor](../App/LightTargetLuxView.swift).
 
 If **Unsaved lighting setup** appears in Projects, choose **Save current setup** before creating, importing, switching or organizing projects. Saving is explicit; leaving an editor or exporting a copy is not a project save. If **Saved library changed** appears, **Save setup as new project** preserves your open setup separately. **Reload latest saved library** asks before discarding this window's unsaved edits.
 
