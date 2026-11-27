@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "worker_id": "056",
+  "canonical_id": "/root/w051/w056",
+  "role": "resource-lifetime reviewer",
+  "campaign": "f150f98",
+  "wave": 6,
+  "lane": "04-metal-cache",
+  "repository": "mirzotipi-wq/APP1",
+  "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "packet_blob": "2d556afeca3be2fe717b6cfb23d793431264b34e",
+  "packet_input_sha": null,
+  "authority": "Exact input SHA supplied by current wave-launch brief; stale main instructions do not authorize worker mutations.",
+  "planned": {
+    "worktree": "/tmp/keyfill04-2987b1ee980d/workers/w056",
+    "results": "/tmp/keyfill04-2987b1ee980d/results/w056",
+    "created_or_inspected": false
+  },
+  "actual_mode": "Immutable GitHub snapshots/session state only; no local execution probes.",
+  "startup_reads": [
+    {
+      "path": "AGENTS.md",
+      "sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "sha": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "agents/state.json",
+      "sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "status": "read at exact input ref"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "status": "read at exact input ref"
+    }
+  ],
+  "source_manifest": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "sha": "8c1acd852d85cd99671feaba883db1808bbb5e68"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "sha": "2af764b51023dc66a9cc0070d8d49f5bd7de334e"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "sha": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84"
+    }
+  ],
+  "candidates": [
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "blob_sha": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "original_test_declarations": 12,
+      "candidate_test_declarations": 16,
+      "original_prefix_preserved": true,
+      "prefix_characters": 11262,
+      "original_remaining_text": "}\\n",
+      "appended_tests": 4,
+      "executed": false
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob_sha": "e264fac9e4f521a0ca61cdf9f590530f3d4678ba",
+      "original_test_declarations": 19,
+      "candidate_test_declarations": 25,
+      "original_prefix_preserved": true,
+      "prefix_characters": 34732,
+      "original_remaining_text": "}\\n",
+      "appended_tests": 6,
+      "executed": false
+    }
+  ],
+  "actual_checks": [
+    "Discovered GitHub immutable read/create_blob tools; stripped account-comment data from printed schemas.",
+    "Read all ten mandatory startup files at input SHA.",
+    "Fetched source at input SHA and fetched both exact candidate blobs.",
+    "Inspected immutable recursive Git tree; truncated=false; engine blob agrees with brief.",
+    "Ran JavaScript text-prefix comparisons and counted func test declarations in fetched text. This is static source inspection, not a test-suite run.",
+    "Reviewed retained-reference graph and falsified potential strong retention via helpers, observers, factories, cache snapshots, returned images and per-command resources."
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "status": "no defect demonstrated",
+      "location": "Core candidate lines 205-229 and 316-325",
+      "finding": "Oversized replacement lifetime probe observes only weak references before key 3 admission. No value(for:) or persistent cache snapshot intervenes. Scoped withExtendedLifetime calls end before mutations; helper local strong value ends on return. Rejected allocation is checked nil while originals remain nonnil; following eviction checks oldest nil and survivors nonnil.",
+      "limitation": "ARC release assertions have not executed in either build configuration."
+    },
+    {
+      "id": "F2",
+      "status": "no defect demonstrated",
+      "location": "Core candidate lines 230-325",
+      "finding": "Replacement, independent pixel/mask budget eviction, selective Metal removal, no-match removal and complete removal check only weak observers after mutation. Helpers return no strong payload, and the tests retain cache for positive lifetime assertions.",
+      "limitation": "Tests exercise reference payload ownership, not allocator/driver reclamation."
+    },
+    {
+      "id": "F3",
+      "status": "no defect demonstrated",
+      "location": "Native candidate lines 321-441 and 921-1015; engine lines 247-295",
+      "finding": "Observer weak storage is lock protected; getter returns Bool. Control clears optional strong backend and checks weak nil plus deinit count. Factory captures script and observer only; script holds steps/counters/budget and no backend. Backend owns script without a reverse link. Failed command/allocation/invalid-output paths, with and without cancellation, are observed after actor render returns. The same actor is subsequently called, so actor destruction cannot satisfy the release assertion.",
+      "limitation": "Injected scripted backends are mocks, not actual Metal resources; candidate not executed."
+    },
+    {
+      "id": "F4",
+      "status": "scope distinction",
+      "location": "Engine lines 10-13, 193-202, 299-303; ReferenceStudy lines 375-408; native candidate resource tests",
+      "finding": "Cached and returned frames contain immutable StudyImage values with Data RGBA/mask storage. Callers can retain images after cache eviction, potentially sharing backing storage. Native frames/bustFrames arrays retain evicted images deliberately; reported actor count/pixelBytes/maskBytes are not global live-image or RSS counters. Captured synthetic compute frame holds no backend."
+    },
+    {
+      "id": "F5",
+      "status": "no defect demonstrated",
+      "location": "Engine lines 28-41, 81-116, 189-221, 267-295",
+      "finding": "Device, command queue and pipeline are persistent backend properties. CPU downgrade drops state ownership and purges Metal cache entries; a render-local backend binding may remain until its call unwinds. Per-call input/output buffers, command and encoder stay outside cached payload; command completion is awaited before reading output and leaving autoreleasepool. Output passes through independent Data/array conversion. No source evidence supports immediate driver/RSS reclamation."
+    }
+  ],
+  "frozen_acceptance": {
+    "cpu_authoritative": true,
+    "invalid_masks": "exact",
+    "six_parity": {
+      "mean_RGB_channel_error_max": 1,
+      "fraction_channel_error_over_4_max": 0.005
+    },
+    "eight_precision_max_channel_error": 1,
+    "cache": {
+      "entries_max": 4,
+      "RGBA_payload_bytes_max": 262144,
+      "mask_payload_bytes_max": 65536
+    },
+    "failed_cancelled_frames": "excluded",
+    "downgrade": "purge Metal; preserve CPU",
+    "bust_width_max": 144,
+    "cpu_cancellation_extra_pixel_evaluations_max": 8,
+    "changed": false,
+    "evidence_classes": "Host kernel, injected mocks, simulator Metal and physical-device outcomes remain distinct. None executed by this worker."
+  },
+  "unavailable_unrun": [
+    "Local git status",
+    "Local git HEAD",
+    "Local git log",
+    "python3 scripts/agent_cycle.py check",
+    "python3 scripts/agent_cycle.py next",
+    "git hash-object",
+    "Swift installation/build/syntax/typecheck",
+    "Core Debug/Release candidate tests",
+    "Native candidate tests",
+    "Host shared-kernel/parity/precision execution",
+    "Simulator Metal execution",
+    "Physical-device execution",
+    "Allocator/RSS/driver memory measurement"
+  ],
+  "modifications": {
+    "source": false,
+    "branch": false,
+    "commit": false,
+    "global_state": false,
+    "build_config": false,
+    "harness": false,
+    "cpu_oracle": false,
+    "UI": false,
+    "local_files": false
+  },
+  "verdict": "No blocking lifetime defect demonstrated by bounded static review; runtime acceptance pending.",
+  "remedy": "No source remedy justified. Execute the candidate tests on supported Debug/Release and native CI, retain actual failures and measurement rows without relabeling static analysis as runtime evidence.",
+  "report": {
+    "path": "docs/parallel/04/workers/w056.md",
+    "blob_sha": "0adab8e1992ba7fe968b465a5211ca17c0ab98bb"
+  },
+  "integration_owner": "Root alone integrates/pushes finish/04-metal-cache."
+}

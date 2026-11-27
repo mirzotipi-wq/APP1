@@ -1,0 +1,12 @@
+Read AGENTS.md, docs/QUALITY.md, docs/parallel/02/WAVE-TASKS.md, relevant StudioOptics.swift and SurfacePhotometry.swift contracts.
+git status --short
+git rev-parse HEAD
+git log -5 --oneline
+cat /tmp/keyfill02-r2-snapshots/v1/READY
+/tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+uname -sm
+python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w04r09 /tmp/keyfill02-r2-workers/w04r09/private-output/probe.swift v1
+
+Helper expansion:
+flock /tmp/keyfill02-r2-build.lock /tmp/keyfill02-r2-toolchain/usr/bin/swiftc -I /tmp/keyfill02-r2-snapshots/v1/Modules /tmp/keyfill02-r2-workers/w04r09/private-output/probe.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a -o /tmp/keyfill02-r2-workers/w04r09/private-output/probe
+/tmp/keyfill02-r2-workers/w04r09/private-output/probe

@@ -1,0 +1,56 @@
+{
+  "worker": "W74-implementation",
+  "canonicalRuntimeID": "/root/wave08/w74_implementation",
+  "followup": "W78-AX-01; same W74 worker, explicit sole-writer authorization via W71/root",
+  "status": "Candidate prepared; independent review and native compilation pending",
+  "inputCommit": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "privateTree": "/tmp/keyfill03-7f4b/workers/W74-implementation",
+  "source": "App/ReferenceStudyPreview.swift",
+  "originalSHA256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+  "candidateSHA256": "612e922e16a900bf69cbc1bf13d9995912db535703a4b0bd85f372de1f1d44a5",
+  "patch": "docs/parallel/03/workers/wave08-evidence/W74-previous-frame-warning.patch",
+  "patchSHA256": "cf1a9ac9711102a7d81b3ea153a11bffaaa67cb585aa22b484af1dd65a223e05",
+  "checks": [
+    {
+      "command": "git diff --check",
+      "outcome": "exit 0"
+    },
+    {
+      "command": "git diff --name-only",
+      "outcome": [
+        "App/ReferenceStudyPreview.swift"
+      ]
+    },
+    {
+      "command": "git apply --check --reverse /workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave08-evidence/W74-previous-frame-warning.patch",
+      "outcome": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "command": "git diff -- App/ReferenceStudyPreview.swift",
+      "outcome": "Reviewed one bounded UI diff; existing current warning, identifiers, pipeline and task identity unchanged."
+    }
+  ],
+  "sourceReview": {
+    "condition": "Within a nonnil-image branch whose outer guard permits a previous request only for the same subject: !isCurrent && frame.unsupportedPixels > 0.",
+    "visiblePlacement": "Previous warning text shares a VStack with the existing updating/paused status; no second overlay.",
+    "accessibility": "Previous-image label appends the warning count. Current image label remains its existing label.",
+    "currentWarning": "Existing isCurrent && unsupportedPixels > 0 warning and its lighting advice are untouched; inactivity alone does not remove it.",
+    "staleAdvice": "Previous warning contains count/magenta only, with no prior backend or lighting advice for the new request."
+  },
+  "limits": [
+    "Source evidence only; no actual VoiceOver/UI reproduction.",
+    "No tests, build, render, benchmark, commit, push, cleanup or production-checkout source edit.",
+    "Original W74 report and IMAGE_REVIEW preserved; this authorized followup supplements the earlier source-no-change scope."
+  ],
+  "followupNote": {
+    "path": "docs/parallel/03/workers/W74-implementation-followup.md",
+    "sha256": "6f923794da8c2e1007284e5aee2cb28c11b2447f32d668a957ae442420d994c1",
+    "words": 284,
+    "linksResolve": true
+  },
+  "originalW74ReportUnchangedSHA256": "ae14846054aad1d51072c96f59e26344649b03e2cd0ed2b424c4957ff67c375e"
+}

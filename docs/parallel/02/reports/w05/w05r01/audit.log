@@ -1,0 +1,73 @@
+{
+  "role": "W05R01",
+  "method": "static source acceptance audit; no runtime probe or package build",
+  "worktree_head": "928ca0eafa6330742114c2e0ac184789c2f17752",
+  "production_baseline": "58b3ca43943e18d0fc7800189b08365f424d9c9e",
+  "frozen_probe_module_commit": "1b286885cb803ba17e159713651515ab119e17f1",
+  "files": {
+    "Sources/LightingCore/LightOutputAdjustment.swift": {
+      "sha256": "7865e65f02f356abf2a0030801fdfdc4b1795c038676a486ebc6c2a6d6b724c8",
+      "identical_to_production_baseline_and_snapshot": true
+    },
+    "Sources/LightingCore/Scene.swift": {
+      "sha256": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+      "identical_to_production_baseline_and_snapshot": true
+    }
+  },
+  "checks": [
+    {
+      "name": "validated_source_before_zero_or_positive_solve",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 37,
+      "pass": true
+    },
+    {
+      "name": "maximum_candela_is_100000",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 60,
+      "pass": true
+    },
+    {
+      "name": "maximum_forward_model_is_valid_finite_positive_and_request_bounded",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 61,
+      "pass": true
+    },
+    {
+      "name": "quotient_must_be_positive_and_valid_or_use_valid_maximum",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 76,
+      "pass": true
+    },
+    {
+      "name": "forward_result_must_be_finite_positive",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 90,
+      "pass": true
+    },
+    {
+      "name": "forward_ratio_gate_is_1e_minus_9",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 92,
+      "pass": true
+    },
+    {
+      "name": "already_exact_bypass_requires_positive_source_and_exact_forward_result",
+      "path": "Sources/LightingCore/LightOutputAdjustment.swift",
+      "line": 70,
+      "pass": true
+    },
+    {
+      "name": "light_model_finite_closed_0_to_100000_cd_range",
+      "path": "Sources/LightingCore/Scene.swift",
+      "line": 35,
+      "pass": true
+    }
+  ],
+  "validation_order_checks": 2,
+  "quality_gates_unchanged": {
+    "point": "1%",
+    "area": "5%"
+  },
+  "limit": "This role checks the actual source guards and revision identity; independent wave roles supply runtime evidence."
+}

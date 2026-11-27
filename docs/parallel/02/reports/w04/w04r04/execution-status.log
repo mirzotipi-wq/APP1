@@ -1,0 +1,42 @@
+W04 R04: first attempt interrupted; second-executor Swift probe PASS.
+
+Before executor replacement:
+Command: git status --short; git rev-parse HEAD; git log -3 --oneline
+Working directory: /tmp/keyfill02-r2-workers/w04r04
+Result: clean status; HEAD 47de6afe6afe24a7822f4276950f70bd3db9f57d.
+Assigned immutable v1 production revision: 1b286885cb803ba17e159713651515ab119e17f1.
+
+Command: python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w04r04 /tmp/keyfill02-r2-workers/w04r04/private-output/probe.swift v1
+Result: pending exec session 35032; no output or exit status received.
+Other pending read-only commands: swiftc --version; cat v1/READY; git diff --stat production HEAD -- Sources Tests.
+Resume failure for all four pending sessions:
+write_stdin failed: Unified exec process failed: exec-server transport disconnected; failed to resume exec-server session: exec-server protocol error: executor key changed during session recovery
+
+After executor replacement:
+Command: rg --files /tmp/keyfill02-r2-workers/w04r04/private-output /tmp/keyfill02-r2-snapshots/v1
+Exit: 2
+rg: /tmp/keyfill02-r2-workers/w04r04/private-output: No such file or directory (os error 2)
+rg: /tmp/keyfill02-r2-snapshots/v1: No such file or directory (os error 2)
+
+At this checkpoint the candidate, probe source and reference were restored under private-output; production/source and snapshots were not recreated or edited by R04. No test pass, Swift version, compile status or runtime numerical error was then claimed.
+
+Second executor after coordinator READY:
+Root restored worktree, SDK, helper and snapshot. Root reports the v1 module was rebuilt from 047803c0bff16137467e751263f1c11d8aa165aa; its Sources match the assigned production revision.
+Command: git rev-parse HEAD
+Result: 47de6afe6afe24a7822f4276950f70bd3db9f57d
+Command: cat /tmp/keyfill02-r2-snapshots/v1/READY
+Result: 1b286885cb803ba17e159713651515ab119e17f1
+Command: git rev-parse 047803c
+Result: 047803c0bff16137467e751263f1c11d8aa165aa
+Command: git diff --stat 1b286885cb803ba17e159713651515ab119e17f1 047803c -- Sources
+Result: exit 0, empty output; no source differences.
+Command: /tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+Result: Swift version 6.0.3 (swift-6.0.3-RELEASE); Target: x86_64-unknown-linux-gnu
+Command: python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w04r04 /tmp/keyfill02-r2-workers/w04r04/private-output/probe.swift v1
+Result: exit 0. compile.log and probe.log retained.
+Analytic coefficient: 0.11959789527956421 lx/cd
+Unit actual: 0.11960250634721419 lx; relative error 3.8554755827258091e-05
+Tiny intensity: 3.9525251667299724e-323 cd; intensity/16 = 0
+Tiny actual = expected = 4.9406564584124654e-324 lx; bit pattern 1; relative error 0
+PASS: tiny clipped-face result preserves one representable lux step
+XCTest candidate was not integrated or run as a package test; no package build was performed by R04.

@@ -194,7 +194,17 @@ public enum PortraitStudyRenderer {
                     throw StudyError.invalidCamera
                 }
                 let minimum = CameraFraming.minimumDepthMeters / portraitDot(ray, forward)
-                guard let hit = geometry.hit(origin: origin, direction: ray, minimum: minimum) else {
+                // Find the actual first surface before applying the camera's
+                // near plane. Skipping a clipped head entry can expose either
+                // its back face or another front-facing part inside the head.
+                guard let hit = geometry.hit(origin: origin, direction: ray, minimum: 0) else {
+                    pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
+                    continue
+                }
+                if hit.distance < minimum {
+                    // The open panel can be clipped normally. A cut through a
+                    // closed subject would misrepresent its visible geometry.
+                    guard hit.region == .panel else { throw StudyError.invalidCamera }
                     pixels[index] = 18; pixels[index + 1] = 20; pixels[index + 2] = 24
                     continue
                 }

@@ -1,0 +1,89 @@
+{
+  "worktree": "/tmp/keyfill02-r2-workers/w04r10",
+  "snapshot_ready_sha": "1b286885cb803ba17e159713651515ab119e17f1",
+  "fresh_execution": true,
+  "historical_logs_reconstructed": false,
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "47de6afe6afe24a7822f4276950f70bd3db9f57d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "exit_code": 0,
+      "stdout": "?? private-output/\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "1b286885cb803ba17e159713651515ab119e17f1",
+        "HEAD",
+        "--",
+        "Sources/LightingCore/SurfacePhotometry.swift",
+        "Sources/LightingCore/StudioOptics.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "log",
+        "-1",
+        "--format=%H %s",
+        "--",
+        "Sources/LightingCore/SurfacePhotometry.swift",
+        "Sources/LightingCore/StudioOptics.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "58b3ca43943e18d0fc7800189b08365f424d9c9e fix: normalize rolled emitter normals at strict separation boundaries\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/keyfill02-r2-toolchain/usr/bin/swiftc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Swift version 6.0.3 (swift-6.0.3-RELEASE)\nTarget: x86_64-unknown-linux-gnu\n",
+      "stderr": ""
+    }
+  ],
+  "sha256": {
+    "Sources/LightingCore/SurfacePhotometry.swift": "8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f",
+    "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+    "private-output/reference.py": "3e131a62e377985e508d5a3bb3f857fc663fc73f6bfa3ab4afad390be067bad5",
+    "private-output/reference.json": "52bc9274649840919ced419378215f6ca3aea40ca0702e3c237632927e842f38",
+    "private-output/probe.swift": "48a68f0f3a87382c3ecd36416d451ceee4b431ca75dd98bd4e6ee5b6b9378258",
+    "private-output/probe.log": "5ad1039ea1d421a0e4b959076952f53895fbf833d714c56abff6ee068125cf44",
+    "private-output/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "execution_commands": [
+    {
+      "command": "python3 private-output/reference.py",
+      "exit_code": 0,
+      "raw_output": "private-output/reference.json"
+    },
+    {
+      "command": "python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w04r10 /tmp/keyfill02-r2-workers/w04r10/private-output/probe.swift v1",
+      "exit_code": 0,
+      "raw_output": "private-output/probe.log",
+      "compile_log": "private-output/compile.log"
+    }
+  ],
+  "compile_log_bytes": 0
+}

@@ -1,0 +1,419 @@
+{
+  "source_sha": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+  "method_pattern": "\\bfunc\\s+(test\\w*)\\s*\\(",
+  "inventory_only": true,
+  "discovery_basis": "Matches scripts/native_test_shards.py discover_methods; includes same-line attributes",
+  "files": [
+    {
+      "path": "NativeTests/BoundedFileReaderTests.swift",
+      "sha256": "748cacfa66e0a9ace34e7ba1bf4c8fe05a1093bac8d7d6612b319ffae1a22dc8",
+      "class": "BoundedFileReaderTests",
+      "methods": [
+        "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+        "testMetadataPreflightHonorsActualTaskCancellation",
+        "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "testRejectsOversizeBeforeAnyReadCheckpoint",
+        "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking",
+        "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+        "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+        "testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+        "testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+        "testCheckpointCannotSuppressActualTaskCancellation",
+        "testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading"
+      ],
+      "count": 13,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/LightingPlanPDFTests.swift",
+      "sha256": "de2f570768b6ca27633b0adcfb762b39491a5496c6971cb97b30d09f49badd61",
+      "class": "LightingPlanPDFTests",
+      "methods": [
+        "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+        "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+        "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+        "testEmptySceneStillProducesReadableDiagramAndSchedule"
+      ],
+      "count": 4,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/ProjectDocumentIOTests.swift",
+      "sha256": "c97fa8adce643b32cc759e1c260e805a27aba9dcce82670e5f840e8c14fa3a39",
+      "class": "ProjectDocumentIOTests",
+      "methods": [
+        "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+        "testOversizedFileIsRejectedBeforeReadingItsContents",
+        "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt",
+        "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+        "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+        "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+        "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+        "testCancelledReaderDoesNotPublishOrModifyASelectedProject"
+      ],
+      "count": 9,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/ProjectLibraryPresentationTests.swift",
+      "sha256": "6fc6108210430b1e97a1f5760f44a7e8b7dff96b690a15d0ba65d98fd3c166d7",
+      "class": "ProjectLibraryPresentationTests",
+      "methods": [
+        "testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+        "testIgnorableCharactersCannotHideBlankEdgesFromNameDisambiguation",
+        "testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+        "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+        "testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+        "testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars",
+        "testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+        "testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+        "testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity"
+      ],
+      "count": 9,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/ProjectNameEditorTests.swift",
+      "sha256": "9d561fe79d2958170aa840ce66e1470ed7451bbdf1b793197d81d63a325c30f9",
+      "class": "ProjectNameEditorTests",
+      "methods": [
+        "testRejectedPasteRestoresNativeTextButCannotSubmitOldNameOnReturn",
+        "testClearAcknowledgesRejectionWithoutAllowingAnEmptySubmission",
+        "testSingleGraphemeOversizedPasteCannotEscapeTheScalarLimit",
+        "testShortenedLegacyNameStillRequiresADeliberateDifferentName"
+      ],
+      "count": 4,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/ProjectStoreOperationTests.swift",
+      "sha256": "0b529ef1265f39b94f337713cea2617b3240cd046f78c1345269320d480bde13",
+      "class": "ProjectStoreOperationTests",
+      "methods": [
+        "testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+        "testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+        "testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+        "testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+        "testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+        "testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+        "testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+        "testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+        "testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+        "testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+        "testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+        "testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+        "testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+        "testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects",
+        "testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+        "testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult"
+      ],
+      "count": 16,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/ReferencePhotoTests.swift",
+      "sha256": "cfd30a1f0ae5c416ea1f5fa01bd097d458948a1de3784cd2da9701d868241bee",
+      "class": "ReferencePhotoTests",
+      "methods": [
+        "testRotatesReducesAndRemovesSourceMetadata",
+        "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+        "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones",
+        "testRejectsMalformedAndOversizedInputs",
+        "testFileRepresentationConsumesOnlyItsTemporaryFile",
+        "testFileSizeBoundBeforeDecode",
+        "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes"
+      ],
+      "count": 7,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/RoomRotationReadoutTests.swift",
+      "sha256": "b54395e1b98e4e551306c1996665d6bb1bf1dd78d9c9a497c294e25e9c6e9f72",
+      "class": "RoomRotationReadoutTests",
+      "methods": [
+        "testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+        "testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+        "testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+      ],
+      "count": 3,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/SpatialAimRecoveryTests.swift",
+      "sha256": "17a4a59ed520298a0143fe3d6ccc1589f36af3414fcf51bf81d9c1ad491e16a0",
+      "class": "SpatialAimRecoveryTests",
+      "methods": [
+        "testCoincidentAimRecoversRetainedLampAtTranslatedVerticalPose"
+      ],
+      "count": 1,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialEmitterGeometryTests.swift",
+      "sha256": "537f91ff41b0ce69cb3aea882fa8b3d62e99fc5b4d71fa58838d973bc26b2318",
+      "class": "SpatialEmitterGeometryTests",
+      "methods": [
+        "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes",
+        "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+        "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+        "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+        "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection"
+      ],
+      "count": 5,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialEntityUpdateTests.swift",
+      "sha256": "23c0415de68fe2a0d300ae70f0c8fdd686e27b96d828d01c14ce7601356d1cd2",
+      "class": "SpatialEntityUpdateTests",
+      "methods": [
+        "testKindTransitionsReplaceShapeWithoutReplacingLiveLampNodes",
+        "testRectangleResizingReplacesGeometryWhilePoseAndOutputEditsReuseIt",
+        "testStandThresholdDetachesHitsAndReattachesTheSameCylinder"
+      ],
+      "count": 3,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialInteractionTests.swift",
+      "sha256": "824b5484048a65d80b753f354213f955bff2c40d2d92581976cfea9722174c7c",
+      "class": "SpatialInteractionTests",
+      "methods": [
+        "testMetadataOutputAndSelectionKeepLiveNodesAndRefreshCallback",
+        "testRemovedAndReintroducedUUIDCannotReuseOldHitObject",
+        "testInvalidSceneDiscardsHitIdentitiesAndRecoversWithoutOldGeometry",
+        "testDisablingAndDismantlingRejectsSelectionAndReleasesGeometry",
+        "testUndefinedCameraHidesPriorViewAndRecoversAuthoredLens",
+        "testCameraBodyAndLensFollowTheAuthoredNegativeZConvention",
+        "testRepeatedUpdatesKeepBoundedNodeCountAndLiveFixtureIdentity",
+        "testCoincidentSoftboxAndHighStandFitActualNarrowProjection",
+        "testCaptureRealSceneKitOrdinaryAndCrowdedViewports"
+      ],
+      "count": 9,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialNavigationRecoveryTests.swift",
+      "sha256": "fda09865e8e15476789f5ae20a3770002d88f5003677335ead59f11cdb9ebd51",
+      "class": "SpatialNavigationRecoveryTests",
+      "methods": [
+        "testInvalidOrbitTransitionRecoversFromAuthoredCameraWithUnchangedFitRequest",
+        "testInvalidOrbitTransitionRecoversFromUndefinedCameraWithUnchangedFitRequest",
+        "testInvalidOrbitScenePreservesUserCameraAndTargetWithoutFitRequest",
+        "testInitialValidEmptyOrbitEnablesInteraction"
+      ],
+      "count": 4,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialPreviewTests.swift",
+      "sha256": "639fa05b1a09e54a4c5bf0b883e3ee1c4f5e0bf877b89d1979410ac4a655e150",
+      "class": "SpatialPreviewTests",
+      "methods": [
+        "testTranslatedRigAndModifierFitActualSceneKitProjection",
+        "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+        "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical"
+      ],
+      "count": 3,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialSelectionLifetimeTests.swift",
+      "sha256": "865039692d90744ebb8e23a4fe34c5cf6fb71ed1eb825a93394f8544d4080c27",
+      "class": "SpatialSelectionLifetimeTests",
+      "methods": [
+        "testIdenticalSceneRefreshesAndClearsCallbackWithoutReplacingEquipmentOrOrbit",
+        "testDeletionDetachesAllRetainedEquipmentBeforeTheSameUUIDReturns",
+        "testInvalidSceneDetachesAllRetainedEquipmentBeforeRecovery"
+      ],
+      "count": 3,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/SpatialViewportStateTests.swift",
+      "sha256": "3c349e2f909515f255c6f3b78082f9adf26f5ea62f8c327a68f6cdccbc70a013",
+      "class": "SpatialViewportStateTests",
+      "methods": [
+        "testCoincidentAimBoundsIncludeTheVisibleFourMeterHousing",
+        "testHorizontalWorldTranslationPreservesFitScaleAndRelativePose",
+        "testFitIncludesHighStandBasesAndExtremeSparseAndCrowdedRigs",
+        "testNonGeometricEditsDoNotChangeViewportBounds",
+        "testInvalidSceneIsRejectedBeforeBoundsConstruction",
+        "testAimTargetSphereIsContainedBeyondItsAuthoredCenter",
+        "testPanUsesTheSmallerViewportAxisAndDoesNotChangeCameraDistance",
+        "testInvalidGestureSamplesCannotPoisonNavigation",
+        "testGestureLimitsAndFitRecoveryRemainFinite",
+        "testFarClippingEnclosesTheAuthoredWorldAfterExtremePanAndOrbit"
+      ],
+      "count": 10,
+      "spatial": true
+    },
+    {
+      "path": "NativeTests/StudioPaletteTests.swift",
+      "sha256": "e646af3fabf2d2c87ac777e80c01b26a43cf25e6d92c88723ea33fafb437f215",
+      "class": "StudioPaletteTests",
+      "methods": [
+        "testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+        "testProjectSheetControlsContrastOnTheirProductionSurfaces",
+        "testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows",
+        "testFixedPlanTextAndLightControlsContrastInBothAppearances",
+        "testPlanColorsStayFixedWhenInterfaceAppearanceChanges"
+      ],
+      "count": 5,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudioSliderEditingTests.swift",
+      "sha256": "1b1edc611bd2ddd918b555c675d5c898025ffab765dc67b6baf961f49d36f4e9",
+      "class": "StudioSliderEditingTests",
+      "methods": [
+        "testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+        "testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+        "testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+        "testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+        "testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+        "testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+        "testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue",
+        "testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo"
+      ],
+      "count": 8,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudioSliderTrackingTests.swift",
+      "sha256": "1a3a4e775b9de3c1a12c26ac0a08834d6cdeeef5dafcbef8e5713242c286ce35",
+      "class": "StudioSliderTrackingTests",
+      "methods": [
+        "testOutAndBackOptionalSettingsPreserveOriginalSceneAndRedo",
+        "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "testValueAfterEndCannotReopenHistoryOrDisableUndo",
+        "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "testSessionRetainsOriginalWriterAndRange",
+        "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "testReadThatFinishesSessionCannotReopenHistory",
+        "testReadThatReplacesSessionCannotReopenRetiredOwner",
+        "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps"
+      ],
+      "count": 19,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudioTextFieldTests.swift",
+      "sha256": "41bf61e109129f13ca26e31c91752cae1672d2ac2c11c0e7a8834c39556be225",
+      "class": "StudioTextFieldTests",
+      "methods": [
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testCanonicalEquivalentOversizedPasteStillReachesBoundedValidation",
+        "testCanonicalEquivalentExternalResetWinsOverLateEventsAndReconfiguration",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+        "testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration"
+      ],
+      "count": 17,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudioTextLayoutDiagnosticsTests.swift",
+      "sha256": "4672e946f1907fb2e8ad5e9acb2145295d1b29d5fd988ce6bd52368e179ba15c",
+      "class": "StudioTextLayoutDiagnosticsTests",
+      "methods": [
+        "testExplicitGatingAndExactFrameRoundTrip",
+        "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton",
+        "testDisabledHostedProbePreservesUninstrumentedLayout"
+      ],
+      "count": 3,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudioTrackingSliderTests.swift",
+      "sha256": "63dd4eb946922e62bf5c99b327b208b3e31bacaa246627b1a66bbc4e45578e4a",
+      "class": "StudioTrackingSliderTests",
+      "methods": [
+        "testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble",
+        "testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+        "testInvalidRangeDisablesNativeControlWithoutWritingTheModel"
+      ],
+      "count": 3,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudioViewportGeometryTests.swift",
+      "sha256": "19effaeab05b278e152b7eb69fb9dad53a76ee2137574c73b35ccc16e2c82656",
+      "class": "StudioViewportGeometryTests",
+      "methods": [
+        "testNavigationAndNestedScrollSurfacesAllBoundTheTarget",
+        "testKeyboardAndAssistantStripExcludeCoveredControls",
+        "testCoveredProjectsNavigationAndDoneDoNotObscureNamingSheet",
+        "testOnlyHittableFixedControlsInTheSameNavigationOwnerTrimContent",
+        "testMissingScrollAndInvalidTreeFailClosed",
+        "testOverlappingLiveControlWithUnknownOwnerFailsClosed",
+        "testNonfiniteObstacleCannotBeDroppedFromTheViewport",
+        "testMissingLazyTargetSearchStillAvoidsKeyboard"
+      ],
+      "count": 8,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "sha256": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3",
+      "class": "StudyRenderCacheTests",
+      "methods": [
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testSubjectAndResolutionDoNotShareFrames",
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached"
+      ],
+      "count": 11,
+      "spatial": false
+    },
+    {
+      "path": "NativeTests/StudyRendererTests.swift",
+      "sha256": "e0b3bfca7d4b8098f783319cf076052b4ebd9a552561898460800d72ac005e30",
+      "class": "StudyRendererTests",
+      "methods": [
+        "testMetalMatchesCPUOnAvailableDevice",
+        "testEnginePublishesRealFrameWithEitherBackend",
+        "testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+        "testEngineUsesCPUForFarGeometry",
+        "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal",
+        "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "testAdditionalCancellationPredicateCannotSuppressTaskCancellation"
+      ],
+      "count": 7,
+      "spatial": false
+    }
+  ],
+  "native_count": 184,
+  "spatial_count": 38
+}

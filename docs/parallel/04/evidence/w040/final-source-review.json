@@ -1,0 +1,101 @@
+{
+  "worker": "/root/w031/w040",
+  "base": "c08cd0be2548467add169c3594207cf489760787",
+  "role": "final independent reviewer",
+  "destination": "finish/04-metal-cache",
+  "source_scope": "read-only; private review/evidence only; root integrates",
+  "sources": [
+    {
+      "owner": "w034",
+      "path": "App/StudyKernel.h",
+      "sha256": "5bdba47a2620807b9fa61f899c2c6d8ed2cc534f5a3e26693cbdbfbc786ef628",
+      "git_blob": "f60258402a96f58b62607d5cefec5e41c7ec4137"
+    },
+    {
+      "owner": "w037",
+      "path": "NativeTests/StudyRendererTests.swift",
+      "sha256": "2ab0a71b0996035e853b379f4b281128a58532d386356a604e3a2c42bfa80299",
+      "git_blob": "ffe6a6804eb3aa1bf4268331ff1ec52eeba9a119"
+    },
+    {
+      "owner": "w039",
+      "path": "NativeTests/StudyPrecisionMatrixTests.swift",
+      "sha256": "adad419fc6b3f441ed6e7251382b85c9ff07e75ad16c242aaa317d75213cf32f",
+      "git_blob": "e101657aeea929186b0059df6963ee33d17769a5"
+    }
+  ],
+  "static_checks": {
+    "old_native_body_byte_identical": true,
+    "old_native_methods": 11,
+    "new_native_methods": [
+      "testMetalRawDispatchRejectsInvalidPackedMetadata"
+    ],
+    "raw_test_inserted_lines": 155,
+    "header_helpers_byte_identical": true,
+    "header_accumulation_tail_byte_identical": true,
+    "strict_area_constructor_exact": true,
+    "strict_translation_constructor_exact": true,
+    "strict_uuid_validation_distance_exact": true,
+    "strict_8_case_count": true,
+    "strict_width_192": true,
+    "strict_oracle": true,
+    "strict_actual_metal_entry": true,
+    "strict_frozen_metrics": true,
+    "strict_exact_mask": true
+  },
+  "index_falsification": {
+    "parameters_required_rows": 6,
+    "sample_rows_max": 2304,
+    "area_rows_max": 36,
+    "largest_traversed_sample_row": 2303,
+    "largest_traversed_area_row": 35,
+    "area_group_size": 64,
+    "maximum_precheck_i_plus_group": 831,
+    "conclusion": "Finite integral counts and traversed tags validated before casts; all traversed record indexes bounded by declared counts. Backing pointer lengths and output allocation remain caller obligations."
+  },
+  "manual_review": [
+    "Canonical 12-light bound, 8x8 interactive area grid, one point/directional sample, three float4 rows per record, one-based tags; unconditional grid 8 includes empty scenes.",
+    "Header changes no valid-input sampling order, quadrature, channel math, signature, layout or encoding.",
+    "Raw test retains all 11 old methods, allocates initialized 769 sample/13 area records, binds initialized dummy rows for empty arrays, copies storage to MTLBuffer, uses exact 24x16 one-thread groups, checks completion before shared output read.",
+    "Raw tests: 2 valid controls, 18 grid cases, 12 count cases, 7 traversed-tag cases; unlit control supplies geometry mask with background retained and canonical alpha-zero invalid RGBA decoded to exact masks.",
+    "Strict matrix: six area-camera cases plus two translations, width192, exact canonical constructors/UUID normalization; CPU oracle versus direct Metal validation entry, metrics.passes plus max<=1 and exact masks.",
+    "XcodeGen includes NativeTests directory; native_test_shards.py inventories every test method and requires one ordered start/pass; workflow rejects all native skips. No harness change needed."
+  ],
+  "existing_execution_reviewed": {
+    "worker": "/root/w031/w036",
+    "receipt_blob": "36ef843827ccdd8aa5aa1b1135ffe2032fcb5251",
+    "assertions_passed": 21,
+    "compile_exit": 0,
+    "test_exit": 0,
+    "warnings": 0,
+    "float_cast_overflow_diagnostics": 0,
+    "scope": "candidate-only host C++, not actual Metal; no baseline replay"
+  },
+  "commands_actual": [
+    "git status --short --branch; git rev-parse HEAD; git log -5 --oneline: clean detached at base; no pre-existing edits.",
+    "python3 scripts/agent_cycle.py check: exit0, structural/reference validity only.",
+    "python3 scripts/agent_cycle.py next: exit0, historical M03 queue; current lane04 owner scope overrides.",
+    "sha256sum three candidates: expected hashes match; diff -u baseline/candidates: exit1 because intended differences exist.",
+    "Targeted cat/sed/rg source and receipt review; guessed nonexistent StudyCompute.swift/Study.metal/CI helper and archived w032 paths returned exit1/2, corrected through rg --files and actual ReferenceStudy/native_test_shards paths; no build attempted.",
+    "Inline Python static/hash/receipt comparison: all assertions passed; this JSON is the bounded evidence."
+  ],
+  "unrun": [
+    "Swift/Metal compilation",
+    "fresh Apple native execution",
+    "fresh six-fixture and full eight-fixture numerical acceptance",
+    "cache/cancellation runtime acceptance"
+  ],
+  "limits": "No new compilation or runtime test. Wave3 baseline 375 Debug/375 Release and six/eight fixture passes predate this header. Existing host diagnostic does not certify GPU behavior, all malformed inputs, actual buffer backing lengths or release readiness.",
+  "frozen_acceptance": {
+    "oracle": "Swift ReferenceStudyRenderer",
+    "exact_masks": true,
+    "six_mean_max": 1,
+    "six_fraction_above4_max": 0.005,
+    "eight_max_channel_error": 1,
+    "cache_frames": 4,
+    "cache_rgba_bytes": 262144,
+    "cache_mask_bytes": 65536
+  },
+  "blockers": [],
+  "recommendation": "Accept source integration; require root-owned source-specific Apple CI/full matrix before runtime acceptance."
+}

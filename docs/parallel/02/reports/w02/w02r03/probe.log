@@ -1,0 +1,14 @@
+snapshot	f75aa2758b4c14714e7517c4c0df4adb9f1a8b9b	frozen LightingCore v1
+id	API	fixture	expected	actual	result
+1	Photometry.normal	-1 cd; 2 m	nil	nil	PASS
+2	Photometry.normal	0 cd; 2 m	zero	zero	PASS
+3	Photometry.point	100 cd; 0.049 m	nil	nil	PASS
+4	Photometry.point	100 cd; coincident source	nil	nil	PASS
+5	StudioPhotometry	coincident camera/subject	nil	nil	PASS
+6	StudioPhotometry	point behind receiver; 2 m	zero	zero	PASS
+7	StudioPhotometry	0.6x0.9 m rectangle; depth 0.1 m	nil	nil	PASS
+8	LightOutputAdjustment	target -1 lux; valid source	throw:invalidTargetLux	throw:invalidTargetLux	PASS
+9	LightOutputAdjustment	invalid source -1 cd; target 0 lux	throw:invalidLight	throw:invalidLight	PASS
+10	LightOutputAdjustment	near point; target 1 lux	throw:unsupportedGeometry	throw:unsupportedGeometry	PASS
+11	LightOutputAdjustment	valid source/scene; near point + coincident camera; target 0 lux	candela-zero	candela-zero	PASS
+SUMMARY	cases=11	failures=0

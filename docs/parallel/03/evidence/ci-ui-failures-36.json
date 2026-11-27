@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "source": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "run_id": 45842899560,
+  "jobs": [
+    {
+      "id": 139988963860,
+      "name": "core",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139988963860"
+    },
+    {
+      "id": 139992156576,
+      "name": "simulator",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139992156576"
+    },
+    {
+      "id": 139992156772,
+      "name": "ui (studio-optics)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139992156772"
+    },
+    {
+      "id": 139992156791,
+      "name": "ui (library-reference)",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139992156791"
+    },
+    {
+      "id": 139992156797,
+      "name": "ui (studio-export)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139992156797"
+    },
+    {
+      "id": 139992156850,
+      "name": "ui (room-precision)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139992156850"
+    },
+    {
+      "id": 139992156863,
+      "name": "ui (app-accessibility)",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/139992156863"
+    },
+    {
+      "id": 140030106721,
+      "name": "visual review (AXXXL)",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/140030106721"
+    },
+    {
+      "id": 140030106901,
+      "name": "visual review (Default)",
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45842899560/job/140030106901"
+    }
+  ],
+  "logs": [
+    {
+      "job": 139992156791,
+      "characters": 453107,
+      "sha256": "19ee0ee0e4b94cd753e1d9cc26d3df139a78a446150b52f57bd0de51dcaa74d5",
+      "path": "docs/parallel/03/evidence/ci-ui-library-reference-36.log"
+    },
+    {
+      "job": 140030106721,
+      "characters": 3438,
+      "sha256": "51015f9de127554e3b8986b83d83f567c4bad74b47bb6852a420e8fd11687636",
+      "path": "docs/parallel/03/evidence/ci-visual-axxxl-36.log"
+    },
+    {
+      "job": 140030106901,
+      "characters": 3440,
+      "sha256": "a65919028263257d7eff03f3165b2c84c506b6250fda147cd95f3c00b637d68e",
+      "path": "docs/parallel/03/evidence/ci-visual-default-36.log"
+    }
+  ],
+  "actual_ui_results": {
+    "ProjectLibraryUITests": {
+      "methods": 7,
+      "failures": 2,
+      "failed_methods": [
+        {
+          "method": "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+          "location": "UITests/ProjectLibraryUITests.swift:225",
+          "observed": "Project-name entry of Keep did not satisfy the bounded waiter; expected completed, observed timedOut."
+        },
+        {
+          "method": "testCreateDuplicateRenameSwitchAndRelaunch",
+          "location": "UITests/ProjectLibraryUITests.swift:96 (forwarded normal-action helper call)",
+          "observed": "XCTAssertTrue failed for the Done action after snapshot logged expected identifier/button/label, nil AX value and zero children. Enabled/hittable predicates share the forwarded line; exact failed predicate not separately identified in log."
+        }
+      ]
+    },
+    "ReferenceComparisonUITests": {
+      "methods": 2,
+      "failures": 0
+    }
+  },
+  "visual_review_failures": {
+    "cause": "Both jobs failed while downloading ui-app-accessibility-evidence-compact, which the cancelled app-accessibility shard did not produce.",
+    "actual_visual_review_completed": false
+  },
+  "scope": "Core and simulator success remain valid for source36. The whole UI/global M03 gate did not pass. Neither failure names the Study preview; no causal conclusion beyond the observed source/logs.",
+  "routes": [
+    "01 shared UI: inspect ProjectLibraryUITests name-entry and normal Done action failures with retained attachments",
+    "19 CI: preserve/review missing dependent visual artifacts and original failed UI bundle"
+  ],
+  "new_source": "a7c93be58a04154748c951b3d485b05300e9692c",
+  "new_source_status": "Separate run45854357618; current native and UI jobs queued. No native pass claimed for the warning cue at this receipt.",
+  "receipt_correction": {
+    "reviewer": "W89 platform/performance",
+    "original_receipt_commit": "372f0818761aeedd5a4adba987b3de7ee88df84c",
+    "changed_field": "actual_ui_results.ReferencePhotoUITests -> ReferenceComparisonUITests",
+    "reason": "The raw log terminal method events identify ReferenceComparisonUITests for the two passed UI methods. Counts and raw log bytes are unchanged.",
+    "original_preserved": "Original committed receipt remains in git history; raw log is byte-identical."
+  }
+}

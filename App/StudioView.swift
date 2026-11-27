@@ -1,30 +1,23 @@
 import SwiftUI
 import LightingCore
 
+@MainActor
 struct StudioView: View {
+    @State private var session = StudioSession()
     @EnvironmentObject private var entitlements: EntitlementStore
     @AppStorage(StudioPreferences.unitsKey, store: StudioPreferences.defaults)
     private var unitsRaw = PlanUnits.metric.rawValue
     @Environment(\.locale) private var locale
-    @State private var scene = LightingScene.portrait()
-    @State private var selected: UUID?
     @State private var planNeedsLabelNotice = false
     @State private var planGridTitle = StudioPlanGridTitleKey.defaultValue
-    @State private var saved: LightingScene?
-    @State private var library: ProjectLibrary?
     @State private var showProjects = false
-    @State private var showRoomPlacement = false
     @State private var showSubject = false
     @State private var renamingLightID: UUID?
     @State private var lightNameDraft = ""
     @State private var lightNameInputTooLong = false
     @State private var showRenameLight = false
     @State private var renameGeneration: UUID?
-    @State private var planDrag: PlanDrag?
-    @State private var luxTarget: LuxTarget?
-    @State private var showARPlacement = false
     @State private var showSettings = false
-    @State private var editHistory = SceneEditHistory()
     @State private var mode = "Plan"
     @State private var studySubject: StudySubject = .sphere
     @State private var orbitFitRequest = 0
@@ -36,47 +29,33 @@ struct StudioView: View {
     @State private var meterNavigationRequest = 0
     @State private var confirmRemove = false
     @State private var removalTarget: RemovalTarget?
-    @State private var referenceContext: SceneContext?
-    @State private var roomContext: SceneContext?
-    @State private var arrangementContext: SceneContext?
-    @State private var arContext: SceneContext?
-    @State private var loaded = false
-    @State private var saveBlocked = false
-    @State private var message: String?
-    @State private var saveConflict = false
     @State private var confirmReloadConflict = false
-    @State private var showRecoveryCapacity = false
-    @State private var store = ProjectStore()
-    @State private var libraryOperation = ProjectLibraryOperationState()
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
 
-    private struct PlanDrag {
-        let lightID: UUID
-        let generation: UUID
-        let scene: LightingScene
-        let pointsPerMeter: Double
-        let owner: String
+    // Read-through projections, never independently stored copies of the editor.
+    private var scene: LightingScene { session.scene }
+    private var selected: UUID? {
+        get { session.selection }
+        nonmutating set { session.select(newValue, from: session.generation) }
     }
-
-    private struct LuxTarget: Identifiable {
-        let id = UUID()
-        let light: StudioLight
-        let scene: LightingScene
-        let generation: UUID
+    private var library: ProjectLibrary? { session.library }
+    private var saved: LightingScene? { session.saved }
+    private var editHistory: SceneEditHistory { session.history }
+    private var libraryOperation: ProjectLibraryOperationState { session.libraryOperation }
+    private var loaded: Bool { session.loaded }
+    private var saveBlocked: Bool { session.saveBlocked }
+    private var saveConflict: Bool { session.saveConflict }
+    private var planDrag: StudioSession.PlanDrag? { session.planDrag }
+    private var message: String? {
+        get { session.message }
+        nonmutating set { session.message = newValue }
     }
 
     private struct RemovalTarget {
         let lightID: UUID
         let generation: UUID
-    }
-
-    private struct SceneContext: Identifiable {
-        let scene: LightingScene
-        let generation: UUID
-        let owner = UUID().uuidString
-        var id: String { owner }
     }
 
     var body: some View {
@@ -151,62 +130,9 @@ struct StudioView: View {
             .sheet(isPresented: $showRecipes) { recipeSheet }
             .sheet(isPresented: $showStudioGuide) { StudioGuideView() }
             .sheet(isPresented: $showSettings) { StudioSettingsView(store: entitlements) }
-            .sheet(item: $referenceContext) { context in
-                ReferenceComparisonView(scene: context.scene) { rig in
-                    guard acceptsSceneResult(from: context) else { return }
-                    replace(rig); mode = "Study"
-                }
-            }
-            .background {
-                if let context = roomContext {
-                    Color.clear
-                        .sheet(isPresented: roomPresentationBinding(for: context), onDismiss: {
-                            finishRoomEditing(context)
-                        }) {
-                            ManualRoomPlacementView(scene: scene,
-                                onRemove: { removeRoom(from: context) },
-                                onClose: { retireRoomPresentation(context) }) { room in
-                                    applyRoom(room, from: context)
-                                }
-                        }
-                        .id(context.owner)
-                }
-            }
-            .sheet(item: $luxTarget) { target in
-                LightTargetLuxView(light: target.light, scene: target.scene) { adjusted in
-                    guard libraryOperation.allowsSceneMutation(from: target.generation),
-                          scene == target.scene,
-                          let index = scene.lights.firstIndex(where: { $0.id == target.light.id }),
-                          scene.lights[index] == target.light else {
-                        message = "The setup changed while adjusting output. Open the light's target again."
-                        return
-                    }
-                    var next = scene
-                    next.lights[index] = adjusted
-                    replace(next)
-                }
-            }
-            .sheet(item: $arrangementContext) { context in
-                SceneArrangementView(scene: context.scene) { next in
-                    guard acceptsSceneResult(from: context) else { return }
-                    replace(next)
-                }
-            }
-            .background {
-                if let context = arContext {
-                    Color.clear
-                        .sheet(isPresented: roomPresentationBinding(for: context, isAR: true), onDismiss: {
-                            finishRoomEditing(context)
-                        }) {
-                            ARPlacementView(scene: scene,
-                                onRoomRemove: { removeRoom(from: context) },
-                                onClose: { retireRoomPresentation(context) }) { room in
-                                    applyRoom(room, from: context)
-                                }
-                        }
-                        .id(context.owner)
-                }
-            }
+            .modifier(StudioFeatureSheets(session: session, onReferenceApplied: {
+                mode = "Study"
+            }))
             .sheet(isPresented: $showSubject) {
                 NavigationStack {
                     ScrollView {
@@ -236,15 +162,19 @@ struct StudioView: View {
                      : "Use a descriptive name of up to 80 characters.")
             }
             .sheet(isPresented: $showProjects) {
-                ProjectLibraryView(library: $library, scene: $scene, saved: $saved,
+                // This feature's legacy Binding inputs are read-only: mutations
+                // use onSave/onApply. Read the live session after awaited work,
+                // rather than freeze the values in Binding.constant snapshots.
+                ProjectLibraryView(library: Binding(get: { session.library }, set: { _ in }),
+                                   scene: Binding(get: { session.scene }, set: { _ in }),
+                                   saved: Binding(get: { session.saved }, set: { _ in }),
                                    isWorking: libraryOperation.isBusy,
                                    onSave: { try persistScene(from: generation) },
                                    onApply: { try applyLibrary($0, from: generation) })
             }
-            .sheet(isPresented: $showRecoveryCapacity) {
+            .sheet(isPresented: $session.showRecoveryCapacity) {
                 RecoveryCapacityView(onLoad: {
-                    let snapshot = try await store.recoveryLibrarySnapshot()
-                    return snapshot.projects
+                    try await session.recoveryProjects()
                 }, onReplace: { candidate in
                     try beginLibraryOperation(.recover(name: recoveryProjectName, replacing: candidate), from: generation)
                 })
@@ -267,16 +197,21 @@ struct StudioView: View {
                 Text("Only the unsaved changes in this window will be discarded. The latest saved library will be opened.")
             }
             .task { if !loaded { load(from: generation) } }
-            .onChange(of: scenePhase) { _, phase in
-                if phase != .active { finishPlanDrag(); editHistory.end(scene: scene) }
+            .onChange(of: session.workspaceResetID) { _, _ in
+                dismissSceneEditors()
+                mode = "Plan"
+                showMeter = false
             }
-            .onChange(of: mode) { _, _ in finishPlanDrag(); editHistory.end(scene: scene) }
-            .onChange(of: selected) { _, _ in finishPlanDrag(); editHistory.end(scene: scene) }
-            .onDisappear { finishPlanDrag(); editHistory.end(scene: scene) }
+            .onChange(of: scenePhase) { _, phase in
+                if phase != .active { finishPlanDrag(); session.endEditing() }
+            }
+            .onChange(of: mode) { _, _ in finishPlanDrag(); session.endEditing() }
+            .onChange(of: selected) { _, _ in finishPlanDrag(); session.endEditing() }
+            .onDisappear { finishPlanDrag(); session.endEditing() }
         }
     }
 
-    private var projectName: String { library?.activeProject?.name ?? "Portrait setup" }
+    private var projectName: String { session.projectName }
     private var displayUnits: PlanUnits { StudioPreferences.units(from: unitsRaw) }
 
     /// Keep Save reachable while scrolling, with content-sized text rather
@@ -328,25 +263,9 @@ struct StudioView: View {
     // Prefer one row when the full title and action labels fit. At narrower
     // widths or larger text sizes, place the title above the adaptive actions.
     private var header: some View {
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 8) {
-                    projectHeading
-                    projectActions
-                }
-            } else {
-                ViewThatFits(in: .horizontal) {
-                    HStack(alignment: .center, spacing: 8) {
-                        projectHeading.fixedSize(horizontal: true, vertical: false)
-                        Spacer(minLength: 0)
-                        projectActions.fixedSize(horizontal: true, vertical: false)
-                    }
-                    VStack(alignment: .leading, spacing: 8) {
-                        projectHeading
-                        projectActions
-                    }
-                }
-            }
+        StudioAdaptiveLayout(forceVertical: dynamicTypeSize.isAccessibilitySize) {
+            projectHeading.frame(maxWidth: .infinity, alignment: .leading)
+            projectActions
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -370,16 +289,9 @@ struct StudioView: View {
     }
 
     private var projectActions: some View {
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 8) {
-                projectLibraryButton
-                projectUtilityActions
-            }
-            .fixedSize(horizontal: true, vertical: false)
-            VStack(alignment: .leading, spacing: 8) {
-                projectLibraryButton
-                projectUtilityActions
-            }
+        StudioAdaptiveLayout() {
+            projectLibraryButton
+            projectUtilityActions
         }
     }
 
@@ -395,17 +307,21 @@ struct StudioView: View {
     }
 
     private var projectUtilityActions: some View {
-        HStack(spacing: 8) {
+        let generation = session.generation
+        return HStack(spacing: 8) {
             LightingPlanExportMenu(scene: scene, title: projectName, textSettings: exportText)
                 .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
             Menu {
-                Button("Subject position", systemImage: "person.crop.rectangle") { showSubject = true }
-                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath") {
-                    arrangementContext = sceneContext()
+                Button("Subject position", systemImage: "person.crop.rectangle") {
+                    guard session.allowsMutation(from: generation), !editHistory.isEditing else { return }
+                    showSubject = true
                 }
-                Button("Place in AR", systemImage: "arkit") {
-                    arContext = sceneContext(); showARPlacement = true
-                }
+                    .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
+                Button("Arrange setup", systemImage: "arrow.triangle.2.circlepath",
+                       action: featureAction(.arrangement))
+                    .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
+                Button("Place in AR", systemImage: "arkit", action: featureAction(.ar))
+                    .disabled(!loaded || saveBlocked || libraryOperation.isBusy)
                 Divider()
                 Button("Settings", systemImage: "gearshape") { showSettings = true }
             } label: {
@@ -413,7 +329,7 @@ struct StudioView: View {
             }
             .accessibilityLabel("Studio tools")
             .accessibilityIdentifier("studioTools")
-            .disabled(!loaded || saveBlocked || libraryOperation.isBusy || editHistory.isEditing)
+            .disabled(editHistory.isEditing)
             Button { showStudioGuide = true } label: {
                 Label("Guide", systemImage: "questionmark.circle")
                     .labelStyle(.iconOnly)
@@ -459,7 +375,7 @@ struct StudioView: View {
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
             : AnyLayout(HStackLayout(alignment: .center, spacing: 8))
         return layout {
-            Button { referenceContext = sceneContext() } label: {
+            Button(action: featureAction(.reference)) {
                 Label("Reference photo", systemImage: "rectangle.split.2x1")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -467,7 +383,7 @@ struct StudioView: View {
             .buttonStyle(.bordered)
             .accessibilityLabel("Compare reference photo")
             .accessibilityIdentifier("openReference")
-            Button { roomContext = sceneContext(); showRoomPlacement = true } label: {
+            Button(action: featureAction(.room)) {
                 Label("Room placement", systemImage: "ruler")
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .contentShape(Rectangle())
@@ -501,14 +417,14 @@ struct StudioView: View {
                     StudioPalette.planBackground
                     if mode == "Plan" { plan }
                     else if mode == "Camera" { cameraPreview }
-                    else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }
+                    else if mode == "Study" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(session.workspaceResetID) }
                     else {
                         RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in
                             guard libraryOperation.allowsSceneMutation(from: generation),
                                   scene.lights.contains(where: { $0.id == id }) else { return }
                             selected = id
                         }
-                        .id(generation)
+                        .id(session.workspaceResetID)
                         .accessibilityLabel("Illustrative 3D lighting preview")
                     }
                     if mode != "Plan" {
@@ -972,7 +888,7 @@ struct StudioView: View {
                         .disabled(scene.lights.count >= 12)
                     Button("Set ideal lux", systemImage: "sun.max", action: sceneAction {
                         guard scene.lights.contains(light) else { return }
-                        luxTarget = LuxTarget(light: light, scene: scene, generation: libraryOperation.generation)
+                        _ = session.openFeature(.targetLux(lightID: light.id), from: session.generation)
                     })
                 } label: {
                     Image(systemName: "ellipsis.circle").frame(width: 44, height: 44)
@@ -1009,30 +925,24 @@ struct StudioView: View {
                             onEditingChanged: editHandler(owner: opticsOwner))
                 .id(opticsOwner)
             Divider()
-            control("Horizontal", id: light.id, key: \.position.x, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightX")
-            control("Depth", id: light.id, key: \.position.z, range: -4...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightZ")
-            control("Height", id: light.id, key: \.position.y, range: 0...4, domain: Position.coordinateRange, step: 0.05, unit: "m", fieldID: "lightY")
+            control("Horizontal", id: light.id, field: .x, range: -4...4, step: 0.05, unit: "m", fieldID: "lightX")
+            control("Depth", id: light.id, field: .z, range: -4...4, step: 0.05, unit: "m", fieldID: "lightZ")
+            control("Height", id: light.id, field: .y, range: 0...4, step: 0.05, unit: "m", fieldID: "lightY")
             Divider()
-            control("Intensity", id: light.id, key: \.candela, range: 0...3000, domain: 0...100_000, step: 25, unit: "cd", fieldID: "lightIntensity")
-            control("Temperature", id: light.id, key: \.kelvin, range: 2000...9000, domain: 1000...20_000, step: 100, unit: "K", fieldID: "lightTemperature")
+            control("Intensity", id: light.id, field: .candela, range: 0...3000, step: 25, unit: "cd", fieldID: "lightIntensity")
+            control("Temperature", id: light.id, field: .kelvin, range: 2000...9000, step: 100, unit: "K", fieldID: "lightTemperature")
         }.padding(14).background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
     }
 
-    private func control(_ title: String, id: UUID, key: WritableKeyPath<StudioLight, Double>,
-                         range: ClosedRange<Double>, domain: ClosedRange<Double>,
-                         step: Double, unit: String, fieldID: String) -> some View {
+    private func control(_ title: String, id: UUID, field: StudioLightField,
+                         range: ClosedRange<Double>, step: Double,
+                         unit: String, fieldID: String) -> some View {
         let generation = libraryOperation.generation
+        let domain = field.domain
         let value = Binding<Double>(
-            get: { scene.lights.first(where: { $0.id == id })?[keyPath: key] ?? range.lowerBound },
+            get: { scene.lights.first(where: { $0.id == id }).map { field.value(in: $0) } ?? range.lowerBound },
             set: { new in
-                guard libraryOperation.allowsSceneMutation(from: generation),
-                      let i = scene.lights.firstIndex(where: { $0.id == id }),
-                      new.isFinite, domain.contains(new), new != scene.lights[i][keyPath: key] else { return }
-                var next = scene.lights[i]
-                next[keyPath: key] = new
-                guard next.isValid else { return }
-                if !editHistory.isEditing { remember(scene) }
-                scene.lights[i] = next
+                session.apply(.lightValue(id: id, field: field, value: new), from: generation)
             })
         let bounds = StudioNumericInput.sliderBounds(usual: range, current: value.wrappedValue)
         // Capture this project, light and field identity. A late callback must
@@ -1068,62 +978,37 @@ struct StudioView: View {
     private func opticsBinding(for id: UUID) -> Binding<LightOptics> {
         let generation = libraryOperation.generation
         return Binding(get: { scene.lights.first(where: { $0.id == id })?.effectiveOptics ?? LightOptics() },
-                set: { new in
-                    guard libraryOperation.allowsSceneMutation(from: generation),
-                          new.isValid, let i = scene.lights.firstIndex(where: { $0.id == id }),
-                          scene.lights[i].effectiveOptics != new else { return }
-                    if !editHistory.isEditing { remember(scene) }
-                    var next = scene
-                    next.lights[i].optics = new
-                    scene = editHistory.preservingOptionalRepresentations(in: next)
-                })
+                       set: { session.apply(.lightOptics(id: id, optics: $0), from: generation) })
     }
 
     private var cameraPositionBinding: Binding<Position> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.camera }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.camera else { return }
-            if !editHistory.isEditing { remember(scene) }
-            scene.camera = new
-        })
+        return Binding(get: { scene.camera },
+                       set: { session.apply(.cameraPosition($0), from: generation) })
     }
 
     private var subjectPositionBinding: Binding<Position> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.subject }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid,
-                  new != scene.subject else { return }
-            if !editHistory.isEditing { remember(scene) }
-            scene.subject = new
-        })
+        return Binding(get: { scene.subject },
+                       set: { session.apply(.subjectPosition($0), from: generation) })
     }
 
     private var previewSettingsBinding: Binding<PreviewSettings> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.effectivePreviewSettings }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.effectivePreviewSettings else { return }
-            if !editHistory.isEditing { remember(scene) }
-            var next = scene
-            next.previewSettings = new
-            scene = editHistory.preservingOptionalRepresentations(in: next)
-        })
+        return Binding(get: { scene.effectivePreviewSettings },
+                       set: { session.apply(.previewSettings($0), from: generation) })
     }
 
     private var cameraLensBinding: Binding<CameraLens> {
         let generation = libraryOperation.generation
-        return Binding(get: { scene.effectiveCameraLens }, set: { new in
-            guard libraryOperation.allowsSceneMutation(from: generation), new.isValid, new != scene.effectiveCameraLens else { return }
-            if !editHistory.isEditing { remember(scene) }
-            var next = scene
-            next.cameraLens = new
-            scene = editHistory.preservingOptionalRepresentations(in: next)
-        })
+        return Binding(get: { scene.effectiveCameraLens },
+                       set: { session.apply(.cameraLens($0), from: generation) })
     }
 
-    /// Each editor has one stable draft scope until its first saved project.
-    /// Copies may share light UUIDs, so project identity is part of ownership.
+    /// Controls retain identity through first save; intentional document
+    /// switching resets the scope even when copied rigs share light UUIDs.
     private func editOwner(_ control: String) -> String {
-        "\(libraryOperation.generation.uuidString).\(library?.activeID.uuidString ?? "draft").\(control)"
+        session.editOwner(control)
     }
 
     /// The owner is captured while constructing the control, never looked up
@@ -1136,12 +1021,7 @@ struct StudioView: View {
     }
 
     private func editChanged(_ editing: Bool, owner: String, generation: UUID) {
-        if editing {
-            guard libraryOperation.allowsSceneMutation(from: generation) else { return }
-            editHistory.begin(scene: scene, owner: owner)
-        } else {
-            editHistory.end(scene: scene, owner: owner)
-        }
+        session.editChanged(editing, owner: owner, from: generation)
     }
 
     private var recipeSheet: some View {
@@ -1211,9 +1091,6 @@ struct StudioView: View {
     private var exportText: String? {
         (try? LightingPlan(scene: scene, title: projectName, units: displayUnits))?.plainText
     }
-    private func remember(_ previous: LightingScene) {
-        editHistory.record(previous: previous)
-    }
 
     /// Capture the editor generation while creating each action. Disabling a
     /// control cannot alone reject callbacks already queued by an older view.
@@ -1225,120 +1102,33 @@ struct StudioView: View {
         }
     }
 
-    private func sceneContext() -> SceneContext {
-        finishPlanDrag()
-        editHistory.end(scene: scene)
-        return SceneContext(scene: scene, generation: libraryOperation.generation)
-    }
-
-    private func acceptsSceneResult(from context: SceneContext) -> Bool {
-        guard libraryOperation.allowsSceneMutation(from: context.generation) else { return false }
-        guard scene == context.scene else {
-            message = "The setup changed while this editor was open. Reopen it to apply changes to the current setup."
-            return false
-        }
-        return true
-    }
-
-    private func roomPresentationBinding(for context: SceneContext, isAR: Bool = false) -> Binding<Bool> {
-        Binding(get: {
-            isAR ? (showARPlacement && arContext?.owner == context.owner)
-                : (showRoomPlacement && roomContext?.owner == context.owner)
-        }, set: { presented in
-            // A delayed dismissal belongs only to its original presentation.
-            if isAR {
-                guard arContext?.owner == context.owner else { return }
-                showARPlacement = presented
-            } else {
-                guard roomContext?.owner == context.owner else { return }
-                showRoomPlacement = presented
-            }
-        })
-    }
-
-    private func retireRoomPresentation(_ context: SceneContext) {
-        if roomContext?.owner == context.owner { showRoomPlacement = false }
-        if arContext?.owner == context.owner { showARPlacement = false }
-    }
-
-    private func acceptsRoomResult(from context: SceneContext) -> Bool {
-        guard libraryOperation.allowsSceneMutation(from: context.generation),
-              (showRoomPlacement && roomContext?.owner == context.owner)
-                || (showARPlacement && arContext?.owner == context.owner) else { return false }
-        // Repeated room changes belong to this presentation; other rig edits
-        // invalidate its snapshot even if the project generation is unchanged.
-        var current = scene
-        current.placementRoom = context.scene.placementRoom
-        return current == context.scene
-    }
-
-    private func applyRoom(_ room: ManualRoom, from context: SceneContext) -> Bool {
-        guard room.isValid, acceptsRoomResult(from: context) else { return false }
-        guard room != scene.placementRoom else { return true }
-        editHistory.begin(scene: scene, owner: context.owner)
-        scene.placementRoom = room
-        return true
-    }
-
-    private func finishRoomEditing(_ context: SceneContext?) {
-        guard let context else { return }
-        editHistory.end(scene: scene, owner: context.owner)
-        if roomContext?.owner == context.owner {
-            showRoomPlacement = false
-            roomContext = nil
-        }
-        if arContext?.owner == context.owner {
-            showARPlacement = false
-            arContext = nil
-        }
-    }
-
-    private func removeRoom(from context: SceneContext) -> Bool {
-        guard acceptsRoomResult(from: context) else { return false }
-        guard scene.placementRoom != nil else { return true }
-        editHistory.begin(scene: scene, owner: context.owner)
-        scene.placementRoom = nil
-        return true
+    /// Capture storage identity when rendering the action, before a queued tap
+    /// can outlive a project switch. Opening itself reserves the live feature.
+    private func featureAction(_ destination: StudioFeatureDestination) -> () -> Void {
+        let generation = session.generation
+        return { _ = session.openFeature(destination, from: generation) }
     }
 
     private func dismissSceneEditors() {
-        showRoomPlacement = false
         showSubject = false
-        showARPlacement = false
         showRecipes = false
         showRenameLight = false
         confirmRemove = false
         renamingLightID = nil
         renameGeneration = nil
         removalTarget = nil
-        luxTarget = nil
-        referenceContext = nil
-        roomContext = nil
-        arrangementContext = nil
-        arContext = nil
     }
 
     private func replace(_ next: LightingScene) {
-        guard !libraryOperation.isBusy else { return }
-        guard let validated = try? next.validated() else {
-            message = "The proposed setup contains unsupported values. Your current setup has been kept."
-            return
-        }
-        guard validated != scene else { return }
-        remember(scene); scene = validated; repairSelection()
-    }
-    private func repairSelection() {
-        if !scene.lights.contains(where: { $0.id == selected }) { selected = scene.lights.first?.id }
+        session.replace(next, from: session.generation)
     }
     private func undo() {
-        guard !libraryOperation.isBusy, !editHistory.isEditing, planDrag == nil else { return }
-        guard let previous = editHistory.undo(current: scene) else { return }
-        scene = previous; repairSelection()
+        guard planDrag == nil else { return }
+        session.undo(from: session.generation)
     }
     private func redo() {
-        guard !libraryOperation.isBusy, !editHistory.isEditing, planDrag == nil else { return }
-        guard let next = editHistory.redo(current: scene) else { return }
-        scene = next; repairSelection()
+        guard planDrag == nil else { return }
+        session.redo(from: session.generation)
     }
     private func addLight() {
         guard !libraryOperation.isBusy, scene.lights.count < 12 else { return }
@@ -1403,36 +1193,12 @@ struct StudioView: View {
     }
 
     private func dragLight(_ id: UUID, translation: CGSize, scale: Double, generation: UUID) {
-        guard libraryOperation.allowsSceneMutation(from: generation), selected == id,
-              scale.isFinite, scale > 0,
-              translation.width.isFinite, translation.height.isFinite else { return }
-        if planDrag == nil {
-            let owner = editOwner("plan.\(id.uuidString)")
-            planDrag = PlanDrag(lightID: id, generation: generation, scene: scene,
-                                pointsPerMeter: scale, owner: owner)
-            editHistory.begin(scene: scene, owner: owner)
-        }
-        guard let drag = planDrag, drag.lightID == id, drag.generation == generation,
-              let source = drag.scene.lights.first(where: { $0.id == id }),
-              let index = scene.lights.firstIndex(where: { $0.id == id }) else { return }
-        let range = Position.coordinateRange
-        var position = source.position
-        position.x = min(range.upperBound, max(range.lowerBound,
-            source.position.x + Double(translation.width) / drag.pointsPerMeter))
-        position.z = min(range.upperBound, max(range.lowerBound,
-            source.position.z + Double(translation.height) / drag.pointsPerMeter))
-        guard position.isValid else { return }
-        scene.lights[index].position = position
+        session.dragLight(id, translationX: Double(translation.width),
+                          translationZ: Double(translation.height), scale: scale, from: generation)
     }
 
     private func finishPlanDrag(lightID: UUID? = nil, generation: UUID? = nil) {
-        guard let drag = planDrag,
-              lightID == nil || lightID == drag.lightID,
-              generation == nil || generation == drag.generation else { return }
-        if drag.generation == libraryOperation.generation {
-            editHistory.end(scene: scene, owner: drag.owner)
-        }
-        planDrag = nil
+        session.finishPlanDrag(lightID: lightID, generation: generation)
     }
     private func load(from generation: UUID) {
         guard !libraryOperation.isBusy else { return }
@@ -1445,72 +1211,12 @@ struct StudioView: View {
     }
 
     private func applyLibrary(_ command: ProjectLibraryCommand, from generation: UUID) throws -> Task<Void, Error> {
-        guard saved == scene, library != nil else { throw ProjectLibraryError.staleSnapshot }
-        return try beginLibraryOperation(.change(command), from: generation)
+        try session.applyLibrary(command, from: generation)
     }
 
-    /// Reserve on the main actor before launching work. This task belongs to
-    /// Studio, not to a presenting sheet, and is deliberately not cancelled by
-    /// that sheet's observer. A committed receipt must always be reconciled.
     private func beginLibraryOperation(_ operation: ProjectLibraryOperation,
                                        from generation: UUID) throws -> Task<Void, Error> {
-        finishPlanDrag()
-        switch operation {
-        case .load: break
-        default:
-            guard loaded, !saveBlocked else { throw ProjectLibraryError.invalidLibrary }
-        }
-        let request = try libraryOperation.reserve(operation, library: library, scene: scene, from: generation)
-        editHistory.end(scene: scene)
-        return Task { @MainActor in
-            do {
-                let result = try await store.perform(request)
-                // Do not check Task.isCancelled after a potentially committed
-                // operation. Cancellation cannot undo an atomic replacement.
-                guard let adoption = try libraryOperation.adopt(result, for: request,
-                                                                 currentProjectID: library?.activeID,
-                                                                 currentScene: scene) else {
-                    if libraryOperation.finish(request) {
-                        saveConflict = true
-                        message = "An earlier project operation completed after this editor changed. Your current setup has been kept."
-                    }
-                    throw ProjectLibraryOperationState.OperationError.staleEditor
-                }
-                library = adoption.library
-                scene = adoption.scene
-                saved = adoption.saved
-                if libraryOperation.generation != request.generation { dismissSceneEditors() }
-                if adoption.resetsHistory {
-                    editHistory.reset()
-                    selected = scene.lights.first?.id
-                }
-                if adoption.resetsPresentation { mode = "Plan"; showMeter = false }
-                loaded = true; saveBlocked = false; saveConflict = false
-                switch operation {
-                case .load, .change: message = nil
-                case .save: message = "Project saved on this device."
-                case .reload: message = "Latest saved library opened."
-                case .recover: message = "Your setup was saved as a recovery project."
-                }
-            } catch {
-                if libraryOperation.finish(request) {
-                    switch operation {
-                    case .load:
-                        saveBlocked = true; loaded = true
-                        message = "Saved project could not be opened. Saving is disabled to protect existing data."
-                    case .recover:
-                        message = "Could not save a recovery copy. Your edits remain in this window. \(error.localizedDescription)"
-                        if (error as? ProjectLibraryError) == .capacity { showRecoveryCapacity = true }
-                    case .reload:
-                        message = "Could not reload. Your edits remain in this window. \(error.localizedDescription)"
-                    case .save, .change:
-                        if (error as? ProjectLibraryError) == .staleSnapshot { saveConflict = true }
-                        message = "Could not save the project. Your edits remain in this session. \(error.localizedDescription)"
-                    }
-                }
-                throw error
-            }
-        }
+        try session.beginLibraryOperation(operation, from: generation)
     }
 
     private func saveConflictCopy(from generation: UUID) {
@@ -1519,10 +1225,7 @@ struct StudioView: View {
         catch { message = error.localizedDescription }
     }
 
-    private var recoveryProjectName: String {
-        let suffix = " recovery"
-        return StudioDisplayName.display(projectName, maximumCharacters: ProjectLibrary.maximumNameLength - suffix.count) + suffix
-    }
+    private var recoveryProjectName: String { session.recoveryProjectName }
 
     private func reloadAfterConflict(from generation: UUID) {
         guard saveConflict, loaded, !saveBlocked else { return }

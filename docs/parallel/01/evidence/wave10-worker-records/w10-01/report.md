@@ -1,0 +1,9 @@
+# W10-01 — acceptance and scheduler
+
+Created exactly nine fresh `fork_turns:none` peers. Their returned IDs plus this scheduler reconcile with the prior 90 to exactly 100 created contexts. No extra/nested contexts or followup credit; actual creation order is recorded.
+
+Accepted layout commit `7cfab9d`, native regression `61183b6`, and owner-request document `2dee46d`. Published code `ce9f7aabd2de935c933468a00f007604ed7ea6ca` has one stable header/action subtree, outer-only accessibility forcing, preserved inner width fitting and unchanged export-owner bytes. The authored regression checks three real child State identities and live geometry across eight phases. This establishes no historical export-failure cause or runtime fix.
+
+Independently verified all 183 selected manifest hashes against Git, 182 checked-out inputs, and the sparse privacy file from Git. Exact-source root logs reconcile 433 normal Debug and 433 explicit per-file Release starts/passes, with no failures/skips; 86 native files parse. Final ce9 CI core 140083931415 independently passes 433 standard Debug and 433 standard Release on Swift 6.4.2. These are not Apple SDK/runtime results. Four added native methods remain unexecuted. Queue-turn settling can theoretically false-fail; actual sheets, RTL, targets, VoiceOver and viewport visibility remain unverified.
+
+All 90 prior report hashes were verified. Exact W10 briefs/reports/receipts/patches, preserved commits and clean-tree removal records accompany the ledger; completed entries are hash-checked. Three Void producers still need owner acceptance APIs. Lane 19 owns native/CI and final-drag Meter investigation; lane 20 preserves the later CGFloat correction and canonical acceptance. Root owns final docs-only publication and remote verification. No scheduler builds or pushes ran.

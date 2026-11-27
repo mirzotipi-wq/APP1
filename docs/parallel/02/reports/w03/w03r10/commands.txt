@@ -1,0 +1,19 @@
+Working directory: /tmp/keyfill02-r2-workers/w03r10
+
+git rev-parse HEAD
+# 1b286885cb803ba17e159713651515ab119e17f1
+cat /tmp/keyfill02-r2-snapshots/v1/READY
+# 1b286885cb803ba17e159713651515ab119e17f1
+/tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+# Swift version 6.0.3 (swift-6.0.3-RELEASE)
+# Target: x86_64-unknown-linux-gnu
+python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w03r10 /tmp/keyfill02-r2-workers/w03r10/private-output/probe.swift v1
+python3 /tmp/keyfill02-r2-workers/w03r10/private-output/reference.py
+
+The helper invokes:
+flock /tmp/keyfill02-r2-build.lock /tmp/keyfill02-r2-toolchain/usr/bin/swiftc -I /tmp/keyfill02-r2-snapshots/v1/Modules /tmp/keyfill02-r2-workers/w03r10/private-output/probe.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a -o /tmp/keyfill02-r2-workers/w03r10/private-output/probe
+/tmp/keyfill02-r2-workers/w03r10/private-output/probe
+
+Initial compilation failed on Swift's inference budget for literal scalar expressions.
+Original diagnostics retained in compile-initial.log; the fixture was unchanged.
+No package build was run; only the private probe links the supplied immutable module.

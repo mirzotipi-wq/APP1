@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "production": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+  "documentation_parent": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+  "owner_source_reviewed": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+  "campaign_baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "source_entries": [
+    {
+      "commit": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+      "path": "App/StudioView.swift",
+      "git_blob": "54ad56507484decafb467921dab801e26bfaa6dd",
+      "sha256": "9fe13be92262cdfd853fba4cbf0e9403a30b747a04869af480248eee8826d2a8",
+      "excerpts": [
+        {
+          "first": 482,
+          "last": 513,
+          "text": "482:     private var workspace: some View {\n483:         let generation = libraryOperation.generation\n484:         return VStack(spacing: 10) {\n485:             workspaceHeader\n486:             viewModeChoices\n487:             VStack(spacing: 0) {\n488:                 if mode == \"Plan\" {\n489:                     // The title grows outside the diagram, so larger text\n490:                     // cannot cover equipment or change the world projection.\n491:                     Text(planGridTitle)\n492:                         .font(.caption2.monospaced().weight(.medium))\n493:                         .foregroundStyle(.white)\n494:                         .fixedSize(horizontal: false, vertical: true)\n495:                         .frame(maxWidth: .infinity, alignment: .leading)\n496:                         .padding(10)\n497:                         .background(StudioPalette.planBackground)\n498:                         .allowsHitTesting(false)\n499:                 }\n500:                 ZStack(alignment: .topLeading) {\n501:                     StudioPalette.planBackground\n502:                     if mode == \"Plan\" { plan }\n503:                     else if mode == \"Camera\" { cameraPreview }\n504:                     else if mode == \"Study\" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(generation) }\n505:                     else {\n506:                         RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in\n507:                             guard libraryOperation.allowsSceneMutation(from: generation),\n508:                                   scene.lights.contains(where: { $0.id == id }) else { return }\n509:                             selected = id\n510:                         }\n511:                         .id(generation)\n512:                         .accessibilityLabel(\"Illustrative 3D lighting preview\")\n513:                     }"
+        }
+      ]
+    },
+    {
+      "commit": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+      "path": "App/ProjectLibraryOperation.swift",
+      "git_blob": "79dfd4fe8672bb2817392c2a2dfd549846688510",
+      "sha256": "0c4bff3e4d29c585bc0cd342440a5d7e3ec43fd4bc32eeec457533a87b35c413",
+      "excerpts": [
+        {
+          "first": 77,
+          "last": 83,
+          "text": "77:     private(set) var generation = UUID()\n78:     private(set) var pending: ProjectLibraryRequest?\n79:     var isBusy: Bool { pending != nil }\n80: \n81:     func allowsSceneMutation(from capturedGeneration: UUID) -> Bool {\n82:         !isBusy && generation == capturedGeneration\n83:     }"
+        },
+        {
+          "first": 103,
+          "last": 136,
+          "text": "103:     mutating func adopt(_ result: ProjectLibrary?, for request: ProjectLibraryRequest,\n104:                         currentProjectID: UUID?, currentScene: LightingScene) throws -> ProjectLibraryAdoption? {\n105:         guard pending?.id == request.id, generation == request.generation,\n106:               currentProjectID == request.projectID else { return nil }\n107: \n108:         let adoption: ProjectLibraryAdoption\n109:         switch request.operation {\n110:         case .load:\n111:             let active = result?.activeProject\n112:             if result != nil && active == nil { throw ProjectLibraryError.invalidLibrary }\n113:             adoption = .init(library: result, scene: active?.scene ?? request.scene, saved: active?.scene,\n114:                              resetsHistory: true, resetsPresentation: false)\n115:         case .save:\n116:             guard let active = result?.activeProject else { throw ProjectLibraryError.invalidLibrary }\n117:             // Even if a future caller allows edits during save, never mark its\n118:             // newer current scene as written or replace it with the old scene.\n119:             adoption = .init(library: result, scene: currentScene, saved: active.scene,\n120:                              resetsHistory: false, resetsPresentation: false)\n121:         case .change:\n122:             guard let active = result?.activeProject else { throw ProjectLibraryError.invalidLibrary }\n123:             let switching = active.id != request.projectID\n124:             adoption = .init(library: result, scene: switching ? active.scene : currentScene,\n125:                              saved: active.scene, resetsHistory: switching, resetsPresentation: switching)\n126:         case .reload, .recover:\n127:             guard let active = result?.activeProject else { throw ProjectLibraryError.invalidLibrary }\n128:             adoption = .init(library: result, scene: active.scene, saved: active.scene,\n129:                              resetsHistory: true, resetsPresentation: true)\n130:         }\n131:         // First save changes draft identity, but deliberately keeps history,\n132:         // selection and mode. Reloading the same ID still invalidates old views.\n133:         if adoption.resetsHistory || result?.activeID != request.projectID { generation = UUID() }\n134:         finish(request)\n135:         return adoption\n136:     }"
+        }
+      ]
+    },
+    {
+      "commit": "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a",
+      "path": "App/KeyAndFillApp.swift",
+      "git_blob": "cc2a16ba3aa26976fd54a8a85167921eadcaf1d1",
+      "sha256": "40638244f7f65ac622c891ea4e3d2462679975a8f314981d685d64d0d0c61a4e",
+      "excerpts": [
+        {
+          "first": 13,
+          "last": 18,
+          "text": "13:     var body: some Scene {\n14:         WindowGroup {\n15:             StudioView()\n16:                 .environmentObject(entitlements)\n17:                 .preferredColorScheme(appearance == \"dark\" ? .dark : appearance == \"light\" ? .light : nil)\n18:         }"
+        }
+      ]
+    },
+    {
+      "commit": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+      "path": "App/StudioView.swift",
+      "git_blob": "32f2aa6f7db8d876e1b25e9cfe8303f74a303195",
+      "sha256": "cee52460ed41cdd54ab39ba333872ffcc7966622cf9ca92db6c4c5b40174a777",
+      "excerpts": [
+        {
+          "first": 37,
+          "last": 46,
+          "text": "37:     // Read-through projections, never independently stored copies of the editor.\n38:     private var scene: LightingScene { session.scene }\n39:     private var selected: UUID? {\n40:         get { session.selection }\n41:         nonmutating set { session.select(newValue, from: session.generation) }\n42:     }\n43:     private var library: ProjectLibrary? { session.library }\n44:     private var saved: LightingScene? { session.saved }\n45:     private var editHistory: SceneEditHistory { session.history }\n46:     private var libraryOperation: ProjectLibraryOperationState { session.libraryOperation }"
+        },
+        {
+          "first": 414,
+          "last": 443,
+          "text": "414:     private var workspace: some View {\n415:         let generation = libraryOperation.generation\n416:         return VStack(spacing: 10) {\n417:             workspaceHeader\n418:             viewModeChoices\n419:             VStack(spacing: 0) {\n420:                 if mode == \"Plan\" {\n421:                     // The title grows outside the diagram, so larger text\n422:                     // cannot cover equipment or change the world projection.\n423:                     Text(planGridTitle)\n424:                         .font(.caption2.monospaced().weight(.medium))\n425:                         .foregroundStyle(.white)\n426:                         .fixedSize(horizontal: false, vertical: true)\n427:                         .frame(maxWidth: .infinity, alignment: .leading)\n428:                         .padding(10)\n429:                         .background(StudioPalette.planBackground)\n430:                         .allowsHitTesting(false)\n431:                 }\n432:                 ZStack(alignment: .topLeading) {\n433:                     StudioPalette.planBackground\n434:                     if mode == \"Plan\" { plan }\n435:                     else if mode == \"Camera\" { cameraPreview }\n436:                     else if mode == \"Study\" { ReferenceStudyPreview(scene: scene, subject: studySubject).id(session.workspaceResetID) }\n437:                     else {\n438:                         RealityStudioPreview(scene: scene, selected: selected, fitRequest: orbitFitRequest) { id in\n439:                             guard libraryOperation.allowsSceneMutation(from: generation),\n440:                                   scene.lights.contains(where: { $0.id == id }) else { return }\n441:                             selected = id\n442:                         }\n443:                         .id(session.workspaceResetID)"
+        }
+      ]
+    },
+    {
+      "commit": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+      "path": "App/StudioSession.swift",
+      "git_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4",
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+      "excerpts": [
+        {
+          "first": 26,
+          "last": 34,
+          "text": "26:     private(set) var editor: StudioEditorState\n27:     private(set) var library: ProjectLibrary?\n28:     private(set) var saved: LightingScene?\n29:     private(set) var libraryOperation = ProjectLibraryOperationState()\n30:     private(set) var loaded = false\n31:     private(set) var saveBlocked = false\n32:     private(set) var saveConflict = false\n33:     private(set) var workspaceResetID = UUID()\n34:     private(set) var planDrag: PlanDrag?"
+        },
+        {
+          "first": 59,
+          "last": 76,
+          "text": "59:     var scene: LightingScene { editor.scene }\n60:     var selection: UUID? { editor.selection }\n61:     var history: SceneEditHistory { editor.history }\n62:     var generation: UUID { libraryOperation.generation }\n63:     var revision: UUID { editor.revision }\n64:     var isBusy: Bool { libraryOperation.isBusy }\n65:     var projectName: String { library?.activeProject?.name ?? \"Portrait setup\" }\n66: \n67:     func allowsMutation(from generation: UUID) -> Bool {\n68:         loaded && !saveBlocked && libraryOperation.allowsSceneMutation(from: generation)\n69:     }\n70: \n71:     @discardableResult\n72:     func select(_ id: UUID?, from generation: UUID) -> Bool {\n73:         guard allowsMutation(from: generation) else { return false }\n74:         let changed = editor.select(id)\n75:         if changed { planDrag = nil }\n76:         return changed"
+        },
+        {
+          "first": 308,
+          "last": 343,
+          "text": "308:             do {\n309:                 let result = try await execute(request)\n310:                 // Cancellation cannot undo a committed write. Its receipt must\n311:                 // still settle the reservation and leave any newer edits dirty.\n312:                 var nextOperation = libraryOperation\n313:                 guard let adoption = try nextOperation.adopt(result, for: request,\n314:                                                              currentProjectID: library?.activeID,\n315:                                                              currentScene: scene) else {\n316:                     if libraryOperation.finish(request) {\n317:                         saveConflict = true\n318:                         message = \"An earlier project operation completed after this editor changed. Your current setup has been kept.\"\n319:                     }\n320:                     throw ProjectLibraryOperationState.OperationError.staleEditor\n321:                 }\n322:                 // Validate a complete prospective adoption before publishing any\n323:                 // of its scene/history/library/generation state to observers.\n324:                 var nextEditor = editor\n325:                 try nextEditor.adopt(adoption.scene, resettingHistory: adoption.resetsHistory)\n326:                 let nextSaved = try adoption.saved?.validated()\n327:                 libraryOperation = nextOperation\n328:                 editor = nextEditor\n329:                 library = adoption.library\n330:                 saved = nextSaved\n331:                 if adoption.resetsPresentation {\n332:                     workspaceResetID = UUID()\n333:                     feature = nil\n334:                 }\n335:                 loaded = true\n336:                 saveBlocked = false\n337:                 saveConflict = false\n338:                 switch operation {\n339:                 case .load, .change: message = nil\n340:                 case .save: message = \"Project saved on this device.\"\n341:                 case .reload: message = \"Latest saved library opened.\"\n342:                 case .recover: message = \"Your setup was saved as a recovery project.\"\n343:                 }"
+        }
+      ]
+    },
+    {
+      "commit": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+      "path": "NativeTests/StudioSessionTests.swift",
+      "git_blob": "21be02ca1a80d33d4013c12f61d6d188a0efe07a",
+      "sha256": "f71d17ab8e7e9dd2ebfa7e20c87a395124ac8aa88910ef96c784b0be3dcb57bc",
+      "excerpts": [
+        {
+          "first": 132,
+          "last": 157,
+          "text": "132:     func testFirstSaveKeepsSelectionAndHistoryAndReleasesTask() async throws {\n133:         let base = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)\n134:         defer { try? FileManager.default.removeItem(at: base) }\n135:         let session = StudioSession(store: ProjectStore(applicationSupportDirectory: base, arguments: [], environment: [:]))\n136:         try await open(session)\n137:         let original = session.scene\n138:         session.select(original.lights[2].id, from: session.generation)\n139:         var edited = original\n140:         edited.lights[0].candela = 1500\n141:         session.replace(edited, from: session.generation)\n142:         let reset = session.workspaceResetID\n143:         let controlOwner = session.editOwner(\"camera.position\")\n144:         let generation = session.generation\n145:         try await session.beginLibraryOperation(.save, from: generation).value\n146:         XCTAssertEqual(session.saved, edited)\n147:         XCTAssertEqual(session.selection, original.lights[2].id)\n148:         XCTAssertNotEqual(session.generation, generation)\n149:         XCTAssertEqual(session.workspaceResetID, reset)\n150:         XCTAssertEqual(session.editOwner(\"camera.position\"), controlOwner)\n151:         XCTAssertNil(session.operationTask)\n152:         XCTAssertFalse(session.isBusy)\n153:         XCTAssertTrue(session.undo(from: session.generation))\n154:         XCTAssertEqual(session.scene, original)\n155:         XCTAssertEqual(session.editOwner(\"camera.position\"), controlOwner)\n156:         XCTAssertNotEqual(session.saved, session.scene)\n157:     }"
+        },
+        {
+          "first": 344,
+          "last": 369,
+          "text": "344:     func testProjectSwitchResetsHistoryAndPresentationButMetadataDoesNot() async throws {\n345:         let base = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)\n346:         defer { try? FileManager.default.removeItem(at: base) }\n347:         let session = StudioSession(store: ProjectStore(applicationSupportDirectory: base, arguments: [], environment: [:]))\n348:         try await open(session)\n349:         var changed = session.scene\n350:         changed.camera.x = 1\n351:         session.replace(changed, from: session.generation)\n352:         try await session.beginLibraryOperation(.save, from: session.generation).value\n353:         let generation = session.generation\n354:         let reset = session.workspaceResetID\n355:         let controlOwner = session.editOwner(\"camera.position\")\n356:         let id = try XCTUnwrap(session.library?.activeID)\n357:         try await session.applyLibrary(.rename(id, name: \"Renamed\"), from: generation).value\n358:         XCTAssertEqual(session.generation, generation)\n359:         XCTAssertEqual(session.workspaceResetID, reset)\n360:         XCTAssertEqual(session.editOwner(\"camera.position\"), controlOwner)\n361:         XCTAssertTrue(session.history.canUndo)\n362:         try await session.applyLibrary(.create(name: \"Next\", scene: .portrait()), from: generation).value\n363:         XCTAssertNotEqual(session.generation, generation)\n364:         XCTAssertNotEqual(session.workspaceResetID, reset)\n365:         XCTAssertNotEqual(session.editOwner(\"camera.position\"), controlOwner)\n366:         XCTAssertFalse(session.history.canUndo)\n367:         XCTAssertEqual(session.selection, session.scene.lights.first?.id)\n368:         XCTAssertEqual(session.saved, session.scene)\n369:     }"
+        }
+      ]
+    }
+  ],
+  "documents_read": [
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "AGENTS.md",
+      "sha256": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "sha256": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "agents/HANDOFF.md",
+      "sha256": "49e29e071dc359cb6b06c10533a582afa45cbccddd4ccf080873fdfcb85ad597"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "agents/state.json",
+      "sha256": "cf07c191f4b2e80966ee3600aed9bcb13778b6ff286aee85546adba9e9d26312"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/PRODUCT.md",
+      "sha256": "1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/ROADMAP.md",
+      "sha256": "038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/QUALITY.md",
+      "sha256": "af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/DESIGN.md",
+      "sha256": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/acceptance/m02-m03-code.md",
+      "sha256": "829fb77720eca498dcefdb8945b62383e9d7e748cf54fa86b7b53c55d0573ba4"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/parallel/05/HANDOFF.md",
+      "sha256": "fe1f47680b6c956e36fe489a43aa822c23478b0a315ded59b42141ad99c751db"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/parallel/05/OWNER_REQUESTS.md",
+      "sha256": "27b13ef71da88138a49b15009ed8f372117a0d079844900002e04c8c14ddba37"
+    },
+    {
+      "commit": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+      "path": "docs/parallel/05/workers/w09/interfaces/report.md",
+      "sha256": "eb098dff41ee1514973ad3a25e408ed8765b8a35aeab5d8bed60f03391b4ea2d"
+    },
+    {
+      "commit": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+      "path": "docs/parallel/01/HANDOFF.md",
+      "sha256": "85d61f6bd4404ca3daa107ef0311c2ae8120cca7c3a724405b5ac9079f25fba6",
+      "native_retention_limit": "Native first-save viewport retention still needs runtime verification."
+    }
+  ],
+  "production_session_absence": {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a:App/StudioSession.swift"
+    ],
+    "exit_code": 128,
+    "stderr": "fatal: path 'App/StudioSession.swift' does not exist in '60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a'\n"
+  },
+  "initial_checkout_observation": {
+    "branch": "finish/05-spatial-viewports",
+    "HEAD": "1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a",
+    "status_short": "?? docs/parallel/05/validation/ui-studio-export-60059a0.log\n",
+    "disposition": "Existing untracked root artifact was neither read nor modified."
+  },
+  "executed": "Read-only git show/rev-parse/status/log/cat-file/ls-tree, text filtering, GitHub reads, Python evidence serialization and SHA256 hashing; no tests/build/install/native execution/ref updates.",
+  "acceptance": "Owner source implementation exists at the inspected pin; frozen lane05 caller remains .id(generation). No integrated/native retention acceptance.",
+  "historical_limits": {
+    "current_native_inventory": "185 native / 39 spatial at 60059a0; not a pass claimed by this reviewer",
+    "preceding_native_pass": "184 native / 38 spatial at 4e694bc377c4825d1d2dd52fcd7900e534c75072, from pinned HANDOFF; not transferred",
+    "pending_cutoffs": "Pinned documentation pending-at-cutoff evidence preserved; no fresh CI data polled",
+    "executor_outages": 4,
+    "wave01_recovery": "summary-only; original full reports lost before publication",
+    "not_claimed": [
+      "deallocation",
+      "renderer-thread atomicity",
+      "FPS",
+      "device behavior",
+      "manual accessibility acceptance"
+    ]
+  }
+}

@@ -1,0 +1,495 @@
+{
+  "worker": "w08-03",
+  "context": 74,
+  "role": "API/configuration reviewer",
+  "recorded_utc": "2026-11-26T16:24:27.912755+00:00",
+  "base": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "native_source": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+  "root_evidence_source": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+  "branch": "",
+  "initial_status": "",
+  "final_status": "",
+  "source_patch_bytes": 0,
+  "builds": 0,
+  "worker_tests": 0,
+  "commits": [],
+  "report_limits": {
+    "words": 204,
+    "characters": 1599,
+    "estimated_tokens_chars_div4": 400
+  },
+  "startup": {
+    "read": [
+      "AGENTS.md",
+      "agents/OPERATING_PROTOCOL.md",
+      "agents/state.json",
+      "agents/HANDOFF.md current sections",
+      "docs/PRODUCT.md",
+      "docs/ARCHITECTURE.md",
+      "docs/ROADMAP.md",
+      "docs/QUALITY.md",
+      "docs/DESIGN.md",
+      "docs/parallel/01/COORDINATOR.md",
+      "docs/parallel/01/HANDOFF.md",
+      "docs/parallel/01/INTERFACES.md",
+      "docs/parallel/01/NAVIGATION.md"
+    ],
+    "commands": [
+      {
+        "argv": [
+          "python3",
+          "scripts/agent_cycle.py",
+          "check"
+        ],
+        "exit_code": 0,
+        "result": "State references valid only."
+      },
+      {
+        "argv": [
+          "python3",
+          "scripts/agent_cycle.py",
+          "next"
+        ],
+        "exit_code": 0,
+        "result": "M03 active: editing, accessibility, persistence."
+      },
+      {
+        "command": "git status --short; git rev-parse HEAD; git log -5 --oneline",
+        "exit_code": 0
+      }
+    ],
+    "read_command_outcomes": "Source/doc cat, sed, rg, git diff/show and Python bounded log parsers completed. Initial CONFIGURATION.md lookup exit2 corrected to docs/parallel/01/CONFIGURATION.md. Missing assumed StudioFeaturePresentationHost.swift corrected to StudioFeatureSheets.swift; wave07 read from root because sparse tree omits it. Initial receipt script exit1 used stripped git-show output in byte comparison; no artifacts written; corrected raw-byte comparison passes."
+  },
+  "manifest_signatures": [
+    "// swift-tools-version: 5.9",
+    "platforms: [.iOS(.v17), .macOS(.v14)]",
+    "products: [.library(name: \"LightingCore\", targets: [\"LightingCore\"]) ]"
+  ],
+  "api_baseline_diff": "A\tSources/LightingCore/StudioEditorState.swift\nA\tSources/LightingCore/StudioFeatureContext.swift\nA\tSources/LightingCore/StudioFeaturePresentation.swift\nA\tSources/LightingCore/StudioFieldCommand.swift\n",
+  "api_finding": "All four changed core paths are additions; preexisting core files and project.yml unchanged vs f150f98. Product unchanged; API surface additive. No binary ABI or Swift5.9 compiler verification.",
+  "composition_sources": [
+    "App/ProjectLibraryOperation.swift",
+    "App/ProjectStore.swift",
+    "App/StudioSession.swift"
+  ],
+  "native_boundary": "project.yml includes App directly; depends on package product LightingCore only. StudioComposition is not exported. Native app imports LightingCore, never StudioComposition.",
+  "test_switch": "#if canImport(KeyAndFill)\n@testable import KeyAndFill\n#else\n@testable import StudioComposition\n#endif",
+  "shared_test_count": 4,
+  "conditional_path": "StudioSession.swift lines2,10,43,47 use canImport(Darwin) for import Observation, @Observable and two @ObservationIgnored. @MainActor unconditional. Linux does not execute/typecheck native Observation path.",
+  "native_language_mode": "SWIFT_VERSION: \"5.0\" for all three native targets; distinct from compiler/tools versions.",
+  "exact_source_signatures": [
+    "actor ProjectStore",
+    "func perform(_ request: ProjectLibraryRequest) throws -> ProjectLibrary?",
+    "final class StudioSession",
+    "typealias Executor = @Sendable (ProjectLibraryRequest) async throws -> ProjectLibrary?",
+    "func applyFeatureScene(_ next: LightingScene, from context: StudioFeatureContext) -> Bool",
+    "func applyFeatureLight(_ adjusted: StudioLight, from context: StudioFeatureContext) -> Bool",
+    "func applyFeatureRoom(_ room: ManualRoom?, from context: StudioFeatureContext) -> Bool"
+  ],
+  "literal_correction": {
+    "commit": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+    "only_difference": "0.05.nextDown -> Double(0.05).nextDown",
+    "full_file_difference_verified": true,
+    "current_test_identical": true,
+    "semantics": "Explicit Double receiver preserves predecessor boundary; no production signature changes.",
+    "prior_failure": "wave07/ci-139986642720.log: Swift6.4.2 expected named member of numeric literal at line72. Retained failure.",
+    "corrected_ci_source": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+    "corrected_ci_log_sha256": "00323fc554ab439fd44077bbd8535368b39fce4181080383d67a243c41af93aa",
+    "compiler_and_method_events": [
+      {
+        "line": 132,
+        "text": "2026-11-26T15:39:11.6332617Z Swift version 6.4.2 (swift-6.4.2-RELEASE)"
+      },
+      {
+        "line": 1062,
+        "text": "2026-11-26T15:40:07.7400345Z Test Case 'StudioFieldCommandTests.testCompleteOpticsPayloadMatchesFullSceneValidation' started at 2026-11-26 15:40:07.730"
+      },
+      {
+        "line": 1063,
+        "text": "2026-11-26T15:40:07.7401303Z Test Case 'StudioFieldCommandTests.testCompleteOpticsPayloadMatchesFullSceneValidation' passed (0.0 seconds)"
+      },
+      {
+        "line": 2168,
+        "text": "2026-11-26T15:40:45.5180707Z Test Case 'StudioFieldCommandTests.testCompleteOpticsPayloadMatchesFullSceneValidation' started at 2026-11-26 15:40:45.510"
+      },
+      {
+        "line": 2169,
+        "text": "2026-11-26T15:40:45.5181294Z Test Case 'StudioFieldCommandTests.testCompleteOpticsPayloadMatchesFullSceneValidation' passed (0.0 seconds)"
+      },
+      {
+        "line": 2435,
+        "text": "2026-11-26T15:40:45.7722643Z Swift version 6.4.2 (swift-6.4.2-RELEASE)"
+      }
+    ],
+    "scope": "Exact method start/pass twice in retained Swift6.4.2 log; broad suite accounting delegated to wave8 evidence reviewers."
+  },
+  "root_receipts_read": {
+    "debug": {
+      "source": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+        "test",
+        "--configuration",
+        "debug",
+        "--scratch-path",
+        "/tmp/keyfill01-build-v8-debug",
+        "--cache-path",
+        "/tmp/keyfill01-cache-v8",
+        "--jobs",
+        "1",
+        "-Xswiftc",
+        "-disable-batch-mode"
+      ],
+      "exit_code": 0,
+      "log_sha256": "3abf5af90d8eb280d4cb0acea6ec125bfa466a3d23bf200860b8b3c8f29dc566",
+      "matches_receipt_hash": true
+    },
+    "release": {
+      "source": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+        "test",
+        "--configuration",
+        "release",
+        "--scratch-path",
+        "/tmp/keyfill01-build-v8-release",
+        "--cache-path",
+        "/tmp/keyfill01-cache-v8",
+        "--jobs",
+        "1",
+        "-Xswiftc",
+        "-disable-batch-mode"
+      ],
+      "exit_code": 1,
+      "log_sha256": "dd26185e7d2e96cd226e491c85041bfd1bd237c6a25e24e54f3b5cf6e7d73814",
+      "matches_receipt_hash": true
+    },
+    "release-per-file": {
+      "source": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+      "command": [
+        "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+        "test",
+        "--configuration",
+        "release",
+        "--scratch-path",
+        "/tmp/keyfill01-build-v8-release-per-file",
+        "--cache-path",
+        "/tmp/keyfill01-cache-v8",
+        "--jobs",
+        "1",
+        "-Xswiftc",
+        "-disable-batch-mode",
+        "-Xswiftc",
+        "-no-whole-module-optimization"
+      ],
+      "exit_code": 0,
+      "log_sha256": "123c5526549e0e3c71d9151dcbe25740b6d7dfa5de4db6028e4be2e279ae8b83",
+      "matches_receipt_hash": true
+    }
+  },
+  "root_results": "Debug431/0; per-file Release431/0 with -no-whole-module-optimization. Default Release exit1 SIG9 before tests, cause unproven. No worker execution or default-WMO success inferred.",
+  "configuration_document_sha256": "f0fd2ade8ff75d6f1ae179e233786dd6612f14481717a59457cb06071c8348b7",
+  "unresolved_void_interfaces": [
+    "ReferenceComparisonView: let onApply: (LightingScene) -> Void; closeSession before callback.",
+    "SceneArrangementView: let onApply: (LightingScene) -> Void; didFinish before callback, dismiss after.",
+    "LightTargetLuxView: let onApply: (StudioLight) -> Void; didApply before callback, dismiss after."
+  ],
+  "limits": [
+    "XcodeGen generation, Apple typecheck and native/UI execution UNVERIFIED.",
+    "Swift5.9 compiler compatibility is declared, not empirically tested here.",
+    "Package/source review is not full native resource or CI dependency closure.",
+    "No physical-device, commerce, accessibility, Observation lifecycle or release-readiness claim."
+  ],
+  "hashes": [
+    {
+      "path": "Package.swift",
+      "git_blob": "8d52ab9da2fdcf986d1035a271029078752aae8c",
+      "sha256": "2f0af38da3e97072cbb127d93d7da3afb925eb71ddbac02263013e2f1d344caf"
+    },
+    {
+      "path": "project.yml",
+      "git_blob": "056e9d4159ca0273f812728381723b60a253000f",
+      "sha256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+    },
+    {
+      "path": "App/ProjectLibraryOperation.swift",
+      "git_blob": "79dfd4fe8672bb2817392c2a2dfd549846688510",
+      "sha256": "0c4bff3e4d29c585bc0cd342440a5d7e3ec43fd4bc32eeec457533a87b35c413"
+    },
+    {
+      "path": "App/ProjectStore.swift",
+      "git_blob": "531f967fe2f532b7f68f728bcda677c75d8c0253",
+      "sha256": "404db2197b3f4f9fa45865ed915cae8bd1c255338edb1d8b834753022e3852aa"
+    },
+    {
+      "path": "App/StudioSession.swift",
+      "git_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4",
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f"
+    },
+    {
+      "path": "App/StudioFeatureSheets.swift",
+      "git_blob": "1ce678d9009b74ed74d2893522cd6828ec4be74c",
+      "sha256": "8ecbb8802dac256917bae9e779ac7b579c8789e408dfd72be1f8abb378b06e37"
+    },
+    {
+      "path": "NativeTests/StudioSessionTests.swift",
+      "git_blob": "21be02ca1a80d33d4013c12f61d6d188a0efe07a",
+      "sha256": "f71d17ab8e7e9dd2ebfa7e20c87a395124ac8aa88910ef96c784b0be3dcb57bc"
+    },
+    {
+      "path": "NativeTests/StudioPlanSessionTests.swift",
+      "git_blob": "adc9e77205d9142f12d6e93a357ec7de61732356",
+      "sha256": "817b934859c173ee96fa40ac374c0047636f0460bf0ca9085cb568d6f2aa6e3d"
+    },
+    {
+      "path": "NativeTests/StudioFeatureSessionTests.swift",
+      "git_blob": "f5a2a5184333ba42df2fc79154ead9935df8813e",
+      "sha256": "3d3f9d61d97b6ad60a0941b26510c5bda72f61fcb5690dcc7c32fbca0b1cad9e"
+    },
+    {
+      "path": "NativeTests/StudioFeatureWindowTests.swift",
+      "git_blob": "dfe74fd9add2aa9032d99870607b7feaa97cef97",
+      "sha256": "6cb5cf2b8aef13286b81fad48f6c8c4e596a4d3923f79f88008efa2240b896fb"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudioFieldCommandTests.swift",
+      "git_blob": "e3b302e3a9f858856dadcc24e50bbb212f6fcdaa",
+      "sha256": "048db29957e2921cec29f2eea8ccd475169ef4259f7400226c2da44a47aef17e"
+    },
+    {
+      "path": "Sources/LightingCore/StudioEditorState.swift",
+      "git_blob": "76c9f3c70b77ffebd35ff9619a58c89a03060ebf",
+      "sha256": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668"
+    },
+    {
+      "path": "Sources/LightingCore/StudioFeatureContext.swift",
+      "git_blob": "7ed2b7906a9621a6f5d3bee377324ce3a8e28388",
+      "sha256": "d41a1a24be70ca09ce51c2f97f5ec47cea480d58a10ab88ef40b121c65358704"
+    },
+    {
+      "path": "Sources/LightingCore/StudioFeaturePresentation.swift",
+      "git_blob": "94ad1b901ad0cf3e34fb3c19f0512297fad32545",
+      "sha256": "220a85ac575460d54e0a39c5a9ada9f894556b849018ee5e21a2099cf6a472f0"
+    },
+    {
+      "path": "Sources/LightingCore/StudioFieldCommand.swift",
+      "git_blob": "5bc149e520b46ca4c13f93c75ab5f71bc5a32456",
+      "sha256": "f130b2819e6e29beb83c0222da72eab9f0237131c90a33c6f07d9297beefc1ac"
+    },
+    {
+      "path": "App/ReferenceComparisonView.swift",
+      "git_blob": "fad8232524c74c4cf06e0f2ff132e7f678f2c430",
+      "sha256": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb"
+    },
+    {
+      "path": "App/SceneArrangementView.swift",
+      "git_blob": "242c237525abee61e4ef5cc0cb2c885611f26785",
+      "sha256": "40b0018689e309368e37d2defac0271f6e96d8913a688bf757a0540ebf852bb8"
+    },
+    {
+      "path": "App/LightTargetLuxView.swift",
+      "git_blob": "a77521a39b68c1320f6aa5bff86b0224f987e468",
+      "sha256": "7dc77229e6d7f50c767402dc7289e2e1e48e30ecd4845deb5a5596afa6d3b097"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-status",
+        "f150f98e35dd735927075aac4d2f8b02295c6a67",
+        "HEAD",
+        "--",
+        "Sources/LightingCore",
+        "project.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "5ccfbaa^:Tests/LightingCoreTests/StudioFieldCommandTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "5ccfbaa:Tests/LightingCoreTests/StudioFieldCommandTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:Package.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:project.yml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/ProjectLibraryOperation.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/ProjectStore.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/StudioSession.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/StudioFeatureSheets.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:NativeTests/StudioSessionTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:NativeTests/StudioPlanSessionTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:NativeTests/StudioFeatureSessionTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:NativeTests/StudioFeatureWindowTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:Tests/LightingCoreTests/StudioFieldCommandTests.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:Sources/LightingCore/StudioEditorState.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:Sources/LightingCore/StudioFeatureContext.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:Sources/LightingCore/StudioFeaturePresentation.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:Sources/LightingCore/StudioFieldCommand.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/ReferenceComparisonView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/SceneArrangementView.swift"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD:App/LightTargetLuxView.swift"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "recommendation": "Accept bounded source/API compatibility review; no source patch needed."
+}

@@ -1,0 +1,11 @@
+{
+  "finding": "W100 and root independently identified ignored wave09 camelCase recorded primary hashes and explicit followup path/hash fields. Actual file hashes currently matched; incomplete comparison coverage was corrected before finalization.",
+  "before_script_sha256": "929611972efc0788de41054725a22fe912fdcb68543983d69578d77c54798416",
+  "after_script_sha256": "9cd0a3e228f03b67859938adb520821b6758dc49dbd48b6d50dbac914353c4b1",
+  "changes": [
+    "recorded primary SHA uses pick(report_sha256, reportSHA256)",
+    "followup paths use pick(followup_report, followupReport)",
+    "retained followup SHA uses snake_case/camelCase variants and is compared when present"
+  ],
+  "scope": "Normalizer/evidence only; no original worker report or ledger rewritten, no production/test change."
+}

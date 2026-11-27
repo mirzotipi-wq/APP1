@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "wave": 7,
+  "worker": "061",
+  "agent_id": "/root/w061",
+  "input_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "branch": "finish/04-metal-cache",
+  "campaign_baseline": "f150f98",
+  "decision": {
+    "source_review_complete": true,
+    "required_source_corrections": [],
+    "recommendation": "Integrate frozen candidate and run exact-revision native validation",
+    "new_production_blocker_found": false,
+    "native_candidate_acceptance": "pending; all four additions uncompiled/unrun",
+    "milestone_promotion": false
+  },
+  "candidate": {
+    "path": "NativeTests/StudyRenderCacheTests.swift",
+    "baseline_blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "original_candidate_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "final_candidate_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "amendments": [],
+    "baseline_methods": 25,
+    "final_methods": 29,
+    "added_lines": 208,
+    "all_existing_source_preserved": true,
+    "methods": [
+      "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+    ]
+  },
+  "frozen_contract": {
+    "canonicalFixtures": 6,
+    "meanRGB": 1,
+    "outlierFractionOver4": 0.005,
+    "precisionFixtures": 8,
+    "maxChannelError": 1,
+    "exactInvalidMasks": true,
+    "maxFrames": 4,
+    "maxRGBABytes": 262144,
+    "maxMaskBytes": 65536,
+    "maxBustWidth": 144,
+    "cpuMaxFurtherPixelEvaluations": 8
+  },
+  "state_transition_evidence_blob": "426d14e89723a1b8be4f930650cb4e2b24210405",
+  "preservation_evidence_blob": "0c3f4b1ebccac61250c2a60f23d04412cde179c0",
+  "source_freeze_blob": "f9697f05de37040798e9c6af724e1914ef3d7399",
+  "root_source_review_blob": "8e0a5e19ad0cff66af8feab91a9836b00b7040bc",
+  "independent_final_review": {
+    "worker": "070",
+    "report_blob": "ada5dae06ef2071bc13de4f4b82fda10680b7f76",
+    "evidence_blob": "4dc93ee6d861bf500df46f5a4ff98f2dbc732d89",
+    "source_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "decision": "No required source correction"
+  },
+  "acceptance_findings": [
+    "Factory initializes only for eligible uncached sphere requests; default production initializer constructs real Metal backend",
+    "Observed startup cancellation or final validation cancellation leaves unchecked state and releases candidate; subsequent eligible work retries on same engine",
+    "Confirmed failure selects permanent CPU before subsequent cancellation observation; CPU cache retained and Metal cache purged",
+    "New tests witness all four assigned gaps through distinct keys, exact counts, armed errors and budgeted CPU-cache probes",
+    "Submitted concurrent requests have schedule-independent outcomes; source actor serialization supplies no-suspension guarantee, without forced-overlap stress claim",
+    "Startup deinit and existing runtime weak-reference tests cover concrete object ownership paths; no additional memory test warranted"
+  ],
+  "remaining_limits": [
+    {
+      "kind": "owner_dependency",
+      "owner_lanes": [
+        "03",
+        "20"
+      ],
+      "issue": "UI-held Metal A can bypass engine after B confirmed failure+cancel/downgrade and return to A",
+      "status": "existing source-targeted owner proposal unapplied, uncompiled and unrun",
+      "pixel_corruption_claim": false
+    },
+    {
+      "kind": "injection_contract",
+      "issue": "Arbitrary injected Swift CancellationError reaches catch-all permanent CPU",
+      "production_caller_demonstrated": false,
+      "current_production_error": "StudyError.cancelled"
+    },
+    {
+      "kind": "polling",
+      "issue": "Cancellation observations occur at explicit polls; no atomic guarantee against subsequent external flag changes"
+    },
+    {
+      "kind": "runtime",
+      "issue": "Fresh compilation/native execution of four added methods required"
+    }
+  ],
+  "source_report_refs": [
+    {
+      "worker": "063",
+      "agent_id": "/root/w061/w063",
+      "report_blob": "7a4be58000793e70bb4f091242123fc4824804a0"
+    },
+    {
+      "worker": "064",
+      "agent_id": "/root/w061/w064",
+      "report_blob": "73050a155a63787df89ffe0179bd28b517d49295"
+    },
+    {
+      "worker": "062",
+      "agent_id": "/root/w061/w062",
+      "report_blob": "bd966ddf7cd2b1ddd9833b4d045e7051b861e8e0"
+    },
+    {
+      "worker": "065",
+      "agent_id": "/root/w061/w065",
+      "report_blob": "f8617e14fb137cf4f4ca0c2c05c92d30d2fafc0a"
+    },
+    {
+      "worker": "066",
+      "agent_id": "/root/w061/w066",
+      "report_blob": "f4b24b3de140de6a98b8e2b638e3f4525679bfae"
+    },
+    {
+      "worker": "067",
+      "agent_id": "/root/w061/w067",
+      "report_blob": "4518e3f253695fb1c10c46a2887771cbc2c48003"
+    },
+    {
+      "worker": "068",
+      "agent_id": "/root/w061/w068",
+      "report_blob": "a62bf7325019f8f047a71e7c80a41526763aaf0a"
+    },
+    {
+      "worker": "069",
+      "agent_id": "/root/w061/w069",
+      "report_blob": "2346d2957ddf3b94e24b8640cc6361dce1ee33d0"
+    },
+    {
+      "worker": "070",
+      "agent_id": "/root/w061/w070",
+      "report_blob": "ada5dae06ef2071bc13de4f4b82fda10680b7f76"
+    }
+  ],
+  "ci_receipts": [
+    {
+      "kind": "historical actual simulator Metal",
+      "revision": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "runId": 45837392344,
+      "jobId": 139973865345,
+      "conclusion": "success",
+      "parsedPath": "docs/parallel/04/evidence/ci/wave04-native-139973865345.json",
+      "parsedBlob": "0ebfcebb81be765fc6b55cb5dbe41793fa672aeb",
+      "rawPath": "docs/parallel/04/evidence/ci/wave04-native-139973865345.log",
+      "rawBlob": "a87b4e2c42f5bd753c8312c95f22b6bd302bb78c",
+      "receiptStorageRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "kind": "historical portable core and host shared kernel",
+      "revision": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "runId": 45844671107,
+      "jobId": 139997195555,
+      "conclusion": "success",
+      "parsedPath": "docs/parallel/04/evidence/ci/wave05-core-139997195555.json",
+      "parsedBlob": "24fb408cd76f1bd9b851fa63e152420baaa96d40",
+      "rawPath": "docs/parallel/04/evidence/ci/wave05-core-139997195555.log",
+      "rawBlob": "103b9653ce0762ef6278e2b02605d200e7575b63",
+      "receiptStorageRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f"
+    },
+    {
+      "kind": "historical cancelled native job",
+      "revision": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "runId": 45844671107,
+      "jobId": 139999727724,
+      "jobConclusion": "cancelled",
+      "status": "completed",
+      "startedAt": "2026-11-26T15:08:10Z",
+      "completedAt": "2026-11-26T15:25:30Z",
+      "steps": [],
+      "interpretation": "Superseded native job cancelled; no completed native test pass is claimed. Later exact-source native jobs supply runtime evidence.",
+      "url": "https://github.com/mirzotipi-wq/APP1/actions/runs/45844671107/job/139999727724",
+      "receiptBlob": "33642c10c0387bfa78bcfd0ee578eb845b76c1fc"
+    },
+    {
+      "kind": "current portable core and host shared kernel",
+      "revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "runId": 45848953002,
+      "jobId": 140009926092,
+      "conclusion": "success",
+      "parsedBlob": "8d53d8b3bafdb8a9b5f079a583390be7ee827ae2",
+      "originalRawName": "wave06-core-140009926092.log",
+      "rawBlob": "b99b8d092e34a136b6e00e14e4b8e83b1ecd98e8"
+    }
+  ],
+  "latest_root_reported_native6_status": {
+    "source_sha": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+    "run_id": 45848953002,
+    "core_job_id": 140009926092,
+    "core_status": "success",
+    "core_raw_blob": "b99b8d092e34a136b6e00e14e4b8e83b1ecd98e8",
+    "core_parsed_blob": "8d53d8b3bafdb8a9b5f079a583390be7ee827ae2",
+    "debug_count": 379,
+    "release_count": 379,
+    "native_job_id": 140012314020,
+    "native_status": "in_progress",
+    "scope": "New core lifetime methods executed; native wave6/7 pending",
+    "native_phase": "Debug app/native test bundle and Release simulator builds succeeded; simulator warm-up running; native runtime pending"
+  },
+  "native5_cancelled": {
+    "job_id": 139999727724,
+    "status": "cancelled",
+    "steps": 0,
+    "native_pass_claim": false,
+    "receipt_blob": "33642c10c0387bfa78bcfd0ee578eb845b76c1fc"
+  },
+  "worker_execution": {
+    "executed": [
+      "GitHub immutable file/blob reads and blob creates",
+      "In-memory JavaScript source comparisons and receipt parsing"
+    ],
+    "unavailable_or_unrun": [
+      "local status/branch/HEAD/history",
+      "physical worktree creation",
+      "agent_cycle check/next",
+      "git hash-object",
+      "Swift parse/build/tests",
+      "worker-native/Metal/device execution"
+    ],
+    "probes_or_sdk_installs": false
+  },
+  "coordination": {
+    "distinct_workers": 10,
+    "fresh_children": 9,
+    "lead_counted_once": true,
+    "creation_order": [
+      "061",
+      "063",
+      "064",
+      "062",
+      "065",
+      "066",
+      "067",
+      "068",
+      "069",
+      "070"
+    ],
+    "peak_active_children": 2,
+    "active_children_at_close": 0,
+    "first_children": [
+      "063",
+      "064"
+    ],
+    "last_child": "070",
+    "followup_new_workers": 0
+  },
+  "root_integration_only": true
+}

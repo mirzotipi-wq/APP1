@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "worker": "w07-02",
+  "role": "data/invariants writer",
+  "worktree": "/workspace/scratch/e08d5190f17c/workers/w07-02/tree",
+  "base": "4a2199d78ba52b9174381fdd1736f73e47959252",
+  "commit": "237165afc4a060db8eebd5b8946a2b9a69717c2f",
+  "authorized_scope_change": {
+    "from": "Create only UITests/StudioCompositionNavigationUITests.swift",
+    "to": "Add one test method inside existing UITests/StudioSmokeTests.swift",
+    "authority": "Manager message explicitly conveying root authorization",
+    "reason": "native_test_shards.py rejects unassigned new XCTestCase classes and test-bearing extensions; CI changes remain outside scope."
+  },
+  "changed_files": [
+    "UITests/StudioSmokeTests.swift"
+  ],
+  "test_method": "StudioSmokeTests.testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+  "startup": [
+    {
+      "command": "git status --short && git rev-parse HEAD && git log -5 --oneline",
+      "exit_code": 0,
+      "result": "Clean detached worktree at 4a2199d; recent commits inspected."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "output": "State structure and evidence references valid; this does NOT verify test truth or release readiness.\nM03: Professional editing and project library\nOutstanding gates: editing, accessibility, persistence\nRead agents/HANDOFF.md and docs/QUALITY.md before implementing.\n"
+    },
+    {
+      "result": "Required AGENTS, operating protocol, state, handoff, product, architecture, roadmap, quality, design and lane01 coordinator/interfaces/adapter notes read. Short HANDOFF.md/INTERFACES.md/FEATURE_ADAPTERS.md paths in brief resolved under docs/parallel/01 after initial root-path read failed. Base coordinator notes lag wave6, as manager stated."
+    }
+  ],
+  "checks": [
+    {
+      "command": "git diff --check && git diff --stat && git diff -- UITests/StudioSmokeTests.swift",
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "16b84b",
+        "wall_time_seconds": 4.1793e-05,
+        "exit_code": 0,
+        "original_token_count": 1209,
+        "output": " UITests/StudioSmokeTests.swift | 75 ++++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 75 insertions(+)\ndiff --git a/UITests/StudioSmokeTests.swift b/UITests/StudioSmokeTests.swift\nindex d96f265..9f086fe 100644\n--- a/UITests/StudioSmokeTests.swift\n+++ b/UITests/StudioSmokeTests.swift\n@@ -354,6 +354,81 @@ final class StudioSmokeTests: XCTestCase {\n         XCTAssertFalse(app.buttons[\"saveProject\"].isEnabled)\n     }\n \n+    func testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable() throws {\n+        let app = makeApp(corrupt: true)\n+        app.launchArguments += [\"-AppleLanguages\", \"(en)\", \"-AppleLocale\", \"en_US\"]\n+        app.launch()\n+        defer { app.terminate() }\n+\n+        func assertProtectedStudio(line: UInt = #line) {\n+            // Wait for the completed load failure, not the initially disabled Save.\n+            assertStatus(\"Saved data protected\", in: app, line: line)\n+            XCTAssertEqual(app.staticTexts[\"projectName\"].label, \"Project unavailable\", line: line)\n+            for identifier in [\"saveProject\", \"openProjectLibrary\", \"exportLightingPlan\", \"recipes\"] {\n+                let control = app.buttons[identifier]\n+                XCTAssertTrue(control.waitForExistence(timeout: 10),\n+                              \"Protected storage must retain the \\(identifier) control\", line: line)\n+                XCTAssertFalse(control.isEnabled,\n+                               \"Utility navigation must not enable \\(identifier)\", line: line)\n+            }\n+            XCTAssertFalse(app.buttons[\"addLightShortcut\"].exists,\n+                           \"Protected storage must not expose the scene editor\", line: line)\n+            XCTAssertFalse(app.buttons[\"openReference\"].exists,\n+                           \"Protected storage must not expose reference application\", line: line)\n+        }\n+\n+        assertProtectedStudio()\n+        let tools = app.buttons[\"studioTools\"]\n+        waitForEnabledStudioControl(tools)\n+        revealStudioContent(tools, in: app, towardBottom: false)\n+        tools.tap()\n+        for label in [\"Subject position\", \"Arrange setup\", \"Place in AR\"] {\n+            let action = app.buttons[label]\n+            XCTAssertTrue(action.waitForExistence(timeout: 10), \"The Tools menu must retain \\(label)\")\n+            XCTAssertFalse(action.isEnabled, \"Protected storage must still block \\(label)\")\n+        }\n+        let settings = app.buttons[\"Settings\"]\n+        waitForEnabledStudioControl(settings)\n+        settings.tap()\n+        let settingsNavigation = app.navigationBars[\"Settings\"]\n+        XCTAssertTrue(settingsNavigation.waitForExistence(timeout: 10))\n+        XCTAssertTrue(app.buttons[\"distanceUnits\"].waitForExistence(timeout: 10))\n+        let purchaseOptions = app.buttons[\"openPurchaseOptions\"]\n+        waitForEnabledStudioControl(purchaseOptions)\n+        revealStudioContent(purchaseOptions, in: app)\n+        purchaseOptions.tap()\n+\n+        let closePro = app.buttons[\"closeProFeatures\"]\n+        waitForEnabledStudioControl(closePro)\n+        XCTAssertTrue(app.navigationBars[\"Pro\"].exists, \"Purchase options must present the actual Pro screen\")\n+        // Exercise navigation only; never invoke purchase, restore, or refresh.\n+        closePro.tap()\n+        let proDismissed = XCTNSPredicateExpectation(\n+            predicate: NSPredicate(format: \"exists == false\"), object: closePro)\n+        XCTAssertEqual(XCTWaiter.wait(for: [proDismissed], timeout: 10), .completed)\n+        let settingsDone = settingsNavigation.buttons[\"Done\"]\n+        let settingsReturned = XCTNSPredicateExpectation(\n+            predicate: NSPredicate(format: \"exists == true AND enabled == true AND hittable == true\"),\n+            object: settingsDone)\n+        XCTAssertEqual(XCTWaiter.wait(for: [settingsReturned], timeout: 10), .completed,\n+                       \"Closing Pro must return to the existing Settings sheet\")\n+        XCTAssertTrue(purchaseOptions.exists)\n+        settingsDone.tap()\n+        let settingsDismissed = XCTNSPredicateExpectation(\n+            predicate: NSPredicate(format: \"exists == false\"), object: settingsNavigation)\n+        XCTAssertEqual(XCTWaiter.wait(for: [settingsDismissed], timeout: 10), .completed)\n+        assertProtectedStudio()\n+        waitForEnabledStudioControl(tools)\n+        revealStudioContent(tools, in: app, towardBottom: false)\n+\n+        app.terminate()\n+        // Retain the UUID-scoped store, but do not recreate its corrupt fixture.\n+        // Settings and Pro navigation must leave the original data protected.\n+        app.launchEnvironment.removeValue(forKey: \"KEYFILL_UI_TEST_CORRUPT\")\n+        app.launch()\n+        assertProtectedStudio()\n+    }\n+\n     func testStudioGuideKeepsUnsavedSetupSelectionAndHistory() throws {\n         let app = makeApp()\n         app.launch()\n"
+      }
+    },
+    {
+      "command": "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc -frontend -parse UITests/StudioSmokeTests.swift",
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "64a306",
+        "wall_time_seconds": 0.005974828,
+        "exit_code": 0,
+        "original_token_count": 0,
+        "output": ""
+      }
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "6c439c",
+        "wall_time_seconds": 3.6004e-05,
+        "exit_code": 0,
+        "original_token_count": 30,
+        "output": "All 9 UI test classes assigned once across 5 required and 1 opt-in diagnostic shards; native unit target is separate.\n"
+      }
+    },
+    {
+      "command": "python3 - <<'PY'\nimport importlib.util\nspec = importlib.util.spec_from_file_location('native_test_shards', 'scripts/native_test_shards.py')\nmodule = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\nname = 'testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable'\nmethods = module.discover_methods('UITests')\nassert name in methods['StudioSmokeTests']\nassert 'StudioSmokeTests' in module.SHARDS['studio-export']\nprint(f'Discovered StudioSmokeTests.{name} in existing studio-export shard')\nprint(f'StudioSmokeTests methods: {len(methods[\"StudioSmokeTests\"])}')\nprint(f'UI methods total including diagnostics: {sum(map(len, methods.values()))}')\nPY",
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "04b60b",
+        "wall_time_seconds": 4.017e-05,
+        "exit_code": 0,
+        "original_token_count": 49,
+        "output": "Discovered StudioSmokeTests.testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable in existing studio-export shard\nStudioSmokeTests methods: 9\nUI methods total including diagnostics: 38\n"
+      }
+    }
+  ],
+  "commit_command": {
+    "command": "git add -- UITests/StudioSmokeTests.swift && git commit -m 'Cover Settings navigation while saved data is protected' && git rev-parse HEAD && git status --short",
+    "exit_code": 0,
+    "output": "[detached HEAD 237165a] Cover Settings navigation while saved data is protected\n 1 file changed, 75 insertions(+)\n237165afc4a060db8eebd5b8946a2b9a69717c2f\n"
+  },
+  "behavior_asserted": [
+    "Wait for exact completed-load status Saved data protected, with Project unavailable heading.",
+    "Save, Projects, Export and Recipes exist and remain disabled; add-light and reference workflow are absent.",
+    "Tools is enabled and reachable, while Subject position, Arrange setup and Place in AR menu actions remain present and disabled.",
+    "Settings opens; openPurchaseOptions opens Pro; closeProFeatures returns to actionable Settings Done; Done removes Settings.",
+    "Protection remains after returning to Studio and relaunching the same UUID-scoped store with KEYFILL_UI_TEST_CORRUPT removed."
+  ],
+  "limitations": [
+    "No build, Apple typecheck, native UI execution or runtime red/green evidence.",
+    "Swift -frontend -parse is syntax-only.",
+    "Expected original failure at Tools enabled wait is a source-derived inference, not an executed failure.",
+    "No purchase, restore, refresh, camera/photo operation, network publication or implementation change."
+  ],
+  "source_manifest": [
+    {
+      "path": "UITests/StudioSmokeTests.swift",
+      "sha256": "963ea1efbf72a1b365a6bf339c5031a9a163e396c791173726032692c4d36b23",
+      "git_blob": "9f086fe2d3de9eb65785005187da63787d5aba01"
+    },
+    {
+      "path": "UITests/StudioContentReachability.swift",
+      "sha256": "386574431b59136fd7e2fb9d8d3bbec803faf208134dce57c079e37c3aa91139",
+      "git_blob": "c8d52aa6afdd44206e8e04a2f753886b94104f52"
+    },
+    {
+      "path": "App/StudioView.swift",
+      "sha256": "cee52460ed41cdd54ab39ba333872ffcc7966622cf9ca92db6c4c5b40174a777",
+      "git_blob": "32f2aa6f7db8d876e1b25e9cfe8303f74a303195"
+    },
+    {
+      "path": "App/StudioSettingsView.swift",
+      "sha256": "ddcfa02b0e49c8bf81d776a698aa03e20a040596a08cf170d1dd078c57a4e32e",
+      "git_blob": "4f45e201369051598cae04134c4ebb5c5016b06c"
+    },
+    {
+      "path": "App/ProFeaturesView.swift",
+      "sha256": "6b43d11bbe4e4badd7762e875509213c1942de32da2075da064469d1029ce532",
+      "git_blob": "c9f143fbf563c4fe279b6be552de1a89924f4931"
+    },
+    {
+      "path": "App/ProjectStore.swift",
+      "sha256": "404db2197b3f4f9fa45865ed915cae8bd1c255338edb1d8b834753022e3852aa",
+      "git_blob": "531f967fe2f532b7f68f728bcda677c75d8c0253"
+    },
+    {
+      "path": "App/LightingPlanExportView.swift",
+      "sha256": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+      "git_blob": "2db6c333853c8f4cab16082cd4d9037cd05feafb"
+    },
+    {
+      "path": "scripts/native_test_shards.py",
+      "sha256": "12e982beab8e472432121b24171bc1e2963b71a227123016d022f127bfcf3454",
+      "git_blob": "e0f098eb6b1965c44cb6c5869c0b6ceacb6aa249"
+    },
+    {
+      "path": "project.yml",
+      "sha256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+      "git_blob": "056e9d4159ca0273f812728381723b60a253000f"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-02/source.patch",
+      "sha256": "a7384c8e584681eb32f4269647a4d1338b44169e3ce6a350078aa013daaef6fa"
+    },
+    {
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-02/report.original.md",
+      "sha256": "20d4f02356e4920ce9156e1c4f3a9793b4f62807e508fa775c7dc5ad6118a99f"
+    },
+    {
+      "path": "/workspace/scratch/e08d5190f17c/workers/w07-02/report.md",
+      "sha256": "fdadd00eda9d428ada5faa5fd9e94bf1a6bec655e7f952d6e6f1ad4a80999592"
+    }
+  ],
+  "report_budget": {
+    "characters": 1452,
+    "words": 176,
+    "tool_estimated_tokens": 363,
+    "estimator": "ceiling(Unicode character count / 4); not API token usage"
+  },
+  "final_status": {
+    "command": "git status --porcelain",
+    "exit_code": 0,
+    "output": ""
+  }
+}

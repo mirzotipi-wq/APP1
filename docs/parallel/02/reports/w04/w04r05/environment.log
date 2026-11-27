@@ -1,0 +1,20 @@
+Second-executor provenance after coordinator restoration.
+
+$ cat /tmp/keyfill02-r2-snapshots/v1/READY
+1b286885cb803ba17e159713651515ab119e17f1
+exit_code=0
+
+$ /tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+Swift version 6.0.3 (swift-6.0.3-RELEASE)
+Target: x86_64-unknown-linux-gnu
+exit_code=0
+
+$ uname -srm
+Linux 6.18.57 x86_64
+exit_code=0
+
+$ git rev-parse HEAD
+47de6afe6afe24a7822f4276950f70bd3db9f57d
+exit_code=0
+
+Coordinator-provided rebuild provenance: v1 rebuilt from 047803c; Sources diff versus 1b286885cb803ba17e159713651515ab119e17f1 was empty. This worker independently read the READY marker and compiler/host/worktree metadata above.

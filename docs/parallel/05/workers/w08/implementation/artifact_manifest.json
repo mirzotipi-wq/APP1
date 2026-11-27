@@ -1,0 +1,52 @@
+{
+  "canonical_id": "/root/w08_acceptance/implementation",
+  "status": "completed_portable_witness_and_source_review",
+  "input_sha": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+  "baseline_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "candidate_commit": "a92b4fdc5bb8d3af75b3557949477a730462e000",
+  "artifacts": [
+    {
+      "path": "/tmp/keyfill05-be879deb/waves/w08/implementation/portable_geometry_witness.py",
+      "sha256": "96cda16eed0d150b1494a903b88fc450859f1c71b544731491e183414988c348",
+      "bytes": 15840
+    },
+    {
+      "path": "/tmp/keyfill05-be879deb/waves/w08/implementation/portable_geometry_witness.json",
+      "sha256": "d5c4a9f64b59ef329cf35985309a8906aaabf7c3cb111258902b039f2a65128b",
+      "bytes": 23994
+    },
+    {
+      "path": "/tmp/keyfill05-be879deb/waves/w08/implementation/geometry_envelope_notes.md",
+      "sha256": "200ad04a02e39231fb152e5cb223d4a0ed0805ec3c173abed494e84a580a8e6e",
+      "bytes": 5225
+    },
+    {
+      "path": "/tmp/keyfill05-be879deb/waves/w08/implementation/float_fov_candidate.patch",
+      "sha256": "8fdf2042441591771b1a19b109a2e600758f461bdfb5f33599079991ea77dcbe",
+      "bytes": 3252
+    },
+    {
+      "path": "/tmp/keyfill05-be879deb/waves/w08/implementation/candidate_SpatialViewportGeometry.swift",
+      "sha256": "465edc50d458fcfca860d3ecfdbb0887721150c89692e2a6184afb43fc4c3d94",
+      "bytes": 7743
+    },
+    {
+      "path": "/tmp/keyfill05-be879deb/waves/w08/implementation/candidate_SpatialViewportStateTests.swift",
+      "sha256": "7a15a02aec47fce75cc87d3a69cb563453a2786352c4042d958fb8925ba3fc0b",
+      "bytes": 11718
+    }
+  ],
+  "commands": [
+    "git worktree add --detach /tmp/keyfill05-be879deb/waves/w08/implementation/worktree 4e694bc377c4825d1d2dd52fcd7900e534c75072",
+    "python3 scripts/agent_cycle.py check",
+    "python3 scripts/agent_cycle.py next",
+    "python3 /tmp/keyfill05-be879deb/waves/w08/implementation/portable_geometry_witness.py --repo /tmp/keyfill05-be879deb/waves/w08/implementation/worktree --output /tmp/keyfill05-be879deb/waves/w08/implementation/portable_geometry_witness.json",
+    "git diff --check",
+    "git add -- App/SpatialViewportGeometry.swift NativeTests/SpatialViewportStateTests.swift",
+    "git commit -m \"Preserve minimum-axis field of view through Float upload\""
+  ],
+  "native_methods_executed_here": 0,
+  "new_native_regression": "testFloatProjectionDoesNotNarrowTheSmallerViewportAxis",
+  "new_native_regression_status": "unrun",
+  "native_accounting": "Original38source spatial methods and historical30passes remain distinct; no historical native result is promoted to a candidate pass."
+}

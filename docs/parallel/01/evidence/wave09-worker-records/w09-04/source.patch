@@ -1,0 +1,116 @@
+diff --git a/NativeTests/StudioObservationTests.swift b/NativeTests/StudioObservationTests.swift
+new file mode 100644
+index 0000000..9e6a76d
+--- /dev/null
++++ b/NativeTests/StudioObservationTests.swift
+@@ -0,0 +1,110 @@
++#if canImport(Darwin)
++import Foundation
++import Observation
++import XCTest
++import LightingCore
++#if canImport(KeyAndFill)
++@testable import KeyAndFill
++#else
++@testable import StudioComposition
++#endif
++
++/// Observation callbacks are Sendable and run before the observed assignment.
++/// Record only delivery here; inspect session values after the command returns.
++private final class StudioObservationChanges: @unchecked Sendable {
++    private let lock = NSLock()
++    private var notifications = 0
++
++    func record() {
++        lock.lock()
++        defer { lock.unlock() }
++        notifications += 1
++    }
++
++    var count: Int {
++        lock.lock()
++        defer { lock.unlock() }
++        return notifications
++    }
++}
++
++@MainActor
++final class StudioObservationTests: XCTestCase {
++    private func observe(_ read: () -> Void) -> StudioObservationChanges {
++        let changes = StudioObservationChanges()
++        withObservationTracking(read, onChange: { changes.record() })
++        return changes
++    }
++
++    func testSceneObservationFollowsActualEditAndUndo() async throws {
++        let session = StudioSession(execute: { _ in nil })
++        try await session.beginLibraryOperation(.load, from: session.generation).value
++        let original = session.scene
++        var changed = original
++        changed.camera.x += 0.25
++
++        let editChanges = observe { _ = session.scene }
++        XCTAssertTrue(session.apply(.cameraPosition(changed.camera), from: session.generation))
++        XCTAssertEqual(session.scene, changed)
++        XCTAssertEqual(editChanges.count, 1, "The computed scene must observe its editor storage")
++
++        // Each Observation subscription is one-shot, so subscribe again for undo.
++        let undoChanges = observe { _ = session.scene }
++        XCTAssertTrue(session.undo(from: session.generation))
++        XCTAssertEqual(session.scene, original)
++        XCTAssertEqual(undoChanges.count, 1)
++    }
++
++    func testFeatureObservationFollowsOpenRetirementAndRemoval() async throws {
++        let session = StudioSession(execute: { _ in nil })
++        try await session.beginLibraryOperation(.load, from: session.generation).value
++        XCTAssertNil(session.feature)
++
++        let openChanges = observe { _ = session.feature }
++        let context = try XCTUnwrap(session.openFeature(.room, from: session.generation))
++        XCTAssertEqual(session.feature?.id, context.id)
++        XCTAssertEqual(session.feature?.isPresented, true)
++        XCTAssertEqual(openChanges.count, 1)
++
++        let retirementChanges = observe { _ = session.feature?.isPresented }
++        session.retireFeature(context)
++        XCTAssertEqual(session.feature?.id, context.id)
++        XCTAssertEqual(session.feature?.isPresented, false)
++        XCTAssertEqual(retirementChanges.count, 1,
++                       "Mutating the nested presentation value must invalidate its observers")
++
++        let removalChanges = observe { _ = session.feature }
++        session.finishFeature(context)
++        XCTAssertNil(session.feature)
++        XCTAssertEqual(removalChanges.count, 1)
++    }
++
++    func testBusyObservationTracksReservationAndCompletionButTaskIsIgnored() async throws {
++        let session = StudioSession(execute: { _ in nil })
++        XCTAssertFalse(session.isBusy)
++        XCTAssertNil(session.operationTask)
++
++        let reservationChanges = observe { _ = session.isBusy }
++        let taskInstallationChanges = observe { _ = session.operationTask }
++        let loading = try session.beginLibraryOperation(.load, from: session.generation)
++        XCTAssertTrue(session.isBusy)
++        XCTAssertNotNil(session.operationTask)
++        XCTAssertEqual(reservationChanges.count, 1)
++        XCTAssertEqual(taskInstallationChanges.count, 0,
++                       "Installing the task must not register an Observation dependency")
++
++        // No suspension occurs between reservation and these subscriptions. The
++        // operation's MainActor task cannot complete until this test yields.
++        let completionChanges = observe { _ = session.isBusy }
++        let taskRemovalChanges = observe { _ = session.operationTask }
++        try await loading.value
++        XCTAssertFalse(session.isBusy)
++        XCTAssertNil(session.operationTask)
++        XCTAssertTrue(session.loaded)
++        XCTAssertEqual(completionChanges.count, 1)
++        XCTAssertEqual(taskInstallationChanges.count, 0)
++        XCTAssertEqual(taskRemovalChanges.count, 0,
++                       "Clearing the task must not invalidate Observation subscribers")
++    }
++}
++#endif

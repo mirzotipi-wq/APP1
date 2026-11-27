@@ -1,0 +1,135 @@
+[
+  {
+    "sequence": 1,
+    "cwd": "/workspace/scratch/e08d5190f17c",
+    "command": "pwd && cat /workspace/scratch/e08d5190f17c/workers/w07-08/brief.md",
+    "exit_code": 0,
+    "result": "Read brief; working directory confirmed."
+  },
+  {
+    "sequence": 2,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "git status --short && git rev-parse HEAD && git log -8 --oneline && rg --files -g AGENTS.md -g OPERATING_PROTOCOL.md -g HANDOFF.md -g state.json -g PRODUCT.md -g ARCHITECTURE.md -g ROADMAP.md -g QUALITY.md -g DESIGN.md -g COORDINATOR.md -g INTERFACES.md -g FEATURE_ADAPTERS.md",
+    "exit_code": 0,
+    "result": "Clean; HEAD 46a161cb01d0aee2e91940dbd06d82cfe2df5821; recent integrated commits and document paths."
+  },
+  {
+    "sequence": 3,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat AGENTS.md agents/OPERATING_PROTOCOL.md agents/HANDOFF.md agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md",
+    "exit_code": 0,
+    "result": "Startup documents read; combined tool output truncated; relevant documents reread below."
+  },
+  {
+    "sequence": 4,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat docs/parallel/01/COORDINATOR.md docs/parallel/01/HANDOFF.md docs/parallel/01/INTERFACES.md docs/parallel/01/FEATURE_ADAPTERS.md",
+    "exit_code": 0,
+    "result": "Composition documents read; combined tool output truncated; coordinator/handoff/interfaces reread below; feature adapters visible."
+  },
+  {
+    "sequence": 5,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "wc -l AGENTS.md agents/OPERATING_PROTOCOL.md agents/HANDOFF.md agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md docs/parallel/01/COORDINATOR.md docs/parallel/01/HANDOFF.md docs/parallel/01/INTERFACES.md docs/parallel/01/FEATURE_ADAPTERS.md && cat agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md",
+    "exit_code": 0,
+    "result": "812 total document lines inventoried; required state/product/architecture/roadmap/quality/design read."
+  },
+  {
+    "sequence": 6,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+    "exit_code": 0,
+    "result": "State structure and evidence references valid, explicitly not test truth/readiness; M03 outstanding editing, accessibility, persistence."
+  },
+  {
+    "sequence": 7,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat agents/HANDOFF.md docs/parallel/01/COORDINATOR.md docs/parallel/01/HANDOFF.md",
+    "exit_code": 0,
+    "result": "Historical handoff and lane documents read; overall batched output truncated."
+  },
+  {
+    "sequence": 8,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "git show --stat 5decbb0 && git show 5decbb0 -- App/StudioView.swift && git show 08e80c7 -- UITests/StudioSmokeTests.swift && cat docs/parallel/01/NAVIGATION.md",
+    "exit_code": 0,
+    "result": "Reviewed narrow changes/navigation map; overall batched output truncated, diffs reread next."
+  },
+  {
+    "sequence": 9,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat docs/parallel/01/COORDINATOR.md docs/parallel/01/HANDOFF.md && git show 5decbb0 -- App/StudioView.swift && git show 08e80c7 -- UITests/StudioSmokeTests.swift",
+    "exit_code": 0,
+    "result": "Lane documents and exact two diffs read completely."
+  },
+  {
+    "sequence": 10,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat docs/parallel/01/INTERFACES.md && sed -n '1,280p' App/StudioView.swift",
+    "exit_code": 0,
+    "result": "Interfaces read and Studio routing inspected; combined output truncated."
+  },
+  {
+    "sequence": 11,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat App/StudioSettingsView.swift App/ProFeaturesView.swift && rg -n '44|accessibility|ViewThatFits|dynamicType|horizontalSizeClass|disabled|showSettings|task|sheet|onAppear|confirmationDialog' App/StudioView.swift && rg -n 'purchase|restore|refresh|start|begin|Task|productID' App/EntitlementStore.swift",
+    "exit_code": 0,
+    "result": "Accessibility/commerce inventory; combined output truncated, key settings/Pro/entitlement sections reread."
+  },
+  {
+    "sequence": 12,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "cat App/StudioSettingsView.swift && sed -n '1,95p' App/ProFeaturesView.swift && sed -n '250,350p' App/ProFeaturesView.swift && sed -n '220,370p' App/StudioView.swift && sed -n '58,160p' App/EntitlementStore.swift && cat App/KeyAndFillApp.swift",
+    "exit_code": 0,
+    "result": "Settings privacy sections/Done, Pro explicit action and close paths, menu/header geometry and existing StoreKit startup/reactivation refresh read."
+  },
+  {
+    "sequence": 13,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "rg -n 'PhotosPicker|photosPicker|onChange|requestAuthorization|requestAccess|startAR|startCamera|controller.start|ShareLink|fileExporter|showingExporter|onAppear|\\.task|purchase\\(|restorePurchases\\(|AppStore.sync|URLSession|URLRequest|https?://' App/ReferenceComparisonView.swift App/PhotoComparisonView.swift App/ARPlacementView.swift App/ARPlacementController.swift App/LightingPlanExportView.swift App/ProjectBackupView.swift App/ManualRoomPlacementView.swift App/StudioSettingsView.swift App/ProFeaturesView.swift App/StudioFeatureSheets.swift App/StudioSession.swift App/StudioView.swift && sed -n '1,175p' App/ARPlacementView.swift && sed -n '1,145p' App/LightingPlanExportView.swift && rg -n 'allowsMutation|openFeature|startSave|persist|saveBlocked|isBusy|subjectPositionBinding|featureAction' App/StudioSession.swift App/StudioView.swift",
+    "exit_code": 0,
+    "result": "Explicit photo/camera/share/commerce trigger inventory; AR, export, mutation guards inspected."
+  },
+  {
+    "sequence": 14,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "sed -n '75,180p' App/ARPlacementController.swift && sed -n '220,265p' App/ARPlacementView.swift && sed -n '30,65p' App/ReferenceComparisonView.swift && sed -n '112,165p' App/ReferenceComparisonView.swift && sed -n '88,118p' App/PhotoComparisonView.swift && sed -n '125,161p' App/PhotoComparisonView.swift && sed -n '20,98p' App/ProjectBackupView.swift && sed -n '450,476p' App/ManualRoomPlacementView.swift && sed -n '64,76p' App/StudioSession.swift && sed -n '124,146p' App/StudioSession.swift && sed -n '286,312p' App/StudioSession.swift && sed -n '1008,1033p' App/StudioView.swift && sed -n '1124,1145p' App/StudioView.swift && rg -n 'StudioSmokeTests|KEYFILL_UI_TEST_CORRUPT|KEYFILL_UI_TEST_ID|func makeApp|assertStatus' UITests/StudioSmokeTests.swift App/ProjectStore.swift scripts project.yml .github/workflows",
+    "exit_code": 0,
+    "result": "Permission/start, PhotosPicker/Apply, sharing, storage/session admission, fixture and shard mapping read. Output truncated; key missing excerpts reread below."
+  },
+  {
+    "sequence": 15,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "python3 - <<'PY'\nimport hashlib,json,re,subprocess\nfrom pathlib import Path\nroot=Path.cwd()\nold=subprocess.check_output(['git','show','5decbb0^:App/StudioView.swift'],text=True)\nnew=(root/'App/StudioView.swift').read_text()\nchecks={}\nfor label,pattern in {\n'accessibility_labels':r'\\.accessibilityLabel\\([^\\n]*',\n'accessibility_identifiers':r'\\.accessibilityIdentifier\\([^\\n]*',\n'frame_modifiers':r'\\.frame\\([^\\n]*',\n'adaptive_layout':r'.*(?:ViewThatFits|dynamicTypeSize|AnyLayout).*'\n}.items():\n    before=re.findall(pattern,old); after=re.findall(pattern,new)\n    checks[label]={'unchanged':before==after,'before_count':len(before),'after_count':len(after)}\nsmoke=(root/'UITests/StudioSmokeTests.swift').read_text()\nold_smoke=subprocess.check_output(['git','show','08e80c7^:UITests/StudioSmokeTests.swift'],text=True)\npattern=r'func (test\\w+)\\('\nchecks['new_ui_method']={'added':sorted(set(re.findall(pattern,smoke))-set(re.findall(pattern,old_smoke))),'classes':re.findall(r'final class (\\w+): XCTestCase',smoke),'native_execution':False}\nchecks['worktree_clean']=not subprocess.check_output(['git','status','--porcelain'],text=True).strip()\nassert all(checks[k]['unchanged'] for k in ['accessibility_labels','accessibility_identifiers','frame_modifiers','adaptive_layout'])\nassert checks['new_ui_method']['added']==['testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable']\nassert checks['new_ui_method']['classes']==['StudioSmokeTests']\nassert checks['worktree_clean']\nprint(json.dumps(checks,indent=2))\nPath('../static-review.json').write_text(json.dumps(checks,indent=2)+'\\n')\nPY\n\ngit diff --check 5decbb0^..08e80c7 -- App/StudioView.swift UITests/StudioSmokeTests.swift",
+    "exit_code": 0,
+    "result": "Static invariant check and diff whitespace check passed; 18 labels,36 IDs,46 frames,23 layout lines unchanged; one method added to existing class; clean tree."
+  },
+  {
+    "sequence": 16,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "sed -n '1,42p' UITests/StudioSmokeTests.swift && sed -n '21,63p' App/ProjectBackupView.swift && sed -n '94,109p' App/PhotoComparisonView.swift && sed -n '130,158p' App/PhotoComparisonView.swift && cat App/StudioFeatureSheets.swift && rg -n 'onApply|didFinish|didApply|dismiss\\(' App/SceneArrangementView.swift App/LightTargetLuxView.swift && sed -n '1,92p' scripts/native_test_shards.py",
+    "exit_code": 0,
+    "result": "Fixture, PhotosPicker imports and explicit exporter button confirmed; Void producer completion ordering and existing class shard mapping confirmed. Output truncated in host display; no native execution."
+  },
+  {
+    "sequence": 17,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "python3 - <<'PY'\nfrom pathlib import Path\nimport subprocess,hashlib,json,datetime,math,re\nroot=Path('/workspace/scratch/e08d5190f17c/workers/w07-08/tree')\nout=root.parent\n\ndef git(*args): return subprocess.check_output(['git',*args],cwd=root,text=True).strip()\nhead=git('rev-parse','HEAD')\nassert head=='46a161cb01d0aee2e91940dbd06d82cfe2df5821'\nassert not git('status','--porcelain')\ncommits={k:git('rev-parse',k) for k in ['5decbb0','08e80c7','46a161c']}\npatch=subprocess.check_output(['git','diff','5decbb0^..08e80c7','--','App/StudioView.swift','UITests/StudioSmokeTests.swift'],cwd=root)\n(out/'narrow-source.patch').write_bytes(patch)\npaths=['AGENTS.md','agents/OPERATING_PROTOCOL.md','agents/HANDOFF.md','agents/state.json','docs/PRODUCT.md','docs/ARCHITECTURE.md','docs/ROADMAP.md','docs/QUALITY.md','docs/DESIGN.md','docs/parallel/01/COORDINATOR.md','docs/parallel/01/HANDOFF.md','docs/parallel/01/INTERFACES.md','docs/parallel/01/FEATURE_ADAPTERS.md','docs/parallel/01/NAVIGATION.md','App/StudioView.swift','UITests/StudioSmokeTests.swift','App/StudioSettingsView.swift','App/ProFeaturesView.swift','App/EntitlementStore.swift','App/KeyAndFillApp.swift','App/ARPlacementView.swift','App/ARPlacementController.swift','App/ReferenceComparisonView.swift','App/PhotoComparisonView.swift','App/LightingPlanExportView.swift','App/ProjectBackupView.swift','App/ManualRoomPlacementView.swift','App/StudioSession.swift','App/StudioFeatureSheets.swift','App/SceneArrangementView.swift','App/LightTargetLuxView.swift','App/ProjectStore.swift','scripts/native_test_shards.py','scripts/agent_cycle.py']\nmanifest=[]\nfor path in paths:\n data=(root/path).read_bytes(); blob=git('rev-parse',f'HEAD:{path}')\n assert git('hash-object',path)==blob\n manifest.append({'path':path,'sha256':hashlib.sha256(data).hexdigest(),'git_blob':blob,'bytes':len(data)})\noriginal=f'''# W07-08 original accessibility/privacy review\n\n## Conclusion and scope\n\nSource-only recommendation: accept the narrow tools-menu change and added regression scenario, subject to native execution at the integrated source. No new blocker was found in the reviewed diff. This is not VoiceOver, Dynamic Type rendering, hit-target, camera/privacy runtime, commerce, or release acceptance.\n\nReviewed HEAD: `{head}` (tree `{git('rev-parse','HEAD^{tree}')}`). Reviewed implementation: `App/StudioView.swift` at `{commits['5decbb0']}`. Reviewed test: `UITests/StudioSmokeTests.swift` at `{commits['08e80c7']}`. Navigation map: `docs/parallel/01/NAVIGATION.md` at `{commits['46a161c']}`. No worker source changes or commit. The detached tree was clean before and after review; `narrow-source.patch` preserves the reviewed existing two-file change, not a worker-authored patch.\n\n## Accessibility and navigation findings\n\n1. `StudioView.projectUtilityActions` moves loading/protected-storage/busy disabling from the whole menu to Subject position, Arrange setup, and Place in AR. The menu retains the active continuous-edit guard. Its visible symbol, accessibility label Studio tools, identifier studioTools, and 44-by-44 frame are unchanged. Settings remains a native text button; its action only sets its presentation flag.\n2. Static comparisons of the entire StudioView before the fix and at reviewed HEAD found identical lists of 18 accessibility-label modifier lines, 36 identifier modifier lines, 46 frame modifier lines, and 23 adaptive-layout/Dynamic-Type lines. Existing header/project-action ViewThatFits fallbacks, accessibility-size vertical layout and reduced-motion behavior were not modified. These textual invariants do not prove actual accessibility frames, font fit, focus order, contrast or layout.\n3. StudioSettingsView uses a scrollable native Form with the existing Your photographs and Your projects explanatory sections. The text describes reduced metadata-stripped in-memory photos, local processing, possible iCloud picker retrieval, local scenes, and separately managed shared copies. It is accessible by the Settings route in source while storage is protected; this review did not independently validate every underlying retention claim or scroll the screen.\n4. Settings opens Pro with its local showPurchase sheet and shared app-owned EntitlementStore. Pro Done/closeProFeatures calls its own dismiss, and Settings Done calls the enclosing dismiss. Neither has a busy/storage disabling modifier. Pro's purchase/restore/retry controls retain minimum 44-point heights. Settings and the toolbar Done buttons rely on native control geometry; no measured 44-point claim is made for them.\n5. The added method is testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable inside the existing StudioSmokeTests class. It waits for completed Saved data protected status, checks disabled Save/Projects/export/Recipes and scene/reference absence, checks disabled Subject/Arrange/AR, opens actual Settings and Pro, closes to the existing Settings navigation bar, closes to protected Studio and relaunches without reseeding corruption. Its UUID-scoped fixture and fixed English locale avoid using the normal store and localized-menu ambiguity. It does not assert privacy text, VoiceOver behavior, Dynamic Type variants or actual hit-target geometry. scripts/native_test_shards.py assigns this existing class to studio-export; exact-source native validation must include the added method.\n\n## Mutation and privacy boundaries\n\n- Save, Projects, export and Recipes retain loaded/writable/idle disable conditions. Protected Studio still replaces the scene workspace with an unavailable panel, hiding Reference and room entry points. Subject now additionally captures storage generation and guards session.allowsMutation plus edit state. Arrange/AR use featureAction's generation capture; StudioSession.openFeature enforces mutation admission. The session also rejects scene commands and non-load library operations when data is protected. Settings preferences use AppStorage independently of scene persistence.\n- PhotosPicker remains an explicit Choose/Replace control in Reference and comparison. The import callbacks require an actual nonnil picker selection. Reference Apply remains an explicit confirmed action. Opening the route introduces no picker selection or upload action in the reviewed code.\n- AR's onAppear only records visibility/activity. Camera permission is requested by controller.start after Start AR camera. The controller's pending-start continuation is downstream of that explicit start. Manual fallback stops the camera. No camera was opened during review.\n- Text/PDF/room-note sharing remains behind ShareLink. Editable-copy presentation may prepare local data, but its fileExporter is activated only by Save editable copy. Preparation and viewing do not claim a user-selected external destination was written. No sharing or exporter was invoked.\n- Purchase, restore and refresh are explicit Pro button actions with synchronous admission/reservation before their task. purchase calls Product.purchase; restore calls AppStore.sync. Opening Settings/Pro invokes neither. Existing configured EntitlementStore startup/reactivation refresh and transaction observation remain: therefore do not characterize the app as having no automatic StoreKit reads or no network activity. No StoreKit action was invoked.\n\n## Preserved integration limitation\n\nReference closes/clears its session before the Void onApply callback. Arrangement and target-lux mark completion before their Void callbacks and then dismiss. Parent rejection can block scene mutation but cannot retain these consumed drafts. FEATURE_ADAPTERS.md describes a future Bool acceptance API; it is not implemented. This limitation remains separate from the narrow navigation fix.\n\n## Actual checks and limits\n\nThe required startup documents were read, along with the integrated navigation map and the relevant source. git status was clean and HEAD/recent log were inspected. python3 scripts/agent_cycle.py check exited 0 (state references valid, explicitly not proof of test truth or readiness); next exited 0 (M03; editing/accessibility/persistence outstanding). Static modifier/inventory comparisons passed; git diff --check for the two reviewed files exited 0. Receipt records exact inspected file hashes and commands, including output truncation where it occurred. No build, Swift parse, Apple typecheck, XCTest/UI run, device, VoiceOver, capture, permission, photo, share, purchase, restore, external communication, privileged action or nested spawn was performed. Historical failed workflow 45842239860 remains a failure; no later CI outcome was inferred.\n\n## Recommendation\n\nKeep the fix and regression method. Run the mapped native method on the integrated source, then validate the protected menu plus privacy sections and close controls at Default/AXXXL text, including VoiceOver focus/return and actual target geometry where required. Validate real camera/photo/share/StoreKit behavior in their own authorized native acceptance work. Root alone integrates/pushes; manager may remove this clean tree after verifying report/receipt/patch preservation.\n'''\n(out/'report.original.md').write_text(original)\nreport=f'''# W07-08 accessibility/privacy\n\n**Accept the narrow source fix; native acceptance remains pending.** Reviewed `{head}`. No edits or commit.\n\n`App/StudioView.swift` at `5decbb0` preserves Studio tools label/ID, its 44-point frame and adaptive layouts. Static comparison found unchanged 18 label, 36 identifier, 46 frame and 23 adaptive-layout lines. Settings becomes reachable while Subject/Arrange/AR retain storage/busy disabling; active-edit menu protection remains. Session admission still guards mutation. Save/Projects/export/Recipes remain disabled and protected storage hides the scene workspace.\n\nSettings retains privacy explanations and native Done; nested Pro retains `closeProFeatures`. Opening either invokes no purchase/restore. Photo selection, AR camera start, sharing and commerce actions remain explicit. Existing configured-store startup/reactivation refresh remains; this is not a no-network claim.\n\n`UITests/StudioSmokeTests.swift` at `08e80c7` adds one method to the existing class: protected controls → Settings → Pro → Settings → protected Studio, then relaunch without recreating corruption. It does not verify privacy text, VoiceOver, largest-text geometry or device behavior.\n\nChecks: startup documents, source/map review, `agent_cycle.py check`/`next`, modifier/inventory comparison and `git diff --check` passed. Tree clean; no build, syntax parse or native execution. Exact commands/hashes and reviewed patch are preserved alongside this report.\n\nReference/Arrangement/Lux Void callbacks can still consume rejected drafts. Keep that limitation explicit. Run the added native method and Default/AXXXL privacy/close-flow checks at integrated source; no accessibility, permission, commerce or release acceptance is claimed.\n'''\n(out/'report.md').write_text(report)\nmetrics={'words':len(report.split()),'characters':len(report),'utf8_bytes':len(report.encode()),'tool_estimated_tokens':math.ceil(len(report.encode())/3),'estimate_method':'ceil(UTF-8 bytes / 3), conservative planning estimate; not actual tokenizer usage'}\nassert metrics['words']<=250 and metrics['characters']<=2200 and metrics['tool_estimated_tokens']<=800,metrics\nreceipt={'worker':'w07-08','role':'accessibility/privacy readonly','created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'worktree':str(root),'head':head,'tree':git('rev-parse','HEAD^{tree}'),'reviewed_commits':commits,'worker_source_changes':[],'worker_commit':None,'clean_before':True,'clean_after':True,'source_files':manifest,'checks':{'agent_cycle_check':{'exit_code':0,'result':'State structure and evidence references valid; does NOT verify test truth or release readiness'},'agent_cycle_next':{'exit_code':0,'result':'M03; outstanding editing, accessibility, persistence'},'static_review':json.loads((out/'static-review.json').read_text()),'git_diff_check':{'exit_code':0,'scope':'5decbb0^..08e80c7 -- App/StudioView.swift UITests/StudioSmokeTests.swift'}},'unperformed':['build','Swift syntax parse','Apple typecheck','XCTest/UI tests','device','VoiceOver','screenshots','camera permission','photo picker','sharing/file exporter','purchase','restore','external communication','privileged actions','nested spawn'],'known_unresolved':['Reference/Arrangement/Lux Void producers may consume rejected drafts','Native accessibility/layout/navigation/device acceptance remains pending','Historic CI failure 45842239860 not reinterpreted'],'report_limits':metrics,'artifacts':{p.name:{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size} for p in [out/'report.original.md',out/'report.md',out/'narrow-source.patch',out/'static-review.json']},'commands':[]}\n(out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\\n')\nprint(json.dumps({'head':head,'clean':True,'report_limits':metrics,'artifacts':receipt['artifacts']},indent=2))\nPY",
+    "exit_code": 0,
+    "result": "Created original/concise reports, reviewed patch, exact source manifest and initial receipt; all source blobs matched disk. 214 words/1785 characters/598 conservative estimated tokens."
+  },
+  {
+    "sequence": 18,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "git status --short --branch && rg -n -A 6 'func allowsSceneMutation' Sources/LightingCore/ProjectLibraryOperationState.swift && sha256sum App/StudioView.swift UITests/StudioSmokeTests.swift docs/parallel/01/NAVIGATION.md",
+    "exit_code": 2,
+    "result": "Detached clean HEAD shown; guessed source path missing (rg exit2); trailing sha256sum did not execute. Corrected with repository search next."
+  },
+  {
+    "sequence": 19,
+    "cwd": "/workspace/scratch/e08d5190f17c/workers/w07-08/tree",
+    "command": "rg -n -A 6 'func allowsSceneMutation' App Sources && sha256sum App/StudioView.swift UITests/StudioSmokeTests.swift docs/parallel/01/NAVIGATION.md",
+    "exit_code": 0,
+    "result": "Found App/ProjectLibraryOperation.swift:81; admits only !isBusy and current generation. SHA-256 values printed and matched manifest."
+  }
+]

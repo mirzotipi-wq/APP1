@@ -1,0 +1,15 @@
+# W46 — resource assessment
+
+**Scoped acceptance:** accept the W44 narrow-intensity candidate's resource structure. This is static evidence, not a runtime performance or milestone pass.
+
+**Input:** detached HEAD `c9ff1a71c173774e7b7c794e475f8bdf5d633853`; persisted candidate `wave05-evidence/W44-ReferenceStudy.swift`, SHA-256 `4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141`. Read all four assigned protocols. The source patch reconstructs that candidate exactly; `git apply --check` returned 0. The 12 explicit static assertions and file hashes are in `wave05-evidence/W46-static-checks.json`.
+
+## Bounds and preservation
+
+- Validation still limits scenes to 12 lights. Each positive point/directional source contributes one sample; each contiguous rectangle contributes 64 or 1,024. Maximum prepared counts remain 768 interactive and 12,288 reference; the public count still reports stored samples. Zero-output sources remain excluded.
+- One added Double represents at most 6 KiB / 96 KiB of logical field data per prepared lighting value. This is **not** an allocation delta. With actual strides S_old/S_new, occupied element storage changes by N × (S_new − S_old). Alignment, capacity growth, allocator overhead and peak resident memory were not measured; no exact Sample stride is inferred.
+- The existing group traversal is byte-identical after the inserted saves/defer. At most 12 groups run per receiver. New live snapshots are two Double values and one SIMD3<Double>, confined to one iteration. Tiny groups add at most 60 component multiplications and 60 additions per receiver, plus fixed saves/resets/comparisons. Wider existing sample copies may add fixed work per sample depending on code generation. No new collection, recursive traversal or retained closure appears in the changed code. Existing clipped sampling retains its 32-element temporary buffer and ≤grid² callback bound.
+- Preparation adds constant classification work per light and a field per sample. Compute packing adds one multiply per sample (≤12,288), retaining three float4 rows per sample and existing flatMap allocations. It does not append a scale row or repeat integration.
+- Image/setup/cancellation code is byte-identical; cache and portrait files are absent from the patch. The cache's existing pre-append eviction and both cost checks remain; application limits are four frames, 256 KiB RGBA and 64 KiB masks. Mannequin validation remains width ≤144 and uses interactive sampling. These payload caps do not include prepared lighting memory.
+
+**Execution/remaining risk:** no Swift, build, layout, allocation, timing or device tests run. Parent reported root Debug compilation ended with signal 9 before tests and was retrying `-j1`; no cause or product failure inferred. Concrete remaining uncertainty is actual compiler-dependent stride/copy and allocation overhead. A sizeof probe would quantify it but would not change this structural decision; no additional build requested. Report excludes broader numerical guarantees.

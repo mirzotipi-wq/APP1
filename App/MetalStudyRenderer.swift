@@ -16,9 +16,16 @@ enum MetalStudyError: Error {
     case unavailable, allocation, command, parity, precisionDomain
 }
 
+/// The actor creates and exclusively owns its backend. Keeping this contract
+/// synchronous avoids transferring Metal resources across isolation boundaries.
+protocol StudyComputeBackend {
+    func validate(isCancelled: () -> Bool) throws
+    func render(scene: LightingScene, width: Int, isCancelled: () -> Bool) throws -> StudyImage
+}
+
 /// Retains the compiled pipeline/queue. Used only inside the render actor or
 /// a serial native parity test. The buffer layout is explicit float4/uchar4.
-final class MetalStudyRenderer {
+final class MetalStudyRenderer: StudyComputeBackend {
     private let device: MTLDevice
     private let queue: MTLCommandQueue
     private let pipeline: MTLComputePipelineState
@@ -36,55 +43,77 @@ final class MetalStudyRenderer {
     /// Far-away geometry and potentially ambiguous near-field masks stay on
     /// the Double-precision oracle. Routing does not invalidate this backend.
     static func supports(_ scene: LightingScene) -> Bool {
-        StudyFloat32Eligibility.supports(scene)
+        supports(scene, width: 192)
     }
 
-    func render(scene: LightingScene, width: Int) throws -> StudyImage {
-        guard Self.supports(scene) else { throw MetalStudyError.precisionDomain }
-        return try compute(StudyComputeInput(scene: scene, width: width))
+    static func supports(_ scene: LightingScene, width: Int) -> Bool {
+        StudyFloat32Eligibility.supports(scene, width: width)
+    }
+
+    func render(scene: LightingScene, width: Int,
+                isCancelled: () -> Bool = { Task.isCancelled }) throws -> StudyImage {
+        // Preserve the compute input's resolution error before the
+        // width-aware precision predicate can reject the request.
+        guard width >= 24, width <= 192, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }
+        // Preserve the CPU constructor's scene/camera errors before making
+        // the optional precision routing decision. No GPU resource is made
+        // until both input validation and eligibility have succeeded.
+        guard !isCancelled() else { throw StudyError.cancelled }
+        let input = try StudyComputeInput(scene: scene, width: width)
+        guard Self.supports(scene, width: width) else { throw MetalStudyError.precisionDomain }
+        return try compute(input, isCancelled: isCancelled)
     }
 
     /// Internal parity-only path: retain the deliberately unsupported fixture
     /// even though production routing now chooses CPU for near-field scenes.
     /// Input validation and the relative-coordinate limit still apply. The
     /// render engine never uses this entry point to publish a user's frame.
-    func renderValidationFixture(scene: LightingScene, width: Int) throws -> StudyImage {
+    func renderValidationFixture(scene: LightingScene, width: Int,
+                                 isCancelled: () -> Bool = { Task.isCancelled }) throws -> StudyImage {
         let limit = StudyFloat32Eligibility.maximumRelativeDistanceMeters
         guard scene.camera.distance(to: scene.subject) <= limit,
               scene.lights.allSatisfy({ $0.position.distance(to: scene.subject) <= limit })
         else { throw MetalStudyError.precisionDomain }
-        return try compute(StudyComputeInput(scene: scene, width: width))
+        guard !isCancelled() else { throw StudyError.cancelled }
+        return try compute(StudyComputeInput(scene: scene, width: width), isCancelled: isCancelled)
     }
 
-    private func compute(_ input: StudyComputeInput) throws -> StudyImage {
-        guard let params = buffer(input.parameters),
-              let samples = buffer(input.samples),
-              let areas = buffer(input.areas),
-              let output = device.makeBuffer(length: input.width * input.height * 4, options: .storageModeShared),
-              let command = queue.makeCommandBuffer(),
-              let encoder = command.makeComputeCommandEncoder() else { throw MetalStudyError.allocation }
-        command.label = "Key & Fill diagnostic study"
-        encoder.setComputePipelineState(pipeline)
-        encoder.setBuffer(params, offset: 0, index: 0)
-        encoder.setBuffer(samples, offset: 0, index: 1)
-        encoder.setBuffer(areas, offset: 0, index: 2)
-        encoder.setBuffer(output, offset: 0, index: 3)
-        var dimensions = SIMD2<UInt32>(UInt32(input.width), UInt32(input.height))
-        encoder.setBytes(&dimensions, length: MemoryLayout<SIMD2<UInt32>>.stride, index: 4)
-        let groupWidth = min(pipeline.threadExecutionWidth, pipeline.maxTotalThreadsPerThreadgroup)
-        guard groupWidth > 0 else { encoder.endEncoding(); throw MetalStudyError.command }
-        let groupHeight = max(1, min(8, pipeline.maxTotalThreadsPerThreadgroup / groupWidth))
-        let group = MTLSize(width: groupWidth, height: groupHeight, depth: 1)
-        let count = MTLSize(width: (input.width + groupWidth - 1) / groupWidth,
-                            height: (input.height + groupHeight - 1) / groupHeight, depth: 1)
-        encoder.dispatchThreadgroups(count, threadsPerThreadgroup: group)
-        encoder.endEncoding()
-        command.commit()
-        // Only the isolated rendering actor waits. Read shared memory after GPU completion.
-        command.waitUntilCompleted()
-        guard command.status == .completed else { throw MetalStudyError.command }
-        let bytes = Data(bytes: output.contents(), count: input.width * input.height * 4)
-        return try StudyImage.fromComputeRGBA(width: input.width, height: input.height, data: bytes)
+    private func compute(_ input: StudyComputeInput,
+                         isCancelled: () -> Bool = { Task.isCancelled }) throws -> StudyImage {
+        try autoreleasepool {
+            guard !isCancelled() else { throw StudyError.cancelled }
+            guard let params = buffer(input.parameters),
+                  let samples = buffer(input.samples),
+                  let areas = buffer(input.areas),
+                  let output = device.makeBuffer(length: input.width * input.height * 4, options: .storageModeShared),
+                  let command = queue.makeCommandBuffer(),
+                  let encoder = command.makeComputeCommandEncoder() else { throw MetalStudyError.allocation }
+            command.label = "Key & Fill diagnostic study"
+            encoder.setComputePipelineState(pipeline)
+            encoder.setBuffer(params, offset: 0, index: 0)
+            encoder.setBuffer(samples, offset: 0, index: 1)
+            encoder.setBuffer(areas, offset: 0, index: 2)
+            encoder.setBuffer(output, offset: 0, index: 3)
+            var dimensions = SIMD2<UInt32>(UInt32(input.width), UInt32(input.height))
+            encoder.setBytes(&dimensions, length: MemoryLayout<SIMD2<UInt32>>.stride, index: 4)
+            let groupWidth = min(pipeline.threadExecutionWidth, pipeline.maxTotalThreadsPerThreadgroup)
+            guard groupWidth > 0 else { encoder.endEncoding(); throw MetalStudyError.command }
+            let groupHeight = max(1, min(8, pipeline.maxTotalThreadsPerThreadgroup / groupWidth))
+            let group = MTLSize(width: groupWidth, height: groupHeight, depth: 1)
+            let count = MTLSize(width: (input.width + groupWidth - 1) / groupWidth,
+                                height: (input.height + groupHeight - 1) / groupHeight, depth: 1)
+            encoder.dispatchThreadgroups(count, threadsPerThreadgroup: group)
+            encoder.endEncoding()
+            guard !isCancelled() else { throw StudyError.cancelled }
+            command.commit()
+            // Submitted work keeps its buffers alive until completion. A real
+            // command failure remains visible even if cancellation also arrives.
+            command.waitUntilCompleted()
+            guard command.status == .completed else { throw MetalStudyError.command }
+            guard !isCancelled() else { throw StudyError.cancelled }
+            let bytes = Data(bytes: output.contents(), count: input.width * input.height * 4)
+            return try StudyImage.fromComputeRGBA(width: input.width, height: input.height, data: bytes)
+        }
     }
 
     /// Fail closed to CPU on any image-parity failure. Runtime gate is a numerical
@@ -95,7 +124,8 @@ final class MetalStudyRenderer {
             let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 48,
                                                                isCancelled: isCancelled)
             guard !isCancelled() else { throw StudyError.cancelled }
-            let candidate = try renderValidationFixture(scene: fixture.scene, width: 48)
+            let candidate = try renderValidationFixture(scene: fixture.scene, width: 48,
+                                                         isCancelled: isCancelled)
             // A submitted GPU command must finish before its buffers can be
             // read, but cancellation prevents starting another fixture.
             guard !isCancelled() else { throw StudyError.cancelled }
@@ -117,9 +147,10 @@ final class MetalStudyRenderer {
     }
 }
 
-/// Single worker serializes compute submissions and CPU fallbacks. A cancelled
-/// request cannot publish a stale frame. GPU commands already submitted are
-/// allowed to complete, then discarded; CPU pixel work checks cancellation at most every eight evaluations.
+/// Single worker serializes compute submissions and CPU fallbacks. Cooperative
+/// cancellation guards frame return and cache admission; callers still decide
+/// whether to adopt a returned frame. Submitted GPU work completes before its
+/// buffers are released; CPU work checks cancellation every eight evaluations.
 actor StudyRenderEngine {
     static let shared = StudyRenderEngine()
     // Bound both the number of scene snapshots and retained RGBA storage.
@@ -155,7 +186,7 @@ actor StudyRenderEngine {
         }
     }
 
-    private enum State { case unchecked, cpu, metal(MetalStudyRenderer) }
+    private enum State { case unchecked, cpu, metal(any StudyComputeBackend) }
     private var state = State.unchecked
     // Least recently used first. Validated keys contain at most twelve lights
     // and only bounded, fixed-size values after display names are removed.
@@ -164,12 +195,30 @@ actor StudyRenderEngine {
         maximumPixelBytes: StudyRenderEngine.maximumCachedPixelBytes,
         maximumMaskBytes: StudyRenderEngine.maximumCachedMaskBytes)
     private let additionalCancellation: @Sendable () -> Bool
+    private let makeComputeBackend: @Sendable () throws -> any StudyComputeBackend
+
+    var cacheUsage: (count: Int, pixelBytes: Int, maskBytes: Int) {
+        (frameCache.count, frameCache.pixelBytes, frameCache.maskBytes)
+    }
 
     /// An additional cooperative cancellation source is useful to callers that
     /// invalidate work independently of a task, and permits deterministic
     /// lifecycle tests. It can never suppress actual task cancellation.
     init(cancellationRequested: @escaping @Sendable () -> Bool = { false }) {
         additionalCancellation = cancellationRequested
+        makeComputeBackend = {
+            guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
+            return try MetalStudyRenderer(device: device)
+        }
+    }
+
+    /// The factory runs inside this actor when an eligible request first needs
+    /// compute. It must return a fresh backend for this actor's exclusive use;
+    /// callers must not retain it for concurrent use outside the actor.
+    init(cancellationRequested: @escaping @Sendable () -> Bool = { false },
+         makeComputeBackend: @escaping @Sendable () throws -> any StudyComputeBackend) {
+        additionalCancellation = cancellationRequested
+        self.makeComputeBackend = makeComputeBackend
     }
 
     func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {
@@ -192,38 +241,47 @@ actor StudyRenderEngine {
             guard !isCancelled() else { throw StudyError.cancelled }
             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
         }
-        if case .unchecked = state {
+        // Eligibility belongs to this request. CPU-only and invalid requests
+        // must not initialize or change an unchecked backend.
+        let supportsMetal = MetalStudyRenderer.supports(scene, width: width)
+        if case .unchecked = state, supportsMetal {
             do {
-                guard let device = MTLCreateSystemDefaultDevice() else { throw MetalStudyError.unavailable }
-                let renderer = try MetalStudyRenderer(device: device)
+                guard !isCancelled() else { throw StudyError.cancelled }
+                let renderer = try makeComputeBackend()
                 try renderer.validate(isCancelled: isCancelled)
                 guard !isCancelled() else { throw StudyError.cancelled }
                 state = .metal(renderer)
-            } catch let error as StudyError where error == .cancelled {
-                // Incomplete validation is not a failed backend. Leave the
-                // state unchecked so the next live request can validate it.
-                throw error
+            } catch let error as StudyError {
+                // Cancellation and scene errors leave startup retryable.
+                // Malformed output confirms a backend failure instead.
+                if error != .invalidComputeOutput { throw error }
+                selectCPU()
+            } catch MetalStudyError.precisionDomain {
+                // A precision boundary only routes this request through CPU.
             } catch {
-                guard !isCancelled() else { throw StudyError.cancelled }
+                // Fail closed before observing concurrent cancellation.
                 selectCPU()
             }
         }
         guard !isCancelled() else { throw StudyError.cancelled }
-        if case .metal(let renderer) = state, MetalStudyRenderer.supports(scene) {
+        if case .metal(let renderer) = state, supportsMetal {
             do {
-                let image = try renderer.render(scene: scene, width: width)
+                let image = try renderer.render(scene: scene, width: width, isCancelled: isCancelled)
                 guard !isCancelled() else { throw StudyError.cancelled }
                 return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)
             } catch let error as StudyError {
                 // Validation/cancellation is a scene error, not a backend failure.
                 if error != .invalidComputeOutput { throw error }
-                guard !isCancelled() else { throw StudyError.cancelled }
                 selectCPU()
+            } catch MetalStudyError.precisionDomain {
+                // Preserve the validated backend for a later eligible request.
             } catch {
-                guard !isCancelled() else { throw StudyError.cancelled }
                 selectCPU()
             }
         }
+        // In particular, a precision-domain fallback must observe cancellation
+        // before the CPU renderer constructs its scene and emitter samples.
+        guard !isCancelled() else { throw StudyError.cancelled }
         let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
         guard !isCancelled() else { throw StudyError.cancelled }
         return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)

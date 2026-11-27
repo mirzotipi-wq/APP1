@@ -1,0 +1,169 @@
+{
+  "reviewer": "/root/w06_acceptance/interfaces",
+  "frozen_source": "bc08f3b8cd72b9d40bf86ea42a132c685b69d6d9",
+  "campaign_baseline": "f150f98",
+  "review_mode": "Pinned git show source review and public Apple API documentation; no app/native execution or repository mutation.",
+  "decision": "Core dimensions are emitting-face width and height. Supports rectangle-only RealityKit face.scale [W,H,0.006], retaining z=-0.003, directional inset, and existing housing placement.",
+  "source_evidence": [
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "lines": "50-94,107-110",
+      "supports": "Right-handed emitter frame, vertical-aim basis and single authored roll."
+    },
+    {
+      "path": "Sources/LightingCore/CameraFraming.swift",
+      "lines": "3-8,33-61",
+      "supports": "36x24 mm lens, camera local -Z, shared up, minimum depth and undefined framing."
+    },
+    {
+      "path": "Sources/LightingCore/StudioSceneBounds.swift",
+      "lines": "3-6,27-34",
+      "supports": "Explicit emitting-face corners at +/- width/2 and height/2; housing excluded."
+    },
+    {
+      "path": "Sources/LightingCore/StudioOptics.swift",
+      "lines": "131-136",
+      "supports": "Authored width/height passed directly to emitting LambertianRectangle."
+    },
+    {
+      "path": "Sources/LightingCore/SurfacePhotometry.swift",
+      "lines": "118-123,185-189",
+      "supports": "Emission domain and samples use authored full width/height."
+    },
+    {
+      "path": "App/SpatialPreview.swift",
+      "lines": "223-264,294-302,337-340,384-385,424-442",
+      "supports": "Camera contract, emitter basis, nonemitting degenerate aim, full authored box envelope and front-plane anchor; chamfer limits literal ideal corner parity."
+    },
+    {
+      "path": "App/StudioEntityGraph.swift",
+      "lines": "90-96,171,197-203,229-241,260-277",
+      "supports": "Shared basis, unit mesh, hierarchy with unscaled fixture, current face inset and existing front plane."
+    },
+    {
+      "path": "App/SpatialViewportGeometry.swift",
+      "lines": "4-6,25-52",
+      "supports": "Display-only equipment bounds consume shared emitter basis with identity fallback."
+    }
+  ],
+  "consulted_instructions": [
+    "AGENTS.md",
+    "docs/ARCHITECTURE.md",
+    "docs/DESIGN.md",
+    "docs/parallel/05/OWNER_REQUESTS.md"
+  ],
+  "apple_sources": [
+    {
+      "url": "https://developer.apple.com/documentation/realitykit/meshresource/generatebox%28size%3Acornerradius%3A%29",
+      "refs": [
+        "turn646674975search3",
+        "turn789945912search0"
+      ],
+      "claim": "Float size is full box edge length in meters; centered origin; default cornerRadius zero."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/realitykit/hastransform/scale",
+      "refs": [
+        "turn646674975search0"
+      ],
+      "claim": "Entity scale is relative to its parent."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/realitykit/transform/scale.md",
+      "refs": [
+        "turn503816519view1"
+      ],
+      "claim": "Scale is an entity scaling factor."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/realitykit/hastransform/look%28at%3Afrom%3Aupvector%3Arelativeto%3Aforward%3A%29",
+      "refs": [
+        "turn789945912search2"
+      ],
+      "claim": "Forward defaults to negativeZ; look uses supplied up and nil world reference."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/realitykit/hastransform/look(at:from:upvector:relativeto:).md",
+      "refs": [
+        "turn503816519view0"
+      ],
+      "claim": "Existing overload uses supplied up; nil reference is world space."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/scenekit/scnbox/chamferradius.md",
+      "refs": [
+        "turn503816519view2"
+      ],
+      "claim": "Nonzero chamfer creates rounded edges and corners; exact flat-face mesh-corner parity not claimed."
+    }
+  ],
+  "remote": {
+    "repository": "mirzotipi-wq/APP1",
+    "tool": "mcp__codex_apps__github_search_branches",
+    "initial": {
+      "checked_utc": "2026-11-26 14:15:43 UTC",
+      "query": "finish/",
+      "page_size": 100,
+      "response": {
+        "branches": [
+          {
+            "branch": "finish/01-architecture-composition"
+          },
+          {
+            "branch": "finish/02-photometry-color"
+          },
+          {
+            "branch": "finish/03-cpu-study-mannequin"
+          },
+          {
+            "branch": "finish/04-metal-cache"
+          },
+          {
+            "branch": "finish/05-spatial-viewports"
+          }
+        ],
+        "cursor": "NQ"
+      },
+      "interpretation": "Cursor present; insufficient to establish requested branches absent."
+    },
+    "authorized_followups": [
+      {
+        "checked_utc": "2026-11-26 14:17:13 UTC",
+        "query": "finish/06",
+        "page_size": 100,
+        "response": {
+          "branches": [],
+          "cursor": null
+        }
+      },
+      {
+        "checked_utc": "2026-11-26 14:17:13 UTC",
+        "query": "finish/20",
+        "page_size": 100,
+        "response": {
+          "branches": [],
+          "cursor": null
+        }
+      }
+    ],
+    "result": "Both exact-prefix searches returned empty branches and null cursor. No matching branch SHA or HANDOFF path available for inspection.",
+    "fetched_into_repository": false,
+    "baseline_changed": false
+  },
+  "math": {
+    "mesh_box_size": 1,
+    "old_rectangle_face_dimensions": "W - 0.012, H - 0.012 (minimum clamp inactive over valid 0.05...4 m dimensions)",
+    "proposed_rectangle_face_dimensions": "W, H",
+    "face_depth": 0.006,
+    "face_center_local_z": -0.003,
+    "front_local_z": "-0.003 + 0.006/2 = 0",
+    "ideal_world_front_corner": "P +/- (W/2)*right +/- (H/2)*up, subject to Float conversion",
+    "directional_behavior": "Preserve existing directional inset."
+  },
+  "exclusions": [
+    "No source edits",
+    "No native build/test/install/execution",
+    "No physical-device, performance, or calibration evidence",
+    "No Core06, composition01, Plan07, AR13, Study03/04 changes"
+  ]
+}

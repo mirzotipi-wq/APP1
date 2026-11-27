@@ -1,0 +1,13 @@
+# Worker 099 — final CI manifest
+
+Fresh worker `/root/w091/w099` read the ten mandatory documents, wave10 packet and focused contracts at input `0fa824307da13934a289a825fd6d9d4a1939241f`. The requested manifest did not exist at that exact input; its retained 404 records absence, not lost evidence. [CI_MANIFEST.json](../CI_MANIFEST.json) is the first candidate and identifies source7 independently from its later documentation revisions.
+
+The manifest binds CI6 run45848953002 to core140009926092 and native140012314020, and CI7 run45854806270 to core140031989526 and queued native140034909086. Both core jobs passed379 Debug and379 Release methods plus100 tooling tests. CI6 separately passed379 macOS package methods and174 unique Debug native methods, including25 cache methods, with no native failures/skips. Debug and Release app builds, required accounting and finalized export succeeded. Release XCTest runtime remains unperformed.
+
+Raw command groups reconcile to12 successful groups per core job and17 native groups:16 successful plus one failed, nonblocking simulator warm-up. Bootstatus and recovery-preflight timed out before warm-up exit1. The later required native command passed; neither outcome overwrites the other. Group counts exclude setup/post processing and conditional unrun uploads.
+
+All host6/8 and actual simulator Metal6/8 rows retain their exact metrics and mask evidence. Native numerical unsupported/mismatch counts remain unreported. Nineteen CPU cache payload emissions comprise15 steps and4 summaries, all within4 frames/262144 RGBA/65536 mask bytes. Scripted lifetime assertions, real CPU counters, actual Metal and host timings remain separate. Different host CPUs prevent a performance-improvement inference.
+
+Nine uploaded artifacts retain IDs, URLs, sizes and original ZIP SHA256 receipts; supplied expiries are exact and unavailable expiries remain null. No archives were downloaded. Native7 remains queued in the supplied16:47:38 UTC receipt, with no runner or pending approval and unknown cause/ETA. Four appended cache methods, owner03 hosted execution and combined-source integration remain unperformed.
+
+Only immutable reads, in-memory reconciliation and UTF-8 blobs occurred. The extraction's initial macOS classifier mistake is preserved in v1 and corrected transparently in v2. [Inputs](../evidence/w099/inputs.json), raw extraction, checkpoint and path map retain every candidate. No child, shell, SDK probe, build, polling, wait, source/UI/oracle/ABI/config/harness/global-state/ref mutation occurred. Planned worker/results directories remain uncreated. Root alone integrates and seals worker completion.

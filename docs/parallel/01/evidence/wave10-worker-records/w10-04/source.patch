@@ -1,0 +1,111 @@
+diff --git a/App/StudioAdaptiveLayout.swift b/App/StudioAdaptiveLayout.swift
+new file mode 100644
+index 0000000..e0b286a
+--- /dev/null
++++ b/App/StudioAdaptiveLayout.swift
+@@ -0,0 +1,52 @@
++import SwiftUI
++
++/// Changes stack geometry while keeping one stable tree of stateful controls.
++/// Accessibility callers can require a column without replacing the content.
++struct StudioAdaptiveLayout: Layout {
++    var forceVertical: Bool = false
++    var spacing: CGFloat = 8
++
++    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews,
++                      cache: inout ()) -> CGSize {
++        let proposal = normalized(proposal)
++        let layout = stack(for: proposal, subviews: subviews)
++        var stackCache = layout.makeCache(subviews: subviews)
++        return layout.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
++    }
++
++    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
++                       subviews: Subviews, cache: inout ()) {
++        let proposal = normalized(proposal)
++        let layout = stack(for: proposal, subviews: subviews)
++        var stackCache = layout.makeCache(subviews: subviews)
++        // Prepare this stack's cache using the same proposal that chose its
++        // axis. An unrelated earlier sizing probe must not choose placement.
++        _ = layout.sizeThatFits(proposal: proposal, subviews: subviews, cache: &stackCache)
++        layout.placeSubviews(in: bounds, proposal: proposal, subviews: subviews, cache: &stackCache)
++    }
++
++    private func stack(for proposal: ProposedViewSize, subviews: Subviews) -> AnyLayout {
++        let spacing = spacing.isFinite ? max(0, spacing) : 0
++        let vertical = AnyLayout(VStackLayout(alignment: .leading, spacing: spacing))
++        guard !forceVertical else { return vertical }
++
++        let horizontal = AnyLayout(HStackLayout(alignment: .center, spacing: spacing))
++        // An unspecified or infinite width asks for ideal size. A finite
++        // width must fit the complete row before it can use that geometry.
++        guard let availableWidth = proposal.width else { return horizontal }
++        var idealCache = horizontal.makeCache(subviews: subviews)
++        let idealWidth = horizontal.sizeThatFits(proposal: .unspecified,
++                                                subviews: subviews, cache: &idealCache).width
++        return idealWidth.isFinite && idealWidth <= availableWidth ? horizontal : vertical
++    }
++
++    private func normalized(_ proposal: ProposedViewSize) -> ProposedViewSize {
++        ProposedViewSize(width: finiteDimension(proposal.width),
++                         height: finiteDimension(proposal.height))
++    }
++
++    private func finiteDimension(_ value: CGFloat?) -> CGFloat? {
++        guard let value, value.isFinite else { return nil }
++        return max(0, value)
++    }
++}
+diff --git a/App/StudioView.swift b/App/StudioView.swift
+index 88cbc33..3dd6e6f 100644
+--- a/App/StudioView.swift
++++ b/App/StudioView.swift
+@@ -263,25 +263,9 @@ struct StudioView: View {
+     // Prefer one row when the full title and action labels fit. At narrower
+     // widths or larger text sizes, place the title above the adaptive actions.
+     private var header: some View {
+-        Group {
+-            if dynamicTypeSize.isAccessibilitySize {
+-                VStack(alignment: .leading, spacing: 8) {
+-                    projectHeading
+-                    projectActions
+-                }
+-            } else {
+-                ViewThatFits(in: .horizontal) {
+-                    HStack(alignment: .center, spacing: 8) {
+-                        projectHeading.fixedSize(horizontal: true, vertical: false)
+-                        Spacer(minLength: 0)
+-                        projectActions.fixedSize(horizontal: true, vertical: false)
+-                    }
+-                    VStack(alignment: .leading, spacing: 8) {
+-                        projectHeading
+-                        projectActions
+-                    }
+-                }
+-            }
++        StudioAdaptiveLayout(forceVertical: dynamicTypeSize.isAccessibilitySize) {
++            projectHeading.frame(maxWidth: .infinity, alignment: .leading)
++            projectActions
+         }
+         .frame(maxWidth: .infinity, alignment: .leading)
+     }
+@@ -305,16 +289,9 @@ struct StudioView: View {
+     }
+ 
+     private var projectActions: some View {
+-        ViewThatFits(in: .horizontal) {
+-            HStack(spacing: 8) {
+-                projectLibraryButton
+-                projectUtilityActions
+-            }
+-            .fixedSize(horizontal: true, vertical: false)
+-            VStack(alignment: .leading, spacing: 8) {
+-                projectLibraryButton
+-                projectUtilityActions
+-            }
++        StudioAdaptiveLayout() {
++            projectLibraryButton
++            projectUtilityActions
+         }
+     }
+ 

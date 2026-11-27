@@ -354,6 +354,81 @@ final class StudioSmokeTests: XCTestCase {
         XCTAssertFalse(app.buttons["saveProject"].isEnabled)
     }
 
+    func testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable() throws {
+        let app = makeApp(corrupt: true)
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        defer { app.terminate() }
+
+        func assertProtectedStudio(line: UInt = #line) {
+            // Wait for the completed load failure, not the initially disabled Save.
+            assertStatus("Saved data protected", in: app, line: line)
+            XCTAssertEqual(app.staticTexts["projectName"].label, "Project unavailable", line: line)
+            for identifier in ["saveProject", "openProjectLibrary", "exportLightingPlan", "recipes"] {
+                let control = app.buttons[identifier]
+                XCTAssertTrue(control.waitForExistence(timeout: 10),
+                              "Protected storage must retain the \(identifier) control", line: line)
+                XCTAssertFalse(control.isEnabled,
+                               "Utility navigation must not enable \(identifier)", line: line)
+            }
+            XCTAssertFalse(app.buttons["addLightShortcut"].exists,
+                           "Protected storage must not expose the scene editor", line: line)
+            XCTAssertFalse(app.buttons["openReference"].exists,
+                           "Protected storage must not expose reference application", line: line)
+        }
+
+        assertProtectedStudio()
+        let tools = app.buttons["studioTools"]
+        waitForEnabledStudioControl(tools)
+        revealStudioContent(tools, in: app, towardBottom: false)
+        tools.tap()
+        for label in ["Subject position", "Arrange setup", "Place in AR"] {
+            let action = app.buttons[label]
+            XCTAssertTrue(action.waitForExistence(timeout: 10), "The Tools menu must retain \(label)")
+            XCTAssertFalse(action.isEnabled, "Protected storage must still block \(label)")
+        }
+        let settings = app.buttons["Settings"]
+        waitForEnabledStudioControl(settings)
+        settings.tap()
+        let settingsNavigation = app.navigationBars["Settings"]
+        XCTAssertTrue(settingsNavigation.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["distanceUnits"].waitForExistence(timeout: 10))
+        let purchaseOptions = app.buttons["openPurchaseOptions"]
+        waitForEnabledStudioControl(purchaseOptions)
+        revealStudioContent(purchaseOptions, in: app)
+        purchaseOptions.tap()
+
+        let closePro = app.buttons["closeProFeatures"]
+        waitForEnabledStudioControl(closePro)
+        XCTAssertTrue(app.navigationBars["Pro"].exists, "Purchase options must present the actual Pro screen")
+        // Exercise navigation only; never invoke purchase, restore, or refresh.
+        closePro.tap()
+        let proDismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: closePro)
+        XCTAssertEqual(XCTWaiter.wait(for: [proDismissed], timeout: 10), .completed)
+        let settingsDone = settingsNavigation.buttons["Done"]
+        let settingsReturned = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"),
+            object: settingsDone)
+        XCTAssertEqual(XCTWaiter.wait(for: [settingsReturned], timeout: 10), .completed,
+                       "Closing Pro must return to the existing Settings sheet")
+        XCTAssertTrue(purchaseOptions.exists)
+        settingsDone.tap()
+        let settingsDismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: settingsNavigation)
+        XCTAssertEqual(XCTWaiter.wait(for: [settingsDismissed], timeout: 10), .completed)
+        assertProtectedStudio()
+        waitForEnabledStudioControl(tools)
+        revealStudioContent(tools, in: app, towardBottom: false)
+
+        app.terminate()
+        // Retain the UUID-scoped store, but do not recreate its corrupt fixture.
+        // Settings and Pro navigation must leave the original data protected.
+        app.launchEnvironment.removeValue(forKey: "KEYFILL_UI_TEST_CORRUPT")
+        app.launch()
+        assertProtectedStudio()
+    }
+
     func testStudioGuideKeepsUnsavedSetupSelectionAndHistory() throws {
         let app = makeApp()
         app.launch()

@@ -1,0 +1,45 @@
+diff --git a/App/StudyKernel.h b/App/StudyKernel.h
+index df31755..f602584 100644
+--- a/App/StudyKernel.h
++++ b/App/StudyKernel.h
+@@ -187,10 +187,21 @@ inline uchar4 kfStudyPixel(KF_DEVICE const float4 *parameters,
+                            KF_DEVICE const float4 *samples,
+                            KF_DEVICE const float4 *areas,
+                            uint width, uint height, uint x, uint y) {
++    if (width < 24 || width > 192 || width % 3 != 0 || height != width * 2 / 3
++        || x >= width || y >= height) return kfInvalid();
++    // Validate packed metadata before integer conversion or buffer indexing.
++    const float rawSampleCount = parameters[5].x, rawAreaCount = parameters[5].y;
++    if (!isfinite(rawSampleCount) || rawSampleCount < 0.0f || rawSampleCount > 768.0f
++        || floor(rawSampleCount) != rawSampleCount
++        || !isfinite(rawAreaCount) || rawAreaCount < 0.0f || rawAreaCount > 12.0f
++        || floor(rawAreaCount) != rawAreaCount) return kfInvalid();
++    const float rawGrid = parameters[5].w;
++    if (rawGrid != 8.0f) return kfInvalid();
++    const uint sampleCount = (uint)rawSampleCount, areaCount = (uint)rawAreaCount;
++    const uint grid = (uint)rawGrid;
+     const float3 origin = kfXYZ(parameters[0]), forward = kfXYZ(parameters[1]);
+     const float3 right = kfXYZ(parameters[2]), up = kfXYZ(parameters[3]);
+     const float radius = parameters[2].w, extent = parameters[3].w;
+-    const uint sampleCount = (uint)parameters[5].x, areaCount = (uint)parameters[5].y;
+     const float px = (2.0f*((float)x+0.5f)/(float)width-1.0f) * parameters[0].w;
+     const float py = (1.0f-2.0f*((float)y+0.5f)/(float)height) * parameters[1].w;
+     const float3 ray = normalize(forward + right*px + up*py);
+@@ -215,8 +226,6 @@ inline uchar4 kfStudyPixel(KF_DEVICE const float4 *parameters,
+         if (dot(separation,separation) < center.w*center.w) return kfInvalid();
+     }
+     float3 xyz = float3(0.0f,0.0f,0.0f);
+-    const uint grid = (uint)parameters[5].w;
+-    if (areaCount > 0 && grid != 8) return kfInvalid();
+     for (uint i=0; i<sampleCount;) {
+         const float4 source = samples[3*i], axis = samples[3*i+1], color = samples[3*i+2];
+         if (color.w == 0.0f) {
+@@ -227,6 +236,8 @@ inline uchar4 kfStudyPixel(KF_DEVICE const float4 *parameters,
+             ++i;
+             continue;
+         }
++        if (!isfinite(color.w) || color.w < 1.0f || color.w > (float)areaCount
++            || floor(color.w) != color.w) return kfInvalid();
+         const uint areaIndex = (uint)color.w-1;
+         if (areaIndex >= areaCount || i+grid*grid > sampleCount) return kfInvalid();
+         const float4 center = areas[3*areaIndex], ar = areas[3*areaIndex+1], au = areas[3*areaIndex+2];

@@ -1,0 +1,17 @@
+--- a/Sources/LightingCore/LightOutputAdjustment.swift
++++ b/Sources/LightingCore/LightOutputAdjustment.swift
+@@ -11,11 +11,11 @@
+         case .invalidTargetLux:
+             return "Enter a finite target illuminance of zero lux or more."
+         case .invalidLight:
+-            return "The light's settings must be valid before adjusting its output."
++            return "Use a nonblank light name of at most 80 characters. Check its position and emitter settings, output (0–100,000 cd), and color temperature (1,000–20,000 K), then try again."
+         case .unsupportedGeometry:
+-            return "This scene or light geometry cannot produce the requested illuminance on the camera-facing subject plane."
++            return "The model could not calculate this light's contribution. Check the scene settings and all lights. For a positive target in lux, separate the camera from the subject and try moving or re-aiming the light toward the camera-facing subject plane."
+         case .outputOutOfRange:
+-            return "The requested illuminance cannot be represented within the supported candela range and numerical accuracy."
++            return "The requested lux could not be achieved within the model's 0–100,000 cd range and numerical accuracy. Try a different positive target or adjust the light's position or aim; enter 0 lux to turn this light off."
+         }
+     }
+ }

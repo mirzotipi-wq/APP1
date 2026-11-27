@@ -1,0 +1,412 @@
+{
+  "schema": 1,
+  "worker": "W95-concurrency",
+  "runtime_identity": "/root/wave10/w95_concurrency",
+  "recorded_at_utc": "2026-11-26T16:38:49.300231+00:00",
+  "private_worktree": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+  "durable_integration_repository": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+  "reviewed_source": "342e3280e3eb077d55e122c8bfb88b4062b431ed",
+  "reviewed_tree": "629fc14bf911700b924e4d9b2515ed3c9ddc794d",
+  "baseline_native_source": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "host": {
+    "system": "Linux",
+    "release": "6.18.57",
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "verdict": "No demonstrated source blocker in the final preview adoption/publication paths. Hosted runtime and original before/fail remain unverified; no blanket latest native or milestone pass.",
+  "source_files": {
+    "App/ReferenceStudyPreview.swift": {
+      "sha256": "9ba7761837c58dde1b973d0740ad97a37ecea2e73ba8c5b69397da625ef805b9",
+      "worktree_matches_source": true
+    },
+    "NativeTests/StudyPreviewAdoptionTests.swift": {
+      "sha256": "abd3fa97bb0cda6d45e4e9f66b068f1155ea4672b87542a081c33e6d72967f91",
+      "worktree_matches_source": true
+    },
+    "NativeTests/StudyPreviewPipelineTests.swift": {
+      "sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "worktree_matches_source": true
+    },
+    "App/MetalStudyRenderer.swift": {
+      "sha256": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+      "worktree_matches_source": true
+    },
+    "NativeTests/StudyRenderCacheTests.swift": {
+      "sha256": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3",
+      "worktree_matches_source": true
+    },
+    "Sources/LightingCore/ReferenceStudy.swift": {
+      "sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "worktree_matches_source": true
+    },
+    "Sources/LightingCore/PortraitStudy.swift": {
+      "sha256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "worktree_matches_source": true
+    },
+    "Tests/LightingCoreTests/StudyCancellationTests.swift": {
+      "sha256": "a6921bd12c2592e171c33077cab8cd781917283575114abc4946f1f6f4fc3d78",
+      "worktree_matches_source": true
+    }
+  },
+  "source_assertions": {
+    "pipeline_body_identical_source36": true,
+    "pipeline_body_sha256": "f2f7a388b88fd1473c3e74b30cc6798e1c6f327dd715b8382da36f2554a3d32e",
+    "a7_warning_change_leaves_task_block_identical_source36": true,
+    "NativeTests/StudyPreviewPipelineTests.swift_identical_source36": true,
+    "App/MetalStudyRenderer.swift_identical_source36": true,
+    "NativeTests/StudyRenderCacheTests.swift_identical_source36": true,
+    "exact_pipeline_terminal_method_match": true,
+    "all_ten_pipeline_methods_passed": true,
+    "new_hosted_test_absent_source36_log": true
+  },
+  "historical_native": {
+    "evidence_kind": "Independently parsed retained raw native log; not re-executed by W95",
+    "source": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+    "log_path": "docs/parallel/03/evidence/ci-native-36.log",
+    "log_sha256": "019f50cd8b9a949c8f5c2e7c93e79a77826cd3cd7b41a6c234c0c3b1f2ef4bf1",
+    "terminal_regex": "Test Case '-\\[KeyAndFillTests\\.StudyPreviewPipelineTests (test\\w+)\\]' (passed|failed|skipped) ",
+    "pipeline_terminals": [
+      [
+        "testCancellationDiscardsNoncooperativeRenderCompletion",
+        "passed"
+      ],
+      [
+        "testCancelledErrorsAndPrecancelledWorkStaySilent",
+        "passed"
+      ],
+      [
+        "testConversionFailureHasNoSuccessfulImageOrBackend",
+        "passed"
+      ],
+      [
+        "testCurrentFailureCanRetryWithFreshAttempt",
+        "passed"
+      ],
+      [
+        "testDisappearanceOrInactivityInvalidatesLateFailure",
+        "passed"
+      ],
+      [
+        "testInvalidationDuringConversionCannotPublish",
+        "passed"
+      ],
+      [
+        "testLateFailureCannotReplaceNewerImage",
+        "passed"
+      ],
+      [
+        "testLateSuccessCannotReplaceNewerCompletion",
+        "passed"
+      ],
+      [
+        "testPrecancelledBeginCannotInvalidateLiveRequest",
+        "passed"
+      ],
+      [
+        "testReturningToCompletedRequestInvalidatesIntermediateWork",
+        "passed"
+      ]
+    ],
+    "selected_cache_cancellation_terminals": [
+      [
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "passed"
+      ],
+      [
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "passed"
+      ],
+      [
+        "testCancelledTaskCannotReturnCachedFrame",
+        "passed"
+      ]
+    ],
+    "carry_forward_scope": "Only the byte-identical pipeline implementation/test file and engine/cache tests checked here; no changed SwiftUI adoption runtime claim."
+  },
+  "current_apple_build": {
+    "receipt_path": "docs/parallel/03/evidence/ci-apple-build-342.json",
+    "receipt_sha256": "0fcca621b6e8c81fc90c8409a02c2cc652f4fa3b759bd866a4f87e3e3215c410",
+    "source": "342e3280e3eb077d55e122c8bfb88b4062b431ed",
+    "run_id": 45857561126,
+    "job_id": 140042273238,
+    "job_name": "ui (studio-optics)",
+    "step": {
+      "name": "Build native UI test bundle",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-26T16:30:09Z",
+      "completed_at": "2026-11-26T16:32:46Z"
+    },
+    "command": "xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=$SIMULATOR_ID -derivedDataPath $RUNNER_TEMP/keyfill-build CODE_SIGNING_ALLOWED=NO build-for-testing",
+    "evidence_level": "Root-retained finalized successful build-for-testing step metadata; W95 read this receipt. Full job log not yet retrieved at receipt observation.",
+    "runtime_status_at_root_observation": "165 discovered methods await simulator job140042273149.",
+    "limit": "This is a build success, not execution of the hosted test or success of the entire UI/native job. W95 did not poll CI."
+  },
+  "source_findings": [
+    {
+      "topic": "ABA adoption",
+      "references": [
+        "App/ReferenceStudyPreview.swift:78-80",
+        "App/ReferenceStudyPreview.swift:125-148",
+        "App/ReferenceStudyPreview.swift:216-233"
+      ],
+      "observation": "Each live activation reaches the engine-default hook after debounce. A retained A image is current only when both request and active ticket match; successful publication stores the new ticket, pixels, backend and validity together. The old local completed-frame early return is removed."
+    },
+    {
+      "topic": "Precancelled callers",
+      "references": [
+        "App/ReferenceStudyPreview.swift:28-32",
+        "App/ReferenceStudyPreview.swift:216-220",
+        "NativeTests/StudyPreviewPipelineTests.swift:159-184"
+      ],
+      "observation": "Pipeline begin does not supersede live current work for an already-cancelled caller. The SwiftUI task also guards cancellation before assigning its ticket or clearing a failure. The source36 deterministic pipeline test covers begin; it does not execute SwiftUI task scheduling."
+    },
+    {
+      "topic": "Noncooperative completion",
+      "references": [
+        "App/ReferenceStudyPreview.swift:37-59",
+        "NativeTests/StudyPreviewPipelineTests.swift:44-117",
+        "NativeTests/StudyPreviewPipelineTests.swift:150-156"
+      ],
+      "observation": "Ticket and Task.isCancelled are checked before rendering, after suspension, after conversion and before error publication. Stale success/failure and invalidation during conversion are covered by the unchanged pipeline tests. Synchronous publication follows the last guard; no claim of atomicity with an external cancellation after that guard."
+    },
+    {
+      "topic": "Previous frames and pause",
+      "references": [
+        "App/ReferenceStudyPreview.swift:98-105",
+        "App/ReferenceStudyPreview.swift:123-176",
+        "App/ReferenceStudyPreview.swift:178-220"
+      ],
+      "observation": "Only a same-subject successful prior frame can stand in for a different request; a mismatched-subject image or mismatched-request error is hidden. Retained validity counts are explicitly previous-qualified. Inactive work starts a new pipeline ticket and clears activeTicket; disappearance invalidates and clears it. A matching existing error can remain unavailable while inactive; no renderer runs for nil activeRequest."
+    },
+    {
+      "topic": "Hosted mock boundary",
+      "references": [
+        "NativeTests/StudyPreviewAdoptionTests.swift:14-95",
+        "NativeTests/StudyPreviewAdoptionTests.swift:109-159",
+        "NativeTests/StudyPreviewAdoptionTests.swift:170-230"
+      ],
+      "observation": "One host/observable holder retains view identity through A-B-A. Explicit B and A2 continuations plus two-A/one-B invocation counts and initial/held/final AX positive controls target the adoption bug. B only flips a mock boolean and later manually throws StudyError.cancelled; fixtures supply Metal/CPU labels. No actual engine downgrade, GPU execution or cancellation delivery is demonstrated. The host forces active scenePhase and sphere."
+    },
+    {
+      "topic": "Cancellation work and completion boundary",
+      "references": [
+        "Sources/LightingCore/ReferenceStudy.swift:484-495",
+        "Sources/LightingCore/ReferenceStudy.swift:518-552",
+        "Sources/LightingCore/PortraitStudy.swift:190-229",
+        "Tests/LightingCoreTests/StudyCancellationTests.swift:82-154",
+        "App/MetalStudyRenderer.swift:175-246",
+        "NativeTests/StudyRenderCacheTests.swift:265-317"
+      ],
+      "observation": "Pixel checkpoints permit at most eight further evaluations after cancellation immediately following a false poll. Setup/final polls and observed final engine cancellation prevent return/cache admission. The 80 ms task debounce is separate from this work bound. No suspension occurs between final engine check and retain; external cancellation after that final false poll remains a completion-boundary limitation, not a demonstrated precompletion cache-publication failure."
+    }
+  ],
+  "falsifiable_remaining_gaps": [
+    "Execute and retain the exact-source342 hosted native method and finalized method inventory; the recorded successful Apple build alone cannot establish virtual accessibility exposure or the test outcome.",
+    "Original hook-only baseline before/fail and return-removal-only mutation have not been run. Source reasoning predicts missed A2 invocation or incorrect current status, but this is not an observed failing test.",
+    "A held producer plus active-inactive-active, same-state disappearance/reattachment and subject-change hosted cases would test actual task scheduling: paused/previous status, absence of current backend, no inactive render, fresh activation lookup and no stale final publication. Existing hosted test forces active/sphere.",
+    "Actual engine downgrade followed by cancellation and authoritative A lookup requires a distinct engine/native scenario; synthetic backend labels and a manually thrown cancellation cannot establish it."
+  ],
+  "immutable_source_commands": [
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:App/ReferenceStudyPreview.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "9ba7761837c58dde1b973d0740ad97a37ecea2e73ba8c5b69397da625ef805b9",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:NativeTests/StudyPreviewAdoptionTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "abd3fa97bb0cda6d45e4e9f66b068f1155ea4672b87542a081c33e6d72967f91",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:App/MetalStudyRenderer.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:NativeTests/StudyRenderCacheTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:Sources/LightingCore/ReferenceStudy.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:Sources/LightingCore/PortraitStudy.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed:Tests/LightingCoreTests/StudyCancellationTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "a6921bd12c2592e171c33077cab8cd781917283575114abc4946f1f6f4fc3d78",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:App/ReferenceStudyPreview.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "a7c93be58a04154748c951b3d485b05300e9692c:App/ReferenceStudyPreview.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "612e922e16a900bf69cbc1bf13d9995912db535703a4b0bd85f372de1f1d44a5",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:App/MetalStudyRenderer.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1:NativeTests/StudyRenderCacheTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "5504d4e38838d96d7246373f1222c7eb312c0e7f8ab0fa6f4d9dd98b3a4dbbc3",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "48806fd7f3938212a86c19647dc39a17b01b98d3226abb33a0ebb24c4ec6ea64",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "342e3280e3eb077d55e122c8bfb88b4062b431ed^{tree}"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W95-concurrency",
+      "exit_code": 0,
+      "stdout_sha256": "1e0e556c9318b411c618d9c99d3bed54d1ef8e7bbbcf35277bda4ef5bb01feea",
+      "stderr": ""
+    }
+  ],
+  "inspection_events": [
+    "One guessed Sources/LightingCore/LightStudy.swift search returned no-such-file and exit2. rg --files located ReferenceStudy.swift and PortraitStudy.swift; both critical sections were read. This was an inspection path error, not a test failure.",
+    "Broad initial read/log search outputs were truncated; critical preview/test/engine sections, source equality and exact native terminals were re-read or checked with bounded parsing."
+  ],
+  "execution_limits": {
+    "tests_executed_by_W95": [],
+    "builds_executed_by_W95": 0,
+    "renders_executed_by_W95": 0,
+    "source_or_test_edits": false,
+    "children_spawned": 0,
+    "ci_calls": 0,
+    "checkpoint": "Qualitative approximately60% checkpoint delivered; exact token counters unavailable.",
+    "portable_evidence": "Root-owned source342 core391+391 not rerun or represented as UIKit typechecking.",
+    "global_claims": "No M02/M03 promotion, device/VoiceOver, real GPU downgrade, wall-clock cancellation latency or release claim."
+  },
+  "inspection_command_summary": [
+    "cat AGENTS.md agents/OPERATING_PROTOCOL.md docs/acceptance/m02-m03-code.md docs/parallel/03/WORKER_PROTOCOL.md",
+    "nl -ba App/ReferenceStudyPreview.swift; nl -ba NativeTests/StudyPreviewAdoptionTests.swift; nl -ba NativeTests/StudyPreviewPipelineTests.swift (batched read; relevant truncated subsection re-read)",
+    "git diff 36ed6a1..342e328 -- App/ReferenceStudyPreview.swift NativeTests/StudyPreviewPipelineTests.swift NativeTests/StudyPreviewAdoptionTests.swift",
+    "git diff 36ed6a1455dee7ca52b55f46d1a47262f5c98cc1 a7c93be58a04154748c951b3d485b05300e9692c -- App/ReferenceStudyPreview.swift",
+    "sha256sum App/ReferenceStudyPreview.swift NativeTests/StudyPreviewAdoptionTests.swift NativeTests/StudyPreviewPipelineTests.swift",
+    "uname -srm; python3 --version; git --version (actual environment reads)",
+    "Inline Python hashlib/subprocess/re comparison of immutable Git blobs with local source, pipeline extraction, exact raw native terminal method matching and root build receipt inspection; assertions held.",
+    "Bounded rg/sed/cat reads of render cancellation, native cache tests, retained W85/W90 locator receipts, required project documents and exact build receipt."
+  ],
+  "final_validation": {
+    "command": "git diff --check",
+    "exit_code": 0,
+    "diagnostics": "none",
+    "limitation": "Untracked report files were separately loaded and JSON assertions checked; diff --check does not inspect untracked files.",
+    "report_words": 309,
+    "changed_scope": "Only the assigned W95 markdown report and JSON receipt are untracked; no tracked source/test changes."
+  }
+}

@@ -1,0 +1,24 @@
+W02R05; working directory /tmp/keyfill02-workers/w02r05
+Input snapshot supplied by coordinator: LightingCore v1, f75aa2758b4c14714e7517c4c0df4adb9f1a8b9b
+
+Read-only preparation:
+cat /tmp/keyfill02/docs/parallel/02/WAVE-TASKS.md
+rg --files -g '*Scene*' -g '*StudioOptics*' -g '*Colorimetry*' -g '*Neutral*' -g 'AGENTS.md' -g 'Package.swift' /tmp/keyfill02-workers/w02r05
+cat /tmp/keyfill02-probe.py
+cat /tmp/keyfill02-workers/w02r05/AGENTS.md
+rg -n '^(public |    public |enum |struct |extension )|neutralCard|NeutralCard|illuminance|lux|func evaluate|func validate' Sources/LightingCore/Scene.swift Sources/LightingCore/StudioOptics.swift Sources/LightingCore/Colorimetry.swift
+git rev-parse HEAD
+sed -n '1,115p' Sources/LightingCore/Scene.swift
+sed -n '1,190p' Sources/LightingCore/StudioOptics.swift
+sed -n '1,205p' Sources/LightingCore/Colorimetry.swift
+
+Wrote private-output/probe.swift via Python pathlib; exact source retained alongside this file.
+Executed once, exit code 0:
+python3 /tmp/keyfill02-probe.py /tmp/keyfill02-workers/w02r05 /tmp/keyfill02-workers/w02r05/private-output/probe.swift
+
+Helper's compile command (from inspected helper):
+flock /tmp/keyfill02-build.lock /tmp/keyfill02-toolchain/usr/bin/swiftc -I /tmp/keyfill02-swift-snapshot/v1/Modules /tmp/keyfill02-workers/w02r05/private-output/probe.swift /tmp/keyfill02-swift-snapshot/v1/libLightingCore.a -o /tmp/keyfill02-workers/w02r05/private-output/probe
+Helper executed /tmp/keyfill02-workers/w02r05/private-output/probe exactly once.
+The probe performed exactly 32 complete observations, first observation serving as baseline.
+No package build, install, production edit, commit, push, or cleanup.
+Retained only text/source artifacts in this report directory via Python pathlib.

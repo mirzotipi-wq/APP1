@@ -1,0 +1,92 @@
+{
+  "worker": "W53-api",
+  "runtime_id": "/root/wave06/w53_api",
+  "input_sha": "74f7584b4e474c752ec0939add6b7522ba98094f",
+  "timestamp_utc": "2026-11-26T14:30:33.479669+00:00",
+  "worktree": "/tmp/keyfill03-7f4b/workers/W53-api",
+  "private_output": "/tmp/keyfill03-7f4b/builds/W53-api",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "source_sha256": {
+    "App/ReferenceStudyPreview.swift": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+    "NativeTests/StudyPreviewPipelineTests.swift": "4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79",
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "Sources/LightingCore/ReferenceStudy.swift": "86ca1199487d567af8e444e714eabca8252b500bc33b40763d7b258d505977cf",
+    "Sources/LightingCore/PortraitStudy.swift": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+    "App/MetalStudyRenderer.swift": "a537da4c13241ab2612680ae226e453a3a7832167c02af66ec20662e504b194f"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "74f7584b4e474c752ec0939add6b7522ba98094f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "exit_code": 0,
+      "stdout": "## HEAD (no branch)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "rg",
+        "-n",
+        "func test",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "44:    @MainActor func testLateSuccessCannotReplaceNewerCompletion() async throws {\n63:    @MainActor func testLateFailureCannotReplaceNewerImage() async throws {\n79:    @MainActor func testReturningToCompletedRequestInvalidatesIntermediateWork() async throws {\n93:    @MainActor func testCancellationDiscardsNoncooperativeRenderCompletion() async throws {\n107:    @MainActor func testDisappearanceOrInactivityInvalidatesLateFailure() async {\n120:    @MainActor func testCurrentFailureCanRetryWithFreshAttempt() async throws {\n138:    @MainActor func testConversionFailureHasNoSuccessfulImageOrBackend() async throws {\n150:    @MainActor func testInvalidationDuringConversionCannotPublish() async throws {\n159:    @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "rg",
+        "-n",
+        "-A",
+        "24",
+        "struct Position|struct StudySetup|struct StudyLighting",
+        "Sources/LightingCore/Scene.swift",
+        "Sources/LightingCore/ReferenceStudy.swift"
+      ],
+      "exit_code": 0,
+      "stdout": "Sources/LightingCore/Scene.swift:3:public struct Position: Codable, Equatable, Sendable {\nSources/LightingCore/Scene.swift-4-    public static let coordinateRange: ClosedRange<Double> = -100...100\nSources/LightingCore/Scene.swift-5-    public var x: Double\nSources/LightingCore/Scene.swift-6-    public var y: Double\nSources/LightingCore/Scene.swift-7-    public var z: Double\nSources/LightingCore/Scene.swift-8-    public init(x: Double, y: Double, z: Double) {\nSources/LightingCore/Scene.swift-9-        self.x = x; self.y = y; self.z = z\nSources/LightingCore/Scene.swift-10-    }\nSources/LightingCore/Scene.swift-11-    public var isValid: Bool {\nSources/LightingCore/Scene.swift-12-        [x, y, z].allSatisfy { $0.isFinite && Self.coordinateRange.contains($0) }\nSources/LightingCore/Scene.swift-13-    }\nSources/LightingCore/Scene.swift-14-    public func distance(to other: Position) -> Double {\nSources/LightingCore/Scene.swift-15-        let dx = x - other.x, dy = y - other.y, dz = z - other.z\nSources/LightingCore/Scene.swift-16-        return (dx * dx + dy * dy + dz * dz).squareRoot()\nSources/LightingCore/Scene.swift-17-    }\nSources/LightingCore/Scene.swift-18-}\nSources/LightingCore/Scene.swift-19-\nSources/LightingCore/Scene.swift-20-public struct StudioLight: Identifiable, Codable, Equatable, Sendable {\nSources/LightingCore/Scene.swift-21-    public var id: UUID\nSources/LightingCore/Scene.swift-22-    public var name: String\nSources/LightingCore/Scene.swift-23-    public var position: Position\nSources/LightingCore/Scene.swift-24-    /// On-axis luminous intensity, not electrical watts.\nSources/LightingCore/Scene.swift-25-    public var candela: Double\nSources/LightingCore/Scene.swift-26-    public var kelvin: Double\nSources/LightingCore/Scene.swift-27-    /// Nil preserves the legacy isotropic point source.\n--\nSources/LightingCore/ReferenceStudy.swift:204:public struct StudyLighting: Sendable {\nSources/LightingCore/ReferenceStudy.swift-205-    private struct Sample: Sendable {\nSources/LightingCore/ReferenceStudy.swift-206-        let position: SIMD3<Double>\nSources/LightingCore/ReferenceStudy.swift-207-        let emittingNormal: SIMD3<Double>?\nSources/LightingCore/ReferenceStudy.swift-208-        let candela: Double\nSources/LightingCore/ReferenceStudy.swift-209-        let xyz: SIMD3<Double>\nSources/LightingCore/ReferenceStudy.swift-210-        let areaIndex: Int?\nSources/LightingCore/ReferenceStudy.swift-211-    }\nSources/LightingCore/ReferenceStudy.swift-212-    private struct AreaGuard: Sendable {\nSources/LightingCore/ReferenceStudy.swift-213-        let center: SIMD3<Double>\nSources/LightingCore/ReferenceStudy.swift-214-        let right: SIMD3<Double>\nSources/LightingCore/ReferenceStudy.swift-215-        let up: SIMD3<Double>\nSources/LightingCore/ReferenceStudy.swift-216-        let halfWidth: Double\nSources/LightingCore/ReferenceStudy.swift-217-        let halfHeight: Double\nSources/LightingCore/ReferenceStudy.swift-218-        let minimumDistance: Double\nSources/LightingCore/ReferenceStudy.swift-219-\nSources/LightingCore/ReferenceStudy.swift-220-        func containsNearReceiver(_ p: SIMD3<Double>) -> Bool {\nSources/LightingCore/ReferenceStudy.swift-221-            let delta = p - center\nSources/LightingCore/ReferenceStudy.swift-222-            let x = min(halfWidth, max(-halfWidth, dot3(delta, right)))\nSources/LightingCore/ReferenceStudy.swift-223-            let y = min(halfHeight, max(-halfHeight, dot3(delta, up)))\nSources/LightingCore/ReferenceStudy.swift-224-            let separation = delta - right * x - up * y\nSources/LightingCore/ReferenceStudy.swift-225-            return dot3(separation, separation) < minimumDistance * minimumDistance\nSources/LightingCore/ReferenceStudy.swift-226-        }\nSources/LightingCore/ReferenceStudy.swift-227-    }\nSources/LightingCore/ReferenceStudy.swift-228-    private let samples: [Sample]\n--\nSources/LightingCore/ReferenceStudy.swift:438:private struct StudySetup {\nSources/LightingCore/ReferenceStudy.swift-439-    let camera: CameraFraming\nSources/LightingCore/ReferenceStudy.swift-440-    let geometry: StudyGeometry\nSources/LightingCore/ReferenceStudy.swift-441-    let lighting: StudyLighting\nSources/LightingCore/ReferenceStudy.swift-442-    let transform: PreviewColorTransform\nSources/LightingCore/ReferenceStudy.swift-443-    let height: Int\nSources/LightingCore/ReferenceStudy.swift-444-    let halfW: Double\nSources/LightingCore/ReferenceStudy.swift-445-    let halfH: Double\nSources/LightingCore/ReferenceStudy.swift-446-\nSources/LightingCore/ReferenceStudy.swift-447-    init(scene: LightingScene, width: Int, quality: StudyQuality, isCancelled: () -> Bool = { false }) throws {\nSources/LightingCore/ReferenceStudy.swift-448-        let maximum = quality == .reference ? 96 : 192\nSources/LightingCore/ReferenceStudy.swift-449-        guard width >= 24, width <= maximum, width.isMultiple(of: 3) else { throw StudyError.invalidResolution }\nSources/LightingCore/ReferenceStudy.swift-450-        // Reject cancelled work before camera validation and sample allocation.\nSources/LightingCore/ReferenceStudy.swift-451-        // Resolution keeps its cheap, deterministic validation precedence.\nSources/LightingCore/ReferenceStudy.swift-452-        guard !isCancelled() else { throw StudyError.cancelled }\nSources/LightingCore/ReferenceStudy.swift-453-        guard let camera = CameraFraming(scene: scene), let geometry = StudyGeometry(center: scene.subject),\nSources/LightingCore/ReferenceStudy.swift-454-              camera.position.y > geometry.panelY + 0.01,\nSources/LightingCore/ReferenceStudy.swift-455-              camera.subjectDistanceMeters > geometry.radius + CameraFraming.minimumDepthMeters else { throw StudyError.invalidCamera }\nSources/LightingCore/ReferenceStudy.swift-456-        let light = try StudyLighting(scene: scene, quality: quality)\nSources/LightingCore/ReferenceStudy.swift-457-        guard let transform = PreviewColorTransform(settings: scene.effectivePreviewSettings) else { throw StudyError.invalidScene }\nSources/LightingCore/ReferenceStudy.swift-458-        self.camera = camera; self.geometry = geometry; lighting = light; self.transform = transform\nSources/LightingCore/ReferenceStudy.swift-459-        height = width * 2 / 3\nSources/LightingCore/ReferenceStudy.swift-460-        halfW = CameraLens.sensorWidthMillimeters / (2 * camera.lens.focalLengthMillimeters)\nSources/LightingCore/ReferenceStudy.swift-461-        halfH = CameraLens.sensorHeightMillimeters / (2 * camera.lens.focalLengthMillimeters)\nSources/LightingCore/ReferenceStudy.swift-462-    }\n",
+      "stderr": ""
+    }
+  ],
+  "test_methods_inspected": [
+    "testLateSuccessCannotReplaceNewerCompletion",
+    "testLateFailureCannotReplaceNewerImage",
+    "testReturningToCompletedRequestInvalidatesIntermediateWork",
+    "testCancellationDiscardsNoncooperativeRenderCompletion",
+    "testDisappearanceOrInactivityInvalidatesLateFailure",
+    "testCurrentFailureCanRetryWithFreshAttempt",
+    "testConversionFailureHasNoSuccessfulImageOrBackend",
+    "testInvalidationDuringConversionCannotPublish",
+    "testCancelledErrorsAndPrecancelledWorkStaySilent"
+  ],
+  "test_count_inspected": 9,
+  "executed_swift_tests": 0,
+  "native_ui_metal_voiceover": "not run",
+  "classification": "source inspection only; no source edits",
+  "known_prior_search": {
+    "argv": [
+      "rg",
+      "-n",
+      "StudyPreviewHarness|StudyPreviewPipelineTests|study-preview",
+      "Package.swift",
+      "scripts",
+      "docs/parallel/03/WORKER_PROTOCOL.md"
+    ],
+    "exit_code": 1,
+    "result": "no matches"
+  }
+}

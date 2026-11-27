@@ -1,0 +1,49 @@
+{
+  "worker": "W85-concurrency",
+  "runtime_identity": "/root/wave09/w85_concurrency",
+  "same_worker_followup": true,
+  "reviewed_at_utc": "2026-11-26T16:08:42.202280+00:00",
+  "source_revision": "a7c93be58a04154748c951b3d485b05300e9692c",
+  "source_receipt": "W85-concurrency-source.json",
+  "preserved_original_report": {
+    "path": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave09-evidence/W85-original-concurrency.md",
+    "sha256": "c3105f50ddcb3d256f1c7b7f87c5ef471ba0796439d3289781f6632cd6a7e621"
+  },
+  "proposal_sha256": {
+    "docs/parallel/03/evidence/lane04-preview-proposal/owner-preview-adoption.patch": "d2a38f66884d13f53eb12df045bea7d538548e2e41d82732389e377779012c49",
+    "docs/parallel/03/evidence/lane04-preview-proposal/owner-proposal.md": "3a96322015de2da9eab395588a1283c19684498ea472ceec4fb3a07c31698566",
+    "docs/parallel/03/evidence/lane04-preview-proposal/OWNER_REQUESTS-69eb9c.md": "34504e231027037840587a5cd9cb126f97cbdecfb7b5924f78eafaaa6e854127"
+  },
+  "proposal_execution_status": "Read only; proposed patch uncompiled/unrun by W85. W84 owns any adaptation; root owns native execution.",
+  "finding": "W057 is a source-reachable subsequent-request adoption/status-policy defect. It is not evidence of corrupt historical pixels or engine-cache leakage. This supersedes the original report overall no-actionable-defect conclusion.",
+  "reachable_schedule": [
+    "A sphere completes on Metal and is adopted in view-local Frame, including backendLabel Metal compute.",
+    "B starts while the view retains successful A as its previous same-subject image.",
+    "B engine.render encounters a backend error; guard220 or223 observes not cancelled, then selectCPU at221 or224 sets permanent CPU and purges Metal cache at232-236.",
+    "The main actor is free while awaiting B on the render actor. Before B publishes, it changes back to A and cancels B. This can occur immediately after selectCPU and before/during fallback at227.",
+    "The A task calls begin (207), invalidating B, then returns at211 because the view-local frame has request A and a nonnil image. No engine consultation occurs.",
+    "B observes cancellation at a CPU poll or its continuation and cannot publish; the view-local A remains indefinitely. Request-only isCurrent treats it as current and exposes its historical Metal badge despite CPU authority.",
+    "Cancellation need not win an impossible same-actor interval: the actor rendering B and the MainActor running the view are independent while the view awaits."
+  ],
+  "proposal_assessment": {
+    "remove_local_return": "Addresses skipped authoritative engine consultation on every work activation, leaving bounded valid cache reuse to the engine.",
+    "ticket_plus_request_currentness": "A retained same-request A is previous while its new invocation is held; ticket stamping occurs only in existing guarded publication. This prevents presenting revoked output as current during the revalidation delay.",
+    "existing_cancellation": "Pipeline begin/checks and pre-cancelled-entry guards remain, so late B success/failure cannot stamp a new current frame.",
+    "warning_preservation": "The a7 previousWarning logic must remain under the revised isCurrent predicate; same-request historical A may have unsupported pixels and requires the prior warning while pending.",
+    "inactive_disappear": "Clearing activeTicket while invalidating preserves a fresh-adoption requirement on reactivation.",
+    "test_hook": "Defaulted renderStudy must continue calling the same shared engine and preserve output backend provenance; synthetic controlled producer is hosted-view evidence, not real Metal execution."
+  },
+  "minimum_regression_review_criteria": [
+    "Use one mounted host identity with observable scene changes A->B->A, never a .id(scene) replacement.",
+    "Existing ten native pipeline method bodies remain intact.",
+    "Explicit controlled continuation entry/completion determines ordering; waits bounded and held continuations released on failure/cleanup.",
+    "First A displays Metal, B enters and confirms fake downgrade, second A must be invoked while B cannot overwrite it.",
+    "Hold second A result: assert studyPreviousPreview and studyUpdating; current studyBackend and studyWarning absent; preserve historical warning when mask is nonzero.",
+    "After CPU A adoption, assert studyPreview and actual CPU backend, no previous/updating, paired new image provenance.",
+    "Exactly two A and one B requests; baseline with render hook only must fail the second-A expectation; return-removal-only mutant must fail held-frame currentness.",
+    "Source/mock hosted coverage does not prove actual Metal downgrade; integrated engine-specific reproduction remains a separately labelled gate."
+  ],
+  "tests_executed_by_worker": [],
+  "production_edits": false,
+  "candidate_review": "Pending W84 adaptation; root requested later independent review by this same worker and W90."
+}

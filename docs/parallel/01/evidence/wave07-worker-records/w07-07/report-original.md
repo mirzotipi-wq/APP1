@@ -1,0 +1,9 @@
+# W07-07 original report
+
+Created docs/parallel/01/NAVIGATION.md against 08e80c756cb7c8aa4eaf11f27932c8f701000be1. The document maps current Reference, nested comparison, manual room and notes, AR and nested manual fallback, arrangement, target-lux, subject, export-format/PDF/editable-copy/text, and Settings/Pro entry points. It identifies callers, snapshots versus live scene values, typed acceptance, completion/close ownership, cancellation, pending library work and independent transaction lifetime.
+
+The integrated menu change preserves active-edit protection and permits Settings under protected storage. The exact regression lives in existing StudioSmokeTests, not a new class; it opens/closes Pro and Settings and relaunches without recreating corrupt storage. Existing method mappings do not claim execution. Reference/Arrangement/Lux Void producers still consume rejected drafts before they learn of rejection.
+
+Worker checks: startup documents/status/HEAD/log read; agent_cycle.py check and next successful; staged whitespace/scope checks successful; 25 named method declarations and26 local links resolved; scoped unchanged inputs compared to base Git blobs and root source manifest. Root evidence was read and hashed separately:82 syntax inputs,9 UI classes,175 manifest inputs at08e80c7;12 earlier typed-boundary tests at73a829d. Historical Swift6.4.2 failure remains failed. An initial artifact-link validator used an incorrect root fallback parent; corrected without changing the valid document link.
+
+No worker build, Swift parse, native typecheck, simulator/UI execution, device action or StoreKit transaction. Current native sheets/Observation, photo import/dismissal, AR, system export and StoreKit remain unverified. Later rootCI is omitted to avoid conflating revisions. Root may integrate the documentation-only commit and retain native acceptance pending. Patch and receipt are outside the tree; root alone publishes/cleans.

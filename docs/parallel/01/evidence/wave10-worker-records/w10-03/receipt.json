@@ -1,0 +1,125 @@
+{
+  "worker": "W10-03",
+  "actual_context": 94,
+  "agent": "/root/w10_acceptance/w10_03_api",
+  "role": "API compatibility reviewer",
+  "frozen_revision": "adffee463896ba3484a6dde883f7e6745a4c0c6e",
+  "reviewed_integrated_revision": "1f14d48a2e640ee9fe7986f15c20622461ede03f",
+  "reviewed_test_revision": "61183b6dfcabedd6c7df71cdf97f6f3dff39200f",
+  "reviewed_blobs": {
+    "App/StudioAdaptiveLayout.swift": "e0b286a09be9381d15e2741f5563731c3e570ae1",
+    "App/StudioView.swift": "3dd6e6fcd457b5c9fb511e0e75394bfe6a4a8bcb",
+    "App/LightingPlanExportView.swift": "2db6c333853c8f4cab16082cd4d9037cd05feafb",
+    "App/LightingPlanPDF.swift": "0e26c90ab3213f88fc1c337006f817dbbbfd39e5",
+    "App/ProjectDocumentIO.swift": "5b2c7eb311527a5bdd201a23e4674cfc816c673b",
+    "Package.swift": "7afcf4fa2582949170a1c6462fb348c321b0a328",
+    "project.yml": "056e9d4159ca0273f812728381723b60a253000f",
+    "NativeTests/StudioAdaptiveLayoutTests.swift": "7116740e6820a1617446841b2fa13989b186df2e"
+  },
+  "test_blob": "7116740e6820a1617446841b2fa13989b186df2e",
+  "export_equivalent_to": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "export_equivalence": {
+    "App/LightingPlanExportView.swift": true,
+    "App/LightingPlanPDF.swift": true,
+    "App/ProjectDocumentIO.swift": true
+  },
+  "commands": [
+    {
+      "command": "git status --short --branch; git rev-parse HEAD; git log -5 --oneline",
+      "result": "detached frozen HEAD; no worktree changes"
+    },
+    {
+      "command": "Read AGENTS.md, agents/OPERATING_PROTOCOL.md, agents/HANDOFF.md, agents/state.json, docs/parallel/01/HANDOFF.md, docs/PRODUCT.md, docs/ARCHITECTURE.md, docs/ROADMAP.md, docs/QUALITY.md, docs/DESIGN.md",
+      "result": "completed"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit": 0,
+      "result": "State structure and evidence references valid; not acceptance"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit": 0,
+      "result": "M03; editing/accessibility/persistence outstanding"
+    },
+    {
+      "command": "git show a10ee5425a1cc1db9da5798a2f520f591985a5e8:App/StudioAdaptiveLayout.swift; git diff adffee463896ba3484a6dde883f7e6745a4c0c6e a10ee5425a1cc1db9da5798a2f520f591985a5e8 -- App/StudioView.swift Package.swift; git show a10ee5425a1cc1db9da5798a2f520f591985a5e8:Package.swift; git show a10ee5425a1cc1db9da5798a2f520f591985a5e8:project.yml",
+      "result": "actual helper, call sites, targets reviewed"
+    },
+    {
+      "command": "cat /tmp/keyfill01-wave10/w10-02/tree/NativeTests/StudioAdaptiveLayoutTests.swift; git hash-object NativeTests/StudioAdaptiveLayoutTests.swift",
+      "result": "258 lines; exact committed test blob matches read draft"
+    },
+    {
+      "command": "git diff --check adffee463896ba3484a6dde883f7e6745a4c0c6e a10ee5425a1cc1db9da5798a2f520f591985a5e8 -- App Package.swift",
+      "exit": 0
+    },
+    {
+      "command": "git diff --name-only f150f98e35dd735927075aac4d2f8b02295c6a67 a10ee5425a1cc1db9da5798a2f520f591985a5e8 -- App/LightingPlanExportView.swift App/LightingPlanPDF.swift App/ProjectDocumentIO.swift",
+      "result": "empty"
+    },
+    {
+      "command": "git status --porcelain=v1; git rev-parse HEAD",
+      "result": "clean adffee463896ba3484a6dde883f7e6745a4c0c6e"
+    },
+    {
+      "command": "git show 1f14d48a2e640ee9fe7986f15c20622461ede03f:Package.swift; git rev-parse 1f14d48a2e640ee9fe7986f15c20622461ede03f:<reviewed paths>",
+      "result": "Both native files excluded; all prior source blobs and committed test match; root clean"
+    }
+  ],
+  "api_sources": [
+    {
+      "url": "https://developer.apple.com/documentation/swiftui/layout/sizethatfits(proposal:subviews:cache:).md",
+      "reference": "turn238264108view0",
+      "supports": "signature, availability iOS16/macOS13, zero/infinity/unspecified proposal semantics"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/swiftui/layout/placesubviews(in:proposal:subviews:cache:).md",
+      "reference": "turn238264108view1",
+      "supports": "signature, placement proposal corresponds to returned sizing result"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/swiftui/anylayout.md",
+      "reference": "turn238264108view2",
+      "supports": "availability iOS16/macOS13; dynamic layout with retained subview state"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/swiftui/uiviewrepresentable/sizethatfits(_:uiview:context:).md",
+      "reference": "turn238264108view3",
+      "supports": "signature and iOS16 availability"
+    }
+  ],
+  "findings": {
+    "blocking_api_mismatches": [],
+    "integration_pending": null,
+    "nonblocking_limit": "Nonfinite dimensions map to unspecified/ideal. Maximum-flexibility semantics are not preserved; no regression established in current intrinsic call sites."
+  },
+  "native_membership": "project.yml App and NativeTests directory sources include helper and UIKit test; generated target not inspected",
+  "limits": [
+    "No Apple SDK typecheck or native execution performed",
+    "No build, push or nested agents",
+    "Source equivalence and target membership are not execution evidence"
+  ],
+  "worktree_head": "adffee463896ba3484a6dde883f7e6745a4c0c6e",
+  "worktree_status": "",
+  "source_patch_bytes": 0,
+  "report_sha256": "58f374c2efa8bf2f1879c1426bb7b6a6945d49d51eac14334768383d30d0f09a",
+  "report_characters": 1747,
+  "report_words": 214,
+  "report_estimated_tokens_chars_div4": 437,
+  "initial_reviewed_integrated_revision": "a10ee5425a1cc1db9da5798a2f520f591985a5e8",
+  "final_membership_check": {
+    "revision": "1f14d48a2e640ee9fe7986f15c20622461ede03f",
+    "unchanged_source_blobs": {
+      "App/StudioAdaptiveLayout.swift": true,
+      "App/StudioView.swift": true,
+      "App/LightingPlanExportView.swift": true,
+      "App/LightingPlanPDF.swift": true,
+      "App/ProjectDocumentIO.swift": true,
+      "project.yml": true
+    },
+    "integrated_test_matches": true,
+    "package_excludes_helper_and_test": true,
+    "root_status": ""
+  }
+}

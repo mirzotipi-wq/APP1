@@ -1,0 +1,37 @@
+diff --git a/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift b/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
+index f65fe28..46dc05d 100644
+--- a/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
++++ b/Tests/LightingCoreTests/StudyFloat32EligibilityTests.swift
+@@ -23,6 +23,32 @@ final class StudyFloat32EligibilityTests: XCTestCase {
+         XCTAssertTrue(StudyFloat32Eligibility.supports(disabled), "Disabled sources produce no samples or area guards")
+     }
+ 
++    func testCameraInsideSphereIsIneligibleAndRejectedByStudySetup() {
++        let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                  camera: .init(x: 0, y: 1.5, z: 0.1), lights: [])
++        XCTAssertThrowsError(try StudyComputeInput(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertThrowsError(try ReferenceStudyRenderer.render(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value),
++                       "A camera inside the study sphere cannot use the Float32 backend")
++    }
++
++    func testCameraBelowPanelIsIneligibleAndRejectedByStudySetup() {
++        let value = LightingScene(subject: .init(x: 0, y: 1.5, z: 0),
++                                  camera: .init(x: 0, y: 1, z: 3), lights: [])
++        XCTAssertThrowsError(try StudyComputeInput(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertThrowsError(try ReferenceStudyRenderer.render(scene: value, width: 24)) {
++            XCTAssertEqual($0 as? StudyError, .invalidCamera)
++        }
++        XCTAssertFalse(StudyFloat32Eligibility.supports(value),
++                       "A camera below the study panel cannot use the Float32 backend")
++    }
++
+     func testMeasuredMicrometerCutoffRegressionsAndBothSidesOfBoundaryRouteToCPU() throws {
+         // Exact scenes from the independent host-kernel probe. The first
+         // mismatched by 10 nm at 1 m, the second by 1 µm at 20 m.

@@ -1,0 +1,39 @@
+diff --git a/App/StudioSession.swift b/App/StudioSession.swift
+index 7b96509..bf100ff 100644
+--- a/App/StudioSession.swift
++++ b/App/StudioSession.swift
+@@ -1,5 +1,5 @@
+ import Foundation
+-#if canImport(Darwin)
++#if true
+ import Observation
+ #endif
+ import LightingCore
+@@ -7,7 +7,7 @@ import LightingCore
+ /// Per-window editor owner. Views render this state and send commands; the
+ /// session reconciles storage receipts even when a presenting sheet disappears.
+ @MainActor
+-#if canImport(Darwin)
++#if true
+ @Observable
+ #endif
+ final class StudioSession {
+@@ -42,7 +42,7 @@ final class StudioSession {
+     // same orchestration without depending on a Linux Observation runtime.
+     // Keep each ignored attribute on its complete native declaration so the
+     // Observable macro does not also generate tracking accessors for it.
+-    #if canImport(Darwin)
++    #if true
+     @ObservationIgnored private(set) var operationTask: Task<Void, Error>?
+     @ObservationIgnored private var operationTaskID: UUID?
+     #else
+diff --git a/NativeTests/StudioObservationTests.swift b/NativeTests/StudioObservationTests.swift
+index 9e6a76d..8ede9b6 100644
+--- a/NativeTests/StudioObservationTests.swift
++++ b/NativeTests/StudioObservationTests.swift
+@@ -1,4 +1,4 @@
+-#if canImport(Darwin)
++#if true
+ import Foundation
+ import Observation
+ import XCTest

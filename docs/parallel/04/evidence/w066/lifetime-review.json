@@ -1,0 +1,193 @@
+{
+  "schema": 1,
+  "worker": "w066",
+  "wave": 7,
+  "role": "resource-lifetime",
+  "repository": "mirzotipi-wq/APP1",
+  "input_revision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "branch": "finish/04-metal-cache",
+  "campaign_baseline": "f150f98",
+  "packet_blob": "6b541c53c6ca29cc5108f8f62412473d7ae3e559",
+  "scope": "One bounded read-only startup resource-ownership review; immutable report/evidence blobs only. Root integrates.",
+  "mandatory_reads": [
+    {
+      "path": "AGENTS.md",
+      "sha": "e85b23be8676929fa87aae1f8c072c3e5f433722"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "sha": "40eaa48849f59b436d7caa8ec161125d83c65ede"
+    },
+    {
+      "path": "agents/state.json",
+      "sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "sha": "3e7dd3525c070e76838e20ef5e6529f534130639"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "sha": "203c646d5cef679495eee2c30fed8dddf900317c"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d"
+    }
+  ],
+  "source_reads": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "sha": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "ranges": [
+        "1-304"
+      ],
+      "exact_ref_sha_confirmed": true
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "sha": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "ranges": [
+        "325-708",
+        "938-1026"
+      ],
+      "methods": 25
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "candidate_blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "ranges": [
+        "325-708",
+        "938-1235"
+      ],
+      "methods": 29,
+      "comparison": "Entire baseline body before final class brace preserved byte-for-byte; four methods appended, 11556 added characters."
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "sha": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "ranges": [
+        "1-220",
+        "370-450",
+        "450-EOF"
+      ]
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "ranges": [
+        "whole"
+      ]
+    },
+    {
+      "path": "Sources/LightingCore/StudyFloat32Eligibility.swift",
+      "sha": "e9764da10eabbffbad6ceee8999977cf31deb197",
+      "ranges": [
+        "1-160"
+      ]
+    },
+    {
+      "path": "App/ReferenceStudyPreview.swift",
+      "sha": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+      "ranges": [
+        "whole"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "ownership",
+      "kind": "source-review",
+      "result": "No concrete ownership defect found. The default factory constructs fresh resources; backend adoption occurs only after validate and final cancellation check. On confirmed failure state becomes CPU; interrupted validation propagates without adopting the local backend. StudyImage and cached frames contain Data and backend labels, not Metal object references."
+    },
+    {
+      "id": "submitted-work",
+      "kind": "source-review",
+      "result": "compute explicitly calls waitUntilCompleted after commit, checks command status before cancellation, and constructs copied output Data and StudyImage inside autoreleasepool. No assertion about Metal default retained-reference semantics or driver allocation lifetime is made."
+    },
+    {
+      "id": "startup-failure",
+      "kind": "unexecuted-test-source",
+      "methods": [
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame"
+      ],
+      "result": "Assertions expect one deinit for validation-created backend, zero for factory failure before mock allocation; subsequent use of same engine demonstrates permanent CPU choice without destroying actor. Covers confirmed failures with and without cancellation in baseline."
+    },
+    {
+      "id": "validation-interruption",
+      "kind": "unexecuted-test-source",
+      "methods": [
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine"
+      ],
+      "result": "One deinit asserted before retry for thrown StudyError.cancelled and final post-validation cancellation. Candidate proves CPU cache survival and second fresh factory/validation on same engine, with no additional release of retained successful replacement."
+    },
+    {
+      "id": "weak-observation",
+      "kind": "unexecuted-test-source",
+      "method": "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+      "result": "Baseline has a non-owning-observer control and weak nil plus deinit assertions after runtime command/allocation/invalid-output failures, with and without cancellation; same actor subsequently serves CPU. It does not exercise startup, which is already addressed by direct deinit counts."
+    },
+    {
+      "id": "recommendation",
+      "kind": "review-judgment",
+      "result": "Do not add redundant startup weak-reference test. Existing counts plus candidate interrupted-validation assertion cover the actual remaining startup cancellation path. No source patch requested."
+    }
+  ],
+  "frozen_contracts_unchanged": {
+    "cpu_authoritative": true,
+    "exact_invalid_masks": true,
+    "canonical_fixtures": 6,
+    "mean_RGB_channel_error_max": 1,
+    "fraction_channels_error_gt_4_max": 0.005,
+    "strict_fixtures": 8,
+    "strict_max_channel_error": 1,
+    "cache_entries": 4,
+    "cache_RGBA_bytes": 262144,
+    "cache_mask_bytes": 65536,
+    "bust_width_max": 144,
+    "cpu_further_pixel_evaluations_max": 8,
+    "cancelled_and_failed_uncached": true,
+    "downgrade_purges_metal_preserves_cpu": true
+  },
+  "execution": {
+    "local_commands": [],
+    "worktrees_created": false,
+    "agent_cycle": "unavailable/unrun",
+    "Swift": "unavailable/unrun",
+    "native_mock_tests": "pending; not executed by worker",
+    "simulator_Metal": "not executed by worker",
+    "physical_device": "not executed",
+    "driver_memory_RSS": "not measured",
+    "root_reported_context": "240000fd core379 Debug +379 Release and host6+8 passed; native pending. Historical88279ba native160 does not execute wave6/7."
+  },
+  "limits": [
+    "Mock deinit and weak-reference assertions establish only test-object ownership when executed, never GPU allocator/driver/RSS behavior.",
+    "Factory failure before mock allocation is not an execution of partial Metal initialization.",
+    "Known UI-held A→B failure plus cancellation→A engine-bypass issue remains separately routed to owners03/20; no UI fix, corrupted-pixel claim, or new owner request from this review.",
+    "Injected generic CancellationError edge is outside production StudyError.cancelled behavior; no production defect established."
+  ],
+  "isolation": {
+    "planned_worker_path": "/tmp/keyfill04-2987b1ee980d/workers/w066",
+    "planned_results_path": "/tmp/keyfill04-2987b1ee980d/results/w066",
+    "actual": "immutable Git snapshot and separate session state only"
+  },
+  "disposition": "No additional weak-reference or GPU-memory test proposed; await integrated native execution."
+}

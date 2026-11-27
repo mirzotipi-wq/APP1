@@ -1,0 +1,277 @@
+{
+  "worker": "w08-02",
+  "fresh_context": 72,
+  "source_revision": "46a161cb01d0aee2e91940dbd06d82cfe2df5821",
+  "root_evidence_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+  "worktree": "/tmp/keyfill01-wave08/w08-02/tree",
+  "recorded_utc": "2026-11-26T16:19:47.562645+00:00",
+  "git_status_before": "",
+  "git_status_after": "",
+  "source_patch_empty": true,
+  "builds_tests_parses_generated_projects_run_by_worker": false,
+  "commands": [
+    {
+      "command": "git status --short --branch",
+      "exit_code": 0
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "git log -5 --oneline",
+      "exit_code": 0
+    },
+    {
+      "command": "git sparse-checkout list",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0
+    },
+    {
+      "command": "git ls-tree -r --name-only HEAD",
+      "exit_code": 0
+    },
+    {
+      "command": "git status --porcelain=v1",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --binary",
+      "exit_code": 0
+    }
+  ],
+  "audit_method": {
+    "commands": [
+      "git show HEAD:<path> for each manifest path",
+      "git rev-parse HEAD:<path> for each critical input"
+    ],
+    "all_git_exit_codes": 0,
+    "analysis": "Python json/pathlib/hashlib compares manifests with Git bytes; regex counts XCTest events and source test declarations. Source inventory only, not acceptance.",
+    "report_writer_errors": "Two preliminary Python writer invocations exited1 with SyntaxError in the final artifact-output dictionary. Neither parsed/executed statements or wrote files. Corrected writer completes here.",
+    "sparse_lookup": "Initial rg lookup reported absent sparse evidence directory; evidence read from root path. No source-file absence inferred."
+  },
+  "startup": {
+    "required_instructions_current_docs_read": true,
+    "state_check_next": "exit0; valid references and M03 editing/accessibility/persistence outstanding; not test truth"
+  },
+  "manifests": {
+    "wave07/source-manifest.json": {
+      "source_revision": "08e80c756cb7c8aa4eaf11f27932c8f701000be1",
+      "count": 175,
+      "manifest_sha256": "d119b45806845017bcee97fb44ca019f59375bb058b7d680b1c2e0acc243a417",
+      "mismatch_to_frozen_HEAD": []
+    },
+    "wave07/ci-source-manifest.json": {
+      "source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+      "count": 175,
+      "manifest_sha256": "d2e081869fe68e8b63d7e6d7b0473d381969c09e139258e803f4f2334d076113",
+      "mismatch_to_frozen_HEAD": [
+        "App/StudioView.swift",
+        "UITests/StudioSmokeTests.swift"
+      ]
+    },
+    "wave08/source-manifest.json": {
+      "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+      "count": 179,
+      "manifest_sha256": "ac66296b6caf05455da47bb5fd8555f43755a6e50702c0f85333528a365c5bab",
+      "mismatch_to_frozen_HEAD": []
+    }
+  },
+  "inventory": {
+    "direct_inputs": 176,
+    "expanded_inputs": 179,
+    "added": [
+      ".github/workflows/ios-prototype.yml",
+      ".github/workflows/platform-accessibility-diagnostics.yml",
+      "Resources/PrivacyInfo.xcprivacy",
+      "scripts/native_test_shards.py"
+    ],
+    "old_missing_direct_inputs": [
+      "Resources/PrivacyInfo.xcprivacy"
+    ],
+    "expanded_missing": [],
+    "resources_sparse_absence": true,
+    "resources_exist_in_git": true,
+    "workflow_referenced_tracked_scripts_excluded": [
+      "scripts/agent_cycle.py",
+      "scripts/benchmark-study.swift",
+      "scripts/boot_simulator.py",
+      "scripts/ensure-metal-toolchain.sh",
+      "scripts/precision-boundary.swift",
+      "scripts/prepare-kernel-fixtures.swift",
+      "scripts/render-study-fixtures.swift",
+      "scripts/run_atomic_library_write_probe.py",
+      "scripts/verify-kernel-host.cpp",
+      "scripts/verify_app_icon.py",
+      "scripts/verify_privacy_manifest.py"
+    ],
+    "closure_limit": "Also excludes scripts/tests and transitive atomic-probe helpers;179 is the declared target/resources plus selected workflow/shard scope, not complete CI dependency closure."
+  },
+  "critical_input_hashes": {
+    "Resources/PrivacyInfo.xcprivacy": {
+      "blob": "e400f8aa47d2371eab42ca43eb9197fbcb0a48dc",
+      "sha256": "faf85354c10094841f8a1dcd974ca746433553eb93d4683243d57357a83602a7"
+    },
+    "App/Assets.xcassets/AppIcon.appiconset/AppIcon.png": {
+      "blob": "1db0935ac2bc37ce6f317970a4d69897f71cefd1",
+      "sha256": "ae0b6e88c083f67371898cec6186e5fe1ddc4c016f1eff5167c82ed7ffdf2b82"
+    },
+    "App/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "blob": "7140563583a209df2e1515c4177e85428b7417f2",
+      "sha256": "852920cb36e95beb53771138a4b8195a16fcce1cc31250632f246081cc638f9a"
+    },
+    "App/Assets.xcassets/Contents.json": {
+      "blob": "74d6a722cf39b2dd5bef11f166e6ac9b99568a01",
+      "sha256": "f5fb0e1f3a8142892ed092efb5955c1c2cc537003a89ad7bbdb9dade7fe8985f"
+    },
+    "App/ReferenceStudy.metal": {
+      "blob": "09fb9ae35ebeb27eac28bec32e27cd18501fd9e4",
+      "sha256": "39a474e15c28f00f81cbda1a02dc25763d5bada763d12ac269b69bca08af08f8"
+    },
+    "App/StudyKernel.h": {
+      "blob": "df3175546623508b192d29210dcd9b51efce4c37",
+      "sha256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e"
+    },
+    "Package.swift": {
+      "blob": "8d52ab9da2fdcf986d1035a271029078752aae8c",
+      "sha256": "2f0af38da3e97072cbb127d93d7da3afb925eb71ddbac02263013e2f1d344caf"
+    },
+    "project.yml": {
+      "blob": "056e9d4159ca0273f812728381723b60a253000f",
+      "sha256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+    },
+    "Sources/LightingCore/Scene.swift": {
+      "blob": "0825a683a221da4fd72f11cea9e697f8e0a481ae",
+      "sha256": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898"
+    },
+    "Sources/LightingCore/SceneCodec.swift": {
+      "blob": "477f03715b27d3869381779fd8d47a9f2c7c2433",
+      "sha256": "f411f4f57bae222a60802686bccee78fb418f75f8102030dcc8931a4f90622ee"
+    },
+    "Sources/LightingCore/StudioEditorState.swift": {
+      "blob": "76c9f3c70b77ffebd35ff9619a58c89a03060ebf",
+      "sha256": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668"
+    },
+    "Sources/LightingCore/StudioFieldCommand.swift": {
+      "blob": "5bc149e520b46ca4c13f93c75ab5f71bc5a32456",
+      "sha256": "f130b2819e6e29beb83c0222da72eab9f0237131c90a33c6f07d9297beefc1ac"
+    },
+    "Tests/LightingCoreTests/StudioFieldCommandTests.swift": {
+      "blob": "e3b302e3a9f858856dadcc24e50bbb212f6fcdaa",
+      "sha256": "048db29957e2921cec29f2eea8ccd475169ef4259f7400226c2da44a47aef17e"
+    },
+    "App/StudioSession.swift": {
+      "blob": "91b76ee55820642c39793acd2aa6ccf4006910f4",
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f"
+    }
+  },
+  "invariants": {
+    "new_data_defect_found": false,
+    "observations": [
+      "Schemas1\u20135 migrate to5; unsupported schemas, >12 lights, duplicate UUIDs, invalid optional-version fields and nonfinite/range-invalid values reject.",
+      "Geometry meters/intensity candela/temperature kelvin persist unchanged. Lens explicitly millimeters, rotations degrees.",
+      "Typed commands validate complete changed payload and live UUID; arbitrary update/replace/adopt retain full validation. Rejection is atomic for scene/history/selection/revision.",
+      "Effective no-ops preserve nil/default/roll representations; accepted valid feature no-op differs from ordinary mutation Bool.",
+      "No Debug/Release validation conditionals in inspected core/session source. Darwin enables StudioSession Observation, absent on Linux.",
+      "Explicit Double(0.05).nextDown fixes numeric boundary inference; prior Swift6.4.2 failure remains a retained failure."
+    ],
+    "test_examples": [
+      "SceneTests.testLightCountBoundaryAcrossSchemas",
+      "StudioEditorStateTests.testSchemaMigrationKeepsIDsUnitsAndOptionalRepresentations",
+      "StudioFieldCommandTests.testLegacyCombiningMarkNamesAndUntouchedSceneContentSurviveScalarCommands",
+      "StudioFieldCommandTests.testOutAndBackRestoresExactOptionalAndRollRepresentationsWithoutDiscardingRedo",
+      "StudioFieldCommandTests.testArbitrarySceneEntryPointsKeepFullValidationAfterTypedCommands"
+    ]
+  },
+  "configuration_intent": {
+    "portable": {
+      "core_methods": 396,
+      "shared_session_store_methods": 35,
+      "total": 431,
+      "files": {
+        "StudioSessionTests.swift": 12,
+        "StudioPlanSessionTests.swift": 6,
+        "StudioFeatureSessionTests.swift": 16,
+        "StudioFeatureWindowTests.swift": 1
+      }
+    },
+    "native_declared_configured": {
+      "unit_methods": 189,
+      "overlap_with_portable": 35,
+      "native_only": 154,
+      "native_swift_files": 23,
+      "UITest_swift_files": 12,
+      "UITest_declared_methods": 38,
+      "generation_ran": false
+    },
+    "mapping": "Package uses three actual App orchestration files and four shared NativeTests files; native project includes all NativeTests plus UITests/StudioViewportGeometry.swift. Shared tests switch imported module using canImport(KeyAndFill).",
+    "workflow": "Native Debug build-for-testing/test-without-building. Native Release builds plus icon/privacy bundle validators; no Release runtime coverage claim."
+  },
+  "current_root_debug": {
+    "source_revision": "7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f",
+    "command": [
+      "/tmp/keyfill01-swift-6.0.3/usr/bin/swift",
+      "test",
+      "--configuration",
+      "debug",
+      "--scratch-path",
+      "/tmp/keyfill01-build-v8-debug",
+      "--cache-path",
+      "/tmp/keyfill01-cache-v8",
+      "--jobs",
+      "1",
+      "-Xswiftc",
+      "-disable-batch-mode"
+    ],
+    "exit_code": 0,
+    "log_sha256": "3abf5af90d8eb280d4cb0acea6ec125bfa466a3d23bf200860b8b3c8f29dc566",
+    "events": {
+      "started": 431,
+      "passed": 431
+    },
+    "unique_passed": 431,
+    "failed": 0,
+    "inventory_sha256_newline_terminated": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d"
+  },
+  "wave07_ci": {
+    "source_revision": "5ccfbaae821a32d88c12ed8b3abf1600aef25753",
+    "log_sha256": "00323fc554ab439fd44077bbd8535368b39fce4181080383d67a243c41af93aa",
+    "recorded_debug": {
+      "started": 431,
+      "passed": 431,
+      "unique_cases": 431,
+      "failed": 0,
+      "case_inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d"
+    },
+    "recorded_release": {
+      "started": 431,
+      "passed": 431,
+      "unique_cases": 431,
+      "failed": 0,
+      "case_inventory_sha256": "388f38e9005f3890fc0376d92ab280f9a7d372abfa3d83567c012a5394128e6d"
+    },
+    "independent_combined_events": {
+      "started": 862,
+      "passed": 862
+    },
+    "limit": "Only StudioView and StudioSmokeTests differ in the CI175 manifest versus frozen HEAD. Earlier CI cannot prove current native navigation."
+  },
+  "limitations": [
+    "No current Release pass claimed: manager reported compile signal9 at cutoff; worker did not rerun or wait.",
+    "No generated targets, Apple typecheck, UI/AR/StoreKit runtime acceptance.",
+    "Three existing Void producers consume rejected drafts; unchanged.",
+    "Read-only review made no source/CI changes or pushes."
+  ],
+  "report_bounds": {
+    "words": 192,
+    "characters": 1541,
+    "token_estimate": "Below800; exact working-token usage unavailable."
+  }
+}

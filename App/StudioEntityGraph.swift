@@ -69,7 +69,11 @@ final class StudioEntityGraph {
     func update(scene: LightingScene, selected: UUID?) {
         guard let bounds = try? StudioSceneBounds(scene: scene) else {
             anchor.isEnabled = false
+            for lamp in lights.values { lamp.root.removeFromParent() }
+            lights.removeAll()
+            lightRoots.removeAll()
             lastScene = nil
+            lastSelection = nil
             return
         }
         anchor.isEnabled = true
@@ -121,9 +125,12 @@ final class StudioEntityGraph {
     }
 
     func lightID(for entity: Entity) -> UUID? {
+        guard lastScene != nil, anchor.isEnabled else { return nil }
         var current: Entity? = entity
         while let item = current {
-            if let id = lightRoots[ObjectIdentifier(item)] { return id }
+            guard item.isEnabled else { return nil }
+            if let id = lightRoots[ObjectIdentifier(item)],
+               lights[id]?.root === item, item.parent === anchor { return id }
             current = item.parent
         }
         return nil
@@ -244,7 +251,9 @@ private final class StudioLampEntity {
         let optics = light.effectiveOptics
         let frame = StudioPhotometry.frame(for: light, subject: subject)
         let geometryChanged = light.position != lastLight?.position || optics != lastLight?.effectiveOptics || subject != lastSubject
-        let sourceChanged = light != lastLight || subject != lastSubject || shades != lastShades
+        // Display names do not change meshes, materials or light components.
+        let sourceChanged = geometryChanged || light.candela != lastLight?.candela ||
+            light.kelvin != lastLight?.kelvin || shades != lastShades
         if geometryChanged {
             let position = vector(light.position)
             root.position = position
@@ -263,7 +272,9 @@ private final class StudioLampEntity {
             housing.scale = [width, height, 0.08]
             // Stop the housing behind the diffuser to avoid coplanar surfaces.
             housing.position = [0, 0, -0.046]
-            face.scale = [max(0.01, width - 0.012), max(0.01, height - 0.012), 0.006]
+            // Rectangle dimensions describe the full emitting area.
+            face.scale = optics.kind == .rectangle ? [width, height, 0.006] :
+                [max(0.01, width - 0.012), max(0.01, height - 0.012), 0.006]
             // The emitting face is exactly at the authored position, z = 0.
             face.position = [0, 0, -0.003]
             selection.position = isPoint ? .zero : [0, 0, -0.043]
@@ -291,7 +302,7 @@ private final class StudioLampEntity {
                 aimLine.scale = [0.005, length, 0.005]
                 aimLine.orientation = simd_quatf(from: [0, 1, 0], to: delta / length)
                 aimTarget.position = delta
-                aimTarget.scale = [0.055, 0.055, 0.055]
+                aimTarget.scale = SIMD3<Float>(repeating: Float(2 * SpatialViewportBounds.aimTargetRadiusMeters))
             }
         }
         selection.isEnabled = selected

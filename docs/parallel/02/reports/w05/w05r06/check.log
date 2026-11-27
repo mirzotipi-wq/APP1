@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "kind": "single static source-bound check; no runtime benchmark",
+  "photometry_calls": {
+    "any_solve_max": 4,
+    "zero_target": 0,
+    "source_off_max": 3
+  },
+  "rectangle_leaf_samples": {
+    "full_per_call": 1024,
+    "partial_per_call": 432,
+    "full_per_solve_max": 4096,
+    "partial_per_solve_max": 1728
+  },
+  "rectangle_call_depth_max": 2,
+  "rectangle_entries_per_solve_max": 6,
+  "rectangle_entries_rationale": "unit and maximum cannot recurse; existing and achieved may each add one wrapper",
+  "affine_partial_sign_patterns_checked": 32,
+  "bounded_geometry_storage": "four corners, four incidence vertices, at most five clipped vertices; twelve global Gauss tuples; scalar loop accumulators",
+  "validation_storage": "at most twelve UUIDs in map and twelve in Set; light/scene values use normal Swift value semantics",
+  "limitation": "name trimming/counting costs depend on caller-provided encoded string length; 80 Characters does not impose a UTF-8 byte cap. No uniform whole-solver memory/time cap or measured allocation/RSS result is claimed.",
+  "checks": [
+    "worktree HEAD matches assigned revision",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/LightOutputAdjustment.swift",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/StudioOptics.swift",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/SurfacePhotometry.swift",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/Scene.swift",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/CameraFraming.swift",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/Colorimetry.swift",
+    "source bytes match frozen snapshot and production: Sources/LightingCore/RoomPlacement.swift",
+    "all LightingCore production source unchanged since production revision",
+    "exactly four ordered photometry callsites: unit, maximum, existing, achieved",
+    "solver contains no loop (argument label for: excluded)",
+    "solver contains no self recursion",
+    "zero-target return precedes all photometry",
+    "zero-target branch returns immediately",
+    "existing-source evaluation is conditional on positive source intensity",
+    "1e-9 forward acceptance and 100000 cd cap remain present",
+    "full-face midpoint loop has two fixed sample axes",
+    "clipped-face quadrature has two 12-node axes",
+    "four rectangle incidences come from one affine half-plane",
+    "clipping visits initial rectangle once; reserve is not treated as a cap",
+    "independent affine sign enumeration bounds clipped polygon at five vertices",
+    "triangle fan uses at most polygon.count minus two triangles",
+    "tiny-output recursion changes intensity to one and cannot recur again",
+    "tiny wrapper returns before allocating integration arrays or doing quadrature",
+    "scene rejects more than twelve lights before iteration and UUID map/Set allocation",
+    "name trimming/counting is separate input-length-dependent validation"
+  ]
+}

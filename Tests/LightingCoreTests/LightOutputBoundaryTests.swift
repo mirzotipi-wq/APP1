@@ -91,8 +91,21 @@ final class LightOutputBoundaryTests: XCTestCase {
         XCTAssertEqual(adjusted, expected)
     }
 
-    func testUnachievableSubnormalTargetStillRejectsIntegrationUnderflow() {
+    func testRepresentableSubnormalTargetNoLongerLostInIntegration() throws {
         let (source, scene) = fixture()
+        let target = Double.leastNonzeroMagnitude
+        let adjusted = try LightOutputAdjustment.light(source, targetingLux: target, in: scene)
+        XCTAssertTrue(adjusted.isValid)
+        XCTAssertGreaterThan(adjusted.candela, 0)
+        XCTAssertEqual(StudioPhotometry.illuminance(for: adjusted, in: scene), target)
+    }
+
+    func testTrulyUnrepresentableSubnormalTargetStillRejectsOutputUnderflow() {
+        var (source, scene) = fixture(kind: .point)
+        source.position.z = 0.05
+        scene.lights = [source]
+        // At 5 cm the unit-source coefficient is 400. The required candela
+        // for one lux ULP is below Double.leastNonzeroMagnitude.
         XCTAssertThrowsError(try LightOutputAdjustment.light(source, targetingLux: .leastNonzeroMagnitude,
                                                             in: scene)) { error in
             XCTAssertEqual(error as? LightOutputAdjustmentError, .outputOutOfRange)

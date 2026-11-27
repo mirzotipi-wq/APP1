@@ -1,0 +1,125 @@
+{
+  "worker": "W65-concurrency",
+  "role": "concurrency",
+  "wave": 7,
+  "assignment": "Source-only reconciliation of preview adoption and pre-cancelled begin against pinned latest lane04 engine/cache routing; trace cancellation, stale completion/error/badge, cache returns and backend downgrade.",
+  "input_sha": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "runtime_id": "/root/wave07/w65_concurrency",
+  "canonical_task_path": "/root/wave07/w65_concurrency",
+  "runtime_id_kind": "actual canonical ID supplied by task; no separate UUID exposed",
+  "private_worktree": "/tmp/keyfill03-7f4b/workers/W65-concurrency",
+  "private_output": "/tmp/keyfill03-7f4b/builds/W65-concurrency",
+  "private_output_used": false,
+  "integration_checkout": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+  "private_tree_clean": true,
+  "private_head_verified": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "status": "inspection_complete_no_concrete_incompatibility",
+  "recommendation": "Retain current correction and owner boundaries; no source or test proposal warranted by this inspection.",
+  "sources": [
+    {
+      "artifact": "/tmp/keyfill03-7f4b/workers/W65-concurrency/App/ReferenceStudyPreview.swift",
+      "source_path": "App/ReferenceStudyPreview.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 11937,
+      "sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "git_blob": "c96d5cb7a41143867efca160b309d71bfa993c96"
+    },
+    {
+      "artifact": "/tmp/keyfill03-7f4b/workers/W65-concurrency/NativeTests/StudyPreviewPipelineTests.swift",
+      "source_path": "NativeTests/StudyPreviewPipelineTests.swift",
+      "ref": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+      "bytes": 9709,
+      "sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "git_blob": "9d4250cac8296eb6b0825320b6d5df801e127310"
+    },
+    {
+      "artifact": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave07-evidence/W67-lane04-metal.swift",
+      "source_path": "App/MetalStudyRenderer.swift",
+      "ref": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "bytes": 13787,
+      "sha256": "ac846f97796b90929b4c27ae72e2698fb54f62cbc100664f455251e60de88df4",
+      "git_blob": "6f72a920bc8e14438997b07c6b45545c077509dc",
+      "matches_W67_receipt": true
+    },
+    {
+      "artifact": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03/docs/parallel/03/workers/wave07-evidence/W67-lane04-requests.md",
+      "source_path": "docs/parallel/04/OWNER_REQUESTS.md",
+      "ref": "88279ba0ee0262ea6c880580c8a85b56342abbff",
+      "bytes": 3136,
+      "sha256": "33cb62fc43b3b2c3d817bf70deb4bb8c2a209a0adb72d01a2ac5065d1db90a0b",
+      "git_blob": "7ff42021d0e4f2166b8750c233474083bbc26d79",
+      "matches_W67_receipt": true
+    }
+  ],
+  "source_receipt_reference": "docs/parallel/03/workers/wave07-evidence/W67-consumer.json",
+  "checks_actually_executed": [
+    "Read AGENTS.md, agents/OPERATING_PROTOCOL.md, docs/acceptance/m02-m03-code.md and docs/parallel/03/WORKER_PROTOCOL.md in private tree.",
+    "Read numbered App/ReferenceStudyPreview.swift and NativeTests/StudyPreviewPipelineTests.swift; inspected all ten existing test assertions without execution.",
+    "Read full W67-lane04-metal.swift and W67-lane04-requests.md at pinned lane04 ref; compared SHA256 and computed Git blob IDs with W67-consumer.json.",
+    "Traced begin/load/.task and body visibility; actor render/cache promotion/admission, validation cancellation, fallback and selectCPU cache purge.",
+    "Read historical preview-pipeline-inputs.json/log (nine tests) separately from preview-wave06-inputs.json and preview-cancelled-begin-corrected.log (ten tests).",
+    "Computed current preview/test source SHA256 and proved equality with retained ten-test receipt; no retained result relabeled as this worker execution.",
+    "Ran git rev-parse HEAD, git status --porcelain and git log -3 --oneline; repeated HEAD/status before report output.",
+    "Wrote only assigned report and evidence JSON; verified their serialized contents and report word count."
+  ],
+  "tests_run": [],
+  "builds_run": [],
+  "source_changes": [],
+  "test_changes": [],
+  "commits": [],
+  "ref_updates": [],
+  "external_messages": [],
+  "findings": {
+    "pre_cancelled_begin": "Unused ticket returned without replacing current; outer task guard precedes view mutation.",
+    "await_and_publish": "Ticket/cancellation guards precede render, follow await and follow conversion; catch excludes stale tickets, task cancellation and both cancellation error types.",
+    "A_B_A": "begin precedes cached view-frame early return, so intermediate work cannot adopt.",
+    "subject_and_metadata": "Prior image fallback requires same subject; errors exact request; badges/warnings exact request; immutable completion fields from one snapshot.",
+    "cached_return": "Engine validates key before hit, includes subject/effective width, polls before promotion; consumer checks cancellation after the actor await.",
+    "backend_downgrade": "selectCPU purges Metal cache entries; unsupported request routing does not poison a validated backend; retained view-frame labels remain provenance.",
+    "interface": "Preview default-width actor render call and image/backend result remain compatible.",
+    "new_counterexample": false,
+    "name_only_request_canonicalization": "optional and deferred",
+    "width24_runtime_verification_owner": "lane04"
+  },
+  "retained_evidence": {
+    "executed_by_this_worker": false,
+    "metadata": "docs/parallel/03/evidence/preview-wave06-inputs.json",
+    "metadata_sha256": "6a4778f5da150787d80ec4d008372683055388421242e540c5a8e5b2192f49ac",
+    "log": "docs/parallel/03/evidence/preview-cancelled-begin-corrected.log",
+    "log_sha256": "48dc3c908acd8b3c08037a7c3cac6cf9a57173310045ea3c01d034330926d31e",
+    "recorded_result": {
+      "tests": 10,
+      "failures": 0,
+      "seconds": 0.005,
+      "log": "preview-cancelled-begin-corrected.log"
+    },
+    "source_hashes_match_current": {
+      "App/ReferenceStudyPreview.swift": true,
+      "NativeTests/StudyPreviewPipelineTests.swift": true
+    },
+    "scope": "Linux deterministic MainActor publication seam; not actual SwiftUI task scheduling, current Apple typechecking or native Metal proof.",
+    "historical_failure_preserved": {
+      "tests": 10,
+      "failedMethods": 1,
+      "failedAssertions": 2,
+      "log": "preview-cancelled-begin-original.log"
+    },
+    "historical_nine_test_receipt": "docs/parallel/03/evidence/preview-pipeline-inputs.json"
+  },
+  "limitations": [
+    "Source inspection only; no builds/tests/native scheduler/SwiftUI/Metal/layout/physical checks executed.",
+    "Cancellation checks are cooperative boundaries, not atomic exclusion of every external cancellation interleaving.",
+    "Pinned latest lane04 source means 88279ba0ee0262ea6c880580c8a85b56342abbff; no new branch fetch or integration performed.",
+    "Retained engine cache internals were not separately re-audited; inspected owner engine call ordering only.",
+    "CPU six-plus-eight gates are prior source-identified evidence, not worker runs; width24 runtime verification remains lane04.",
+    "Working-token/checkpoint counter unavailable; 12k target/60% checkpoint not measured."
+  ],
+  "lookup_interruptions": [
+    "Initial rg used nonexistent AppTests/ReferenceStudyPreviewPipelineTests.swift and Tests/ReferenceStudyPreviewPipelineTests.swift; corrected via rg --files to NativeTests/StudyPreviewPipelineTests.swift.",
+    "Broad existing-evidence rg output was truncated; followed with exact full preview-wave06-inputs.json and corrected log read."
+  ],
+  "new_runtime_interruptions": [],
+  "report": "docs/parallel/03/workers/W65-concurrency.md",
+  "report_sha256": "b86bf2e896a363edb8b0719323f96ae267e343fbf08c924f18b956df80707b24",
+  "completed_utc": "2026-11-26T15:11:08.656544+00:00"
+}

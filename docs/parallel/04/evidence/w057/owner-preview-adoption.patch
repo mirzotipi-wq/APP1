@@ -1,0 +1,70 @@
+diff --git a/App/ReferenceStudyPreview.swift b/App/ReferenceStudyPreview.swift
+--- a/App/ReferenceStudyPreview.swift
++++ b/App/ReferenceStudyPreview.swift
+@@ -72,7 +72,14 @@
+     @State private var frame: Frame?
+     @State private var attempt = UUID()
+     @State private var pipeline = StudyPreviewPipeline<CGImage>()
++    @State private var activeTicket: UUID?
+ 
++    // Internal seam for hosted adoption tests; ordinary callers use the engine.
++    var renderStudy: @MainActor (LightingScene, StudySubject) async throws -> StudyPreviewOutput = { scene, subject in
++        let rendered = try await StudyRenderEngine.shared.render(scene: scene, subject: subject)
++        return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)
++    }
++
+     private struct Request: Equatable {
+         let scene: LightingScene
+         let subject: StudySubject
+@@ -101,6 +108,7 @@
+     }
+ 
+     private struct Frame {
++        let ticket: UUID
+         let request: Request
+         let image: CGImage?
+         let unsupportedPixels: Int
+@@ -116,7 +124,7 @@
+                 // different subject or an old error must never stand in for it.
+                 if let frame,
+                    frame.request == request || (frame.image != nil && frame.request.subject == subject) {
+-                    let isCurrent = frame.request == request
++                    let isCurrent = frame.request == request && frame.ticket == activeTicket
+                     if let image = frame.image {
+                         let width = min(geometry.size.width, geometry.size.height * 1.5)
+                         let updateStatus = activeRequest == nil ? "Light study paused" : "Updating light study"
+@@ -195,23 +203,26 @@
+                 }
+             }
+         }
+-        .onDisappear { pipeline.invalidate() }
++        .onDisappear {
++            pipeline.invalidate()
++            activeTicket = nil
++        }
+         .task(id: work) {
+             guard !Task.isCancelled else { return }
+             let ticket = pipeline.begin()
++            activeTicket = activeRequest == nil ? nil : ticket
+             guard let snapshot = activeRequest else { return }
+-            // A quick switch back to a completed request can reuse its pixels.
+-            // Failed frames remain retryable when this view appears again.
+-            if let frame, frame.request == snapshot, frame.image != nil { return }
++            // Reconsult the engine on every activation: a cancelled intermediate
++            // request may have permanently downgraded its backend. Retained
++            // pixels remain a previous render until this ticket is adopted.
+             // A new attempt shows loading, not an obsolete failure. Retrying
+             // never edits the scene or changes its cache identity.
+-            if frame?.request == snapshot { frame = nil }
++            if frame?.request == snapshot, frame?.image == nil { frame = nil }
+             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
+             await pipeline.load(ticket: ticket, render: {
+-                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)
+-                return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)
++                try await renderStudy(snapshot.scene, snapshot.subject)
+             }, convert: Self.makeImage) { completion in
+-                frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,
++                frame = Frame(ticket: ticket, request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,
+                               backendLabel: completion.backendLabel, message: completion.message)
+             }
+         }

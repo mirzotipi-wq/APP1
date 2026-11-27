@@ -1,0 +1,575 @@
+{
+  "fixtureManifest": {
+    "path": "docs/parallel/03/evidence/final-parity-inputs.json",
+    "sha256": "d9e54e530769c684affc77afd5bdc38e7d9e0523c0c1debbd1a629219348dda2",
+    "sourceCommit": "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5"
+  },
+  "layout": {
+    "header": "six UInt32 little-endian at byte offsets 0,4,8,12,16,20: width,height,parameterRows,sampleRows,areaRows,unsupportedCount",
+    "rowBytes": 16,
+    "rgbaOffsetFormula": "24 + 16 * (parameterRows + sampleRows + areaRows)",
+    "expectedLengthFormula": "rgbaOffset + width * height * 4",
+    "indexing": "zero-based row-major; x=index%width; y=index//width; top-to-bottom",
+    "serializedMask": "alpha 0 = unsupported (RGB 255,0,255); alpha 255 = valid",
+    "StudyImageMask": "one byte per pixel: 1=unsupported,0=valid; StudyImage RGBA stays opaque"
+  },
+  "fixtures": [
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/dark.bin",
+      "sha256": "3c4fa06af0faa0bf3ab3e501c258280db50384497efaef47aafb0f6f7565f8c2",
+      "manifestSHA256": "3c4fa06af0faa0bf3ab3e501c258280db50384497efaef47aafb0f6f7565f8c2",
+      "hashMatches": true,
+      "gitBlobAtInput": "f709cf682409fee3d6e1d2a504acbb17fd48bbd5",
+      "width": 96,
+      "height": 64,
+      "pixelCount": 6144,
+      "headerUInt32LE": [
+        96,
+        64,
+        6,
+        0,
+        0,
+        0
+      ],
+      "headerHex": "600000004000000006000000000000000000000000000000",
+      "offsetsBytes": {
+        "header": 0,
+        "parameters": 24,
+        "samples": 120,
+        "areas": 120,
+        "rgba": 120
+      },
+      "fileLengthBytes": 24696,
+      "expectedFileLengthBytes": 24696,
+      "unsupportedHeaderCount": 0,
+      "actualAlphaZeroCount": 0,
+      "actualAlpha255Count": 6144,
+      "invalidIndices": [],
+      "referenceInvalidRGBIsMagenta": true,
+      "allFloat32RowsFinite": true,
+      "sampleAreaCountsMatchParameters": true,
+      "pythonMaskConversionRoundTripExact": true,
+      "decodedMaskSHA256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0",
+      "checks": "PASS (data parsing only)"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/hard.bin",
+      "sha256": "c4024aa87d4e7905dfde32af6747e447decc1a22a914f2acfc3dc21235c36a49",
+      "manifestSHA256": "c4024aa87d4e7905dfde32af6747e447decc1a22a914f2acfc3dc21235c36a49",
+      "hashMatches": true,
+      "gitBlobAtInput": "f5ac1ef9ac132ccd1f80abbcd2f397879f80d342",
+      "width": 96,
+      "height": 64,
+      "pixelCount": 6144,
+      "headerUInt32LE": [
+        96,
+        64,
+        6,
+        9,
+        0,
+        0
+      ],
+      "headerHex": "600000004000000006000000090000000000000000000000",
+      "offsetsBytes": {
+        "header": 0,
+        "parameters": 24,
+        "samples": 120,
+        "areas": 264,
+        "rgba": 264
+      },
+      "fileLengthBytes": 24840,
+      "expectedFileLengthBytes": 24840,
+      "unsupportedHeaderCount": 0,
+      "actualAlphaZeroCount": 0,
+      "actualAlpha255Count": 6144,
+      "invalidIndices": [],
+      "referenceInvalidRGBIsMagenta": true,
+      "allFloat32RowsFinite": true,
+      "sampleAreaCountsMatchParameters": true,
+      "pythonMaskConversionRoundTripExact": true,
+      "decodedMaskSHA256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0",
+      "checks": "PASS (data parsing only)"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/near-field.bin",
+      "sha256": "ee821c30159b7ca19f6944bce48991667a253be72ab9ad41e5ecf6f998c96b55",
+      "manifestSHA256": "ee821c30159b7ca19f6944bce48991667a253be72ab9ad41e5ecf6f998c96b55",
+      "hashMatches": true,
+      "gitBlobAtInput": "25c56563f173ff0f8296453c5bc9ff525e411b44",
+      "width": 96,
+      "height": 64,
+      "pixelCount": 6144,
+      "headerUInt32LE": [
+        96,
+        64,
+        6,
+        3,
+        0,
+        84
+      ],
+      "headerHex": "600000004000000006000000030000000000000054000000",
+      "offsetsBytes": {
+        "header": 0,
+        "parameters": 24,
+        "samples": 120,
+        "areas": 168,
+        "rgba": 168
+      },
+      "fileLengthBytes": 24744,
+      "expectedFileLengthBytes": 24744,
+      "unsupportedHeaderCount": 84,
+      "actualAlphaZeroCount": 84,
+      "actualAlpha255Count": 6060,
+      "invalidIndices": [
+        2735,
+        2736,
+        2829,
+        2830,
+        2831,
+        2832,
+        2833,
+        2834,
+        2924,
+        2925,
+        2926,
+        2927,
+        2928,
+        2929,
+        2930,
+        2931,
+        3019,
+        3020,
+        3021,
+        3022,
+        3023,
+        3024,
+        3025,
+        3026,
+        3027,
+        3028,
+        3115,
+        3116,
+        3117,
+        3118,
+        3119,
+        3120,
+        3121,
+        3122,
+        3123,
+        3124,
+        3211,
+        3212,
+        3213,
+        3214,
+        3215,
+        3216,
+        3217,
+        3218,
+        3219,
+        3220,
+        3307,
+        3308,
+        3309,
+        3310,
+        3311,
+        3312,
+        3313,
+        3314,
+        3315,
+        3316,
+        3403,
+        3404,
+        3405,
+        3406,
+        3407,
+        3408,
+        3409,
+        3410,
+        3411,
+        3412,
+        3500,
+        3501,
+        3502,
+        3503,
+        3504,
+        3505,
+        3506,
+        3507,
+        3597,
+        3598,
+        3599,
+        3600,
+        3601,
+        3602,
+        3694,
+        3695,
+        3696,
+        3697
+      ],
+      "referenceInvalidRGBIsMagenta": true,
+      "allFloat32RowsFinite": true,
+      "sampleAreaCountsMatchParameters": true,
+      "pythonMaskConversionRoundTripExact": true,
+      "decodedMaskSHA256": "9574ae6e71b1dac1dbbb18dd460f553436cebf0c1072cf92112aa3f91c40f2fc",
+      "checks": "PASS (data parsing only)"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/soft.bin",
+      "sha256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "manifestSHA256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "hashMatches": true,
+      "gitBlobAtInput": "4baa3ff8702d3279c8c265244519c9fa91500cdb",
+      "width": 96,
+      "height": 64,
+      "pixelCount": 6144,
+      "headerUInt32LE": [
+        96,
+        64,
+        6,
+        576,
+        9,
+        0
+      ],
+      "headerHex": "600000004000000006000000400200000900000000000000",
+      "offsetsBytes": {
+        "header": 0,
+        "parameters": 24,
+        "samples": 120,
+        "areas": 9336,
+        "rgba": 9480
+      },
+      "fileLengthBytes": 34056,
+      "expectedFileLengthBytes": 34056,
+      "unsupportedHeaderCount": 0,
+      "actualAlphaZeroCount": 0,
+      "actualAlpha255Count": 6144,
+      "invalidIndices": [],
+      "referenceInvalidRGBIsMagenta": true,
+      "allFloat32RowsFinite": true,
+      "sampleAreaCountsMatchParameters": true,
+      "pythonMaskConversionRoundTripExact": true,
+      "decodedMaskSHA256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0",
+      "checks": "PASS (data parsing only)"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/translated.bin",
+      "sha256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "manifestSHA256": "ff6dbfbe6ab33f2f1263233fadffe35eac0c3361749baac526c5fffd09eb4986",
+      "hashMatches": true,
+      "gitBlobAtInput": "4baa3ff8702d3279c8c265244519c9fa91500cdb",
+      "width": 96,
+      "height": 64,
+      "pixelCount": 6144,
+      "headerUInt32LE": [
+        96,
+        64,
+        6,
+        576,
+        9,
+        0
+      ],
+      "headerHex": "600000004000000006000000400200000900000000000000",
+      "offsetsBytes": {
+        "header": 0,
+        "parameters": 24,
+        "samples": 120,
+        "areas": 9336,
+        "rgba": 9480
+      },
+      "fileLengthBytes": 34056,
+      "expectedFileLengthBytes": 34056,
+      "unsupportedHeaderCount": 0,
+      "actualAlphaZeroCount": 0,
+      "actualAlpha255Count": 6144,
+      "invalidIndices": [],
+      "referenceInvalidRGBIsMagenta": true,
+      "allFloat32RowsFinite": true,
+      "sampleAreaCountsMatchParameters": true,
+      "pythonMaskConversionRoundTripExact": true,
+      "decodedMaskSHA256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0",
+      "checks": "PASS (data parsing only)"
+    },
+    {
+      "path": "docs/parallel/03/evidence/final-parity/kernel/warm-rotated.bin",
+      "sha256": "10817bf4e983fcc48cd9303802121ec524c57590d765559cb68c58f6a9f68b7b",
+      "manifestSHA256": "10817bf4e983fcc48cd9303802121ec524c57590d765559cb68c58f6a9f68b7b",
+      "hashMatches": true,
+      "gitBlobAtInput": "e93b8c6edb7eafe0b7264fd7750f96af9f2954a0",
+      "width": 96,
+      "height": 64,
+      "pixelCount": 6144,
+      "headerUInt32LE": [
+        96,
+        64,
+        6,
+        387,
+        6,
+        0
+      ],
+      "headerHex": "600000004000000006000000830100000600000000000000",
+      "offsetsBytes": {
+        "header": 0,
+        "parameters": 24,
+        "samples": 120,
+        "areas": 6312,
+        "rgba": 6408
+      },
+      "fileLengthBytes": 30984,
+      "expectedFileLengthBytes": 30984,
+      "unsupportedHeaderCount": 0,
+      "actualAlphaZeroCount": 0,
+      "actualAlpha255Count": 6144,
+      "invalidIndices": [],
+      "referenceInvalidRGBIsMagenta": true,
+      "allFloat32RowsFinite": true,
+      "sampleAreaCountsMatchParameters": true,
+      "pythonMaskConversionRoundTripExact": true,
+      "decodedMaskSHA256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0",
+      "checks": "PASS (data parsing only)"
+    }
+  ],
+  "finalSyntheticMasks": [
+    {
+      "path": "docs/parallel/03/evidence/final/bust-hard.mask",
+      "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "fileLengthBytes": 13824,
+      "widthFromPNGHeader": 144,
+      "heightFromPNGHeader": 96,
+      "pixelCount": 13824,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/bust-rim-only.mask",
+      "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "fileLengthBytes": 13824,
+      "widthFromPNGHeader": 144,
+      "heightFromPNGHeader": 96,
+      "pixelCount": 13824,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/bust-roll-90.mask",
+      "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "fileLengthBytes": 13824,
+      "widthFromPNGHeader": 144,
+      "heightFromPNGHeader": 96,
+      "pixelCount": 13824,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/bust-side.mask",
+      "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "fileLengthBytes": 13824,
+      "widthFromPNGHeader": 144,
+      "heightFromPNGHeader": 96,
+      "pixelCount": 13824,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/bust-soft.mask",
+      "sha256": "299407adb3f1bd645191cfecb3c33a47510b1dfba3c0a936d741bdd8513526c0",
+      "fileLengthBytes": 13824,
+      "widthFromPNGHeader": 144,
+      "heightFromPNGHeader": 96,
+      "pixelCount": 13824,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/exposure-minus-two.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/fill-only-soft.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/hard.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/key-only-hard.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/soft.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/warm.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    },
+    {
+      "path": "docs/parallel/03/evidence/final/white-balance-3200.mask",
+      "sha256": "e9a15a094703faaea3fdf53af7e04da21717008ab4bb228799712b2fced03c65",
+      "fileLengthBytes": 9600,
+      "widthFromPNGHeader": 120,
+      "heightFromPNGHeader": 80,
+      "pixelCount": 9600,
+      "nonzeroMaskBytes": 0,
+      "byteValues": [
+        0
+      ],
+      "lengthMatchesPNGDimensions": true,
+      "allZero": true
+    }
+  ],
+  "sourceIdentities": [
+    {
+      "path": "scripts/prepare-kernel-fixtures.swift",
+      "gitBlobAtInput": "be419f64796e72d0523099ca783d0e15d490a293",
+      "sha256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+      "manifestSHA256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+      "matchesManifest": true,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "scripts/verify-kernel-host.cpp",
+      "gitBlobAtInput": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6",
+      "sha256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "manifestSHA256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "matchesManifest": true,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+      "gitBlobAtInput": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "sha256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "gitBlobAtInput": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+      "sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "gitBlobAtInput": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765",
+      "sha256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "gitBlobAtInput": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "sha256": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "App/StudyKernel.h",
+      "gitBlobAtInput": "df3175546623508b192d29210dcd9b51efce4c37",
+      "sha256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "manifestSHA256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "matchesManifest": true,
+      "matchesFixtureSourceCommit": true
+    }
+  ],
+  "sourceTreeIdentity": {
+    "Sources": {
+      "inputTree": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4",
+      "fixtureSourceTree": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4"
+    },
+    "Tests": {
+      "inputTree": "dc52c1fd56b9580b99353436229a3559dcb38f35",
+      "fixtureSourceTree": "dc52c1fd56b9580b99353436229a3559dcb38f35"
+    },
+    "scripts": {
+      "inputTree": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f",
+      "fixtureSourceTree": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f"
+    }
+  },
+  "rawInvalidIndicesCSV": "docs/parallel/03/workers/wave07-evidence/W62-near-field-invalid-indices.csv",
+  "rawInvalidIndicesCSVSHA256": "aae265f6af7e14f8c3f736884da1dc32d3d02305cbea53eff6213266c8333089"
+}

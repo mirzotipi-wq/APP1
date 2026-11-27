@@ -1,0 +1,477 @@
+{
+  "schema": 1,
+  "canonicalID": "/root/w051/w059",
+  "role": "platform/performance reviewer",
+  "campaign": "f150f98",
+  "lane": "04",
+  "wave": "06",
+  "input": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "inputAuthority": "Parent brief; packet blob 2d556afeca3be2fe717b6cfb23d793431264b34e was reported to have null input.",
+  "planned": {
+    "workspace": "/tmp/keyfill04-2987b1ee980d/workers/w059",
+    "results": "/tmp/keyfill04-2987b1ee980d/results/w059",
+    "localDirectoriesCreated": false
+  },
+  "actual": {
+    "method": "Immutable Git file/blob reads and JavaScript arithmetic in session state; one narrow source falsification pass.",
+    "executed": [
+      "Mandatory exact-ref document reads",
+      "Packer, Metal binding/shader, engine/cache source review",
+      "Final native candidate resource-section read",
+      "JavaScript arithmetic for requested buffer lengths and cache evictions"
+    ],
+    "unrun": [
+      "Local status/HEAD/history",
+      "agent_cycle.py check/next",
+      "hash-object",
+      "Local probes/SDK install/Swift build",
+      "Native tests/cacheUsage rows",
+      "Host kernel/mocks/simulator Metal/device execution",
+      "Benchmarks or allocator/driver/RSS measurements"
+    ]
+  },
+  "mandatoryReads": [
+    "AGENTS.md",
+    "agents/OPERATING_PROTOCOL.md",
+    "agents/HANDOFF.md",
+    "agents/state.json",
+    "docs/PRODUCT.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROADMAP.md",
+    "docs/QUALITY.md",
+    "docs/DESIGN.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "sources": [
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "blobSHA": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blobSHA": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "App/ReferenceStudy.metal",
+      "blobSHA": "09fb9ae35ebeb27eac28bec32e27cd18501fd9e4",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blobSHA": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    }
+  ],
+  "derivation": {
+    "scope": "Twelve positive rectangular emitters; interactive 8x8 sampling; 192x128 output.",
+    "parameters": "StudyComputeInput packs six SIMD4<Float> rows: 6*16.",
+    "samples": "StudyLighting emits 64 samples per rectangle; computeSamples emits three float4 rows per sample: 12*8*8*3*16.",
+    "areas": "One guard per rectangle; computeAreas emits three float4 rows: 12*3*16.",
+    "output": "makeBuffer length is width*height*4; shader writes uchar4.",
+    "dimensions": "SIMD2<UInt32> passed through setBytes at index 4: 2*4 bytes.",
+    "shaderBindings": "parameters 0; samples 1; areas 2; output 3; dimensions 4.",
+    "emptyBindingCaveat": "buffer() uses one 16-byte dummy row for an empty sample/area array; neither array is empty in this workload.",
+    "cache": "retain() passes image.rgba.count and unsupportedPixelMask.count; generic cache evicts oldest before append using separate subtraction checks."
+  },
+  "sourceDerivedBufferBytes": {
+    "parameters": 96,
+    "samples": 36864,
+    "areas": 576,
+    "output": 98304,
+    "dimensions": 8,
+    "requestedBuffers": 135840,
+    "requestedBuffersAndDimensions": 135848
+  },
+  "sourceDerivedCacheSequences": [
+    {
+      "name": "four-small",
+      "steps": [
+        {
+          "step": 1,
+          "count": 1,
+          "pixelBytes": 1536,
+          "maskBytes": 384,
+          "retainedDimensions": [
+            [
+              24,
+              16
+            ]
+          ]
+        },
+        {
+          "step": 2,
+          "count": 2,
+          "pixelBytes": 3072,
+          "maskBytes": 768,
+          "retainedDimensions": [
+            [
+              24,
+              16
+            ],
+            [
+              24,
+              16
+            ]
+          ]
+        },
+        {
+          "step": 3,
+          "count": 3,
+          "pixelBytes": 4608,
+          "maskBytes": 1152,
+          "retainedDimensions": [
+            [
+              24,
+              16
+            ],
+            [
+              24,
+              16
+            ],
+            [
+              24,
+              16
+            ]
+          ]
+        },
+        {
+          "step": 4,
+          "count": 4,
+          "pixelBytes": 6144,
+          "maskBytes": 1536,
+          "retainedDimensions": [
+            [
+              24,
+              16
+            ],
+            [
+              24,
+              16
+            ],
+            [
+              24,
+              16
+            ],
+            [
+              24,
+              16
+            ]
+          ]
+        }
+      ],
+      "summary": {
+        "step": 4,
+        "count": 4,
+        "pixelBytes": 6144,
+        "maskBytes": 1536,
+        "retainedDimensions": [
+          [
+            24,
+            16
+          ],
+          [
+            24,
+            16
+          ],
+          [
+            24,
+            16
+          ],
+          [
+            24,
+            16
+          ]
+        ]
+      }
+    },
+    {
+      "name": "four-maximum-bust",
+      "steps": [
+        {
+          "step": 1,
+          "count": 1,
+          "pixelBytes": 55296,
+          "maskBytes": 13824,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ]
+          ]
+        },
+        {
+          "step": 2,
+          "count": 2,
+          "pixelBytes": 110592,
+          "maskBytes": 27648,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ]
+          ]
+        },
+        {
+          "step": 3,
+          "count": 3,
+          "pixelBytes": 165888,
+          "maskBytes": 41472,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ]
+          ]
+        },
+        {
+          "step": 4,
+          "count": 4,
+          "pixelBytes": 221184,
+          "maskBytes": 55296,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ]
+          ]
+        }
+      ],
+      "summary": {
+        "step": 4,
+        "count": 4,
+        "pixelBytes": 221184,
+        "maskBytes": 55296,
+        "retainedDimensions": [
+          [
+            144,
+            96
+          ],
+          [
+            144,
+            96
+          ],
+          [
+            144,
+            96
+          ],
+          [
+            144,
+            96
+          ]
+        ]
+      }
+    },
+    {
+      "name": "three-maximum-sphere",
+      "steps": [
+        {
+          "step": 1,
+          "count": 1,
+          "pixelBytes": 98304,
+          "maskBytes": 24576,
+          "retainedDimensions": [
+            [
+              192,
+              128
+            ]
+          ]
+        },
+        {
+          "step": 2,
+          "count": 2,
+          "pixelBytes": 196608,
+          "maskBytes": 49152,
+          "retainedDimensions": [
+            [
+              192,
+              128
+            ],
+            [
+              192,
+              128
+            ]
+          ]
+        },
+        {
+          "step": 3,
+          "count": 2,
+          "pixelBytes": 196608,
+          "maskBytes": 49152,
+          "retainedDimensions": [
+            [
+              192,
+              128
+            ],
+            [
+              192,
+              128
+            ]
+          ]
+        }
+      ],
+      "summary": {
+        "step": 3,
+        "count": 2,
+        "pixelBytes": 196608,
+        "maskBytes": 49152,
+        "retainedDimensions": [
+          [
+            192,
+            128
+          ],
+          [
+            192,
+            128
+          ]
+        ]
+      }
+    },
+    {
+      "name": "mixed",
+      "steps": [
+        {
+          "step": 1,
+          "count": 1,
+          "pixelBytes": 55296,
+          "maskBytes": 13824,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ]
+          ]
+        },
+        {
+          "step": 2,
+          "count": 2,
+          "pixelBytes": 110592,
+          "maskBytes": 27648,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ]
+          ]
+        },
+        {
+          "step": 3,
+          "count": 3,
+          "pixelBytes": 165888,
+          "maskBytes": 41472,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ]
+          ]
+        },
+        {
+          "step": 4,
+          "count": 3,
+          "pixelBytes": 208896,
+          "maskBytes": 52224,
+          "retainedDimensions": [
+            [
+              144,
+              96
+            ],
+            [
+              144,
+              96
+            ],
+            [
+              192,
+              128
+            ]
+          ]
+        }
+      ],
+      "summary": {
+        "step": 4,
+        "count": 3,
+        "pixelBytes": 208896,
+        "maskBytes": 52224,
+        "retainedDimensions": [
+          [
+            144,
+            96
+          ],
+          [
+            144,
+            96
+          ],
+          [
+            192,
+            128
+          ]
+        ]
+      }
+    }
+  ],
+  "evictionWitnesses": {
+    "threeMaximumSpheresBeforeEviction": {
+      "count": 3,
+      "pixelBytes": 294912,
+      "maskBytes": 73728
+    },
+    "threeBustsPlusSphereBeforeEviction": {
+      "count": 4,
+      "pixelBytes": 264192,
+      "maskBytes": 66048
+    },
+    "limits": {
+      "count": 4,
+      "pixelBytes": 262144,
+      "maskBytes": 65536
+    }
+  },
+  "nativeCandidate": {
+    "blobSHA": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "plannedPerStepRows": 15,
+    "plannedSummaryRows": 4,
+    "observedNativeRows": 0,
+    "sourceReview": "recordCacheResources reads await engine.cacheUsage after CPU renders and independently checks retained image Data.count; four methods plan 4+4+3+4 step rows plus one summary each."
+  },
+  "finding": "No mismatch found in this bounded arithmetic and source-accounting pass.",
+  "measurementLimit": "Calculated requested buffer lengths and retained payload counters are not observed native measurements, total allocations, driver resources, process RSS, or physical-device performance. Packed Swift arrays, intermediate image/mask storage, keys, caller-held values and allocator overhead are outside the totals.",
+  "nextAction": "Root should integrate/review candidates and obtain the existing native run's actual 19 rows before claiming native measurement.",
+  "changes": "Only report/evidence blobs; no source, test, UI, state, handoff, build configuration, harness, CPU oracle, refs or commits changed."
+}

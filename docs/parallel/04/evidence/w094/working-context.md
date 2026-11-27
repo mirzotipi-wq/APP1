@@ -1,0 +1,11 @@
+# w094 working checkpoint — approximately 60 percent
+
+Worker /root/w091/w094 owns docs/parallel/04/HANDOFF.md at immutable input 0fa824307da13934a289a825fd6d9d4a1939241f. Authority is wave10 task packet blob 648643ac25b2f50d255e6e39214e31a86dfa15c6, role index 3. The working budget of 12000 tokens and this checkpoint are advisory targets; exact runtime counters are unavailable.
+
+All ten mandatory input documents and the focused coordinator, fallback, parity and precision documents were read. Retained owner comparison, resource table, CI metadata, queue receipt, worker ledger, plan and environment recovery were inspected. Git compare confirms source6 to source7 changes only one non-lane-document path: 208 appended lines in NativeTests/StudyRenderCacheTests.swift. Source7 to input is two documentation commits with 193 files, all under docs/parallel/04/. The f150 comparison returns 300 files and is not treated as exhaustive. Imported main ancestry is separately established by merge 5bf9da747f947e9f5ed2e0836abb3ba726800307, parents 3d0e20616d0e771ad72161592c59105f591951c9 and 9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318.
+
+The handoff will preserve source6 native 174/0/0 and real simulator Metal6/8, source7 core 379/379 and host6/8, and queued source7 native with four unexecuted additions. The retained simulator warm-up failure remains separate from the later successful required native command/accounting/export. CPU counters, weak-reference tests, mock lifecycle frames, requested-buffer arithmetic and actual Metal are separate evidence classes.
+
+Owner03's newer ticket/engine-consultation remedy and hosted test exist at its pinned head but remain unmerged and Apple-unrun in retained receipts. Root supplied current actual wave10 creation of w091, w094 and w099; seven additional contexts remain to be created. The input ledger has 90 completed workers, not 100. Only root can final-seal.
+
+Two exact-input reads returned 404: docs/parallel/04/README.md and HANDOFF.md. No prior HANDOFF bytes exist in that read; this is new content. Remaining work is candidate creation, cross-reference/claim checks, report and explicit path/blob artifact map. No local executor, shell, SDK probe, build, CI poll/rerun, ref mutation, child spawn or cleanup was performed. Planned worker/results paths remain UNCREATED.

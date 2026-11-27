@@ -1,0 +1,109 @@
+{
+  "runtime_id": "/root/wave06/w54_implementation",
+  "same_worker_followup": true,
+  "input_sha": "74f7584b4e474c752ec0939add6b7522ba98094f",
+  "authorization": "Root explicitly expanded W54 scope to guard canceled pre-start attempts and add one deterministic ControlledRender regression; source authorship remains W54, builds/integration remain root.",
+  "recovery": "Initial W54 cwd lookup failed after runtime reset. Persistent patch/report survived; root recreated worker-control, and W54 recreated its own detached tree sequentially then reapplied the original verified paused patch. No original artifact overwritten.",
+  "worktree": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+  "output": "/tmp/keyfill03-7f4b/builds/W54-implementation",
+  "source_sha256": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+  "tests_sha256": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+  "original_paused_source_sha256": "cbed7ca5aab555ff9ed4b4e306054a50382ee99dfb8481380a08f7e16bcc9376",
+  "original_paused_patch_sha256": "2fbf52d65654796f5f89d285f34cfe7c8d967551f5b62907c9c7309cfaba4341",
+  "supplement_sha256": "7afd8c5c961c879b5cbfda7d98b1a436e8c509ae79d74e0fd0f591e603aaf908",
+  "combined_patch_sha256": "ec874e5cd1baa20e427c3f17e097d2085f1a68c81b8015faf6bb258b772aed32",
+  "test_only_patch_sha256": "5fb152c6bab7392ae936b3ba57d9836d9c4b9cf6b19a995fc12c52b441882bb7",
+  "source_checks_only": {
+    "only_three_source_lines_added_to_paused_candidate": true,
+    "original_nine_tests_byte_preserved": true,
+    "test_count_after_addition": 10
+  },
+  "commands": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "74f7584b4e474c752ec0939add6b7522ba98094f\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "App/ReferenceStudyPreview.swift\nNativeTests/StudyPreviewPipelineTests.swift\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "diff --git a/NativeTests/StudyPreviewPipelineTests.swift b/NativeTests/StudyPreviewPipelineTests.swift\nindex 5a23ef9..9d4250c 100644\n--- a/NativeTests/StudyPreviewPipelineTests.swift\n+++ b/NativeTests/StudyPreviewPipelineTests.swift\n@@ -156,6 +156,35 @@ final class StudyPreviewPipelineTests: XCTestCase {\n         XCTAssertEqual(publications, 0)\n     }\n \n+    @MainActor func testPrecancelledBeginCannotInvalidateLiveRequest() async throws {\n+        let pipeline = StudyPreviewPipeline<UInt8>(), live = ControlledRender()\n+        var completions: [StudyPreviewPipeline<UInt8>.Completion] = []\n+        var cancelledRenders = 0\n+        let liveTicket = pipeline.begin()\n+        let liveTask = Task { await pipeline.load(ticket: liveTicket, render: live.render,\n+            convert: { $0.rgba[0] }, publish: { completions.append($0) }) }\n+        await live.waitUntilRequested()\n+\n+        let cancelledTask = Task { @MainActor in\n+            XCTAssertTrue(Task.isCancelled)\n+            let cancelledTicket = pipeline.begin()\n+            await pipeline.load(ticket: cancelledTicket, render: {\n+                cancelledRenders += 1\n+                return try self.output(10)\n+            }, convert: { $0.rgba[0] }, publish: { completions.append($0) })\n+        }\n+        // This actor cannot start the task before cancellation and the await.\n+        cancelledTask.cancel()\n+        await cancelledTask.value\n+        live.finish(.success(try output(9)))\n+        await liveTask.value\n+\n+        XCTAssertEqual(cancelledRenders, 0)\n+        XCTAssertEqual(completions.count, 1)\n+        XCTAssertEqual(completions.first?.image, 9)\n+        XCTAssertNil(completions.first?.message)\n+    }\n+\n     @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {\n         let pipeline = StudyPreviewPipeline<UInt8>()\n         var publications = 0, renders = 0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--",
+        "App/ReferenceStudyPreview.swift",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "diff --git a/App/ReferenceStudyPreview.swift b/App/ReferenceStudyPreview.swift\nindex 4b1e283..c96d5cb 100644\n--- a/App/ReferenceStudyPreview.swift\n+++ b/App/ReferenceStudyPreview.swift\n@@ -24,8 +24,10 @@ struct StudyPreviewOutput: Sendable {\n \n     /// Begin even when reusing a completed frame: an A \u2192 B \u2192 A switch must\n     /// invalidate B without requiring another render of the cached A image.\n+    /// A cancelled caller gets an unused ticket without superseding live work.\n     func begin() -> UUID {\n         let ticket = UUID()\n+        guard !Task.isCancelled else { return ticket }\n         current = ticket\n         return ticket\n     }\n@@ -117,7 +119,8 @@ struct StudyPreviewOutput: Sendable {\n                     let isCurrent = frame.request == request\n                     if let image = frame.image {\n                         let width = min(geometry.size.width, geometry.size.height * 1.5)\n-                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). Updating light study.\"\n+                        let updateStatus = activeRequest == nil ? \"Light study paused\" : \"Updating light study\"\n+                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). \\(updateStatus).\"\n                         Image(image, scale: 1, orientation: .up, label: Text(label))\n                             .resizable().interpolation(.medium)\n                             .frame(width: width, height: width / 1.5)\n@@ -140,17 +143,23 @@ struct StudyPreviewOutput: Sendable {\n                                 .accessibilityIdentifier(\"studyWarning\")\n                         }\n                         if !isCurrent {\n-                            ProgressView(\"Updating light study\")\n-                                .controlSize(.small)\n+                            Group {\n+                                if activeRequest == nil {\n+                                    Text(\"Light study paused\")\n+                                } else {\n+                                    ProgressView(\"Updating light study\")\n+                                        .controlSize(.small)\n+                                }\n+                            }\n                                 .font(.caption.weight(.medium))\n                                 .tint(.white).foregroundStyle(.white)\n                                 .padding(8)\n                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))\n                                 .padding(8)\n                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)\n-                                .accessibilityLabel(\"Updating light study\")\n+                                .accessibilityLabel(updateStatus)\n                                 .accessibilityValue(\"Showing the previous scene\")\n-                                .accessibilityIdentifier(\"studyUpdating\")\n+                                .accessibilityIdentifier(activeRequest == nil ? \"studyPaused\" : \"studyUpdating\")\n                         }\n                     } else {\n                         ScrollView {\n@@ -173,6 +182,11 @@ struct StudyPreviewOutput: Sendable {\n                         .frame(maxWidth: .infinity, maxHeight: .infinity)\n                         .accessibilityIdentifier(\"studyUnavailable\")\n                     }\n+                } else if activeRequest == nil {\n+                    Text(\"Light study paused\")\n+                        .foregroundStyle(.white)\n+                        .frame(maxWidth: .infinity, maxHeight: .infinity)\n+                        .accessibilityIdentifier(\"studyPaused\")\n                 } else {\n                     ProgressView(\"Rendering light study\")\n                         .tint(.white).foregroundStyle(.white)\n@@ -183,6 +197,7 @@ struct StudyPreviewOutput: Sendable {\n         }\n         .onDisappear { pipeline.invalidate() }\n         .task(id: work) {\n+            guard !Task.isCancelled else { return }\n             let ticket = pipeline.begin()\n             guard let snapshot = activeRequest else { return }\n             // A quick switch back to a completed request can reuse its pixels.\ndiff --git a/NativeTests/StudyPreviewPipelineTests.swift b/NativeTests/StudyPreviewPipelineTests.swift\nindex 5a23ef9..9d4250c 100644\n--- a/NativeTests/StudyPreviewPipelineTests.swift\n+++ b/NativeTests/StudyPreviewPipelineTests.swift\n@@ -156,6 +156,35 @@ final class StudyPreviewPipelineTests: XCTestCase {\n         XCTAssertEqual(publications, 0)\n     }\n \n+    @MainActor func testPrecancelledBeginCannotInvalidateLiveRequest() async throws {\n+        let pipeline = StudyPreviewPipeline<UInt8>(), live = ControlledRender()\n+        var completions: [StudyPreviewPipeline<UInt8>.Completion] = []\n+        var cancelledRenders = 0\n+        let liveTicket = pipeline.begin()\n+        let liveTask = Task { await pipeline.load(ticket: liveTicket, render: live.render,\n+            convert: { $0.rgba[0] }, publish: { completions.append($0) }) }\n+        await live.waitUntilRequested()\n+\n+        let cancelledTask = Task { @MainActor in\n+            XCTAssertTrue(Task.isCancelled)\n+            let cancelledTicket = pipeline.begin()\n+            await pipeline.load(ticket: cancelledTicket, render: {\n+                cancelledRenders += 1\n+                return try self.output(10)\n+            }, convert: { $0.rgba[0] }, publish: { completions.append($0) })\n+        }\n+        // This actor cannot start the task before cancellation and the await.\n+        cancelledTask.cancel()\n+        await cancelledTask.value\n+        live.finish(.success(try output(9)))\n+        await liveTask.value\n+\n+        XCTAssertEqual(cancelledRenders, 0)\n+        XCTAssertEqual(completions.count, 1)\n+        XCTAssertEqual(completions.first?.image, 9)\n+        XCTAssertNil(completions.first?.message)\n+    }\n+\n     @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {\n         let pipeline = StudyPreviewPipeline<UInt8>()\n         var publications = 0, renders = 0\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/tmp/keyfill03-7f4b/builds/W54-implementation/W54-cancelled-attempt.patch"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/tmp/keyfill03-7f4b/builds/W54-implementation/W54-paused-and-cancellation.patch"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "runtime_tests": "UNRUN. Expected old-pipeline failure and candidate success are reasoning only until root executes its portable/native harness. The test does not reproduce or establish SwiftUI scheduling behavior.",
+  "limits": "No builds, commits, pushes or root source mutations. Token counter unavailable."
+}

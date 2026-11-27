@@ -1,0 +1,135 @@
+{
+  "worker": "W62-geometry",
+  "role": "geometry/data specialist",
+  "assignment": "Verify exact fixture serialization, hashes, counts, all 84 near-field invalid positions, and twelve final synthetic masks from existing bytes.",
+  "actualRuntimeID": "/root/wave07/w62_geometry",
+  "inputSHA": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1",
+  "privateWorktree": "/tmp/keyfill03-7f4b/workers/W62-geometry",
+  "outputDirectory": "/tmp/keyfill03-7f4b/builds/W62-geometry",
+  "status": "COMPLETE: data checks PASS; no renderer or kernel execution",
+  "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "testsActuallyExecuted": [
+    {
+      "command": "python3 - <<'PY' [inline struct/hashlib/csv assertion probe in worker tool transcript]",
+      "result": "PASS",
+      "kind": "binary and mask data checks"
+    }
+  ],
+  "checks": {
+    "sixFixtures": 6,
+    "allSixManifestSHA256Matches": true,
+    "allHeadersOffsetsAndLengthsValid": true,
+    "allUnsupportedCountsEqualExactAlphaPositions": true,
+    "nearFieldInvalidPositions": 84,
+    "otherFiveInvalidPositions": 0,
+    "invalidRGBAndAlphaValid": true,
+    "float32InputsFinite": true,
+    "pythonSerializedMaskRoundTrips": 6,
+    "finalSyntheticMasks": 12,
+    "finalMaskBytesChecked": 136320,
+    "allTwelveMasksZero": true
+  },
+  "metadataPath": "docs/parallel/03/workers/wave07-evidence/W62-fixture-metadata.json",
+  "metadataSHA256": "e97afc6becea88b2d5ab34473568730564307a354f19a8138a4e3414a935dce9",
+  "rawInvalidIndicesCSV": "docs/parallel/03/workers/wave07-evidence/W62-near-field-invalid-indices.csv",
+  "rawInvalidIndicesCSVSHA256": "aae265f6af7e14f8c3f736884da1dc32d3d02305cbea53eff6213266c8333089",
+  "sourceIdentities": [
+    {
+      "path": "scripts/prepare-kernel-fixtures.swift",
+      "gitBlobAtInput": "be419f64796e72d0523099ca783d0e15d490a293",
+      "sha256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+      "manifestSHA256": "501ad36fd3f7232b44450d8a5c88d17c91552be167a1a29c4dff12af582ad9fd",
+      "matchesManifest": true,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "scripts/verify-kernel-host.cpp",
+      "gitBlobAtInput": "6885ead6bb9c76679a4cef1cd84d457c7bd460e6",
+      "sha256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "manifestSHA256": "6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216",
+      "matchesManifest": true,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyValidationFixtures.swift",
+      "gitBlobAtInput": "555677e7baf0931b6c629b635f617a9cc2356800",
+      "sha256": "f635cd1b9fc27587e941383e754dda5fe24a53d72e8f4da0c8b76478ab44e908",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "gitBlobAtInput": "82e54a53f3d32d745aee1edfa297086504fb81ec",
+      "sha256": "4ac702653392d64586d0a472576da64ebe3f68dad7339954232f7c5f6635b141",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/PortraitStudy.swift",
+      "gitBlobAtInput": "e873a1d7029dcc1d0b06fe5fd7b39da4dba3b765",
+      "sha256": "f406fb496129d82f81dc429cc3bb002fc1b168b5ed771edcff8e449d5e2757cb",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "gitBlobAtInput": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "sha256": "8d4729d4366b7c0c8622469d70b0fb53ec87cb665f3f88ba7333164a265cd9d5",
+      "manifestSHA256": null,
+      "matchesManifest": null,
+      "matchesFixtureSourceCommit": true
+    },
+    {
+      "path": "App/StudyKernel.h",
+      "gitBlobAtInput": "df3175546623508b192d29210dcd9b51efce4c37",
+      "sha256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "manifestSHA256": "1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e",
+      "matchesManifest": true,
+      "matchesFixtureSourceCommit": true
+    }
+  ],
+  "sourceTreeIdentity": {
+    "Sources": {
+      "inputTree": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4",
+      "fixtureSourceTree": "8736d618d6a78ac3abbc5bc696d029b0ed1d26e4"
+    },
+    "Tests": {
+      "inputTree": "dc52c1fd56b9580b99353436229a3559dcb38f35",
+      "fixtureSourceTree": "dc52c1fd56b9580b99353436229a3559dcb38f35"
+    },
+    "scripts": {
+      "inputTree": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f",
+      "fixtureSourceTree": "ad29becaef4bf46b9e7a72f4f6f2f13a2078dc5f"
+    }
+  },
+  "fixtureManifest": {
+    "path": "docs/parallel/03/evidence/final-parity-inputs.json",
+    "sha256": "d9e54e530769c684affc77afd5bdc38e7d9e0523c0c1debbd1a629219348dda2",
+    "sourceCommit": "db7a5b5f3dd2d18c2469e78d3cf22ec01d84d6b5"
+  },
+  "carriedEvidence": "Existing six parity plus eight precision host passes belong to root; none rerun by W62.",
+  "limitations": [
+    "Static source review and Python byte checks only. No Swift, shared kernel, Metal, device, image rerender or physical validation executed.",
+    "The 84 near-field positions are intentionally unsupported parity data; the twelve synthetic rendering scenes have separate all-zero masks.",
+    "The separate width24 Swift silhouette witness is outside this check.",
+    "No sampling token counter is exposed; 12k-token target monitored qualitatively; no measurable 60% checkpoint available."
+  ],
+  "toolingNotes": [
+    "One read command exited 2 because guessed Sources/LightingCore/StudyRenderer.swift does not exist; corrected review uses ReferenceStudy.swift, PortraitStudy.swift, and StudyFrameCache.swift. No test result inferred from that lookup."
+  ],
+  "sourceChanges": false,
+  "commitsMade": false,
+  "reportPath": "docs/parallel/03/workers/W62-geometry.md",
+  "reportSHA256": "93438c8c42d2c345c9422a7eecf9c826a95a5d0020595b69047ed1f2e17aedcf",
+  "sourceReviewFindings": {
+    "ReferenceStudyRenderer": "Per-pixel invalidSurface catch increments count, writes mask[index/4]=1 and magenta RGB; initial alpha remains 255; mask/count returned together.",
+    "PortraitStudyRenderer": "Same count/mask/magenta metadata behavior; initial alpha stays opaque.",
+    "StudyImage.fromComputeRGBA": "Rejects invalid dimensions/lengths/noncanonical alpha and nonmagenta alpha-zero pixels; derives mask from alpha then restores alpha=255.",
+    "prepare-kernel-fixtures": "Serializes six UInt32 little-endian fields, Float32 rows, then reference RGBA; uses explicit mask to encode alpha 0/255.",
+    "verify-kernel-host": "Counts exact reference positions and validates reference count against header; position parity itself was not executed by W62."
+  }
+}

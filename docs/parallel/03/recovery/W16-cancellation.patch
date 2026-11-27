@@ -1,0 +1,58 @@
+*** Begin Patch
+*** Update File: /tmp/keyfill03-7f4b/workers/W16-resource/Tests/LightingCoreTests/StudyCancellationTests.swift
+@@
+ final class StudyCancellationTests: XCTestCase {
++    private func setupProbeRenderers(scene: LightingScene, width: Int)
++        -> [(String, (() -> Bool) throws -> StudyImage)] {
++        [
++            ("sphere interactive", { try ReferenceStudyRenderer.render(scene: scene, width: width,
++                                                                        quality: .interactive, isCancelled: $0) }),
++            ("sphere reference", { try ReferenceStudyRenderer.render(scene: scene, width: width,
++                                                                      quality: .reference, isCancelled: $0) }),
++            ("mannequin", { try PortraitStudyRenderer.render(scene: scene, width: width, isCancelled: $0) })
++        ]
++    }
++
++    func testPrecancelledValidResolutionStopsBeforeInvalidCameraSetup() {
++        var scene = LightingScene.portrait()
++        scene.camera = scene.subject
++        for (name, render) in setupProbeRenderers(scene: scene, width: 24) {
++            var polls = 0
++            XCTAssertThrowsError(try render { polls += 1; return true }, name) {
++                XCTAssertEqual($0 as? StudyError, .cancelled, name)
++            }
++            XCTAssertEqual(polls, 1, "One preparation poll must observe cancellation: \(name)")
++        }
++    }
++
++    func testInvalidResolutionPrecedesCancellationAndInvalidCameraSetup() {
++        var scene = LightingScene.portrait()
++        scene.camera = scene.subject
++        // Cover the lower bound and divisibility before either cancellation or setup.
++        for width in [23, 25] {
++            for requested in [false, true] {
++                for (name, render) in setupProbeRenderers(scene: scene, width: width) {
++                    let context = "\(name), width \(width), cancelled \(requested)"
++                    var polls = 0
++                    XCTAssertThrowsError(try render { polls += 1; return requested }, context) {
++                        XCTAssertEqual($0 as? StudyError, .invalidResolution, context)
++                    }
++                    XCTAssertEqual(polls, 0, context)
++                }
++            }
++        }
++    }
++
++    func testNoncancelledInvalidCameraPreservesCameraError() {
++        var scene = LightingScene.portrait()
++        scene.camera = scene.subject
++        for (name, render) in setupProbeRenderers(scene: scene, width: 24) {
++            // Do not freeze the old sphere path's absence of a preparation poll.
++            XCTAssertThrowsError(try render { false }, name) {
++                XCTAssertEqual($0 as? StudyError, .invalidCamera, name)
++            }
++        }
++    }
++
+     func testCancellationAtCompletedPixelBoundariesLimitsAdditionalWork() throws {
+*** End Patch

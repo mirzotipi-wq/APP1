@@ -1,0 +1,1500 @@
+{
+  "runtime_id": "/root/wave06/w59_platform_performance",
+  "input_sha": "74f7584b4e474c752ec0939add6b7522ba98094f",
+  "private_tree": "/tmp/keyfill03-7f4b/workers/W59-platform-performance",
+  "output": "/tmp/keyfill03-7f4b/builds/W59-platform-performance",
+  "root": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W59-platform-performance",
+      "exit_code": 0,
+      "stdout": "74f7584b4e474c752ec0939add6b7522ba98094f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W59-platform-performance",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "74f7584b4e474c752ec0939add6b7522ba98094f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": " M App/ReferenceStudyPreview.swift\n M NativeTests/StudyPreviewPipelineTests.swift\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+      "exit_code": 0,
+      "stdout": "36ed6a1455dee7ca52b55f46d1a47262f5c98cc1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "/workspace/scratch/7f4be4bbb2d6/APP1-lane03",
+      "exit_code": 0,
+      "stdout": "?? docs/parallel/03/workers/W52-geometry.md\n?? docs/parallel/03/workers/W53-api.md\n?? docs/parallel/03/workers/W55-concurrency.md\n?? docs/parallel/03/workers/W56-resource.md\n?? docs/parallel/03/workers/W57-consumer.md\n?? docs/parallel/03/workers/W58-accessibility-privacy.md\n?? docs/parallel/03/workers/wave06-evidence/W51-acceptance-plan.md\n?? docs/parallel/03/workers/wave06-evidence/W51-recovery.json\n?? docs/parallel/03/workers/wave06-evidence/W51-setup.json\n?? docs/parallel/03/workers/wave06-evidence/W52-source-inspection.json\n?? docs/parallel/03/workers/wave06-evidence/W53-api-inspection.json\n?? docs/parallel/03/workers/wave06-evidence/W53-api-source.txt\n?? docs/parallel/03/workers/wave06-evidence/W55-recovery-preservation.json\n?? docs/parallel/03/workers/wave06-evidence/W56-recovery-preservation.json\n?? docs/parallel/03/workers/wave06-evidence/W57-source-provenance.json\n?? docs/parallel/03/workers/wave06-evidence/W57-verification.txt\n?? docs/parallel/03/workers/wave06-evidence/W58-source-review.txt\n?? docs/parallel/03/workers/wave06.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "App/ReferenceStudyPreview.swift\nNativeTests/StudyPreviewPipelineTests.swift\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        "App/ReferenceStudyPreview.swift",
+        "NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W54-implementation",
+      "exit_code": 0,
+      "stdout": "diff --git a/App/ReferenceStudyPreview.swift b/App/ReferenceStudyPreview.swift\nindex 4b1e283..c96d5cb 100644\n--- a/App/ReferenceStudyPreview.swift\n+++ b/App/ReferenceStudyPreview.swift\n@@ -24,8 +24,10 @@ struct StudyPreviewOutput: Sendable {\n \n     /// Begin even when reusing a completed frame: an A \u2192 B \u2192 A switch must\n     /// invalidate B without requiring another render of the cached A image.\n+    /// A cancelled caller gets an unused ticket without superseding live work.\n     func begin() -> UUID {\n         let ticket = UUID()\n+        guard !Task.isCancelled else { return ticket }\n         current = ticket\n         return ticket\n     }\n@@ -117,7 +119,8 @@ struct StudyPreviewOutput: Sendable {\n                     let isCurrent = frame.request == request\n                     if let image = frame.image {\n                         let width = min(geometry.size.width, geometry.size.height * 1.5)\n-                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). Updating light study.\"\n+                        let updateStatus = activeRequest == nil ? \"Light study paused\" : \"Updating light study\"\n+                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). \\(updateStatus).\"\n                         Image(image, scale: 1, orientation: .up, label: Text(label))\n                             .resizable().interpolation(.medium)\n                             .frame(width: width, height: width / 1.5)\n@@ -140,17 +143,23 @@ struct StudyPreviewOutput: Sendable {\n                                 .accessibilityIdentifier(\"studyWarning\")\n                         }\n                         if !isCurrent {\n-                            ProgressView(\"Updating light study\")\n-                                .controlSize(.small)\n+                            Group {\n+                                if activeRequest == nil {\n+                                    Text(\"Light study paused\")\n+                                } else {\n+                                    ProgressView(\"Updating light study\")\n+                                        .controlSize(.small)\n+                                }\n+                            }\n                                 .font(.caption.weight(.medium))\n                                 .tint(.white).foregroundStyle(.white)\n                                 .padding(8)\n                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))\n                                 .padding(8)\n                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)\n-                                .accessibilityLabel(\"Updating light study\")\n+                                .accessibilityLabel(updateStatus)\n                                 .accessibilityValue(\"Showing the previous scene\")\n-                                .accessibilityIdentifier(\"studyUpdating\")\n+                                .accessibilityIdentifier(activeRequest == nil ? \"studyPaused\" : \"studyUpdating\")\n                         }\n                     } else {\n                         ScrollView {\n@@ -173,6 +182,11 @@ struct StudyPreviewOutput: Sendable {\n                         .frame(maxWidth: .infinity, maxHeight: .infinity)\n                         .accessibilityIdentifier(\"studyUnavailable\")\n                     }\n+                } else if activeRequest == nil {\n+                    Text(\"Light study paused\")\n+                        .foregroundStyle(.white)\n+                        .frame(maxWidth: .infinity, maxHeight: .infinity)\n+                        .accessibilityIdentifier(\"studyPaused\")\n                 } else {\n                     ProgressView(\"Rendering light study\")\n                         .tint(.white).foregroundStyle(.white)\n@@ -183,6 +197,7 @@ struct StudyPreviewOutput: Sendable {\n         }\n         .onDisappear { pipeline.invalidate() }\n         .task(id: work) {\n+            guard !Task.isCancelled else { return }\n             let ticket = pipeline.begin()\n             guard let snapshot = activeRequest else { return }\n             // A quick switch back to a completed request can reuse its pixels.\ndiff --git a/NativeTests/StudyPreviewPipelineTests.swift b/NativeTests/StudyPreviewPipelineTests.swift\nindex 5a23ef9..9d4250c 100644\n--- a/NativeTests/StudyPreviewPipelineTests.swift\n+++ b/NativeTests/StudyPreviewPipelineTests.swift\n@@ -156,6 +156,35 @@ final class StudyPreviewPipelineTests: XCTestCase {\n         XCTAssertEqual(publications, 0)\n     }\n \n+    @MainActor func testPrecancelledBeginCannotInvalidateLiveRequest() async throws {\n+        let pipeline = StudyPreviewPipeline<UInt8>(), live = ControlledRender()\n+        var completions: [StudyPreviewPipeline<UInt8>.Completion] = []\n+        var cancelledRenders = 0\n+        let liveTicket = pipeline.begin()\n+        let liveTask = Task { await pipeline.load(ticket: liveTicket, render: live.render,\n+            convert: { $0.rgba[0] }, publish: { completions.append($0) }) }\n+        await live.waitUntilRequested()\n+\n+        let cancelledTask = Task { @MainActor in\n+            XCTAssertTrue(Task.isCancelled)\n+            let cancelledTicket = pipeline.begin()\n+            await pipeline.load(ticket: cancelledTicket, render: {\n+                cancelledRenders += 1\n+                return try self.output(10)\n+            }, convert: { $0.rgba[0] }, publish: { completions.append($0) })\n+        }\n+        // This actor cannot start the task before cancellation and the await.\n+        cancelledTask.cancel()\n+        await cancelledTask.value\n+        live.finish(.success(try output(9)))\n+        await liveTask.value\n+\n+        XCTAssertEqual(cancelledRenders, 0)\n+        XCTAssertEqual(completions.count, 1)\n+        XCTAssertEqual(completions.first?.image, 9)\n+        XCTAssertNil(completions.first?.message)\n+    }\n+\n     @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {\n         let pipeline = StudyPreviewPipeline<UInt8>()\n         var publications = 0, renders = 0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "ace9f2eba068bc31dd04bb2f1e2028af315d6bdb:App/ReferenceStudyPreview.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W59-platform-performance",
+      "exit_code": 0,
+      "stdout": "import Foundation\nimport LightingCore\n#if canImport(SwiftUI) && canImport(CoreGraphics)\nimport SwiftUI\nimport CoreGraphics\n#endif\n\n/// The publication seam has no dependency on a GPU or on image conversion.\n/// Tests can finish a noncooperative renderer after a newer request has won.\nstruct StudyPreviewOutput: Sendable {\n    let image: StudyImage\n    let backendLabel: String\n}\n\n@MainActor final class StudyPreviewPipeline<DisplayImage> {\n    struct Completion {\n        let image: DisplayImage?\n        let unsupportedPixels: Int\n        let backendLabel: String?\n        let message: String?\n    }\n\n    private var current: UUID?\n\n    /// Begin even when reusing a completed frame: an A \u2192 B \u2192 A switch must\n    /// invalidate B without requiring another render of the cached A image.\n    func begin() -> UUID {\n        let ticket = UUID()\n        current = ticket\n        return ticket\n    }\n\n    func invalidate() { current = nil }\n\n    func load(ticket: UUID,\n              render: () async throws -> StudyPreviewOutput,\n              convert: (StudyImage) -> DisplayImage?,\n              publish: (Completion) -> Void) async {\n        guard current == ticket, !Task.isCancelled else { return }\n        do {\n            let output = try await render()\n            guard current == ticket, !Task.isCancelled else { return }\n            let image = convert(output.image)\n            guard current == ticket, !Task.isCancelled else { return }\n            publish(.init(image: image, unsupportedPixels: image == nil ? 0 : output.image.unsupportedPixels,\n                          backendLabel: image == nil ? nil : output.backendLabel,\n                          message: image == nil ? \"The rendered image could not be displayed.\" : nil))\n        } catch {\n            guard current == ticket, !Task.isCancelled, !(error is CancellationError),\n                  (error as? StudyError) != .cancelled else { return }\n            let message: String\n            switch error as? StudyError {\n            case .invalidCamera: message = \"Move the camera above the panel and away from the subject.\"\n            case .invalidEmitter: message = \"Check the aiming direction of each active light.\"\n            default: message = \"Check the camera, light positions, and preview settings.\"\n            }\n            publish(.init(image: nil, unsupportedPixels: 0, backendLabel: nil, message: message))\n        }\n    }\n}\n\n#if canImport(SwiftUI) && canImport(CoreGraphics)\n\n/// The bounded direct-light study is deliberately distinct from the illustrative\n/// SceneKit views. A serialized worker validates Metal against CPU before use.\n@MainActor struct ReferenceStudyPreview: View {\n    let scene: LightingScene\n    var subject: StudySubject = .sphere\n    @Environment(\\.scenePhase) private var scenePhase\n    @State private var frame: Frame?\n    @State private var attempt = UUID()\n    @State private var pipeline = StudyPreviewPipeline<CGImage>()\n\n    private struct Request: Equatable {\n        let scene: LightingScene\n        let subject: StudySubject\n\n        init(scene: LightingScene, subject: StudySubject) {\n            // Measured-room placement does not participate in this direct-light\n            // study. Keep its snapshot and identity independent of room edits,\n            // retaining the complete light optics, camera and preview settings.\n            var renderScene = scene\n            renderScene.placementRoom = nil\n            self.scene = renderScene\n            self.subject = subject\n        }\n    }\n    private var request: Request { .init(scene: scene, subject: subject) }\n    // Changing to nil cancels in-flight work while inactive; foregrounding\n    // starts the latest scene/subject request without discarding a valid frame.\n    private var activeRequest: Request? { scenePhase == .active ? request : nil }\n    private struct Work: Equatable {\n        let request: Request?\n        let attempt: UUID\n    }\n    private var work: Work { .init(request: activeRequest, attempt: attempt) }\n    private var imageLabel: String {\n        subject == .sphere ? \"Rendered neutral sphere and panel\" : \"Rendered neutral mannequin bust\"\n    }\n\n    private struct Frame {\n        let request: Request\n        let image: CGImage?\n        let unsupportedPixels: Int\n        let backendLabel: String?\n        let message: String?\n    }\n\n    var body: some View {\n        GeometryReader { geometry in\n            ZStack(alignment: .bottomLeading) {\n                Color.black\n                // A previous scene may remain visible while it updates, but a\n                // different subject or an old error must never stand in for it.\n                if let frame,\n                   frame.request == request || (frame.image != nil && frame.request.subject == subject) {\n                    let isCurrent = frame.request == request\n                    if let image = frame.image {\n                        let width = min(geometry.size.width, geometry.size.height * 1.5)\n                        let label = isCurrent ? imageLabel : \"Previous render. \\(imageLabel). Updating light study.\"\n                        Image(image, scale: 1, orientation: .up, label: Text(label))\n                            .resizable().interpolation(.medium)\n                            .frame(width: width, height: width / 1.5)\n                            .frame(maxWidth: .infinity, maxHeight: .infinity)\n                            .accessibilityLabel(label)\n                            .accessibilityIdentifier(isCurrent ? \"studyPreview\" : \"studyPreviousPreview\")\n                        if isCurrent, let backendLabel = frame.backendLabel {\n                            Text(backendLabel).font(.caption2.monospaced())\n                                .foregroundStyle(.white.opacity(0.8))\n                                .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))\n                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)\n                                .padding(8).accessibilityIdentifier(\"studyBackend\")\n                        }\n                        if isCurrent, frame.unsupportedPixels > 0 {\n                            Label(\"\\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.\",\n                                  systemImage: \"exclamationmark.triangle.fill\")\n                                .font(.caption2.weight(.medium))\n                                .foregroundStyle(.white)\n                                .padding(8).background(.black.opacity(0.85))\n                                .accessibilityIdentifier(\"studyWarning\")\n                        }\n                        if !isCurrent {\n                            ProgressView(\"Updating light study\")\n                                .controlSize(.small)\n                                .font(.caption.weight(.medium))\n                                .tint(.white).foregroundStyle(.white)\n                                .padding(8)\n                                .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))\n                                .padding(8)\n                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)\n                                .accessibilityLabel(\"Updating light study\")\n                                .accessibilityValue(\"Showing the previous scene\")\n                                .accessibilityIdentifier(\"studyUpdating\")\n                        }\n                    } else {\n                        ScrollView {\n                            VStack(spacing: 8) {\n                                Image(systemName: \"exclamationmark.triangle\").font(.title2)\n                                    .accessibilityHidden(true)\n                                Text(\"Study unavailable\").font(.headline)\n                                Text(frame.message ?? \"Check camera and lighting geometry.\").font(.caption)\n                                Button { attempt = UUID() } label: {\n                                    Text(\"Retry light study\").frame(minHeight: 44)\n                                }\n                                    .buttonStyle(.bordered)\n                                    .accessibilityIdentifier(\"studyRetry\")\n                            }\n                            .multilineTextAlignment(.center)\n                            .foregroundStyle(.white).padding(24)\n                            .frame(maxWidth: .infinity)\n                        }\n                        .defaultScrollAnchor(.center)\n                        .frame(maxWidth: .infinity, maxHeight: .infinity)\n                        .accessibilityIdentifier(\"studyUnavailable\")\n                    }\n                } else {\n                    ProgressView(\"Rendering light study\")\n                        .tint(.white).foregroundStyle(.white)\n                        .frame(maxWidth: .infinity, maxHeight: .infinity)\n                        .accessibilityIdentifier(\"studyLoading\")\n                }\n            }\n        }\n        .onDisappear { pipeline.invalidate() }\n        .task(id: work) {\n            let ticket = pipeline.begin()\n            guard let snapshot = activeRequest else { return }\n            // A quick switch back to a completed request can reuse its pixels.\n            // Failed frames remain retryable when this view appears again.\n            if let frame, frame.request == snapshot, frame.image != nil { return }\n            // A new attempt shows loading, not an obsolete failure. Retrying\n            // never edits the scene or changes its cache identity.\n            if frame?.request == snapshot { frame = nil }\n            do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }\n            await pipeline.load(ticket: ticket, render: {\n                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)\n                return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)\n            }, convert: Self.makeImage) { completion in\n                frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,\n                              backendLabel: completion.backendLabel, message: completion.message)\n            }\n        }\n    }\n\n    private static func makeImage(_ study: StudyImage) -> CGImage? {\n        guard study.rgba.count == study.width * study.height * 4,\n              let provider = CGDataProvider(data: study.rgba as CFData),\n              let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }\n        return CGImage(width: study.width, height: study.height,\n                       bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: study.width * 4,\n                       space: space, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),\n                       provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)\n    }\n}\n#endif\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "ace9f2eba068bc31dd04bb2f1e2028af315d6bdb:NativeTests/StudyPreviewPipelineTests.swift"
+      ],
+      "cwd": "/tmp/keyfill03-7f4b/workers/W59-platform-performance",
+      "exit_code": 0,
+      "stdout": "import Foundation\nimport XCTest\nimport LightingCore\n#if canImport(KeyAndFill)\n@testable import KeyAndFill\n#else\n@testable import StudyPreviewHarness\n#endif\n\nfinal class StudyPreviewPipelineTests: XCTestCase {\n    @MainActor private final class ControlledRender {\n        private var continuation: CheckedContinuation<StudyPreviewOutput, Error>?\n        private var waiters: [CheckedContinuation<Void, Never>] = []\n        private var requested = false\n\n        func render() async throws -> StudyPreviewOutput {\n            try await withCheckedThrowingContinuation { continuation in\n                self.continuation = continuation\n                requested = true\n                waiters.forEach { $0.resume() }\n                waiters.removeAll()\n            }\n        }\n\n        func waitUntilRequested() async {\n            if requested { return }\n            await withCheckedContinuation { waiters.append($0) }\n        }\n\n        func finish(_ result: Result<StudyPreviewOutput, Error>) {\n            precondition(continuation != nil)\n            continuation?.resume(with: result)\n            continuation = nil\n        }\n    }\n\n    private func output(_ value: UInt8) throws -> StudyPreviewOutput {\n        var bytes = [UInt8](repeating: value, count: 24 * 16 * 4)\n        for i in stride(from: 3, to: bytes.count, by: 4) { bytes[i] = 255 }\n        return .init(image: try StudyImage.fromComputeRGBA(width: 24, height: 16, data: Data(bytes)),\n                     backendLabel: \"Controlled CPU\")\n    }\n\n    @MainActor func testLateSuccessCannotReplaceNewerCompletion() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>()\n        let old = ControlledRender(), new = ControlledRender()\n        var published: [UInt8] = []\n        let firstTicket = pipeline.begin()\n        let first = Task { await pipeline.load(ticket: firstTicket, render: old.render,\n                                               convert: { $0.rgba[0] }, publish: { published.append($0.image!) }) }\n        await old.waitUntilRequested()\n        let secondTicket = pipeline.begin()\n        let second = Task { await pipeline.load(ticket: secondTicket, render: new.render,\n                                                convert: { $0.rgba[0] }, publish: { published.append($0.image!) }) }\n        await new.waitUntilRequested()\n        new.finish(.success(try output(2)))\n        await second.value\n        old.finish(.success(try output(1)))\n        await first.value\n        XCTAssertEqual(published, [2])\n    }\n\n    @MainActor func testLateFailureCannotReplaceNewerImage() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>(), old = ControlledRender()\n        var completions: [StudyPreviewPipeline<UInt8>.Completion] = []\n        let firstTicket = pipeline.begin()\n        let first = Task { await pipeline.load(ticket: firstTicket, render: old.render,\n                                               convert: { $0.rgba[0] }, publish: { completions.append($0) }) }\n        await old.waitUntilRequested()\n        await pipeline.load(ticket: pipeline.begin(), render: { try self.output(3) },\n                            convert: { $0.rgba[0] }, publish: { completions.append($0) })\n        old.finish(.failure(StudyError.invalidCamera))\n        await first.value\n        XCTAssertEqual(completions.count, 1)\n        XCTAssertEqual(completions.first?.image, 3)\n        XCTAssertNil(completions.first?.message)\n    }\n\n    @MainActor func testReturningToCompletedRequestInvalidatesIntermediateWork() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>(), intermediate = ControlledRender()\n        _ = pipeline.begin() // Previously completed A.\n        let ticketB = pipeline.begin()\n        var published = 0\n        let task = Task { await pipeline.load(ticket: ticketB, render: intermediate.render,\n                                              convert: { $0.rgba[0] }, publish: { _ in published += 1 }) }\n        await intermediate.waitUntilRequested()\n        _ = pipeline.begin() // Reuse A without another render.\n        intermediate.finish(.success(try output(4)))\n        await task.value\n        XCTAssertEqual(published, 0)\n    }\n\n    @MainActor func testCancellationDiscardsNoncooperativeRenderCompletion() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>(), renderer = ControlledRender()\n        let ticket = pipeline.begin()\n        var conversions = 0, publications = 0\n        let task = Task { await pipeline.load(ticket: ticket, render: renderer.render,\n            convert: { conversions += 1; return $0.rgba[0] }, publish: { _ in publications += 1 }) }\n        await renderer.waitUntilRequested()\n        task.cancel()\n        renderer.finish(.success(try output(5)))\n        await task.value\n        XCTAssertEqual(conversions, 0)\n        XCTAssertEqual(publications, 0)\n    }\n\n    @MainActor func testDisappearanceOrInactivityInvalidatesLateFailure() async {\n        let pipeline = StudyPreviewPipeline<UInt8>(), renderer = ControlledRender()\n        let ticket = pipeline.begin()\n        var publications = 0\n        let task = Task { await pipeline.load(ticket: ticket, render: renderer.render,\n            convert: { $0.rgba[0] }, publish: { _ in publications += 1 }) }\n        await renderer.waitUntilRequested()\n        pipeline.invalidate()\n        renderer.finish(.failure(StudyError.invalidEmitter))\n        await task.value\n        XCTAssertEqual(publications, 0)\n    }\n\n    @MainActor func testCurrentFailureCanRetryWithFreshAttempt() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>()\n        var completions: [StudyPreviewPipeline<UInt8>.Completion] = []\n        let first = pipeline.begin()\n        await pipeline.load(ticket: first, render: { throw StudyError.invalidCamera },\n                            convert: { $0.rgba[0] }, publish: { completions.append($0) })\n        let retry = pipeline.begin()\n        XCTAssertNotEqual(first, retry)\n        await pipeline.load(ticket: retry, render: { try self.output(6) },\n                            convert: { $0.rgba[0] }, publish: { completions.append($0) })\n        XCTAssertEqual(completions.count, 2)\n        XCTAssertNil(completions[0].image)\n        XCTAssertEqual(completions[0].message, \"Move the camera above the panel and away from the subject.\")\n        XCTAssertEqual(completions[1].image, 6)\n        XCTAssertNil(completions[1].message)\n        XCTAssertEqual(completions[1].backendLabel, \"Controlled CPU\")\n    }\n\n    @MainActor func testConversionFailureHasNoSuccessfulImageOrBackend() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>()\n        var completion: StudyPreviewPipeline<UInt8>.Completion?\n        await pipeline.load(ticket: pipeline.begin(), render: { try self.output(7) },\n                            convert: { _ in nil }, publish: { completion = $0 })\n        XCTAssertNotNil(completion)\n        XCTAssertNil(completion?.image)\n        XCTAssertNil(completion?.backendLabel)\n        XCTAssertEqual(completion?.unsupportedPixels, 0)\n        XCTAssertEqual(completion?.message, \"The rendered image could not be displayed.\")\n    }\n\n    @MainActor func testInvalidationDuringConversionCannotPublish() async throws {\n        let pipeline = StudyPreviewPipeline<UInt8>()\n        var publications = 0\n        await pipeline.load(ticket: pipeline.begin(), render: { try self.output(8) },\n                            convert: { image in pipeline.invalidate(); return image.rgba[0] },\n                            publish: { _ in publications += 1 })\n        XCTAssertEqual(publications, 0)\n    }\n\n    @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {\n        let pipeline = StudyPreviewPipeline<UInt8>()\n        var publications = 0, renders = 0\n        for error in [CancellationError() as Error, StudyError.cancelled] {\n            await pipeline.load(ticket: pipeline.begin(), render: { throw error },\n                                convert: { $0.rgba[0] }, publish: { _ in publications += 1 })\n        }\n        let ticket = pipeline.begin()\n        let task = Task { await pipeline.load(ticket: ticket, render: {\n            renders += 1\n            throw StudyError.invalidCamera\n        }, convert: { $0.rgba[0] }, publish: { _ in publications += 1 }) }\n        task.cancel()\n        await task.value\n        XCTAssertEqual(renders, 0)\n        XCTAssertEqual(publications, 0)\n    }\n}\n",
+      "stderr": ""
+    }
+  ],
+  "source_bindings": {
+    "App/ReferenceStudyPreview.swift": {
+      "worker_input": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+      "candidate": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "root": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+      "retained_ace9": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2"
+    },
+    "NativeTests/StudyPreviewPipelineTests.swift": {
+      "worker_input": "4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79",
+      "candidate": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "root": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "retained_ace9": "4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79"
+    }
+  },
+  "logs": {
+    "docs/parallel/03/evidence/ci-native-ace9.log": {
+      "sha256": "404e610736302d5ddb2c49188d58434e0cc4a70655230f04986ed11228b375e6",
+      "bytes": 1013360,
+      "selected_lines": [
+        {
+          "line": 137,
+          "text": "2026-11-26T13:11:38.3001920Z ProductName:\t\tmacOS"
+        },
+        {
+          "line": 138,
+          "text": "2026-11-26T13:11:38.3007440Z ProductVersion:\t\t26.6.1"
+        },
+        {
+          "line": 864,
+          "text": "2026-11-26T13:13:35.3459730Z \t Executed 10 tests, with 0 failures (0 unexpected) in 0.006 (0.008) seconds"
+        },
+        {
+          "line": 1169,
+          "text": "2026-11-26T13:13:35.6123270Z \t Executed 10 tests, with 0 failures (0 unexpected) in 0.005 (0.007) seconds"
+        },
+        {
+          "line": 1341,
+          "text": "2026-11-26T13:13:36.0393720Z \u21b3 Target Platform: x86_64-apple-macos14.0"
+        },
+        {
+          "line": 2075,
+          "text": "2026-11-26T13:14:41.4851690Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" build-for-testing"
+        },
+        {
+          "line": 3621,
+          "text": "2026-11-26T13:16:27.3785850Z ** TEST BUILD SUCCEEDED **"
+        },
+        {
+          "line": 3669,
+          "text": "2026-11-26T13:16:35.4801310Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO build"
+        },
+        {
+          "line": 4612,
+          "text": "2026-11-26T13:20:31.4853850Z ** BUILD SUCCEEDED **"
+        },
+        {
+          "line": 4696,
+          "text": "2026-11-26T13:25:59.0215470Z \u001b[36;1mprint(\"Required Metal methods executed and passed; no native methods skipped.\")\u001b[0m"
+        },
+        {
+          "line": 4707,
+          "text": "2026-11-26T13:27:36.0518060Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" test-without-building"
+        },
+        {
+          "line": 5418,
+          "text": "2026-11-26T13:31:36.9980090Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testCancellationDiscardsNoncooperativeRenderCompletion]' passed (0.063 seconds)."
+        },
+        {
+          "line": 5420,
+          "text": "2026-11-26T13:31:37.7887150Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testCancelledErrorsAndPrecancelledWorkStaySilent]' passed (0.007 seconds)."
+        },
+        {
+          "line": 5422,
+          "text": "2026-11-26T13:31:38.0181120Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testConversionFailureHasNoSuccessfulImageOrBackend]' passed (0.016 seconds)."
+        },
+        {
+          "line": 5424,
+          "text": "2026-11-26T13:31:38.2205270Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testCurrentFailureCanRetryWithFreshAttempt]' passed (0.005 seconds)."
+        },
+        {
+          "line": 5426,
+          "text": "2026-11-26T13:31:38.4254180Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testDisappearanceOrInactivityInvalidatesLateFailure]' passed (0.281 seconds)."
+        },
+        {
+          "line": 5428,
+          "text": "2026-11-26T13:31:38.6263900Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testInvalidationDuringConversionCannotPublish]' passed (0.003 seconds)."
+        },
+        {
+          "line": 5430,
+          "text": "2026-11-26T13:31:38.8268210Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testLateFailureCannotReplaceNewerImage]' passed (0.005 seconds)."
+        },
+        {
+          "line": 5432,
+          "text": "2026-11-26T13:31:39.0273470Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testLateSuccessCannotReplaceNewerCompletion]' passed (0.005 seconds)."
+        },
+        {
+          "line": 5434,
+          "text": "2026-11-26T13:31:39.2309080Z Test Case '-[KeyAndFillTests.StudyPreviewPipelineTests testReturningToCompletedRequestInvalidatesIntermediateWork]' passed (0.005 seconds)."
+        },
+        {
+          "line": 5492,
+          "text": "2026-11-26T13:31:45.0875900Z Metal hard: mean 0.0, max 0, outliers 0.0, invalid match true"
+        },
+        {
+          "line": 5495,
+          "text": "2026-11-26T13:31:45.3885000Z Metal soft: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true"
+        },
+        {
+          "line": 5496,
+          "text": "2026-11-26T13:31:45.4890170Z Metal warm-rotated: mean 0.0, max 0, outliers 0.0, invalid match true"
+        },
+        {
+          "line": 5497,
+          "text": "2026-11-26T13:31:45.5892840Z Metal dark: mean 0.0, max 0, outliers 0.0, invalid match true"
+        },
+        {
+          "line": 5498,
+          "text": "2026-11-26T13:31:45.6893640Z Metal near-field: mean 0.0, max 0, outliers 0.0, invalid match true"
+        },
+        {
+          "line": 5499,
+          "text": "2026-11-26T13:31:45.7907620Z Metal translated: mean 5.425347222222222e-05, max 1, outliers 0.0, invalid match true"
+        },
+        {
+          "line": 5508,
+          "text": "2026-11-26T13:31:46.7191740Z \t Executed 163 tests, with 0 failures (0 unexpected) in 52.451 (54.740) seconds"
+        },
+        {
+          "line": 5510,
+          "text": "2026-11-26T13:31:46.9194500Z \t Executed 163 tests, with 0 failures (0 unexpected) in 52.451 (54.746) seconds"
+        },
+        {
+          "line": 5556,
+          "text": "2026-11-26T13:33:39.3664360Z ** TEST EXECUTE SUCCEEDED **"
+        },
+        {
+          "line": 5559,
+          "text": "2026-11-26T13:33:51.7459720Z Required Metal methods executed and passed; no native methods skipped."
+        }
+      ]
+    },
+    "docs/parallel/03/evidence/preview-cancelled-begin-original.log": {
+      "sha256": "8b3641bc1cb7a209c535b7e0998a131f17c91b35b642165a51b3233edd20925c",
+      "bytes": 6752,
+      "selected_lines": [
+        {
+          "line": 61,
+          "text": "Test Case 'StudyPreviewPipelineTests.testCancellationDiscardsNoncooperativeRenderCompletion' passed (0.002 seconds)"
+        },
+        {
+          "line": 63,
+          "text": "Test Case 'StudyPreviewPipelineTests.testCancelledErrorsAndPrecancelledWorkStaySilent' passed (0.001 seconds)"
+        },
+        {
+          "line": 65,
+          "text": "Test Case 'StudyPreviewPipelineTests.testConversionFailureHasNoSuccessfulImageOrBackend' passed (0.0 seconds)"
+        },
+        {
+          "line": 67,
+          "text": "Test Case 'StudyPreviewPipelineTests.testCurrentFailureCanRetryWithFreshAttempt' passed (0.001 seconds)"
+        },
+        {
+          "line": 69,
+          "text": "Test Case 'StudyPreviewPipelineTests.testDisappearanceOrInactivityInvalidatesLateFailure' passed (0.101 seconds)"
+        },
+        {
+          "line": 71,
+          "text": "Test Case 'StudyPreviewPipelineTests.testInvalidationDuringConversionCannotPublish' passed (0.003 seconds)"
+        },
+        {
+          "line": 73,
+          "text": "Test Case 'StudyPreviewPipelineTests.testLateFailureCannotReplaceNewerImage' passed (0.001 seconds)"
+        },
+        {
+          "line": 75,
+          "text": "Test Case 'StudyPreviewPipelineTests.testLateSuccessCannotReplaceNewerCompletion' passed (0.004 seconds)"
+        },
+        {
+          "line": 79,
+          "text": "Test Case 'StudyPreviewPipelineTests.testPrecancelledBeginCannotInvalidateLiveRequest' failed (0.001 seconds)"
+        },
+        {
+          "line": 81,
+          "text": "Test Case 'StudyPreviewPipelineTests.testReturningToCompletedRequestInvalidatesIntermediateWork' passed (0.0 seconds)"
+        },
+        {
+          "line": 83,
+          "text": "\t Executed 10 tests, with 2 failures (0 unexpected) in 0.114 (0.114) seconds"
+        },
+        {
+          "line": 85,
+          "text": "\t Executed 10 tests, with 2 failures (0 unexpected) in 0.114 (0.114) seconds"
+        },
+        {
+          "line": 87,
+          "text": "\t Executed 10 tests, with 2 failures (0 unexpected) in 0.114 (0.114) seconds"
+        },
+        {
+          "line": 90,
+          "text": "\u21b3 Target Platform: x86_64-unknown-linux-gnu"
+        }
+      ]
+    },
+    "docs/parallel/03/evidence/preview-cancelled-begin-corrected.log": {
+      "sha256": "48dc3c908acd8b3c08037a7c3cac6cf9a57173310045ea3c01d034330926d31e",
+      "bytes": 3429,
+      "selected_lines": [
+        {
+          "line": 14,
+          "text": "Test Case 'StudyPreviewPipelineTests.testCancellationDiscardsNoncooperativeRenderCompletion' passed (0.001 seconds)"
+        },
+        {
+          "line": 16,
+          "text": "Test Case 'StudyPreviewPipelineTests.testCancelledErrorsAndPrecancelledWorkStaySilent' passed (0.0 seconds)"
+        },
+        {
+          "line": 18,
+          "text": "Test Case 'StudyPreviewPipelineTests.testConversionFailureHasNoSuccessfulImageOrBackend' passed (0.0 seconds)"
+        },
+        {
+          "line": 20,
+          "text": "Test Case 'StudyPreviewPipelineTests.testCurrentFailureCanRetryWithFreshAttempt' passed (0.0 seconds)"
+        },
+        {
+          "line": 22,
+          "text": "Test Case 'StudyPreviewPipelineTests.testDisappearanceOrInactivityInvalidatesLateFailure' passed (0.002 seconds)"
+        },
+        {
+          "line": 24,
+          "text": "Test Case 'StudyPreviewPipelineTests.testInvalidationDuringConversionCannotPublish' passed (0.0 seconds)"
+        },
+        {
+          "line": 26,
+          "text": "Test Case 'StudyPreviewPipelineTests.testLateFailureCannotReplaceNewerImage' passed (0.0 seconds)"
+        },
+        {
+          "line": 28,
+          "text": "Test Case 'StudyPreviewPipelineTests.testLateSuccessCannotReplaceNewerCompletion' passed (0.0 seconds)"
+        },
+        {
+          "line": 30,
+          "text": "Test Case 'StudyPreviewPipelineTests.testPrecancelledBeginCannotInvalidateLiveRequest' passed (0.0 seconds)"
+        },
+        {
+          "line": 32,
+          "text": "Test Case 'StudyPreviewPipelineTests.testReturningToCompletedRequestInvalidatesIntermediateWork' passed (0.0 seconds)"
+        },
+        {
+          "line": 34,
+          "text": "\t Executed 10 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds"
+        },
+        {
+          "line": 36,
+          "text": "\t Executed 10 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds"
+        },
+        {
+          "line": 38,
+          "text": "\t Executed 10 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds"
+        },
+        {
+          "line": 41,
+          "text": "\u21b3 Target Platform: x86_64-unknown-linux-gnu"
+        }
+      ]
+    },
+    "docs/parallel/03/evidence/preview-wave06-syntax.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "selected_lines": []
+    }
+  },
+  "receipts": {
+    "docs/parallel/03/evidence/preview-cancelled-begin-original-inputs.json": {
+      "base": "4be68d3f37436377f38762ef2d2c3d8a34dcd49c",
+      "sourceSHA256": {
+        "App/ReferenceStudyPreview.swift": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+        "NativeTests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99"
+      },
+      "tests": 10,
+      "failedMethods": 1,
+      "failedAssertions": 2,
+      "log": "preview-cancelled-begin-original.log",
+      "scope": "Actual production pipeline and same XCTest source, temporary Linux Swift package. A pre-cancelled MainActor caller overwrites the active ticket; live completion is lost. This does not reproduce SwiftUI scheduling or physical UI."
+    },
+    "docs/parallel/03/evidence/preview-pipeline-inputs.json": {
+      "parent": "02355a52d557d899e4b74ef1671dccbe656fd694",
+      "platform": "Swift6.2.1 Linux",
+      "sourceSHA256": {
+        "App/ReferenceStudyPreview.swift": "f609041d40414637955ff8cf1d143c3269c0305a7a0dba8d937c845e95ecf4e2",
+        "NativeTests/StudyPreviewPipelineTests.swift": "4d609ac715176d372bc3d0af408f8bf3892633c8f70b238d2284881578213b79"
+      },
+      "tests": 9,
+      "failures": 0,
+      "log": "preview-pipeline-tests.log",
+      "harness": "Temporary Swift package StudyPreviewHarness, depending on this repository LightingCore; symlinks the exact App/ReferenceStudyPreview.swift and NativeTests/StudyPreviewPipelineTests.swift. canImport(KeyAndFill) chooses the native app import under Xcode; Linux imports StudyPreviewHarness. The SwiftUI conditional is excluded on Linux.",
+      "command": "TMPDIR=/home/agent/keyfill03-7f4b/tmp PATH=/workspace/scratch/13a77d3f98df/toolchain/usr/bin:$PATH swift test --package-path /home/agent/keyfill03-7f4b/preview-harness --scratch-path /home/agent/keyfill03-7f4b/builds/preview-harness -j 2",
+      "nativeStatus": "not yet verified for this source; no simulated UI claim"
+    },
+    "docs/parallel/03/evidence/preview-wave06-inputs.json": {
+      "parent": "4be68d3f37436377f38762ef2d2c3d8a34dcd49c",
+      "sourceSHA256": {
+        "App/ReferenceStudyPreview.swift": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6",
+        "NativeTests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99"
+      },
+      "command": "TMPDIR=/home/agent/keyfill03-7f4b/tmp PATH=/workspace/scratch/13a77d3f98df/toolchain/usr/bin:$PATH swift test --package-path /home/agent/keyfill03-7f4b/preview-harness --scratch-path /home/agent/keyfill03-7f4b/builds/preview-harness -j1 -Xswiftc -disable-batch-mode",
+      "old": {
+        "tests": 10,
+        "failedMethods": 1,
+        "failedAssertions": 2,
+        "log": "preview-cancelled-begin-original.log"
+      },
+      "corrected": {
+        "tests": 10,
+        "failures": 0,
+        "seconds": 0.005,
+        "log": "preview-cancelled-begin-corrected.log"
+      },
+      "syntax": {
+        "command": "swiftc -frontend -parse App/ReferenceStudyPreview.swift NativeTests/StudyPreviewPipelineTests.swift",
+        "exitCode": 0,
+        "log": "preview-wave06-syntax.log"
+      },
+      "scope": "Actual production publication seam and same XCTest source execute on Linux. The pre-cancelled caller witness is deterministic MainActor execution, not a reproduction of SwiftUI task scheduling. SwiftUI/CoreGraphics typechecking, visible layouts and VoiceOver require source-specific Apple evidence.",
+      "changes": [
+        "Inactive pending/previous previews show static Light study paused labels; active IDs and current images/errors/warnings unchanged.",
+        "Cancelled begin does not supersede live generation; task returns before generation or frame mutation.",
+        "Original nine regression methods preserved; one new controlled cancellation regression."
+      ],
+      "nativeStatus": "Latest candidate native tests not yet run at receipt creation."
+    }
+  },
+  "retained_native": {
+    "revision": "ace9f2eba068bc31dd04bb2f1e2028af315d6bdb",
+    "run": 45826013515,
+    "job": 139932504817,
+    "nativeTests": 163,
+    "failures": 0,
+    "skippedNativeMethods": 0,
+    "previewPipelineMethodsPassed": [
+      "testCancellationDiscardsNoncooperativeRenderCompletion",
+      "testCancelledErrorsAndPrecancelledWorkStaySilent",
+      "testConversionFailureHasNoSuccessfulImageOrBackend",
+      "testCurrentFailureCanRetryWithFreshAttempt",
+      "testDisappearanceOrInactivityInvalidatesLateFailure",
+      "testInvalidationDuringConversionCannotPublish",
+      "testLateFailureCannotReplaceNewerImage",
+      "testLateSuccessCannotReplaceNewerCompletion",
+      "testReturningToCompletedRequestInvalidatesIntermediateWork"
+    ],
+    "nativeMetalParity": "Six fixtures executed; maximum channel error1, exact invalid masks; observed simulator backend, not physical device",
+    "unsignedDebugAppBuild": "success",
+    "unsignedReleaseAppBuild": "success",
+    "logSHA256": "404e610736302d5ddb2c49188d58434e0cc4a70655230f04986ed11228b375e6",
+    "log": "ci-native-ace9.log",
+    "scopeLimit": "This source predates the later direct first-hit-depth refinement; UIKit/VoiceOver interaction shards are separate.",
+    "log_digest_verified": true
+  },
+  "workflow_native_commands": [
+    {
+      "line": 210,
+      "text": "          python3 scripts/verify_privacy_manifest.py --bundle \"$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app\" | tee privacy-debug.log"
+    },
+    {
+      "line": 211,
+      "text": "          mkdir -p artifacts"
+    },
+    {
+      "line": 212,
+      "text": "          ditto -c -k --keepParent \"$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app\" artifacts/KeyAndFill-simulator.zip"
+    },
+    {
+      "line": 213,
+      "text": "      - name: Upload simulator application"
+    },
+    {
+      "line": 214,
+      "text": "        uses: actions/upload-artifact@v4"
+    },
+    {
+      "line": 215,
+      "text": "        with:"
+    },
+    {
+      "line": 216,
+      "text": "          name: KeyAndFill-iOS-Simulator"
+    },
+    {
+      "line": 217,
+      "text": "          path: artifacts/KeyAndFill-simulator.zip"
+    },
+    {
+      "line": 218,
+      "text": "          if-no-files-found: error"
+    },
+    {
+      "line": 219,
+      "text": "      - name: Build unsigned release simulator application"
+    },
+    {
+      "line": 220,
+      "text": "        id: release_build"
+    },
+    {
+      "line": 221,
+      "text": "        timeout-minutes: 15"
+    },
+    {
+      "line": 222,
+      "text": "        # Collect independent Release evidence before the longer UI suite."
+    },
+    {
+      "line": 223,
+      "text": "        # A UI failure or timeout must not erase these artifacts."
+    },
+    {
+      "line": 224,
+      "text": "        if: ${{ !cancelled() && steps.debug_build.outcome == 'success' }}"
+    },
+    {
+      "line": 225,
+      "text": "        run: |"
+    },
+    {
+      "line": 226,
+      "text": "          set -euo pipefail"
+    },
+    {
+      "line": 227,
+      "text": "          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \\"
+    },
+    {
+      "line": 228,
+      "text": "            -destination \"id=$SIMULATOR_ID\" -derivedDataPath \"$RUNNER_TEMP/keyfill-build\" \\"
+    },
+    {
+      "line": 229,
+      "text": "            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log"
+    },
+    {
+      "line": 230,
+      "text": "          python3 scripts/verify_app_icon.py --bundle \"$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app\" | tee icon-release.log"
+    },
+    {
+      "line": 231,
+      "text": "          python3 scripts/verify_privacy_manifest.py --bundle \"$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app\" | tee privacy-release.log"
+    },
+    {
+      "line": 232,
+      "text": "          mkdir -p artifacts"
+    },
+    {
+      "line": 233,
+      "text": "          ditto -c -k --keepParent \"$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app\" artifacts/KeyAndFill-simulator-release.zip"
+    },
+    {
+      "line": 234,
+      "text": "      - name: Upload unsigned release simulator application"
+    },
+    {
+      "line": 235,
+      "text": "        if: ${{ !cancelled() && steps.release_build.outcome == 'success' }}"
+    },
+    {
+      "line": 236,
+      "text": "        uses: actions/upload-artifact@v4"
+    },
+    {
+      "line": 237,
+      "text": "        with:"
+    },
+    {
+      "line": 238,
+      "text": "          name: KeyAndFill-iOS-Simulator-Release"
+    },
+    {
+      "line": 239,
+      "text": "          path: artifacts/KeyAndFill-simulator-release.zip"
+    },
+    {
+      "line": 240,
+      "text": "          if-no-files-found: error"
+    },
+    {
+      "line": 241,
+      "text": "      # Preparatory host warm-up is diagnostic. The required xcodebuild run"
+    },
+    {
+      "line": 242,
+      "text": "      # still targets this exact UDID and must execute every selected test."
+    },
+    {
+      "line": 243,
+      "text": "      - name: Warm selected iPhone simulator (diagnostic)"
+    },
+    {
+      "line": 244,
+      "text": "        id: simulator_warmup"
+    },
+    {
+      "line": 245,
+      "text": "        continue-on-error: true"
+    },
+    {
+      "line": 246,
+      "text": "        timeout-minutes: 10"
+    },
+    {
+      "line": 247,
+      "text": "        run: |"
+    },
+    {
+      "line": 248,
+      "text": "          set -euo pipefail"
+    },
+    {
+      "line": 249,
+      "text": "          python3 scripts/boot_simulator.py --udid \"$SIMULATOR_ID\" \\"
+    },
+    {
+      "line": 250,
+      "text": "            --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \\"
+    },
+    {
+      "line": 251,
+      "text": "            --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \\"
+    },
+    {
+      "line": 252,
+      "text": "            --output simulator-startup 2>&1 | tee simulator-boot.log"
+    },
+    {
+      "line": 253,
+      "text": "      - name: Run native unit tests"
+    },
+    {
+      "line": 254,
+      "text": "        timeout-minutes: 18"
+    },
+    {
+      "line": 255,
+      "text": "        env:"
+    },
+    {
+      "line": 256,
+      "text": "          TEST_SHARD: unit"
+    },
+    {
+      "line": 257,
+      "text": "          SIMULATOR_WARMUP_OUTCOME: ${{ steps.simulator_warmup.outcome }}"
+    },
+    {
+      "line": 258,
+      "text": "        run: |"
+    },
+    {
+      "line": 259,
+      "text": "          set -euo pipefail"
+    },
+    {
+      "line": 260,
+      "text": "          echo \"Simulator warm-up outcome: $SIMULATOR_WARMUP_OUTCOME (diagnostic only)\""
+    },
+    {
+      "line": 261,
+      "text": "          selectors=$(python3 scripts/native_test_shards.py \"$TEST_SHARD\")"
+    },
+    {
+      "line": 262,
+      "text": "          tests=()"
+    },
+    {
+      "line": 263,
+      "text": "          while IFS= read -r selector; do"
+    },
+    {
+      "line": 264,
+      "text": "            tests+=(\"$selector\")"
+    },
+    {
+      "line": 265,
+      "text": "          done <<< \"$selectors\""
+    },
+    {
+      "line": 266,
+      "text": "          [ \"${#tests[@]}\" -gt 0 ]"
+    },
+    {
+      "line": 267,
+      "text": "          xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \\"
+    },
+    {
+      "line": 268,
+      "text": "            -destination \"id=$SIMULATOR_ID\" -derivedDataPath \"$RUNNER_TEMP/keyfill-build\" \\"
+    },
+    {
+      "line": 269,
+      "text": "            -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \\"
+    },
+    {
+      "line": 270,
+      "text": "            CODE_SIGNING_ALLOWED=NO \"${tests[@]}\" test-without-building 2>&1 | tee native-tests.log"
+    },
+    {
+      "line": 271,
+      "text": "          python3 - <<'PY'"
+    },
+    {
+      "line": 272,
+      "text": "          from pathlib import Path"
+    },
+    {
+      "line": 273,
+      "text": "          import re"
+    },
+    {
+      "line": 274,
+      "text": "          log = Path(\"native-tests.log\").read_text(encoding=\"utf-8\", errors=\"replace\")"
+    },
+    {
+      "line": 275,
+      "text": "          required_metal = {"
+    },
+    {
+      "line": 276,
+      "text": "              \"testMetalMatchesCPUOnAvailableDevice\","
+    },
+    {
+      "line": 277,
+      "text": "              \"testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal\","
+    },
+    {
+      "line": 278,
+      "text": "              \"testCancelledInitialParityValidationCanRetryMetalOnSameEngine\","
+    },
+    {
+      "line": 279,
+      "text": "          }"
+    },
+    {
+      "line": 280,
+      "text": "          skipped = re.findall(r\"Test Case '-\\[([^\\]]+)\\]' skipped\", log)"
+    },
+    {
+      "line": 281,
+      "text": "          if skipped:"
+    },
+    {
+      "line": 282,
+      "text": "              raise SystemExit(f\"Incomplete native execution: skipped={skipped}\")"
+    },
+    {
+      "line": 283,
+      "text": "          for method in sorted(required_metal):"
+    },
+    {
+      "line": 284,
+      "text": "              pattern = r\"Test Case '-\\[KeyAndFillTests\\.StudyRendererTests \" + re.escape(method) + r\"\\]' (passed|failed|skipped)\\b\""
+    },
+    {
+      "line": 285,
+      "text": "              outcomes = re.findall(pattern, log)"
+    },
+    {
+      "line": 286,
+      "text": "              if outcomes != [\"passed\"]:"
+    },
+    {
+      "line": 287,
+      "text": "                  raise SystemExit(f\"Required Metal test {method}: expected one pass; observed {outcomes}\")"
+    },
+    {
+      "line": 288,
+      "text": "          print(\"Required Metal methods executed and passed; no native methods skipped.\")"
+    },
+    {
+      "line": 289,
+      "text": "          PY"
+    },
+    {
+      "line": 290,
+      "text": "      - name: Verify required native method accounting"
+    },
+    {
+      "line": 291,
+      "text": "        if: always()"
+    },
+    {
+      "line": 292,
+      "text": "        run: |"
+    },
+    {
+      "line": 293,
+      "text": "          python3 scripts/native_test_shards.py verify-log unit native-tests.log \\"
+    },
+    {
+      "line": 294,
+      "text": "            --report native-method-accounting.json"
+    },
+    {
+      "line": 295,
+      "text": "      - name: Export finalized XCTest result bundle and genuine attachments"
+    }
+  ],
+  "preview_source_relevant": [
+    {
+      "line": 1,
+      "text": "import Foundation"
+    },
+    {
+      "line": 2,
+      "text": "import LightingCore"
+    },
+    {
+      "line": 3,
+      "text": "#if canImport(SwiftUI) && canImport(CoreGraphics)"
+    },
+    {
+      "line": 4,
+      "text": "import SwiftUI"
+    },
+    {
+      "line": 5,
+      "text": "import CoreGraphics"
+    },
+    {
+      "line": 6,
+      "text": "#endif"
+    },
+    {
+      "line": 7,
+      "text": ""
+    },
+    {
+      "line": 8,
+      "text": "/// The publication seam has no dependency on a GPU or on image conversion."
+    },
+    {
+      "line": 9,
+      "text": "/// Tests can finish a noncooperative renderer after a newer request has won."
+    },
+    {
+      "line": 10,
+      "text": "struct StudyPreviewOutput: Sendable {"
+    },
+    {
+      "line": 11,
+      "text": "    let image: StudyImage"
+    },
+    {
+      "line": 12,
+      "text": "    let backendLabel: String"
+    },
+    {
+      "line": 13,
+      "text": "}"
+    },
+    {
+      "line": 14,
+      "text": ""
+    },
+    {
+      "line": 15,
+      "text": "@MainActor final class StudyPreviewPipeline<DisplayImage> {"
+    },
+    {
+      "line": 16,
+      "text": "    struct Completion {"
+    },
+    {
+      "line": 17,
+      "text": "        let image: DisplayImage?"
+    },
+    {
+      "line": 18,
+      "text": "        let unsupportedPixels: Int"
+    },
+    {
+      "line": 19,
+      "text": "        let backendLabel: String?"
+    },
+    {
+      "line": 20,
+      "text": "        let message: String?"
+    },
+    {
+      "line": 21,
+      "text": "    }"
+    },
+    {
+      "line": 22,
+      "text": ""
+    },
+    {
+      "line": 23,
+      "text": "    private var current: UUID?"
+    },
+    {
+      "line": 24,
+      "text": ""
+    },
+    {
+      "line": 25,
+      "text": "    /// Begin even when reusing a completed frame: an A \u2192 B \u2192 A switch must"
+    },
+    {
+      "line": 26,
+      "text": "    /// invalidate B without requiring another render of the cached A image."
+    },
+    {
+      "line": 27,
+      "text": "    /// A cancelled caller gets an unused ticket without superseding live work."
+    },
+    {
+      "line": 28,
+      "text": "    func begin() -> UUID {"
+    },
+    {
+      "line": 29,
+      "text": "        let ticket = UUID()"
+    },
+    {
+      "line": 30,
+      "text": "        guard !Task.isCancelled else { return ticket }"
+    },
+    {
+      "line": 31,
+      "text": "        current = ticket"
+    },
+    {
+      "line": 32,
+      "text": "        return ticket"
+    },
+    {
+      "line": 33,
+      "text": "    }"
+    },
+    {
+      "line": 34,
+      "text": ""
+    },
+    {
+      "line": 35,
+      "text": "    func invalidate() { current = nil }"
+    },
+    {
+      "line": 36,
+      "text": ""
+    },
+    {
+      "line": 37,
+      "text": "    func load(ticket: UUID,"
+    },
+    {
+      "line": 38,
+      "text": "              render: () async throws -> StudyPreviewOutput,"
+    },
+    {
+      "line": 39,
+      "text": "              convert: (StudyImage) -> DisplayImage?,"
+    },
+    {
+      "line": 40,
+      "text": "              publish: (Completion) -> Void) async {"
+    },
+    {
+      "line": 41,
+      "text": "        guard current == ticket, !Task.isCancelled else { return }"
+    },
+    {
+      "line": 42,
+      "text": "        do {"
+    },
+    {
+      "line": 43,
+      "text": "            let output = try await render()"
+    },
+    {
+      "line": 44,
+      "text": "            guard current == ticket, !Task.isCancelled else { return }"
+    },
+    {
+      "line": 45,
+      "text": "            let image = convert(output.image)"
+    },
+    {
+      "line": 46,
+      "text": "            guard current == ticket, !Task.isCancelled else { return }"
+    },
+    {
+      "line": 47,
+      "text": "            publish(.init(image: image, unsupportedPixels: image == nil ? 0 : output.image.unsupportedPixels,"
+    },
+    {
+      "line": 48,
+      "text": "                          backendLabel: image == nil ? nil : output.backendLabel,"
+    },
+    {
+      "line": 49,
+      "text": "                          message: image == nil ? \"The rendered image could not be displayed.\" : nil))"
+    },
+    {
+      "line": 50,
+      "text": "        } catch {"
+    },
+    {
+      "line": 51,
+      "text": "            guard current == ticket, !Task.isCancelled, !(error is CancellationError),"
+    },
+    {
+      "line": 52,
+      "text": "                  (error as? StudyError) != .cancelled else { return }"
+    },
+    {
+      "line": 53,
+      "text": "            let message: String"
+    },
+    {
+      "line": 54,
+      "text": "            switch error as? StudyError {"
+    },
+    {
+      "line": 55,
+      "text": "            case .invalidCamera: message = \"Move the camera above the panel and away from the subject.\""
+    },
+    {
+      "line": 56,
+      "text": "            case .invalidEmitter: message = \"Check the aiming direction of each active light.\""
+    },
+    {
+      "line": 57,
+      "text": "            default: message = \"Check the camera, light positions, and preview settings.\""
+    },
+    {
+      "line": 58,
+      "text": "            }"
+    },
+    {
+      "line": 59,
+      "text": "            publish(.init(image: nil, unsupportedPixels: 0, backendLabel: nil, message: message))"
+    },
+    {
+      "line": 60,
+      "text": "        }"
+    },
+    {
+      "line": 61,
+      "text": "    }"
+    },
+    {
+      "line": 62,
+      "text": "}"
+    },
+    {
+      "line": 63,
+      "text": ""
+    },
+    {
+      "line": 64,
+      "text": "#if canImport(SwiftUI) && canImport(CoreGraphics)"
+    },
+    {
+      "line": 65,
+      "text": ""
+    },
+    {
+      "line": 66,
+      "text": "/// The bounded direct-light study is deliberately distinct from the illustrative"
+    },
+    {
+      "line": 67,
+      "text": "/// SceneKit views. A serialized worker validates Metal against CPU before use."
+    },
+    {
+      "line": 68,
+      "text": "@MainActor struct ReferenceStudyPreview: View {"
+    },
+    {
+      "line": 69,
+      "text": "    let scene: LightingScene"
+    },
+    {
+      "line": 70,
+      "text": "    var subject: StudySubject = .sphere"
+    },
+    {
+      "line": 71,
+      "text": "    @Environment(\\.scenePhase) private var scenePhase"
+    },
+    {
+      "line": 72,
+      "text": "    @State private var frame: Frame?"
+    },
+    {
+      "line": 73,
+      "text": "    @State private var attempt = UUID()"
+    },
+    {
+      "line": 74,
+      "text": "    @State private var pipeline = StudyPreviewPipeline<CGImage>()"
+    },
+    {
+      "line": 75,
+      "text": ""
+    },
+    {
+      "line": 76,
+      "text": "    private struct Request: Equatable {"
+    },
+    {
+      "line": 77,
+      "text": "        let scene: LightingScene"
+    },
+    {
+      "line": 78,
+      "text": "        let subject: StudySubject"
+    },
+    {
+      "line": 79,
+      "text": ""
+    },
+    {
+      "line": 80,
+      "text": "        init(scene: LightingScene, subject: StudySubject) {"
+    },
+    {
+      "line": 81,
+      "text": "            // Measured-room placement does not participate in this direct-light"
+    },
+    {
+      "line": 82,
+      "text": "            // study. Keep its snapshot and identity independent of room edits,"
+    },
+    {
+      "line": 83,
+      "text": "            // retaining the complete light optics, camera and preview settings."
+    },
+    {
+      "line": 84,
+      "text": "            var renderScene = scene"
+    },
+    {
+      "line": 85,
+      "text": "            renderScene.placementRoom = nil"
+    },
+    {
+      "line": 86,
+      "text": "            self.scene = renderScene"
+    },
+    {
+      "line": 87,
+      "text": "            self.subject = subject"
+    },
+    {
+      "line": 88,
+      "text": "        }"
+    },
+    {
+      "line": 89,
+      "text": "    }"
+    },
+    {
+      "line": 90,
+      "text": "    private var request: Request { .init(scene: scene, subject: subject) }"
+    },
+    {
+      "line": 91,
+      "text": "    // Changing to nil cancels in-flight work while inactive; foregrounding"
+    },
+    {
+      "line": 92,
+      "text": "    // starts the latest scene/subject request without discarding a valid frame."
+    },
+    {
+      "line": 93,
+      "text": "    private var activeRequest: Request? { scenePhase == .active ? request : nil }"
+    },
+    {
+      "line": 94,
+      "text": "    private struct Work: Equatable {"
+    },
+    {
+      "line": 95,
+      "text": "        let request: Request?"
+    },
+    {
+      "line": 96,
+      "text": "        let attempt: UUID"
+    },
+    {
+      "line": 97,
+      "text": "    }"
+    },
+    {
+      "line": 98,
+      "text": "    private var work: Work { .init(request: activeRequest, attempt: attempt) }"
+    },
+    {
+      "line": 99,
+      "text": "    private var imageLabel: String {"
+    },
+    {
+      "line": 100,
+      "text": "        subject == .sphere ? \"Rendered neutral sphere and panel\" : \"Rendered neutral mannequin bust\""
+    },
+    {
+      "line": 101,
+      "text": "    }"
+    },
+    {
+      "line": 102,
+      "text": ""
+    },
+    {
+      "line": 103,
+      "text": "    private struct Frame {"
+    },
+    {
+      "line": 104,
+      "text": "        let request: Request"
+    },
+    {
+      "line": 105,
+      "text": "        let image: CGImage?"
+    },
+    {
+      "line": 106,
+      "text": "        let unsupportedPixels: Int"
+    },
+    {
+      "line": 107,
+      "text": "        let backendLabel: String?"
+    },
+    {
+      "line": 108,
+      "text": "        let message: String?"
+    },
+    {
+      "line": 109,
+      "text": "    }"
+    },
+    {
+      "line": 110,
+      "text": ""
+    },
+    {
+      "line": 111,
+      "text": "    var body: some View {"
+    },
+    {
+      "line": 112,
+      "text": "        GeometryReader { geometry in"
+    },
+    {
+      "line": 113,
+      "text": "            ZStack(alignment: .bottomLeading) {"
+    },
+    {
+      "line": 114,
+      "text": "                Color.black"
+    },
+    {
+      "line": 115,
+      "text": "                // A previous scene may remain visible while it updates, but a"
+    },
+    {
+      "line": 190,
+      "text": "                } else {"
+    },
+    {
+      "line": 191,
+      "text": "                    ProgressView(\"Rendering light study\")"
+    },
+    {
+      "line": 192,
+      "text": "                        .tint(.white).foregroundStyle(.white)"
+    },
+    {
+      "line": 193,
+      "text": "                        .frame(maxWidth: .infinity, maxHeight: .infinity)"
+    },
+    {
+      "line": 194,
+      "text": "                        .accessibilityIdentifier(\"studyLoading\")"
+    },
+    {
+      "line": 195,
+      "text": "                }"
+    },
+    {
+      "line": 196,
+      "text": "            }"
+    },
+    {
+      "line": 197,
+      "text": "        }"
+    },
+    {
+      "line": 198,
+      "text": "        .onDisappear { pipeline.invalidate() }"
+    },
+    {
+      "line": 199,
+      "text": "        .task(id: work) {"
+    },
+    {
+      "line": 200,
+      "text": "            guard !Task.isCancelled else { return }"
+    },
+    {
+      "line": 201,
+      "text": "            let ticket = pipeline.begin()"
+    },
+    {
+      "line": 202,
+      "text": "            guard let snapshot = activeRequest else { return }"
+    },
+    {
+      "line": 203,
+      "text": "            // A quick switch back to a completed request can reuse its pixels."
+    },
+    {
+      "line": 204,
+      "text": "            // Failed frames remain retryable when this view appears again."
+    },
+    {
+      "line": 205,
+      "text": "            if let frame, frame.request == snapshot, frame.image != nil { return }"
+    },
+    {
+      "line": 206,
+      "text": "            // A new attempt shows loading, not an obsolete failure. Retrying"
+    },
+    {
+      "line": 207,
+      "text": "            // never edits the scene or changes its cache identity."
+    },
+    {
+      "line": 208,
+      "text": "            if frame?.request == snapshot { frame = nil }"
+    },
+    {
+      "line": 209,
+      "text": "            do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }"
+    },
+    {
+      "line": 210,
+      "text": "            await pipeline.load(ticket: ticket, render: {"
+    },
+    {
+      "line": 211,
+      "text": "                let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)"
+    },
+    {
+      "line": 212,
+      "text": "                return .init(image: rendered.image, backendLabel: rendered.backend.rawValue)"
+    },
+    {
+      "line": 213,
+      "text": "            }, convert: Self.makeImage) { completion in"
+    },
+    {
+      "line": 214,
+      "text": "                frame = Frame(request: snapshot, image: completion.image, unsupportedPixels: completion.unsupportedPixels,"
+    },
+    {
+      "line": 215,
+      "text": "                              backendLabel: completion.backendLabel, message: completion.message)"
+    },
+    {
+      "line": 216,
+      "text": "            }"
+    },
+    {
+      "line": 217,
+      "text": "        }"
+    },
+    {
+      "line": 218,
+      "text": "    }"
+    },
+    {
+      "line": 219,
+      "text": ""
+    },
+    {
+      "line": 220,
+      "text": "    private static func makeImage(_ study: StudyImage) -> CGImage? {"
+    },
+    {
+      "line": 221,
+      "text": "        guard study.rgba.count == study.width * study.height * 4,"
+    },
+    {
+      "line": 222,
+      "text": "              let provider = CGDataProvider(data: study.rgba as CFData),"
+    },
+    {
+      "line": 223,
+      "text": "              let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }"
+    },
+    {
+      "line": 224,
+      "text": "        return CGImage(width: study.width, height: study.height,"
+    },
+    {
+      "line": 225,
+      "text": "                       bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: study.width * 4,"
+    },
+    {
+      "line": 226,
+      "text": "                       space: space, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),"
+    },
+    {
+      "line": 227,
+      "text": "                       provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)"
+    },
+    {
+      "line": 228,
+      "text": "    }"
+    },
+    {
+      "line": 229,
+      "text": "}"
+    },
+    {
+      "line": 230,
+      "text": "#endif"
+    }
+  ],
+  "harness": {
+    "path": "/home/agent/keyfill03-7f4b/preview-harness",
+    "files": {
+      "Package.swift": "0a9b77f3a8833fb1512e781f24f8c9055212edf5b890a98595fe501cc53c0eb6",
+      "Tests/StudyPreviewPipelineTests.swift": "a68a38abce16baff2eee55c175bd3874664d8707d6c358d04282691455407c99",
+      "Sources/ReferenceStudyPreview.swift": "45a899619938e4a9c719f42af9c37d79e685c3a98d51465ca1995cc260595fc6"
+    },
+    "package": "// swift-tools-version: 5.9\nimport PackageDescription\nlet package = Package(name: \"StudyPreviewHarness\", dependencies: [.package(name: \"LightingCore\", path: \"/workspace/scratch/7f4be4bbb2d6/APP1-lane03\")], targets: [.target(name: \"StudyPreviewHarness\", dependencies: [.product(name: \"LightingCore\", package: \"LightingCore\")], path: \"Sources\"), .testTarget(name: \"StudyPreviewHarnessTests\", dependencies: [\"StudyPreviewHarness\", .product(name: \"LightingCore\", package: \"LightingCore\")], path: \"Tests\")])\n"
+  },
+  "source_review": {
+    "comparison": "W54 candidate against worker input 74f7584b4e474c752ec0939add6b7522ba98094f only",
+    "unchanged_sections": {
+      "pipeline_load_and_publication_unchanged": true,
+      "request_identity_and_state_unchanged": true,
+      "debounce_render_call_and_image_conversion_unchanged": true
+    },
+    "conclusion": "Only paused-state presentation and two pre-cancellation guards change production behavior. Cache keys/limits, pixel kernels, image conversion, 80ms debounce, sample budgets and routing have no W54 delta. This is source review, not new timing or device measurement."
+  },
+  "remaining_native_gate": {
+    "status": "UNRUN for candidate source",
+    "minimal_w54_scope": [
+      "Fresh native SwiftUI/CoreGraphics app compilation in Debug and Release; frontend parse and Linux build exclude platform typechecking.",
+      "Run all 10 StudyPreviewPipelineTests on the same exact source in iOS Simulator and preserve finalized xcresult/method accounting.",
+      "Record affected UI states: inactive without frame and inactive with stale frame show static paused state; active pending/stale uses progress; foreground completes latest request. Check the changed caption/label at default and largest text size."
+    ],
+    "command_templates_not_executed": [
+      "xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination \"id=$SIMULATOR_ID\" -derivedDataPath \"$W59_NATIVE_DERIVED_DATA\" -parallel-testing-enabled NO -resultBundlePath \"$W59_NATIVE_RESULTS\" CODE_SIGNING_ALLOWED=NO -only-testing:KeyAndFillTests/StudyPreviewPipelineTests test",
+      "xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release -destination \"id=$SIMULATOR_ID\" -derivedDataPath \"$W59_NATIVE_DERIVED_DATA\" CODE_SIGNING_ALLOWED=NO build"
+    ],
+    "limits": "W54 alone does not require timing/physical/cache/pixel reruns. Earlier CPU changes and their outstanding current-source native/Metal requirements are separate; ace9 cannot establish their present pass. Native pipeline tests still do not directly reproduce SwiftUI task scheduling."
+  },
+  "worker_execution": {
+    "builds_or_tests_run": false,
+    "inspection_commands_successful": true,
+    "artifact_writes_only": true,
+    "no_source_changes_commits_pushes_cleanup_or_external_messages": true,
+    "token_counter": "unavailable",
+    "root_corrected_harness_status": "Root reported session 81120 exit 0; finalized log and preview-wave06-inputs.json independently inspected."
+  }
+}

@@ -1,0 +1,13 @@
+# W89 — platform/performance
+
+**Complete retained-data review; candidate native execution remains pending.** Runtime `/root/wave09/w89_platform_performance`; private tree `/tmp/keyfill03-7f4b/workers/W89-platform-performance`; immutable input `a7c93be58a04154748c951b3d485b05300e9692c`. Reviewed integrated candidate `342e3280e3eb077d55e122c8bfb88b4062b431ed`.
+
+Command: `python3 docs/parallel/03/workers/wave09-evidence/W89-retained-check.py` → exit 0. [Receipt](wave09-evidence/W89-platform-evidence.json) records commands, source hashes and existing log paths/SHA256; raw logs were not duplicated. No build, XCTest, render or benchmark executed.
+
+Source36 Apple run 45842899560/job 139992156576 independently recounts **164 methods**, each started/passed once, including **ten pipeline methods**. Six actual simulator Metal cases report maximum channel error 1. Exact masks follow from the executed `XCTAssertTrue(metrics.passes)` and source36’s full-mask equality predicate; the printed invalid-match flag alone checks counts. Host parity 6/precision 8 remain separate: all retained mask mismatches 0, precision limit 1, and deliberate nonzero invalid counts preserved.
+
+All 31 core manifest hashes match; core Git trees are identical across db7, source36, a7 and 342e. The optimized historical benchmark retains **eight frame/twelve cancellation/four visibility workloads**. Seven measured samples per timed workload yield 84 samples; all retained percentiles reconcile, unsupported frame counts are 0 and all cancellation probes observe cancellation. Source compares complete images with warmup; JSON archives one hash per workload. Raw 74f revision remains preserved with its explicit db7 compiled-source binding. No portable timing/device guarantee follows.
+
+Found and routed a receipt defect: the two passing UI methods are **ReferenceComparisonUITests**, not the original ReferencePhotoUITests label. Root corrected the summary while preserving its original provenance. Two ProjectLibrary methods fail; both visual jobs terminate on missing accessibility artifacts. No source03 causal linkage or whole-M03 pass is established.
+
+Candidate preview 9ba77618… supersedes W84 e0483281… only for the accessibility wording; hosted test abd3fa97… is unchanged. Native 165 is discovery only. Its synthetic backend policy cannot establish real engine downgrade or Metal behavior. Parent reports candidate run 45857561126 in progress; Apple typecheck, hosted execution and actual UI/semantics remain pending. Changed lane04 kernel is outside source36 validation. No physical, thermal/RSS, sustained-FPS or VoiceOver claim. Qualitative 60% checkpoint recorded; exact counters unavailable.

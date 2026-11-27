@@ -1,0 +1,1086 @@
+{
+  "canonical_id": "/root/w08_acceptance/implementation",
+  "status": "completed_portable_witness_and_source_review",
+  "input_sha": "4e694bc377c4825d1d2dd52fcd7900e534c75072",
+  "baseline_sha": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "runtime": {
+    "python": "3.12.14",
+    "host": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "native_execution": false
+  },
+  "evidence": "Source-derived analytical primitive support and pinhole arithmetic; NOT native rendering, Swift tests, runtime telemetry, calibration, or universal floating-point verification.",
+  "source_sha256": {
+    "App/SpatialViewportGeometry.swift": "4d840ea8a8610e4a0abd23989c530094b3e6e6f92cd1b334c0bafb9c0ae4b3bf",
+    "App/SpatialPreview.swift": "f7d90394a449c859a0fdebd98e7b11b0a5dad942d971d6a1d3a24474c9f0a585",
+    "App/StudioEntityGraph.swift": "a969106d321096bd2a573c1b0ddbb6b3c70192dfd86a792ec1a8a249089a783b",
+    "App/RealityStudioPreview.swift": "3a95ef21338a212765f9ff13692adebf5d116b3779e9d4bc93d085134714ac07",
+    "Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+    "Sources/LightingCore/StudioSceneBounds.swift": "05480eeac51b8564a499c000fc5418439be6067897408e2cc4b4ae11406c1206",
+    "Sources/LightingCore/CameraFraming.swift": "f3d78baddf790d0ee7e3025e6e6f2b4b9645bfa2ee38cf46b3b6cb0913ab92f3"
+  },
+  "fixture_count": 15,
+  "layouts": [
+    [
+      360,
+      240
+    ],
+    [
+      120,
+      600
+    ],
+    [
+      600,
+      120
+    ],
+    [
+      1,
+      1000
+    ]
+  ],
+  "orbit_yaw_pitch": [
+    [
+      0.56,
+      0.36
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      2.4,
+      -1.2
+    ],
+    [
+      -2.1,
+      1.35
+    ]
+  ],
+  "full_shape_frustum_checks_per_projection_model": 240,
+  "failures": [],
+  "fixtures": [
+    {
+      "name": "ordinary",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          1.5,
+          3
+        ],
+        "lights": [
+          {
+            "p": [
+              -1.5,
+              2.1,
+              1.2
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          },
+          {
+            "p": [
+              1.5,
+              1.7,
+              1.5
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          },
+          {
+            "p": [
+              0.8,
+              2.2,
+              -1.2
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          }
+        ]
+      },
+      "primitives": 64,
+      "bounds": [
+        [
+          -1.74,
+          -0.0,
+          -1.44
+        ],
+        [
+          1.74,
+          2.3200000000000003,
+          3.24
+        ]
+      ],
+      "max_envelope_excess_m": 0.0,
+      "min_ideal_frustum_clearance_m": 0.8610761824256833,
+      "min_float_angle_only_clearance_m": 0.8610765169390647
+    },
+    {
+      "name": "translated_x80_z75",
+      "scene": {
+        "subject": [
+          80,
+          1.5,
+          75
+        ],
+        "camera": [
+          80,
+          1.5,
+          78
+        ],
+        "lights": [
+          {
+            "p": [
+              78.5,
+              2.1,
+              76.2
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          },
+          {
+            "p": [
+              81.5,
+              1.7,
+              76.5
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          },
+          {
+            "p": [
+              80.8,
+              2.2,
+              73.8
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          }
+        ]
+      },
+      "primitives": 64,
+      "bounds": [
+        [
+          78.26,
+          -0.0,
+          73.56
+        ],
+        [
+          81.74,
+          2.3200000000000003,
+          78.24
+        ]
+      ],
+      "max_envelope_excess_m": 0.0,
+      "min_ideal_frustum_clearance_m": 0.8610761824256766,
+      "min_float_angle_only_clearance_m": 0.8610765169390447
+    },
+    {
+      "name": "translated_y75",
+      "scene": {
+        "subject": [
+          0,
+          76.5,
+          0
+        ],
+        "camera": [
+          0,
+          76.5,
+          3
+        ],
+        "lights": [
+          {
+            "p": [
+              -1.5,
+              77.1,
+              1.2
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          },
+          {
+            "p": [
+              1.5,
+              76.7,
+              1.5
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          },
+          {
+            "p": [
+              0.8,
+              77.2,
+              -1.2
+            ],
+            "kind": "point",
+            "w": 0.6,
+            "h": 0.9,
+            "target": null,
+            "roll": 0
+          }
+        ]
+      },
+      "primitives": 64,
+      "bounds": [
+        [
+          -1.74,
+          -0.0,
+          -1.44
+        ],
+        [
+          1.74,
+          77.32000000000001,
+          3.24
+        ]
+      ],
+      "max_envelope_excess_m": 0.0,
+      "min_ideal_frustum_clearance_m": 4.90522559111772,
+      "min_float_angle_only_clearance_m": 4.90522559111772
+    },
+    {
+      "name": "coincident_4m",
+      "scene": {
+        "subject": [
+          0,
+          2,
+          -0.1
+        ],
+        "camera": [
+          0,
+          2,
+          0.1
+        ],
+        "lights": [
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 4,
+            "target": [
+              0,
+              2,
+              0
+            ],
+            "roll": 0
+          }
+        ]
+      },
+      "primitives": 29,
+      "bounds": [
+        [
+          -2.03,
+          -0.029999999999999805,
+          -0.45999999999999996
+        ],
+        [
+          2.03,
+          4.029999999999999,
+          0.33999999999999997
+        ]
+      ],
+      "max_envelope_excess_m": -0.005499999999999616,
+      "min_ideal_frustum_clearance_m": 0.6046786045983003,
+      "min_float_angle_only_clearance_m": 0.6046786045983003
+    },
+    {
+      "name": "empty",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          1.5,
+          3
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          -0.36,
+          0.5400000000000001,
+          -0.36
+        ],
+        [
+          0.36,
+          1.7400000000000002,
+          3.24
+        ]
+      ],
+      "max_envelope_excess_m": -0.009999999999999898,
+      "min_ideal_frustum_clearance_m": 0.6297783734503499,
+      "min_float_angle_only_clearance_m": 0.6297785844719872
+    },
+    {
+      "name": "empty_coincident_boundary",
+      "scene": {
+        "subject": [
+          100,
+          -100,
+          100
+        ],
+        "camera": [
+          100,
+          -100,
+          100
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          99.64,
+          -100.96,
+          99.64
+        ],
+        [
+          100.36,
+          -99.76,
+          100.36
+        ]
+      ],
+      "max_envelope_excess_m": -0.009999999999990905,
+      "min_ideal_frustum_clearance_m": 0.3217824835672149,
+      "min_float_angle_only_clearance_m": 0.3217824835672149
+    },
+    {
+      "name": "sparse_no_stand",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          1.5,
+          3
+        ],
+        "lights": [
+          {
+            "p": [
+              2,
+              0.05,
+              -1
+            ],
+            "kind": "rectangle",
+            "w": 0.05,
+            "h": 0.05,
+            "target": [
+              0,
+              1.5,
+              0
+            ],
+            "roll": 37
+          }
+        ]
+      },
+      "primitives": 28,
+      "bounds": [
+        [
+          -0.36,
+          -0.09623831049501731,
+          -1.1278111128361212
+        ],
+        [
+          2.154892622619631,
+          1.7400000000000002,
+          3.24
+        ]
+      ],
+      "max_envelope_excess_m": -0.02478838351394108,
+      "min_ideal_frustum_clearance_m": 0.592322014500229,
+      "min_float_angle_only_clearance_m": 0.592322014500229
+    },
+    {
+      "name": "tall_stand",
+      "scene": {
+        "subject": [
+          0,
+          90,
+          0
+        ],
+        "camera": [
+          0,
+          90,
+          3
+        ],
+        "lights": [
+          {
+            "p": [
+              -2,
+              100,
+              1
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 89
+          }
+        ]
+      },
+      "primitives": 32,
+      "bounds": [
+        [
+          -3.81052319758306,
+          -0.0,
+          -0.36
+        ],
+        [
+          0.36,
+          100.58950932327099,
+          3.24
+        ]
+      ],
+      "max_envelope_excess_m": 0.0,
+      "min_ideal_frustum_clearance_m": 6.268496681202923,
+      "min_float_angle_only_clearance_m": 6.268496681202923
+    },
+    {
+      "name": "crowded_12",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          1.5,
+          3
+        ],
+        "lights": [
+          {
+            "p": [
+              -99,
+              0,
+              -95
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": -170
+          },
+          {
+            "p": [
+              99,
+              8,
+              -78
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": -141
+          },
+          {
+            "p": [
+              -99,
+              16,
+              -61
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": -112
+          },
+          {
+            "p": [
+              99,
+              24,
+              -44
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": -83
+          },
+          {
+            "p": [
+              -99,
+              32,
+              -27
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": -54
+          },
+          {
+            "p": [
+              99,
+              40,
+              -10
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": -25
+          },
+          {
+            "p": [
+              -99,
+              48,
+              7
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 4
+          },
+          {
+            "p": [
+              99,
+              56,
+              24
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 33
+          },
+          {
+            "p": [
+              -99,
+              64,
+              41
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 62
+          },
+          {
+            "p": [
+              99,
+              72,
+              58
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 91
+          },
+          {
+            "p": [
+              -99,
+              80,
+              75
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 120
+          },
+          {
+            "p": [
+              99,
+              88,
+              92
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": null,
+            "roll": 149
+          }
+        ]
+      },
+      "primitives": 270,
+      "bounds": [
+        [
+          -100.49666139364724,
+          -0.408285677171041,
+          -96.55545964372273
+        ],
+        [
+          100.06547054969144,
+          89.00117128451828,
+          93.74776687834141
+        ]
+      ],
+      "max_envelope_excess_m": -0.0068849151212451165,
+      "min_ideal_frustum_clearance_m": 21.052333641321695,
+      "min_float_angle_only_clearance_m": 21.052350099971882
+    },
+    {
+      "name": "arbitrary_aim_roll",
+      "scene": {
+        "subject": [
+          -0.7,
+          1.3,
+          0.4
+        ],
+        "camera": [
+          2.7,
+          -1.2,
+          -3.1
+        ],
+        "lights": [
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": [
+              1,
+              2,
+              3
+            ],
+            "roll": 37
+          },
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "directional",
+            "w": 0.05,
+            "h": 4,
+            "target": [
+              0,
+              4,
+              0
+            ],
+            "roll": 90
+          },
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": [
+              0,
+              -2,
+              0
+            ],
+            "roll": -90
+          },
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "directional",
+            "w": 0.05,
+            "h": 4,
+            "target": [
+              -3,
+              1,
+              -2
+            ],
+            "roll": -137.25
+          },
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "rectangle",
+            "w": 4,
+            "h": 0.05,
+            "target": [
+              2,
+              -3,
+              4
+            ],
+            "roll": 180
+          },
+          {
+            "p": [
+              0,
+              2,
+              0
+            ],
+            "kind": "directional",
+            "w": 0.05,
+            "h": 4,
+            "target": [
+              0,
+              2,
+              0
+            ],
+            "roll": 0
+          }
+        ]
+      },
+      "primitives": 139,
+      "bounds": [
+        [
+          -3.0275,
+          -3.0275,
+          -3.34
+        ],
+        [
+          2.9400000000000004,
+          4.0275,
+          4.0275
+        ]
+      ],
+      "max_envelope_excess_m": 0.0,
+      "min_ideal_frustum_clearance_m": 1.1608463251594852,
+      "min_float_angle_only_clearance_m": 1.1608463251594852
+    },
+    {
+      "name": "authored_camera_above",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          4,
+          0
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          -0.36,
+          0.5400000000000001,
+          -0.36
+        ],
+        [
+          0.36,
+          4.24,
+          0.36
+        ]
+      ],
+      "max_envelope_excess_m": -0.009999999999999898,
+      "min_ideal_frustum_clearance_m": 0.4434240053110754,
+      "min_float_angle_only_clearance_m": 0.4434240053110754
+    },
+    {
+      "name": "authored_camera_below",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          -2,
+          0
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          -0.36,
+          -2.24,
+          -0.36
+        ],
+        [
+          0.36,
+          1.7400000000000002,
+          0.36
+        ]
+      ],
+      "max_envelope_excess_m": -0.025000000000000133,
+      "min_ideal_frustum_clearance_m": 0.3387758621296947,
+      "min_float_angle_only_clearance_m": 0.3387758621296947
+    },
+    {
+      "name": "authored_camera_back",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          0,
+          1.5,
+          -3
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          -0.36,
+          0.5400000000000001,
+          -3.24
+        ],
+        [
+          0.36,
+          1.7400000000000002,
+          0.36
+        ]
+      ],
+      "max_envelope_excess_m": -0.009999999999999898,
+      "min_ideal_frustum_clearance_m": 0.559055004411714,
+      "min_float_angle_only_clearance_m": 0.5590552163572734
+    },
+    {
+      "name": "authored_camera_side",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          3,
+          1.5,
+          0
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          -0.36,
+          0.5400000000000001,
+          -0.36
+        ],
+        [
+          3.24,
+          1.7400000000000002,
+          0.36
+        ]
+      ],
+      "max_envelope_excess_m": -0.009999999999999898,
+      "min_ideal_frustum_clearance_m": 0.46658405341411635,
+      "min_float_angle_only_clearance_m": 0.4665842539843485
+    },
+    {
+      "name": "authored_camera_oblique",
+      "scene": {
+        "subject": [
+          0,
+          1.5,
+          0
+        ],
+        "camera": [
+          -4,
+          3,
+          -2
+        ],
+        "lights": []
+      },
+      "primitives": 10,
+      "bounds": [
+        [
+          -4.24,
+          0.5400000000000001,
+          -2.24
+        ],
+        [
+          0.36,
+          3.24,
+          0.36
+        ]
+      ],
+      "max_envelope_excess_m": -0.009999999999999898,
+      "min_ideal_frustum_clearance_m": 0.6891010356929962,
+      "min_float_angle_only_clearance_m": 0.6891013435026639
+    }
+  ],
+  "scalar_fov_cases": [
+    {
+      "width": 360,
+      "height": 240,
+      "ideal_vertical_degrees": 48.0,
+      "nearest_float_degrees": 48.0,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 33.736704105540746,
+      "candidate_vertical_degrees": 48.0,
+      "candidate_accepts": true,
+      "candidate_horizontal_half_degrees": 33.736704105540746
+    },
+    {
+      "width": 120,
+      "height": 600,
+      "ideal_vertical_degrees": 131.62006644412162,
+      "nearest_float_degrees": 131.6200714111328,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 24.000002468819687,
+      "candidate_vertical_degrees": 131.6200714111328,
+      "candidate_accepts": true,
+      "candidate_horizontal_half_degrees": 24.000002468819687
+    },
+    {
+      "width": 600,
+      "height": 120,
+      "ideal_vertical_degrees": 48.0,
+      "nearest_float_degrees": 48.0,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 65.8100332220608,
+      "candidate_vertical_degrees": 48.0,
+      "candidate_accepts": true,
+      "candidate_horizontal_half_degrees": 65.8100332220608
+    },
+    {
+      "width": 1,
+      "height": 1000,
+      "ideal_vertical_degrees": 179.74262357724163,
+      "nearest_float_degrees": 179.7426300048828,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 24.000531691198518,
+      "candidate_vertical_degrees": 179.7426300048828,
+      "candidate_accepts": true,
+      "candidate_horizontal_half_degrees": 24.000531691198518
+    },
+    {
+      "width": 0.0003,
+      "height": 3000,
+      "ideal_vertical_degrees": 179.99997426231445,
+      "nearest_float_degrees": 179.99996948242188,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 20.580836688741652,
+      "candidate_vertical_degrees": 179.99998474121094,
+      "candidate_accepts": true,
+      "candidate_horizontal_half_degrees": 36.906081955009505
+    },
+    {
+      "width": 0.0002,
+      "height": 3000,
+      "ideal_vertical_degrees": 179.999982841543,
+      "nearest_float_degrees": 179.99998474121094,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 26.595211118296646,
+      "candidate_vertical_degrees": 179.99998474121094,
+      "candidate_accepts": true,
+      "candidate_horizontal_half_degrees": 26.595211118296646
+    },
+    {
+      "width": 0.0001,
+      "height": 3000,
+      "ideal_vertical_degrees": 179.99999142077152,
+      "nearest_float_degrees": 179.99998474121094,
+      "old_accepts": true,
+      "old_horizontal_half_degrees": 14.053987907538744,
+      "candidate_vertical_degrees": null,
+      "candidate_accepts": false,
+      "candidate_horizontal_half_degrees": null
+    },
+    {
+      "width": 1e-05,
+      "height": 1000,
+      "ideal_vertical_degrees": 179.99999742623143,
+      "nearest_float_degrees": 180.0,
+      "old_accepts": false,
+      "old_horizontal_half_degrees": 89.99999964916454,
+      "candidate_vertical_degrees": null,
+      "candidate_accepts": false,
+      "candidate_horizontal_half_degrees": null
+    }
+  ],
+  "extreme_subpixel_counterexample": {
+    "scene": {
+      "subject": [
+        -100,
+        1.5,
+        0
+      ],
+      "camera": [
+        100,
+        1.5,
+        0
+      ],
+      "lights": []
+    },
+    "width": 0.0001,
+    "height": 3000,
+    "bounds": [
+      [
+        -100.36,
+        0.5400000000000001,
+        -0.36
+      ],
+      [
+        100.24,
+        1.7400000000000002,
+        0.36
+      ]
+    ],
+    "fit_distance_m": 276.19526157403106,
+    "ideal_vertical_degrees": 179.99999142077152,
+    "uploaded_float_vertical_degrees": 179.99998474121094,
+    "old_accepts": true,
+    "intended_minimum_half_degrees": 24,
+    "uploaded_horizontal_half_degrees": 14.053987907538744,
+    "authored_camera_marker_center_horizontal_degrees": 20.534834507590055,
+    "marker_center_normalized_x": 1.4963415439584467,
+    "candidate_accepts": false
+  },
+  "universal_ideal_sphere_argument": {
+    "max_validated_envelope_radius_m": 178.18432768790046,
+    "max_fit_distance_m": 490.6527366241181,
+    "minimum_fit_distance_m": 2.2028996286745177,
+    "maximum_sphere_half_angle_degrees": 21.294249360176515,
+    "assumptions": "Validated authored coordinates [-100,100], dimensions [0.05,4], orthonormal emitter frames, ideal primitives, no pan/zoom after Fit. Floor and grid intentionally excluded."
+  },
+  "limitations": [
+    "Bounded scene/orbit matrix; analytical envelope argument supplements it.",
+    "Box bounds conservatively enclose chamfers and actual outline thickness.",
+    "Aim box is enclosed by a circular tube of radius sqrt(2)*0.0025; marker radius .0275.",
+    "Float-angle-only calculations retain ideal geometry/camera transforms; no quaternion, native matrix, Float transcendental, mesh tessellation, pixel rasterization or gesture execution claim.",
+    "Fit does not promise containment after intentional pan/zoom, or fit the floor/grid.",
+    "Candidate native regression is added but unrun; original 4e runtime evidence cannot validate this candidate."
+  ]
+}

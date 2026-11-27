@@ -1,0 +1,16 @@
+# W08-07: feature integration, read only
+
+You are actual fresh context #77, wave8 Key & Fill lane01. Manager /root/w08_acceptance; root /root. No nested agents. Work only in /tmp/keyfill01-wave08/w08-07/tree; separate unused build dir /tmp/keyfill01-wave08/w08-07/build. Frozen base 46a161cb01d0aee2e91940dbd06d82cfe2df5821; native source08e80c756cb7c8aa4eaf11f27932c8f701000be1. Root published source-equivalent docs/evidence checkpoint7bdea15c771d7dfeeb3f20d011b3c02e4bc5b34f.
+
+Mandatory startup: inspect git status/HEAD/recent commits; read AGENTS.md, agents/OPERATING_PROTOCOL.md, current sections of agents/HANDOFF.md and agents/state.json; read relevant sections of docs/PRODUCT.md, ARCHITECTURE.md, ROADMAP.md, QUALITY.md, DESIGN.md and docs/parallel/01/COORDINATOR.md, HANDOFF.md, INTERFACES.md, NAVIGATION.md. Run python3 scripts/agent_cycle.py check and next (read-only state validation, not acceptance). Keep reading focused; old handoff history is not current proof.
+
+## Assignment
+Check observed lane-owner requests, later main changes to preserve, and actual producer API availability. Inspect advertised refs read only (no push), lane05 OWNER_REQUESTS and existing FEATURE_ADAPTERS/NAVIGATION. Common baseline f150f98; observed main9e0e2ba includes native Double.greatestFiniteMagnitude correction reserved for final integration. Reference/Arrangement/Lux remain Void unless exact observed source disproves it. Document scoped inspection, not global absence.
+
+## Boundaries
+Root alone builds, integrates, pushes finish/01-architecture-composition and edits Package.swift/project.yml/composition when authorized. You perform no builds, CI changes or pushes. Other feature files owner-only, CI lane19, canonical state/main lane20. Readonly roles change no repository files. No tests for quota. Native generation/typecheck/UI remain UNVERIFIED without exact current-source Apple evidence. Current three Void producers consume rejected drafts; do not claim fixed.
+
+Root repo evidence path: /workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/. Wave07 logs include ci-140017565927.log (471KB), ci-case-reconciliation.json and ci-source-manifest.json. Parse large logs programmatically; never dump them. Existing175-input manifest may omit resources; audit scope explicitly. /workspace is tight (~14MB free); do not create caches or copies of large logs. /tmp may reset: commits/reports durable, recover same context with manager help.
+
+## Budget and deliverables
+Brief max2000 tool-estimated tokens; working target12000 tokens is requested only, no enforceable cap or actual usage measurement exposed. Keep final report <=800 tool-estimated tokens AND <=250 words AND <=2200 characters (aim180 words). Detailed evidence goes in compact receipt.json, not oversized final prose. Record actual commands, exit codes, source/blob hashes, findings, limits and unchanged git status. Write /workspace/scratch/e08d5190f17c/workers/w08-07/report.md and receipt.json; preserve a source.patch (empty for readonly). Writer commit/source patch must be durable before worktree cleanup. Do not remove your tree. Send early material findings and writer commit immediately. Preserve originals if manager requests same-context condensation; followups count0 fresh. Your final response must also satisfy the report bound.

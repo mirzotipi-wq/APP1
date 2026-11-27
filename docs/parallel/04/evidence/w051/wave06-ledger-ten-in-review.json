@@ -1,0 +1,610 @@
+{
+  "schema": 1,
+  "wave": 6,
+  "lane": "04-metal-cache",
+  "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "campaign_baseline": "f150f98",
+  "packet_blob_sha": "2d556afeca3be2fe717b6cfb23d793431264b34e",
+  "packet_input_sha_was_null": true,
+  "input_authority": "root wave06 launch brief",
+  "coordinator": "/root/w051",
+  "integration_authority": "/root",
+  "branch": "finish/04-metal-cache",
+  "environment": "execution unavailable after fourth interruption; no physical wave06 worktrees created",
+  "max_active_children": 2,
+  "expected_workers": 10,
+  "expected_fresh_children": 9,
+  "actual_context_count": 10,
+  "frozen_acceptance": {
+    "cache_frames": 4,
+    "pixel_bytes": 262144,
+    "mask_bytes": 65536,
+    "parity_mean_rgb": 1,
+    "parity_fraction_error_gt4": 0.005,
+    "precision_max_channel_error": 1,
+    "cpu_bust_max_width": 144,
+    "cpu_cancel_max_further_pixels": 8,
+    "exact_masks": true,
+    "cpu_authoritative": true,
+    "failed_cancelled_frames_excluded": true,
+    "downgrade_purges_metal_preserves_cpu": true
+  },
+  "workers": [
+    {
+      "number": 51,
+      "role": "acceptance",
+      "task": "Acceptance worker 051: coordinate nine fresh workers 052–060 with at most two active children. Freeze four-entry, 262144 RGBA-byte, 65536 mask-byte bounds and exact cache identity. Start 054 core test writer and 055 native test writer; 060 reviews last. Do not rewrite a correct cache.",
+      "canonical_id": "/root/w051",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w51",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w51",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "active",
+      "reports": [],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w051/source-acceptance-baseline.json",
+          "blob_sha": "1c398d1fcf4205d10eed73c308ca4fc3cc2993a7",
+          "kind": "source-review"
+        }
+      ],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    },
+    {
+      "number": 52,
+      "role": "invariants",
+      "task": "Inspect LRU replacement, rejection and selective removal, including Int.max and zero costs. Find a concrete counterexample or report the bounded checks that passed. No product edit or redundant tests.",
+      "canonical_id": "/root/w051/w052",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w52",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w52",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w052.md",
+          "blob_sha": "cf80a5d34bb0c0666825b5bc1ac330b2dea1cc2b"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w052/invariants-review.json",
+          "blob_sha": "66a16d3dee53ef5a42ad28591050cbf440490847",
+          "kind": "source-review"
+        }
+      ],
+      "checks_executed": [
+        "immutable startup/cache/candidate reads",
+        "bounded source proof for rejection/replacement/zero cost/Int.max/selective removal",
+        "JavaScript text comparison preserving original 12 tests"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "No concrete counterexample; source and text checks only, no cache model or Swift execution."
+    },
+    {
+      "number": 53,
+      "role": "interface",
+      "task": "Review exact scene identity, subject and clamped widths. Validation must precede name stripping. Identify any incompatible frame surviving backend failure. No UI edits.",
+      "canonical_id": "/root/w051/w053",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w53",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w53",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w053.md",
+          "blob_sha": "3ddea00de730e435b9ad1a02b2e7044f4e962e10"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w053/review.json",
+          "blob_sha": "a03b47b6d7a49128123cc8b1bc83d166d48c479f",
+          "kind": "source-review"
+        }
+      ],
+      "checks_executed": [
+        "mandatory immutable startup/source reads",
+        "bounded exact-key/error-order/downgrade source review",
+        "candidate exact-prefix check retaining19 original methods"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "No incompatible engine-cache survivor found; validated exact identity/clamped width and purge-before-cancellation hold by source inspection."
+    },
+    {
+      "number": 54,
+      "role": "implementation",
+      "task": "Own only Tests/LightingCoreTests/StudyFrameCacheTests.swift. Add focused weak-reference lifetime regressions: rejected oversized replacement retains the old value and order; successful replacement, eviction and selective invalidation release precisely the removed values. Preserve existing tests. Do not duplicate arithmetic or alter the cache without a demonstrated defect.",
+      "canonical_id": "/root/w051/w054",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w54",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w54",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w054.md",
+          "blob_sha": "a42e0d5c403aa18bdf8bb796aaede05160d4874f"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+          "blob_sha": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+          "kind": "source-candidate"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w054/source-review.json",
+          "blob_sha": "28d656cb171e8e584c01fcc724c16840a88dde6c",
+          "kind": "source-review"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w054/original-report-v1.md",
+          "blob_sha": "84bd50f59a1fa97703aff73812301f43cd008354",
+          "kind": "superseded-report"
+        }
+      ],
+      "checks_executed": [
+        "immutable startup/source reads",
+        "JavaScript source-preservation, method inventory and weak-observer checks",
+        "reported exact UTF-8 roundtrip for source/report/evidence"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "No cache defect found; four weak-reference tests appended; all 12 original methods preserved.",
+      "followups": [
+        {
+          "reason": "compact primary report to <=800-token workflow cap",
+          "new_worker": false
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "role": "concurrency",
+      "task": "Own only NativeTests/StudyRenderCacheTests.swift. Add a cancelled-hit full-LRU regression. Measure actual engine cache payload with real CPU rendering for small, maximum and mixed sphere/bust frames using cacheUsage. Print compact KEYFILL_CACHE_RESOURCES JSON rows with dimensions/count/pixelBytes/maskBytes and assert budgets plus expected eviction. Prove failed injected backend release through a weak observer whose factory does not capture it strongly. Preserve prior tests. These measure actor ownership and payload, not GPU driver memory or RSS. No Swift build. Include four 24×16 frames (6144/1536 bytes), four 144×96 bust frames (221184/55296), three 192×128 sphere requests retaining two (196608/49152), and three 144×96 bust requests followed by one 192×128 sphere request retaining two busts plus the sphere (208896/52224). These are expected payload values to assert, not measured results until CI executes.",
+      "canonical_id": "/root/w051/w055",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w55",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w55",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w055.md",
+          "blob_sha": "ea1f61deb464d8eecd16dae9b650b8900a45561e"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "NativeTests/StudyRenderCacheTests.swift",
+          "blob_sha": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+          "kind": "source-candidate"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w055/native-cache-source-review.json",
+          "blob_sha": "627dd946720128f39174f38ba4612b74e41656d3",
+          "kind": "source-review"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w055/candidate-before-per-step.swift",
+          "blob_sha": "e264fac9e4f521a0ca61cdf9f590530f3d4678ba",
+          "kind": "superseded-source"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w055/candidate-before-per-step-report.md",
+          "blob_sha": "08d89079f623c92731edbcd6fa549062614cb0ad",
+          "kind": "superseded-report"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w055/candidate-before-per-step-evidence.json",
+          "blob_sha": "ec6188783eb7f5875ae53142b0523fbe4e6f9a8b",
+          "kind": "superseded-evidence"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w055/original-report-v1.md",
+          "blob_sha": "6ab59fc1448cbf4f694675d61d1b57480c6d1127",
+          "kind": "superseded-report"
+        }
+      ],
+      "checks_executed": [
+        "immutable startup/source reads",
+        "JavaScript preservation/inventory checks",
+        "reported UTF-8 readback of source/report/evidence"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "Six new methods preserve 19 originals. Root-requested 17-line revision adds live per-step observations:15 expected step rows plus4 summary rows, zero added render calls. Resource/ARC outcomes CI-pending.",
+      "followups": [
+        {
+          "new_worker": false,
+          "reason": "Root requested per-request resource rows in four fixtures; preserve four final summary rows without additional renders."
+        }
+      ]
+    },
+    {
+      "number": 56,
+      "role": "resource-lifetime",
+      "task": "Review retained references: cache payload, image copies, persistent pipeline, per-command buffers and driver memory. Verify weak tests truly drop external references. Report a precise remedy for any defect; no edits.",
+      "canonical_id": "/root/w051/w056",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w56",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w56",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w056.md",
+          "blob_sha": "0adab8e1992ba7fe968b465a5211ca17c0ab98bb"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w056/retention-review.json",
+          "blob_sha": "fba87a202fa5c53674d199adce7dda672db46411",
+          "kind": "source-review"
+        }
+      ],
+      "checks_executed": [
+        "immutable startup/source/candidate reads",
+        "static ownership/lifetime falsification",
+        "exact-prefix source-preservation checks"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "No demonstrated retention defect; actor cache payload excludes caller-owned images, transient conversions, persistent Metal resources and driver/RSS memory.",
+      "reviewed_candidates": [
+        "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+        "e264fac9e4f521a0ca61cdf9f590530f3d4678ba"
+      ]
+    },
+    {
+      "number": 57,
+      "role": "consumer-integration",
+      "task": "Check consumer reuse after undo/reopen, display-name edits and subject switches, and CPU backend labels following precision fallback or downgrade. Preview belongs to 03; report only newly relevant gaps.",
+      "canonical_id": "/root/w051/w057",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w57",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w57",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w057.md",
+          "blob_sha": "7c5944bb0ba78402616f1880a580af48db97967b"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w057/source-review.json",
+          "blob_sha": "20791defd3bc0f3f7788a2d364bca61c25f30023",
+          "kind": "source-review"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w057/owner-preview-adoption.patch",
+          "blob_sha": "85e6d2da8789ef0d0f3a2393f65d64da8b3d7789",
+          "kind": "unapplied-owner-proposal"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w057/owner-proposal.md",
+          "blob_sha": "6fe1f2613751e2486967282046fb89dc3a41fbdd",
+          "kind": "owner-regression-specification"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w057/original-report.md",
+          "blob_sha": "f1100c00c5ab074f9e40ef2a491a8bbead89f323",
+          "kind": "superseded-report"
+        }
+      ],
+      "checks_executed": [
+        "immutable startup/source reads",
+        "frozen-preview adoption trace",
+        "pinned/current lane03 exact-ref preview inspection"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "Confirmed static A→B backend failure+cancellation→A UI-held reuse gap, separate from engine cache; owner03/20 correction/regression required.",
+      "followups": [
+        {
+          "new_worker": false,
+          "reason": "Root requested minimal owner proposal patch and exact pipeline regression artifact; product UI stays untouched."
+        }
+      ]
+    },
+    {
+      "number": 58,
+      "role": "accessibility-privacy",
+      "task": "Audit stripped display names, bounded key metadata and measurement privacy. New logs must contain generic fixtures, dimensions and counts; no reference photos or user names. No edits.",
+      "canonical_id": "/root/w051/w058",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w58",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w58",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w058.md",
+          "blob_sha": "14123f5a99c66a707bd89c0a15ae81be3ad922a9"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w058/privacy-audit.json",
+          "blob_sha": "6dd4d3091bb01c93d68f20f6163d4ea61f212719",
+          "kind": "source-review"
+        }
+      ],
+      "checks_executed": [
+        "immutable startup/domain/cache/candidate source reads",
+        "measurement schema/call-site dataflow inspection",
+        "candidate method-list comparison"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "No disclosure found: bounded stripped metadata and numeric/generic resource schema; planned19 output rows are unobserved."
+    },
+    {
+      "number": 59,
+      "role": "platform-performance",
+      "task": "Verify requested buffer algebra from the packer: 96 parameter +36864 sample +576 area +98304 output bytes =135840, plus 8 dimension bytes. Verify cache payload examples. Separate source-derived bounds from observed native measurements. No Swift builds.",
+      "canonical_id": "/root/w051/w059",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w59",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w59",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "completed",
+      "reports": [
+        {
+          "path": "docs/parallel/04/workers/w059.md",
+          "blob_sha": "06171a44249637dbb0289e6d7866247fb670c2e3"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/parallel/04/evidence/w059/arithmetic-review.json",
+          "blob_sha": "29b472d8ffccd8e9ba517bfc920ee17ae1c44751",
+          "kind": "source-review"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w059/original-report.md",
+          "blob_sha": "0ab0cc6f62d284d853a5fc55adf2a25f0aa1be14",
+          "kind": "superseded-report"
+        },
+        {
+          "path": "docs/parallel/04/evidence/w059/original-arithmetic-review.json",
+          "blob_sha": "e0234d199f8940ffa3565a36132f1ab3c1d160f4",
+          "kind": "superseded-evidence"
+        }
+      ],
+      "checks_executed": [
+        "immutable packer/Metal/cache reads",
+        "JavaScript buffer and cache-payload arithmetic",
+        "native observation-site inspection"
+      ],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ],
+      "findings": "No arithmetic mismatch; requested buffer payload135840+8dimension bytes. Mixed264192/66048 is hypothetical without pre-eviction; cache removes before append. New runtime measurements require future integrated execution.",
+      "followups": [
+        {
+          "new_worker": false,
+          "reason": "Clarify hypothetical un-evicted sum versus eviction-before-append and future candidate execution."
+        }
+      ]
+    },
+    {
+      "number": 60,
+      "role": "independent-review",
+      "task": "LAST independent review of new core/native tests and any justified cache change. Ensure assertions detect cancelled recency mutation, incorrect real payload counters and unintended retention. Separate executed checks from CI-pending tests.",
+      "canonical_id": "/root/w051/w060",
+      "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+      "campaign_baseline": "f150f98",
+      "planned_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w60",
+      "planned_results": "/tmp/keyfill04-2987b1ee980d/results/w60",
+      "physical_worktree_created": false,
+      "actual_mode": "isolated immutable GitHub source snapshot in per-worker session state",
+      "status": "active",
+      "reports": [],
+      "artifacts": [],
+      "checks_executed": [],
+      "checks_unrun": [
+        "local git status/branch/HEAD/log",
+        "python3 scripts/agent_cycle.py check",
+        "python3 scripts/agent_cycle.py next",
+        "git hash-object",
+        "Swift builds/tests",
+        "simulator Metal",
+        "physical device"
+      ]
+    }
+  ],
+  "startup_read_manifest": [
+    {
+      "path": "AGENTS.md",
+      "blob_sha": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "blob_sha": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "blob_sha": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "agents/state.json",
+      "blob_sha": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "blob_sha": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "blob_sha": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "blob_sha": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "blob_sha": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "blob_sha": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "blob_sha": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "ref": "5934f291b8e78e378a96ec3e4d294521c79839d0"
+    }
+  ],
+  "prior_ci_context": {
+    "source": "root-reported; not independently reconciled by w051",
+    "commit": "88279ba",
+    "native_job": 139973865345,
+    "native_methods_passed": 160,
+    "skips": 0,
+    "raw_blob_sha": "a87b4e2c42f5bd753c8312c95f22b6bd302bb78c",
+    "metadata_blob_sha": "0ebfcebb81be765fc6b55cb5dbe41793fa672aeb",
+    "scope_limit": "Not evidence for wave05 cancellation changes or wave06 authored tests"
+  },
+  "checkpoint": {
+    "name": "ten-contexts-final-review",
+    "created_contexts": 10,
+    "fresh_children_created": 9,
+    "primary_reports_uploaded": 8,
+    "active_children": [
+      "/root/w051/w060"
+    ],
+    "remaining_fresh_children": [],
+    "independent_review_pending": true
+  },
+  "consumer_owner_issue": {
+    "status": "confirmed by static source; unapplied owner proposal/regression specification preserved; owner03/20 implementation pending",
+    "owner": "lane03 with lane20 integration",
+    "candidate_code_modified": false,
+    "input_preview_blob": "1a68db0fd7782ac945b915b32b4ddd8485321ad3",
+    "sequence": "A published as Metal; B confirms backend failure plus cancellation; engine purges Metal, UI retains A; return to A bypasses engine via matching-frame early return",
+    "limitation": "Old A pixels are valid historical output. This concerns UI-held adoption/status freshness, not engine cache leakage or runtime reproduction.",
+    "next": "057 exact owner-source/proposed adoption test; root routes without UI edits.",
+    "current_owner_head": "8ce5e464253144deccb39d838faef70f05e0c38c",
+    "current_owner_preview_blob": "c96d5cb7a41143867efca160b309d71bfa993c96",
+    "proposed_patch_blob": "85e6d2da8789ef0d0f3a2393f65d64da8b3d7789",
+    "regression_spec_blob": "6fe1f2613751e2486967282046fb89dc3a41fbdd"
+  },
+  "checkpoints": [
+    {
+      "stage": "initial",
+      "blob_sha": "0caa72d06ce7623104aa39ae309fcbb4055c10a4",
+      "actual_context_count": 3
+    },
+    {
+      "stage": "six-actual-contexts",
+      "blob_sha": "d85909b6cd57357b172c97f8a4701123dcb0ffee",
+      "actual_context_count": 6
+    },
+    {
+      "stage": "nine-actual-contexts",
+      "blob_sha": "594352e4bc5735b5c1e9d9dc550c6a7bfa297745",
+      "actual_context_count": 9
+    }
+  ],
+  "final_new_worker_started_last": "/root/w051/w060"
+}

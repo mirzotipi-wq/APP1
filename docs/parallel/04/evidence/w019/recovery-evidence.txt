@@ -1,0 +1,215 @@
+worker019 platform-performance: restored-environment independent O0/O2 reproduction.
+Probe exit 0 means expected parity-threshold FAILURE reproduced, not parity pass.
+Shared Float32 host C++ versus independent C++ Double transcription. Shipped Swift CPU oracle and actual Metal unrun.
+Product revision f150f98e35dd735927075aac4d2f8b02295c6a67. Root reports earlier Swift compile killed by signal 9, no oracle executed.
+
+label: head
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: git rev-parse HEAD
+started_utc: 2026-11-26T12:45:57.332386+00:00
+finished_utc: 2026-11-26T12:45:57.335190+00:00
+exit: 0
+stdout:
+3d0e20616d0e771ad72161592c59105f591951c9
+
+stderr:
+
+
+label: status-before
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: git status --porcelain=v1
+started_utc: 2026-11-26T12:45:57.335309+00:00
+finished_utc: 2026-11-26T12:45:57.352898+00:00
+exit: 0
+stdout:
+
+stderr:
+
+
+label: compiler
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: g++ --version
+started_utc: 2026-11-26T12:45:57.357997+00:00
+finished_utc: 2026-11-26T12:45:57.359791+00:00
+exit: 0
+stdout:
+g++ (Debian 14.2.0-19) 14.2.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+stderr:
+
+
+label: compiler-target
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: g++ -dumpmachine
+started_utc: 2026-11-26T12:45:57.359956+00:00
+finished_utc: 2026-11-26T12:45:57.361559+00:00
+exit: 0
+stdout:
+x86_64-linux-gnu
+
+stderr:
+
+
+label: environment
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: uname -a
+started_utc: 2026-11-26T12:45:57.361664+00:00
+finished_utc: 2026-11-26T12:45:57.363181+00:00
+exit: 0
+stdout:
+Linux 6e77ed83c607 6.18.57 #1 SMP Tue Oct 20 21:56:04 UTC 2026 x86_64 GNU/Linux
+
+stderr:
+
+
+label: os-release
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: cat /etc/os-release
+started_utc: 2026-11-26T12:45:57.363285+00:00
+finished_utc: 2026-11-26T12:45:57.364826+00:00
+exit: 0
+stdout:
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+NAME="Debian GNU/Linux"
+VERSION_ID="13"
+VERSION="13 (trixie)"
+VERSION_CODENAME=trixie
+DEBIAN_VERSION_FULL=13.7
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+
+stderr:
+
+
+label: source-sha256
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: sha256sum docs/parallel/04/evidence/silhouette-probe.cpp scripts/verify-kernel-host.cpp App/StudyKernel.h
+started_utc: 2026-11-26T12:45:57.464578+00:00
+finished_utc: 2026-11-26T12:45:57.469185+00:00
+exit: 0
+stdout:
+8d19fcf911303a11639230853d29f34f6a24053c48cbb4659eab7dd77e23d6e4  docs/parallel/04/evidence/silhouette-probe.cpp
+6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216  scripts/verify-kernel-host.cpp
+1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e  App/StudyKernel.h
+
+stderr:
+
+
+label: source-git-blob
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: git hash-object docs/parallel/04/evidence/silhouette-probe.cpp scripts/verify-kernel-host.cpp App/StudyKernel.h
+started_utc: 2026-11-26T12:45:57.469363+00:00
+finished_utc: 2026-11-26T12:45:57.471751+00:00
+exit: 0
+stdout:
+47ca11b56f33b9fca12100440f3aa134bbd25d14
+6885ead6bb9c76679a4cef1cd84d457c7bd460e6
+df3175546623508b192d29210dcd9b51efce4c37
+
+stderr:
+
+
+label: product-input-diff
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: git diff --exit-code f150f98e35dd735927075aac4d2f8b02295c6a67 HEAD -- scripts/verify-kernel-host.cpp App/StudyKernel.h
+started_utc: 2026-11-26T12:45:57.471979+00:00
+finished_utc: 2026-11-26T12:45:57.474102+00:00
+exit: 0
+stdout:
+
+stderr:
+
+
+label: build-O0
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: flock -x /tmp/keyfill04-2987b1ee980d/build.lock g++ -std=c++17 -O0 -ffp-contract=off -Wall -Wextra -Werror docs/parallel/04/evidence/silhouette-probe.cpp -o /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O0
+started_utc: 2026-11-26T12:45:57.474294+00:00
+finished_utc: 2026-11-26T12:45:58.356553+00:00
+exit: 0
+stdout:
+
+stderr:
+
+
+label: run-O0
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O0
+started_utc: 2026-11-26T12:45:58.356787+00:00
+finished_utc: 2026-11-26T12:45:58.359144+00:00
+exit: 0
+stdout:
+pixel=9,0 double-discriminant=5.9699800658563618e-11 reference=0,0,0 shared=18,20,24
+pixel=14,0 double-discriminant=5.9699800658563618e-11 reference=0,0,0 shared=18,20,24
+shared-kernel-vs-independent-double-geometry: pixels=2 mean=0.1076388888888889 max=24 fraction-over-4=0.005208333333333333 invalid=0
+
+stderr:
+
+
+label: build-O2
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: flock -x /tmp/keyfill04-2987b1ee980d/build.lock g++ -std=c++17 -O2 -ffp-contract=off -Wall -Wextra -Werror docs/parallel/04/evidence/silhouette-probe.cpp -o /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O2
+started_utc: 2026-11-26T12:45:58.359517+00:00
+finished_utc: 2026-11-26T12:45:59.386509+00:00
+exit: 0
+stdout:
+
+stderr:
+
+
+label: run-O2
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O2
+started_utc: 2026-11-26T12:45:59.386914+00:00
+finished_utc: 2026-11-26T12:45:59.389134+00:00
+exit: 0
+stdout:
+pixel=9,0 double-discriminant=5.9699800658563618e-11 reference=0,0,0 shared=18,20,24
+pixel=14,0 double-discriminant=5.9699800658563618e-11 reference=0,0,0 shared=18,20,24
+shared-kernel-vs-independent-double-geometry: pixels=2 mean=0.1076388888888889 max=24 fraction-over-4=0.005208333333333333 invalid=0
+
+stderr:
+
+
+label: source-sha256-after
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: sha256sum docs/parallel/04/evidence/silhouette-probe.cpp scripts/verify-kernel-host.cpp App/StudyKernel.h
+started_utc: 2026-11-26T12:45:59.389409+00:00
+finished_utc: 2026-11-26T12:45:59.392763+00:00
+exit: 0
+stdout:
+8d19fcf911303a11639230853d29f34f6a24053c48cbb4659eab7dd77e23d6e4  docs/parallel/04/evidence/silhouette-probe.cpp
+6cbe80cc95e0234776ba76a41a88164dfe0ba80461655697879a3145e402b216  scripts/verify-kernel-host.cpp
+1eca183628af5c7c6cb3a126f124fc7f8ccbd0dfb5d64d70bac39965a6591a3e  App/StudyKernel.h
+
+stderr:
+
+
+label: status-after
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: git status --porcelain=v1
+started_utc: 2026-11-26T12:45:59.393041+00:00
+finished_utc: 2026-11-26T12:45:59.396762+00:00
+exit: 0
+stdout:
+
+stderr:
+
+
+label: binary-sha256
+cwd: /tmp/keyfill04-2987b1ee980d/workers/w019
+command: sha256sum /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O0 /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O2
+started_utc: 2026-11-26T12:45:59.397062+00:00
+finished_utc: 2026-11-26T12:45:59.400929+00:00
+exit: 0
+stdout:
+0a8b808678201a865f8c50deab4316ff6a875723457648b814229895ef20fd94  /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O0
+8608e3f075ade5bdfc9dc1d0e3ccc41a7f35b035e8e98711de8dadf6c0951153  /workspace/scratch/2987b1ee980d/build04/w019/silhouette-O2
+
+stderr:
+

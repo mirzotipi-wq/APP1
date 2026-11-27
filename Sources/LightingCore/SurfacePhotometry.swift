@@ -46,7 +46,14 @@ public struct LambertianRectangle: Sendable {
         self.widthMeters = widthMeters; self.heightMeters = heightMeters
         self.onAxisCandela = onAxisCandela
         let r = right.vector, u = up.vector
-        normal = .init(r.y * u.z - r.z * u.y, r.z * u.x - r.x * u.z, r.x * u.y - r.y * u.x)
+        // The cross product of two represented unit axes can be slightly
+        // shorter than one after rounding. Depth is a distance, so its normal
+        // must itself be normalized; otherwise rolling a rectangle can reject
+        // an exact minimum-separation receiver. No separation epsilon is used.
+        guard let direction = UnitDirection(x: r.y * u.z - r.z * u.y,
+                                            y: r.z * u.x - r.x * u.z,
+                                            z: r.x * u.y - r.y * u.x) else { return nil }
+        normal = direction.vector
     }
 }
 
@@ -110,6 +117,20 @@ extension Photometry {
         let minimumDepth = max(0.05, max(emitter.widthMeters, emitter.heightMeters) / 4)
         guard abs(depth) >= minimumDepth else { return nil }
         if depth < 0 || emitter.onAxisCandela == 0 { return 0 }
+
+        // Keep the geometric integration at unit intensity when dividing an
+        // extremely small output among cells would lose its significant bits.
+        // Apply intensity once, after summation. The ordinary-output path keeps
+        // its established sample ordering and rounding for renderer parity.
+        if emitter.onAxisCandela < Double.leastNormalMagnitude * 1024 {
+            guard let unit = LambertianRectangle(
+                center: emitter.center, right: emitter.right, up: emitter.up,
+                widthMeters: emitter.widthMeters, heightMeters: emitter.heightMeters,
+                onAxisCandela: 1),
+                let unitLux = rectangularIlluminance(emitter: unit, receiver: receiver,
+                                                     receiverNormal: receiverNormal) else { return nil }
+            return unitLux * emitter.onAxisCandela
+        }
 
         let right = emitter.right.vector, up = emitter.up.vector
         let normal = receiverNormal.vector

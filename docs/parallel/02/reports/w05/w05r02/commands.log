@@ -1,0 +1,33 @@
+W05 R02 executed command record; initial source-discovery reads were interactive. All results below were captured directly during this run.
+$ git rev-parse HEAD
+exit=0
+$ git status --short --branch
+exit=0
+$ git log -1 --format=%H -- Sources/LightingCore
+exit=0
+$ cat /tmp/keyfill02-r2-snapshots/v1/READY
+exit=0
+$ git diff --exit-code 1b286885cb803ba17e159713651515ab119e17f1 HEAD -- Sources/LightingCore
+exit=0
+$ /tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+exit=0
+$ sha256sum Sources/LightingCore/LightOutputAdjustment.swift Sources/LightingCore/Scene.swift Sources/LightingCore/StudioOptics.swift /tmp/keyfill02-r2-snapshots/v1/libLightingCore.a /tmp/keyfill02-r2-snapshots/v1/Modules/LightingCore.swiftmodule /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift
+exit=0
+$ cat Sources/LightingCore/LightOutputAdjustment.swift
+exit=0
+$ sed -n 19,89p Sources/LightingCore/Scene.swift
+exit=0
+$ sed -n 1,48p Sources/LightingCore/StudioOptics.swift
+exit=0
+$ rg -n 'photometry|missing tool|unrun test' docs/QUALITY.md
+exit=0
+$ sed -n 61,71p /tmp/keyfill02-r2/docs/parallel/02/WAVE-TASKS.md
+exit=0
+$ cat /tmp/keyfill02-r2-brief.md
+exit=0
+$ cat /tmp/keyfill02-r2-probe.py
+exit=0
+$ python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w05r02 /tmp/keyfill02-r2-workers/w05r02/private-output/probe.swift v1
+exit=0
+$ git status --short --branch
+exit=0

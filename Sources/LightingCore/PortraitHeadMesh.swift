@@ -85,6 +85,8 @@ struct PortraitHeadMesh: Sendable {
         let c: Vertex
         let edge1: SIMD3<Double>
         let edge2: SIMD3<Double>
+        let geometricNormal: SIMD3<Double>
+        let twiceArea: Double
         let bounds: Bounds
         let centroid: SIMD3<Double>
 
@@ -92,10 +94,13 @@ struct PortraitHeadMesh: Sendable {
             let e1 = b.position - a.position, e2 = c.position - a.position
             let areaVector = headCross(e1, e2)
             guard headDot(areaVector, areaVector) > 1e-24 else { return nil }
+            let twiceArea = sqrt(headDot(areaVector, areaVector))
             var box = Bounds()
             box.include(a.position); box.include(b.position); box.include(c.position)
             self.a = a; self.b = b; self.c = c
             self.edge1 = e1; self.edge2 = e2
+            self.twiceArea = twiceArea
+            self.geometricNormal = areaVector / twiceArea
             self.bounds = box
             self.centroid = (a.position + b.position + c.position) / 3
         }
@@ -106,7 +111,10 @@ struct PortraitHeadMesh: Sendable {
                           minimum: Double, maximum: Double) -> (Double, Double, Double)? {
             let p = headCross(direction, edge2)
             let determinant = headDot(edge1, p)
-            guard abs(determinant) > 1e-14 else { return nil }
+            // Directions are unit length. Use an angular parallelism threshold:
+            // an absolute determinant cutoff discards valid grazing rays on the
+            // small polar triangles because the determinant also contains area.
+            guard abs(determinant) > twiceArea * 1e-14 else { return nil }
             let inverse = 1 / determinant, offset = origin - a.position
             let u = headDot(offset, p) * inverse
             let tolerance = 1e-10
@@ -125,7 +133,7 @@ struct PortraitHeadMesh: Sendable {
                                                minimum: minimum, maximum: maximum),
                   let normal = headUnit(a.normal * (1 - u - v) + b.normal * u + c.normal * v)
             else { return nil }
-            guard let faceNormal = headUnit(headCross(edge1, edge2)) else { return nil }
+            let faceNormal = geometricNormal
             // A smooth interpolated normal can face away from a grazing camera ray
             // although the intersected triangle is front-facing. In that case use
             // the actual outward geometric normal, not a flipped shading normal.

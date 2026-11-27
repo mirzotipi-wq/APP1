@@ -1,0 +1,458 @@
+UTC: 2026-11-26T12:59:26.163342+00:00
+CWD: /tmp/keyfill02-r2-workers/w03r06
+
+$ git rev-parse HEAD
+1b286885cb803ba17e159713651515ab119e17f1
+exit=0
+
+$ git status --short
+?? private-output/
+exit=0
+
+$ sha256sum /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/Scene.swift /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/StudioOptics.swift /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/SurfacePhotometry.swift
+76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898  /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/Scene.swift
+94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd  /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/StudioOptics.swift
+8d281e91eb54ef088e96881e833ea53e74d5e483ff44784bc37ea03a94b5999f  /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/SurfacePhotometry.swift
+exit=0
+
+$ nl -ba /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/Scene.swift
+     1	import Foundation
+     2	
+     3	public struct Position: Codable, Equatable, Sendable {
+     4	    public static let coordinateRange: ClosedRange<Double> = -100...100
+     5	    public var x: Double
+     6	    public var y: Double
+     7	    public var z: Double
+     8	    public init(x: Double, y: Double, z: Double) {
+     9	        self.x = x; self.y = y; self.z = z
+    10	    }
+    11	    public var isValid: Bool {
+    12	        [x, y, z].allSatisfy { $0.isFinite && Self.coordinateRange.contains($0) }
+    13	    }
+    14	    public func distance(to other: Position) -> Double {
+    15	        let dx = x - other.x, dy = y - other.y, dz = z - other.z
+    16	        return (dx * dx + dy * dy + dz * dz).squareRoot()
+    17	    }
+    18	}
+    19	
+    20	public struct StudioLight: Identifiable, Codable, Equatable, Sendable {
+    21	    public var id: UUID
+    22	    public var name: String
+    23	    public var position: Position
+    24	    /// On-axis luminous intensity, not electrical watts.
+    25	    public var candela: Double
+    26	    public var kelvin: Double
+    27	    /// Nil preserves the legacy isotropic point source.
+    28	    public var optics: LightOptics?
+    29	    public init(id: UUID = UUID(), name: String, position: Position, candela: Double, kelvin: Double, optics: LightOptics? = nil) {
+    30	        self.id = id; self.name = name; self.position = position
+    31	        self.candela = candela; self.kelvin = kelvin; self.optics = optics
+    32	    }
+    33	    public var isValid: Bool {
+    34	        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && name.count <= 80 &&
+    35	        position.isValid && candela.isFinite && (0...100_000).contains(candela) &&
+    36	        kelvin.isFinite && (1_000...20_000).contains(kelvin) && (optics?.isValid ?? true)
+    37	    }
+    38	}
+    39	
+    40	public enum SceneError: Error, Equatable {
+    41	    case unsupportedVersion, invalidScene, invalidLight, duplicateLight
+    42	}
+    43	
+    44	public struct LightingScene: Codable, Equatable, Sendable {
+    45	    public static let currentSchemaVersion = 5
+    46	    public var schemaVersion: Int = currentSchemaVersion
+    47	    public var subject: Position
+    48	    public var camera: Position
+    49	    /// Nil uses the default 50 mm full-frame perspective.
+    50	    public var cameraLens: CameraLens?
+    51	    public var lights: [StudioLight]
+    52	    /// Nil retains the default diagnostic card balance and exposure.
+    53	    public var previewSettings: PreviewSettings?
+    54	    /// Nil means no measured room has been saved with this scene.
+    55	    public var placementRoom: ManualRoom?
+    56	
+    57	    public init(subject: Position, camera: Position, lights: [StudioLight], cameraLens: CameraLens? = nil, previewSettings: PreviewSettings? = nil, placementRoom: ManualRoom? = nil) {
+    58	        self.subject = subject; self.camera = camera; self.lights = lights; self.cameraLens = cameraLens; self.previewSettings = previewSettings
+    59	        self.placementRoom = placementRoom
+    60	    }
+    61	
+    62	    public func validated() throws -> Self {
+    63	        guard (1...Self.currentSchemaVersion).contains(schemaVersion) else { throw SceneError.unsupportedVersion }
+    64	        guard lights.count <= 12 else { throw SceneError.invalidScene }
+    65	        // Version 1 never contained optics; reject ambiguous mislabeled files.
+    66	        guard schemaVersion != 1 || lights.allSatisfy({ $0.optics == nil }) else { throw SceneError.invalidScene }
+    67	        // Version 2 adds light optics, version 3 adds a camera lens.
+    68	        guard schemaVersion >= 3 || cameraLens == nil else { throw SceneError.invalidScene }
+    69	        guard schemaVersion >= 4 || previewSettings == nil else { throw SceneError.invalidScene }
+    70	        // Version 5 adds measured rooms and rectangular-emitter roll.
+    71	        guard schemaVersion >= 5 || (placementRoom == nil && lights.allSatisfy({ $0.optics?.rollDegrees == nil })) else {
+    72	            throw SceneError.invalidScene
+    73	        }
+    74	        guard subject.isValid, camera.isValid, (cameraLens?.isValid ?? true), (previewSettings?.isValid ?? true),
+    75	              (placementRoom?.isValid ?? true) else { throw SceneError.invalidScene }
+    76	        guard lights.allSatisfy({ $0.isValid }) else { throw SceneError.invalidLight }
+    77	        guard Set(lights.map(\.id)).count == lights.count else { throw SceneError.duplicateLight }
+    78	        var migrated = self
+    79	        migrated.schemaVersion = Self.currentSchemaVersion
+    80	        return migrated
+    81	    }
+    82	
+    83	    public static func portrait() -> Self {
+    84	        .init(subject: .init(x: 0, y: 1.5, z: 0),
+    85	              camera: .init(x: 0, y: 1.5, z: 3),
+    86	              lights: [
+    87	                .init(name: "Key", position: .init(x: -1.5, y: 2.1, z: 1.2), candela: 900, kelvin: 5600),
+    88	                .init(name: "Fill", position: .init(x: 1.5, y: 1.7, z: 1.5), candela: 300, kelvin: 5600),
+    89	                .init(name: "Rim", position: .init(x: 0.8, y: 2.2, z: -1.2), candela: 450, kelvin: 3200)
+    90	              ])
+    91	    }
+    92	}
+    93	
+    94	public enum Photometry {
+    95	    /// Ideal point source, normal incidence. No occlusion, falloff pattern, modifier or near-field model.
+    96	    public static func normalIlluminance(candela: Double, distanceMeters: Double) -> Double? {
+    97	        guard candela.isFinite, (0...100_000).contains(candela),
+    98	              distanceMeters.isFinite, distanceMeters >= 0.05 else { return nil }
+    99	        return candela / (distanceMeters * distanceMeters)
+   100	    }
+   101	}
+exit=0
+
+$ nl -ba /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/StudioOptics.swift
+     1	import Foundation
+     2	
+     3	public enum EmitterKind: String, Codable, CaseIterable, Sendable {
+     4	    case point, directional, rectangle
+     5	
+     6	    public var title: String {
+     7	        switch self {
+     8	        case .point: return "Bare point"
+     9	        case .directional: return "Directional"
+    10	        case .rectangle: return "Rectangular softbox"
+    11	        }
+    12	    }
+    13	    public var isAimed: Bool { self != .point }
+    14	}
+    15	
+    16	/// Ideal emitter geometry, not a measured modifier or equipment profile.
+    17	/// Nil aimTarget follows the subject. A manual target is an absolute world position in meters.
+    18	public struct LightOptics: Codable, Equatable, Sendable {
+    19	    public static let dimensionRange: ClosedRange<Double> = 0.05...4
+    20	    public static let rollRange: ClosedRange<Double> = -180...180
+    21	    public var kind: EmitterKind
+    22	    public var aimTarget: Position?
+    23	    public var widthMeters: Double
+    24	    public var heightMeters: Double
+    25	    /// Rotation about the emitting normal. Nil preserves the legacy world-up orientation.
+    26	    public var rollDegrees: Double?
+    27	
+    28	    public init(kind: EmitterKind = .point, aimTarget: Position? = nil,
+    29	                widthMeters: Double = 0.6, heightMeters: Double = 0.9,
+    30	                rollDegrees: Double? = nil) {
+    31	        self.kind = kind; self.aimTarget = aimTarget
+    32	        self.widthMeters = widthMeters; self.heightMeters = heightMeters
+    33	        self.rollDegrees = rollDegrees
+    34	    }
+    35	
+    36	    public var effectiveRollDegrees: Double { rollDegrees ?? 0 }
+    37	
+    38	    public var isValid: Bool {
+    39	        (aimTarget?.isValid ?? true) && widthMeters.isFinite && heightMeters.isFinite &&
+    40	        Self.dimensionRange.contains(widthMeters) && Self.dimensionRange.contains(heightMeters) &&
+    41	        effectiveRollDegrees.isFinite && Self.rollRange.contains(effectiveRollDegrees)
+    42	    }
+    43	}
+    44	
+    45	extension StudioLight {
+    46	    public var effectiveOptics: LightOptics { optics ?? .init() }
+    47	    public func target(subject: Position) -> Position { effectiveOptics.aimTarget ?? subject }
+    48	}
+    49	
+    50	/// Right-handed world-space basis; right × up = emitting normal.
+    51	/// Zero roll follows world up, with a deterministic basis at a vertical aim.
+    52	/// Positive roll turns right toward up around the emitting normal (the right-hand rule).
+    53	public struct EmitterFrame: Equatable, Sendable {
+    54	    public let right: UnitDirection
+    55	    public let up: UnitDirection
+    56	    public let normal: UnitDirection
+    57	
+    58	    public init?(source: Position, target: Position, rollDegrees: Double = 0) {
+    59	        guard source.isValid, target.isValid, rollDegrees.isFinite,
+    60	              LightOptics.rollRange.contains(rollDegrees),
+    61	              let n = UnitDirection(x: target.x - source.x, y: target.y - source.y, z: target.z - source.z) else { return nil }
+    62	        let horizontal = hypot(n.x, n.z)
+    63	        let r = horizontal > 1e-12
+    64	            ? UnitDirection(x: n.z, y: 0, z: -n.x)
+    65	            : UnitDirection(x: 1, y: 0, z: 0)
+    66	        guard let r, let u = UnitDirection(x: n.y * r.z - n.z * r.y,
+    67	                                           y: n.z * r.x - n.x * r.z,
+    68	                                           z: n.x * r.y - n.y * r.x) else { return nil }
+    69	        // Keep legacy sample coordinates exactly unchanged when no roll is requested.
+    70	        if rollDegrees == 0 {
+    71	            self.right = r; self.up = u; self.normal = n
+    72	            return
+    73	        }
+    74	        // Exact cardinal coefficients keep mathematical wall/floor/ceiling
+    75	        // contact from becoming a trigonometric overhang. Do not snap other
+    76	        // angles or physical coordinates: real overhangs must remain outside.
+    77	        let c: Double
+    78	        let s: Double
+    79	        switch rollDegrees {
+    80	        case 90: c = 0; s = 1
+    81	        case -90: c = 0; s = -1
+    82	        case -180, 180: c = -1; s = 0
+    83	        default:
+    84	            let radians = rollDegrees * .pi / 180
+    85	            c = cos(radians); s = sin(radians)
+    86	        }
+    87	        guard let rolledRight = UnitDirection(x: c * r.x + s * u.x,
+    88	                                              y: c * r.y + s * u.y,
+    89	                                              z: c * r.z + s * u.z),
+    90	              let rolledUp = UnitDirection(x: -s * r.x + c * u.x,
+    91	                                           y: -s * r.y + c * u.y,
+    92	                                           z: -s * r.z + c * u.z) else { return nil }
+    93	        self.right = rolledRight; self.up = rolledUp; self.normal = n
+    94	    }
+    95	}
+    96	
+    97	/// Estimates illuminance at the subject's center on a plane facing the scene camera.
+    98	/// This is a diagnostic sample, not exposure or the brightness of a rendered face.
+    99	public enum StudioPhotometry {
+   100	    public static func receiverNormal(in scene: LightingScene) -> UnitDirection? {
+   101	        guard scene.subject.isValid, scene.camera.isValid else { return nil }
+   102	        return UnitDirection(x: scene.camera.x - scene.subject.x,
+   103	                             y: scene.camera.y - scene.subject.y,
+   104	                             z: scene.camera.z - scene.subject.z)
+   105	    }
+   106	
+   107	    public static func frame(for light: StudioLight, subject: Position) -> EmitterFrame? {
+   108	        guard light.isValid, light.effectiveOptics.kind.isAimed else { return nil }
+   109	        return EmitterFrame(source: light.position, target: light.target(subject: subject),
+   110	                            rollDegrees: light.effectiveOptics.effectiveRollDegrees)
+   111	    }
+   112	
+   113	    public static func illuminance(for light: StudioLight, in scene: LightingScene) -> Double? {
+   114	        guard light.isValid, let normal = receiverNormal(in: scene) else { return nil }
+   115	        let optics = light.effectiveOptics
+   116	        switch optics.kind {
+   117	        case .point:
+   118	            return Photometry.pointIlluminance(candela: light.candela, source: light.position,
+   119	                                              receiver: scene.subject, receiverNormal: normal)
+   120	        case .directional:
+   121	            // Ideal one-sided cosine emitter. Not a hard-edged spotlight or a measured beam.
+   122	            guard let frame = frame(for: light, subject: scene.subject),
+   123	                  let ray = UnitDirection(x: scene.subject.x - light.position.x,
+   124	                                          y: scene.subject.y - light.position.y,
+   125	                                          z: scene.subject.z - light.position.z),
+   126	                  let lux = Photometry.pointIlluminance(candela: light.candela, source: light.position,
+   127	                                                        receiver: scene.subject, receiverNormal: normal) else { return nil }
+   128	            let n = frame.normal
+   129	            let emission = min(1, max(0, n.x * ray.x + n.y * ray.y + n.z * ray.z))
+   130	            return lux * emission
+   131	        case .rectangle:
+   132	            guard let frame = frame(for: light, subject: scene.subject),
+   133	                  let emitter = LambertianRectangle(center: light.position, right: frame.right, up: frame.up,
+   134	                                                      widthMeters: optics.widthMeters, heightMeters: optics.heightMeters,
+   135	                                                      onAxisCandela: light.candela) else { return nil }
+   136	            return Photometry.rectangularIlluminance(emitter: emitter, receiver: scene.subject, receiverNormal: normal)
+   137	        }
+   138	    }
+   139	}
+exit=0
+
+$ sed -n 1,103p /tmp/keyfill02-r2-workers/w03r06/Sources/LightingCore/SurfacePhotometry.swift
+import Foundation
+
+/// A finite, normalized direction. Scene positions remain in meters.
+public struct UnitDirection: Equatable, Sendable {
+    public let x: Double
+    public let y: Double
+    public let z: Double
+
+    public init?(x: Double, y: Double, z: Double) {
+        guard x.isFinite, y.isFinite, z.isFinite else { return nil }
+        let scale = max(abs(x), max(abs(y), abs(z)))
+        guard scale > 0 else { return nil }
+        let a = x / scale, b = y / scale, c = z / scale
+        let length = (a * a + b * b + c * c).squareRoot()
+        self.x = a / length; self.y = b / length; self.z = c / length
+    }
+
+    fileprivate var vector: SIMD3<Double> { .init(x, y, z) }
+}
+
+private func dot(_ a: SIMD3<Double>, _ b: SIMD3<Double>) -> Double {
+    a.x * b.x + a.y * b.y + a.z * b.z
+}
+
+private func vector(_ p: Position) -> SIMD3<Double> { .init(p.x, p.y, p.z) }
+
+/// Uniform, one-sided Lambertian rectangle; not a calibrated equipment profile.
+/// `right` cross `up` points along the emitting normal. `onAxisCandela` is the
+/// total far-field intensity along that normal, not luminous flux or watts.
+public struct LambertianRectangle: Sendable {
+    public let center: Position
+    public let right: UnitDirection
+    public let up: UnitDirection
+    public let widthMeters: Double
+    public let heightMeters: Double
+    public let onAxisCandela: Double
+    fileprivate let normal: SIMD3<Double>
+
+    public init?(center: Position, right: UnitDirection, up: UnitDirection,
+                 widthMeters: Double, heightMeters: Double, onAxisCandela: Double) {
+        guard center.isValid, widthMeters.isFinite, heightMeters.isFinite,
+              (0.05...4).contains(widthMeters), (0.05...4).contains(heightMeters),
+              onAxisCandela.isFinite, (0...100_000).contains(onAxisCandela),
+              abs(dot(right.vector, up.vector)) <= 1e-8 else { return nil }
+        self.center = center; self.right = right; self.up = up
+        self.widthMeters = widthMeters; self.heightMeters = heightMeters
+        self.onAxisCandela = onAxisCandela
+        let r = right.vector, u = up.vector
+        // The cross product of two represented unit axes can be slightly
+        // shorter than one after rounding. Depth is a distance, so its normal
+        // must itself be normalized; otherwise rolling a rectangle can reject
+        // an exact minimum-separation receiver. No separation epsilon is used.
+        guard let direction = UnitDirection(x: r.y * u.z - r.z * u.y,
+                                            y: r.z * u.x - r.x * u.z,
+                                            z: r.x * u.y - r.y * u.x) else { return nil }
+        normal = direction.vector
+    }
+}
+
+/// A vertex of the emitting face in its local meter coordinates. Incidence
+/// is the unnormalized projection toward the receiver's front hemisphere.
+/// Keeping it at vertices permits stable positive barycentric interpolation
+/// even for a very narrow, nearly tangent contributing part of the face.
+private struct IncidenceVertex {
+    let point: SIMD2<Double>
+    let incidence: Double
+}
+
+/// Twelve-point Gauss-Legendre nodes and weights on [0, 1].
+/// A square-to-triangle map integrates the clipped polygon as a triangle fan.
+/// The higher order keeps the partial/full transition error small even at
+/// the minimum supported plane separation.
+private let gauss12: [(node: Double, weight: Double)] = [
+    (0.009219682876640378, 0.023587668193255706),
+    (0.0479413718147626, 0.05346966299765953),
+    (0.11504866290284765, 0.08003916427167321),
+    (0.20634102285669126, 0.10158371336153287),
+    (0.31608425050090994, 0.1167462682691773),
+    (0.43738329574426554, 0.12457352290670134),
+    (0.5626167042557344, 0.12457352290670134),
+    (0.6839157494990901, 0.1167462682691773),
+    (0.7936589771433087, 0.10158371336153287),
+    (0.8849513370971523, 0.08003916427167321),
+    (0.9520586281852375, 0.05346966299765953),
+    (0.9907803171233596, 0.023587668193255706)
+]
+
+extension Photometry {
+    /// Ideal isotropic point source incident on an oriented surface, in lux.
+    /// Intensity is the candela in the receiver's direction; no occlusion.
+    /// Returns nil for invalid input or distances below 5 cm.
+    public static func pointIlluminance(candela: Double, source: Position, receiver: Position,
+                                        receiverNormal: UnitDirection) -> Double? {
+        guard source.isValid, receiver.isValid else { return nil }
+        let delta = vector(source) - vector(receiver)
+        let distance = dot(delta, delta).squareRoot()
+        guard let normalLux = normalIlluminance(candela: candela, distanceMeters: distance) else { return nil }
+        return normalLux * min(1, max(0, dot(delta / distance, receiverNormal.vector)))
+    }
+
+    /// Integrates E = L cos(thetaEmitter) cos(thetaReceiver) dA / r^2,
+    /// with L = on-axis cd / emitter area. Fully front-facing emitters use
+    /// the same 32x32 midpoint grid as the unoccluded reference renderer.
+exit=0
+
+$ du -s -B1 /tmp/keyfill02-r2-workers/w03r06 /tmp/keyfill02-r2-workers/w03r06/private-output
+2334720	/tmp/keyfill02-r2-workers/w03r06
+exit=0
+
+$ du -s -b /tmp/keyfill02-r2-workers/w03r06 /tmp/keyfill02-r2-workers/w03r06/private-output
+1878195	/tmp/keyfill02-r2-workers/w03r06
+exit=0
+
+$ df -B1 /tmp/keyfill02-r2-workers/w03r06
+Filesystem      1B-blocks       Used  Available Use% Mounted on
+tmpfs          5225713664 3599548416 1626165248  69% /tmp
+exit=0
+
+$ free -b
+               total        used        free      shared  buff/cache   available
+Mem:     10451427328  7683203072  1358585856  5972881408  7952904192  2768224256
+Swap:              0           0           0
+exit=0
+
+$ cat /proc/meminfo
+MemTotal:       10206472 kB
+MemFree:         1326744 kB
+MemAvailable:    2703344 kB
+Buffers:           70384 kB
+Cached:          7042084 kB
+SwapCached:            0 kB
+Active:          5999164 kB
+Inactive:        1491716 kB
+Active(anon):    5248580 kB
+Inactive(anon):   992608 kB
+Active(file):     750584 kB
+Inactive(file):   499108 kB
+Unevictable:       29944 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:              2052 kB
+Writeback:             0 kB
+AnonPages:        408540 kB
+Mapped:           139480 kB
+Shmem:           5832892 kB
+KReclaimable:     654040 kB
+Slab:             964004 kB
+SReclaimable:     654040 kB
+SUnreclaim:       309964 kB
+KernelStack:        5396 kB
+PageTables:        12564 kB
+SecPageTables:         0 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     5103236 kB
+Committed_AS:    7381816 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:        6772 kB
+VmallocChunk:          0 kB
+Percpu:             4848 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:    108544 kB
+FilePmdMapped:         0 kB
+Balloon:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:     1294336 kB
+DirectMap2M:    11192320 kB
+DirectMap1G:    14680064 kB
+exit=0
+
+$ cat /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current
+cat: /sys/fs/cgroup/memory.max: No such file or directory
+cat: /sys/fs/cgroup/memory.current: No such file or directory
+exit=1
+
+SOURCE INVENTORY (Path.glob, splitlines):
+{
+  "swift_files": 31,
+  "swift_lines": 5450,
+  "reviewed_source_lines": {
+    "Sources/LightingCore/Scene.swift": 101,
+    "Sources/LightingCore/StudioOptics.swift": 139,
+    "Sources/LightingCore/SurfacePhotometry.swift": 220
+  }
+}

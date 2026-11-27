@@ -1,0 +1,35 @@
+Read-only inspection (workdir /tmp/keyfill02-r2-workers/w05r04):
+1. pwd && rg --files -g 'AGENTS.md' -g '*QUALITY*' -g '*LightOutputBoundaryTests.swift' -g '*LightOutput*' -g 'Package.swift'
+2. cat /tmp/keyfill02-r2-brief.md
+3. rg -n -A 30 -B 10 'W05|R04' /tmp/keyfill02-r2/docs/parallel/02/WAVE-TASKS.md
+4. cat AGENTS.md docs/QUALITY.md
+5. cat Tests/LightingCoreTests/LightOutputBoundaryTests.swift Sources/LightingCore/LightOutputAdjustment.swift
+6. git rev-parse HEAD && git status --short && rg -n 'solve|targetLux|targetIlluminance|LightOutput' Tests/LightingCoreTests && cat /tmp/keyfill02-r2-probe.py
+7. rg -n 'enum EmitterKind|struct LightOptics|struct StudioLight|struct LightingScene|struct Vector3|orientation|yawDegrees|pitchDegrees|rollDegrees' Sources/LightingCore && rg -n 'targetingLux|LightOutputAdjustment|250\.0|17\.25|731\.25|3141\.75' Tests && cat /tmp/keyfill02-r2-snapshots/v1/READY
+8. cat Sources/LightingCore/StudioPhotometry.swift && cat Tests/LightingCoreTests/DirectionalCosineReferenceTests.swift
+   Exit 1: first path absent; second cat not executed. Located actual implementation in StudioOptics.swift.
+9. cat Sources/LightingCore/StudioOptics.swift Sources/LightingCore/Scene.swift
+10. rg --files Tests/LightingCoreTests | rg 'Directional|RoundTrip|Output' && rg -n 'StudioPhotometry|minimumSeparationMeters|cameraFacing' Sources/LightingCore/StudioOptics.swift Sources/LightingCore/Photometry.swift
+    Exit 2: Photometry.swift absent; StudioOptics.swift match returned.
+11. git diff --exit-code 58b3ca43943e18d0fc7800189b08365f424d9c9e HEAD -- Sources/LightingCore && git log -1 --format='%H%n%s%n%cd' && uname -a
+    Exit 0: no LightingCore production difference from 58b3ca43943e18d0fc7800189b08365f424d9c9e.
+
+Evidence command (exact; no package build):
+python3 /tmp/keyfill02-r2-probe.py /tmp/keyfill02-r2-workers/w05r04 /tmp/keyfill02-r2-workers/w05r04/private-output/probe.swift v1
+
+The helper serializes standalone swiftc linkage with flock, and records compile.log/probe.log.
+XCTest candidate is not run by the package test runner; parent reviews and integrates.
+
+Provenance capture (read-only commands, exact):
+git rev-parse HEAD
+exit=0
+928ca0eafa6330742114c2e0ac184789c2f17752
+git diff --exit-code 58b3ca43943e18d0fc7800189b08365f424d9c9e HEAD -- Sources/LightingCore
+exit=0
+git status --short
+exit=0
+?? private-output/
+/tmp/keyfill02-r2-toolchain/usr/bin/swiftc --version
+exit=0
+Swift version 6.0.3 (swift-6.0.3-RELEASE)
+Target: x86_64-unknown-linux-gnu

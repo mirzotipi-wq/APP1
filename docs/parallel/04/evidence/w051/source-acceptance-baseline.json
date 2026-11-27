@@ -1,0 +1,132 @@
+{
+  "worker": 51,
+  "canonical_id": "/root/w051",
+  "role": "acceptance",
+  "input_sha": "5934f291b8e78e378a96ec3e4d294521c79839d0",
+  "campaign_baseline": "f150f98",
+  "actual_mode": "immutable GitHub source snapshots; no local worktree or command execution",
+  "checked_files": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "blob_sha": "8c1acd852d85cd99671feaba883db1808bbb5e68"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "blob_sha": "0731ab93a924572ccacd3dd66e334a85dc7c06e7"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "blob_sha": "98f01603ac6ab2f5f8a06f46b51f8c174d4dac84"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "blob_sha": "2af764b51023dc66a9cc0070d8d49f5bd7de334e"
+    }
+  ],
+  "executed_checks": {
+    "engine_and_cache_source_review": "completed",
+    "functions_javascript_literal_checks": [
+      {
+        "name": "cache immutable positive bounds",
+        "pass": true
+      },
+      {
+        "name": "admission guard precedes replacement",
+        "pass": true
+      },
+      {
+        "name": "independent subtraction guard for both budgets",
+        "pass": true
+      },
+      {
+        "name": "engine validation precedes name stripping",
+        "pass": true
+      },
+      {
+        "name": "cancel check precedes cache promotion",
+        "pass": true
+      },
+      {
+        "name": "downgrade removes only Metal frames",
+        "pass": true
+      },
+      {
+        "name": "payload accounting uses actual image array counts",
+        "pass": true
+      }
+    ],
+    "original_test_inventory": {
+      "core": [
+        "testEmptyCacheRetainsConfiguredLimitsAndMissDoesNotChangeCosts",
+        "testEntryLimitBoundsZeroCostValues",
+        "testHitPromotesRecencyAndMissDoesNotProtectOldestEntry",
+        "testPixelBudgetEvictsMultipleOldestEntriesBeforeCountLimit",
+        "testMaskBudgetIndependentlyEvictsAndSubtractsBothCosts",
+        "testProductionPayloadBudgetsRemainBoundedAcrossMixedFrameSizes",
+        "testReplacementChargesNewCostsOnlyAndBecomesMostRecent",
+        "testLargerReplacementRemovesOldChargeBeforeEvictingOtherEntries",
+        "testInvalidAndOversizedCostsRejectWithoutReplacementOrRecencyChanges",
+        "testMaximumIntegerBudgetsEvictBeforeAdditionCanOverflow",
+        "testSelectiveBackendRemovalPreservesSurvivorCostsAndRecency",
+        "testEquivalentNonHashableKeysReplaceAndFindTheSameEntry"
+      ],
+      "native": [
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testSubjectAndResolutionDoNotShareFrames",
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testFactoryIsDeferredUntilEligibleUncachedSphereRequest"
+      ]
+    }
+  },
+  "limitations": [
+    "Source literal checks do not compile or execute Swift.",
+    "Local git status/HEAD/log, agent_cycle check/next and git hash-object unavailable.",
+    "Swift package and native test execution, actual simulator Metal, physical device and RSS/GPU-driver measurement unrun."
+  ],
+  "conclusion": "No concrete cache/engine defect identified in this narrow acceptance read; wave06 test candidates and independent review pending.",
+  "expected_payload_not_measured": [
+    {
+      "fixture": "four-small",
+      "dimensions": "4x24x16",
+      "count": 4,
+      "pixelBytes": 6144,
+      "maskBytes": 1536
+    },
+    {
+      "fixture": "four-max-bust",
+      "dimensions": "4x144x96",
+      "count": 4,
+      "pixelBytes": 221184,
+      "maskBytes": 55296
+    },
+    {
+      "fixture": "three-max-sphere",
+      "dimensions": "3x192x128 requested",
+      "count": 2,
+      "pixelBytes": 196608,
+      "maskBytes": 49152
+    },
+    {
+      "fixture": "mixed-max",
+      "dimensions": "3x144x96 bust then1x192x128 sphere",
+      "count": 3,
+      "pixelBytes": 208896,
+      "maskBytes": 52224
+    }
+  ]
+}

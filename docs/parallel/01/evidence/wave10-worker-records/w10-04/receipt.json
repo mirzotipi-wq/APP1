@@ -1,0 +1,105 @@
+{
+  "worker": "W10-04",
+  "actual_context": 92,
+  "agent": "/root/w10_acceptance/w10_04_layout",
+  "base_revision": "adffee463896ba3484a6dde883f7e6745a4c0c6e",
+  "commit": "7cfab9d98895dbb36685f14191ddabaced4b323f",
+  "tree": "14f9113f4fd16b23ed3d9fab30b68fed03c0947f",
+  "worktree": "/tmp/keyfill01-wave10/w10-04/tree",
+  "status_porcelain": "",
+  "changed_paths": [
+    "App/StudioAdaptiveLayout.swift",
+    "App/StudioView.swift"
+  ],
+  "source_blobs": {
+    "App/StudioAdaptiveLayout.swift": "e0b286a09be9381d15e2741f5563731c3e570ae1",
+    "App/StudioView.swift": "3dd6e6fcd457b5c9fb511e0e75394bfe6a4a8bcb"
+  },
+  "inspected_baseline_blobs": {
+    "App/StudioView.swift": "88cbc339130ad6af7f9a77adda34754aeb1a2e9c",
+    "App/LightingPlanExportView.swift": "2db6c333853c8f4cab16082cd4d9037cd05feafb"
+  },
+  "source_sha256": {
+    "App/StudioAdaptiveLayout.swift": "6979ddb5b51699f2e1212375ef359ced2a24e98cf1eb85c24746daa62f945cf5",
+    "App/StudioView.swift": "9ac6c558a309efdbc139cd434fc1d84559adf7247eb5693f88c4ea14ceb812a1"
+  },
+  "commands": [
+    {
+      "command": "git status --short; git rev-parse HEAD; git log -5 --oneline",
+      "result": "clean detached baseline adffee4"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exit_code": 0,
+      "scope": "structure/evidence references only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "M03 editing/accessibility/persistence outstanding"
+    },
+    {
+      "command": "git diff --check; git diff --cached --check",
+      "exit_code": 0
+    },
+    {
+      "command": "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc -frontend -parse App/StudioAdaptiveLayout.swift App/StudioView.swift",
+      "exit_code": 0,
+      "scope": "syntax only on exact committed bytes, before commit"
+    },
+    {
+      "command": "source assertions: untouched StudioView sections, accessibility IDs, export owner bytes, clean status",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check && /tmp/keyfill01-swift-6.0.3/usr/bin/swiftc -frontend -parse App/StudioAdaptiveLayout.swift App/StudioView.swift",
+      "exit_code": 0,
+      "scope": "corrected final bytes, syntax only before final commit"
+    },
+    {
+      "command": "source assertions after correction: untouched sections, accessibility IDs, export bytes, clean status",
+      "exit_code": 0
+    }
+  ],
+  "official_docs_read": [
+    "https://developer.apple.com/documentation/swiftui/layout.md",
+    "https://developer.apple.com/documentation/swiftui/anylayout.md"
+  ],
+  "evidence_inspected": [
+    "docs/parallel/01/evidence/wave09-final/native-syntax.json",
+    "docs/parallel/01/evidence/wave09/ci-corrected-native-blocker.json",
+    "docs/parallel/01/evidence/wave09/owner-routed-failures.json"
+  ],
+  "coordination": "Design approved by root before edits; exact helper contract and early candidate sent to W10-02 and root.",
+  "limitations": [
+    "No Apple SDK typecheck or hosted/native runtime executed.",
+    "No screenshots or geometry/state-retention pass claimed.",
+    "Historical export-sheet failure cause remains unproved.",
+    "Package exclusions and integrated builds belong to root."
+  ],
+  "artifacts_sha256": {
+    "brief.md": "237e649ecddb07616af07828fdd9d14a76866446a7c7431c324f3d9142842761",
+    "report.md": "d0e5a36cfa1b4c0c6b6096ce7b5fdad3707dfedcc41a793db87848e2ca357adb",
+    "source.patch": "cb756e9352b8d894828c610788d6cede8eadd628194be983dda0538caaf8b311"
+  },
+  "candidate_history": [
+    {
+      "commit": "47b9651068b09966a96f3d482ea60e059452de5e",
+      "tree": "a28d8cfd62fdc8e94754279b0ad75991b80ecba0",
+      "source_blobs": {
+        "App/StudioAdaptiveLayout.swift": "e0b286a09be9381d15e2741f5563731c3e570ae1",
+        "App/StudioView.swift": "4530c31e7c5a841062e1e195f3e27c4d1fc7e6bb"
+      },
+      "source_sha256": {
+        "App/StudioAdaptiveLayout.swift": "6979ddb5b51699f2e1212375ef359ced2a24e98cf1eb85c24746daa62f945cf5",
+        "App/StudioView.swift": "0292243eb90afc7f7e0af19184986cd6d78ca69b3209845f4bf5a56115cf74ae"
+      },
+      "artifacts_sha256": {
+        "brief.md": "237e649ecddb07616af07828fdd9d14a76866446a7c7431c324f3d9142842761",
+        "report.md": "36775c622c460356bbbae3560d2bb46962bb85aba8f9ec7a737e907fd9450714",
+        "source.patch": "3baf5b3f9f562f82b9c87b9b6e2a7746a71578e9e8b30ab8ab74608dba9d5539"
+      }
+    }
+  ],
+  "review_correction": "Root reviewed 47b9651: force only the outer header vertical at accessibility sizes; preserve width-based inner projectActions. Implemented in 7cfab9d and coordinated with W10-02."
+}

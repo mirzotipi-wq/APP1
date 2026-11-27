@@ -1,0 +1,129 @@
+{
+  "status": "partial checkpoint; execution environment unavailable",
+  "recovered_at_utc": "2026-11-26T12:36:41.081Z",
+  "branch": "finish/01-architecture-composition",
+  "inspected_baseline": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "last_fully_published_checkpoint_before_outage": "ef71165d52e513d46176f37d22ec472b19124c6b",
+  "local_commits_before_outage": [
+    {
+      "prefix": "7c6f1c0",
+      "purpose": "session extraction and adoption guard; full local Debug run383 passed"
+    },
+    {
+      "prefix": "538d45d",
+      "purpose": "integrated worker04 additional eight tests; targeted suite passed"
+    },
+    {
+      "prefix": "f851500",
+      "purpose": "local logs and source manifest; publication interrupted"
+    }
+  ],
+  "recovery": {
+    "method": "Reapplied recorded deterministic edits to fetched ef71165 baseline and reconstructed new files from submitted source text. Native/session file line counts match the local change record. Worker04 file exactly matches its pre-outage SHA256.",
+    "independent_reexecution": "unavailable after environment loss; recovered tree requires a fresh test run",
+    "raw_logs": "Full logs/source-manifest existed in the interrupted local commit but could not be recovered. Retained terminal output excerpts are in retained-tool-outcomes.md, not substitutes for original raw files.",
+    "source_files": [
+      {
+        "path": "App/StudioView.swift",
+        "git_blob": "b5879731afb007c7ca3a8bf65817327485c49ba4",
+        "sha256": "6f94b9923baae66b60b8771a7dd0cd9daebc63f82377785322754d93927e0605",
+        "characters": 77181
+      },
+      {
+        "path": "App/StudioSession.swift",
+        "git_blob": "c0c7d4f49de7b196d51693889cf0eb03834dfb80",
+        "sha256": "8e2584fe4b4e0764871abe2f75e0425b8813f0bfdcdc3b7ccb86ec00d5fddb14",
+        "characters": 8500
+      },
+      {
+        "path": "Package.swift",
+        "git_blob": "c6409cf8fc806a956d2a494df367752723b0b458",
+        "sha256": "b8c1fd5d24249412bbe5f453415d0a65cee701d351f6cdd80ab6e10d27587e28",
+        "characters": 3981
+      },
+      {
+        "path": "Sources/LightingCore/StudioEditorState.swift",
+        "git_blob": "de296c68f9216d81db7228e0a67eb51997e71d4f",
+        "sha256": "cfa32709adb231bfb6ad17326fbac205f679430da5cb246f8b2ff67545f5df5a",
+        "characters": 4708
+      },
+      {
+        "path": "NativeTests/StudioSessionTests.swift",
+        "git_blob": "a6a47929c477771fcbe814b53da139951282a496",
+        "sha256": "ed427d78840185a3f15350a65156306593959c367e23c481219dd9cc89dea4e7",
+        "characters": 10701
+      },
+      {
+        "path": "Tests/LightingCoreTests/StudioFeatureContractTests.swift",
+        "git_blob": "14ce39324e2e3082e10a0de5379935eba9ba0ce4",
+        "sha256": "e47dfc0e576edb5b8837872aab561209ccd8438ef4aad7a49331306acd08b406",
+        "characters": 10913
+      }
+    ]
+  },
+  "actual_pre_outage_checks": [
+    {
+      "source": "baseline plus documentation",
+      "swift": "6.0.3 Linux",
+      "command": "swift test --scratch-path /tmp/keyfill-01-e08d/build/portable --jobs 1",
+      "tests": 366,
+      "failures": 0,
+      "result": "passed"
+    },
+    {
+      "source": "new editor/context contract; tree later published at30e52b8c277cfd15d5edeb872ff7a53d274f9b16",
+      "swift": "6.0.3 Linux",
+      "command": "swift test --scratch-path /tmp/keyfill-01-e08d/build/portable --jobs 1 --filter StudioEditorStateTests",
+      "tests": 9,
+      "failures": 0,
+      "result": "passed"
+    },
+    {
+      "source": "local7c6f1c0",
+      "swift": "6.2.1 Linux",
+      "command": "swift test --scratch-path /tmp/keyfill-01-e08d/build/portable --jobs 1 -Xswiftc -disable-batch-mode",
+      "tests": 383,
+      "failures": 0,
+      "result": "passed"
+    },
+    {
+      "source": "local538d45d",
+      "swift": "6.2.1 Linux",
+      "command": "swift test --scratch-path /tmp/keyfill-01-e08d/build/portable --jobs 1 -Xswiftc -disable-batch-mode --filter StudioFeatureContractTests",
+      "tests": 8,
+      "failures": 0,
+      "result": "passed"
+    },
+    {
+      "source": "local7c6f1c0",
+      "command": "swiftc -frontend -parse App/*.swift NativeTests/*.swift UITests/*.swift",
+      "result": "passed syntax only; no Apple API typecheck"
+    }
+  ],
+  "failed_pre_outage_attempts": [
+    "Swift6.0.3 Linux Observation runtime unresolved swift::threading::fatal symbol.",
+    "Swift6.2.1 initial compile killed by signal9 under observed host resource pressure.",
+    "Test discovery failed after --disable-index-store due missing index units.",
+    "Swift6.2.1 Linux Observation unresolved symbol; native Observation adapter scoped to Darwin while all orchestration bodies remain portable.",
+    "Incremental objects retained old Observation autolinks; clean serial build then passed383 tests."
+  ],
+  "unverified": [
+    "fresh recovered-source Debug and Release suite",
+    "Apple SDK typecheck/build",
+    "native UI and observation behavior",
+    "reference/room/AR ownership integration",
+    "device AR and StoreKit",
+    "complete ten-wave campaign"
+  ],
+  "worker_accounting": {
+    "actual_created": 17,
+    "fully_completed_waves": 1,
+    "wave2_created": 7,
+    "wave2_missing_roles": [
+      "feature integration",
+      "accessibility/privacy",
+      "platform/performance"
+    ],
+    "remaining_requested_workers": 83
+  }
+}

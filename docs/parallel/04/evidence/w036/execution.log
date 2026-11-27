@@ -1,0 +1,85 @@
+compiler-version
+g++ --version
+exitcode=0 sanitizer_diagnostics=0
+STDOUT:
+g++ (Debian 14.2.0-19) 14.2.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+STDERR:
+
+compiler-target
+g++ -dumpmachine
+exitcode=0 sanitizer_diagnostics=0
+STDOUT:
+x86_64-linux-gnu
+
+STDERR:
+
+platform
+uname -a
+exitcode=0 sanitizer_diagnostics=0
+STDOUT:
+Linux 6e77ed83c607 6.18.57 #1 SMP Tue Oct 20 21:56:04 UTC 2026 x86_64 GNU/Linux
+
+STDERR:
+
+compile
+flock /tmp/keyfill04-2987b1ee980d/build.lock g++ -std=c++17 -O1 -g -Wall -Wextra -Wpedantic -Werror -ffp-contract=off -fno-omit-frame-pointer -fsanitize=float-cast-overflow -fno-sanitize-recover=all /workspace/scratch/2987b1ee980d/lane04/results/w036/candidate_metadata_test.cpp -o /tmp/keyfill04-builds-2987b1ee980d/w036/candidate-metadata-test
+exitcode=0 sanitizer_diagnostics=0
+STDOUT:
+
+STDERR:
+
+test
+UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=0 /tmp/keyfill04-builds-2987b1ee980d/w036/candidate-metadata-test
+exitcode=0 sanitizer_diagnostics=0
+STDOUT:
+host_cpp_only=1 parser_used=0 sample_records=769 area_records=13 dimensions=24x16 pixel=12,8
+valid-control pixel=24,24,24,255 result=PASS
+samples-negative value=-1 call=begin
+samples-negative pixel=255,0,255,0 result=PASS
+samples-fractional value=64.5 call=begin
+samples-fractional pixel=255,0,255,0 result=PASS
+samples-max-plus-one value=769 call=begin
+samples-max-plus-one pixel=255,0,255,0 result=PASS
+samples-nan value=nan call=begin
+samples-nan pixel=255,0,255,0 result=PASS
+samples-large value=4294967296 call=begin
+samples-large pixel=255,0,255,0 result=PASS
+areas-negative value=-1 call=begin
+areas-negative pixel=255,0,255,0 result=PASS
+areas-fractional value=1.5 call=begin
+areas-fractional pixel=255,0,255,0 result=PASS
+areas-max-plus-one value=13 call=begin
+areas-max-plus-one pixel=255,0,255,0 result=PASS
+areas-nan value=nan call=begin
+areas-nan pixel=255,0,255,0 result=PASS
+areas-large value=4294967296 call=begin
+areas-large pixel=255,0,255,0 result=PASS
+grid-negative value=-1 call=begin
+grid-negative pixel=255,0,255,0 result=PASS
+grid-fractional value=8.5 call=begin
+grid-fractional pixel=255,0,255,0 result=PASS
+grid-nine value=9 call=begin
+grid-nine pixel=255,0,255,0 result=PASS
+grid-nan value=nan call=begin
+grid-nan pixel=255,0,255,0 result=PASS
+grid-large value=4294967296 call=begin
+grid-large pixel=255,0,255,0 result=PASS
+tag-negative value=-1 call=begin
+tag-negative pixel=255,0,255,0 result=PASS
+tag-fractional value=1.5 call=begin
+tag-fractional pixel=255,0,255,0 result=PASS
+tag-above-area-count value=2 call=begin
+tag-above-area-count pixel=255,0,255,0 result=PASS
+tag-nan value=nan call=begin
+tag-nan pixel=255,0,255,0 result=PASS
+tag-large value=4294967296 call=begin
+tag-large pixel=255,0,255,0 result=PASS
+summary valid_controls=1 invalid_cases=20 failures=0
+
+STDERR:
+

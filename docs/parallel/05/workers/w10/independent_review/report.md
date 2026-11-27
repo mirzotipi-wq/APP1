@@ -1,0 +1,14 @@
+# WAVE10 — independent review
+
+**Disposition:** retain frozen implementation; package the bounded evidence after final ledger/manifest completion. No new lane05 source defect demonstrated; no milestone promotion.
+
+Source `60059a0b8c5f099efb3fb5fffb3a1b8fee1df45a`; original docs `1d3195eb7ee6fcd87a9b1a379a4f12f7c555c65a`; supplemental published docs `6cea78fbea62d7a04049566af42f84d268a95ac1`. Inspected all nine reports, `acceptance-matrix.md`, `synthesis.md`, creation/ledger/manifests, pinned App/NativeTests and `docs/parallel/05/{HANDOFF,GEOMETRY_COMPARISONS,INTERACTION_REGRESSIONS,OWNER_REQUESTS,RECOVERY}.md`. Executed Git reads, Python byte/hash/event reconciliation and original-image viewing; no builds, installs, native execution or integration edits.
+
+- **Acceptance/platform:** independently enumerated and reconciled **185 native/39 spatial passes: 11 helpers, 28 SceneKit**, exactly one ordered start/pass each. Failed warm-up precedes actual success; root's terminal observation is **16:52:09 UTC**. Earlier pending cutoffs and predecessor184/38 remain historical. Export9/1, Plan-meter accessibility failure and later optics8/2 plus timeout/unfinalized bundle prevent full-workflow acceptance; viewport causality remains unestablished.
+- **Implementation/geometry:** exactly four App/seven native-test changes; all eleven blobs match both documentation parents. Core unchanged. **26 native point checks** remain distinct from the older portable **15 scenes/760 primitives/240 cases per model**.
+- **Concurrency/accessibility:** detached RealityKit lookup can resolve retained graph objects while delivery is gated. SceneKit retains two fixed coordinator nodes. Nil-callback/no-window negative fixtures do not isolate disabled/offwindow/VoiceOver behavior. No deallocation or renderer-thread atomicity follows.
+- **Interactions:** viewed current ordinary/crowded/full-app originals and verified archive/image hashes. Crowded occlusion, dark stands/camera and partly covered Fit/footer remain documented. Passed Fit taps establish neither resulting pose nor orbit/pan/pinch delivery.
+- **Interfaces:** confirmed owner7bdea15c identity/guard blobs; frozen `.id(generation)` remains. Lane01 integration and hosted first-save retention/project replacement with overlapping UUIDs remain open.
+- **Resources:** verified prior90 unique IDs,80 ledger hashes,176 historical manifest entries, ten current IDs, nine report hashes and44 provisional entries. Recomputed W08's2659-byte body-hash erratum; authoritative whole-file hashes match. Preserve four executor interruptions and W01 summary-only recovery.
+
+Final100 completion requires retaining this report and regenerating/verifying final manifests and aggregate ledger. RealityKit runtime, delivered gestures, device/FPS and manual accessibility remain unverified; token telemetry is unavailable. Detailed dispositions, paths and hashes: `evidence.json`; reproducible read-only audit: `audit.py`.

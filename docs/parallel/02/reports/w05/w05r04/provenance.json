@@ -1,0 +1,72 @@
+{
+  "role": "W05 R04",
+  "worktree": "/tmp/keyfill02-r2-workers/w05r04",
+  "worktree_docs_tests_head": {
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "stdout": "928ca0eafa6330742114c2e0ac184789c2f17752\n",
+    "stderr": ""
+  },
+  "frozen_module_revision_from_READY": "1b286885cb803ba17e159713651515ab119e17f1",
+  "production_revision": "58b3ca43943e18d0fc7800189b08365f424d9c9e",
+  "production_equivalence_check": {
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "58b3ca43943e18d0fc7800189b08365f424d9c9e",
+      "HEAD",
+      "--",
+      "Sources/LightingCore"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "toolchain": {
+    "command": [
+      "/tmp/keyfill02-r2-toolchain/usr/bin/swiftc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "stdout": "Swift version 6.0.3 (swift-6.0.3-RELEASE)\nTarget: x86_64-unknown-linux-gnu\n",
+    "stderr": ""
+  },
+  "final_status": {
+    "command": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "exit_code": 0,
+    "stdout": "?? private-output/\n",
+    "stderr": ""
+  },
+  "probe_command": [
+    "python3",
+    "/tmp/keyfill02-r2-probe.py",
+    "/tmp/keyfill02-r2-workers/w05r04",
+    "/tmp/keyfill02-r2-workers/w05r04/private-output/probe.swift",
+    "v1"
+  ],
+  "probe_exit_code": 0,
+  "sha256": {
+    "/tmp/keyfill02-r2-workers/w05r04/Sources/LightingCore/LightOutputAdjustment.swift": "7865e65f02f356abf2a0030801fdfdc4b1795c038676a486ebc6c2a6d6b724c8",
+    "/tmp/keyfill02-r2-workers/w05r04/Sources/LightingCore/StudioOptics.swift": "94a087ed1ea4cd311bc06006812637bd0214ef78801390c4b831247bf922e7fd",
+    "/tmp/keyfill02-r2-workers/w05r04/Sources/LightingCore/Scene.swift": "76adf1355ed75495724260a8df89892f93305b513caecce714ff0b2cac0b0898",
+    "/tmp/keyfill02-r2-workers/w05r04/Tests/LightingCoreTests/LightOutputBoundaryTests.swift": "a86f24bbf96205bcad168d8990a89bbccf2905914f1747f16d8eb3fc220531dd",
+    "/tmp/keyfill02-r2-workers/w05r04/private-output/LightOutputAttainableRoundTripTests.swift": "31c22d0e620bfd8bb9d06bec89f5d88e844d18778506f4f224bf677ba1739ea4",
+    "/tmp/keyfill02-r2-workers/w05r04/private-output/probe.swift": "45f309076c15af90fb73ec29b3b8037a554c897d8e936a5c36654b7d80f9b528",
+    "/tmp/keyfill02-r2-workers/w05r04/private-output/probe.log": "0236d8ca8b487f8e7b4c198db5b31fb4300d2de30270c3bcc17533f8a7bd11e3",
+    "/tmp/keyfill02-r2-workers/w05r04/private-output/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/keyfill02-r2-snapshots/v1/libLightingCore.a": "8a6187ca36a27bb59ccedf13f52bc41aea1f92f028f1c2f83f2cff5dfbce852a"
+  },
+  "limitations": [
+    "One standalone Swift probe; XCTest candidate is not package-tested.",
+    "Forward-model consistency only; no independent photometry accuracy or device/calibration evidence."
+  ]
+}

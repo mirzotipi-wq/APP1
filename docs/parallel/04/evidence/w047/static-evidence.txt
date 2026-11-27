@@ -1,0 +1,338 @@
+$ git status --short --branch
+## HEAD (no branch)
+exit=0
+$ git rev-parse HEAD
+88279ba0ee0262ea6c880580c8a85b56342abbff
+exit=0
+$ git log -5 --oneline
+88279ba fix(render): guard packed metadata before conversion and add strict Metal matrix
+c08cd0b fix(metal): route precision boundaries through CPU with width-aware eligibility
+c76e176 docs(metal): preserve 20 worker reports and wave 2 precision reproductions
+5bf9da7 Merge current main into Metal workstream and preserve execution recovery
+3d0e206 docs(metal): record wave 1 audits and reproduced silhouette boundary
+exit=0
+$ python3 scripts/agent_cycle.py check
+State structure and evidence references valid; this does NOT verify test truth or release readiness.
+exit=0
+$ python3 scripts/agent_cycle.py next
+M03: Professional editing and project library
+Outstanding gates: editing, accessibility, persistence
+Read agents/HANDOFF.md and docs/QUALITY.md before implementing.
+exit=0
+$ git hash-object /tmp/keyfill04-workers-2987b1ee980d/w047/App/ReferenceStudyPreview.swift /workspace/scratch/2987b1ee980d/lane04/results/w044/MetalStudyRenderer.swift /workspace/scratch/2987b1ee980d/lane04/results/w045/checkpoint-StudyRenderCacheTests.swift
+1a68db0fd7782ac945b915b32b4ddd8485321ad3
+98aa3c619ef05b7cc1369ecab71a1b04456a89d3
+2af764b51023dc66a9cc0070d8d49f5bd7de334e
+exit=0
+READ-ONLY SOURCE EXCERPTS: not runtime, image, or accessibility acceptance
+SOURCE /tmp/keyfill04-workers-2987b1ee980d/w047/App/ReferenceStudyPreview.swift
+1: import SwiftUI
+2: import CoreGraphics
+3: import Foundation
+4: import LightingCore
+5: 
+6: /// The bounded direct-light study is deliberately distinct from the illustrative
+7: /// SceneKit views. A serialized worker validates Metal against CPU before use.
+8: struct ReferenceStudyPreview: View {
+9:     let scene: LightingScene
+10:     var subject: StudySubject = .sphere
+11:     @Environment(\.scenePhase) private var scenePhase
+12:     @State private var frame: Frame?
+13: 
+14:     private struct Request: Equatable {
+15:         let scene: LightingScene
+16:         let subject: StudySubject
+17: 
+18:         init(scene: LightingScene, subject: StudySubject) {
+19:             // Measured-room placement does not participate in this direct-light
+20:             // study. Keep its snapshot and identity independent of room edits,
+21:             // retaining the complete light optics, camera and preview settings.
+22:             var renderScene = scene
+23:             renderScene.placementRoom = nil
+24:             self.scene = renderScene
+25:             self.subject = subject
+26:         }
+27:     }
+28:     private var request: Request { .init(scene: scene, subject: subject) }
+29:     // Changing to nil cancels in-flight work while inactive; foregrounding
+30:     // starts the latest scene/subject request without discarding a valid frame.
+31:     private var activeRequest: Request? { scenePhase == .active ? request : nil }
+32:     private var imageLabel: String {
+33:         subject == .sphere ? "Rendered neutral sphere and panel" : "Rendered neutral mannequin bust"
+34:     }
+35: 
+36:     private struct Frame {
+37:         let request: Request
+38:         let image: CGImage?
+39:         let unsupportedPixels: Int
+40:         let backend: StudyBackend?
+41:         let message: String?
+42:     }
+43: 
+44:     var body: some View {
+45:         GeometryReader { geometry in
+46:             ZStack(alignment: .bottomLeading) {
+47:                 Color.black
+48:                 // A previous scene may remain visible while it updates, but a
+49:                 // different subject or an old error must never stand in for it.
+50:                 if let frame,
+51:                    frame.request == request || (frame.image != nil && frame.request.subject == subject) {
+52:                     let isCurrent = frame.request == request
+53:                     if let image = frame.image {
+54:                         let width = min(geometry.size.width, geometry.size.height * 1.5)
+55:                         let label = isCurrent ? imageLabel : "Previous render. \(imageLabel). Updating light study."
+56:                         Image(image, scale: 1, orientation: .up, label: Text(label))
+57:                             .resizable().interpolation(.medium)
+58:                             .frame(width: width, height: width / 1.5)
+59:                             .frame(maxWidth: .infinity, maxHeight: .infinity)
+60:                             .accessibilityLabel(label)
+61:                             .accessibilityIdentifier(isCurrent ? "studyPreview" : "studyPreviousPreview")
+62:                         if isCurrent, let backend = frame.backend {
+63:                             Text(backend.rawValue).font(.caption2.monospaced())
+64:                                 .foregroundStyle(.white.opacity(0.8))
+65:                                 .padding(6).background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 6))
+66:                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+67:                                 .padding(8).accessibilityIdentifier("studyBackend")
+68:                         }
+69:                         if isCurrent, frame.unsupportedPixels > 0 {
+70:                             Label("\(frame.unsupportedPixels) unsupported pixels (magenta). Move the lights farther away.",
+71:                                   systemImage: "exclamationmark.triangle.fill")
+72:                                 .font(.caption2.weight(.medium))
+73:                                 .foregroundStyle(.white)
+74:                                 .padding(8).background(.black.opacity(0.85))
+75:                                 .accessibilityIdentifier("studyWarning")
+76:                         }
+77:                         if !isCurrent {
+78:                             ProgressView("Updating light study")
+79:                                 .controlSize(.small)
+80:                                 .font(.caption.weight(.medium))
+81:                                 .tint(.white).foregroundStyle(.white)
+82:                                 .padding(8)
+83:                                 .background(.black.opacity(0.85), in: RoundedRectangle(cornerRadius: 8))
+84:                                 .padding(8)
+85:                                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+86:                                 .accessibilityLabel("Updating light study")
+87:                                 .accessibilityValue("Showing the previous scene")
+88:                                 .accessibilityIdentifier("studyUpdating")
+89:                         }
+90:                     } else {
+91:                         VStack(spacing: 8) {
+92:                             Image(systemName: "exclamationmark.triangle").font(.title2)
+93:                             Text("Study unavailable").font(.headline)
+94:                             Text(frame.message ?? "Check camera and lighting geometry.").font(.caption)
+95:                         }
+96:                         .multilineTextAlignment(.center)
+97:                         .foregroundStyle(.white).padding(24)
+98:                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+99:                         .accessibilityIdentifier("studyUnavailable")
+100:                     }
+101:                 } else {
+102:                     ProgressView("Rendering light study")
+103:                         .tint(.white).foregroundStyle(.white)
+104:                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+105:                         .accessibilityIdentifier("studyLoading")
+106:                 }
+107:             }
+108:         }
+109:         .task(id: activeRequest) {
+110:             guard let snapshot = activeRequest else { return }
+111:             // A quick switch back to a completed request can reuse its pixels.
+112:             // Failed frames remain retryable when this view appears again.
+113:             if let frame, frame.request == snapshot, frame.image != nil { return }
+114:             do { try await Task.sleep(nanoseconds: 80_000_000) } catch { return }
+115:             do {
+116:                 let rendered = try await StudyRenderEngine.shared.render(scene: snapshot.scene, subject: snapshot.subject)
+117:                 guard !Task.isCancelled else { return }
+118:                 let study = rendered.image
+119:                 let image = Self.makeImage(study)
+120:                 guard !Task.isCancelled else { return }
+121:                 frame = Frame(request: snapshot, image: image, unsupportedPixels: study.unsupportedPixels,
+122:                               backend: rendered.backend,
+123:                               message: image == nil ? "The rendered image could not be displayed." : nil)
+124:             } catch {
+125:                 guard !Task.isCancelled, !(error is CancellationError),
+126:                       (error as? StudyError) != .cancelled else { return }
+127:                 let message: String
+128:                 switch error as? StudyError {
+129:                 case .invalidCamera: message = "Move the camera above the panel and away from the subject."
+130:                 case .invalidEmitter: message = "Check the aiming direction of each active light."
+131:                 default: message = "Check the camera, light positions, and preview settings."
+132:                 }
+133:                 frame = Frame(request: snapshot, image: nil, unsupportedPixels: 0, backend: nil, message: message)
+134:             }
+135:         }
+136:     }
+137: 
+138:     private static func makeImage(_ study: StudyImage) -> CGImage? {
+139:         guard study.rgba.count == study.width * study.height * 4,
+140:               let provider = CGDataProvider(data: study.rgba as CFData),
+141:               let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+142:         return CGImage(width: study.width, height: study.height,
+143:                        bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: study.width * 4,
+144:                        space: space, bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
+145:                        provider: provider, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+146:     }
+147: }
+SOURCE /workspace/scratch/2987b1ee980d/lane04/results/w044/MetalStudyRenderer.swift
+81:     private func compute(_ input: StudyComputeInput,
+82:                          isCancelled: () -> Bool = { Task.isCancelled }) throws -> StudyImage {
+83:         try autoreleasepool {
+84:             guard !isCancelled() else { throw StudyError.cancelled }
+85:             guard let params = buffer(input.parameters),
+86:                   let samples = buffer(input.samples),
+87:                   let areas = buffer(input.areas),
+88:                   let output = device.makeBuffer(length: input.width * input.height * 4, options: .storageModeShared),
+89:                   let command = queue.makeCommandBuffer(),
+90:                   let encoder = command.makeComputeCommandEncoder() else { throw MetalStudyError.allocation }
+91:             command.label = "Key & Fill diagnostic study"
+92:             encoder.setComputePipelineState(pipeline)
+93:             encoder.setBuffer(params, offset: 0, index: 0)
+94:             encoder.setBuffer(samples, offset: 0, index: 1)
+95:             encoder.setBuffer(areas, offset: 0, index: 2)
+96:             encoder.setBuffer(output, offset: 0, index: 3)
+97:             var dimensions = SIMD2<UInt32>(UInt32(input.width), UInt32(input.height))
+98:             encoder.setBytes(&dimensions, length: MemoryLayout<SIMD2<UInt32>>.stride, index: 4)
+99:             let groupWidth = min(pipeline.threadExecutionWidth, pipeline.maxTotalThreadsPerThreadgroup)
+100:             guard groupWidth > 0 else { encoder.endEncoding(); throw MetalStudyError.command }
+101:             let groupHeight = max(1, min(8, pipeline.maxTotalThreadsPerThreadgroup / groupWidth))
+102:             let group = MTLSize(width: groupWidth, height: groupHeight, depth: 1)
+103:             let count = MTLSize(width: (input.width + groupWidth - 1) / groupWidth,
+104:                                 height: (input.height + groupHeight - 1) / groupHeight, depth: 1)
+105:             encoder.dispatchThreadgroups(count, threadsPerThreadgroup: group)
+106:             encoder.endEncoding()
+107:             guard !isCancelled() else { throw StudyError.cancelled }
+108:             command.commit()
+109:             // Submitted work keeps its buffers alive until completion. A real
+110:             // command failure remains visible even if cancellation also arrives.
+111:             command.waitUntilCompleted()
+112:             guard command.status == .completed else { throw MetalStudyError.command }
+113:             guard !isCancelled() else { throw StudyError.cancelled }
+114:             let bytes = Data(bytes: output.contents(), count: input.width * input.height * 4)
+115:             return try StudyImage.fromComputeRGBA(width: input.width, height: input.height, data: bytes)
+116:         }
+117:     }
+118: 
+119:     /// Fail closed to CPU on any image-parity failure. Runtime gate is a numerical
+120:     /// sanity check, not a measured performance or physical-rendering claim.
+121:     func validate(isCancelled: () -> Bool = { Task.isCancelled }) throws {
+122:         for fixture in StudyValidationFixtures.all() {
+123:             guard !isCancelled() else { throw StudyError.cancelled }
+124:             let reference = try ReferenceStudyRenderer.render(scene: fixture.scene, width: 48,
+125:                                                                isCancelled: isCancelled)
+126:             guard !isCancelled() else { throw StudyError.cancelled }
+127:             let candidate = try renderValidationFixture(scene: fixture.scene, width: 48,
+128:                                                          isCancelled: isCancelled)
+129:             // A submitted GPU command must finish before its buffers can be
+130:             // read, but cancellation prevents starting another fixture.
+131:             guard !isCancelled() else { throw StudyError.cancelled }
+132:             guard StudyParityMetrics(reference: reference, candidate: candidate)?.passes == true else {
+133:                 throw MetalStudyError.parity
+134:             }
+135:         }
+136:     }
+150: /// Single worker serializes compute submissions and CPU fallbacks. Cooperative
+151: /// cancellation guards frame return and cache admission; callers still decide
+152: /// whether to adopt a returned frame. Submitted GPU work completes before its
+153: /// buffers are released; CPU work checks cancellation every eight evaluations.
+154: actor StudyRenderEngine {
+155:     static let shared = StudyRenderEngine()
+156:     // Bound both the number of scene snapshots and retained RGBA storage.
+157:     // Four small frames fit; at 192 × 128 the byte limit retains at most two.
+158:     static let maximumCachedFrames = 4
+159:     static let maximumCachedPixelBytes = 256 * 1024
+160:     static let maximumCachedMaskBytes = 64 * 1024
+223:     func render(scene: LightingScene, width: Int = 192, subject: StudySubject = .sphere) throws -> StudyRenderedFrame {
+224:         let additionalCancellation = additionalCancellation
+225:         let isCancelled = { Task.isCancelled || additionalCancellation() }
+226:         guard !isCancelled() else { throw StudyError.cancelled }
+227:         let renderWidth = subject == .bust ? min(width, PortraitStudyRenderer.maximumWidth) : width
+228:         let key = CacheKey(scene: scene, width: renderWidth, subject: subject)
+229:         if let key {
+230:             // Check before the cache promotes a hit. A cancelled request must
+231:             // neither publish pixels nor change the eviction order.
+232:             guard !isCancelled() else { throw StudyError.cancelled }
+233:             if let cached = frameCache.value(for: key) { return cached }
+234:         }
+235:         if subject == .bust {
+236:             // The mannequin has additional geometry. Do not send it
+237:             // to the sphere-only Metal kernel or claim a validated GPU path.
+238:             let image = try PortraitStudyRenderer.render(scene: scene, width: renderWidth,
+239:                                                         isCancelled: isCancelled)
+240:             guard !isCancelled() else { throw StudyError.cancelled }
+241:             return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+242:         }
+243:         // Eligibility belongs to this request. CPU-only and invalid requests
+244:         // must not initialize or change an unchecked backend.
+245:         let supportsMetal = MetalStudyRenderer.supports(scene, width: width)
+246:         if case .unchecked = state, supportsMetal {
+247:             do {
+248:                 guard !isCancelled() else { throw StudyError.cancelled }
+249:                 let renderer = try makeComputeBackend()
+250:                 try renderer.validate(isCancelled: isCancelled)
+251:                 guard !isCancelled() else { throw StudyError.cancelled }
+252:                 state = .metal(renderer)
+253:             } catch let error as StudyError {
+254:                 // Cancellation and scene errors leave startup retryable.
+255:                 // Malformed output confirms a backend failure instead.
+256:                 if error != .invalidComputeOutput { throw error }
+257:                 selectCPU()
+258:             } catch MetalStudyError.precisionDomain {
+259:                 // A precision boundary only routes this request through CPU.
+260:             } catch {
+261:                 // Fail closed before observing concurrent cancellation.
+262:                 selectCPU()
+263:             }
+264:         }
+265:         guard !isCancelled() else { throw StudyError.cancelled }
+266:         if case .metal(let renderer) = state, supportsMetal {
+267:             do {
+268:                 let image = try renderer.render(scene: scene, width: width, isCancelled: isCancelled)
+269:                 guard !isCancelled() else { throw StudyError.cancelled }
+270:                 return retain(StudyRenderedFrame(image: image, backend: .metal), for: key)
+271:             } catch let error as StudyError {
+272:                 // Validation/cancellation is a scene error, not a backend failure.
+273:                 if error != .invalidComputeOutput { throw error }
+274:                 selectCPU()
+275:             } catch MetalStudyError.precisionDomain {
+276:                 // Preserve the validated backend for a later eligible request.
+277:             } catch {
+278:                 selectCPU()
+279:             }
+280:         }
+281:         // In particular, a precision-domain fallback must observe cancellation
+282:         // before the CPU renderer constructs its scene and emitter samples.
+283:         guard !isCancelled() else { throw StudyError.cancelled }
+284:         let image = try ReferenceStudyRenderer.render(scene: scene, width: width, isCancelled: isCancelled)
+285:         guard !isCancelled() else { throw StudyError.cancelled }
+286:         return retain(StudyRenderedFrame(image: image, backend: .cpu), for: key)
+287:     }
+288: 
+289:     private func selectCPU() {
+290:         state = .cpu
+291:         // A runtime backend failure invalidates its old frames as well. A later
+292:         // hit must not resurrect Metal after the engine has failed closed.
+293:         frameCache.removeAll { $0.backend == .metal }
+294:     }
+295: 
+296:     /// Only called after the final cooperative cancellation check. There is no
+297:     /// suspension between that check, cache admission and returning the frame.
+298:     private func retain(_ frame: StudyRenderedFrame, for key: CacheKey?) -> StudyRenderedFrame {
+299:         guard let key else { return frame }
+300:         frameCache.insert(frame, for: key, pixelBytes: frame.image.rgba.count,
+301:                           maskBytes: frame.image.unsupportedPixelMask.count)
+302:         return frame
+303:     }
+STARTUP DOCUMENTS READ: provenance hashes, not validation results
+8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6  AGENTS.md
+cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6  agents/OPERATING_PROTOCOL.md
+49e29e071dc359cb6b06c10533a582afa45cbccddd4ccf080873fdfcb85ad597  agents/HANDOFF.md
+cf07c191f4b2e80966ee3600aed9bcb13778b6ff286aee85546adba9e9d26312  agents/state.json
+1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628  docs/PRODUCT.md
+3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a  docs/ARCHITECTURE.md
+038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678  docs/ROADMAP.md
+af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336  docs/QUALITY.md
+ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117  docs/DESIGN.md
+829fb77720eca498dcefdb8945b62383e9d7e748cf54fa86b7b53c55d0573ba4  docs/acceptance/m02-m03-code.md
+Limits: no Swift compiler, SDK install, test execution, GPU submission, UI run, or screenshot inspection.
+Unchanged fixtures, tolerances, equations, packed ABI, CPU oracle, harness, preview, source, global state and handoff.
+Final test candidate was hash-verified only; its synthetic lifecycle tests do not establish Metal output.

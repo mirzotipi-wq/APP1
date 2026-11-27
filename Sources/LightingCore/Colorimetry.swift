@@ -27,9 +27,15 @@ public struct RelativeXYZ: Equatable, Sendable {
     public let z: Double
     public init(x: Double, y: Double, z: Double) { self.x = x; self.y = y; self.z = z }
     public var chromaticity: Chromaticity? {
+        guard x.isFinite, y.isFinite, z.isFinite, x >= 0, y >= 0, z >= 0 else { return nil }
         let sum = x + y + z
-        guard sum.isFinite, sum > 0, x >= 0, y >= 0, z >= 0 else { return nil }
-        return .init(x: x / sum, y: y / sum)
+        guard sum > 0 else { return nil }
+        if sum.isFinite { return .init(x: x / sum, y: y / sum) }
+        // Chromaticity is invariant to a positive scale. Finite XYZ values
+        // need not have a representable sum, so normalize before adding.
+        let scale = max(x, max(y, z))
+        let a = x / scale, b = y / scale, c = z / scale
+        return .init(x: a / (a + b + c), y: b / (a + b + c))
     }
     fileprivate var vector: SIMD3<Double> { .init(x, y, z) }
     fileprivate init(_ v: SIMD3<Double>) { self.init(x: v.x, y: v.y, z: v.z) }
@@ -118,14 +124,22 @@ public struct PreviewColorTransform: Sendable {
     /// neutral-axis gamut compression into display-encoded sRGB.
     public func display(_ xyz: RelativeXYZ) -> DisplayRGB? {
         guard xyz.x.isFinite, xyz.y.isFinite, xyz.z.isFinite, xyz.x >= 0, xyz.y >= 0, xyz.z >= 0 else { return nil }
-        let adapted = PreviewColorimetry.inverseBradford(PreviewColorimetry.bradford(xyz.vector) * adaptationRatio) * exposure
+        // The normal scene range retains its original arithmetic. Above it,
+        // cancel the input scale analytically in the Reinhard denominator so
+        // finite inputs do not overflow in adaptation or exposure products.
+        let scale = max(xyz.x, max(xyz.y, xyz.z))
+        let scaled = scale > 1e150
+        let input = scaled ? xyz.vector / scale : xyz.vector
+        let adapted = PreviewColorimetry.inverseBradford(PreviewColorimetry.bradford(input) * adaptationRatio)
+            * (scaled ? 1 : exposure)
         let rgb = SIMD3<Double>(3.24096994 * adapted.x - 1.53738318 * adapted.y - 0.49861076 * adapted.z,
                                 -0.96924364 * adapted.x + 1.87596750 * adapted.y + 0.04155506 * adapted.z,
                                 0.05563008 * adapted.x - 0.20397696 * adapted.y + 1.05697151 * adapted.z)
         guard rgb.x.isFinite, rgb.y.isFinite, rgb.z.isFinite, adapted.y.isFinite, adapted.y >= 0 else { return nil }
         if adapted.y == 0 { return .init(red: 0, green: 0, blue: 0) }
-        let luminance = adapted.y / (1 + adapted.y)
-        let tone = rgb / (1 + adapted.y)
+        let denominator = scaled ? adapted.y + (1 / scale) / exposure : 1 + adapted.y
+        let luminance = adapted.y / denominator
+        let tone = rgb / denominator
         var t = 1.0
         for component in [tone.x, tone.y, tone.z] {
             let delta = component - luminance

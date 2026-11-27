@@ -1,0 +1,136 @@
+{
+  "worker": "w09-05",
+  "actual_context": 85,
+  "role": "concurrency reviewer",
+  "read_only": true,
+  "worktree": "/tmp/keyfill01-wave09/w09-05/tree",
+  "head": "f33a399f8ba21618320ce50aed7981450a9703a7",
+  "writer_revision": "d3946bc5369bb00459c161e4397d9364dccba2bc",
+  "integrated_revision": "cdacffd3c6eb7bc178bf127187e2990adc4c676c",
+  "git_status_porcelain": "",
+  "source_hashes": {
+    "App/StudioSession.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "7b965091e3043fd294502f3cf900b7bd970f8458",
+      "sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+      "identical_at_integrated": true
+    },
+    "App/ProjectStore.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "531f967fe2f532b7f68f728bcda677c75d8c0253",
+      "sha256": "404db2197b3f4f9fa45865ed915cae8bd1c255338edb1d8b834753022e3852aa",
+      "identical_at_integrated": true
+    },
+    "App/ProjectLibraryOperation.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "79dfd4fe8672bb2817392c2a2dfd549846688510",
+      "sha256": "0c4bff3e4d29c585bc0cd342440a5d7e3ec43fd4bc32eeec457533a87b35c413",
+      "identical_at_integrated": true
+    },
+    "Sources/LightingCore/ProjectLibrary.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "87dbaf35066e3599db00a398bba1baabbaf3046e",
+      "sha256": "0b6689015a9102d5b5ca6f309553455b48c047534432bc2c2b99726a242d73c4",
+      "identical_at_integrated": true
+    },
+    "Sources/LightingCore/StudioEditorState.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "76c9f3c70b77ffebd35ff9619a58c89a03060ebf",
+      "sha256": "ec4bb8c3c119f9f94a53ed65690dca567079efc9768ce2568faba397d7e8a668",
+      "identical_at_integrated": true
+    },
+    "Sources/LightingCore/SceneEditHistory.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "1b28c1e12424b98db5ccfdcbbc4b10b9d32c8368",
+      "sha256": "b74aa78bac2c6940c86177dc74703864e054190950092879e81c64cc7697a767",
+      "identical_at_integrated": true
+    },
+    "Sources/LightingCore/StudioFeaturePresentation.swift": {
+      "revision": "f33a399f8ba21618320ce50aed7981450a9703a7",
+      "git_blob": "94ad1b901ad0cf3e34fb3c19f0512297fad32545",
+      "sha256": "220a85ac575460d54e0a39c5a9ada9f894556b849018ee5e21a2099cf6a472f0",
+      "identical_at_integrated": true
+    },
+    "NativeTests/StudioCommittedSaveTests.swift": {
+      "revision": "d3946bc5369bb00459c161e4397d9364dccba2bc",
+      "git_blob": "07dc1cad6d7f02fc3964672426d7d57c1b3a3be8",
+      "sha256": "11fe4dd72f5f534f2bfcb270db1e731e0fc79824e9c08fd8280fb0cfe4cca70c",
+      "identical_at_integrated": true
+    }
+  },
+  "commands": [
+    {
+      "command": "git status --short && git rev-parse HEAD && git log -5 --oneline",
+      "exit_code": 0,
+      "result": "Clean detached frozen tree"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next",
+      "exit_code": 0,
+      "result": "Structure valid; M03 editing/accessibility/persistence outstanding; not acceptance"
+    },
+    {
+      "command": "cat Sources/LightingCore/ProjectLibraryFileStore.swift",
+      "exit_code": 1,
+      "result": "Guessed path absent; rg located actual implementation in ProjectLibrary.swift and it was read"
+    },
+    {
+      "command": "git diff --exit-code d3946bc5369bb00459c161e4397d9364dccba2bc cdacffd3c6eb7bc178bf127187e2990adc4c676c -- NativeTests/StudioCommittedSaveTests.swift App/StudioSession.swift App/ProjectStore.swift App/ProjectLibraryOperation.swift",
+      "exit_code": 0,
+      "result": "No differences"
+    },
+    {
+      "command": "git show cdacffd3c6eb7bc178bf127187e2990adc4c676c:Package.swift | rg -n Studio",
+      "exit_code": 0,
+      "result": "Integrated source explicitly registers StudioCommittedSaveTests.swift"
+    },
+    {
+      "command": "git status --porcelain=v1 && git diff --check",
+      "exit_code": 0,
+      "result": "Clean"
+    },
+    {
+      "command": "Python hashlib/subprocess source and log verification",
+      "exit_code": 0,
+      "result": "All reviewed source bytes identical at integrated revision"
+    }
+  ],
+  "findings": {
+    "blocking": [],
+    "coverage_limits": [
+      "Selection ends initial Room edit before reservation; open-edit reservation boundary is not independently covered here.",
+      "Gate count measures executor completions; disk bytes do not count physical write syscalls.",
+      "Cleanup deadlines bound cooperative waits, not arbitrary deadlocks."
+    ]
+  },
+  "review": {
+    "real_store": "Actual perform; empty args/environment; no substituted receipt",
+    "gate_order": "Store transaction returns before continuation suspension; load ungated",
+    "cancellation": "Observer and owning session task separately cancelled and checked",
+    "reentrancy": "Continuation publication under lock, resume outside lock; monotonic release handles early/repeated open",
+    "settlement": "Pending request and owned task clear; stable generation and bytes after repeated result reads",
+    "history": "Post-reservation editor equality, persistent context/selection, stale callback rejection, exact undo/redo"
+  },
+  "root_executed_evidence": {
+    "source_revision": "c3ce48761e2f927da82f1e86549aab77becf61a1",
+    "path": "/workspace/scratch/e08d5190f17c/keyfill-01/docs/parallel/01/evidence/wave09/committed-save.log",
+    "log_sha256": "df3646eb51bdb32807c9de2577435cedce8c241ecf0606c9b406750dd03905c2",
+    "result": "2 targeted Debug methods passed, 0 failures",
+    "not_run_by_this_worker": true
+  },
+  "unrun_by_worker": [
+    "All builds and runtime tests",
+    "Native syntax/typechecking",
+    "Apple SDK and runtime",
+    "New tests in Release",
+    "Full integrated suite"
+  ],
+  "prior_evidence": "wave08 Apple Observation failures retained; wave08-fixed local checks and bed58 431/431 CI do not establish acceptance for new tests",
+  "production_defect_found": false,
+  "production_changes": false,
+  "source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "report_sha256": "b29e20efb2d7e962d08aa75c26051fb40b93d44477c247385d5c48438c4726a8",
+  "report_words": 242,
+  "report_characters": 1786,
+  "report_estimated_tokens_chars_div_4": 447
+}

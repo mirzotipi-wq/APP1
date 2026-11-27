@@ -1,0 +1,53 @@
+{
+  "reviewed_at": "2026-11-26T16:40:32.192549+00:00",
+  "fix_commit": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+  "changed_paths": [
+    "App/StudioSession.swift"
+  ],
+  "diff_sha256": "c87d5a9d0401facdf1fcc1a3d3a324792b11bfe8e8ec717ff0849ab24d930d30",
+  "actual_source_sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+  "source_review": "Only complete Darwin task-property declarations carry direct ignored attributes; Linux branch contains same plain stored fields. Session methods, task semantics and access control unchanged.",
+  "probe_before": {
+    "source_revision": "167eb90f49462cddab780798825e07e5954be4a9",
+    "source_sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+    "transformed_source_sha256": "f2939be17673faaa591b4a377c36c22a8b93d35bd3e1d1cb12c7240a3e996465",
+    "transform": "Only replace #if canImport(Darwin) with #if true in actual StudioSession source to exercise Observation macros on Linux; no linking or Apple SDK",
+    "command": [
+      "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc",
+      "-typecheck",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-module-name",
+      "StudioCompositionMacroProbe",
+      "-I",
+      "/tmp/keyfill01-build-v8-debug/x86_64-unknown-linux-gnu/debug/Modules",
+      "/tmp/keyfill01-observation-probe/StudioSession-before.swift",
+      "App/ProjectStore.swift",
+      "App/ProjectLibraryOperation.swift"
+    ],
+    "exit_code": 1
+  },
+  "probe_after": {
+    "source_revision": "8b18366c1c718c2c81f6b275d66140f6dc9d49c9",
+    "source_sha256": "5945edc83665fee91cb8410303c9336a7e35b389752b740f4f5c29e797af5997",
+    "transformed_source_sha256": "f4d60ce1931dd6ca420a8e6a416ed82ad776614a53ae30af087911406432bffb",
+    "transform": "Only replace #if canImport(Darwin) with #if true in actual StudioSession source to exercise Observation macros on Linux; no linking or Apple SDK",
+    "command": [
+      "/tmp/keyfill01-swift-6.0.3/usr/bin/swiftc",
+      "-typecheck",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-module-name",
+      "StudioCompositionMacroProbe",
+      "-I",
+      "/tmp/keyfill01-build-v8-debug/x86_64-unknown-linux-gnu/debug/Modules",
+      "/tmp/keyfill01-observation-probe/StudioSession-after.swift",
+      "App/ProjectStore.swift",
+      "App/ProjectLibraryOperation.swift"
+    ],
+    "exit_code": 0
+  },
+  "scope": "Root ran transformed actual-source Linux typecheck, not Apple SDK/link/UI execution; corrected full-suite evidence pending at this checkpoint."
+}

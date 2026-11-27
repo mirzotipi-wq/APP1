@@ -1,0 +1,62 @@
+diff --git a/App/ReferenceStudyPreview.swift b/App/ReferenceStudyPreview.swift
+--- a/App/ReferenceStudyPreview.swift
++++ b/App/ReferenceStudyPreview.swift
+@@ -24,8 +24,10 @@
+ 
+     /// Begin even when reusing a completed frame: an A → B → A switch must
+     /// invalidate B without requiring another render of the cached A image.
++    /// A cancelled caller gets an unused ticket without superseding live work.
+     func begin() -> UUID {
+         let ticket = UUID()
++        guard !Task.isCancelled else { return ticket }
+         current = ticket
+         return ticket
+     }
+@@ -195,6 +197,7 @@
+         }
+         .onDisappear { pipeline.invalidate() }
+         .task(id: work) {
++            guard !Task.isCancelled else { return }
+             let ticket = pipeline.begin()
+             guard let snapshot = activeRequest else { return }
+             // A quick switch back to a completed request can reuse its pixels.
+diff --git a/NativeTests/StudyPreviewPipelineTests.swift b/NativeTests/StudyPreviewPipelineTests.swift
+index 5a23ef9..9d4250c 100644
+--- a/NativeTests/StudyPreviewPipelineTests.swift
++++ b/NativeTests/StudyPreviewPipelineTests.swift
+@@ -156,6 +156,35 @@ final class StudyPreviewPipelineTests: XCTestCase {
+         XCTAssertEqual(publications, 0)
+     }
+ 
++    @MainActor func testPrecancelledBeginCannotInvalidateLiveRequest() async throws {
++        let pipeline = StudyPreviewPipeline<UInt8>(), live = ControlledRender()
++        var completions: [StudyPreviewPipeline<UInt8>.Completion] = []
++        var cancelledRenders = 0
++        let liveTicket = pipeline.begin()
++        let liveTask = Task { await pipeline.load(ticket: liveTicket, render: live.render,
++            convert: { $0.rgba[0] }, publish: { completions.append($0) }) }
++        await live.waitUntilRequested()
++
++        let cancelledTask = Task { @MainActor in
++            XCTAssertTrue(Task.isCancelled)
++            let cancelledTicket = pipeline.begin()
++            await pipeline.load(ticket: cancelledTicket, render: {
++                cancelledRenders += 1
++                return try self.output(10)
++            }, convert: { $0.rgba[0] }, publish: { completions.append($0) })
++        }
++        // This actor cannot start the task before cancellation and the await.
++        cancelledTask.cancel()
++        await cancelledTask.value
++        live.finish(.success(try output(9)))
++        await liveTask.value
++
++        XCTAssertEqual(cancelledRenders, 0)
++        XCTAssertEqual(completions.count, 1)
++        XCTAssertEqual(completions.first?.image, 9)
++        XCTAssertNil(completions.first?.message)
++    }
++
+     @MainActor func testCancelledErrorsAndPrecancelledWorkStaySilent() async {
+         let pipeline = StudyPreviewPipeline<UInt8>()
+         var publications = 0, renders = 0

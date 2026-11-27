@@ -1,0 +1,769 @@
+{
+  "schema": 1,
+  "worker": "w076",
+  "role": "Resource-lifetime review",
+  "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+  "baselineRevision": "f150f98e35dd735927075aac4d2f8b02295c6a67",
+  "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+  "repository": "mirzotipi-wq/APP1",
+  "linkId": "link_6b0496ede3088191ad7f6c85f178a8a8",
+  "integration": {
+    "branch": "finish/04-metal-cache",
+    "owner": "root alone",
+    "workerWriteScope": [
+      "docs/parallel/04/evidence/w076/",
+      "docs/parallel/04/workers/w076.md"
+    ],
+    "refsOrCommitsChanged": false
+  },
+  "mandatoryReads": [
+    {
+      "path": "AGENTS.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "e85b23be8676929fa87aae1f8c072c3e5f433722",
+      "status": "read"
+    },
+    {
+      "path": "agents/OPERATING_PROTOCOL.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "292224aac56f4bcf5373b3c01c0eee30d4b190c5",
+      "status": "read"
+    },
+    {
+      "path": "agents/HANDOFF.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "40eaa48849f59b436d7caa8ec161125d83c65ede",
+      "status": "read"
+    },
+    {
+      "path": "agents/state.json",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "ef5f0fa5489b5bf8562d511b1119dfbd6e36a712",
+      "status": "read"
+    },
+    {
+      "path": "docs/PRODUCT.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "0bb6b6db5cc61a680267a4cbaf256dcca9db0f93",
+      "status": "read"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "be7fb6ec9ab6b7a8d9d7bb20d5507149ffc9fdf1",
+      "status": "read"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "3e7dd3525c070e76838e20ef5e6529f534130639",
+      "status": "read"
+    },
+    {
+      "path": "docs/QUALITY.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "203c646d5cef679495eee2c30fed8dddf900317c",
+      "status": "read"
+    },
+    {
+      "path": "docs/DESIGN.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "d7160cdeb784080883a7fd75d8d6ed3b71c71bfa",
+      "status": "read"
+    },
+    {
+      "path": "docs/acceptance/m02-m03-code.md",
+      "ref": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "blob": "e2650deda2ca5e4ca693543b9aa4142cf9f9a45d",
+      "status": "read"
+    }
+  ],
+  "rolePacketBlob": "7e17185f497cc4f85d54b44b87b0128e2b01d60c",
+  "inputHashManifestBlob": "4c50a638a8c1fbb85461ed4de152addc03903175",
+  "sourceIdentity": [
+    {
+      "path": "App/MetalStudyRenderer.swift",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "testedBlob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "inputBlob": "8c1acd852d85cd99671feaba883db1808bbb5e68",
+      "unchanged": true,
+      "verifiedBy": "github_fetch_file at tested revision; input Git tree hash manifest"
+    },
+    {
+      "path": "Sources/LightingCore/StudyFrameCache.swift",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "testedBlob": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "inputBlob": "0731ab93a924572ccacd3dd66e334a85dc7c06e7",
+      "unchanged": true,
+      "verifiedBy": "github_fetch_file at tested revision; input Git tree hash manifest"
+    },
+    {
+      "path": "Tests/LightingCoreTests/StudyFrameCacheTests.swift",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "testedBlob": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "inputBlob": "af6a0a4d81bb7bf9ebaeffb717f8f0871f7981de",
+      "unchanged": true,
+      "verifiedBy": "github_fetch_file at tested revision; input Git tree hash manifest"
+    },
+    {
+      "path": "NativeTests/StudyRenderCacheTests.swift",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "testedBlob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+      "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "inputBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+      "unchanged": false,
+      "verifiedBy": "github_fetch_file at tested revision; input Git tree hash manifest"
+    },
+    {
+      "path": "Sources/LightingCore/ReferenceStudy.swift",
+      "testedRevision": "240000fd3f8cb75273eb279be9dcc7f204a5b29f",
+      "testedBlob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "inputRevision": "69eb9c5096c863e9c8be1c5e53d9faff0d9c3014",
+      "inputBlob": "0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad",
+      "unchanged": true,
+      "verifiedBy": "github_fetch_file at tested revision; input Git tree hash manifest"
+    }
+  ],
+  "source7Comparison": {
+    "source6MethodCount": 25,
+    "source7MethodCount": 29,
+    "added": [
+      "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+      "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+      "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+      "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames"
+    ],
+    "unchangedSource6Prefix": true,
+    "prefixChars": 51898,
+    "boundaryConvention": "prefixChars is JS UTF-16 code-unit index n6.lastIndexOf(\"\\n}\"); comparison is n6.slice(0,cut) === n7.slice(0,cut), excluding the newline before the final class brace. Numeric prefix is not a whole-file length or method count.",
+    "source6Blob": "6e811837c87ff3a8a0d8c87c4b0f877c752aae89",
+    "source7Blob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "source7RunId": 45854806270,
+    "status": "Pending at supplied handoff; no new-four-method results supplied or polled",
+    "source6CacheMethodsEachStartedAndPassedOnce": true
+  },
+  "readCorrection": {
+    "attemptedBlob": "7dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "outcome": "GitHub HTTP 422 INVALID_ARGUMENT: SHA must be exactly 40 hexadecimal characters",
+    "reason": "Concatenated source7 label in role brief; coordinator confirmed ambiguity",
+    "correctedBlob": "dd068965cf56312ea0feb90578ca9461ba6b1054",
+    "correctionSource": "input hash manifest blob 4c50a638a8c1fbb85461ed4de152addc03903175",
+    "correctedFetch": "success",
+    "attemptWasNotExecutionOrCIPoll": true,
+    "rawErrorText": "GitHub API error 422: {\"message\":\"The sha parameter must be exactly 40 characters and contain only [0-9a-f].\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"422\"}"
+  },
+  "native": {
+    "runId": 45848953002,
+    "jobId": 140012314020,
+    "jobUrl": "https://github.com/mirzotipi-wq/APP1/actions/runs/45848953002/job/140012314020",
+    "rawLogBlob": "48500c2b0d1ef8ed6ac2bae8e0a12e4f7e07614d",
+    "parsedReceiptBlob": "006f0a8f6546adb58e09b9a3942f3d624a842ac3",
+    "environment": {
+      "host": "macOS 26.6.1 (25G76), x86_64",
+      "swift": "Apple Swift 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)",
+      "xcode": "26.6 (17F113)",
+      "sdk": "iOS Simulator 26.5",
+      "simulator": "iPhone 17 Pro",
+      "simulatorId": "12FCFD0F-7FCF-463F-A605-132A7E18B5D5"
+    },
+    "commands": [
+      {
+        "line": 2143,
+        "text": "2026-11-26T15:36:09.2466710Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" build-for-testing"
+      },
+      {
+        "line": 3740,
+        "text": "2026-11-26T15:39:19.9773070Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build CODE_SIGNING_ALLOWED=NO build"
+      },
+      {
+        "line": 4777,
+        "text": "2026-11-26T15:51:21.3687540Z     /Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO \"-only-testing:KeyAndFillTests\" test-without-building"
+      }
+    ],
+    "outcomes": [
+      {
+        "line": 3692,
+        "text": "2026-11-26T15:39:10.7532790Z ** TEST BUILD SUCCEEDED **"
+      },
+      {
+        "line": 4682,
+        "text": "2026-11-26T15:43:10.3971630Z ** BUILD SUCCEEDED **"
+      },
+      {
+        "line": 5645,
+        "text": "2026-11-26T15:55:36.4430810Z \t Executed 174 tests, with 0 failures (0 unexpected) in 83.932 (87.173) seconds"
+      },
+      {
+        "line": 5647,
+        "text": "2026-11-26T15:55:36.5181730Z \t Executed 174 tests, with 0 failures (0 unexpected) in 83.932 (87.176) seconds"
+      },
+      {
+        "line": 5697,
+        "text": "2026-11-26T15:58:02.6486950Z ** TEST EXECUTE SUCCEEDED **"
+      },
+      {
+        "line": 5700,
+        "text": "2026-11-26T15:58:42.4099870Z Required Metal methods executed and passed; no native methods skipped."
+      },
+      {
+        "line": 5709,
+        "text": "2026-11-26T15:58:45.1041810Z Verified 174 unit methods: one start and one pass each; no failures, skips, duplicates or omissions."
+      }
+    ],
+    "accountingCommand": "python3 scripts/native_test_shards.py verify-log unit native-tests.log --report native-method-accounting.json",
+    "finalizedExportCommand": "xcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments",
+    "finalizedExportEvidence": "Info.plist guard and export command at raw lines 5723–5728, subsequent attachment export output, successful full/compact uploads, and supplied terminal receipt; skipped no-matching-attachment exports are not skipped test methods.",
+    "independentAccounting": {
+      "starts": 174,
+      "passes": 174,
+      "uniqueStarts": 174,
+      "uniquePasses": 174,
+      "failures": 0,
+      "skips": 0
+    },
+    "cacheMethods": [
+      {
+        "line": 5509,
+        "className": "StudyRenderCacheTests",
+        "method": "testBustCachePreservesExistingMaximumWidthClamping",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:16.5528290Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testBustCachePreservesExistingMaximumWidthClamping]' started."
+      },
+      {
+        "line": 5512,
+        "className": "StudyRenderCacheTests",
+        "method": "testBustCachePreservesExistingMaximumWidthClamping",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:17.4805190Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testBustCachePreservesExistingMaximumWidthClamping]' passed (1.794 seconds)."
+      },
+      {
+        "line": 5513,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:17.5809150Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame]' started."
+      },
+      {
+        "line": 5514,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:17.6816520Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame]' passed (0.013 seconds)."
+      },
+      {
+        "line": 5515,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:17.7816140Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledCPUWorkAndFinalCancellationAreNeverCached]' started."
+      },
+      {
+        "line": 5517,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:17.9860030Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledCPUWorkAndFinalCancellationAreNeverCached]' passed (0.053 seconds)."
+      },
+      {
+        "line": 5518,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:18.0865140Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledHitLeavesFullCacheEvictionOrderUnchanged]' started."
+      },
+      {
+        "line": 5520,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:18.2876890Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledHitLeavesFullCacheEvictionOrderUnchanged]' passed (0.143 seconds)."
+      },
+      {
+        "line": 5521,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledTaskCannotReturnCachedFrame",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:18.3890670Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledTaskCannotReturnCachedFrame]' started."
+      },
+      {
+        "line": 5522,
+        "className": "StudyRenderCacheTests",
+        "method": "testCancelledTaskCannotReturnCachedFrame",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:18.4886130Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testCancelledTaskCannotReturnCachedFrame]' passed (0.014 seconds)."
+      },
+      {
+        "line": 5523,
+        "className": "StudyRenderCacheTests",
+        "method": "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:18.6233470Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation]' started."
+      },
+      {
+        "line": 5524,
+        "className": "StudyRenderCacheTests",
+        "method": "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:18.7242680Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation]' passed (0.238 seconds)."
+      },
+      {
+        "line": 5525,
+        "className": "StudyRenderCacheTests",
+        "method": "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:18.8299990Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation]' started."
+      },
+      {
+        "line": 5528,
+        "className": "StudyRenderCacheTests",
+        "method": "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:19.1323210Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation]' passed (0.688 seconds)."
+      },
+      {
+        "line": 5529,
+        "className": "StudyRenderCacheTests",
+        "method": "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:19.2331490Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame]' started."
+      },
+      {
+        "line": 5530,
+        "className": "StudyRenderCacheTests",
+        "method": "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:19.3347490Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame]' passed (0.058 seconds)."
+      },
+      {
+        "line": 5531,
+        "className": "StudyRenderCacheTests",
+        "method": "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:19.4347130Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testEveryRenderingControlKeepsDistinctCacheIdentity]' started."
+      },
+      {
+        "line": 5532,
+        "className": "StudyRenderCacheTests",
+        "method": "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:19.5427960Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testEveryRenderingControlKeepsDistinctCacheIdentity]' passed (0.249 seconds)."
+      },
+      {
+        "line": 5533,
+        "className": "StudyRenderCacheTests",
+        "method": "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:19.6444040Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testFactoryIsDeferredUntilEligibleUncachedSphereRequest]' started."
+      },
+      {
+        "line": 5534,
+        "className": "StudyRenderCacheTests",
+        "method": "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:19.7449830Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testFactoryIsDeferredUntilEligibleUncachedSphereRequest]' passed (0.018 seconds)."
+      },
+      {
+        "line": 5535,
+        "className": "StudyRenderCacheTests",
+        "method": "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:19.8458700Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive]' started."
+      },
+      {
+        "line": 5536,
+        "className": "StudyRenderCacheTests",
+        "method": "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:19.9463720Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive]' passed (0.170 seconds)."
+      },
+      {
+        "line": 5537,
+        "className": "StudyRenderCacheTests",
+        "method": "testInvalidMetadataCannotReuseAValidatedFrame",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:20.0468940Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testInvalidMetadataCannotReuseAValidatedFrame]' started."
+      },
+      {
+        "line": 5538,
+        "className": "StudyRenderCacheTests",
+        "method": "testInvalidMetadataCannotReuseAValidatedFrame",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:20.1486100Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testInvalidMetadataCannotReuseAValidatedFrame]' passed (0.013 seconds)."
+      },
+      {
+        "line": 5539,
+        "className": "StudyRenderCacheTests",
+        "method": "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:20.1530410Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testInvalidResolutionAndCameraKeepOriginalErrorOrdering]' started."
+      },
+      {
+        "line": 5540,
+        "className": "StudyRenderCacheTests",
+        "method": "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:20.2537460Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testInvalidResolutionAndCameraKeepOriginalErrorOrdering]' passed (0.014 seconds)."
+      },
+      {
+        "line": 5541,
+        "className": "StudyRenderCacheTests",
+        "method": "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:20.3541810Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testOrdinaryComputeCancellationRetainsBackendAndCompletedCache]' started."
+      },
+      {
+        "line": 5542,
+        "className": "StudyRenderCacheTests",
+        "method": "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:20.4580160Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testOrdinaryComputeCancellationRetainsBackendAndCompletedCache]' passed (0.004 seconds)."
+      },
+      {
+        "line": 5543,
+        "className": "StudyRenderCacheTests",
+        "method": "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:20.5604210Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testPixelBudgetEvictsLargeFramesBeforeEntryLimit]' started."
+      },
+      {
+        "line": 5544,
+        "className": "StudyRenderCacheTests",
+        "method": "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:20.6611570Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testPixelBudgetEvictsLargeFramesBeforeEntryLimit]' passed (0.083 seconds)."
+      },
+      {
+        "line": 5545,
+        "className": "StudyRenderCacheTests",
+        "method": "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:20.7623030Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testPrecisionDomainFallbackPreservesValidatedBackend]' started."
+      },
+      {
+        "line": 5546,
+        "className": "StudyRenderCacheTests",
+        "method": "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:20.8628220Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testPrecisionDomainFallbackPreservesValidatedBackend]' passed (0.021 seconds)."
+      },
+      {
+        "line": 5547,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:20.9634330Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForFourMaximumBustFrames]' started."
+      },
+      {
+        "line": 5557,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:22.3645740Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForFourMaximumBustFrames]' passed (2.920 seconds)."
+      },
+      {
+        "line": 5558,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForFourSmallFrames",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:22.4652100Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForFourSmallFrames]' started."
+      },
+      {
+        "line": 5565,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForFourSmallFrames",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:23.1701760Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForFourSmallFrames]' passed (0.044 seconds)."
+      },
+      {
+        "line": 5566,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:23.2712630Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForMaximumSpheresEvictOldest]' started."
+      },
+      {
+        "line": 5572,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:23.8739930Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForMaximumSpheresEvictOldest]' passed (0.100 seconds)."
+      },
+      {
+        "line": 5573,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:23.9767590Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust]' started."
+      },
+      {
+        "line": 5581,
+        "className": "StudyRenderCacheTests",
+        "method": "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:24.4638850Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust]' passed (1.819 seconds)."
+      },
+      {
+        "line": 5582,
+        "className": "StudyRenderCacheTests",
+        "method": "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:24.4820260Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRevertedAndReopenedSceneReusesExactSuccessfulPixels]' started."
+      },
+      {
+        "line": 5583,
+        "className": "StudyRenderCacheTests",
+        "method": "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:24.4961300Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testRevertedAndReopenedSceneReusesExactSuccessfulPixels]' passed (0.035 seconds)."
+      },
+      {
+        "line": 5584,
+        "className": "StudyRenderCacheTests",
+        "method": "testStartupFinalCancellationLeavesInitializationRetryable",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:24.5087450Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupFinalCancellationLeavesInitializationRetryable]' started."
+      },
+      {
+        "line": 5585,
+        "className": "StudyRenderCacheTests",
+        "method": "testStartupFinalCancellationLeavesInitializationRetryable",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:24.5227010Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupFinalCancellationLeavesInitializationRetryable]' passed (0.005 seconds)."
+      },
+      {
+        "line": 5586,
+        "className": "StudyRenderCacheTests",
+        "method": "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:24.5363850Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupPrecisionDomainFallbackRemainsRetryable]' started."
+      },
+      {
+        "line": 5587,
+        "className": "StudyRenderCacheTests",
+        "method": "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:24.5487740Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupPrecisionDomainFallbackRemainsRetryable]' passed (0.037 seconds)."
+      },
+      {
+        "line": 5588,
+        "className": "StudyRenderCacheTests",
+        "method": "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:24.5573930Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupStudyErrorsPropagateAndLeaveInitializationRetryable]' started."
+      },
+      {
+        "line": 5590,
+        "className": "StudyRenderCacheTests",
+        "method": "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:24.6674710Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testStartupStudyErrorsPropagateAndLeaveInitializationRetryable]' passed (0.010 seconds)."
+      },
+      {
+        "line": 5591,
+        "className": "StudyRenderCacheTests",
+        "method": "testSubjectAndResolutionDoNotShareFrames",
+        "outcome": "started",
+        "rawLine": "2026-11-26T15:55:24.7181630Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testSubjectAndResolutionDoNotShareFrames]' started."
+      },
+      {
+        "line": 5592,
+        "className": "StudyRenderCacheTests",
+        "method": "testSubjectAndResolutionDoNotShareFrames",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:55:24.7342770Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testSubjectAndResolutionDoNotShareFrames]' passed (0.017 seconds)."
+      }
+    ],
+    "artifacts": [
+      {
+        "id": 15136500149,
+        "name": "native-unit-and-build-evidence-compact",
+        "size_in_bytes": 332373,
+        "digest": "sha256:61cd00143b5c0a7d77e0e303efd7ddf89b01eedb5b2084d541677b44027567a3",
+        "verification": "ID and reported digest reconciled against raw CI upload lines; archives not re-downloaded or independently rehashed by this worker"
+      },
+      {
+        "id": 15135391983,
+        "name": "native-unit-and-build-evidence",
+        "size_in_bytes": 65050006,
+        "digest": "sha256:fac90cb1ce6c4ae8133f9af521d12cf37165982d2c852c9b888701f9e5b1638d",
+        "verification": "ID and reported digest reconciled against raw CI upload lines; archives not re-downloaded or independently rehashed by this worker"
+      }
+    ]
+  },
+  "core": {
+    "runId": 45848953002,
+    "jobId": 140009926092,
+    "jobUrl": "https://github.com/mirzotipi-wq/APP1/actions/runs/45848953002/job/140009926092",
+    "rawLogBlob": "b99b8d092e34a136b6e00e14e4b8e83b1ecd98e8",
+    "parsedReceiptBlob": "8d53d8b3bafdb8a9b5f079a583390be7ee827ae2",
+    "environment": {
+      "host": "Ubuntu 24.04.5 LTS, x86_64",
+      "swift": "6.4.3 (swift-6.4.3-RELEASE)",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "commands": [
+      {
+        "line": 189,
+        "text": "2026-11-26T15:26:19.1703686Z \u001b[36;1mswift test --jobs 2 2>&1 | tee core-tests.log\u001b[0m"
+      },
+      {
+        "line": 1155,
+        "text": "2026-11-26T15:26:59.7559202Z \u001b[36;1mswift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log\u001b[0m"
+      }
+    ],
+    "outcomes": [
+      {
+        "line": 1146,
+        "text": "2026-11-26T15:26:59.7478962Z \t Executed 379 tests, with 0 failures (0 unexpected) in 10.34 (10.34) seconds"
+      },
+      {
+        "line": 1148,
+        "text": "2026-11-26T15:26:59.7479946Z \t Executed 379 tests, with 0 failures (0 unexpected) in 10.34 (10.34) seconds"
+      },
+      {
+        "line": 2102,
+        "text": "2026-11-26T15:27:39.7889424Z \t Executed 379 tests, with 0 failures (0 unexpected) in 5.324 (5.324) seconds"
+      },
+      {
+        "line": 2104,
+        "text": "2026-11-26T15:27:39.7890244Z \t Executed 379 tests, with 0 failures (0 unexpected) in 5.324 (5.324) seconds"
+      }
+    ],
+    "cacheMethodAccounting": [
+      {
+        "configuration": "Debug",
+        "starts": 16,
+        "passes": 16
+      },
+      {
+        "configuration": "Release",
+        "starts": 16,
+        "passes": 16
+      }
+    ],
+    "lifetimePasses": [
+      {
+        "logLine": 1052,
+        "configuration": "Debug",
+        "method": "testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:26:59.3666493Z Test Case 'StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1070,
+        "configuration": "Debug",
+        "method": "testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:26:59.5151497Z Test Case 'StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1080,
+        "configuration": "Debug",
+        "method": "testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:26:59.5159618Z Test Case 'StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 1082,
+        "configuration": "Debug",
+        "method": "testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:26:59.5161225Z Test Case 'StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 2008,
+        "configuration": "Release",
+        "method": "testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:27:39.6701796Z Test Case 'StudyFrameCacheTests.testBudgetEvictionReleasesEveryRemovedValueAndRetainsSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 2026,
+        "configuration": "Release",
+        "method": "testOversizedReplacementRetainsOriginalLifetimeAndRecency",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:27:39.7717104Z Test Case 'StudyFrameCacheTests.testOversizedReplacementRetainsOriginalLifetimeAndRecency' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 2036,
+        "configuration": "Release",
+        "method": "testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:27:39.7724751Z Test Case 'StudyFrameCacheTests.testSelectiveInvalidationReleasesOnlyMatchingValuesThenReleasesSurvivors' passed (0.0 seconds)"
+      },
+      {
+        "logLine": 2038,
+        "configuration": "Release",
+        "method": "testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement",
+        "outcome": "passed",
+        "rawLine": "2026-11-26T15:27:39.7726288Z Test Case 'StudyFrameCacheTests.testSuccessfulReplacementReleasesOnlyOriginalAndPromotesReplacement' passed (0.0 seconds)"
+      }
+    ],
+    "lifetimeScope": "Weak references to pure Swift LifetimeValue objects; isMetal is a Boolean fixture label, not an MTL resource. Helper returns only a weak observer; withExtendedLifetime(cache) keeps the cache alive while removals/survivors are checked."
+  },
+  "nativeWeakLifetime": {
+    "method": "StudyRenderCacheTests/testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+    "testSourceLines": [
+      935,
+      1025
+    ],
+    "passEvent": {
+      "line": 5536,
+      "text": "2026-11-26T15:55:19.9463720Z Test Case '-[KeyAndFillTests.StudyRenderCacheTests testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive]' passed (0.170 seconds)."
+    },
+    "matrix": {
+      "scriptedFailures": [
+        "MetalStudyError.command",
+        "MetalStudyError.allocation",
+        "StudyError.invalidComputeOutput"
+      ],
+      "cancel": [
+        false,
+        true
+      ],
+      "cases": 6
+    },
+    "scope": "Weak ScriptedComputeBackend reference plus deinit count; standalone observer control releases when sole strong reference is nil. Factory captures script/observer only; after awaited failure engine remains usable, CPU cache survives, Metal-tagged synthetic cache entry is evicted, and future requests stay CPU. Not actual Metal-buffer/driver/GPU deallocation."
+  },
+  "invariants": {
+    "cancelledAndFailedAttemptedFrames": "not admitted; source and passed retained tests",
+    "completedCPUFallback": "may be admitted after its own final cancellation check",
+    "permanentDowngrade": "evicts Metal-tagged cached frames while preserving CPU entries",
+    "payloadLimits": {
+      "count": 4,
+      "rgbaBytes": 262144,
+      "maskBytes": 65536,
+      "bustMaximumWidth": 144
+    }
+  },
+  "ownerDependency": "03/20 A/Metal shown → B permanent downgrade + cancellation → return A through UI-held frame remains open. Engine cache tests do not exercise that consumer adoption path or establish UI acceptance; do not call it engine-cache leakage.",
+  "relatedLifecycleReceiptBlob": "d6faa63085d6d565cc44d8c4ed901adbb4eb12ea",
+  "lifecycleNonClaims": "Near-field final Metal return is a cache hit; startup cancellation interrupts CPU validation before GPU submission. Neither establishes GPU latency or memory.",
+  "procedure": {
+    "toolsUsed": "github_fetch_file, github_fetch_blob, github_create_blob; JavaScript inspection in functions.exec",
+    "rawExtraction": "Split raw log on newline; find literal KEYFILL_CACHE_RESOURCES marker; JSON.parse only suffix; preserve raw order/line/timestamp; associate active StudyRenderCacheTests start; compare canonicalized payload objects against supplied parsed receipt.",
+    "methodAccounting": "Parse XCTest start/pass/fail/skip lines by class/method; count unique identities and one start/pass per original 25 cache methods; split portable configurations at exact Release command.",
+    "reconciliation": {
+      "rawRows": 19,
+      "perRequestRows": 15,
+      "summaryRows": 4,
+      "exactReceiptRowMatch": true,
+      "allWithinLimits": true,
+      "allDimensionCountMatches": true,
+      "allDimensionRGBAArithmeticMatches": true,
+      "allDimensionMaskArithmeticMatches": true
+    },
+    "newExecution": false,
+    "ciPolling": false,
+    "localEnvironmentProbe": false,
+    "plannedScratchPaths": [
+      "/tmp/keyfill04-2987b1ee980d/workers/w076",
+      "/tmp/keyfill04-2987b1ee980d/results/w076"
+    ],
+    "scratchPathsStatus": "UNCREATED; immutable Git/session isolation only",
+    "validation": "In-memory source/log consistency checks; no new source, tests, harness, build, fixture, oracle or ABI changes."
+  }
+}

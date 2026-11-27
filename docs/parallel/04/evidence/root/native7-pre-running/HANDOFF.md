@@ -1,0 +1,151 @@
+# Lane 04 handoff
+
+## Current decision and source boundary
+
+**Source7 native acceptance remains incomplete: its first native job failed after all 178 methods passed.** At unchanged product/test source `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014`, native job140034909086 recorded 178 starts/178 unique passes, all29 cache methods and zero failures/skips, but the required command timed out after18minutes and the XCTest result bundle was not finalized. The four source7 additions now have Apple compilation and runtime evidence; that does not make the job successful. Source6's successful command/accounting/finalized-export evidence remains a separate result. [Attempt1 receipt](evidence/w094/native7-attempt1-metadata.json), [raw log](evidence/w094/native7-attempt1.log).
+
+A native-only retry, attempt2 job140103955982 in run45854806270, was queued at **2026-11-26 18:29:38 UTC**. No retry execution is claimed by this snapshot. Consumer integration with owner03 remains open. This handoff supplies lane evidence; it does not promote a global milestone, establish a whole-workflow pass, or authorize release. [Retry receipt](evidence/w094/native7-retry-queued.json).
+
+The ten-wave campaign is complete: **100 actual fresh-context workers and 100 primary reports**, with worker100 created last and its independent review accepted. [The global ledger](worker-ledger.json), [wave10 ledger](wave10-worker-ledger.json), [report catalog](evidence/w091/report-catalog.final.json) and [independent review](evidence/w100/review.json) retain actual identities and artifacts. The original worker-authored handoff remains preserved as [HANDOFF.v3.md](evidence/w094/HANDOFF.v3.md).
+
+This same-ID w094 evidence update reads immutable input `789a00e12dade890d9168cda802029db1e507366` under [the supplementary task packet](evidence/w094/native7-task-packet.json). It changes no product/test source, primary report or worker count. The original root handoff is preserved at [native7-original-HANDOFF.md](evidence/w094/native7-original-HANDOFF.md), blob `f4cf13af40be7a3bb92af0e6ad4ad21a02958138`; the initial worker task remains [the original wave10 packet](evidence/w094/originals/task-packet.json).
+
+**Historical progress:** the **2026-11-26 17:48:36 UTC** [build receipt](evidence/ci/wave07-native-140034909086-debug-build.json) established Debug app/native-bundle compilation while Release application build and runtime were pending. Earlier queue and progress observations retain those source/time boundaries. The terminal attempt1 evidence below supersedes their current-status interpretation. Worker100's [post-checkpoint review](evidence/w094/native7-worker100-review.json) accepted the published100-worker/100-primary-report mapping; this follow-up adds zero workers.
+
+| Revision | Meaning and retained boundary |
+|---|---|
+| `f150f98e35dd735927075aac4d2f8b02295c6a67` | Fixed campaign baseline. Its native test-bundle build failed before native/UI execution; it has no native pass to carry forward. |
+| `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318` | Main observed at startup. Its four post-f150 commits include historical evidence/status and the existing native build correction. |
+| `b0d25eece01a3edb4c46e89cd487105d4d5a8cdd` | Imported upstream correction in `UITests/StudioAppAccessibilityUITests.swift`: explicit `CGFloat` bounds disambiguation. This is an ownership exception inherited unchanged, not a lane04 UI edit. |
+| `5bf9da747f947e9f5ed2e0836abb3ba726800307` | Recorded upstream merge, with parents `3d0e20616d0e771ad72161592c59105f591951c9` and startup main `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318`. This is the executed post-build-fix baseline. |
+| `240000fd3f8cb75273eb279be9dcc7f204a5b29f` | Source6: completed portable, app-build and 174-method Debug native evidence, including 25 cache methods and actual simulator Metal6/8. |
+| `69eb9c5096c863e9c8be1c5e53d9faff0d9c3014` | Source7: unchanged production plus four appended native cache methods,29 total. Portable job passed. Native attempt1 passed178 methods, including all29 cache methods, but the job failed command timeout/finalization. Retry attempt2 was queued at its stated receipt. |
+| `0fa824307da13934a289a825fd6d9d4a1939241f` | Original handoff input: two documentation-only descendants after source7; its exact compare reports193 lane-document paths. No new product/test execution follows from that documentation change. |
+| `789a00e12dade890d9168cda802029db1e507366` | Current documentation/evidence input for this bounded follow-up. Product/test source remains69eb9c5; new runtime claims come from the pinned attempt1 receipts, not the documentation revision. |
+
+The retained source6→source7 compare has one non-lane-document path:208 appended lines in `NativeTests/StudyRenderCacheTests.swift`. The historical f150→0fa8243 compare is capped at300 files and is not exhaustive scope proof. The recorded complete, untruncated recursive-tree comparison for imported upstream `9e0e2ba7eded9bb5b91af53c44b4ff00efbdf318` and original handoff input0fa8243 establishes exactly eight changes outside lane documentation: three owned production files (engine, eligibility, header) and five owned test files. README, agents/global evidence and the UITest build correction match imported upstream bytes; lane04 did not author them. [The recovery record](ENVIRONMENT_RECOVERY.md#upstream-dependency), [source manifest](evidence/root/final-source-hashes.json), [complete source-scope audit](evidence/root/source-scope-audit.json), and [w094 input/compare receipt](evidence/w094/inputs.json) preserve ancestry and these limitations. Imported global documents retain their original project history; lane04 did not author a global milestone promotion.
+
+## Corrected behavior and unchanged authority
+
+The shipped Swift Double CPU renderer remains the numerical reference. Lane04 does not change its equations, color/sample meanings, canonical fixtures, acceptance thresholds or packed row layout. The layout remains six float4 parameter rows and three rows per sample and per area, each row 16 bytes. [Source identities](evidence/root/final-source-hashes.json) pin the engine (`8c1acd852d85cd99671feaba883db1808bbb5e68`), guarded header (`f60258402a96f58b62607d5cefec5e41c7ec4137`), width-aware eligibility (`e9764da10eabbffbad6ceee8999977cf31deb197`), unchanged lane04 oracle (`0ca920b1332e1042d2e3ddfe0d0fe69ccc5b46ad`) and unchanged core cache (`0731ab93a924572ccacd3dd66e334a85dc7c06e7`).
+
+Production eligibility uses the requested pixel width; the compatible `supports(scene)` overload forwards width192. Valid but precision-ineligible sphere requests use CPU without disabling later eligible Metal work. Guards cover silhouette-sensitive grids, near-field/panel bounds, exact camera-clearance validity and the narrow nonaxial near-vertical cone. Relative camera and active-light distances are bounded at 20m; zero-candela lights are exempt from that production light-distance check. Packing subtracts the subject in Double before Float conversion. The mannequin remains CPU-only, clamped to width144. Invalid input preserves its constructor error rather than becoming a successful fallback frame.
+
+The shared header rejects invalid dimensions, pixel coordinates, nonfinite/nonintegral/out-of-range counts and area tags before unsafe integer conversion or indexing. This preserves valid-input arithmetic and ABI. The conservative eligibility margins are engineering guards, not universal proved Float32 error bounds.
+
+[The frozen fallback contract](FALLBACK_CONTRACT.md) gives the full ordered table. Its essential state distinctions are:
+
+| Event | Required engine behavior |
+|---|---|
+| First eligible uncached sphere request | The default actor-owned factory creates the real Metal renderer, validates all six canonical fixtures at width48 against CPU, then stores the backend only after the cancellation check. |
+| Typed scene/input errors or `StudyError.cancelled` during startup | Propagate without admission; remain unchecked and retryable. |
+| Startup `precisionDomain` | CPU for this request; preserve cache and unchecked state for a later eligible uncached retry. |
+| Ordinary cancellation or typed scene/input error after validation | Propagate; preserve the validated backend and old completed entries. |
+| Steady-state `precisionDomain` | CPU for this request; retain validated backend and compatible cache. |
+| Confirmed command/allocation/parity/invalid-compute-output or other backend failure | Permanently select CPU and purge engine-cached Metal frames before the next cancellation check. A concurrent cancellation may be returned while the permanent downgrade remains effective. |
+| Successful completed frame | Admit only after the final cooperative check; cache hits promote only after their own cancellation check. |
+
+A generic Swift `CancellationError` from an injected backend currently takes the catch-all failure route; the backend cancellation contract uses `StudyError.cancelled`. An armed but unexecuted scripted failure proves no downgrade. The injected factory is opt-in and requires exclusive backend ownership; synchronous methods alone do not enforce exclusivity.
+
+The actor serializes its synchronous render method. Cancellation remains cooperative: an external flag can change after the last false observation. After GPU submission, the code waits for completion, checks command status, checks cancellation, copies output and constructs the image within the autorelease-pool scope. These are program-order facts, not GPU preemption, latency or driver-lifetime measurements. CPU cancellation retains the acceptance bound of at most eight further pixel evaluations after an external cancellation immediately following a false poll.
+
+Cache identity validates the scene before omitting display names and otherwise uses exact scene/effective-width/subject equality. Failed or cancelled attempts do not enter the cache; separately successful CPU fallbacks may. Limits are per engine: **4 completed frames, 262144 RGBA bytes and 65536 mask bytes**. Selective downgrade preserves CPU entries and their order; it cannot revoke images retained by UI or other callers.
+
+## Numerical evidence and exact CI scope
+
+Companion documents are [CI_MANIFEST.json](CI_MANIFEST.json) and [RESOURCE_RESULTS.md](RESOURCE_RESULTS.md). Their owners maintain the CI and resource records separately. This handoff binds its current statements to the pinned attempt1 and retry receipts below, preserving the distinction between passing methods, failed aggregate execution/finalization and pending combined-owner integration.
+
+Acceptance remains exact invalid-mask equality, mean RGB-channel error≤1 and fraction of channels with error>4≤0.005. Strict8 additionally requires maximum channel error≤1. Canonical maximum error is descriptive. Matching nonzero unsupported counts are allowed; mask bytes are not unsupported-pixel counts.
+
+[PARITY_TABLES.md](PARITY_TABLES.md) retains the original baseline, historical and source6 host/simulator rows, raw blobs, emitted precision and assertion basis. Source7 attempt1's six/eight rows are separately retained in [its terminal metadata](evidence/w094/native7-attempt1-metadata.json). [PRECISION_REPRODUCIBILITY.md](PRECISION_REPRODUCIBILITY.md) and [precision-fixtures.json](precision-fixtures.json) bind exact constructors and commands. Canonical6 is hard, soft, warm-rotated, dark, near-field and translated, at 96×64 for host/native comparison. Strict8 is six 19.0/19.999999/20.0m × 85/200mm cases plus two world translations, at 192×128. The generator emits 33 probes; CI selects eight, so the other 25 have no inferred pass.
+
+Native `renderValidationFixture` bypasses production eligibility while retaining input/relative-distance validation and actual Metal dispatch. These parity methods cannot pass by returning CPU fallback; their results do not assert ordinary production eligibility for every case. No-device skips are unverified, never passes. Native unsupported and mismatch counts are not printed; exact masks are established by the retained passing assertions, not invented numeric counts.
+
+| Exact source / run | Job and evidence | Observed outcome |
+|---|---|---|
+| Post-fix baseline `5bf9da7`; [45820657102](https://github.com/mirzotipi-wq/APP1/actions/runs/45820657102) | Core139911733805; native139913885039; [baseline metadata](evidence/ci/baseline-native-139913885039.json) | 366 Debug/366 Release portable; 154 native passed. Canonical host and actual simulator Metal results match the later printed values. Native strict8 did not exist yet. |
+| Historical source `88279ba`; [45837392344](https://github.com/mirzotipi-wq/APP1/actions/runs/45837392344) | Native139973865345; [receipt](evidence/ci/wave04-native-139973865345.json) | 160 native passed, no skips; actual simulator Metal6/8. Kept separately from later renderer execution. |
+| Source6 `240000fd`; [45848953002](https://github.com/mirzotipi-wq/APP1/actions/runs/45848953002) | Core140009926092; [log](evidence/ci/wave06-core-140009926092.log), [metadata](evidence/ci/wave06-core-140009926092.json) | 379 Debug/379 Release; canonical host6 and selected strict8 passed with zero mask mismatches. |
+| Same source6/run | Native140012314020; [log](evidence/ci/wave06-native-140012314020.log), [metadata](evidence/ci/wave06-native-140012314020.json) | 174 unique Debug native methods, zero failures/skips, including all 25 cache methods. Both unsigned app builds, required method accounting and finalized XCTest export passed. Actual simulator Metal6 maximum≤1/outlier fractions0; strict8 mean/max/outlier fractions0; exact masks asserted. |
+| Source7 `69eb9c5`; [45854806270](https://github.com/mirzotipi-wq/APP1/actions/runs/45854806270) | Core140031989526; [log](evidence/ci/wave07-core-140031989526.log), [metadata](evidence/ci/wave07-core-140031989526.json) | 379 Debug/379 Release and host6/8 passed. This is portable execution; native evidence is separate. |
+| Same source7/run, attempt1 | Native140034909086; [terminal metadata](evidence/w094/native7-attempt1-metadata.json), [raw log](evidence/w094/native7-attempt1.log) | **Job failed.** All178 Debug methods started/passed once, all29 cache methods, zero failures/skips. Debug app/native-bundle and Release app builds passed; standalone method accounting passed. The18-minute native command timed out after tests; finalized export failed. Actual simulator Metal6/8 and19 CPU resource rows were observed. |
+| Same source7/run, attempt2 | Native140103955982; [18:29:38 UTC retry receipt](evidence/w094/native7-retry-queued.json) | Native-only rerun accepted and queued. No new source, harness, threshold, timeout or inventory change. Retry method execution remains unverified at this snapshot; root alone monitors. |
+
+The source7 additions cover startup failure plus cancellation preserving CPU cache, cancelled validation preserving CPU cache and retry, concurrent eligible requests validating once, and steady-state scene errors preserving validated backend/cache. All four compiled and emitted passing terminal events in attempt1: raw lines5525–5528,5594–5595 and5602–5603 retain their starts/passes. They are no longer unexecuted; the aggregate native gate remains incomplete.
+
+### Source7 attempt1 terminal failure and retry boundary
+
+The native suite printed178 tests with zero failures and an All tests pass before the action timed out at raw line5670. The subsequent standalone `native_test_shards.py verify-log` step executed and verified178 methods, one start/pass each with no failures, skips, duplicates or omissions, at line5679. The inline required-Metal guard after the `xcodebuild` pipeline was **not reached**: its code was echoed before execution, but no executed success message followed. Actual Metal evidence instead comes from the passing native method events and their emitted matrices.
+
+Canonical6 observed maximum channel error≤1 and all outlier fractions0; strict8 observed zero mean, maximum and outlier errors. Passing method assertions establish exact masks; native unsupported/mismatch numeric counts remain unprinted. These observed results survive as method evidence, not as a successful native job or finalized attachments.
+
+The preparatory simulator warm-up also failed diagnostically: bootstatus and recovery-preflight timed out, and the command exited1 at line4756. Finalized export subsequently failed at lines5704–5705 because `NativeTests.xcresult/Info.plist` was absent. Native artifact15143453127 (`native-unit-and-build-evidence`,610055bytes, SHA256 `7e986090bbeab88c62bb5b1a2b3827242c9822284d54aca24f2241d7098f4697`) retains logs and unfinished-bundle evidence. No finalized native attachments or native compact artifact is claimed. Source6's successful native command and finalized export remain distinct.
+
+Attempt2 reruns only native job140034909086 as new job140103955982. The API also assigned attempt2 identifiers to retained core/UI outcome envelopes; those are not new core/UI executions. Preserve attempt1's failure. The18-minute limit and all gates are unchanged; a successful retry is not presumed.
+
+**CI6 warm-up failed separately:** attempt-1 bootstatus and recovery-preflight timed out; the preparatory command exited1 in raw lines4714–4735. The subsequent required native test command, exact accounting and finalized export succeeded. Preserve both observations. Native runtime was Debug only; Release built the application but did not run native methods. No assertion that every step or the whole workflow passed follows from these job results. Cancelled native5 remains cancelled.
+
+Source6 host reported Swift6.4.3 on Ubuntu24.04.5; simulator evidence used Xcode26.6/17F113, Apple Swift6.3.3, hosted Intel macOS26.6.1 and iOS simulator SDK26.5. Exact retained commands include:
+
+~~~sh
+swift test --jobs 2 2>&1 | tee core-tests.log
+swift test --configuration release --jobs 2 2>&1 | tee core-release-tests.log
+/Applications/Xcode_26.6.app/Contents/Developer/usr/bin/xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug -destination id=12FCFD0F-7FCF-463F-A605-132A7E18B5D5 -derivedDataPath /Users/runner/work/_temp/keyfill-build -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult CODE_SIGNING_ALLOWED=NO "-only-testing:KeyAndFillTests" test-without-building
+~~~
+
+The reproducibility note retains build-for-testing, Swift fixture preparation, clang++ -O2 canonical comparison and `--maximum-channel-error 1` strict selection verbatim. These commands were not run by w094. Source6 core artifact15132856675, native full15135391983/compact15136500149, and source7 core15135792348 have retained upload identities/digests in the corresponding evidence. Artifact upload success alone does not supply a test result.
+
+The original f150 silhouette probe remains a failing **host C++ Float32 versus independent C++ Double transcription**, not shipped Swift or Metal execution: 24×16, two differing pixels, mean0.1076388888888889, maximum24 and >4 fraction0.005208333333333333. Exit0 means successful reproduction. The retained command is -O2; `invalid=0` counts only candidate invalid pixels and proves no two-mask comparison. Later Swift reference-pixel assertions do not create a whole-frame Swift/Metal metric.
+
+## Observed resources and lifetime boundaries
+
+Source6 native emitted all **19 real CPU cache payload rows**, comprising15 request observations and four summaries. [The original complete resource table](evidence/w076/CACHE_RESOURCES.md), [raw emissions](evidence/w076/observed-resource-lines.log) and [machine-readable receipt](evidence/w076/cache-resources.json) retain those source6 values. Source7 attempt1 independently emitted the same19 rows and final payload values at raw lines5564–5590; its [metadata](evidence/w094/native7-attempt1-metadata.json) preserves the rows. These observations are valid CPU payload evidence within the failed attempt1 job, not a finalized-result or memory-residency pass.
+
+| Final population | Entries | RGBA bytes | Mask bytes |
+|---|---:|---:|---:|
+| Four 24×16 bust frames | 4 | 6144 | 1536 |
+| Four 144×96 bust frames | 4 | 221184 | 55296 |
+| Three 192×128 sphere requests, two retained | 2 | 196608 | 49152 |
+| Three maximum busts then one maximum sphere, two busts plus sphere retained | 3 | 208896 | 52224 |
+
+All observations satisfy the fixed per-engine bounds. Dimensions come from retained returned-image arrays cross-checked against actor counters; they are not direct cache-entry enumeration. Subsequent hit/cold-render checks establish retained identities. The fixture arrays still hold returned images, so these counters do not establish image-allocation release or process RSS.
+
+All16 portable cache methods passed Debug and Release. Their weak-reference tests measure pure Swift ownership. The native weak scripted-backend test observes release after callback unwinding while the engine stays usable; synthetic Metal-tagged images prove state handling, not GPU work. Requested Metal buffer arithmetic is separately `96 + 16×max(3S,1) + 16×max(3A,1) + 4WH` bytes. The eight-byte dimension argument uses setBytes; mask construction occurs on CPU. Neither arithmetic nor ownership tests measure allocator capacity, driver memory, peak RSS, physical-device memory or GPU cancellation latency.
+
+## Owner routes and the remaining consumer integration
+
+The latest retained owner refresh is **2026-11-26 18:14:50 UTC**, with [the bounded refresh receipt](evidence/w094/native7-owner-refresh.json), blob `39e9b2680a3348e2eab6b006dff86af5c0df4560`. Owner02 remains `b5c1f008446f8b33f3ee97f8fefe6675058ef347`; owner03 is `6f93f95c817d2bd230ae93554dea25a174a437f8`. The earlier16:35:58 comparison at owner03 `92dc7a69c0032141ee49de0b96940fccab83a33e` remains [historical evidence](evidence/w083/source-review.v1.json), blob `55bb057aecbca8210673c3f2ae85b8323bff86fb`. No direct acknowledgment, combined merge or runtime approval is inferred.
+
+Frozen lane04 still permits the UI-held A/Metal→B permanent downgrade plus cancellation→returnA shortcut without reconsulting the engine. That is a consumer current-status/adoption gap, not demonstrated corrupt pixels or engine-cache leakage. Owner03's preview remedy remains source-present and unmerged here: request-and-ticket currentness, no successful-frame shortcut, engine reconsultation on activation and a single Frame pairing image/backend/warning/error. Preview blob `999b590b7eaad2bed75d417690856004300568b2` is unchanged since the earlier refresh. The w057 patch remains historical and unapplied/uncompiled; it must not obscure the newer source remedy.
+
+**Original hosted test now has a failed execution.** At owner03 source `342e3280e3eb077d55e122c8bfb88b4062b431ed`, run45857561126/job140042273149 built the Debug app/native bundle and Release app successfully. Its165 native methods started:164 passed, one failed, zero skipped/unstarted. The original hosted test blob `c514f15cf000538f56d7653b7b30d85d451442ad` failed its initial accessibility positive control, `Initial A is current Metal; identifiers=[]`, before any scene-switching A→B→A assertions. This does not demonstrate a production image, backend-badge or cancellation defect. All ten existing pipeline methods passed at that source. [Original execution receipt](evidence/w094/native7-owner-original-execution.json).
+
+**The corrected hosted test remains pending Apple verification.** Current test blob `f65004c8b7ca86248a163c80b9d7a3c02dabf20e` replaces that AX observer with public UIKit `drawHierarchy` center-pixel observation: initial and held A must be gray32, replacement gray160, alpha255 and each RGB channel within2. It retains one mounted host, two A calls/one B call, explicit continuations and a controlled synthetic producer. It removes the hosted AX/status/backend-badge/warning assertions; it is not equivalent accessibility coverage. Its held-frame pixel check is one checkpoint, not continuous visibility or proof that B cancellation has drained. It executes neither real engine failure nor actual Metal. [Pinned current test source](https://github.com/mirzotipi-wq/APP1/blob/6f93f95c817d2bd230ae93554dea25a174a437f8/NativeTests/StudyPreviewAdoptionTests.swift).
+
+The corrected test's source is `dbbc264fde91bfb04a1e82fbebdf2f8d5792d761`; its owner-retained run45868801497/job140080474886 was queued in the inspected owner handoff, not live-refreshed by this worker. Its Apple compilation/runtime and the hook-only before/fail comparison remain unperformed in these receipts. The earlier Apple-unrun status is historical for the original test, not its current disposition. Existing pipeline byte tests and the unchanged single-Frame assignment remain separate evidence; the current pixel observer is source-level intended coverage, not an executed display-image pass or a new mandatory gate.
+
+Owner03's oracle blob `82e54a53f3d32d745aee1edfa297086504fb81ec` is also unchanged since the prior refresh. Its already-recorded tiny-output integration/packing construction and early cancellation differences from lane04 remain: unit-intensity accumulation restores original intensity before packing; the6/3/3 float4 layout and sample-intensity meaning are preserved. There is no new packed-construction change in this refresh. Lane04's older-oracle passes do not establish combined parity.
+
+Current owner03 still carries the older renderer `a1d60cd94d0b016bb7e06e5e1a8ad7231135865d`, header `df3175546623508b192d29210dcd9b51efce4c37` and eligibility `69a826c8498efc508bdb2479dc80f40b75af3b71`. Lane20 must retain lane04 targets `8c1acd852d85cd99671feaba883db1808bbb5e68`, `f60258402a96f58b62607d5cefec5e41c7ec4137` and `e9764da10eabbffbad6ceee8999977cf31deb197` when combining owner03 oracle/consumer/test work. No combined-source pass is recorded.
+
+| Owner | Concrete next responsibility |
+|---|---|
+| 02 — photometry/color | Preserve canonical/strict definitions, CPU authority and packed semantics; reconcile color/photometry changes and rerun combined numerical checks. |
+| 03 — CPU/preview | Complete Apple compilation/runtime of the corrected pixel-observer test and the retained hook-only before/fail comparison. Preserve the original AX-positive-control failure and distinguish the corrected test's pixel/call-count scope from removed AX badge/warning assertions. Keep production generation/cancellation and paired adoption checks. |
+| 01 — composition/build | Preserve the imported native build-fix ancestry and default real-backend construction. Keep test injection opt-in and owner changes reviewable. |
+| 19 — harness/CI | Diagnose the source7 native command timeout and missing result finalization while retaining normal command completion, exact accounting and finalized-export gates. The unchanged native-only retry is pending. Separately validate host-parser metadata without weakening fixtures, masks or thresholds. |
+| 20 — integration | Retain lane04 engine, width-aware eligibility and guarded header while combining owner02/03 oracle/consumer/test work. Owner02/03 contain older header/engine versions; do not overwrite lane04 corrections wholesale. Rerun combined CPU Debug/Release, host6/8, actual Metal6/8, lifecycle/cache and adoption checks. Own global milestone decisions. |
+
+[OWNER_REQUESTS.md](OWNER_REQUESTS.md), [OWNER_INTEGRATION.md](OWNER_INTEGRATION.md) and the fallback contract contain detailed routes and pinned owner links. Current lane04 engine evidence is not completed consumer integration.
+
+## Worker ledger, recovery and final integration
+
+The final [worker ledger](worker-ledger.json) records **100 actual completed workers and primary reports in ten waves of ten**. All IDs are distinct and contiguous w001–w100; every worker used a fresh context. Worker100 was created last, after all preceding reports and four final-wave artifacts froze. Same-ID follow-ups, retries and paths add no workers. The independent review fetched every preceding report, checked actual spawn returns, preserved all prior90 rows and verified canonical links and evidence. Historical w084's recorded role remains “contract”, meaning implementation of the fallback-contract artifact; its label is explained, not rewritten.
+
+The actual concurrency limit was four including root. In waves with a lead, root plus lead plus at most two active children occupied those slots. Brief, working-context and report budgets were workflow targets; exact live token/context limits were not exposed by the platform. Per-wave checkpoints, including the campaign60% checkpoint, retain those limitations rather than claiming an enforced hard cap.
+
+[ENVIRONMENT_RECOVERY.md](ENVIRONMENT_RECOVERY.md) preserves the low-disk sparse checkout, temporary-tree move, interrupted signal9 Swift compile, linker failures, resets, recovered original host executable and verified preservation before completed-worktree cleanup. A zero watchdog RSS field meant no sample, not a measured zero peak. Later reset causation remains unproved.
+
+The fourth interruption during wave5 left the executor unavailable. Workers051–100 have **UNCREATED physical worktree/build/result paths** and used isolated immutable Git snapshots plus content-addressed evidence instead. Their actual contexts and reports exist; planned directories are not counted as work or execution. No subsequent local cleanup or SDK/runner workaround is claimed. Earlier worker-specific recovery details remain in their reports and ledgers.
+
+All reviewed original/intermediate candidates, raw outcomes, maps and report catalogs are retained. This same-ID update changes only the handoff and w094 supplementary evidence; all100 primary reports and product/test/shared-configuration source stay unchanged. Root alone integrates and publishes to `finish/04-metal-cache`, then records any later native-only attempt2 outcome with its own command, accounting, finalization and artifact evidence. This bounded worker update stops at the queued18:29:38 receipt and does not poll, rerun or presume a retry pass. Owner20 then performs the combined owner integration and gates above. No global milestone, release readiness, physical calibration, device/thermal performance, process/driver memory or manual accessibility acceptance is established by this lane handoff.

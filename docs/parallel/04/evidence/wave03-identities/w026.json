@@ -1,0 +1,74 @@
+{
+  "canonicalID": "/root/w021/w026",
+  "worker": "worker026",
+  "exact_task": "Resource/performance review024: dimension validation before multiplication/index conversion; analytic count bounded to128 rows and constant storage, no invalid sqrt/division/overflow or missed interval pixels. Check rotated/translated camera basis assumption.",
+  "inputSHA": "24a00f8bb13717c86377590a22d22faeab4153f4",
+  "baseline": "c76e176fa60d29f8ebd49845d7e8ea883c11b64f",
+  "ownership": {
+    "private_worktree": "/tmp/keyfill04-2987b1ee980d/workers/w026",
+    "frozen_source_read_only": "/tmp/keyfill04-2987b1ee980d/repo/Sources/LightingCore/StudyFloat32Eligibility.swift",
+    "writable_artifacts": "/tmp/keyfill04-2987b1ee980d/results/w026",
+    "source_changes": "none authorized or performed",
+    "refs": "no writes"
+  },
+  "outcome": "resource_and_numeric_domain_pass_with_existing_near_vertical_basis_model_undercount",
+  "report": "/tmp/keyfill04-2987b1ee980d/results/w026/report.md",
+  "changed_files": [],
+  "checks": {
+    "git status --short": "clean",
+    "git branch --show-current": "detached",
+    "git rev-parse HEAD": "c76e176fa60d29f8ebd49845d7e8ea883c11b64f",
+    "git hash-object Sources/LightingCore/StudyFloat32Eligibility.swift": "24a00f8bb13717c86377590a22d22faeab4153f4",
+    "diagnostic": {
+      "runtime": "Python3 binary64; one selected row/pixel, no enumeration",
+      "width": 192,
+      "height": 128,
+      "focal_length_mm": 14,
+      "subject": [
+        0,
+        0,
+        0
+      ],
+      "camera": [
+        2.5133431923616664e-13,
+        0.27926035470685184,
+        0
+      ],
+      "pixel": [
+        191,
+        63
+      ],
+      "forward_dot_right": 9e-13,
+      "shell_outer_squared_slope": 1.6359315210449183,
+      "pixel_squared_slope": 1.635931521045919,
+      "slope_padding": 1.1623992584794382e-14,
+      "index_padding": 1.3642420526593924e-12,
+      "positive_interval_before_empty_guard": [
+        191,
+        190
+      ],
+      "outer_sphere_discriminant": 3.1041141879128986e-14,
+      "inner_sphere_discriminant": -9.374584350706205e-7,
+      "interpretation": "A pre-existing nearly vertical camera basis can place an actual basis-space shell pixel outside the analytic sensor-space interval. This does not establish Float32/GPU parity failure.",
+      "source": "/tmp/keyfill04-2987b1ee980d/results/w026/diagnostic.py",
+      "output": "/tmp/keyfill04-2987b1ee980d/results/w026/diagnostic-output.txt",
+      "execution": "The exact diagnostic.py content was executed once using python3 through a shell heredoc before these artifacts were saved; no additional run."
+    }
+  },
+  "unrun_checks": [
+    "Swift execution",
+    "builds",
+    "SDK checks",
+    "broad pixel enumeration",
+    "benchmarks",
+    "device tests",
+    "GPU parity"
+  ],
+  "runtime_limits": "Read-only source review, one targeted Python point calculation; no children; no source edits, commits, refs, or heavy work.",
+  "artifacts": [
+    "report.md",
+    "identity.json",
+    "diagnostic.py",
+    "diagnostic-output.txt"
+  ]
+}

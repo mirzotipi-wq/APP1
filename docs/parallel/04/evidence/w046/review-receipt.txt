@@ -1,0 +1,91 @@
+Worker 046 static review receipt
+Date: 2026-11-26
+Worktree argument: /tmp/keyfill04-2987b1ee980d/workers/w046
+Resolved pwd: /tmp/keyfill04-workers-2987b1ee980d/w046
+Base: 88279ba0ee0262ea6c880580c8a85b56342abbff
+Scope: finish/04-metal-cache; independent resource-lifetime review.
+This receipt records exact shell command strings and selected observed outputs.
+It is not a compiler, test, Metal, allocation-fault, or memory-measurement result.
+
+Command 1, exit 0:
+pwd && rg --files -g 'AGENTS.md' -g '*agent_cycle*' -g '*START*' -g '*start*' -g '*README*' .
+Selected output:
+/tmp/keyfill04-workers-2987b1ee980d/w046
+./AGENTS.md
+./README.md
+./scripts/agent_cycle.py
+./scripts/diagnostics/accessibility-control/README.md
+./scripts/tests/test_agent_cycle.py
+
+Command 2, exit 0:
+cat AGENTS.md
+
+Command 3, exit 0:
+git status --short && git branch --show-current && git rev-parse HEAD && git log -5 --oneline && cat agents/OPERATING_PROTOCOL.md agents/HANDOFF.md agents/state.json docs/PRODUCT.md docs/ARCHITECTURE.md docs/ROADMAP.md docs/QUALITY.md docs/DESIGN.md
+Observed status: clean; branch output blank (detached HEAD).
+Observed HEAD: 88279ba0ee0262ea6c880580c8a85b56342abbff
+The combined tool display was truncated; state/product were read again in command 4.
+
+Command 4, exit 0:
+cat agents/state.json docs/PRODUCT.md docs/acceptance/m02-m03-code.md
+
+Command 5, exit 0:
+python3 scripts/agent_cycle.py check && python3 scripts/agent_cycle.py next
+Complete output:
+State structure and evidence references valid; this does NOT verify test truth or release readiness.
+M03: Professional editing and project library
+Outstanding gates: editing, accessibility, persistence
+Read agents/HANDOFF.md and docs/QUALITY.md before implementing.
+
+Command 6, exit 0:
+git hash-object /tmp/keyfill04-2987b1ee980d/results/w044/MetalStudyRenderer.swift /tmp/keyfill04-2987b1ee980d/results/w045/checkpoint-StudyRenderCacheTests.swift && wc -l /tmp/keyfill04-2987b1ee980d/results/w044/MetalStudyRenderer.swift /tmp/keyfill04-2987b1ee980d/results/w045/checkpoint-StudyRenderCacheTests.swift && rg -n 'autoreleasepool|makeBuffer|makeCommand|endEncoding|commit|waitUntilCompleted|status|cancel|backend|Data\(|downgrade|purge|deinit|release|weak|factory' /tmp/keyfill04-2987b1ee980d/results/w044/MetalStudyRenderer.swift /tmp/keyfill04-2987b1ee980d/results/w045/checkpoint-StudyRenderCacheTests.swift
+Hash and line-count output:
+98aa3c619ef05b7cc1369ecab71a1b04456a89d3
+2af764b51023dc66a9cc0070d8d49f5bd7de334e
+304 /tmp/keyfill04-2987b1ee980d/results/w044/MetalStudyRenderer.swift
+707 /tmp/keyfill04-2987b1ee980d/results/w045/checkpoint-StudyRenderCacheTests.swift
+
+Command 7, exit 0:
+nl -ba /tmp/keyfill04-2987b1ee980d/results/w044/MetalStudyRenderer.swift
+Complete 304-line source inspected.
+
+Command 8, exit 2:
+sed -n '319,665p' /tmp/keyfill04-2987b1ee980d/results/w045/checkpoint-StudyRenderCacheTests.swift && rg -n 'struct StudyComputeInput|fromComputeRGBA|maximum.*|parameters|samples|areas' Sources/LightingCore/StudyComputeInput.swift Sources/LightingCore/StudyImage.swift
+The test slice printed successfully. The guessed separate core files did not exist:
+rg: Sources/LightingCore/StudyComputeInput.swift: No such file or directory (os error 2)
+rg: Sources/LightingCore/StudyImage.swift: No such file or directory (os error 2)
+
+Command 9, exit 1:
+rg -n 'struct StudyComputeInput|static func fromComputeRGBA|struct StudyImage|maximumSamples|maximumLights|maximumRelative' Sources && git diff --no-index -- App/MetalStudyRenderer.swift /tmp/keyfill04-2987b1ee980d/results/w044/MetalStudyRenderer.swift
+Source definitions located:
+Sources/LightingCore/ReferenceStudy.swift:375:public struct StudyImage: Equatable, Sendable {
+Sources/LightingCore/ReferenceStudy.swift:395:    public static func fromComputeRGBA(width: Int, height: Int, data: Data) throws -> StudyImage {
+Sources/LightingCore/ReferenceStudy.swift:416:public struct StudyComputeInput: Sendable {
+The exit 1 was the expected differing-file result of git diff --no-index.
+
+Command 10, exit 0:
+sed -n '375,485p' Sources/LightingCore/ReferenceStudy.swift && git status --short
+Image conversion copies Data into a UInt8 array, creates a distinct validity mask,
+and returns Data values. Validated input limits width to 192 and height to width*2/3.
+Final worktree status was clean.
+
+Focused falsification observations (static, not execution):
+1. Partial allocation failure does not reach commit. No encoder exists on a failed
+   encoder-creation guard; all normal paths after successful encoder creation end it.
+2. Cancellation after encoding but before submission unwinds uncommitted resources.
+   Cancellation after submission cannot bypass completion wait or the status check.
+3. Data(bytes:count:) executes inside the per-frame pool after successful completion;
+   fromComputeRGBA finishes all conversion and mask creation before that pool exits.
+4. Runtime allocation/command/invalidComputeOutput failure calls selectCPU before
+   the next cancellation guard. selectCPU replaces state and removes Metal frames.
+   The if-case local renderer may retain the backend until function unwinding.
+5. Checkpoint fake factory captures ComputeScript, not ScriptedComputeBackend.
+   deinit counts are read after awaited render helpers, not inside failing callbacks.
+6. Cache usage assertions measure count/RGBA/mask payload only. Requested buffer
+   lengths and these counts do not measure process RSS, driver allocations, or GPU
+   preemption. Mock lifecycle checks do not establish actual Metal behavior.
+
+No source edits, Swift compilation, SDK installation, native tests, host-kernel
+execution, actual Metal execution, commit, push, or ref changes were performed.
+No cause is assigned to the three reported environment resets.
+

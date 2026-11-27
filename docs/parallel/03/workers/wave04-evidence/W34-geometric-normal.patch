@@ -1,0 +1,66 @@
+diff --git a/Tests/LightingCoreTests/StudyEmitterFacingTests.swift b/Tests/LightingCoreTests/StudyEmitterFacingTests.swift
+index af3245c..7241f59 100644
+--- a/Tests/LightingCoreTests/StudyEmitterFacingTests.swift
++++ b/Tests/LightingCoreTests/StudyEmitterFacingTests.swift
+@@ -153,6 +153,61 @@ final class StudyEmitterFacingTests: XCTestCase {
+         }
+     }
+ 
++    func testMeshShadowOffsetAndReceiverHemisphereUseTheOutwardFace() throws {
++        // An interior point of a fixed brow/eye mesh face, away from shared edges.
++        func vertex(_ row: Int, _ column: Int) -> SIMD3<Double> {
++            PortraitHeadMesh.surfacePoint(y: PortraitHeadMesh.ringY(row),
++                angle: 2 * Double.pi * Double(column) / Double(PortraitHeadMesh.longitudeSegments))
++        }
++        let a = vertex(24, 3), b = vertex(24, 4), c = vertex(25, 3)
++        let ab = b - a, ac = c - a
++        let geometric = vector(try unit(.init(ab.y * ac.z - ab.z * ac.y,
++            ab.z * ac.x - ab.x * ac.z, ab.x * ac.y - ab.y * ac.x)))
++        let center = (a + b + c) / 3, camera = center + geometric * 0.01
++        let hit = try XCTUnwrap(PortraitHeadMesh.standard.hit(origin: camera, direction: -geometric,
++                                                             minimum: 1e-6, maximum: 0.02))
++        XCTAssertEqual(hit.distance, 0.01, accuracy: 1e-10)
++        XCTAssertGreaterThan(geometric.z, 0)
++        XCTAssertEqual(dot(hit.geometricNormal, geometric), 1, accuracy: 1e-12)
++        let receiver = camera - geometric * hit.distance
++        let difference = hit.normal - geometric
++        XCTAssertGreaterThan(dot(difference, difference), 1e-6,
++                             "This fixture must distinguish smooth and geometric normals")
++        // For distinct unit normals n and g, n-g faces n but lies behind g.
++        let belowFace = vector(try unit(difference))
++        XCTAssertGreaterThan(dot(hit.normal, belowFace), 0)
++        XCTAssertLessThan(dot(geometric, belowFace), 0)
++
++        for (lightDirection, frontFacing) in [(geometric, true), (belowFace, false)] {
++            let source = receiver + lightDirection
++            let scene = LightingScene(subject: position(receiver), camera: position(camera), lights: [
++                .init(name: "Mesh normal probe", position: position(source), candela: 1000, kelvin: 5600)
++            ])
++            let lighting = try StudyLighting(scene: scene)
++            var visibilityCalls = 0
++            let actual = try lighting.evaluate(receiver: receiver, normal: hit.normal, view: geometric,
++                material: .diffuse(reflectance: 1), occlusionTest: { origin, direction, distance in
++                    visibilityCalls += 1
++                    let offset = origin - receiver, outward = self.dot(offset, geometric)
++                    XCTAssertGreaterThan(outward, 0)
++                    let tangent = offset - geometric * outward
++                    XCTAssertLessThan(sqrt(self.dot(tangent, tangent)), 1e-12,
++                                      "A shading-normal offset slides the ray along the actual face")
++                    let endpoint = origin + direction * distance
++                    for axis in 0..<3 { XCTAssertEqual(endpoint[axis], source[axis], accuracy: 1e-12) }
++                    return false
++                }, geometricNormal: hit.geometricNormal)
++            if frontFacing {
++                XCTAssertEqual(visibilityCalls, 1)
++                XCTAssertGreaterThan(actual.visibleLux, 0)
++                XCTAssertEqual(actual.visibleLux, actual.unoccludedLux)
++            } else {
++                assertDark(actual)
++                XCTAssertEqual(visibilityCalls, 0)
++            }
++        }
++    }
++
+     func testBackFacingRenderStillObservesPixelCancellation() throws {
+         var scene = LightingScene.portrait()
+         scene.lights = self.scene(center: .init(x: 0, y: 1.5, z: 10),

@@ -1,0 +1,53 @@
+{
+  "worker": "W06-03",
+  "phase": "source review complete; document not yet written",
+  "base_commit": "791fa58702be6fa84a2675e7d5a9b8462c143caf",
+  "producer_sources": {
+    "App/ReferenceComparisonView.swift": {
+      "sha256": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb",
+      "git_blob": "fad8232524c74c4cf06e0f2ff132e7f678f2c430"
+    },
+    "App/SceneArrangementView.swift": {
+      "sha256": "40b0018689e309368e37d2defac0271f6e96d8913a688bf757a0540ebf852bb8",
+      "git_blob": "242c237525abee61e4ef5cc0cb2c885611f26785"
+    },
+    "App/LightTargetLuxView.swift": {
+      "sha256": "7dc77229e6d7f50c767402dc7289e2e1e48e30ecd4845deb5a5596afa6d3b097",
+      "git_blob": "a77521a39b68c1320f6aa5bff86b0224f987e468"
+    },
+    "App/ManualRoomPlacementView.swift": {
+      "sha256": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+      "git_blob": "37ab4a07b45600b2e1c6e4aa76eb8bddd36196a6"
+    },
+    "App/ARPlacementView.swift": {
+      "sha256": "e6085889ed25337c729c2dbb7d2b9027e7368e08b8cd3ff46ab980a617979c0a",
+      "git_blob": "ec10f43d57234af9245bddc2fd90785d6ef21b22"
+    },
+    "App/StudioSession.swift": {
+      "sha256": "36c37cf74b63de1cbdd64be6ec5d6500e0e87b6f73053745323869df45987d1f",
+      "git_blob": "91b76ee55820642c39793acd2aa6ccf4006910f4"
+    }
+  },
+  "host": {
+    "commit": "9e5b363a3fd78befd5aee14a528fe4defb97637f",
+    "path": "/workspace/scratch/e08d5190f17c/workers/w06-04/tree/App/StudioFeatureSheets.swift",
+    "sha256": "8ecbb8802dac256917bae9e779ac7b579c8789e408dfd72be1f8abb378b06e37"
+  },
+  "checks": {
+    "agent_cycle_check": "exit 0: state structure/references valid, not test truth",
+    "agent_cycle_next": "exit 0: M03; editing, accessibility, persistence outstanding",
+    "source_bytes_match_committed_blobs": true
+  },
+  "no_runs": [
+    "builds",
+    "tests",
+    "native runtime",
+    "network"
+  ],
+  "findings": [
+    "Reference clears session before Void callback",
+    "Arrangement/lux set completion flag before Void callback and dismiss afterward",
+    "Room/AR already use synchronous Bool; nested manual close is local"
+  ],
+  "scope": "new docs/parallel/01/FEATURE_ADAPTERS.md only"
+}

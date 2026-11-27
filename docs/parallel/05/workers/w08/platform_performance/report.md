@@ -1,0 +1,12 @@
+# Wave 08 — platform/performance review
+
+Canonical ID: `/root/w08_acceptance/platform_performance`  
+Status: `completed_source_and_native_evidence_review`
+
+**Actual execution.** Independently checked the retained log against frozen `4e694bc` source inventory and spatial receipt: exactly 184 ordered start/pass pairs, no missing, extra, duplicate, failed or skipped methods; 38 spatial = 10 helper/state methods + 28 SceneKit behavior methods. Run 45838950713/job 139980771221 also records successful Debug test-bundle and Release builds. Runtime was x86_64 iPhone 17 Pro/iOS 26.5/Xcode 26.6. The architecture guard selects SceneKit before RealityKit resource construction.
+
+**Actual projection coverage.** Only two methods call `SCNView.projectPoint`. `SpatialPreviewTests:22–58` checks eight helper-AABB corners of a rig translated by (80,75), with a 4×3 m modifier, at 360×280 and 240×400. `SpatialInteractionTests:162–191` checks four transformed fixture-envelope samples plus the stand-base origin for a coincident 4×4 m softbox at height 20 m, at 120×600 and 600×120. These total 26 discrete projections; they do not enumerate every renderer mesh extremum. Other native tests verify transforms, camera state/recovery, identities and selection callbacks. Capture provenance establishes two original SCNView-in-UIWindow snapshots, without delivered-gesture evidence.
+
+**Helper/source/portable coverage.** `SpatialViewportStateTests:157–186` projects helper-produced AABB corners through independent pinhole arithmetic, including 1×1000 layouts; this does not independently validate primitive containment. The separate portable witness addresses that distinction with independently defined primitive supports: 15 scenes, 760 primitives and 240 frustum checks per projection model. Its zero recorded failures remain modeled geometry/Float-angle arithmetic, excluding native matrices, tessellation and rasterization.
+
+**Candidate and limits.** The approved outward-Float fix is published at `60059a0`; its 185-native/39-spatial inventory is EXPECTED, with no candidate pass established by this review. The 4e execution cannot transfer to changed source. Source compilation and portable proof do not establish RealityKit runtime, physical-device behavior or gesture delivery. Repeated-update node/identity bounds establish bounded structure, not FPS, memory leaks, thermal behavior or performance measurements. No additional source blocker found; retain exact-candidate native execution as outstanding.
