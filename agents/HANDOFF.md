@@ -1,6 +1,14 @@
 ## Active beta implementation — 27 November 2026, request 16f31723
 
-Baseline `14d33cd`; first checkpoint is published as `c9b46a3` with exact tree mapping in [the current packet](../docs/evidence/beta-development-2026-11-27-16f31723/README.md). Its raw portable job passed 602 Debug/602 Release methods and 120 tooling tests; native jobs remained in progress. The second reviewed checkpoint adds terminal photo cleanup, a retained unsigned device app artifact, and source revision identity in Settings/feedback and CI bundles. New-source Swift/native validation and actual packaging remain required. Continue the 100 actual-worker effort, keep M01 active and later gates unchanged, and preserve the earlier requests below. See [the actual worker ledger](../docs/evidence/beta-development-2026-11-27-16f31723/worker-ledger.json).
+Baseline `14d33cd`; reviewed source `c19d5f8f9cae6bb88660e86954212cfb201cd84e` is published on main with exact tree `7576d6533bf0c89aa989bf4b65b4261a337b9c72`. The [current packet](../docs/evidence/beta-development-2026-11-27-16f31723/README.md) records both publications. The earlier `c9b46a3` portable job passed 602 Debug/602 Release methods and 120 tooling tests; the newer push cancelled its native/UI jobs. Current-source [run 46063267130](https://github.com/mirzotipi-wq/APP1/actions/runs/46063267130) passed 604 Debug/604 Release methods and 120 tooling tests, with checksum-verified original outputs and persistence artifacts retained; Apple/native/UI jobs are executing. This second checkpoint adds terminal photo cleanup, a retained unsigned device app artifact, and source revision identity in Settings/feedback and CI bundles. Current native validation and actual packaging remain required. Continue the 100 actual-worker effort, keep M01 active and later gates unchanged, and preserve the earlier requests below. See [the actual worker ledger](../docs/evidence/beta-development-2026-11-27-16f31723/worker-ledger.json).
+
+Actual downloaded c19 Debug app inspection found both custom metadata keys absent.
+The [repair record](../docs/evidence/beta-development-2026-11-27-16f31723/build-metadata-repair.md)
+preserves the failed plist and guard witnesses. Local source e5c63c1 adds explicit
+plist inputs and early actual-bundle checks; publish after independent review and
+reconcile fresh Apple outputs. Portable application/package/test inputs remain
+identical to c19. No failed observation is replaced by the source-only repair.
+
 
 ## Targeted CI repair — 27 November 2026
 

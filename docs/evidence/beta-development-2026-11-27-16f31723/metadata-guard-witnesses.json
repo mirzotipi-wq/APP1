@@ -1,0 +1,61 @@
+{
+  "observedFailingSource": "c19d5f8f9cae6bb88660e86954212cfb201cd84e",
+  "candidate": "e5c63c1020d3c3ef193c1de5109d5d73e4566939",
+  "cases": [
+    {
+      "check": "Build unsigned simulator app and native unit test bundle",
+      "case": "actual c19 compiled app missing custom keys",
+      "expected": "reject",
+      "returnCode": 1
+    },
+    {
+      "check": "Build unsigned simulator app and native unit test bundle",
+      "case": "synthetic validator fixture with correct custom keys; not an Xcode build",
+      "expected": "accept",
+      "returnCode": 0
+    },
+    {
+      "check": "Build unsigned simulator app and native unit test bundle",
+      "case": "valid-shape wrong revision",
+      "expected": "reject",
+      "returnCode": 1
+    },
+    {
+      "check": "Build unsigned release simulator application",
+      "case": "actual c19 compiled app missing custom keys",
+      "expected": "reject",
+      "returnCode": 1
+    },
+    {
+      "check": "Build unsigned release simulator application",
+      "case": "synthetic validator fixture with correct custom keys; not an Xcode build",
+      "expected": "accept",
+      "returnCode": 0
+    },
+    {
+      "check": "Build unsigned release simulator application",
+      "case": "valid-shape wrong revision",
+      "expected": "reject",
+      "returnCode": 1
+    },
+    {
+      "check": "Build native UI test bundle",
+      "case": "missing UI-test bundle",
+      "expected": "reject",
+      "returnCode": 1
+    },
+    {
+      "check": "Build native UI test bundle",
+      "case": "UI-test bundle disagrees with app revision",
+      "expected": "reject",
+      "returnCode": 1
+    },
+    {
+      "check": "Build native UI test bundle",
+      "case": "synthetic app and independent test-bundle fixture; not an Xcode build",
+      "expected": "accept",
+      "returnCode": 0
+    }
+  ],
+  "limits": "These execute the exact workflow guard bodies on retained actual failing plist and explicit synthetic boundary fixtures. They do not prove Xcode propagation, UI execution or device packaging."
+}

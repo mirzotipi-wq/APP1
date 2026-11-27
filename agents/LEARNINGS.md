@@ -309,3 +309,15 @@ Worker045 reconciled recovered original method evidence against M01: do not add 
 2026-11-27 / targeted CI repair: Inspect finalized XCTest attachments and original native traces before changing input logic or loosening an assertion. Baseline run 46047691385 shows a single-digit input delivered after roughly 41 seconds and an AXXXL Projects sheet whose Save row sits below a long explanation. Use one exact snapshot observation with bounded host headroom and reveal real scroll content before requiring its semantics; move the primary save action above the explanation. Self-review only; repeat original required UI methods and retain all screenshots on the new source. See docs/evidence/ci-repair-2026-11-27-b5379ee.md.
 
 2026-11-27 / beta implementation 16f31723: A Void feature callback discarded reference and numeric drafts before the session could reject a stale proposal. Return explicit admission to the producer and retain both draft and synchronous duplicate-action guard until acceptance. Worker 009 caught the missing reference guard; correction 14a4c0c passed independent source review. Native rejection/retry remains unverified. Save feedback also needs a project/revision receipt; a past successful write cannot describe subsequent edits.
+
+
+## 27 November 2026 — inspect custom metadata in the actual bundle
+
+The source-revision configuration used arbitrary `INFOPLIST_KEY_` settings.
+Independent source review passed, but a checksum-verified uploaded simulator app
+contained neither custom key. Apple's generated-plist behavior explains the
+omission. The repair supplies explicit input plists and adds early checks of
+the built app and independent UI-test bundle. Keep the original failed plist;
+source settings and passing compilation alone do not establish generated output.
+The narrow runtime guard is the regression protection; no broader procedure or
+acceptance threshold changed.

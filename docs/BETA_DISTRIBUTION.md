@@ -164,6 +164,11 @@ on the actual source-specific Actions run.
 CI supplies the checked-out Git commit through `KEYFILL_SOURCE_REVISION` to the
 app and UI-test bundles. Settings shows the complete recorded revision, and a
 reviewed beta feedback report includes it with an explicit contents notice.
+Custom keys come from explicit app and UI-test plist templates merged with
+Xcode-generated standard metadata. CI checks the actual built app and independent
+test bundle before simulator startup; source settings alone do not prove the
+fields were embedded.
+
 Only a complete 40-character hexadecimal revision is accepted; a local build
 without this value shows `Unavailable` and omits it from feedback. No revision
 is guessed from the marketing version or build number.

@@ -229,6 +229,16 @@ jobs:
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" build-for-testing 2>&1 | tee build.log
           python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee icon-debug.log
           python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee privacy-debug.log
+          python3 - "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app/Info.plist" "$(git rev-parse HEAD)" <<'PY' 2>&1 | tee metadata-debug.log
+          import plistlib, sys
+          with open(sys.argv[1], "rb") as stream:
+              info = plistlib.load(stream)
+          if info.get("KEYFILL_SOURCE_REVISION") != sys.argv[2]:
+              raise SystemExit(f"Debug app source revision mismatch: {info.get('KEYFILL_SOURCE_REVISION')!r}")
+          if "KEYFILL_PRO_PRODUCT_ID" not in info:
+              raise SystemExit("Debug app is missing its configured product metadata key")
+          print(f"Debug app source revision verified: {sys.argv[2]}")
+          PY
           mkdir -p artifacts
           ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator.zip
       - name: Upload simulator application
@@ -251,6 +261,16 @@ jobs:
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
           python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee icon-release.log
           python3 scripts/verify_privacy_manifest.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee privacy-release.log
+          python3 - "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app/Info.plist" "$(git rev-parse HEAD)" <<'PY' 2>&1 | tee metadata-release.log
+          import plistlib, sys
+          with open(sys.argv[1], "rb") as stream:
+              info = plistlib.load(stream)
+          if info.get("KEYFILL_SOURCE_REVISION") != sys.argv[2]:
+              raise SystemExit(f"Release app source revision mismatch: {info.get('KEYFILL_SOURCE_REVISION')!r}")
+          if "KEYFILL_PRO_PRODUCT_ID" not in info:
+              raise SystemExit("Release app is missing its configured product metadata key")
+          print(f"Release app source revision verified: {sys.argv[2]}")
+          PY
           mkdir -p artifacts
           ditto -c -k --keepParent "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" artifacts/KeyAndFill-simulator-release.zip
       - name: Upload unsigned release simulator application
@@ -403,6 +423,8 @@ jobs:
             privacy-debug.log
             icon-release.log
             privacy-release.log
+            metadata-debug.log
+            metadata-release.log
             native-tests.log
             native-method-accounting.json
             artifacts/native-results.zip
@@ -690,6 +712,20 @@ jobs:
             KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
+          python3 - "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator" "$(git rev-parse HEAD)" <<'PY' 2>&1 | tee native-ui-metadata.log
+          import plistlib, sys
+          from pathlib import Path
+          products = Path(sys.argv[1])
+          test_plists = list(products.rglob("KeyAndFillUITests.xctest/Info.plist"))
+          if not test_plists:
+              raise SystemExit("The built UI-test bundle Info.plist is missing")
+          for path in [products / "KeyAndFill.app/Info.plist", *test_plists]:
+              with path.open("rb") as stream:
+                  info = plistlib.load(stream)
+              if info.get("KEYFILL_SOURCE_REVISION") != sys.argv[2]:
+                  raise SystemExit(f"Source revision mismatch in {path}: {info.get('KEYFILL_SOURCE_REVISION')!r}")
+              print(f"{path.relative_to(products)} source revision verified: {sys.argv[2]}")
+          PY
       # Preparatory host warm-up is diagnostic. The required xcodebuild run
       # still targets this exact UDID and must execute every selected test.
       - name: Warm selected iPhone simulator (diagnostic)
@@ -953,6 +989,7 @@ jobs:
             native-tests.log
             native-method-accounting.json
             native-ui-build.log
+            native-ui-metadata.log
             simulator-startup/
             simulator-boot.log
             artifacts/ui-host-*.log
