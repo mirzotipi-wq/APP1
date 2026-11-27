@@ -185,7 +185,7 @@ final class LightingPlanPDFTests: XCTestCase {
                 }
                 let contents = (0..<pdf.pageCount).compactMap { pdf.page(at: $0)?.string }.joined(separator: " ")
                 for light in scene.lights { XCTAssertFalse(contents.contains(light.id.uuidString), "Internal fixture identity leaked") }
-                XCTAssertEqual(pdf.documentAttributes?[.titleAttribute] as? String, "Key & Fill - Lighting plan")
+                XCTAssertEqual(pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute.rawValue] as? String, "Key & Fill - Lighting plan")
             }
         }
     }
