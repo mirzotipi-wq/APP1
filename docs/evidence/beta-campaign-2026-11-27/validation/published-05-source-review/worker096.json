@@ -1,0 +1,83 @@
+{
+  "worker": "/root/a096_numeric_entry_causal_review",
+  "base": "f94c0e6cb9cd072286d6e4414eb2c1f8974d4ce5",
+  "commits": [
+    "52fbadd55ff67ef2e9eabbf8ef7e103228536c11",
+    "85f428e4395a2435f639c60fe4ab8c88300af62d"
+  ],
+  "files": [
+    {
+      "path": "App/StudioTextField.swift",
+      "bytes": 23906,
+      "sha256": "728f5f82bd580216e936f22914824d967eb51c8723070b6b617488253bec11ac"
+    },
+    {
+      "path": "NativeTests/StudioTextFieldTests.swift",
+      "bytes": 41526,
+      "sha256": "7ef2bc173dd2f711b3b69ae9ebd88bae3ecc4aa8f6bf02d367e6b975e37281da"
+    },
+    {
+      "path": "UITests/StudioAppAccessibilityUITests.swift",
+      "bytes": 31982,
+      "sha256": "03d7664df4b6eae3d95cabd533746fb882bb788c2b0d092fc45693e25bb00eee"
+    },
+    {
+      "path": "UITests/ManualRoomPlacementUITests.swift",
+      "bytes": 12971,
+      "sha256": "2d28a2f4dc8a813701ab5ce3b22d64ceea3f96f1c0a24e6fc7e528dac8312e7a"
+    },
+    {
+      "path": "UITests/BetaWorkflowUITests.swift",
+      "bytes": 20546,
+      "sha256": "a234541eb70f6786a669eb27fe607b30518a7d05b66cb4f202decd35f53ecf73"
+    }
+  ],
+  "newNativeMethods": [
+    "testInputTraceOmitsPrivateDraftsLabelsHintsAndUnknownIdentifiers",
+    "testInputTraceCapsIncludeMarkersAndDisabledRecorderEmitsNothing",
+    "testInputTraceLeavesAcceptedRejectedAndExternalResetBehaviorIdentical",
+    "testUnchangedReconfigurationPreservesTraceBudgetForTheNextNativeEdit"
+  ],
+  "requiredNativeInventoryBeforeOtherChanges": 327,
+  "nativeExecution": false,
+  "portableOrNativeBuild": false,
+  "checks": [
+    {
+      "command": "swiftc -D DEBUG -frontend -parse ...",
+      "outcome": "failed invocation; unknown argument: -frontend",
+      "compilerExitCodeObservedSeparately": null,
+      "combinedShellExitCode": 0,
+      "note": "Later shell checks ran; final wrapper0 did not make the first command a pass."
+    },
+    {
+      "command": "swiftc -frontend -parse -D DEBUG App/StudioTextField.swift NativeTests/StudioTextFieldTests.swift UITests/StudioAppAccessibilityUITests.swift UITests/ManualRoomPlacementUITests.swift UITests/BetaWorkflowUITests.swift",
+      "exitCode": 0,
+      "revision": "85f428e4395a2435f639c60fe4ab8c88300af62d"
+    },
+    {
+      "command": "swiftc -frontend -parse App/StudioTextField.swift NativeTests/StudioTextFieldTests.swift",
+      "exitCode": 0,
+      "revision": "85f428e4395a2435f639c60fe4ab8c88300af62d"
+    },
+    {
+      "command": "git diff --check f94c0e6cb9cd072286d6e4414eb2c1f8974d4ce5 HEAD",
+      "exitCode": 0,
+      "revision": "85f428e4395a2435f639c60fe4ab8c88300af62d"
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "exitCode": 0,
+      "scope": "private f94 base plus initial five-file instrumentation; five required UI shards, root separate split not included"
+    }
+  ],
+  "originalReportPreservedSHA256": "b02c9b2213a893326066c12eb9760729ab8fc9800cbba56f606f1188aee7e2c3",
+  "releaseBehavior": "Independent001 token equivalence review; Apple runtime remains required",
+  "retention": "Full xcresult app stdout; compact attachment artifact alone insufficient",
+  "implementationLimits": {
+    "processRecordsIncludingMarker": 512,
+    "controlRecordsIncludingMarker": 256,
+    "boundedUTF16Observation": 257,
+    "overlongBothComparison": "unknown",
+    "rawTextLogged": false
+  }
+}
