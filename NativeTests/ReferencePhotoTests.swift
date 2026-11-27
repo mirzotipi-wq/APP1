@@ -4,6 +4,7 @@ import Foundation
 import ImageIO
 import LightingCore
 import UniformTypeIdentifiers
+import UIKit
 import XCTest
 @testable import KeyAndFill
 
@@ -267,5 +268,68 @@ final class ReferencePhotoTests: XCTestCase {
             }
             XCTAssertEqual(try Data(contentsOf: url), original)
         }
+    }
+
+    @MainActor
+    func testTemporaryDisappearanceRetainsSessionUntilRepresentableRemoval() {
+        let controller = ComparisonSessionDismissalObserver.Controller()
+        var closes = 0
+        controller.update(onDismiss: { closes += 1 })
+        controller.loadViewIfNeeded()
+        controller.beginAppearanceTransition(true, animated: false)
+        controller.endAppearanceTransition()
+
+        // A covering picker does not dismiss the comparison's UIKit ancestors.
+        controller.beginAppearanceTransition(false, animated: false)
+        controller.endAppearanceTransition()
+        XCTAssertEqual(closes, 0)
+        controller.beginAppearanceTransition(true, animated: false)
+        controller.endAppearanceTransition()
+        XCTAssertEqual(closes, 0)
+
+        // SwiftUI removal can happen without any ancestor being dismissed.
+        ComparisonSessionDismissalObserver.dismantleUIViewController(controller, coordinator: ())
+        XCTAssertEqual(closes, 1)
+    }
+
+    @MainActor
+    func testRemovalClosesOnceReleasesCaptureAndRejectsLateCallbackUpdates() {
+        final class SessionResource { var closed = false }
+        let controller = ComparisonSessionDismissalObserver.Controller()
+        controller.loadViewIfNeeded()
+        controller.beginAppearanceTransition(true, animated: false)
+        controller.endAppearanceTransition()
+        var closes = 0
+        weak var retainedSession: SessionResource?
+        do {
+            let session = SessionResource()
+            retainedSession = session
+            controller.update(onDismiss: {
+                session.closed = true
+                closes += 1
+                // Cleanup may reenter through a parent's dismissal.
+                ComparisonSessionDismissalObserver.dismantleUIViewController(controller, coordinator: ())
+            })
+        }
+        XCTAssertNotNil(retainedSession)
+
+        ComparisonSessionDismissalObserver.dismantleUIViewController(controller, coordinator: ())
+        XCTAssertEqual(closes, 1)
+        XCTAssertNil(retainedSession)
+
+        weak var staleSession: SessionResource?
+        do {
+            let session = SessionResource()
+            staleSession = session
+            controller.update(onDismiss: {
+                session.closed = true
+                closes += 1
+            })
+        }
+        XCTAssertNil(staleSession, "A removed observer must not retain a new session callback")
+        ComparisonSessionDismissalObserver.dismantleUIViewController(controller, coordinator: ())
+        controller.beginAppearanceTransition(false, animated: false)
+        controller.endAppearanceTransition()
+        XCTAssertEqual(closes, 1)
     }
 }

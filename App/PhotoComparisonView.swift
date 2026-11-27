@@ -346,25 +346,46 @@ struct PhotoComparisonView: View {
 }
 
 /// SwiftUI disappearance also occurs when a nested picker or sheet covers a
-/// session. Only a completed dismissal of this controller's ancestor releases
-/// the photos; a cancelled interactive swipe must retain them.
+/// session. A completed dismissal or removal of the representable releases the
+/// photos; a temporary covering or cancelled interactive swipe must retain them.
 @MainActor
 struct ComparisonSessionDismissalObserver: UIViewControllerRepresentable {
     let onDismiss: () -> Void
 
     func makeUIViewController(context: Context) -> Controller {
         let controller = Controller()
-        controller.onDismiss = onDismiss
+        controller.update(onDismiss: onDismiss)
         return controller
     }
 
     func updateUIViewController(_ controller: Controller, context: Context) {
-        controller.onDismiss = onDismiss
+        controller.update(onDismiss: onDismiss)
+    }
+
+    static func dismantleUIViewController(_ controller: Controller, coordinator: ()) {
+        // Removing the parent SwiftUI view need not dismiss a UIKit ancestor.
+        // This is terminal removal, unlike viewDidDisappear under a picker.
+        controller.finishSession()
     }
 
     final class Controller: UIViewController {
-        var onDismiss: (() -> Void)?
+        private var onDismiss: (() -> Void)?
         private var dismissalStarted = false
+        private var sessionFinished = false
+
+        func update(onDismiss: @escaping () -> Void) {
+            guard !sessionFinished else { return }
+            self.onDismiss = onDismiss
+        }
+
+        func finishSession() {
+            guard !sessionFinished else { return }
+            sessionFinished = true
+            dismissalStarted = false
+            let callback = onDismiss
+            onDismiss = nil
+            callback?()
+        }
 
         private var ancestorIsBeingDismissed: Bool {
             var ancestor: UIViewController? = self
@@ -387,7 +408,7 @@ struct ComparisonSessionDismissalObserver: UIViewControllerRepresentable {
 
         override func viewDidDisappear(_ animated: Bool) {
             super.viewDidDisappear(animated)
-            if dismissalStarted || ancestorIsBeingDismissed { onDismiss?() }
+            if dismissalStarted || ancestorIsBeingDismissed { finishSession() }
             dismissalStarted = false
         }
 

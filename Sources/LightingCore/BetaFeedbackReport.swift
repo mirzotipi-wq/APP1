@@ -23,6 +23,18 @@ public struct BetaFeedbackReport: Equatable, Sendable {
     public static let maximumVersionUTF8Bytes = 64
     public static let maximumReportUTF8Bytes = 8_192
 
+    /// Build metadata may omit this value, especially in a local build. Accept
+    /// only a complete Git SHA-1 object name; an unresolved setting, abbreviation
+    /// or arbitrary text must never be presented as an identified source build.
+    public static func validatedSourceRevision(_ input: String?) -> String? {
+        guard let input else { return nil }
+        let bytes = Array(input.utf8.prefix(41))
+        guard bytes.count == 40, bytes.allSatisfy({
+            (48...57).contains($0) || (65...70).contains($0) || (97...102).contains($0)
+        }) else { return nil }
+        return String(decoding: bytes, as: UTF8.self).lowercased()
+    }
+
     /// Session-only raw text for one form field. Validate a replacement before
     /// storing it; report cleanup must never silently alter an editable draft.
     public struct NoteDraft: Equatable, Sendable {
@@ -58,10 +70,12 @@ public struct BetaFeedbackReport: Equatable, Sendable {
     }
 
     public static let contentsNotice = "This report contains app version/build, OS version, device family, and any notes you enter. The app adds no photographs, project or scene contents, account details, network or hardware identifiers, or logs. Check your notes for personal information before sharing."
+    public static let sourceRevisionNotice = "This report also includes the build's source revision, an identifier for the app's code."
     public static let simulationNotice = "Lighting previews and reference suggestions are simulations and planning aids. They are not calibrated equipment or camera exposure, and do not establish an exact reconstruction. Confirm results with your equipment, a light meter and test photographs."
 
     public let appVersion: String
     public let buildVersion: String
+    public let sourceRevision: String?
     public let operatingSystemVersion: String
     public let deviceFamily: DeviceFamily
     public let problem: String
@@ -72,9 +86,11 @@ public struct BetaFeedbackReport: Equatable, Sendable {
 
     public init(appVersion: String?, buildVersion: String?, operatingSystemVersion: String?,
                 deviceFamily: DeviceFamily, problem: String = "",
-                reproductionSteps: String = "", expectedResult: String = "") {
+                reproductionSteps: String = "", expectedResult: String = "",
+                sourceRevision: String? = nil) {
         self.appVersion = Self.versionToken(appVersion)
         self.buildVersion = Self.versionToken(buildVersion)
+        self.sourceRevision = Self.validatedSourceRevision(sourceRevision)
         self.operatingSystemVersion = Self.versionToken(operatingSystemVersion)
         self.deviceFamily = deviceFamily
 
@@ -100,7 +116,7 @@ public struct BetaFeedbackReport: Equatable, Sendable {
         App version: \(appVersion)
         Build: \(buildVersion)
         OS version: \(operatingSystemVersion)
-        Device family: \(deviceFamily.rawValue)
+        Device family: \(deviceFamily.rawValue)\(sourceRevision.map { "\nSource revision: \($0)" } ?? "")
 
         Problem or observation
         \(noteText(problem, field: .problem))
@@ -112,7 +128,7 @@ public struct BetaFeedbackReport: Equatable, Sendable {
         \(noteText(expectedResult, field: .expectedResult))
 
         Report contents
-        \(Self.contentsNotice)
+        \(Self.contentsNotice)\(sourceRevision == nil ? "" : "\n" + Self.sourceRevisionNotice)
 
         Simulation and calibration
         \(Self.simulationNotice)

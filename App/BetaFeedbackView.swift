@@ -17,6 +17,9 @@ struct BetaFeedbackView: View {
 
     private let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
     private let buildVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+    private let sourceRevision = BetaFeedbackReport.validatedSourceRevision(
+        Bundle.main.object(forInfoDictionaryKey: "KEYFILL_SOURCE_REVISION") as? String
+    )
     private let osVersion = ProcessInfo.processInfo.operatingSystemVersion
 
     var body: some View {
@@ -25,6 +28,9 @@ struct BetaFeedbackView: View {
                 Section { draftHeading }
                 Section("What will be shared") {
                     Text(BetaFeedbackReport.contentsNotice)
+                    if sourceRevision != nil {
+                        Text(BetaFeedbackReport.sourceRevisionNotice)
+                    }
                     Text("Your draft stays in memory while this sheet is open. Closing it discards your notes. You choose the destination in the system share sheet; nothing is sent automatically.")
                 }
                 Section {
@@ -164,7 +170,8 @@ struct BetaFeedbackView: View {
         return BetaFeedbackReport(appVersion: appVersion, buildVersion: buildVersion,
                                   operatingSystemVersion: "\(osVersion.majorVersion).\(osVersion.minorVersion).\(osVersion.patchVersion)",
                                   deviceFamily: family, problem: problem.text,
-                                  reproductionSteps: reproductionSteps.text, expectedResult: expectedResult.text)
+                                  reproductionSteps: reproductionSteps.text, expectedResult: expectedResult.text,
+                                  sourceRevision: sourceRevision)
     }
 }
 

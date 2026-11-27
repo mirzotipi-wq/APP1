@@ -149,10 +149,11 @@ jobs:
     # 6 host probe + 12 Metal + 25 Debug/test build + 15 simulator Release
     # + 10 boot + 24 native command + 20 device Release minutes, with the same
     # 8 minutes for setup, the macOS package check and evidence export.
+    # An additional 3 minutes packages the checked device app, with 1 for upload.
     # The added 20-minute cap covers a separate arm64 device build/check only;
     # existing native/UI deadlines and their required checks are unchanged.
     # Boot and compilation must not consume the test/finalization deadline.
-    timeout-minutes: 120
+    timeout-minutes: 124
     steps:
       - uses: actions/checkout@v4
       - name: Record Apple toolchain and test the portable package on macOS
@@ -223,6 +224,7 @@ jobs:
           done <<< "$selectors"
           [ "${#tests[@]}" -gt 0 ]
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" build-for-testing 2>&1 | tee build.log
           python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFill.app" | tee icon-debug.log
@@ -244,6 +246,7 @@ jobs:
         run: |
           set -euo pipefail
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
+            KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build 2>&1 | tee release-build.log
           python3 scripts/verify_app_icon.py --bundle "$RUNNER_TEMP/keyfill-build/Build/Products/Release-iphonesimulator/KeyAndFill.app" | tee icon-release.log
@@ -301,6 +304,7 @@ jobs:
           # The following always-run step restores the original artifact layout.
           mkdir -p "$RUNNER_TEMP/keyfill-test-output"
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" \
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee "$RUNNER_TEMP/keyfill-test-output/native-tests.log"
@@ -437,6 +441,7 @@ jobs:
           } 2>&1 | tee "$device_evidence/environment.log"
           [ "$(xcrun --sdk iphoneos --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 device SDK"; exit 1; }
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Release \
+            KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -sdk iphoneos -destination 'generic/platform=iOS' \
             -derivedDataPath "$RUNNER_TEMP/keyfill-device-release-build" \
             ARCHS=arm64 ONLY_ACTIVE_ARCH=NO CODE_SIGNING_ALLOWED=NO build \
@@ -456,6 +461,8 @@ jobs:
               "CFBundleSupportedPlatforms": ["iPhoneOS"],
               "DTPlatformName": "iphoneos",
               "DTSDKName": "iphoneos26.5",
+              "KEYFILL_SOURCE_REVISION": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True, timeout=30).strip(),
           }
           for key, value in expected.items():
               if info.get(key) != value:
@@ -476,9 +483,83 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: arm64-device-release-build-evidence
-          # Logs and generated metadata only; no device app or archive is uploaded.
+          # Failure evidence stays separate from the successful application package.
           path: ${{ runner.temp }}/keyfill-device-release-evidence/
           if-no-files-found: warn
+      - name: Package checked unsigned device application
+        id: device_release_package
+        if: ${{ !cancelled() && steps.device_release_build.outcome == 'success' }}
+        timeout-minutes: 3
+        run: |
+          set -euo pipefail
+          device_app="$RUNNER_TEMP/keyfill-device-release-build/Build/Products/Release-iphoneos/KeyAndFill.app"
+          device_package="$RUNNER_TEMP/keyfill-device-release-package"
+          mkdir "$device_package"
+          ditto -c -k --keepParent "$device_app" "$device_package/KeyAndFill-device-release-unsigned.zip"
+          python3 - "$device_app" "$device_package" <<'PY'
+          import hashlib, json, plistlib, subprocess, sys, zipfile
+          from pathlib import Path
+          bundle, output = map(Path, sys.argv[1:])
+          archive = output / "KeyAndFill-device-release-unsigned.zip"
+          info_bytes = (bundle / "Info.plist").read_bytes()
+          info = plistlib.loads(info_bytes)
+          with zipfile.ZipFile(archive) as package:
+              if package.testzip() is not None:
+                  raise SystemExit("The device ZIP failed its integrity check")
+              if package.read("KeyAndFill.app/Info.plist") != info_bytes:
+                  raise SystemExit("The device ZIP does not contain the checked application")
+              file_count = sum(not item.is_dir() for item in package.infolist())
+          def command(*arguments):
+              return subprocess.check_output(arguments, text=True, timeout=30).strip()
+          digest = hashlib.sha256()
+          with archive.open("rb") as stream:
+              for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                  digest.update(chunk)
+          manifest = {
+              "schema": 1,
+              "kind": "unsigned-device-application",
+              "commit": command("git", "rev-parse", "HEAD"),
+              "tree": command("git", "rev-parse", "HEAD^{tree}"),
+              "trackedSourceClean": subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], check=False).returncode == 0,
+              "configuration": "Release",
+              "architecture": "arm64",
+              "sdk": command("xcrun", "--sdk", "iphoneos", "--show-sdk-version"),
+              "xcode": command("xcodebuild", "-version"),
+              "xcodegen": command("xcodegen", "--version"),
+              "bundleIdentifier": info.get("CFBundleIdentifier"),
+              "sourceRevision": info.get("KEYFILL_SOURCE_REVISION"),
+              "version": info.get("CFBundleShortVersionString"),
+              "build": info.get("CFBundleVersion"),
+              "minimumOSVersion": info.get("MinimumOSVersion"),
+              "codeSigningAllowed": False,
+              "deviceExecution": False,
+              "distributionApproved": False,
+              "archive": archive.name,
+              "archiveBytes": archive.stat().st_size,
+              "archiveFiles": file_count,
+              "sha256": digest.hexdigest(),
+          }
+          (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          (output / "README.txt").write_text(
+              "Key & Fill: unsigned arm64 Release application\n\n"
+              "This package preserves the application that passed the device compile/link, "
+              "bundle, icon and privacy-manifest checks in this workflow.\n"
+              "It is not an installable or TestFlight beta, and is not an xcarchive. "
+              "Signing, provisioning, physical-device validation and owner distribution "
+              "approval remain required.\n"
+              "See manifest.json for source/toolchain identity and ZIP integrity. "
+              "The separate arm64-device-release-build-evidence artifact contains build logs.\n",
+              encoding="utf-8")
+          print(json.dumps(manifest, indent=2))
+          PY
+      - name: Upload unsigned device application
+        if: ${{ !cancelled() && steps.device_release_package.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAndFill-device-release-unsigned
+          path: ${{ runner.temp }}/keyfill-device-release-package/
+          if-no-files-found: error
+          retention-days: 14
   ui:
     # Independent class-level shards retain all scenarios and avoid losing an
     # entire result bundle when a different test class overruns its budget.
@@ -606,6 +687,7 @@ jobs:
         run: |
           set -euo pipefail
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee native-ui-build.log
       # Preparatory host warm-up is diagnostic. The required xcodebuild run
@@ -688,6 +770,7 @@ jobs:
           # The following always-run step restores the original artifact layout.
           mkdir -p "$RUNNER_TEMP/keyfill-test-output"
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
+            KEYFILL_SOURCE_REVISION="$(git rev-parse HEAD)" \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath "$RUNNER_TEMP/keyfill-test-output/NativeTests.xcresult" \
             CODE_SIGNING_ALLOWED=NO "${tests[@]}" test-without-building 2>&1 | tee "$RUNNER_TEMP/keyfill-test-output/native-tests.log"

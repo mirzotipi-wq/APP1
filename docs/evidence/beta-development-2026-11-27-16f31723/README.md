@@ -30,11 +30,46 @@ production fixes and independent review. Protected release requirements remain.
   and retry controls can scroll independently of the PDF preview. Snapshot and
   request-adoption behavior remains intact. Native layout verification is pending.
 
+## Second implementation checkpoint
+
+- The shared photo-session observer now performs idempotent terminal cleanup
+  when SwiftUI removes its controller, including removal without a UIKit
+  dismissal transition. Temporary covering by a picker remains distinct.
+  Two focused native regressions cover the cleanup receipt and retained-photo
+  lifetime. Workers 014 and 016 implemented and independently reviewed this.
+- CI retains the existing checked unsigned arm64 Release app as a separate ZIP,
+  with source/toolchain identity, bundle metadata, size and SHA-256. Packaging
+  validates ZIP integrity and the included Info.plist, preserves failure logs
+  separately and adds no compilation or signing step. Worker 017 identified the
+  missing artifact; root implemented it and 025 independently reviewed it.
+- A validated complete source revision appears in Settings and optional beta
+  feedback metadata. CI stamps both the app and UI-test bundles with the actual
+  checkout SHA; the UI fixture derives its expectation independently from the
+  test bundle. The device check compares the embedded value with Git before
+  packaging. Missing or malformed revision metadata remains unavailable.
+  Workers 028 and 032 implemented and reviewed the app, core and CI wiring.
+
+Device ZIP packaging, source-stamp propagation and new native cleanup tests remain unrun
+on an Apple host at this checkpoint. Two additional portable source-metadata
+regressions also require fresh changed-source execution.
+
 ## Validation and limits
 
 Local environment: Linux; neither Swift nor Xcode is installed. `git diff --check`,
 agent-state structure, native UI class partition, privacy-manifest and app-icon
-checks passed. These checks do not compile Swift or exercise native UI.
+checks passed. YAML, embedded Python and the changed shell commands parse. These
+checks do not compile Swift or exercise native UI.
+
+Published first checkpoint `c9b46a3` has an exact tree match with local `63131a9`,
+recorded in [publication-01.json](publication-01.json). Its complete portable
+[job](https://github.com/mirzotipi-wq/APP1/actions/runs/46061357326/job/140718057890)
+passed: 602 distinct test methods each passed once in Debug and once in Release,
+with zero failed method events; 120 tooling tests passed. All twelve synthetic
+fixtures reported zero unsupported pixels; six shared-kernel and eight strict
+precision cases passed. These numerical outputs are not a new visual or device
+acceptance claim. The [extracted receipt](checkpoint-01-core.json) retains the
+actual method and fixture evidence. Native jobs were still in progress.
+Later changed core/app/configuration inputs require fresh verification.
 
 At baseline, [run 46057140877](https://github.com/mirzotipi-wq/APP1/actions/runs/46057140877)
 passed portable core and the five initially running UI bundle builds. Its UI

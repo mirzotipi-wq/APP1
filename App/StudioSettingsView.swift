@@ -10,6 +10,9 @@ struct StudioSettingsView: View {
     private var appearance = "system"
     @State private var showPurchase = false
     @State private var showBetaFeedback = false
+    private let sourceRevision = BetaFeedbackReport.validatedSourceRevision(
+        Bundle.main.object(forInfoDictionaryKey: "KEYFILL_SOURCE_REVISION") as? String
+    )
 
     var body: some View {
         NavigationStack {
@@ -49,6 +52,14 @@ struct StudioSettingsView: View {
                 }
                 Section("About") {
                     LabeledContent("Version", value: version)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Source revision")
+                        Text(sourceRevision ?? "Unavailable")
+                            .font(.caption.monospaced())
+                            .textSelection(.enabled)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("buildSourceRevision")
+                    }
                     Text("Lighting previews and reference suggestions are planning aids. Confirm the result using your equipment, a light meter and test photographs.")
                     Button {
                         showBetaFeedback = true

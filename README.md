@@ -4,7 +4,7 @@
 
 Key & Fill is a native iOS lighting workspace for photographers and filmmakers: explore a reference, edit a plausible rig, preview its geometry, place it in a room, and export a practical plan.
 
-**Status: beta engineering in progress; distribution readiness remains unverified.** The [current development packet](docs/evidence/beta-development-2026-11-27-16f31723/README.md) tracks a new 100-agent request with actual identities and completion states. The first checkpoint preserves rejected reference/arrangement/lux drafts, keeps save feedback accurate and reachable, prevents stale AR sheet reopening, and adapts PDF export controls for large text. See the [tester guide](docs/BETA_TESTER_GUIDE.md), [handoff](agents/HANDOFF.md), and [release gates](docs/QUALITY.md) for the distinction between implemented features and verified beta acceptance.
+**Status: beta engineering in progress; distribution readiness remains unverified.** The [current development packet](docs/evidence/beta-development-2026-11-27-16f31723/README.md) tracks a new 100-agent request with actual identities and completion states. Reviewed changes preserve rejected reference/arrangement/lux drafts, keep save feedback accurate and reachable, prevent stale AR sheet reopening, adapt PDF controls, clear retired photo sessions, retain unsigned device artifacts, and identify builds by their source revision. See the [tester guide](docs/BETA_TESTER_GUIDE.md), [handoff](agents/HANDOFF.md), and [release gates](docs/QUALITY.md) for the distinction between implemented features and verified beta acceptance.
 
 ## Current implementation
 
@@ -47,7 +47,7 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-The current source changes have independent review and passing repository structure, UI class partition, privacy-manifest, app-icon and whitespace checks. Swift and Xcode are unavailable in this development environment. Three focused save-feedback regressions were added; changed-source compilation, native execution and Default/AXXXL layout verification remain required. No new passing Swift or device result is inferred from source inspection.
+The current source changes have independent review and passing repository structure, UI class partition, privacy-manifest, app-icon and whitespace checks. Swift and Xcode are unavailable in this development environment. The first published checkpoint `c9b46a3` passed 602 portable methods in each of Debug and Release plus 120 tooling tests. The next source adds photo teardown and source-revision diagnostics; its fresh Swift/native execution, actual device packaging and Default/AXXXL layout verification remain required. Source inspection is not native or physical-device acceptance.
 
 Baseline `14d33cd` passed its portable CI job and built the first five UI bundles before this checkpoint; other baseline jobs were pending when inspected. Its results remain specific to that source. [Current implementation and worker evidence](docs/evidence/beta-development-2026-11-27-16f31723/README.md) records fresh outcomes as they become available. [The earlier campaign](docs/evidence/beta-progress-2026-11-27-0eff52f/README.md) retains its 599-test local results, failures, diagnostics and previous worker identities separately.
 

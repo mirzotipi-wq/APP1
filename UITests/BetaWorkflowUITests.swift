@@ -444,6 +444,21 @@ final class BetaWorkflowUITests: XCTestCase {
             XCTAssertNotNil(lines[index].range(of: pattern, options: .regularExpression))
         }
         XCTAssertTrue(["Device family: iPhone", "Device family: iPad", "Device family: Other"].contains(lines[5]))
+        // The test target receives the same immutable build setting as the app.
+        // Expected source identity comes from that independent bundle, never
+        // from the report whose complete metadata allowlist is under test.
+        let configuredSource = Bundle(for: BetaWorkflowUITests.self)
+            .object(forInfoDictionaryKey: "KEYFILL_SOURCE_REVISION") as? String ?? ""
+        let sourceBytes = Array(configuredSource.utf8.prefix(41))
+        let validSource = sourceBytes.count == 40 && sourceBytes.allSatisfy {
+            (48...57).contains($0) || (65...70).contains($0) || (97...102).contains($0)
+        }
+        XCTAssertTrue(configuredSource.isEmpty || validSource,
+                      "A configured test build source revision must be a complete ASCII Git SHA-1")
+        let expectedSource = validSource ? String(decoding: sourceBytes, as: UTF8.self).lowercased() : nil
+        let sourceLine = expectedSource.map { "\nSource revision: \($0)" } ?? ""
+        let sourceNotice = expectedSource == nil ? "" :
+            "\nThis report also includes the build's source revision, an identifier for the app's code."
         let os = ProcessInfo.processInfo.operatingSystemVersion
         let exact = """
         Key & Fill — beta feedback
@@ -451,7 +466,7 @@ final class BetaWorkflowUITests: XCTestCase {
         \(lines[2])
         \(lines[3])
         OS version: \(os.majorVersion).\(os.minorVersion).\(os.patchVersion)
-        \(lines[5])
+        \(lines[5])\(sourceLine)
 
         Problem or observation
         \(problem)
@@ -463,7 +478,7 @@ final class BetaWorkflowUITests: XCTestCase {
         \(expected)
 
         Report contents
-        This report contains app version/build, OS version, device family, and any notes you enter. The app adds no photographs, project or scene contents, account details, network or hardware identifiers, or logs. Check your notes for personal information before sharing.
+        This report contains app version/build, OS version, device family, and any notes you enter. The app adds no photographs, project or scene contents, account details, network or hardware identifiers, or logs. Check your notes for personal information before sharing.\(sourceNotice)
 
         Simulation and calibration
         Lighting previews and reference suggestions are simulations and planning aids. They are not calibrated equipment or camera exposure, and do not establish an exact reconstruction. Confirm results with your equipment, a light meter and test photographs.

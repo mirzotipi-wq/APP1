@@ -3735,6 +3735,30 @@
       "artifact": "docs/evidence/beta-development-2026-11-27-16f31723/README.md",
       "reviewer": "Root and actual workers in this packet; per-change reviews recorded in ledger",
       "notes": "First checkpoint retains rejected drafts, binds save feedback to revision, rejects stale AR reopening and adapts PDF export controls. Structural checks do not establish runtime acceptance."
+    },
+    {
+      "gate": "core_tests",
+      "result": "pass",
+      "scope": "historical",
+      "revision": "c9b46a32eb95e5bfad299cded917909ce675f2f0",
+      "date": "2026-11-27",
+      "method": "Read completed raw GitHub core job log and reconcile exact distinct method pass events in Debug and Release",
+      "environment": "Ubuntu 24.04, Swift 6.4.3, x86_64; run 46061357326 / job 140718057890",
+      "artifact": "docs/evidence/beta-development-2026-11-27-16f31723/checkpoint-01-core.json",
+      "reviewer": "Root; implementation and independent source reviews in actual worker ledger",
+      "notes": "602 distinct methods,each two passed events,zero failed events;120 tooling tests. Latest core source adds optional source-revision diagnostics and needs fresh validation."
+    },
+    {
+      "gate": "regression",
+      "result": "unverified",
+      "scope": "current",
+      "revision": "working-tree after c9b46a32eb95e5bfad299cded917909ce675f2f0",
+      "date": "2026-11-27",
+      "method": "Independent source reviews 016, 025, 032 and root structural/syntax validation",
+      "environment": "Local Linux without Swift/Xcode;changed-source hosted validation pending",
+      "artifact": "docs/evidence/beta-development-2026-11-27-16f31723/README.md",
+      "reviewer": "Root and actual reviewers recorded in worker ledger",
+      "notes": "Second checkpoint changes photo teardown,device artifact packaging,and app/test source metadata. Native cleanup,layout,Info.plist propagation and actual artifact creation remain unverified;no gate promotion."
     }
   ],
   "historyArchives": [

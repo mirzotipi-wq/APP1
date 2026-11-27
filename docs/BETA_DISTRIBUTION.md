@@ -137,6 +137,42 @@ product identifier and existing free feature access remain intact. A future
 commerce decision must follow the existing product/quality contracts; archive
 preparation does not authorize a price or entitlement change.
 
+## Retained unsigned device application
+
+The `iOS Prototype` workflow is configured to retain the existing arm64 Release
+device application after its compile/link, platform, architecture, icon and
+privacy-manifest checks succeed. The separate artifact is named
+`KeyAndFill-device-release-unsigned` and has a 14-day retention period. Its
+creation is conditional on those checks; a pending or failed workflow is not
+evidence that this artifact exists.
+
+The artifact contains the zipped `KeyAndFill.app`, a `manifest.json` with the
+source commit/tree, toolchain versions, bundle identity, file count, byte size
+and ZIP SHA-256, and a short scope note. Packaging verifies ZIP integrity and
+that the included Info.plist belongs to the checked application. It reuses the
+existing build and does not perform another compilation. Failure logs remain
+available separately as `arm64-device-release-build-evidence`.
+
+This is an unsigned application for developer inspection. It is not an
+installable beta or an `.xcarchive`; use the archive preparation procedure above
+for owner-configured build preparation. Signing, physical-device validation and
+distribution approval remain separate. Download availability must be checked
+on the actual source-specific Actions run.
+
+## Identifying a running build
+
+CI supplies the checked-out Git commit through `KEYFILL_SOURCE_REVISION` to the
+app and UI-test bundles. Settings shows the complete recorded revision, and a
+reviewed beta feedback report includes it with an explicit contents notice.
+Only a complete 40-character hexadecimal revision is accepted; a local build
+without this value shows `Unavailable` and omits it from feedback. No revision
+is guessed from the marketing version or build number.
+
+The device bundle check verifies that its embedded revision matches the checked
+out commit before packaging. The ZIP manifest includes both values. This ties
+the generated artifact to its source identifier; it does not establish physical
+device behavior or replace the manifest's tracked-source cleanliness record.
+
 ## Tooling verification
 
 ```sh

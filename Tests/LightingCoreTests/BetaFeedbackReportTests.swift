@@ -4,10 +4,12 @@ import XCTest
 final class BetaFeedbackReportTests: XCTestCase {
     private func report(appVersion: String? = "0.1.0", buildVersion: String? = "2",
                         osVersion: String? = "18.1.0", family: BetaFeedbackReport.DeviceFamily = .iPhone,
-                        problem: String = "", steps: String = "", expected: String = "") -> BetaFeedbackReport {
+                        problem: String = "", steps: String = "", expected: String = "",
+                        sourceRevision: String? = nil) -> BetaFeedbackReport {
         BetaFeedbackReport(appVersion: appVersion, buildVersion: buildVersion,
                            operatingSystemVersion: osVersion, deviceFamily: family,
-                           problem: problem, reproductionSteps: steps, expectedResult: expected)
+                           problem: problem, reproductionSteps: steps, expectedResult: expected,
+                           sourceRevision: sourceRevision)
     }
 
     func testEmptyDraftHasAnExplicitStablePrivacyAllowlistAndNoInventedObservations() {
@@ -52,6 +54,46 @@ final class BetaFeedbackReportTests: XCTestCase {
         XCTAssertTrue(first.plainText.contains("Problem or observation\nThe view stayed open."))
         XCTAssertTrue(first.plainText.contains("Steps to reproduce\n1. Open Settings.\n2. Tap Close."))
         XCTAssertTrue(first.plainText.contains("Expected result\nReturn to the studio."))
+    }
+
+    func testFullSourceRevisionDistinguishesBuildsWithoutChangingVersionOrPrivateFields() {
+        let revision = "0123456789abcdef0123456789abcdef01234567"
+        let draft = report(sourceRevision: revision.uppercased())
+        XCTAssertEqual(draft.sourceRevision, revision)
+        XCTAssertEqual(draft, report(sourceRevision: revision))
+        XCTAssertEqual(Array(draft.plainText.components(separatedBy: "\n").prefix(8)), [
+            "Key & Fill — beta feedback", "", "App version: 0.1.0", "Build: 2",
+            "OS version: 18.1.0", "Device family: iPhone", "Source revision: \(revision)", ""
+        ])
+        XCTAssertTrue(draft.plainText.contains("Report contents\n" + BetaFeedbackReport.contentsNotice
+            + "\n" + BetaFeedbackReport.sourceRevisionNotice + "\n\nSimulation and calibration"))
+        let different = report(sourceRevision: "1123456789abcdef0123456789abcdef01234567")
+        XCTAssertEqual(draft.appVersion, different.appVersion)
+        XCTAssertEqual(draft.buildVersion, different.buildVersion)
+        XCTAssertNotEqual(draft, different)
+        XCTAssertNotEqual(draft.plainText, different.plainText)
+        XCTAssertEqual(draft.problem, "")
+        XCTAssertTrue(draft.shortenedFields.isEmpty)
+        XCTAssertTrue(draft.cleanedFields.isEmpty)
+    }
+
+    func testMissingInvalidAndUnresolvedSourceRevisionPreservesTheNoRevisionReport() {
+        let revision = "0123456789abcdef0123456789abcdef01234567"
+        let invalid: [String?] = [nil, "", "0123456", "$(KEYFILL_SOURCE_REVISION)",
+            " " + revision, revision + "\n", revision + "0", String(repeating: "a", count: 39),
+            String(repeating: "g", count: 40), String(repeating: "ａ", count: 40),
+            revision + "\nProject: private-marker", "a" + String(repeating: "\u{0301}", count: 100_000)]
+        let baseline = report()
+        for input in invalid {
+            XCTAssertNil(BetaFeedbackReport.validatedSourceRevision(input))
+            let draft = report(sourceRevision: input)
+            XCTAssertNil(draft.sourceRevision)
+            XCTAssertEqual(draft, baseline)
+            XCTAssertEqual(draft.plainText, baseline.plainText)
+            XCTAssertFalse(draft.plainText.contains("Source revision:"))
+            XCTAssertFalse(draft.plainText.contains(BetaFeedbackReport.sourceRevisionNotice))
+            XCTAssertFalse(draft.plainText.contains("private-marker"))
+        }
     }
 
     func testFreshDraftCannotReuseNotesFromAnEarlierReport() {
@@ -180,7 +222,8 @@ final class BetaFeedbackReportTests: XCTestCase {
         let huge = String(repeating: "x\n", count: 100_000)
         let version = String(repeating: "9", count: BetaFeedbackReport.maximumVersionUTF8Bytes)
         let draft = report(appVersion: version, buildVersion: version, osVersion: version,
-                           family: .other, problem: huge, steps: huge, expected: huge)
+                           family: .other, problem: huge, steps: huge, expected: huge,
+                           sourceRevision: "0123456789abcdef0123456789abcdef01234567")
         for note in [draft.problem, draft.reproductionSteps, draft.expectedResult] {
             XCTAssertLessThanOrEqual(note.utf8.count, BetaFeedbackReport.maximumNoteUTF8Bytes)
         }
