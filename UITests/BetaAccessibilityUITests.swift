@@ -10,7 +10,9 @@ final class BetaAccessibilityUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     override func tearDownWithError() throws {
-        let attachment = XCTAttachment(string: observations.joined(separator: "\n"))
+        let details = observations.joined(separator: "\n")
+        print("Supplemental-AXXXL-Beta-observed-controls:\n" + details)
+        let attachment = XCTAttachment(string: details)
         attachment.name = "Supplemental-AXXXL-Beta-observed-controls"
         attachment.lifetime = .keepAlways
         add(attachment)
@@ -21,6 +23,8 @@ final class BetaAccessibilityUITests: XCTestCase {
         app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US",
                                "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEXT_LAYOUT_PROBES"] = "1"
+        app.launchEnvironment["KEYFILL_UI_TEXT_INPUT_TRACE"] = "1"
         if corrupt { app.launchEnvironment["KEYFILL_UI_TEST_CORRUPT"] = "1" }
         return app
     }
@@ -35,10 +39,9 @@ final class BetaAccessibilityUITests: XCTestCase {
         waitForEnabledStudioControl(healthy.buttons["openProjectLibrary"])
         let title = healthy.staticTexts["studioWelcomeTitle"]
         revealStudioContent(title, in: healthy, towardBottom: false, fullyVisible: true)
-        try assertWelcomeTitleFitsLargestFont(title)
+        try assertWelcomeTitleFitsLargestFont(title, in: healthy)
         try control(healthy.buttons["dismissStudioWelcome"], label: "Dismiss welcome", in: healthy,
                     towardBottom: false)
-        capture("Welcome-heading", in: healthy)
         for (identifier, label) in [("welcomeSaveCurrent", "Save current setup"),
                                     ("welcomeOpenGuide", "Studio guide"),
                                     ("welcomeOpenProjects", "Projects")] {
@@ -177,22 +180,84 @@ final class BetaAccessibilityUITests: XCTestCase {
         XCTAssertTrue(viewport.contains(state.frame), "\(state.label): \(state.frame) outside \(viewport)")
     }
 
-    private func assertWelcomeTitleFitsLargestFont(_ element: XCUIElement) throws {
-        let state = try element.snapshot()
+    private func assertWelcomeTitleFitsLargestFont(_ element: XCUIElement, in app: XCUIApplication) throws {
+        let initial = try element.snapshot()
+        XCTAssertEqual(initial.elementType, .staticText)
+        XCTAssertEqual(initial.label, "Start your first portrait")
+        observations.append("Welcome title before recorded layout: AX frame=\(initial.frame), " +
+                            "value=\(String(describing: initial.value))")
+        // Preserve the reached title even if its geometry assertion fails. The
+        // original 587 < 591 failure occurred before any welcome image existed.
+        capture("Welcome-heading", in: app)
+
+        let probe = "studioWelcomeTitle"
+        var readyState: (any XCUIElementSnapshot)?
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard let state = try? element.snapshot(), let value = state.value as? String,
+                  RecordedTitleLayout.frame(from: value, probe: probe) != nil else { return false }
+            readyState = state
+            return true
+        }, object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+                       "The opted-in app must publish the actual welcome Text layout")
+        let state = try XCTUnwrap(readyState, "Expected the current layout-readiness snapshot")
         XCTAssertEqual(state.elementType, .staticText)
         XCTAssertEqual(state.label, "Start your first portrait")
+        let value = try XCTUnwrap(state.value as? String)
+        let frame = try XCTUnwrap(RecordedTitleLayout.frame(from: value, probe: probe))
+        let viewport = try StudioViewportObservation(in: app, matching: state).viewport
+        XCTAssertTrue(viewport.contains(state.frame), "The semantic title must be fully visible")
+        XCTAssertTrue(viewport.contains(frame), "The actual Text layout must be fully visible")
         let preferred = UIFont.preferredFont(forTextStyle: .title3,
             compatibleWith: UITraitCollection(preferredContentSizeCategory: category))
         let font = UIFont.systemFont(ofSize: preferred.pointSize, weight: .semibold)
         let scale = UIScreen.main.scale
+        let measurementWidth = max(1, (frame.width * scale).rounded() / scale)
         let required = (state.label as NSString).boundingRect(
+            with: CGSize(width: measurementWidth,
+                         height: CGFloat.greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
+        let axRequired = (state.label as NSString).boundingRect(
             with: CGSize(width: max(1, (state.frame.width * scale).rounded() / scale),
                          height: CGFloat.greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin], attributes: [.font: font], context: nil)
+        // The AX semantic rectangle is not an intrinsic SwiftUI layout probe.
+        // Keep both observations; apply the unchanged physical-pixel line-box
+        // rule to the actual Text BEFORE its expanding frame, never its card.
+        observations.append("Welcome AX title: frame=\(state.frame), " +
+                            "observedPixels=\((state.frame.height * scale).rounded()), " +
+                            "requiredPixelsAtAXWidth=\(ceil(axRequired.height * scale))")
         observations.append("Welcome title: category=\(category.rawValue), font=\(font.pointSize), " +
-                            "frame=\(state.frame), requiredHeight=\(required.height), scale=\(scale)")
-        XCTAssertGreaterThanOrEqual((state.frame.height * scale).rounded(), ceil(required.height * scale),
-                                   "The actual title must fit the requested largest-size font")
+                            "fontName=\(font.fontName), ascent=\(font.ascender), descent=\(font.descender), " +
+                            "frame=\(frame), measurementWidth=\(measurementWidth), " +
+                            "requiredHeight=\(required.height), scale=\(scale), " +
+                            "observedPixels=\((frame.height * scale).rounded()), " +
+                            "requiredPixels=\(ceil(required.height * scale)); " +
+                            "source=DEBUG GeometryReader before frame/padding, not AX StaticText")
+        XCTAssertGreaterThanOrEqual((frame.height * scale).rounded(), ceil(required.height * scale),
+                                   "The actual title must fit the requested largest-size font in its recorded Text layout")
+    }
+
+    private struct RecordedTitleLayout: Decodable {
+        let kind: String
+        let probe: String
+        let x: Double
+        let y: Double
+        let width: Double
+        let height: Double
+
+        static func frame(from value: String, probe: String) -> CGRect? {
+            let prefix = "DEBUG_UI_TEXT_LAYOUT_V1:"
+            guard value.utf8.count <= 1_024, value.hasPrefix(prefix),
+                  let data = String(value.dropFirst(prefix.count)).data(using: .utf8),
+                  let record = try? JSONDecoder().decode(Self.self, from: data),
+                  record.kind == "recorded-swiftui-text-layout", record.probe == probe else { return nil }
+            let frame = CGRect(x: record.x, y: record.y, width: record.width, height: record.height)
+            guard !frame.isEmpty, !frame.isNull, !frame.isInfinite,
+                  frame.minX.isFinite, frame.minY.isFinite,
+                  frame.maxX.isFinite, frame.maxY.isFinite else { return nil }
+            return frame
+        }
     }
 
     private func expectValue(_ value: String, of element: XCUIElement) {

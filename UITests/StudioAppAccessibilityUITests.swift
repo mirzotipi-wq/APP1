@@ -53,6 +53,7 @@ final class StudioAppAccessibilityUITests: XCTestCase {
         app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US",
                                "-UIPreferredContentSizeCategoryName", launchValue]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEXT_INPUT_TRACE"] = "1"
         // Only this semantics/layout workflow opts into recorded Text geometry.
         app.launchEnvironment["KEYFILL_UI_TEXT_LAYOUT_PROBES"] = "1"
         runningApp = app

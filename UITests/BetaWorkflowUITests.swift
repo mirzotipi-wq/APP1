@@ -8,6 +8,7 @@ final class BetaWorkflowUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEXT_INPUT_TRACE"] = "1"
         if corrupt { app.launchEnvironment["KEYFILL_UI_TEST_CORRUPT"] = "1" }
         return app
     }

@@ -185,6 +185,11 @@ struct ProjectLibraryRecoveryView: View {
             Label("New library is ready", systemImage: "checkmark.circle")
                 .font(.headline)
                 .fixedSize(horizontal: false, vertical: true)
+                // Expose one status header. Otherwise the identifier can be
+                // inherited by the decorative checkmark ("Selected") instead
+                // of the visible completion message.
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("New library is ready")
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityIdentifier("libraryRecoverySuccess")
             Text("Copies of the original saved files were kept on this device before the new library was created. Your previous projects have not been restored.")

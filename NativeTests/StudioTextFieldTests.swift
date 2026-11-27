@@ -60,6 +60,179 @@ final class StudioTextFieldTests: XCTestCase {
         return own + view.subviews.flatMap { nativeFields(in: $0) }
     }
 
+#if DEBUG
+    private func traceRecords(_ lines: [String]) throws -> [[String: Any]] {
+        let prefix = "KEYFILL_INPUT_TRACE_V1 "
+        return try lines.map { line in
+            XCTAssertTrue(line.hasPrefix(prefix))
+            return try XCTUnwrap(JSONSerialization.jsonObject(
+                with: Data(line.dropFirst(prefix.count).utf8)) as? [String: Any])
+        }
+    }
+
+    func testInputTraceOmitsPrivateDraftsLabelsHintsAndUnknownIdentifiers() throws {
+        let secret = "PRIVATE-CANARY-096-e\u{0301}-\u{1F511}"
+        var model = secret, lines: [String] = []
+        let field = StudioNativeTextField(frame: .zero)
+        field.inputTrace = StudioTextInputTrace(isEnabled: true, sink: { lines.append($0) })
+        let view = StudioTextField(secret, text: Binding(get: { model }, set: { next in
+            if StudioNumericInput.isWithinDraftLimit(next) { model = next }
+        }), isFocused: .constant(false),
+            accessibility: .init(label: secret, identifier: secret, hint: secret))
+        field.configure(view, contentSizeCategory: .large, isEnabled: true)
+        XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+                                      replacementString: secret))
+        field.text = secret + "-accepted"
+        field.sendActions(for: .editingChanged)
+        let accepted = model
+        let oversized = secret + String(repeating: "x", count: 1_000)
+        XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+                                      replacementString: oversized))
+        field.text = oversized
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(field.text, accepted)
+        XCTAssertEqual(model, accepted)
+        field.invalidate()
+
+        let records = try traceRecords(lines)
+        XCTAssertFalse(records.isEmpty)
+        XCTAssertFalse(lines.joined().contains("PRIVATE-CANARY"))
+        XCTAssertFalse(lines.joined().contains(oversized))
+        let allowed = Set(["version", "sequence", "control", "lifecycle", "uptime", "epochSeconds", "field", "event", "state"])
+        for record in records {
+            XCTAssertTrue(Set(record.keys).isSubset(of: allowed))
+            XCTAssertEqual(record["field"] as? String, "other")
+        }
+        let readbacks = records.filter { $0["event"] as? String == "bindingReadback" }
+        XCTAssertEqual(readbacks.count, 2)
+        XCTAssertEqual((readbacks.first?["state"] as? [String: Any])?["bindingMatchesNative"] as? Bool, true)
+        XCTAssertEqual((readbacks.last?["state"] as? [String: Any])?["bindingMatchesNative"] as? Bool, false)
+        XCTAssertTrue(records.contains { record in
+            guard let state = record["state"] as? [String: Any] else { return false }
+            return state["replacementUTF16"] as? Int == 257
+        }, "Oversized input is observed with a bounded length, never copied into output")
+    }
+
+    func testInputTraceCapsIncludeMarkersAndDisabledRecorderEmitsNothing() throws {
+        var lines: [String] = [], disabledLines: [String] = []
+        var collected = 0, disabledCollected = 0
+        let trace = StudioTextInputTrace(isEnabled: true, sink: { lines.append($0) })
+        let disabled = StudioTextInputTrace(isEnabled: false, sink: { disabledLines.append($0) })
+        let state = StudioTextInputTrace.State(
+            configured: true, enabled: true, firstResponder: false, inWindow: false,
+            markedText: false, applyingConfiguration: false, replacingText: false,
+            synchronizingFocus: false, nativeUTF16: 3, modelUTF16: 3,
+            bindingUTF16: nil, replacementUTF16: nil, bindingMatchesNative: nil,
+            requestedFocus: nil, rangeLocation: nil, rangeLength: nil)
+        let lifecycle = UUID()
+        let first = trace.makeControlID(), second = trace.makeControlID(), third = trace.makeControlID()
+        for control in [first, second, third] {
+            for _ in 0..<600 {
+                trace.record(control: control, lifecycle: lifecycle, identifier: "precisionValue",
+                             event: .editingChanged) { collected += 1; return state }
+                disabled.record(control: control, lifecycle: lifecycle, identifier: "precisionValue",
+                                event: .editingChanged) { disabledCollected += 1; return state }
+            }
+        }
+        XCTAssertTrue(disabledLines.isEmpty)
+        XCTAssertEqual(disabledCollected, 0)
+        XCTAssertEqual(collected, 510, "Neither cap/disabled attempts nor either marker may collect native state")
+        let records = try traceRecords(lines)
+        XCTAssertEqual(records.count, 512, "The process cap includes its terminal marker")
+        XCTAssertEqual(records.filter { $0["control"] as? Int == first }.count, 256)
+        XCTAssertEqual(records.filter { $0["control"] as? Int == second }.count, 256)
+        XCTAssertEqual(records.filter { $0["control"] as? Int == third }.count, 0)
+        XCTAssertEqual(records.compactMap { $0["sequence"] as? Int }, Array(1...512))
+        XCTAssertEqual(records.filter { $0["event"] as? String == "controlLimit" }.count, 1)
+        XCTAssertEqual(records.filter { $0["event"] as? String == "processLimit" }.count, 1)
+        XCTAssertEqual(records.last?["event"] as? String, "processLimit")
+        XCTAssertNil(records.last?["state"])
+        XCTAssertFalse(trace.canRecord(control: first))
+        XCTAssertFalse(trace.canRecord(control: third))
+    }
+
+    func testInputTraceLeavesAcceptedRejectedAndExternalResetBehaviorIdentical() throws {
+        var outcomes: [[String]] = [], recorded: [String] = []
+        for tracing in [false, true] {
+            var model = "900", writes = 0, textReads = 0, focusReads = 0, focusWrites = 0
+            var focused = false, lines: [String] = []
+            let view = control(text: Binding(get: { textReads += 1; return model }, set: { next in
+                writes += 1
+                if StudioNumericInput.isWithinDraftLimit(next) { model = next }
+            }), focus: Binding(get: { focusReads += 1; return focused }, set: { focused = $0; focusWrites += 1 }))
+            let field = StudioNativeTextField(frame: .zero)
+            field.inputTrace = StudioTextInputTrace(isEnabled: tracing, sink: { lines.append($0) })
+            field.configure(view, contentSizeCategory: .large, isEnabled: true)
+            defer { field.invalidate() }
+            try select(NSRange(location: 3, length: 0), in: field)
+            XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 3, length: 0),
+                                          replacementString: "1"))
+            field.text = "9001"
+            try select(NSRange(location: 4, length: 0), in: field)
+            field.sendActions(for: .editingChanged)
+            XCTAssertEqual(model, "9001")
+            XCTAssertEqual(try selection(in: field), NSRange(location: 4, length: 0))
+            let acceptedSelection = try selection(in: field)
+            XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: acceptedSelection,
+                                          replacementString: String(repeating: "8", count: 1_000)))
+            field.text = String(repeating: "8", count: 1_000)
+            field.sendActions(for: .editingChanged)
+            XCTAssertEqual(model, "9001")
+            XCTAssertEqual(field.text, "9001")
+            XCTAssertEqual(try selection(in: field), acceptedSelection)
+            model = "42"
+            field.text = "90012" // A real external reset wins over this late native event.
+            field.sendActions(for: .editingChanged)
+            XCTAssertEqual(field.text, "42")
+            XCTAssertEqual(model, "42")
+            XCTAssertEqual(writes, 2)
+            XCTAssertFalse(field.isFirstResponder)
+            field.textFieldDidBeginEditing(field)
+            XCTAssertTrue(focused)
+            field.textFieldDidEndEditing(field)
+            XCTAssertFalse(focused)
+            XCTAssertEqual(focusWrites, 2)
+            outcomes.append([model, field.text ?? "<nil>", String(writes), String(describing: try selection(in: field)),
+                             String(textReads), String(focusReads), String(focusWrites)])
+            if tracing { recorded = lines } else { XCTAssertTrue(lines.isEmpty) }
+        }
+        XCTAssertEqual(outcomes[0], outcomes[1])
+        let events = try traceRecords(recorded).compactMap { $0["event"] as? String }
+        XCTAssertTrue(events.contains("delegateEdit"))
+        XCTAssertTrue(events.contains("editingChanged"))
+        XCTAssertTrue(events.contains("publishExternalReset"))
+        XCTAssertTrue(events.contains("replaceNativeText"))
+    }
+
+    func testUnchangedReconfigurationPreservesTraceBudgetForTheNextNativeEdit() async throws {
+        var model = "900", lines: [String] = []
+        let view = control(text: Binding(get: { model }, set: { model = $0 }))
+        let field = StudioNativeTextField(frame: .zero)
+        field.inputTrace = StudioTextInputTrace(isEnabled: true, sink: { lines.append($0) })
+        field.configure(view, contentSizeCategory: .large, isEnabled: true)
+        defer { field.invalidate() }
+        await drainMainQueue()
+        let before = lines.count
+        for _ in 0..<100 {
+            field.configure(view, contentSizeCategory: .large, isEnabled: true)
+            await drainMainQueue() // Exercise each queued unchanged focus request.
+        }
+        XCTAssertEqual(lines.count, before, "Unchanged renders/focus checks must not consume the input diagnostic budget")
+        try select(NSRange(location: 3, length: 0), in: field)
+        XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 3, length: 0),
+                                      replacementString: "1"))
+        field.text = "9001"
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(model, "9001")
+        let events = try traceRecords(lines).compactMap { $0["event"] as? String }
+        XCTAssertTrue(events.contains("delegateEdit"))
+        XCTAssertTrue(events.contains("editingChanged"))
+        XCTAssertTrue(events.contains("bindingReadback"))
+        XCTAssertFalse(events.contains("controlLimit"))
+        XCTAssertFalse(events.contains("processLimit"))
+    }
+#endif
+
     func testNativeSizingAndConfigurationOwnTheAccessibleInput() {
         let field = configured(control())
         defer { field.invalidate() }

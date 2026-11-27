@@ -6,6 +6,7 @@ final class ManualRoomPlacementUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEXT_INPUT_TRACE"] = "1"
         app.launch()
         let open = app.buttons["openRoomPlacement"]
         XCTAssertTrue(open.waitForExistence(timeout: 15))
@@ -85,6 +86,7 @@ final class ManualRoomPlacementUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launchEnvironment["KEYFILL_UI_TEST_ID"] = UUID().uuidString
+        app.launchEnvironment["KEYFILL_UI_TEXT_INPUT_TRACE"] = "1"
         app.launch()
         let open = app.buttons["openRoomPlacement"]
         XCTAssertTrue(open.waitForExistence(timeout: 15))

@@ -20,9 +20,11 @@ struct StudioWelcomeView: View {
                     Text("Start your first portrait")
                         .font(.title3.weight(.semibold))
                         .fixedSize(horizontal: false, vertical: true)
+                        .studioTextLayoutProbe("studioWelcomeTitle")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityAddTraits(.isHeader)
                         .accessibilityIdentifier("studioWelcomeTitle")
+                        .studioTextLayoutValue("studioWelcomeTitle")
                     Button {
                         // No animation, including when Reduce Motion is enabled.
                         isDismissed = true

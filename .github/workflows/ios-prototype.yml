@@ -471,11 +471,11 @@ jobs:
     strategy:
       fail-fast: false
       # Each required shard has its own simulator and bounded budget.
-      # Separate hosted runners and per-test stores make all five shards
+      # Separate hosted runners and per-test stores make all six shards
       # independent. Start app accessibility alongside the longer workflows.
       max-parallel: 5
       matrix:
-        shard: [room-precision, library-reference, studio-export, studio-optics, app-accessibility]
+        shard: [room-precision, library-reference, studio-export, studio-optics, app-accessibility, beta-workflows]
         include:
           - shard: room-precision
             runner: macos-26-intel
@@ -491,6 +491,14 @@ jobs:
           - shard: studio-export
             runner: macos-26-intel
             expected_arch: x86_64
+            ui_test_minutes: 40
+            job_minutes: 93
+          - shard: beta-workflows
+            runner: macos-26-intel
+            expected_arch: x86_64
+            # The combined 19-method export/beta shard reached its 40-minute
+            # command cap at f94c0e6 after 14 starts. Keep every method and
+            # assertion, with the eight beta/Plan methods in their own shard.
             ui_test_minutes: 40
             job_minutes: 93
           - shard: studio-optics
@@ -626,7 +634,7 @@ jobs:
             tests+=("$selector")
           done <<< "$selectors"
           [ "${#tests[@]}" -gt 0 ]
-          if [ "$TEST_SHARD" = "studio-export" ] || [ "$TEST_SHARD" = "studio-optics" ]; then
+          if [ "$TEST_SHARD" = "studio-export" ] || [ "$TEST_SHARD" = "studio-optics" ] || [ "$TEST_SHARD" = "beta-workflows" ]; then
             printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
             record_studio_trace_end() {
               studio_test_exit_code=$?
@@ -691,7 +699,7 @@ jobs:
                                 "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
           PY
       - name: Export studio slider unified log
-        if: ${{ always() && (matrix.shard == 'studio-export' || matrix.shard == 'studio-optics') }}
+        if: ${{ always() && (matrix.shard == 'studio-export' || matrix.shard == 'studio-optics' || matrix.shard == 'beta-workflows') }}
         continue-on-error: true
         timeout-minutes: 2
         env:

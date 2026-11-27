@@ -37,7 +37,7 @@ jobs:
               raise SystemExit("Invalid workflow run")
           if not re.fullmatch(r"[a-f0-9]{40}", revision):
               raise SystemExit("Invalid source revision")
-          if not re.fullmatch(r"ui-(app-accessibility|room-precision|studio-export|studio-optics|library-reference)-evidence-compact", artifact):
+          if not re.fullmatch(r"ui-(app-accessibility|room-precision|studio-export|studio-optics|library-reference|beta-workflows)-evidence-compact", artifact):
               raise SystemExit("Only original compact UI artifacts may be reviewed")
           if not isinstance(captures, list) or not 1 <= len(captures) <= 24:
               raise SystemExit("Invalid capture selection")
