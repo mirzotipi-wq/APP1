@@ -1,0 +1,43 @@
+{
+  "worker": "/root/a087_welcome_title_query_repair",
+  "baseRevision": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "changedFile": "UITests/BetaAccessibilityUITests.swift",
+  "sourceSHA256": "022614b1b97c283598f7c78053426a805b33fb8d1b59a92d39c6649ac1f504cb",
+  "sourceScope": "Exact identifier and expected label plus uniqueness assertion; identifier-wide absence after dismissal",
+  "preserved": [
+    "Actual Text diagnostic layout oracle",
+    "Largest text/font measurements",
+    "Physical-pixel height threshold",
+    "Semantic and actual-layout viewport containment",
+    "Minimum hit targets",
+    "All timeout and attempt budgets",
+    "All screenshot names and capture requirements",
+    "All required method identities"
+  ],
+  "checks": [
+    {
+      "command": "swiftc -frontend -parse -D DEBUG UITests/BetaAccessibilityUITests.swift",
+      "exitCode": 0
+    },
+    {
+      "command": "swiftc -frontend -parse UITests/BetaAccessibilityUITests.swift",
+      "exitCode": 0
+    },
+    {
+      "command": "git diff --check -- UITests/BetaAccessibilityUITests.swift",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 ../a087-evidence/query_probe.py",
+      "exitCode": 0,
+      "scenarios": 8,
+      "capturedTitleNodes": 2,
+      "qualifiedMatches": 1
+    }
+  ],
+  "platform": "Linux x86_64 Swift 6.0.3; no Apple SDK/runtime",
+  "historicalEvidence": "A084 verified original2fc beta archive and hierarchy BCD4C175-2657-4B13-8FD9-FC3FB508BEAC.txt",
+  "causalLimit": "The duplicate identifier and pre-drag nil-target path support query ambiguity; the thrown snapshot error was suppressed and is not directly logged.",
+  "nativeOutcome": "unverified",
+  "commitPerformed": false
+}

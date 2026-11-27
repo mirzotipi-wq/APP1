@@ -1,0 +1,1461 @@
+{
+  "start": {
+    "NativeTests": {
+      "BoundedFileReaderTests": [
+        "testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+        "testCheckpointCannotSuppressActualTaskCancellation",
+        "testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+        "testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+        "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "testMetadataPreflightHonorsActualTaskCancellation",
+        "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+        "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+        "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+        "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "testRejectsOversizeBeforeAnyReadCheckpoint",
+        "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking"
+      ],
+      "EntitlementStoreConfigurationTests": [
+        "testCancelledUnconfiguredActionsRemainTerminalAndIdle",
+        "testCurrentPrereleaseBuildHasNoConfiguredProduct",
+        "testNilEmptyAndWhitespaceOnlyIdentifiersDisableSales",
+        "testUnconfiguredPurchaseAndRestoreReturnWithoutStartingActivity",
+        "testUnconfiguredRefreshPreservesIdleStateAndNoOutcome",
+        "testUnexpandedBuildSettingsAndEmbeddedWhitespaceDisableSales"
+      ],
+      "LightTargetLuxDraftTests": [
+        "testInitializationUsesCapturedSeparatorAndDoesNotReseedAnExistingDraft",
+        "testInvalidEnglishGroupingCannotBecomeFrenchTargetWithoutAnEdit",
+        "testLocaleIdentifierChangeIsGuardedEvenWhenTheSeparatorMatches",
+        "testLocaleRoundTripDoesNotReviveAnInvalidatedDraft",
+        "testOversizeRejectionSurvivesLocaleChangeAndUnchangedTextEchoes",
+        "testRawByteAndDecimalGrammarBoundsRemainIndependentOfDraftAdmission",
+        "testUnchangedContextAndTextKeepTheSameAcceptedInterpretation",
+        "testValidDecimalIsBlockedUntilEditedForTheNewLocale",
+        "testWrongGroupingAndNegativeTargetsRemainRejectedInTheirCapturedLocale"
+      ],
+      "LightingPlanPDFTests": [
+        "testEmptySceneStillProducesReadableDiagramAndSchedule",
+        "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+        "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+        "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits"
+      ],
+      "ProjectDocumentIOTests": [
+        "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+        "testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+        "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+        "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+        "testOversizedFileIsRejectedBeforeReadingItsContents",
+        "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+        "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt"
+      ],
+      "ProjectLibraryPresentationTests": [
+        "testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+        "testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+        "testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+        "testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+        "testIgnorableCharactersCannotHideBlankEdgesFromNameDisambiguation",
+        "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+        "testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+        "testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+        "testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars"
+      ],
+      "ProjectNameEditorTests": [
+        "testClearAcknowledgesRejectionWithoutAllowingAnEmptySubmission",
+        "testRejectedPasteRestoresNativeTextButCannotSubmitOldNameOnReturn",
+        "testShortenedLegacyNameStillRequiresADeliberateDifferentName",
+        "testSingleGraphemeOversizedPasteCannotEscapeTheScalarLimit"
+      ],
+      "ProjectStoreOperationTests": [
+        "testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+        "testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+        "testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+        "testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+        "testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+        "testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+        "testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+        "testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+        "testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+        "testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+        "testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+        "testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+        "testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+        "testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+        "testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+        "testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects"
+      ],
+      "ReferenceAnalysisServiceTests": [
+        "testByteLimitRejectsOversizedInputBeforeImageRead",
+        "testDecodableJPEGIsRejectedAsUnsanitizedInput",
+        "testEitherOversizedSourceEdgeIsRejectedBeforeAnalysis",
+        "testEmptyAndMalformedInputsReturnUnsupportedManualFallback",
+        "testFeaturelessPNGRequiresManualDirectionAndCannotProduceRig",
+        "testPreCancelledAnalysisThrowsInsteadOfPublishingFallback",
+        "testRepeatedUnsupportedAnalysisKeepsObservationsStable"
+      ],
+      "ReferencePhotoTests": [
+        "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+        "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+        "testFileRepresentationConsumesOnlyItsTemporaryFile",
+        "testFileSizeBoundBeforeDecode",
+        "testRejectsMalformedAndOversizedInputs",
+        "testRotatesReducesAndRemovesSourceMetadata",
+        "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones"
+      ],
+      "RoomRotationReadoutTests": [
+        "testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+        "testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+        "testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+      ],
+      "SpatialAimRecoveryTests": [
+        "testCoincidentAimRecoversRetainedLampAtTranslatedVerticalPose"
+      ],
+      "SpatialEmitterGeometryTests": [
+        "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+        "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+        "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+        "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+        "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes"
+      ],
+      "SpatialEntityUpdateTests": [
+        "testKindTransitionsReplaceShapeWithoutReplacingLiveLampNodes",
+        "testRectangleResizingReplacesGeometryWhilePoseAndOutputEditsReuseIt",
+        "testStandThresholdDetachesHitsAndReattachesTheSameCylinder"
+      ],
+      "SpatialInteractionTests": [
+        "testCameraBodyAndLensFollowTheAuthoredNegativeZConvention",
+        "testCaptureRealSceneKitOrdinaryAndCrowdedViewports",
+        "testCoincidentSoftboxAndHighStandFitActualNarrowProjection",
+        "testDisablingAndDismantlingRejectsSelectionAndReleasesGeometry",
+        "testInvalidSceneDiscardsHitIdentitiesAndRecoversWithoutOldGeometry",
+        "testMetadataOutputAndSelectionKeepLiveNodesAndRefreshCallback",
+        "testRemovedAndReintroducedUUIDCannotReuseOldHitObject",
+        "testRepeatedUpdatesKeepBoundedNodeCountAndLiveFixtureIdentity",
+        "testUndefinedCameraHidesPriorViewAndRecoversAuthoredLens"
+      ],
+      "SpatialNavigationRecoveryTests": [
+        "testInitialValidEmptyOrbitEnablesInteraction",
+        "testInvalidOrbitScenePreservesUserCameraAndTargetWithoutFitRequest",
+        "testInvalidOrbitTransitionRecoversFromAuthoredCameraWithUnchangedFitRequest",
+        "testInvalidOrbitTransitionRecoversFromUndefinedCameraWithUnchangedFitRequest"
+      ],
+      "SpatialPreviewTests": [
+        "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+        "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+        "testTranslatedRigAndModifierFitActualSceneKitProjection"
+      ],
+      "SpatialSelectionLifetimeTests": [
+        "testDeletionDetachesAllRetainedEquipmentBeforeTheSameUUIDReturns",
+        "testIdenticalSceneRefreshesAndClearsCallbackWithoutReplacingEquipmentOrOrbit",
+        "testInvalidSceneDetachesAllRetainedEquipmentBeforeRecovery"
+      ],
+      "SpatialViewportStateTests": [
+        "testAimTargetSphereIsContainedBeyondItsAuthoredCenter",
+        "testCoincidentAimBoundsIncludeTheVisibleFourMeterHousing",
+        "testFarClippingEnclosesTheAuthoredWorldAfterExtremePanAndOrbit",
+        "testFitIncludesHighStandBasesAndExtremeSparseAndCrowdedRigs",
+        "testFloatProjectionDoesNotNarrowTheSmallerViewportAxis",
+        "testGestureLimitsAndFitRecoveryRemainFinite",
+        "testHorizontalWorldTranslationPreservesFitScaleAndRelativePose",
+        "testInvalidGestureSamplesCannotPoisonNavigation",
+        "testInvalidSceneIsRejectedBeforeBoundsConstruction",
+        "testNonGeometricEditsDoNotChangeViewportBounds",
+        "testPanUsesTheSmallerViewportAxisAndDoesNotChangeCameraDistance"
+      ],
+      "StudioAdaptiveLayoutTests": [
+        "testNestedLayoutsRetainChildStateThroughWidthForcedColumnAndAccessibilityChanges"
+      ],
+      "StudioCommittedSaveTests": [
+        "testCancellingObserverAfterRealFirstSaveCommitPreservesRoomAndUndo",
+        "testCancellingSessionTaskAfterRealFirstSaveCommitStillAdoptsReceipt"
+      ],
+      "StudioFeatureSessionTests": [
+        "testAcceptedFeatureMutationClearsZeroMotionPlanOriginBeforeNextDrag",
+        "testBusyRejectionKeepsFeatureAndFirstSavePreservesLogicalContext",
+        "testEditAwayAndUndoBackCannotReviveSnapshotOrDiscardRedo",
+        "testFailedInitialLoadBlocksFeatureButExplicitRetryCanRecover",
+        "testFailedProjectOperationsKeepTheOpenFeatureUsable",
+        "testForeignPresentationWithEqualSnapshotCannotWriteOrCloseOwner",
+        "testOpenAdmissionPreservesGestureUntilLoadedCurrentValidDestination",
+        "testReloadAndProjectSwitchClearFeatureAndRejectItsLateCallbacks",
+        "testRepeatedHealthyLoadRejectsBeforeReservationOrEndingGesture",
+        "testRetiredOwnerCannotApplyOrFinishTheNextPresentedRoomGroup",
+        "testRoomAndARAdvanceOwnReceiptAndUndoAllAcceptedMeasurementsTogether",
+        "testSceneNoOpIsAcceptedOnceAndRetiresWithoutDiscardingRedo",
+        "testTargetLuxNoOpRetiresWithoutChangingEditor",
+        "testTargetLuxUsesCapturedUUIDAndOnlyAcceptsOutputChanges",
+        "testUnrelatedTypedOrSceneUpdateSeparatesRoomUndoButInvalidAndNoOpDoNot",
+        "testWrongRouteAndInvalidSceneAreAtomicEvenWithAnOpenControl"
+      ],
+      "StudioFeatureWindowTests": [
+        "testTwoWindowsKeepRoomOwnersThroughCompetingSaveAndRetireOnlyRecoveredWindow"
+      ],
+      "StudioInitialProjectTests": [
+        "testCallerSuppliedDraftNeverReceivesStarterPermission",
+        "testCancelledFirstCreateBeforeStoreWorkDoesNotAdoptAndCanRetry",
+        "testCancelledObserverAfterFirstCreateCommitStillAdoptsOnce",
+        "testCancelledSessionAfterFirstCreateCommitStillAdoptsOnce",
+        "testDirtySavedProjectStillRequiresSaveBeforeCreatingAnotherProject",
+        "testEditedAndUndoneStarterCannotUseInitialCreateException",
+        "testFailedInitialLoadNeverAuthorizesCreateOrChangesCorruptBytes",
+        "testFirstCreateRequiresHealthyEmptyLoadAndSavesOnlyRequestedProject",
+        "testInvalidFirstProjectKeepsStarterAndCanBeRetried",
+        "testOnlyCreateCommandAcceptsNilLibraryInSessionAndStore",
+        "testOutAndBackEditStaysProtectedEvenWithNoHistoryOrContentDifference",
+        "testStorageFailureBeforeFirstCommitKeepsStarterAndCanBeRetried",
+        "testTwoEmptyWindowsRaceFirstCreateAgainstFirstSaveWithoutOverwrite",
+        "testUnchangedEditAndFeatureMustCloseBeforeInitialCreate",
+        "testValidatedFirstImportKeepsExactBackupSceneWithoutPlaceholder"
+      ],
+      "StudioLibraryRecoveryTests": [
+        "testArchiveFailureLeavesBlockedEditorAndOriginalBytesThenRetrySucceeds",
+        "testBlockedRecoveryPreservesOriginalsAndAdoptsCommittedDefault",
+        "testCallerSuppliedDraftRemainsProtectedEvenAfterLoadFailure",
+        "testCancellationBeforeStorageLeavesBytesUntouchedAndCanRetry",
+        "testCancelledInspectionCannotReturnConfirmationOrChangeFiles",
+        "testCancelledObserverAfterCommitStillAdoptsRecoveryExactlyOnce",
+        "testCancelledSessionTaskAfterCommitStillAdoptsRecoveryExactlyOnce",
+        "testChangedFilesRejectConfirmationAndFreshInspectionCanRetry",
+        "testCompetingWindowConfirmationsProduceOnlyOneCommit",
+        "testDelayedInspectionRejectsReceiptAfterEditorRecoveryChangesGeneration",
+        "testDelayedInspectionRejectsReceiptWhileAnotherOperationIsReserved",
+        "testHealthySavedAndDirtyEditorsCannotResetLibrary",
+        "testStaleEditorCannotInspectOrConfirmRecovery",
+        "testUnloadedHealthyEmptyAndUnsavedEditorsCannotResetLibrary",
+        "testUnreadableLegacyOnlyRecoveryPreservesLegacyAndReopensNewLibrary"
+      ],
+      "StudioObservationTests": [
+        "testBusyObservationTracksReservationAndCompletionButTaskIsIgnored",
+        "testFeatureObservationFollowsOpenRetirementAndRemoval",
+        "testSceneObservationFollowsActualEditAndUndo"
+      ],
+      "StudioPaletteTests": [
+        "testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+        "testFixedPlanTextAndLightControlsContrastInBothAppearances",
+        "testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+        "testProjectSheetControlsContrastOnTheirProductionSurfaces",
+        "testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows"
+      ],
+      "StudioPlanGestureLifetimeTests": [
+        "testDiscreteHeightSurvivesLatePlanSampleAndCompleteUndoRedo",
+        "testEditingEndsRetireOnlyTheirMatchingPlanOwner",
+        "testExistingProjectSaveRetiresCallbacksEvenWhenGenerationDoesNotChange",
+        "testFinishedGestureRejectsLateChangesAndEndWithoutRestarting",
+        "testForeignControlRetiresPlanCallbacksWithoutSplittingItsOwnEdit",
+        "testForeignSceneUpdateRetiresPlanAndRecordsSeparateUndoStep",
+        "testInvalidAndNoOpForeignCommandsPreserveActivePlanAndRedo",
+        "testRenameReplacementRetiresCumulativeCallbacksAndKeepsBothUndoSteps",
+        "testRetiredTokenCannotMutateOrEndNewSameLightGesture",
+        "testSelectionRoundTripCannotReviveSameLightGesture"
+      ],
+      "StudioPlanSessionTests": [
+        "testDifferentControlCommitsPlanAndRejectsItsDelayedEnd",
+        "testDiscreteReplacementDuringPlanDragKeepsSeparateUndoSteps",
+        "testInvalidScaleOrTranslationPreservesIdleRedoAndActiveDrag",
+        "testMissingOrUnselectedLightAndStaleGenerationLeavePlanStateUnchanged",
+        "testSelectionChangeCommitsPlanExactlyOnceWithoutChangingSceneRevision",
+        "testStalePlanEndCannotFinishNewLightDrag"
+      ],
+      "StudioSessionTests": [
+        "testAcceptedSaveEndsPlanGestureAndLateEndCannotCloseNewGeneration",
+        "testCancellingSheetObserverStillReconcilesCommittedSaveExactlyOnce",
+        "testFirstSaveKeepsSelectionAndHistoryAndReleasesTask",
+        "testLoadFailureProtectsDataAndRejectsEditingAndSave",
+        "testPendingOperationRejectsMutationAndSecondReservation",
+        "testProjectSwitchResetsHistoryAndPresentationButMetadataDoesNot",
+        "testRealCompetingSavePreservesUnsavedSceneAndHistory",
+        "testSessionAndStoreSurviveObserverReleaseUntilReceiptSettles",
+        "testStaleControlEndCannotCloseSameControlAfterFirstSave",
+        "testStaleReservationDoesNotEndCurrentContinuousEdit",
+        "testTwoWindowsKeepIndependentEditorsAndRecoverCompetingSave",
+        "testTypedCommandsRequireCurrentLoadedEditorAndUseTheAddressedLight"
+      ],
+      "StudioSliderEditingTests": [
+        "testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+        "testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+        "testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+        "testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+        "testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+        "testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+        "testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+        "testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue"
+      ],
+      "StudioSliderTrackingTests": [
+        "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+        "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "testOutAndBackOptionalSettingsPreserveOriginalSceneAndRedo",
+        "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "testReadThatFinishesSessionCannotReopenHistory",
+        "testReadThatReplacesSessionCannotReopenRetiredOwner",
+        "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "testSessionRetainsOriginalWriterAndRange",
+        "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "testValueAfterEndCannotReopenHistoryOrDisableUndo"
+      ],
+      "StudioTextFieldTests": [
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testCanonicalEquivalentExternalResetWinsOverLateEventsAndReconfiguration",
+        "testCanonicalEquivalentOversizedPasteStillReachesBoundedValidation",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+        "testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit"
+      ],
+      "StudioTextLayoutDiagnosticsTests": [
+        "testDisabledHostedProbePreservesUninstrumentedLayout",
+        "testExplicitGatingAndExactFrameRoundTrip",
+        "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton"
+      ],
+      "StudioTrackingSliderTests": [
+        "testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+        "testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+        "testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble"
+      ],
+      "StudioViewportGeometryTests": [
+        "testCoveredProjectsNavigationAndDoneDoNotObscureNamingSheet",
+        "testKeyboardAndAssistantStripExcludeCoveredControls",
+        "testMissingLazyTargetSearchStillAvoidsKeyboard",
+        "testMissingScrollAndInvalidTreeFailClosed",
+        "testNavigationAndNestedScrollSurfacesAllBoundTheTarget",
+        "testNonfiniteObstacleCannotBeDroppedFromTheViewport",
+        "testOnlyHittableFixedControlsInTheSameNavigationOwnerTrimContent",
+        "testOverlappingLiveControlWithUnknownOwnerFailsClosed"
+      ],
+      "StudyPrecisionMatrixTests": [
+        "testMetalMatchesCPUForEightRequiredPrecisionFixtures"
+      ],
+      "StudyPreviewAdoptionTests": [
+        "testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade"
+      ],
+      "StudyPreviewPipelineTests": [
+        "testCancellationDiscardsNoncooperativeRenderCompletion",
+        "testCancelledErrorsAndPrecancelledWorkStaySilent",
+        "testConversionFailureHasNoSuccessfulImageOrBackend",
+        "testCurrentFailureCanRetryWithFreshAttempt",
+        "testDisappearanceOrInactivityInvalidatesLateFailure",
+        "testInvalidationDuringConversionCannotPublish",
+        "testLateFailureCannotReplaceNewerImage",
+        "testLateSuccessCannotReplaceNewerCompletion",
+        "testPrecancelledBeginCannotInvalidateLiveRequest",
+        "testReturningToCompletedRequestInvalidatesIntermediateWork"
+      ],
+      "StudyRenderCacheTests": [
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+        "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+        "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "testRealCPUCacheResourcesForFourSmallFrames",
+        "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames",
+        "testSubjectAndResolutionDoNotShareFrames"
+      ],
+      "StudyRendererTests": [
+        "testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+        "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "testEngineInvalidWidthsPreserveResolutionError",
+        "testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+        "testEnginePublishesRealFrameWithEitherBackend",
+        "testEngineUsesCPUForFarGeometry",
+        "testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal",
+        "testMetalInvalidCameraPreservesConstructorErrorBeforePrecisionRouting",
+        "testMetalInvalidWidthsPreserveResolutionErrorBeforePrecisionRouting",
+        "testMetalMatchesCPUOnAvailableDevice",
+        "testMetalRawDispatchRejectsInvalidPackedMetadata",
+        "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal"
+      ]
+    },
+    "UITests": {
+      "AccessibilityAuditUITests": [
+        "testExactLightIntensityEditorAccessibilityAudit",
+        "testInitialLoadedPlanStudioAccessibilityAudit"
+      ],
+      "BetaAccessibilityUITests": [
+        "testBetaSurfacesAtLargestAccessibilityTextSize"
+      ],
+      "BetaWorkflowUITests": [
+        "testFeedbackExactReviewBackAndDiscardExcludePrivateProjectData",
+        "testInitialProjectNameEditorSavesOnlyRequestedProjectAndReopens",
+        "testUnreadableLibraryRecoveryNeedsConfirmationAndSurvivesRelaunch",
+        "testWelcomeDismissalPersistsAndInitialActionsNeedNoDefaultSave"
+      ],
+      "LightingPlanExportUITests": [
+        "testExportPreviewOpensWithoutSavingOrChangingScene",
+        "testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory"
+      ],
+      "ManualRoomPlacementUITests": [
+        "testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+        "testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates"
+      ],
+      "PlanGestureUITests": [
+        "testFreshDragAfterBackgroundResumeKeepsPriorPositionAndHistory",
+        "testFreshDragAfterCompletionCreatesASeparateUndoableEdit",
+        "testShortFastSelectedMarkerDragChangesPositionAndUndoRedoRestoresExactly"
+      ],
+      "PrecisionEditingUITests": [
+        "testExactCameraFocalLengthUndoRedoAndReopen",
+        "testExactLightIntensityValidationUndoRedoAndReopen",
+        "testExactModifierWidthAndRoomCrossingWithInsideCenters"
+      ],
+      "ProjectLibraryUITests": [
+        "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "testCreateDuplicateRenameSwitchAndRelaunch",
+        "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+        "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+        "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+        "testStaleSaveReloadRequiresConfirmation",
+        "testUnsavedSetupMustBeSavedBeforeLibraryChanges"
+      ],
+      "ReferenceComparisonUITests": [
+        "testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        "testReferenceComparisonOpensWithRealStudyAndNoPhoto"
+      ],
+      "StudioAppAccessibilityUITests": [
+        "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ],
+      "StudioOpticsUITests": [
+        "testOpticsEditingUndoRedoAndRelaunch",
+        "testOpticsRepeatability02",
+        "testOpticsRepeatability03",
+        "testOpticsRepeatability04",
+        "testOpticsRepeatability05",
+        "testOpticsRepeatability06",
+        "testOpticsRepeatability07",
+        "testOpticsRepeatability08",
+        "testOpticsRepeatability09",
+        "testOpticsRepeatability10"
+      ],
+      "StudioSmokeTests": [
+        "testCameraFocalLengthUndoAndRelaunch",
+        "testCorruptProjectBlocksSavingAcrossRelaunch",
+        "testMeterBalanceSaveUndoAndRelaunch",
+        "testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+        "testRecipeEditSaveAndReopen",
+        "testSettingsFeet3DFitAndSimulatorARManualFallback",
+        "testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+        "testStudyRendersActualReferenceFrame",
+        "testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene"
+      ]
+    }
+  },
+  "upstream": {
+    "NativeTests": {
+      "BoundedFileReaderTests": [
+        "testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+        "testCheckpointCannotSuppressActualTaskCancellation",
+        "testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+        "testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+        "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "testMetadataPreflightHonorsActualTaskCancellation",
+        "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+        "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+        "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+        "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "testRejectsOversizeBeforeAnyReadCheckpoint",
+        "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking"
+      ],
+      "EntitlementStoreConfigurationTests": [
+        "testCancelledUnconfiguredActionsRemainTerminalAndIdle",
+        "testCurrentPrereleaseBuildHasNoConfiguredProduct",
+        "testNilEmptyAndWhitespaceOnlyIdentifiersDisableSales",
+        "testUnconfiguredPurchaseAndRestoreReturnWithoutStartingActivity",
+        "testUnconfiguredRefreshPreservesIdleStateAndNoOutcome",
+        "testUnexpandedBuildSettingsAndEmbeddedWhitespaceDisableSales"
+      ],
+      "LightTargetLuxDraftTests": [
+        "testInitializationUsesCapturedSeparatorAndDoesNotReseedAnExistingDraft",
+        "testInvalidEnglishGroupingCannotBecomeFrenchTargetWithoutAnEdit",
+        "testLocaleIdentifierChangeIsGuardedEvenWhenTheSeparatorMatches",
+        "testLocaleRoundTripDoesNotReviveAnInvalidatedDraft",
+        "testOversizeRejectionSurvivesLocaleChangeAndUnchangedTextEchoes",
+        "testRawByteAndDecimalGrammarBoundsRemainIndependentOfDraftAdmission",
+        "testUnchangedContextAndTextKeepTheSameAcceptedInterpretation",
+        "testValidDecimalIsBlockedUntilEditedForTheNewLocale",
+        "testWrongGroupingAndNegativeTargetsRemainRejectedInTheirCapturedLocale"
+      ],
+      "LightingPlanPDFTests": [
+        "testEmptySceneStillProducesReadableDiagramAndSchedule",
+        "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+        "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+        "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits"
+      ],
+      "ProjectDocumentIOTests": [
+        "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+        "testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+        "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+        "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+        "testOversizedFileIsRejectedBeforeReadingItsContents",
+        "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+        "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt"
+      ],
+      "ProjectLibraryPresentationTests": [
+        "testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+        "testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+        "testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+        "testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+        "testIgnorableCharactersCannotHideBlankEdgesFromNameDisambiguation",
+        "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+        "testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+        "testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+        "testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars"
+      ],
+      "ProjectNameEditorTests": [
+        "testClearAcknowledgesRejectionWithoutAllowingAnEmptySubmission",
+        "testRejectedPasteRestoresNativeTextButCannotSubmitOldNameOnReturn",
+        "testShortenedLegacyNameStillRequiresADeliberateDifferentName",
+        "testSingleGraphemeOversizedPasteCannotEscapeTheScalarLimit"
+      ],
+      "ProjectStoreOperationTests": [
+        "testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+        "testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+        "testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+        "testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+        "testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+        "testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+        "testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+        "testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+        "testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+        "testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+        "testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+        "testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+        "testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+        "testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+        "testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+        "testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects"
+      ],
+      "ReferenceAnalysisServiceTests": [
+        "testByteLimitRejectsOversizedInputBeforeImageRead",
+        "testDecodableJPEGIsRejectedAsUnsanitizedInput",
+        "testEitherOversizedSourceEdgeIsRejectedBeforeAnalysis",
+        "testEmptyAndMalformedInputsReturnUnsupportedManualFallback",
+        "testFeaturelessPNGRequiresManualDirectionAndCannotProduceRig",
+        "testPreCancelledAnalysisThrowsInsteadOfPublishingFallback",
+        "testRepeatedUnsupportedAnalysisKeepsObservationsStable"
+      ],
+      "ReferencePhotoTests": [
+        "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+        "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+        "testFileRepresentationConsumesOnlyItsTemporaryFile",
+        "testFileSizeBoundBeforeDecode",
+        "testRejectsMalformedAndOversizedInputs",
+        "testRotatesReducesAndRemovesSourceMetadata",
+        "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones"
+      ],
+      "RoomRotationReadoutTests": [
+        "testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+        "testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+        "testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+      ],
+      "SpatialAimRecoveryTests": [
+        "testCoincidentAimRecoversRetainedLampAtTranslatedVerticalPose"
+      ],
+      "SpatialEmitterGeometryTests": [
+        "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+        "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+        "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+        "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+        "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes"
+      ],
+      "SpatialEntityUpdateTests": [
+        "testKindTransitionsReplaceShapeWithoutReplacingLiveLampNodes",
+        "testRectangleResizingReplacesGeometryWhilePoseAndOutputEditsReuseIt",
+        "testStandThresholdDetachesHitsAndReattachesTheSameCylinder"
+      ],
+      "SpatialInteractionTests": [
+        "testCameraBodyAndLensFollowTheAuthoredNegativeZConvention",
+        "testCaptureRealSceneKitOrdinaryAndCrowdedViewports",
+        "testCoincidentSoftboxAndHighStandFitActualNarrowProjection",
+        "testDisablingAndDismantlingRejectsSelectionAndReleasesGeometry",
+        "testInvalidSceneDiscardsHitIdentitiesAndRecoversWithoutOldGeometry",
+        "testMetadataOutputAndSelectionKeepLiveNodesAndRefreshCallback",
+        "testRemovedAndReintroducedUUIDCannotReuseOldHitObject",
+        "testRepeatedUpdatesKeepBoundedNodeCountAndLiveFixtureIdentity",
+        "testUndefinedCameraHidesPriorViewAndRecoversAuthoredLens"
+      ],
+      "SpatialNavigationRecoveryTests": [
+        "testInitialValidEmptyOrbitEnablesInteraction",
+        "testInvalidOrbitScenePreservesUserCameraAndTargetWithoutFitRequest",
+        "testInvalidOrbitTransitionRecoversFromAuthoredCameraWithUnchangedFitRequest",
+        "testInvalidOrbitTransitionRecoversFromUndefinedCameraWithUnchangedFitRequest"
+      ],
+      "SpatialPreviewTests": [
+        "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+        "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+        "testTranslatedRigAndModifierFitActualSceneKitProjection"
+      ],
+      "SpatialSelectionLifetimeTests": [
+        "testDeletionDetachesAllRetainedEquipmentBeforeTheSameUUIDReturns",
+        "testIdenticalSceneRefreshesAndClearsCallbackWithoutReplacingEquipmentOrOrbit",
+        "testInvalidSceneDetachesAllRetainedEquipmentBeforeRecovery"
+      ],
+      "SpatialViewportStateTests": [
+        "testAimTargetSphereIsContainedBeyondItsAuthoredCenter",
+        "testCoincidentAimBoundsIncludeTheVisibleFourMeterHousing",
+        "testFarClippingEnclosesTheAuthoredWorldAfterExtremePanAndOrbit",
+        "testFitIncludesHighStandBasesAndExtremeSparseAndCrowdedRigs",
+        "testFloatProjectionDoesNotNarrowTheSmallerViewportAxis",
+        "testGestureLimitsAndFitRecoveryRemainFinite",
+        "testHorizontalWorldTranslationPreservesFitScaleAndRelativePose",
+        "testInvalidGestureSamplesCannotPoisonNavigation",
+        "testInvalidSceneIsRejectedBeforeBoundsConstruction",
+        "testNonGeometricEditsDoNotChangeViewportBounds",
+        "testPanUsesTheSmallerViewportAxisAndDoesNotChangeCameraDistance"
+      ],
+      "StudioAdaptiveLayoutTests": [
+        "testNestedLayoutsRetainChildStateThroughWidthForcedColumnAndAccessibilityChanges"
+      ],
+      "StudioCommittedSaveTests": [
+        "testCancellingObserverAfterRealFirstSaveCommitPreservesRoomAndUndo",
+        "testCancellingSessionTaskAfterRealFirstSaveCommitStillAdoptsReceipt"
+      ],
+      "StudioFeatureSessionTests": [
+        "testAcceptedFeatureMutationClearsZeroMotionPlanOriginBeforeNextDrag",
+        "testBusyRejectionKeepsFeatureAndFirstSavePreservesLogicalContext",
+        "testEditAwayAndUndoBackCannotReviveSnapshotOrDiscardRedo",
+        "testFailedInitialLoadBlocksFeatureButExplicitRetryCanRecover",
+        "testFailedProjectOperationsKeepTheOpenFeatureUsable",
+        "testForeignPresentationWithEqualSnapshotCannotWriteOrCloseOwner",
+        "testOpenAdmissionPreservesGestureUntilLoadedCurrentValidDestination",
+        "testReloadAndProjectSwitchClearFeatureAndRejectItsLateCallbacks",
+        "testRepeatedHealthyLoadRejectsBeforeReservationOrEndingGesture",
+        "testRetiredOwnerCannotApplyOrFinishTheNextPresentedRoomGroup",
+        "testRoomAndARAdvanceOwnReceiptAndUndoAllAcceptedMeasurementsTogether",
+        "testSceneNoOpIsAcceptedOnceAndRetiresWithoutDiscardingRedo",
+        "testTargetLuxNoOpRetiresWithoutChangingEditor",
+        "testTargetLuxUsesCapturedUUIDAndOnlyAcceptsOutputChanges",
+        "testUnrelatedTypedOrSceneUpdateSeparatesRoomUndoButInvalidAndNoOpDoNot",
+        "testWrongRouteAndInvalidSceneAreAtomicEvenWithAnOpenControl"
+      ],
+      "StudioFeatureWindowTests": [
+        "testTwoWindowsKeepRoomOwnersThroughCompetingSaveAndRetireOnlyRecoveredWindow"
+      ],
+      "StudioInitialProjectTests": [
+        "testCallerSuppliedDraftNeverReceivesStarterPermission",
+        "testCancelledFirstCreateBeforeStoreWorkDoesNotAdoptAndCanRetry",
+        "testCancelledObserverAfterFirstCreateCommitStillAdoptsOnce",
+        "testCancelledSessionAfterFirstCreateCommitStillAdoptsOnce",
+        "testDirtySavedProjectStillRequiresSaveBeforeCreatingAnotherProject",
+        "testEditedAndUndoneStarterCannotUseInitialCreateException",
+        "testFailedInitialLoadNeverAuthorizesCreateOrChangesCorruptBytes",
+        "testFirstCreateRequiresHealthyEmptyLoadAndSavesOnlyRequestedProject",
+        "testInvalidFirstProjectKeepsStarterAndCanBeRetried",
+        "testOnlyCreateCommandAcceptsNilLibraryInSessionAndStore",
+        "testOutAndBackEditStaysProtectedEvenWithNoHistoryOrContentDifference",
+        "testStorageFailureBeforeFirstCommitKeepsStarterAndCanBeRetried",
+        "testTwoEmptyWindowsRaceFirstCreateAgainstFirstSaveWithoutOverwrite",
+        "testUnchangedEditAndFeatureMustCloseBeforeInitialCreate",
+        "testValidatedFirstImportKeepsExactBackupSceneWithoutPlaceholder"
+      ],
+      "StudioLibraryRecoveryTests": [
+        "testArchiveFailureLeavesBlockedEditorAndOriginalBytesThenRetrySucceeds",
+        "testBlockedRecoveryPreservesOriginalsAndAdoptsCommittedDefault",
+        "testCallerSuppliedDraftRemainsProtectedEvenAfterLoadFailure",
+        "testCancellationBeforeStorageLeavesBytesUntouchedAndCanRetry",
+        "testCancelledInspectionCannotReturnConfirmationOrChangeFiles",
+        "testCancelledObserverAfterCommitStillAdoptsRecoveryExactlyOnce",
+        "testCancelledSessionTaskAfterCommitStillAdoptsRecoveryExactlyOnce",
+        "testChangedFilesRejectConfirmationAndFreshInspectionCanRetry",
+        "testCompetingWindowConfirmationsProduceOnlyOneCommit",
+        "testDelayedInspectionRejectsReceiptAfterEditorRecoveryChangesGeneration",
+        "testDelayedInspectionRejectsReceiptWhileAnotherOperationIsReserved",
+        "testHealthySavedAndDirtyEditorsCannotResetLibrary",
+        "testStaleEditorCannotInspectOrConfirmRecovery",
+        "testUnloadedHealthyEmptyAndUnsavedEditorsCannotResetLibrary",
+        "testUnreadableLegacyOnlyRecoveryPreservesLegacyAndReopensNewLibrary"
+      ],
+      "StudioObservationTests": [
+        "testBusyObservationTracksReservationAndCompletionButTaskIsIgnored",
+        "testFeatureObservationFollowsOpenRetirementAndRemoval",
+        "testSceneObservationFollowsActualEditAndUndo"
+      ],
+      "StudioPaletteTests": [
+        "testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+        "testFixedPlanTextAndLightControlsContrastInBothAppearances",
+        "testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+        "testProjectSheetControlsContrastOnTheirProductionSurfaces",
+        "testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows"
+      ],
+      "StudioPlanGestureLifetimeTests": [
+        "testDiscreteHeightSurvivesLatePlanSampleAndCompleteUndoRedo",
+        "testEditingEndsRetireOnlyTheirMatchingPlanOwner",
+        "testExistingProjectSaveRetiresCallbacksEvenWhenGenerationDoesNotChange",
+        "testFinishedGestureRejectsLateChangesAndEndWithoutRestarting",
+        "testForeignControlRetiresPlanCallbacksWithoutSplittingItsOwnEdit",
+        "testForeignSceneUpdateRetiresPlanAndRecordsSeparateUndoStep",
+        "testInvalidAndNoOpForeignCommandsPreserveActivePlanAndRedo",
+        "testRenameReplacementRetiresCumulativeCallbacksAndKeepsBothUndoSteps",
+        "testRetiredTokenCannotMutateOrEndNewSameLightGesture",
+        "testSelectionRoundTripCannotReviveSameLightGesture"
+      ],
+      "StudioPlanSessionTests": [
+        "testDifferentControlCommitsPlanAndRejectsItsDelayedEnd",
+        "testDiscreteReplacementDuringPlanDragKeepsSeparateUndoSteps",
+        "testInvalidScaleOrTranslationPreservesIdleRedoAndActiveDrag",
+        "testMissingOrUnselectedLightAndStaleGenerationLeavePlanStateUnchanged",
+        "testSelectionChangeCommitsPlanExactlyOnceWithoutChangingSceneRevision",
+        "testStalePlanEndCannotFinishNewLightDrag"
+      ],
+      "StudioSessionTests": [
+        "testAcceptedSaveEndsPlanGestureAndLateEndCannotCloseNewGeneration",
+        "testCancellingSheetObserverStillReconcilesCommittedSaveExactlyOnce",
+        "testFirstSaveKeepsSelectionAndHistoryAndReleasesTask",
+        "testLoadFailureProtectsDataAndRejectsEditingAndSave",
+        "testPendingOperationRejectsMutationAndSecondReservation",
+        "testProjectSwitchResetsHistoryAndPresentationButMetadataDoesNot",
+        "testRealCompetingSavePreservesUnsavedSceneAndHistory",
+        "testSessionAndStoreSurviveObserverReleaseUntilReceiptSettles",
+        "testStaleControlEndCannotCloseSameControlAfterFirstSave",
+        "testStaleReservationDoesNotEndCurrentContinuousEdit",
+        "testTwoWindowsKeepIndependentEditorsAndRecoverCompetingSave",
+        "testTypedCommandsRequireCurrentLoadedEditorAndUseTheAddressedLight"
+      ],
+      "StudioSliderEditingTests": [
+        "testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+        "testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+        "testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+        "testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+        "testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+        "testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+        "testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+        "testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue"
+      ],
+      "StudioSliderTrackingTests": [
+        "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+        "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "testOutAndBackOptionalSettingsPreserveOriginalSceneAndRedo",
+        "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "testReadThatFinishesSessionCannotReopenHistory",
+        "testReadThatReplacesSessionCannotReopenRetiredOwner",
+        "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "testSessionRetainsOriginalWriterAndRange",
+        "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "testValueAfterEndCannotReopenHistoryOrDisableUndo"
+      ],
+      "StudioTextFieldTests": [
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testCanonicalEquivalentExternalResetWinsOverLateEventsAndReconfiguration",
+        "testCanonicalEquivalentOversizedPasteStillReachesBoundedValidation",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+        "testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInputTraceCapsIncludeMarkersAndDisabledRecorderEmitsNothing",
+        "testInputTraceLeavesAcceptedRejectedAndExternalResetBehaviorIdentical",
+        "testInputTraceOmitsPrivateDraftsLabelsHintsAndUnknownIdentifiers",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testUnchangedReconfigurationPreservesTraceBudgetForTheNextNativeEdit",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit"
+      ],
+      "StudioTextLayoutDiagnosticsTests": [
+        "testDisabledHostedProbePreservesUninstrumentedLayout",
+        "testExplicitGatingAndExactFrameRoundTrip",
+        "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton"
+      ],
+      "StudioTrackingSliderTests": [
+        "testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+        "testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+        "testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble"
+      ],
+      "StudioViewportGeometryTests": [
+        "testCoveredProjectsNavigationAndDoneDoNotObscureNamingSheet",
+        "testKeyboardAndAssistantStripExcludeCoveredControls",
+        "testMissingLazyTargetSearchStillAvoidsKeyboard",
+        "testMissingScrollAndInvalidTreeFailClosed",
+        "testNavigationAndNestedScrollSurfacesAllBoundTheTarget",
+        "testNonfiniteObstacleCannotBeDroppedFromTheViewport",
+        "testOnlyHittableFixedControlsInTheSameNavigationOwnerTrimContent",
+        "testOverlappingLiveControlWithUnknownOwnerFailsClosed"
+      ],
+      "StudyPrecisionMatrixTests": [
+        "testMetalMatchesCPUForEightRequiredPrecisionFixtures"
+      ],
+      "StudyPreviewAdoptionTests": [
+        "testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade"
+      ],
+      "StudyPreviewPipelineTests": [
+        "testCancellationDiscardsNoncooperativeRenderCompletion",
+        "testCancelledErrorsAndPrecancelledWorkStaySilent",
+        "testConversionFailureHasNoSuccessfulImageOrBackend",
+        "testCurrentFailureCanRetryWithFreshAttempt",
+        "testDisappearanceOrInactivityInvalidatesLateFailure",
+        "testInvalidationDuringConversionCannotPublish",
+        "testLateFailureCannotReplaceNewerImage",
+        "testLateSuccessCannotReplaceNewerCompletion",
+        "testPrecancelledBeginCannotInvalidateLiveRequest",
+        "testReturningToCompletedRequestInvalidatesIntermediateWork"
+      ],
+      "StudyRenderCacheTests": [
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+        "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+        "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "testRealCPUCacheResourcesForFourSmallFrames",
+        "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames",
+        "testSubjectAndResolutionDoNotShareFrames"
+      ],
+      "StudyRendererTests": [
+        "testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+        "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "testEngineInvalidWidthsPreserveResolutionError",
+        "testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+        "testEnginePublishesRealFrameWithEitherBackend",
+        "testEngineUsesCPUForFarGeometry",
+        "testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal",
+        "testMetalInvalidCameraPreservesConstructorErrorBeforePrecisionRouting",
+        "testMetalInvalidWidthsPreserveResolutionErrorBeforePrecisionRouting",
+        "testMetalMatchesCPUOnAvailableDevice",
+        "testMetalRawDispatchRejectsInvalidPackedMetadata",
+        "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal"
+      ]
+    },
+    "UITests": {
+      "AccessibilityAuditUITests": [
+        "testExactLightIntensityEditorAccessibilityAudit",
+        "testInitialLoadedPlanStudioAccessibilityAudit"
+      ],
+      "BetaAccessibilityUITests": [
+        "testBetaSurfacesAtLargestAccessibilityTextSize"
+      ],
+      "BetaWorkflowUITests": [
+        "testFeedbackExactReviewBackAndDiscardExcludePrivateProjectData",
+        "testInitialProjectNameEditorSavesOnlyRequestedProjectAndReopens",
+        "testUnreadableLibraryRecoveryNeedsConfirmationAndSurvivesRelaunch",
+        "testWelcomeDismissalPersistsAndInitialActionsNeedNoDefaultSave"
+      ],
+      "LightingPlanExportUITests": [
+        "testExportPreviewOpensWithoutSavingOrChangingScene",
+        "testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory"
+      ],
+      "ManualRoomPlacementUITests": [
+        "testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+        "testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates"
+      ],
+      "PlanGestureUITests": [
+        "testFreshDragAfterBackgroundResumeKeepsPriorPositionAndHistory",
+        "testFreshDragAfterCompletionCreatesASeparateUndoableEdit",
+        "testShortFastSelectedMarkerDragChangesPositionAndUndoRedoRestoresExactly"
+      ],
+      "PrecisionEditingUITests": [
+        "testExactCameraFocalLengthUndoRedoAndReopen",
+        "testExactLightIntensityValidationUndoRedoAndReopen",
+        "testExactModifierWidthAndRoomCrossingWithInsideCenters"
+      ],
+      "ProjectLibraryUITests": [
+        "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "testCreateDuplicateRenameSwitchAndRelaunch",
+        "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+        "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+        "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+        "testStaleSaveReloadRequiresConfirmation",
+        "testUnsavedSetupMustBeSavedBeforeLibraryChanges"
+      ],
+      "ReferenceComparisonUITests": [
+        "testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        "testReferenceComparisonOpensWithRealStudyAndNoPhoto"
+      ],
+      "StudioAppAccessibilityUITests": [
+        "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ],
+      "StudioOpticsUITests": [
+        "testOpticsEditingUndoRedoAndRelaunch",
+        "testOpticsRepeatability02",
+        "testOpticsRepeatability03",
+        "testOpticsRepeatability04",
+        "testOpticsRepeatability05",
+        "testOpticsRepeatability06",
+        "testOpticsRepeatability07",
+        "testOpticsRepeatability08",
+        "testOpticsRepeatability09",
+        "testOpticsRepeatability10"
+      ],
+      "StudioSmokeTests": [
+        "testCameraFocalLengthUndoAndRelaunch",
+        "testCorruptProjectBlocksSavingAcrossRelaunch",
+        "testMeterBalanceSaveUndoAndRelaunch",
+        "testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+        "testRecipeEditSaveAndReopen",
+        "testSettingsFeet3DFitAndSimulatorARManualFallback",
+        "testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+        "testStudyRendersActualReferenceFrame",
+        "testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene"
+      ]
+    }
+  },
+  "candidate": {
+    "NativeTests": {
+      "BoundedFileReaderTests": [
+        "testCancellationDuringReadPreservesSourceAndDoesNotReturnPartialData",
+        "testCheckpointCannotSuppressActualTaskCancellation",
+        "testGrowthAfterMetadataCheckStillHonorsTheByteLimit",
+        "testInvalidLimitsMissingFilesAndNonFileURLsFailWithoutReading",
+        "testMetadataPreflightAllowsRegularAndUnavailableMetadataForCoordination",
+        "testMetadataPreflightHonorsActualTaskCancellation",
+        "testMetadataPreflightRejectsKnownNonRegularFilesWithoutReading",
+        "testPassingMetadataPreflightCannotAuthorizeAReplacementPath",
+        "testPathReplacedBeforeOpenCannotMakeReaderFollowASymbolicLink",
+        "testPathReplacementAfterOpenDoesNotRedirectTheOpenedDescriptor",
+        "testReadsEmptyAndExactLimitFilesWithoutChangingBytes",
+        "testRejectsOversizeBeforeAnyReadCheckpoint",
+        "testRejectsSymlinksDirectoriesAndFIFOsWithoutBlocking"
+      ],
+      "EntitlementStoreConfigurationTests": [
+        "testCancelledUnconfiguredActionsRemainTerminalAndIdle",
+        "testCurrentPrereleaseBuildHasNoConfiguredProduct",
+        "testHistoricalCompletionBeforePendingResultStillAllowsPendingState",
+        "testHistoricalRevocationDoesNotClearNewPendingApproval",
+        "testMatchingVerifiedCompletionBeforePendingResultCannotReopenApproval",
+        "testNilEmptyAndWhitespaceOnlyIdentifiersDisableSales",
+        "testOlderCompletionCannotResolveReplacementAttempt",
+        "testPendingApprovalThenRevocationResolvesWithoutPurchasedSnapshot",
+        "testPurchasedEntitlementResolvesPendingWithoutRequestToken",
+        "testUnconfiguredPurchaseAndRestoreReturnWithoutStartingActivity",
+        "testUnconfiguredRefreshPreservesIdleStateAndNoOutcome",
+        "testUnexpandedBuildSettingsAndEmbeddedWhitespaceDisableSales"
+      ],
+      "LightTargetLuxDraftTests": [
+        "testInitializationUsesCapturedSeparatorAndDoesNotReseedAnExistingDraft",
+        "testInvalidEnglishGroupingCannotBecomeFrenchTargetWithoutAnEdit",
+        "testLocaleIdentifierChangeIsGuardedEvenWhenTheSeparatorMatches",
+        "testLocaleRoundTripDoesNotReviveAnInvalidatedDraft",
+        "testOversizeRejectionSurvivesLocaleChangeAndUnchangedTextEchoes",
+        "testRawByteAndDecimalGrammarBoundsRemainIndependentOfDraftAdmission",
+        "testUnchangedContextAndTextKeepTheSameAcceptedInterpretation",
+        "testValidDecimalIsBlockedUntilEditedForTheNewLocale",
+        "testWrongGroupingAndNegativeTargetsRemainRejectedInTheirCapturedLocale"
+      ],
+      "LightingPlanPDFTests": [
+        "testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames",
+        "testEmptySceneStillProducesReadableDiagramAndSchedule",
+        "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+        "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+        "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits"
+      ],
+      "ProjectDocumentIOTests": [
+        "testCancellationStopsWaitingForFilePresenterAndDoesNotPublishProject",
+        "testCancelledReaderDoesNotPublishOrModifyASelectedProject",
+        "testDirectoryIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFIFOIsRejectedBeforeCoordinationWithoutBlocking",
+        "testFilePresenterCoordinationErrorIsPropagatedWithoutPublishingOrChangingSource",
+        "testMalformedAndNonFileInputsDoNotChangeExistingBytes",
+        "testOversizedFileIsRejectedBeforeReadingItsContents",
+        "testPreparedBackupRoundTripsThroughCoordinatedAsyncFileReaderWithoutChangingSource",
+        "testSymbolicLinkIsRejectedBeforeCoordinationWithoutFollowingIt"
+      ],
+      "ProjectLibraryPresentationTests": [
+        "testCollidingUUIDPrefixesExpandAtGroupBoundariesUntilDistinct",
+        "testDefaultIgnorableSuffixesCannotHideDuplicateNames",
+        "testDuplicateCaseWidthAndDiacriticNamesKeepTheirSpellingsAndDistinctIdentities",
+        "testFallbackCollisionAlsoIdentifiesTheProjectActuallyNamedUnnamedProject",
+        "testIgnorableCharactersCannotHideBlankEdgesFromNameDisambiguation",
+        "testInvisibleOnlyLegacyNameHasReadableFallbackAndIdentityWithoutRewritingStorage",
+        "testSearchKeepsIdentityComputedAgainstHiddenAndArchivedProjects",
+        "testUniqueOrdinaryNamesRetainExistingLabelsWithoutExtraIdentity",
+        "testVisibleJoinedEmojiAndScriptsKeepTheirExactDisplayedScalars"
+      ],
+      "ProjectNameEditorTests": [
+        "testClearAcknowledgesRejectionWithoutAllowingAnEmptySubmission",
+        "testRejectedPasteRestoresNativeTextButCannotSubmitOldNameOnReturn",
+        "testShortenedLegacyNameStillRequiresADeliberateDifferentName",
+        "testSingleGraphemeOversizedPasteCannotEscapeTheScalarLimit"
+      ],
+      "ProjectStoreOperationTests": [
+        "testActorSerializesCompetingSavesWhileMainActorRemainsAvailable",
+        "testCancellationAfterCommitStillDeliversAndAdoptsTheReceiptExactlyOnce",
+        "testCorruptLoadAndSaveKeepProtectedBytesAndDoNotProduceAnAdoption",
+        "testFailedCommandDoesNotAdoptOrChangeBytesAndCanBeRetried",
+        "testFirstSavePreservesHistoryAndPresentationWhileInvalidatingDraftCallbacks",
+        "testInitializerDoesNoFileWorkAndQueuedCancellationCannotCreateAFile",
+        "testLargeLaunchFixtureUsesRealBoundedBytesAndRetainsSavedEditsOnRelaunch",
+        "testMetadataSwitchAndConfirmedReloadHaveDistinctAdoptionPolicies",
+        "testRealStaleSaveRetainsLocalSceneHistoryAndCompetingBytes",
+        "testRecoveryCandidateReadNeverAdoptsLatestLibraryOrUnsavedEditor",
+        "testRecoveryIdentityReadIncludesHiddenRecordsWithoutChangingCandidateContractOrBytes",
+        "testRecoveryRechecksFullCandidateThenUsesNewlyAvailableCapacity",
+        "testReservationRejectsDuplicateCommandsAndSceneCallbacksUntilItSettles",
+        "testSaveReceiptKeepsAnyNewerSceneDirtyInsteadOfMarkingItSaved",
+        "testScopedLaunchFixtureIsDeferredAndRelaunchKeepsRecoveryResult",
+        "testUITestingWithoutValidIDNeverLoadsOrChangesNormalSavedProjects"
+      ],
+      "ReferenceAnalysisServiceTests": [
+        "testByteLimitRejectsOversizedInputBeforeImageRead",
+        "testDecodableJPEGIsRejectedAsUnsanitizedInput",
+        "testEitherOversizedSourceEdgeIsRejectedBeforeAnalysis",
+        "testEmptyAndMalformedInputsReturnUnsupportedManualFallback",
+        "testFeaturelessPNGRequiresManualDirectionAndCannotProduceRig",
+        "testPreCancelledAnalysisThrowsInsteadOfPublishingFallback",
+        "testRepeatedUnsupportedAnalysisKeepsObservationsStable"
+      ],
+      "ReferencePhotoTests": [
+        "testAllEightExifOrientationsPreserveIntendedLeftRightAndTopBottom",
+        "testCancelledImportRejectsBeforeReadingOrDecodingAndKeepsSourceBytes",
+        "testFileRepresentationConsumesOnlyItsTemporaryFile",
+        "testFileSizeBoundBeforeDecode",
+        "testRejectsMalformedAndOversizedInputs",
+        "testRotatesReducesAndRemovesSourceMetadata",
+        "testTransparentAndPartialAlphaRemainExcludedFromReferenceTones"
+      ],
+      "RoomRotationReadoutTests": [
+        "testFractionalYawReadoutsPreservePositiveAndNegativePrecision",
+        "testLocalizedYawReadoutsUseExactFrenchAndArabicNumbers",
+        "testYawEndpointsAndSignedZeroReadoutsPreserveSourceBits"
+      ],
+      "SpatialAimRecoveryTests": [
+        "testCoincidentAimRecoversRetainedLampAtTranslatedVerticalPose"
+      ],
+      "SpatialEmitterGeometryTests": [
+        "testBarePointAndOmnidirectionalSourceKeepAuthoredCenter",
+        "testDegenerateAimKeepsSelectableMarkerWithoutInventingEmitterDirection",
+        "testDirectionalHousingFrontUsesAuthoredPlaneEvenWhenPoweredOff",
+        "testOffsetHousingPreservesFixtureStandAndSelectionIdentity",
+        "testRectangularFrontPlaneAndRollMatchAuthoredFrameInBothPreviewModes"
+      ],
+      "SpatialEntityUpdateTests": [
+        "testKindTransitionsReplaceShapeWithoutReplacingLiveLampNodes",
+        "testRectangleResizingReplacesGeometryWhilePoseAndOutputEditsReuseIt",
+        "testStandThresholdDetachesHitsAndReattachesTheSameCylinder"
+      ],
+      "SpatialInteractionTests": [
+        "testCameraBodyAndLensFollowTheAuthoredNegativeZConvention",
+        "testCaptureRealSceneKitOrdinaryAndCrowdedViewports",
+        "testCoincidentSoftboxAndHighStandFitActualNarrowProjection",
+        "testDisablingAndDismantlingRejectsSelectionAndReleasesGeometry",
+        "testInvalidSceneDiscardsHitIdentitiesAndRecoversWithoutOldGeometry",
+        "testMetadataOutputAndSelectionKeepLiveNodesAndRefreshCallback",
+        "testRemovedAndReintroducedUUIDCannotReuseOldHitObject",
+        "testRepeatedUpdatesKeepBoundedNodeCountAndLiveFixtureIdentity",
+        "testUndefinedCameraHidesPriorViewAndRecoversAuthoredLens"
+      ],
+      "SpatialNavigationRecoveryTests": [
+        "testInitialValidEmptyOrbitEnablesInteraction",
+        "testInvalidOrbitScenePreservesUserCameraAndTargetWithoutFitRequest",
+        "testInvalidOrbitTransitionRecoversFromAuthoredCameraWithUnchangedFitRequest",
+        "testInvalidOrbitTransitionRecoversFromUndefinedCameraWithUnchangedFitRequest"
+      ],
+      "SpatialPreviewTests": [
+        "testEmptyExtremeRigHasFiniteFitAndCameraModeRemainsPhysical",
+        "testOrdinarySceneEditPreservesOrbitButExplicitFitRestoresCamera",
+        "testTranslatedRigAndModifierFitActualSceneKitProjection"
+      ],
+      "SpatialSelectionLifetimeTests": [
+        "testDeletionDetachesAllRetainedEquipmentBeforeTheSameUUIDReturns",
+        "testIdenticalSceneRefreshesAndClearsCallbackWithoutReplacingEquipmentOrOrbit",
+        "testInvalidSceneDetachesAllRetainedEquipmentBeforeRecovery"
+      ],
+      "SpatialViewportStateTests": [
+        "testAimTargetSphereIsContainedBeyondItsAuthoredCenter",
+        "testCoincidentAimBoundsIncludeTheVisibleFourMeterHousing",
+        "testFarClippingEnclosesTheAuthoredWorldAfterExtremePanAndOrbit",
+        "testFitIncludesHighStandBasesAndExtremeSparseAndCrowdedRigs",
+        "testFloatProjectionDoesNotNarrowTheSmallerViewportAxis",
+        "testGestureLimitsAndFitRecoveryRemainFinite",
+        "testHorizontalWorldTranslationPreservesFitScaleAndRelativePose",
+        "testInvalidGestureSamplesCannotPoisonNavigation",
+        "testInvalidSceneIsRejectedBeforeBoundsConstruction",
+        "testNonGeometricEditsDoNotChangeViewportBounds",
+        "testPanUsesTheSmallerViewportAxisAndDoesNotChangeCameraDistance"
+      ],
+      "StudioAdaptiveLayoutTests": [
+        "testNestedLayoutsRetainChildStateThroughWidthForcedColumnAndAccessibilityChanges"
+      ],
+      "StudioCommittedSaveTests": [
+        "testCancellingObserverAfterRealFirstSaveCommitPreservesRoomAndUndo",
+        "testCancellingSessionTaskAfterRealFirstSaveCommitStillAdoptsReceipt"
+      ],
+      "StudioFeatureSessionTests": [
+        "testAcceptedFeatureMutationClearsZeroMotionPlanOriginBeforeNextDrag",
+        "testBusyRejectionKeepsFeatureAndFirstSavePreservesLogicalContext",
+        "testEditAwayAndUndoBackCannotReviveSnapshotOrDiscardRedo",
+        "testFailedInitialLoadBlocksFeatureButExplicitRetryCanRecover",
+        "testFailedProjectOperationsKeepTheOpenFeatureUsable",
+        "testForeignPresentationWithEqualSnapshotCannotWriteOrCloseOwner",
+        "testOpenAdmissionPreservesGestureUntilLoadedCurrentValidDestination",
+        "testReloadAndProjectSwitchClearFeatureAndRejectItsLateCallbacks",
+        "testRepeatedHealthyLoadRejectsBeforeReservationOrEndingGesture",
+        "testRetiredOwnerCannotApplyOrFinishTheNextPresentedRoomGroup",
+        "testRoomAndARAdvanceOwnReceiptAndUndoAllAcceptedMeasurementsTogether",
+        "testSceneNoOpIsAcceptedOnceAndRetiresWithoutDiscardingRedo",
+        "testTargetLuxNoOpRetiresWithoutChangingEditor",
+        "testTargetLuxUsesCapturedUUIDAndOnlyAcceptsOutputChanges",
+        "testUnrelatedTypedOrSceneUpdateSeparatesRoomUndoButInvalidAndNoOpDoNot",
+        "testWrongRouteAndInvalidSceneAreAtomicEvenWithAnOpenControl"
+      ],
+      "StudioFeatureWindowTests": [
+        "testTwoWindowsKeepRoomOwnersThroughCompetingSaveAndRetireOnlyRecoveredWindow"
+      ],
+      "StudioInitialProjectTests": [
+        "testCallerSuppliedDraftNeverReceivesStarterPermission",
+        "testCancelledFirstCreateBeforeStoreWorkDoesNotAdoptAndCanRetry",
+        "testCancelledObserverAfterFirstCreateCommitStillAdoptsOnce",
+        "testCancelledSessionAfterFirstCreateCommitStillAdoptsOnce",
+        "testDirtySavedProjectStillRequiresSaveBeforeCreatingAnotherProject",
+        "testEditedAndUndoneStarterCannotUseInitialCreateException",
+        "testFailedInitialLoadNeverAuthorizesCreateOrChangesCorruptBytes",
+        "testFirstCreateRequiresHealthyEmptyLoadAndSavesOnlyRequestedProject",
+        "testInvalidFirstProjectKeepsStarterAndCanBeRetried",
+        "testOnlyCreateCommandAcceptsNilLibraryInSessionAndStore",
+        "testOutAndBackEditStaysProtectedEvenWithNoHistoryOrContentDifference",
+        "testStorageFailureBeforeFirstCommitKeepsStarterAndCanBeRetried",
+        "testTwoEmptyWindowsRaceFirstCreateAgainstFirstSaveWithoutOverwrite",
+        "testUnchangedEditAndFeatureMustCloseBeforeInitialCreate",
+        "testValidatedFirstImportKeepsExactBackupSceneWithoutPlaceholder"
+      ],
+      "StudioLibraryRecoveryTests": [
+        "testArchiveFailureLeavesBlockedEditorAndOriginalBytesThenRetrySucceeds",
+        "testBlockedRecoveryPreservesOriginalsAndAdoptsCommittedDefault",
+        "testCallerSuppliedDraftRemainsProtectedEvenAfterLoadFailure",
+        "testCancellationBeforeStorageLeavesBytesUntouchedAndCanRetry",
+        "testCancelledInspectionCannotReturnConfirmationOrChangeFiles",
+        "testCancelledObserverAfterCommitStillAdoptsRecoveryExactlyOnce",
+        "testCancelledSessionTaskAfterCommitStillAdoptsRecoveryExactlyOnce",
+        "testChangedFilesRejectConfirmationAndFreshInspectionCanRetry",
+        "testCompetingWindowConfirmationsProduceOnlyOneCommit",
+        "testDelayedInspectionRejectsReceiptAfterEditorRecoveryChangesGeneration",
+        "testDelayedInspectionRejectsReceiptWhileAnotherOperationIsReserved",
+        "testHealthySavedAndDirtyEditorsCannotResetLibrary",
+        "testStaleEditorCannotInspectOrConfirmRecovery",
+        "testUnloadedHealthyEmptyAndUnsavedEditorsCannotResetLibrary",
+        "testUnreadableLegacyOnlyRecoveryPreservesLegacyAndReopensNewLibrary"
+      ],
+      "StudioObservationTests": [
+        "testBusyObservationTracksReservationAndCompletionButTaskIsIgnored",
+        "testFeatureObservationFollowsOpenRetirementAndRemoval",
+        "testSceneObservationFollowsActualEditAndUndo"
+      ],
+      "StudioPaletteTests": [
+        "testActionAndSecondaryTextContrastOnResolvedSystemSurfaces",
+        "testFixedPlanTextAndLightControlsContrastInBothAppearances",
+        "testPlanColorsStayFixedWhenInterfaceAppearanceChanges",
+        "testProjectSheetControlsContrastOnTheirProductionSurfaces",
+        "testSecondaryTextAndSelectionCuesContrastOnLayeredLightRows"
+      ],
+      "StudioPlanGestureLifetimeTests": [
+        "testDiscreteHeightSurvivesLatePlanSampleAndCompleteUndoRedo",
+        "testEditingEndsRetireOnlyTheirMatchingPlanOwner",
+        "testExistingProjectSaveRetiresCallbacksEvenWhenGenerationDoesNotChange",
+        "testFinishedGestureRejectsLateChangesAndEndWithoutRestarting",
+        "testForeignControlRetiresPlanCallbacksWithoutSplittingItsOwnEdit",
+        "testForeignSceneUpdateRetiresPlanAndRecordsSeparateUndoStep",
+        "testInvalidAndNoOpForeignCommandsPreserveActivePlanAndRedo",
+        "testRenameReplacementRetiresCumulativeCallbacksAndKeepsBothUndoSteps",
+        "testRetiredTokenCannotMutateOrEndNewSameLightGesture",
+        "testSelectionRoundTripCannotReviveSameLightGesture"
+      ],
+      "StudioPlanSessionTests": [
+        "testDifferentControlCommitsPlanAndRejectsItsDelayedEnd",
+        "testDiscreteReplacementDuringPlanDragKeepsSeparateUndoSteps",
+        "testInvalidScaleOrTranslationPreservesIdleRedoAndActiveDrag",
+        "testMissingOrUnselectedLightAndStaleGenerationLeavePlanStateUnchanged",
+        "testSelectionChangeCommitsPlanExactlyOnceWithoutChangingSceneRevision",
+        "testStalePlanEndCannotFinishNewLightDrag"
+      ],
+      "StudioSessionTests": [
+        "testAcceptedSaveEndsPlanGestureAndLateEndCannotCloseNewGeneration",
+        "testCancellingSheetObserverStillReconcilesCommittedSaveExactlyOnce",
+        "testFirstSaveKeepsSelectionAndHistoryAndReleasesTask",
+        "testLoadFailureProtectsDataAndRejectsEditingAndSave",
+        "testPendingOperationRejectsMutationAndSecondReservation",
+        "testProjectSwitchResetsHistoryAndPresentationButMetadataDoesNot",
+        "testRealCompetingSavePreservesUnsavedSceneAndHistory",
+        "testSessionAndStoreSurviveObserverReleaseUntilReceiptSettles",
+        "testStaleControlEndCannotCloseSameControlAfterFirstSave",
+        "testStaleReservationDoesNotEndCurrentContinuousEdit",
+        "testTwoWindowsKeepIndependentEditorsAndRecoverCompetingSave",
+        "testTypedCommandsRequireCurrentLoadedEditorAndUseTheAddressedLight"
+      ],
+      "StudioSliderEditingTests": [
+        "testAccessibilityAdjustmentsFinishAndRemainSeparateAtBothBounds",
+        "testAccessibilityRetainsOutOfQuickRangeCoordinatesWithoutReversingDirection",
+        "testBeginBeforeFirstValueAndRepeatedBeginsPreserveOriginalScene",
+        "testCancellationAfterEarlyValueRestoresStartAndRetainsRedo",
+        "testFirstValueBeforeBeginUndoesWholeWidthGestureAndKeepsEmitterCommand",
+        "testInvalidAndUnchangedValuesDoNotOpenAnEditOrDiscardRedo",
+        "testLateOtherOwnerEndDoesNotSplitEditBegunByFirstValue",
+        "testPrecisionCommandAfterGestureRemainsSeparateAndKeepsExactValue"
+      ],
+      "StudioSliderTrackingTests": [
+        "testAnotherOwnerCannotAbsorbAnActiveTokenValue",
+        "testCancellationCommitsLastPublishedValueWithoutFloatRewrite",
+        "testCapturedGenerationCannotWriteOrCloseNewProjectEdit",
+        "testFinalSampleBeforeEndRestoresWholeGestureAndKeepsEmitterCommand",
+        "testInvalidSamplesDoNotWriteOrLeaveEditingOpen",
+        "testMappingRejectsInvalidConfigurationAndKeepsEndpointsAndSteps",
+        "testNewSessionRetiresOldTokenAndKeepsGesturesSeparate",
+        "testOutAndBackOptionalSettingsPreserveOriginalSceneAndRedo",
+        "testOwnerReassertionCannotWriteAfterReentrantCancellation",
+        "testParentForceCloseKeepsSubsequentActiveValuesInOneOwnedEdit",
+        "testReadThatFinishesSessionCannotReopenHistory",
+        "testReadThatReplacesSessionCannotReopenRetiredOwner",
+        "testReentrantBeginFromPreviousEndKeepsNewOwnerAndRetiresInterruptedToken",
+        "testReentrantFinishDuringFinalWriteClosesOnlyOnce",
+        "testReentrantInvalidationAtBeginRejectsSubsequentValues",
+        "testReturnToStartingThumbRestoresExactOffGridValueWithoutHistory",
+        "testSessionRetainsOriginalWriterAndRange",
+        "testUnchangedThumbPreservesExactImportedDoubleAndRedo",
+        "testValueAfterEndCannotReopenHistoryOrDisableUndo"
+      ],
+      "StudioTextFieldTests": [
+        "testAcceptedIncompleteDraftPreservesNativeSelectionWithoutParsing",
+        "testAcceptedMarkedTextUpdatesRawDraftAndSurvivesUnchangedConfiguration",
+        "testCanonicalEquivalentExternalResetWinsOverLateEventsAndReconfiguration",
+        "testCanonicalEquivalentOversizedPasteStillReachesBoundedValidation",
+        "testDisabledEnvironmentReachesNativeControl",
+        "testExplicitClearImmediatelyReplacesMarkedTextWithoutWritingBack",
+        "testExternalResetWinsOverLateNativeEventBeforeAnotherRender",
+        "testHostedFormGivesTheNativeControlAtLeast44PointsInScreenCoordinates",
+        "testHostedNameDraftPreservesRapidEditsAcrossStateReconfiguration",
+        "testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl",
+        "testInputTraceCapsIncludeMarkersAndDisabledRecorderEmitsNothing",
+        "testInputTraceDistinguishesDeliveryRejectionResetAndBlockedEventsWithoutText",
+        "testInputTraceLeavesAcceptedRejectedAndExternalResetBehaviorIdentical",
+        "testInputTraceOmitsPrivateDraftsLabelsHintsAndUnknownIdentifiers",
+        "testInvalidationCancelsPendingFocusAndIgnoresStaleEvents",
+        "testNativeSizingAndConfigurationOwnTheAccessibleInput",
+        "testReconfigurationUsesCurrentBindingAndSubmitClosure",
+        "testRejectedOversizedBindingRestoresActualNativeTextAndPriorSelectionOnce",
+        "testRequestedAndNativeFocusChangesDoNotEchoConfiguration",
+        "testSubmitPublishesPendingTextOnceAndLeavesFocusDecisionToCaller",
+        "testUnchangedReconfigurationPreservesTraceBudgetForTheNextNativeEdit",
+        "testUpdatesDoNotWriteBindingsOrEraseAnUndeliveredNativeEdit"
+      ],
+      "StudioTextLayoutDiagnosticsTests": [
+        "testDisabledHostedProbePreservesUninstrumentedLayout",
+        "testExplicitGatingAndExactFrameRoundTrip",
+        "testHostedProbeMeasuresIntrinsicTextAndRejectsSmallTextInsideLargeButton"
+      ],
+      "StudioTrackingSliderTests": [
+        "testInvalidRangeDisablesNativeControlWithoutWritingTheModel",
+        "testNativeAccessibilityActionsUseExactDoubleStepsAndRespectDisabledState",
+        "testProgrammaticConfigurationAndStrayValueEventNeverRoundTripDouble"
+      ],
+      "StudioViewportGeometryTests": [
+        "testCoveredProjectsNavigationAndDoneDoNotObscureNamingSheet",
+        "testKeyboardAndAssistantStripExcludeCoveredControls",
+        "testMissingLazyTargetSearchStillAvoidsKeyboard",
+        "testMissingScrollAndInvalidTreeFailClosed",
+        "testNavigationAndNestedScrollSurfacesAllBoundTheTarget",
+        "testNonfiniteObstacleCannotBeDroppedFromTheViewport",
+        "testOnlyHittableFixedControlsInTheSameNavigationOwnerTrimContent",
+        "testOverlappingLiveControlWithUnknownOwnerFailsClosed"
+      ],
+      "StudyPrecisionMatrixTests": [
+        "testMetalMatchesCPUForEightRequiredPrecisionFixtures"
+      ],
+      "StudyPreviewAdoptionTests": [
+        "testReactivatedCompletedFrameConsultsEngineAfterCancelledDowngrade"
+      ],
+      "StudyPreviewPipelineTests": [
+        "testCancellationDiscardsNoncooperativeRenderCompletion",
+        "testCancelledErrorsAndPrecancelledWorkStaySilent",
+        "testConversionFailureHasNoSuccessfulImageOrBackend",
+        "testCurrentFailureCanRetryWithFreshAttempt",
+        "testDisappearanceOrInactivityInvalidatesLateFailure",
+        "testInvalidationDuringConversionCannotPublish",
+        "testLateFailureCannotReplaceNewerImage",
+        "testLateSuccessCannotReplaceNewerCompletion",
+        "testPrecancelledBeginCannotInvalidateLiveRequest",
+        "testReturningToCompletedRequestInvalidatesIntermediateWork"
+      ],
+      "StudyRenderCacheTests": [
+        "testBustCachePreservesExistingMaximumWidthClamping",
+        "testCancelledCPUWorkAndFinalCancellationAreNeverCached",
+        "testCancelledCacheLookupCannotPublishOrDiscardCompletedFrame",
+        "testCancelledHitLeavesFullCacheEvictionOrderUnchanged",
+        "testCancelledTaskCannotReturnCachedFrame",
+        "testCancelledValidationPreservesCPUCacheAndRetriesOnSameEngine",
+        "testConcurrentEligibleRequestsValidateOnceAndCacheDistinctImages",
+        "testConfirmedComputeFailuresDowngradeBeforeConcurrentCancellation",
+        "testConfirmedStartupFailuresSelectCPUBeforeConcurrentCancellation",
+        "testEntryLimitEvictsLeastRecentlyUsedSuccessfulFrame",
+        "testEveryRenderingControlKeepsDistinctCacheIdentity",
+        "testFactoryIsDeferredUntilEligibleUncachedSphereRequest",
+        "testFailedBackendReleasesWeaklyObservedInstanceWhileEngineRemainsAlive",
+        "testInvalidMetadataCannotReuseAValidatedFrame",
+        "testInvalidResolutionAndCameraKeepOriginalErrorOrdering",
+        "testOrdinaryComputeCancellationRetainsBackendAndCompletedCache",
+        "testPixelBudgetEvictsLargeFramesBeforeEntryLimit",
+        "testPrecisionDomainFallbackPreservesValidatedBackend",
+        "testRealCPUCacheResourcesForFourMaximumBustFrames",
+        "testRealCPUCacheResourcesForFourSmallFrames",
+        "testRealCPUCacheResourcesForMaximumSpheresEvictOldest",
+        "testRealCPUCacheResourcesForMixedSubjectsEvictOnlyOldestBust",
+        "testRevertedAndReopenedSceneReusesExactSuccessfulPixels",
+        "testStartupFailureWithCancellationPreservesPreviouslyCachedCPUFrame",
+        "testStartupFinalCancellationLeavesInitializationRetryable",
+        "testStartupPrecisionDomainFallbackRemainsRetryable",
+        "testStartupStudyErrorsPropagateAndLeaveInitializationRetryable",
+        "testSteadyStateSceneErrorsPreserveValidatedBackendAndCachedFrames",
+        "testSubjectAndResolutionDoNotShareFrames"
+      ],
+      "StudyRendererTests": [
+        "testAdditionalCancellationPredicateCannotSuppressTaskCancellation",
+        "testCancelledInitialParityValidationCanRetryMetalOnSameEngine",
+        "testEngineInvalidWidthsPreserveResolutionError",
+        "testEngineMannequinUsesCPUAndPublishesDistinctFrame",
+        "testEnginePublishesRealFrameWithEitherBackend",
+        "testEngineUsesCPUForFarGeometry",
+        "testExactWidth24SilhouetteRoutesToCPUWithoutDisablingLaterMetal",
+        "testMetalInvalidCameraPreservesConstructorErrorBeforePrecisionRouting",
+        "testMetalInvalidWidthsPreserveResolutionErrorBeforePrecisionRouting",
+        "testMetalMatchesCPUOnAvailableDevice",
+        "testMetalRawDispatchRejectsInvalidPackedMetadata",
+        "testNearFieldRoutingDoesNotPermanentlyDowngradeValidatedMetal"
+      ]
+    },
+    "UITests": {
+      "AccessibilityAuditUITests": [
+        "testExactLightIntensityEditorAccessibilityAudit",
+        "testInitialLoadedPlanStudioAccessibilityAudit"
+      ],
+      "BetaAccessibilityUITests": [
+        "testBetaSurfacesAtLargestAccessibilityTextSize"
+      ],
+      "BetaWorkflowUITests": [
+        "testFeedbackExactReviewBackAndDiscardExcludePrivateProjectData",
+        "testInitialProjectNameEditorSavesOnlyRequestedProjectAndReopens",
+        "testUnreadableLibraryRecoveryNeedsConfirmationAndSurvivesRelaunch",
+        "testWelcomeDismissalPersistsAndInitialActionsNeedNoDefaultSave"
+      ],
+      "LightingPlanExportUITests": [
+        "testExportPreviewOpensWithoutSavingOrChangingScene",
+        "testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory"
+      ],
+      "ManualRoomPlacementUITests": [
+        "testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+        "testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates"
+      ],
+      "PlanGestureUITests": [
+        "testFreshDragAfterBackgroundResumeKeepsPriorPositionAndHistory",
+        "testFreshDragAfterCompletionCreatesASeparateUndoableEdit",
+        "testShortFastSelectedMarkerDragChangesPositionAndUndoRedoRestoresExactly"
+      ],
+      "PrecisionEditingUITests": [
+        "testExactCameraFocalLengthUndoRedoAndReopen",
+        "testExactLightIntensityValidationUndoRedoAndReopen",
+        "testExactModifierWidthAndRoomCrossingWithInsideCenters"
+      ],
+      "ProjectLibraryUITests": [
+        "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+        "testCreateDuplicateRenameSwitchAndRelaunch",
+        "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+        "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+        "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+        "testStaleSaveReloadRequiresConfirmation",
+        "testUnsavedSetupMustBeSavedBeforeLibraryChanges"
+      ],
+      "ReferenceComparisonUITests": [
+        "testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        "testReferenceComparisonOpensWithRealStudyAndNoPhoto"
+      ],
+      "StudioAppAccessibilityUITests": [
+        "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize"
+      ],
+      "StudioOpticsUITests": [
+        "testOpticsEditingUndoRedoAndRelaunch",
+        "testOpticsRepeatability02",
+        "testOpticsRepeatability03",
+        "testOpticsRepeatability04",
+        "testOpticsRepeatability05",
+        "testOpticsRepeatability06",
+        "testOpticsRepeatability07",
+        "testOpticsRepeatability08",
+        "testOpticsRepeatability09",
+        "testOpticsRepeatability10"
+      ],
+      "StudioSmokeTests": [
+        "testCameraFocalLengthUndoAndRelaunch",
+        "testCorruptProjectBlocksSavingAcrossRelaunch",
+        "testMeterBalanceSaveUndoAndRelaunch",
+        "testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+        "testRecipeEditSaveAndReopen",
+        "testSettingsFeet3DFitAndSimulatorARManualFallback",
+        "testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+        "testStudyRendersActualReferenceFrame",
+        "testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene"
+      ]
+    }
+  }
+}

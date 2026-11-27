@@ -1,0 +1,76 @@
+{
+  "worker": "/root/a089_beta_navigation_geometry",
+  "scope": "Read-only preflight of remaining beta accessibility scrolling versus fixed controls",
+  "baseRevision": "bab46f4b6d40452b7609daa14c3a67b093cb3f9e",
+  "sourceStatus": "Working tree includes other workers source and documentation edits; no source changed by A089. Exact hashes below bind reviewed files.",
+  "files": {
+    "UITests/BetaAccessibilityUITests.swift": "022614b1b97c283598f7c78053426a805b33fb8d1b59a92d39c6649ac1f504cb",
+    "UITests/StudioContentReachability.swift": "6955df74cdd3ca9195ade6c0b45606a4ce34c18fecd82be9ebcc7080e212dacb",
+    "UITests/StudioViewportObservation.swift": "f172cfa12a320e984cf59b9496def656fc9464306e6c011d1b6fe461c0a7f297",
+    "UITests/StudioViewportGeometry.swift": "53612c9f5d2133a9be1457a36e6e508f8a6e875f9aa6572a702130b890a3e134",
+    "NativeTests/StudioViewportGeometryTests.swift": "19effaeab05b278e152b7eb69fb9dad53a76ee2137574c73b35ccc16e2c82656",
+    "App/BetaFeedbackView.swift": "384875c873724bd881ec18091110347207a5e7407bf0b1a8c68ebed1c1ff64cd",
+    "App/ProjectLibraryRecoveryView.swift": "c236b15040be4176007d870856b8b55583aac8189bed6f08bd14d8c6122c8a9c"
+  },
+  "findings": [
+    {
+      "route": "closeBetaFeedback",
+      "result": "Correctly uses scrolling mode",
+      "reason": "The Close button is in draftHeading within the Form, not a navigation toolbar. This permits large-text growth and scrolling."
+    },
+    {
+      "route": "Preview Back",
+      "result": "Correctly uses fixed mode",
+      "reason": "control(... scrolling:false) bypasses scroll-container geometry, retains enabled state, live hittability, 44-point minimum and application-frame containment."
+    },
+    {
+      "route": "Recovery Done and alert actions",
+      "result": "Correctly use fixed mode",
+      "reason": "Recovery Done is in safeAreaInset; Back/Done/confirmation/discard controls explicitly avoid content scrolling."
+    },
+    {
+      "route": "Presented-owner and keyboard geometry",
+      "result": "No concrete defect found in scoped review",
+      "reason": "Actual pure geometry excludes keyboard/assistant overlap, rejects absent scroll ancestry, and does not trim foreground content using a covered prior-owner fixed button."
+    }
+  ],
+  "checks": [
+    {
+      "command": "swiftc -O UITests/StudioViewportGeometry.swift ../a089-evidence/main.swift -o ../a089-evidence/probe",
+      "compiler": "Swift6.0.3 Linux x86_64",
+      "exitCode": 0
+    },
+    {
+      "command": "../a089-evidence/probe",
+      "exitCode": 0,
+      "assertionsPassed": 15,
+      "fixtureType": "Synthetic hand-built geometry; no native snapshot or live input"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exitCode": 0,
+      "meaning": "Structure/reference validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exitCode": 0,
+      "result": "M01; native_build and persistence_smoke outstanding"
+    }
+  ],
+  "unverifiedBoundary": {
+    "description": "The geometry adapter explicitly recognizes undo and projectLibraryDone as fixed clipping obstacles, not closeLibraryRecovery. Whether the recovery Form safe-area inset already shrinks the actual scroll frame must be observed in a real AX snapshot.",
+    "syntheticResult": "A hypothetical full-height Form with an overlapping recovery footer is geometrically accepted because no footer obstacle is supplied. This is not evidence that the app emits that frame or accepts a covered target; live hittability is independently required.",
+    "nextAction": "Inspect real recovery original/AX tree after beta route reaches recovery; record actual Form frame, footer frame, target containment and live hittability before proposing any change."
+  },
+  "limits": [
+    "No Apple compilation, native execution or UI actions",
+    "No currently reached beta route or screenshot acceptance",
+    "No gate, threshold, target or source modification",
+    "Synthetic fixture success does not establish real safe-area/keyboard/navigation behavior"
+  ],
+  "artifacts": {
+    "probe.log": "9e5f4dc1f9cfc14611ab3ed21f1e1d467d4de4dc862d8cf4a1540a74f2bac032",
+    "compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "main.swift": "876fb51b8b7da91693e83d58f811c2b96532671e3360919977a5c9d0fc34f06c"
+  }
+}

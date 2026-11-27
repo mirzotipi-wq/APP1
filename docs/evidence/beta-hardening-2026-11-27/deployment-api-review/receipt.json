@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "worker": "/root/a092_deployment_api_review",
+  "sourceRevision": "af6b7e56bb5d2b550ebefcc5fd7bb2afc4c20867",
+  "review": "Focused minimum-deployment API additions review after corrected strict decoder availability regression",
+  "scope": {
+    "start": "9e2313cbffb01d66249458c64087cb66c7652cca",
+    "concurrentBase": "2fc7647314d3ae6fa22d95284e778c6c5badbe4a",
+    "paths": "Executable App/Sources/NativeTests/UITests additions and Package/project source inclusion; archived evidence ignored",
+    "deploymentTargets": {
+      "iOS": "17.0",
+      "macOS": "14.0"
+    },
+    "configuredCI": "Xcode26.6; simulator SDK26.5"
+  },
+  "findings": {
+    "additionalConfirmedAvailabilityDefects": 0,
+    "deploymentTargetsUnchanged": true,
+    "projectYMLByteIdenticalToStart": true,
+    "logger": "DEBUG-only Logger/subsystem/category/notice/public interpolation is below supported minima; actual sink uses Logger.notice, not an os_log varargs call.",
+    "layout": "New layout composition uses established SwiftUI stack, frame, contentShape, lineSpacing, fixedSize, foregroundStyle and dynamic-type APIs below iOS17.",
+    "testDiagnostics": "New snapshot/attachment/NSPredicate/state diagnostic usage has no newly identified deployment constraint; actual Apple compilation remains authoritative.",
+    "gesture": "Velocity/hold coordinate method was already used by existing PlanGesture tests before this candidate; current documented module/toolchain requirement is covered by configuredCI.",
+    "sourceInclusion": "App source glob includes new purchase helper. Package excludes it only from explicit portable StudioComposition target; native tests remain in NativeTests glob.",
+    "knownPreviouslyReviewed": "Per-attempt StoreKit UUID and PDFPage CGRect selection were reviewed by A073; compatible String(bytes:encoding:) by A083. This review did not repeat their runtime probes.",
+    "newerInitializer": "No String(validating:) call remains in the executable changed Swift inputs."
+  },
+  "primarySources": [
+    {
+      "api": "Logger.init(subsystem:category:)",
+      "minimums": {
+        "iOS": "14.0",
+        "macOS": "11.0"
+      },
+      "url": "https://developer.apple.com/documentation/os/logger/init(subsystem:category:).md"
+    },
+    {
+      "api": "Logger.notice(_:)",
+      "minimums": {
+        "iOS": "14.0",
+        "macOS": "11.0"
+      },
+      "url": "https://developer.apple.com/documentation/os/logger/notice(_:).md"
+    },
+    {
+      "api": "DynamicTypeSize.isAccessibilitySize",
+      "minimums": {
+        "iOS": "15.0",
+        "macOS": "12.0"
+      },
+      "url": "https://developer.apple.com/documentation/swiftui/dynamictypesize/isaccessibilitysize.md"
+    },
+    {
+      "api": "XCUICoordinate.press(forDuration:thenDragTo:withVelocity:thenHoldForDuration:)",
+      "minimums": {
+        "documentedXCUIAutomationModuleXcode": "16.3"
+      },
+      "url": "https://developer.apple.com/documentation/xcuiautomation/xcuicoordinate/press(forduration:thendragto:withvelocity:thenholdforduration:).md",
+      "qualification": "Current documentation describes the XCUIAutomation module. This is not asserted to be the original introduction date of the older XCTest API, nor a production iOS version requirement. Same method already exists at2fc in UITests/PlanGestureUITests.swift:65. CI selects Xcode26.6."
+    }
+  ],
+  "actualChecks": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exitCode": 0,
+      "meaning": "Structure/reference validation only"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exitCode": 0,
+      "meaning": "M01 still reports outstanding gates; not acceptance"
+    },
+    {
+      "command": "Compare committed and working changed source hashes; inspect declarations/diffs and target inclusion",
+      "result": "All 19 inspected inputs match source revision"
+    }
+  ],
+  "unperformed": [
+    "Apple API type checking",
+    "Apple builds",
+    "native tests",
+    "UI execution",
+    "oldest-supported-device runtime",
+    "signed Release binary inspection"
+  ],
+  "noRepoEdits": true,
+  "noTargetOrGateChanges": true,
+  "sourceInventory": "source-inventory.json"
+}

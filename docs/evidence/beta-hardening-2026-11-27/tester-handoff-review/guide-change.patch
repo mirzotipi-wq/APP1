@@ -1,0 +1,31 @@
+diff --git a/docs/BETA_TESTER_GUIDE.md b/docs/BETA_TESTER_GUIDE.md
+index 56d1f16..ae6919b 100644
+--- a/docs/BETA_TESTER_GUIDE.md
++++ b/docs/BETA_TESTER_GUIDE.md
+@@ -6,6 +6,8 @@ This guide is a checklist for an **engineering candidate** (27 November 2026), n
+ 
+ Use a disposable setup for testing. Open **Studio tools** (the sliders icon) → **Settings** to check **Version**, **Distance units** and **Appearance**. The **Studio guide** question-mark button remains available after dismissing the welcome card.
+ 
++For the current development configuration, open **Purchase options** in Settings. Check that **Purchases unavailable** is shown, the **Purchase unavailable** and **Restore Purchases** buttons are disabled, and current features remain usable without a purchase. Choose **Done** to return to Settings. Record a differently configured owner-provided build separately; this disabled-state check is not a purchase or restore test.
++
+ 1. On a fresh, untouched first-use setup, either choose **Save current setup** to keep the displayed portrait, or open **Projects** → **New project**, enter a **Name**, and choose **Save project name**. New project creates a named portrait setup.
+ 2. To start from a backup instead, choose **Projects** → **Import editable project** and select one Key & Fill editable `.json` file. A valid import creates a separate project and keeps existing saved projects. An untouched first-use starter need not be saved first.
+ 3. Select a light, change one setting, and try **Undo** and **Redo**. Choose **Save** and check that the project status becomes **Saved locally**. Close and relaunch the app, then verify the same project and setting reopen. Record what actually happens.
+@@ -35,6 +37,8 @@ Source: [recovery screen](../App/ProjectLibraryRecoveryView.swift), [preservatio
+ 
+ Choose **Reference photo** → **Choose photo** and select a still image you are authorized to use. Review the on-device key-side check and its limitations. **Use suggested side** accepts only that tentative cue. You can choose **Key side**, **Shadow edges**, **Shadow fill** and **Rim highlight** yourself, then choose **Build starting rigs**. If a suggestion or starting rig is unavailable, continue editing lights manually in the studio.
+ 
++With a photo open and a manual cue selected, choose **Replace photo**, then cancel the system picker. Check that the previous photo and guided choices remain. If **Preparing photo…** is visible during a replacement, try **Cancel replacement** and check the same retained state. If the selected provider denies access or cannot retrieve an image, record the displayed error and check that an existing photo and guided work remain available. Mark a failure or cancellation branch unavailable if you cannot exercise it. This implementation uses the selected-photo picker without requesting broad Photos access; record the permission/provider state actually observed rather than expecting a whole-library authorization prompt.
++
+ Select a candidate, review its assumptions, then choose **Apply selected rig** → **Apply rig**. This replaces lights while retaining camera and subject positions. **Undo** restores the previous lights; **Save** is still required. **Compare a test shot** opens side-by-side/wipe comparison of two photographs.
+ 
+ These are plausible starting arrangements, not exact photo reconstruction. Plan/3D/Camera views are illustrative; Study and lux values are idealized planning aids, not calibrated equipment, skin exposure or camera measurements. Check real results with your equipment, a light meter and test photographs.
+@@ -49,7 +53,7 @@ Source: [reference workflow](../App/ReferenceComparisonView.swift), [photo handl
+ 
+ For AR, open **Studio tools** → **Place in AR** → **Start AR camera** and respond to camera permission. On supported hardware, follow tracking guidance, aim at the physical floor, and choose **Place subject on this floor point** when available. Adjust **Setup direction** as needed. Test **Stop camera** and **Reset and scan again**; after tracking recovery, check the physical placement before choosing **I checked the recovered placement** when shown.
+ 
+-On a physical device, also try denying camera access when iOS asks, or turn off Key & Fill's camera access in iOS Settings. Return to **Place in AR** → **Start AR camera** and check the denial guidance and **Use manual room measurements**. Then choose **Open Camera Settings**, allow camera access, return and start again. If iOS restrictions or hardware prevent a branch, record it as unavailable.
++On a physical device, also try denying camera access when iOS asks, or turn off Key & Fill's camera access in iOS Settings. Return to **Place in AR** → **Start AR camera** and check the denial guidance and **Use manual room measurements**. If you open that manual-room sheet, choose **Done** to return to **AR placement** before choosing **Open Camera Settings**. Allow camera access, return and start again. If iOS restrictions or hardware prevent a branch, record it as unavailable.
+ 
+ Use **Use manual room measurements** when AR is unavailable, permission is denied, or tracking is unsuitable. The simulator cannot place a setup in a real room. AR distances come from the authored plan, not a measurement of equipment or tracking accuracy; no placement-accuracy result is established here. Camera frames/maps are not saved, and anchors clear when leaving or pausing the camera.
+ 

@@ -1,0 +1,316 @@
+=== Original job log lines 190-205 ===
+190: 2026-11-27T14:56:47.9956780Z ##[endgroup]
+191: 2026-11-27T14:56:48.0249970Z [command]/usr/local/bin/git log -1 --format=%H
+192: 2026-11-27T14:56:48.0437880Z 2fc7647314d3ae6fa22d95284e778c6c5badbe4a
+193: 2026-11-27T14:56:48.1360940Z ##[group]Run set -euo pipefail
+194: 2026-11-27T14:56:48.1362110Z [36;1mset -euo pipefail[0m
+195: 2026-11-27T14:56:48.1364150Z [36;1m{[0m
+196: 2026-11-27T14:56:48.1365200Z [36;1m  sw_vers[0m
+197: 2026-11-27T14:56:48.1365840Z [36;1m  uname -a[0m
+198: 2026-11-27T14:56:48.1366500Z [36;1m  swift --version[0m
+199: 2026-11-27T14:56:48.1369770Z [36;1m  xcodebuild -version[0m
+200: 2026-11-27T14:56:48.1374390Z [36;1m  xcodebuild -showsdks[0m
+201: 2026-11-27T14:56:48.1375790Z [36;1m  git rev-parse HEAD[0m
+202: 2026-11-27T14:56:48.1376850Z [36;1m} | tee macos-environment.log[0m
+203: 2026-11-27T14:56:48.1379050Z [36;1m[ "$(uname -m)" = "$EXPECTED_RUNNER_ARCH" ] || { echo "::error::Expected the configured $EXPECTED_RUNNER_ARCH runner"; exit 1; }[0m
+204: 2026-11-27T14:56:48.1382060Z [36;1m[ "$(xcrun --sdk iphonesimulator --show-sdk-version)" = 26.5 ] || { echo "::error::Expected the iOS 26.5 simulator SDK"; exit 1; }[0m
+205: 2026-11-27T14:56:48.1636360Z shell: /bin/bash -e {0}
+
+=== Original job log lines 2006-2035 ===
+2006: 2026-11-27T15:02:03.3995650Z 
+2007: 2026-11-27T15:02:03.3999490Z Touch /Users/runner/work/_temp/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFillUITests-Runner.app/PlugIns/KeyAndFillUITests.xctest (in target 'KeyAndFillUITests' from project 'KeyAndFill')
+2008: 2026-11-27T15:02:03.4003570Z     cd /Users/runner/work/APP1/APP1
+2009: 2026-11-27T15:02:03.4005700Z     /usr/bin/touch -c /Users/runner/work/_temp/keyfill-build/Build/Products/Debug-iphonesimulator/KeyAndFillUITests-Runner.app/PlugIns/KeyAndFillUITests.xctest
+2010: 2026-11-27T15:02:03.4007640Z 
+2011: 2026-11-27T15:02:03.5031950Z ** TEST BUILD SUCCEEDED **
+2012: 2026-11-27T15:02:03.5166020Z 
+2013: 2026-11-27T15:02:03.6547690Z ##[group]Run set -euo pipefail
+2014: 2026-11-27T15:02:03.6548670Z [36;1mset -euo pipefail[0m
+2015: 2026-11-27T15:02:03.6549530Z [36;1mpython3 scripts/boot_simulator.py --udid "$SIMULATOR_ID" \[0m
+2016: 2026-11-27T15:02:03.6550610Z [36;1m  --runtime com.apple.CoreSimulator.SimRuntime.iOS-26-5 \[0m
+2017: 2026-11-27T15:02:03.6551890Z [36;1m  --device-type com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro \[0m
+2018: 2026-11-27T15:02:03.6553090Z [36;1m  --output simulator-startup 2>&1 | tee simulator-boot.log[0m
+2019: 2026-11-27T15:02:03.6687550Z shell: /bin/bash -e {0}
+2020: 2026-11-27T15:02:03.6688040Z env:
+2021: 2026-11-27T15:02:03.6690910Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2022: 2026-11-27T15:02:03.6692250Z   SIMULATOR_ID: 12FCFD0F-7FCF-463F-A605-132A7E18B5D5
+2023: 2026-11-27T15:02:03.6693230Z ##[endgroup]
+2024: 2026-11-27T15:02:04.0138770Z Simulator startup: preflight; evidence /Users/runner/work/APP1/APP1/simulator-startup/01-preflight
+2025: 2026-11-27T15:02:04.7797100Z Simulator startup: preflight: exited, exit=0
+2026: 2026-11-27T15:02:04.8700840Z Simulator startup: attempt-1-boot; evidence /Users/runner/work/APP1/APP1/simulator-startup/02-attempt-1-boot
+2027: 2026-11-27T15:02:09.6235450Z Simulator startup: attempt-1-boot: exited, exit=0
+2028: 2026-11-27T15:02:09.6256190Z Simulator startup: attempt-1-bootstatus; evidence /Users/runner/work/APP1/APP1/simulator-startup/03-attempt-1-bootstatus
+2029: 2026-11-27T15:06:56.5967780Z Simulator startup: attempt-1-bootstatus: timed_out, exit=-9
+2030: 2026-11-27T15:06:56.5975870Z Simulator startup: recovery-preflight; evidence /Users/runner/work/APP1/APP1/simulator-startup/04-recovery-preflight
+2031: 2026-11-27T15:07:16.8505560Z Simulator startup: recovery-preflight: timed_out, exit=-9
+2032: 2026-11-27T15:07:21.5758060Z Simulator startup failed: recovery-preflight did not complete successfully before its deadline (status=timed_out, exit=-9)
+2033: 2026-11-27T15:07:23.4472830Z Simulator startup: failed; report /Users/runner/work/APP1/APP1/simulator-startup/report.json
+2034: 2026-11-27T15:07:25.1134170Z ##[error]Process completed with exit code 1.
+2035: 2026-11-27T15:07:34.1785540Z ##[group]Run mkdir -p artifacts
+
+=== Original job log lines 2260-2303 ===
+2260: 2026-11-27T15:18:53.9253880Z     t =   180.95s     Synthesize event
+2261: 2026-11-27T15:18:54.7477660Z     t =   181.62s     Wait for com.example.keyandfill to idle
+2262: 2026-11-27T15:18:58.1061500Z     t =   185.01s Checking `Expect predicate `exists == 0` for object "Restore Portrait setup" Button`
+2263: 2026-11-27T15:18:58.2142490Z     t =   185.01s     Checking existence of `"Restore Portrait setup" Button`
+2264: 2026-11-27T15:18:59.3099690Z     t =   186.51s Tap "Done" Button
+2265: 2026-11-27T15:18:59.4101510Z     t =   186.51s     Wait for com.example.keyandfill to idle
+2266: 2026-11-27T15:18:59.5198930Z     t =   186.52s     Find the "Done" Button
+2267: 2026-11-27T15:19:00.6941720Z     t =   187.84s     Check for interrupting elements affecting "projectLibraryDone" Button
+2268: 2026-11-27T15:19:01.2976560Z     t =   188.54s     Synthesize event
+2269: 2026-11-27T15:19:01.7075650Z     t =   188.88s     Wait for com.example.keyandfill to idle
+2270: 2026-11-27T15:19:03.2662680Z     t =   190.49s Checking `Expect predicate `exists == 1 AND label == "Keep"` for object "projectName" StaticText`
+2271: 2026-11-27T15:19:03.4049620Z     t =   190.49s     Checking existence of `"projectName" StaticText`
+2272: 2026-11-27T15:19:04.0288650Z     t =   191.23s     Find the "projectName" StaticText
+2273: 2026-11-27T15:19:04.5439710Z     t =   191.79s Terminate com.example.keyandfill:40568
+2274: 2026-11-27T15:19:05.6097180Z     t =   192.81s Open com.example.keyandfill
+2275: 2026-11-27T15:19:05.7099790Z     t =   192.81s     Launch com.example.keyandfill
+2276: 2026-11-27T15:19:05.8106960Z 2026-11-27 15:19:05.580 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2277: 2026-11-27T15:19:05.9778650Z 2026-11-27 15:19:05.580 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: no debugger version
+2278: 2026-11-27T15:19:09.2261840Z     t =   195.42s         Setting up automation session
+2279: 2026-11-27T15:19:17.2393600Z     t =   204.42s         Wait for com.example.keyandfill to idle
+2280: 2026-11-27T15:20:17.3509230Z     t =   264.48s             App event loop idle notification not received, will attempt to continue.
+2281: 2026-11-27T15:20:20.0039850Z     t =   266.54s Checking `Expect predicate `BLOCKPREDICATE(0x600000c92400)` for object "openProjectLibrary" Button`
+2282: 2026-11-27T15:20:20.0081980Z     t =   266.55s     Find the "openProjectLibrary" Button
+2283: 2026-11-27T15:20:48.6553980Z     t =   295.85s     Capturing element debug description
+2284: 2026-11-27T15:20:48.7560040Z     t =   295.87s Requesting snapshot of accessibility hierarchy for app with pid 41191
+2285: 2026-11-27T15:21:53.8357930Z     t =   360.94s Requesting snapshot of accessibility hierarchy for app with pid 41191
+2286: 2026-11-27T15:22:58.8667930Z Project-control-readiness-failure:
+2287: 2026-11-27T15:22:58.9726530Z Application state: 4
+2288: 2026-11-27T15:22:59.0890670Z Requested element:
+2289: 2026-11-27T15:22:59.1902870Z Query chain:
+2290: 2026-11-27T15:22:59.3304770Z  →Find: Target Application 'com.example.keyandfill'
+2291: 2026-11-27T15:22:59.4318450Z   ↪︎Find: Descendants matching type Button
+2292: 2026-11-27T15:22:59.5331970Z     ↪︎Find: Elements matching predicate '"openProjectLibrary" IN identifiers'
+2293: 2026-11-27T15:22:59.6330170Z 
+2294: 2026-11-27T15:22:59.7543790Z Application hierarchy:
+2295: 2026-11-27T15:22:59.8601020Z Query chain:
+2296: 2026-11-27T15:23:00.0419390Z  →Find: Target Application 'com.example.keyandfill'
+2297: 2026-11-27T15:23:00.1422110Z 
+2298: 2026-11-27T15:23:00.2447830Z     t =   425.99s Added attachment named 'Project-control-readiness-failure'
+2299: 2026-11-27T15:23:48.0093530Z /Users/runner/work/APP1/APP1/UITests/ProjectLibraryUITests.swift:30: error: -[KeyAndFillUITests.ProjectLibraryUITests testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval] : Failed to get screenshot: Timed out while requesting screenshot.
+2300: 2026-11-27T15:23:48.1090500Z     t =   475.13s Tear Down
+2301: 2026-11-27T15:23:50.3901820Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval]' failed (477.597 seconds).
+2302: 2026-11-27T15:23:50.6339550Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testCreateDuplicateRenameSwitchAndRelaunch]' started.
+2303: 2026-11-27T15:23:50.7345470Z     t =     0.00s Start Test at 2026-11-27 15:23:50.343
+
+=== Original job log lines 2407-2445 ===
+2407: 2026-11-27T15:26:11.2356680Z     t =   140.70s     Wait for com.example.keyandfill to idle
+2408: 2026-11-27T15:26:11.3362710Z     t =   140.83s     Find the "Options for Editorial" Button
+2409: 2026-11-27T15:26:11.8059610Z     t =   141.46s     Check for interrupting elements affecting "Options for Editorial" Button
+2410: 2026-11-27T15:26:12.3150670Z     t =   141.92s     Synthesize event
+2411: 2026-11-27T15:26:12.8372660Z     t =   142.46s     Wait for com.example.keyandfill to idle
+2412: 2026-11-27T15:26:14.6772950Z     t =   144.23s Tap "Duplicate" Button
+2413: 2026-11-27T15:26:14.7787880Z     t =   144.23s     Wait for com.example.keyandfill to idle
+2414: 2026-11-27T15:26:15.5244320Z     t =   145.13s     Find the "Duplicate" Button
+2415: 2026-11-27T15:26:16.1456640Z     t =   145.75s     Check for interrupting elements affecting "plus.square.on.square" Button
+2416: 2026-11-27T15:26:16.6496150Z     t =   146.26s     Synthesize event
+2417: 2026-11-27T15:26:17.0585630Z     t =   146.63s     Wait for com.example.keyandfill to idle
+2418: 2026-11-27T15:27:17.2618250Z     t =   206.69s         App event loop idle notification not received, will attempt to continue.
+2419: 2026-11-27T15:27:17.5527250Z     t =   206.69s App animations complete notification not received, will attempt to continue.
+2420: 2026-11-27T15:27:17.6683430Z     t =   206.70s Waiting 10.0s for "projectNameInput" TextField to exist
+2421: 2026-11-27T15:27:18.4860970Z     t =   207.74s     Checking `Expect predicate `existsNoRetry == 1` for object "projectNameInput" TextField`
+2422: 2026-11-27T15:27:18.5948420Z     t =   207.75s         Checking existence of `"projectNameInput" TextField`
+2423: 2026-11-27T15:27:28.4655080Z     t =   216.98s         Capturing element debug description
+2424: 2026-11-27T15:27:29.9186810Z     t =   218.88s             Requesting snapshot of accessibility hierarchy for app with pid 45643
+2425: 2026-11-27T15:27:30.0417620Z     t =   218.89s             Requesting snapshot of accessibility hierarchy for app with pid 45643
+2426: 2026-11-27T15:27:30.5246810Z     t =   218.89s             Requesting snapshot of accessibility hierarchy for app with pid 45643
+2427: 2026-11-27T15:27:31.0042000Z     t =   219.26s     Checking existence of `"projectNameInput" TextField`
+2428: 2026-11-27T15:28:01.2193120Z     t =   250.31s     Checking existence of `"projectNameInput" TextField` (retry 1)
+2429: 2026-11-27T15:28:32.7111980Z     t =   281.36s     Checking existence of `"projectNameInput" TextField` (retry 2)
+2430: 2026-11-27T15:29:02.4476740Z /Users/runner/work/APP1/APP1/UITests/ProjectLibraryUITests.swift:124: error: -[KeyAndFillUITests.ProjectLibraryUITests testCreateDuplicateRenameSwitchAndRelaunch] : Failed to get matching snapshots: Timed out while evaluating UI query.
+2431: 2026-11-27T15:29:02.4945600Z     t =   311.47s Tear Down
+2432: 2026-11-27T15:29:34.1129450Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testCreateDuplicateRenameSwitchAndRelaunch]' failed (342.242 seconds).
+2433: 2026-11-27T15:29:34.1149800Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup]' started.
+2434: 2026-11-27T15:29:34.1158380Z     t =     0.00s Start Test at 2026-11-27 15:29:32.626
+2435: 2026-11-27T15:30:03.5587730Z     t =    30.07s Set Up
+2436: 2026-11-27T15:30:03.6809700Z     t =    30.07s     Open com.example.keyandfill
+2437: 2026-11-27T15:30:04.4607190Z     t =    30.08s         Launch com.example.keyandfill
+2438: 2026-11-27T15:30:04.5820140Z     t =    30.08s             Terminate com.example.keyandfill:45643
+2439: 2026-11-27T15:30:16.2875510Z     t =    42.36s Unable to monitor animations
+2440: 2026-11-27T15:30:17.4744720Z     t =    42.38s Unable to monitor event loop
+2441: 2026-11-27T15:31:03.3941980Z /Users/runner/work/APP1/APP1/UITests/ProjectLibraryUITests.swift:42: error: -[KeyAndFillUITests.ProjectLibraryUITests testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup] : Failed to terminate com.example.keyandfill:45643: Failed to terminate com.example.keyandfill:0
+2442: 2026-11-27T15:31:03.7734560Z     t =    90.17s Tear Down
+2443: 2026-11-27T15:31:33.5047610Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup]' failed (120.212 seconds).
+2444: 2026-11-27T15:31:33.9470720Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testLargeValidLibraryCanLoadSaveBrowseAndRelaunch]' started.
+2445: 2026-11-27T15:31:34.0505690Z     t =     0.00s Start Test at 2026-11-27 15:31:32.837
+
+=== Original job log lines 2444-2477 ===
+2444: 2026-11-27T15:31:33.9470720Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testLargeValidLibraryCanLoadSaveBrowseAndRelaunch]' started.
+2445: 2026-11-27T15:31:34.0505690Z     t =     0.00s Start Test at 2026-11-27 15:31:32.837
+2446: 2026-11-27T15:31:36.2116320Z Reload Package ‘app1’
+2447: 2026-11-27T15:31:39.5238620Z 
+2448: 2026-11-27T15:32:14.1256420Z     t =    12.20s Set Up
+2449: 2026-11-27T15:32:14.2262670Z     t =    12.24s                 Open com.example.keyandfill
+2450: 2026-11-27T15:32:14.3267290Z     t =    12.24s                     Launch com.example.keyandfill
+2451: 2026-11-27T15:32:14.4298240Z 2026-11-27 15:31:46.390543+0000 KeyAndFillUITests-Runner[40168:138688] [XPCErrors] [C:2] Error received: Connection interrupted.
+2452: 2026-11-27T15:32:14.5315280Z 2026-11-27 15:31:47.146948+0000 KeyAndFillUITests-Runner[40168:140246] [XPCErrors] [C:1] Error received: Connection interrupted.
+2453: 2026-11-27T15:32:14.6593200Z 2026-11-27 15:32:14.236 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2454: 2026-11-27T15:32:14.7593720Z 2026-11-27 15:32:14.236 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: no debugger version
+2455: 2026-11-27T15:35:21.0039040Z Reload Package ‘app1’
+2456: 2026-11-27T15:35:30.4022340Z 
+2457: 2026-11-27T15:35:30.9196290Z Reload Package ‘app1’
+2458: 2026-11-27T15:35:31.0198370Z 
+2459: 2026-11-27T15:35:31.1202470Z Reload Package ‘app1’
+2460: 2026-11-27T15:35:31.3207500Z 
+2461: 2026-11-27T15:35:36.5410760Z 2026-11-27 15:35:36.475056+0000 KeyAndFillUITests-Runner[49810:144445] [Default] Running tests...
+2462: 2026-11-27T15:35:37.0434060Z 2026-11-27 15:35:37.020993+0000 KeyAndFillUITests-Runner[49810:144501] [General] Failed to send CA Event for app launch measurements for ca_event_type: 0 event_name: com.apple.app_launch_measurement.FirstFramePresentationMetric
+2463: 2026-11-27T15:35:37.5557660Z     t =      nans Interface orientation changed to Portrait
+2464: 2026-11-27T15:35:37.7625650Z 
+2465: 2026-11-27T15:35:37.8630890Z Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.
+2466: 2026-11-27T15:35:37.9667840Z 
+2467: 2026-11-27T15:35:38.0672790Z Test Suite 'Selected tests' started at 2026-11-27 15:35:37.910.
+2468: 2026-11-27T15:35:38.1678910Z Test Suite 'KeyAndFillUITests.xctest' started at 2026-11-27 15:35:37.913.
+2469: 2026-11-27T15:35:38.2683790Z Test Suite 'ProjectLibraryUITests' started at 2026-11-27 15:35:37.914.
+2470: 2026-11-27T15:35:38.4281040Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch]' started.
+2471: 2026-11-27T15:35:38.5321760Z     t =     0.02s Start Test at 2026-11-27 15:35:37.937
+2472: 2026-11-27T15:35:38.7331510Z 2026-11-27 15:35:38.174238+0000 KeyAndFillUITests-Runner[49810:144718] [General] Failed to send CA Event for app launch measurements for ca_event_type: 1 event_name: com.apple.app_launch_measurement.ExtendedLaunchMetrics
+2473: 2026-11-27T15:35:39.3964430Z     t =     1.32s Set Up
+2474: 2026-11-27T15:35:39.5587270Z     t =     1.34s Open com.example.keyandfill
+2475: 2026-11-27T15:35:39.6203670Z     t =     1.34s     Launch com.example.keyandfill
+2476: 2026-11-27T15:35:39.7226040Z     t =     1.34s         Terminate com.example.keyandfill:49538
+2477: 2026-11-27T15:35:40.4818570Z 2026-11-27 15:35:40.371 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+
+=== Original job log lines 2536-2565 ===
+2536: 2026-11-27T15:36:29.2705920Z     t =    51.20s Checking existence of `"saveConflictCopy" Button`
+2537: 2026-11-27T15:36:30.5426600Z     t =    52.59s Checking existence of `"saveConflictCopy" Button`
+2538: 2026-11-27T15:36:30.9941830Z     t =    52.98s Find the Target Application 'com.example.keyandfill'
+2539: 2026-11-27T15:36:31.7560150Z     t =    53.63s Find the "saveConflictCopy" Button
+2540: 2026-11-27T15:36:32.7024950Z     t =    54.71s Find the "saveConflictCopy" Button
+2541: 2026-11-27T15:36:33.0034940Z     t =    55.08s Tap "saveConflictCopy" Button
+2542: 2026-11-27T15:36:33.1037840Z     t =    55.08s     Wait for com.example.keyandfill to idle
+2543: 2026-11-27T15:36:33.2039440Z     t =    55.09s     Find the "saveConflictCopy" Button
+2544: 2026-11-27T15:36:33.6138600Z     t =    55.61s     Check for interrupting elements affecting "saveConflictCopy" Button
+2545: 2026-11-27T15:36:33.9326070Z     t =    55.90s     Synthesize event
+2546: 2026-11-27T15:36:34.2334610Z     t =    56.29s     Wait for com.example.keyandfill to idle
+2547: 2026-11-27T15:36:36.2346160Z     t =    58.30s Checking `Expect predicate `exists == 1 AND label == "Portrait setup recovery"` for object "projectName" StaticText`
+2548: 2026-11-27T15:36:36.3350940Z     t =    58.30s     Checking existence of `"projectName" StaticText`
+2549: 2026-11-27T15:36:36.6962830Z     t =    58.73s     Find the "projectName" StaticText
+2550: 2026-11-27T15:36:37.0981790Z     t =    59.17s Find the "projectStatus" StaticText
+2551: 2026-11-27T15:36:37.4618210Z     t =    59.52s Terminate com.example.keyandfill:49919
+2552: 2026-11-27T15:36:38.4649090Z     t =    60.53s Open com.example.keyandfill
+2553: 2026-11-27T15:36:38.5675160Z 2026-11-27 15:36:38.457 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2554: 2026-11-27T15:36:38.6678940Z 2026-11-27 15:36:38.457 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: no debugger version
+2555: 2026-11-27T15:36:38.7770550Z     t =    60.53s     Launch com.example.keyandfill
+2556: 2026-11-27T15:36:45.0216180Z     t =    67.02s         Setting up automation session
+2557: 2026-11-27T15:37:06.5018930Z     t =    81.05s         Wait for com.example.keyandfill to idle
+2558: 2026-11-27T15:37:12.0044390Z     t =    93.81s Checking `Expect predicate `BLOCKPREDICATE(0x600000cb4870)` for object "openProjectLibrary" Button`
+2559: 2026-11-27T15:37:12.2809950Z     t =    93.81s     Find the "openProjectLibrary" Button
+2560: 2026-11-27T15:37:19.7198620Z     t =   100.70s Checking `Expect predicate `exists == 1 AND label == "Portrait setup recovery"` for object "projectName" StaticText`
+2561: 2026-11-27T15:37:20.2301940Z     t =   100.70s     Checking existence of `"projectName" StaticText`
+2562: 2026-11-27T15:37:42.3138460Z     t =   109.94s     Checking existence of `"projectName" StaticText` (retry 1)
+2563: 2026-11-27T15:37:42.7965110Z     t =   109.95s     Checking existence of `"projectName" StaticText` (retry 2)
+2564: 2026-11-27T15:37:46.7193770Z     t =   110.01s     Capturing element debug description
+2565: 2026-11-27T15:37:49.4941170Z /Users/runner/work/APP1/APP1/UITests/ProjectLibraryUITests.swift:49: error: -[KeyAndFillUITests.ProjectLibraryUITests testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch] : XCTAssertEqual failed: ("XCTWaiterResult(rawValue: 2)") is not equal to ("XCTWaiterResult(rawValue: 1)")
+
+=== Original job log lines 2655-2684 ===
+2655: 2026-11-27T15:39:43.6012620Z     t =   116.54s Find the Target Application 'com.example.keyandfill'
+2656: 2026-11-27T15:39:44.1034490Z     t =   117.05s Find the "light-Key" Button
+2657: 2026-11-27T15:39:44.8596590Z     t =   117.78s Find the "light-Key" Button
+2658: 2026-11-27T15:39:45.6065010Z     t =   118.54s Checking existence of `"light-Key" Button`
+2659: 2026-11-27T15:39:46.2082990Z     t =   119.19s Checking existence of `"light-Backlight" Button`
+2660: 2026-11-27T15:39:46.8560450Z     t =   119.85s Tear Down
+2661: 2026-11-27T15:39:51.8590080Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testStaleSaveReloadRequiresConfirmation]' passed (124.838 seconds).
+2662: 2026-11-27T15:39:51.9601200Z Test Case '-[KeyAndFillUITests.ProjectLibraryUITests testUnsavedSetupMustBeSavedBeforeLibraryChanges]' started.
+2663: 2026-11-27T15:39:52.0606520Z     t =     0.00s Start Test at 2026-11-27 15:39:51.836
+2664: 2026-11-27T15:39:52.3856640Z     t =     0.04s Set Up
+2665: 2026-11-27T15:39:52.4858180Z     t =     0.05s Open com.example.keyandfill
+2666: 2026-11-27T15:39:52.5920990Z     t =     0.05s     Launch com.example.keyandfill
+2667: 2026-11-27T15:39:52.6924130Z     t =     0.05s         Terminate com.example.keyandfill:51546
+2668: 2026-11-27T15:39:52.9848890Z 2026-11-27 15:39:52.906 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2669: 2026-11-27T15:39:53.0847320Z 2026-11-27 15:39:52.906 xcodebuild[34910:98738] [MT] IDELaunchParametersSnapshot: no debugger version
+2670: 2026-11-27T15:39:53.6168680Z Reload Package ‘app1’
+2671: 2026-11-27T15:39:53.7871600Z 
+2672: 2026-11-27T15:40:22.5466210Z ##[error]The action 'Run selected native UI shard' has timed out after 32 minutes.
+2673: 2026-11-27T15:40:22.5793570Z ##[group]Run python3 scripts/native_test_shards.py verify-log "$TEST_SHARD" native-tests.log \
+2674: 2026-11-27T15:40:22.5796900Z [36;1mpython3 scripts/native_test_shards.py verify-log "$TEST_SHARD" native-tests.log \[0m
+2675: 2026-11-27T15:40:22.5798910Z [36;1m  --report native-method-accounting.json[0m
+2676: 2026-11-27T15:40:22.7908000Z shell: /bin/bash -e {0}
+2677: 2026-11-27T15:40:22.7908980Z env:
+2678: 2026-11-27T15:40:22.7910080Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2679: 2026-11-27T15:40:22.7911870Z   SIMULATOR_ID: 12FCFD0F-7FCF-463F-A605-132A7E18B5D5
+2680: 2026-11-27T15:40:22.7913270Z   TEST_SHARD: library-reference
+2681: 2026-11-27T15:40:22.7914300Z ##[endgroup]
+2682: 2026-11-27T15:40:37.6563200Z Incomplete XCTest execution: [{"events": [{"event": "started", "line": 26}, {"event": "failed", "line": 195}], "method": "ProjectLibraryUITests.testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [{"event": "started", "line": 196}, {"event": "failed", "line": 326}], "method": "ProjectLibraryUITests.testCreateDuplicateRenameSwitchAndRelaunch", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [{"event": "started", "line": 327}, {"event": "failed", "line": 337}], "method": "ProjectLibraryUITests.testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [{"event": "started", "line": 338}], "method": "ProjectLibraryUITests.testLargeValidLibraryCanLoadSaveBrowseAndRelaunch", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [{"event": "started", "line": 364}, {"event": "failed", "line": 461}], "method": "ProjectLibraryUITests.testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [{"event": "started", "line": 556}], "method": "ProjectLibraryUITests.testUnsavedSetupMustBeSavedBeforeLibraryChanges", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [], "method": "ReferenceComparisonUITests.testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}, {"events": [], "method": "ReferenceComparisonUITests.testReferenceComparisonOpensWithRealStudyAndNoPhoto", "reason": "Expected exactly one ordered started -> passed sequence", "target": "KeyAndFillUITests"}]
+2683: 2026-11-27T15:40:37.7513410Z ##[error]Process completed with exit code 1.
+2684: 2026-11-27T15:40:37.7643600Z ##[group]Run mkdir -p artifacts
+
+=== Original job log lines 2720-2752 ===
+2720: 2026-11-27T15:40:37.7845650Z env:
+2721: 2026-11-27T15:40:37.7846670Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2722: 2026-11-27T15:40:37.7848300Z   SIMULATOR_ID: 12FCFD0F-7FCF-463F-A605-132A7E18B5D5
+2723: 2026-11-27T15:40:37.7849530Z   UI_TEST_STEP_OUTCOME: failure
+2724: 2026-11-27T15:40:37.7850430Z ##[endgroup]
+2725: 2026-11-27T15:40:48.1138710Z ##[group]Run set -euo pipefail
+2726: 2026-11-27T15:40:48.1140310Z [36;1mset -euo pipefail[0m
+2727: 2026-11-27T15:40:48.1141360Z [36;1mmkdir -p artifacts[0m
+2728: 2026-11-27T15:40:48.1143030Z [36;1m# Preserve any original bundle before checking finalization. A timed-out[0m
+2729: 2026-11-27T15:40:48.1145140Z [36;1m# command must retain its raw evidence without passing this required gate.[0m
+2730: 2026-11-27T15:40:48.1146950Z [36;1mif [ -d NativeTests.xcresult ]; then[0m
+2731: 2026-11-27T15:40:48.1148670Z [36;1m  ditto -c -k --keepParent NativeTests.xcresult artifacts/native-results.zip || {[0m
+2732: 2026-11-27T15:40:48.1150570Z [36;1m    native_archive_exit_code=$?[0m
+2733: 2026-11-27T15:40:48.1153780Z [36;1m    printf 'archive_failed=true\n' >> "$GITHUB_OUTPUT"[0m
+2734: 2026-11-27T15:40:48.1155590Z [36;1m    echo "::error::XCTest archive failed; preserve the original bundle separately"[0m
+2735: 2026-11-27T15:40:48.1157270Z [36;1m    exit "$native_archive_exit_code"[0m
+2736: 2026-11-27T15:40:48.1158290Z [36;1m  }[0m
+2737: 2026-11-27T15:40:48.1159240Z [36;1mfi[0m
+2738: 2026-11-27T15:40:48.1161150Z [36;1mif [ ! -f NativeTests.xcresult/Info.plist ]; then[0m
+2739: 2026-11-27T15:40:48.1163300Z [36;1m  echo "::error::No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle"[0m
+2740: 2026-11-27T15:40:48.1165180Z [36;1m  exit 1[0m
+2741: 2026-11-27T15:40:48.1165890Z [36;1mfi[0m
+2742: 2026-11-27T15:40:48.1166750Z [36;1mmkdir -p artifacts/native-attachments[0m
+2743: 2026-11-27T15:40:48.1168910Z [36;1mxcrun xcresulttool export attachments --path NativeTests.xcresult --output-path artifacts/native-attachments[0m
+2744: 2026-11-27T15:40:48.1320550Z shell: /bin/bash -e {0}
+2745: 2026-11-27T15:40:48.1321520Z env:
+2746: 2026-11-27T15:40:48.1322690Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2747: 2026-11-27T15:40:48.1324230Z   SIMULATOR_ID: 12FCFD0F-7FCF-463F-A605-132A7E18B5D5
+2748: 2026-11-27T15:40:48.1325420Z ##[endgroup]
+2749: 2026-11-27T15:40:58.2075040Z ##[error]No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle
+2750: 2026-11-27T15:40:58.3028100Z ##[error]Process completed with exit code 1.
+2751: 2026-11-27T15:40:58.3922740Z ##[group]Run actions/upload-artifact@v4
+2752: 2026-11-27T15:40:58.3924060Z with:
+
+=== Original job log lines 2790-2831 ===
+2790: 2026-11-27T15:41:10.1339470Z Root directory input is valid!
+2791: 2026-11-27T15:41:11.4976570Z Beginning upload of artifact content to blob storage
+2792: 2026-11-27T15:41:11.5979790Z Uploaded bytes 8388608
+2793: 2026-11-27T15:41:11.6983080Z Uploaded bytes 16777216
+2794: 2026-11-27T15:41:11.7988690Z Uploaded bytes 25165824
+2795: 2026-11-27T15:41:12.1066070Z Uploaded bytes 30770920
+2796: 2026-11-27T15:41:12.2069580Z Finished uploading artifact content to blob storage!
+2797: 2026-11-27T15:41:12.3077270Z SHA256 digest of uploaded artifact zip is 731d69eb98df1f556a2439a3ad3f14be7b6eed39e9a7a21cd42060447620d5c9
+2798: 2026-11-27T15:41:12.4081330Z Finalizing artifact upload
+2799: 2026-11-27T15:41:12.9019610Z Artifact ui-library-reference-evidence.zip successfully finalized. Artifact ID 15211924726
+2800: 2026-11-27T15:41:13.0021380Z Artifact ui-library-reference-evidence has been successfully uploaded! Final size is 30770920 bytes. Artifact ID is 15211924726
+2801: 2026-11-27T15:41:13.1023900Z Artifact download URL: https://github.com/mirzotipi-wq/APP1/actions/runs/46019722045/artifacts/15211924726
+2802: 2026-11-27T15:41:13.2007160Z ##[group]Run actions/upload-artifact@v4
+2803: 2026-11-27T15:41:13.2008490Z with:
+2804: 2026-11-27T15:41:13.2009540Z   name: ui-library-reference-evidence-compact
+2805: 2026-11-27T15:41:13.2013930Z   path: artifacts/native-attachments/manifest.json
+2806: artifacts/native-attachments/*.png
+2807: artifacts/native-attachments/*.txt
+2808: artifacts/native-attachments/*.ips
+2809: artifacts/native-attachments/*.pdf
+2810: artifacts/studio-slider-trace*
+2811: 
+2812: 2026-11-27T15:41:13.2018020Z   if-no-files-found: warn
+2813: 2026-11-27T15:41:13.2019560Z   compression-level: 6
+2814: 2026-11-27T15:41:13.2020620Z   overwrite: false
+2815: 2026-11-27T15:41:13.2021510Z   include-hidden-files: false
+2816: 2026-11-27T15:41:13.2022500Z env:
+2817: 2026-11-27T15:41:13.2023700Z   DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+2818: 2026-11-27T15:41:13.2025790Z   SIMULATOR_ID: 12FCFD0F-7FCF-463F-A605-132A7E18B5D5
+2819: 2026-11-27T15:41:13.2027590Z ##[endgroup]
+2820: 2026-11-27T15:41:14.6127150Z (node:54360) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2821: 2026-11-27T15:41:14.7133020Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2822: 2026-11-27T15:41:15.6180810Z ##[warning]No files were found with the provided path: artifacts/native-attachments/manifest.json
+2823: artifacts/native-attachments/*.png
+2824: artifacts/native-attachments/*.txt
+2825: artifacts/native-attachments/*.ips
+2826: artifacts/native-attachments/*.pdf
+2827: artifacts/studio-slider-trace*. No artifacts will be uploaded.
+2828: 2026-11-27T15:41:15.8192250Z Post job cleanup.
+2829: 2026-11-27T15:41:16.8495080Z [command]/usr/local/bin/git version
+2830: 2026-11-27T15:41:17.0539010Z git version 2.55.0
+2831: 2026-11-27T15:41:17.5604350Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/70e11ea6-5e49-4823-9ffc-4ef5901fb912/.gitconfig'
+

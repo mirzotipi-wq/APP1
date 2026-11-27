@@ -1,0 +1,44 @@
+diff --git a/UITests/BetaAccessibilityUITests.swift b/UITests/BetaAccessibilityUITests.swift
+index 4f2989e..16fe278 100644
+--- a/UITests/BetaAccessibilityUITests.swift
++++ b/UITests/BetaAccessibilityUITests.swift
+@@ -37,7 +37,12 @@ final class BetaAccessibilityUITests: XCTestCase {
+ 
+         healthy.launch()
+         waitForEnabledStudioControl(healthy.buttons["openProjectLibrary"])
+-        let title = healthy.staticTexts["studioWelcomeTitle"]
++        // The opted-in layout value can expose an empty-label AX wrapper.
++        // Select the actual labeled title and reject ambiguous real matches.
++        let titles = healthy.staticTexts.matching(NSPredicate(
++            format: "identifier == %@ AND label == %@", "studioWelcomeTitle", "Start your first portrait"))
++        XCTAssertEqual(titles.count, 1, "Expected one actual labeled welcome title")
++        let title = titles.firstMatch
+         revealStudioContent(title, in: healthy, towardBottom: false, fullyVisible: true)
+         try assertWelcomeTitleFitsLargestFont(title, in: healthy)
+         try control(healthy.buttons["dismissStudioWelcome"], label: "Dismiss welcome", in: healthy,
+@@ -54,7 +59,9 @@ final class BetaAccessibilityUITests: XCTestCase {
+         let dismiss = healthy.buttons["dismissStudioWelcome"]
+         try control(dismiss, label: "Dismiss welcome", in: healthy, towardBottom: false)
+         dismiss.tap()
+-        expectGone(title)
++        // Dismissal must remove every title identity, including the wrapper.
++        expectGone(healthy.staticTexts.matching(NSPredicate(
++            format: "identifier == %@", "studioWelcomeTitle")).firstMatch)
+ 
+         // Settings is only the entry route; this smoke exercises the new sheet.
+         let tools = healthy.buttons["studioTools"]
+diff --git a/UITests/BetaWorkflowUITests.swift b/UITests/BetaWorkflowUITests.swift
+index 726758c..644799e 100644
+--- a/UITests/BetaWorkflowUITests.swift
++++ b/UITests/BetaWorkflowUITests.swift
+@@ -406,7 +406,9 @@ final class BetaWorkflowUITests: XCTestCase {
+     }
+ 
+     private func openFeedbackFromSettings(in app: XCUIApplication) {
+-        tapContent(app.buttons["openBetaFeedback"], in: app)
++        // The final Settings row can sit below the generic 100-point inset.
++        // Require its full frame inside the observed sheet viewport instead.
++        tapContent(app.buttons["openBetaFeedback"], in: app, avoidingKeyboard: true)
+         waitForEnabledStudioControl(app.buttons["closeBetaFeedback"])
+         XCTAssertFalse(app.buttons["shareBetaFeedbackReport"].exists,
+                        "The exact report must be reviewed before sharing is available")

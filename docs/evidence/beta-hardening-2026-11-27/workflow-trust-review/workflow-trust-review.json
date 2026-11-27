@@ -1,0 +1,139 @@
+{
+  "worker": "/root/a075_workflow_supply_chain",
+  "reviewedLocalHead": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "publishedEquivalentReportedByParent": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "reviewType": "Read-only static source and primary documentation review; not a penetration test or runtime pass",
+  "workflowCount": 5,
+  "runBlockCount": 56,
+  "findings": [],
+  "conclusion": "No concrete privilege escalation, untrusted metadata shell injection or artifact path traversal was established in reviewed workflow source.",
+  "checks": [
+    {
+      "path": ".github/workflows/accessibility-control.yml",
+      "sha256": "15eee60e05abfda7a3e7028a05fd679fca05b198940ac8b7f208e4a472710854",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "jobs": [
+        "audit"
+      ],
+      "runBlocks": 7,
+      "expressionsInsideRunBodies": 0,
+      "uses": [
+        "actions/checkout@v4",
+        "actions/upload-artifact@v4"
+      ],
+      "jobPermissionOverrides": []
+    },
+    {
+      "path": ".github/workflows/ios-prototype.yml",
+      "sha256": "e2087a504187040726783cacb597160390f6d39ec8625586b1624f9bcf66e8d2",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "jobs": [
+        "core",
+        "simulator",
+        "ui",
+        "visual-review"
+      ],
+      "runBlocks": 36,
+      "expressionsInsideRunBodies": 0,
+      "uses": [
+        "actions/checkout@v4",
+        "actions/download-artifact@v4",
+        "actions/upload-artifact@v4"
+      ],
+      "jobPermissionOverrides": []
+    },
+    {
+      "path": ".github/workflows/platform-accessibility-diagnostics.yml",
+      "sha256": "78fd2bb87d4286a83f06a68037dbdddce59b950f47d169c2eb574eef0da64ab9",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "jobs": [
+        "app-audit"
+      ],
+      "runBlocks": 10,
+      "expressionsInsideRunBodies": 0,
+      "uses": [
+        "actions/checkout@v4",
+        "actions/upload-artifact@v4"
+      ],
+      "jobPermissionOverrides": []
+    },
+    {
+      "path": ".github/workflows/project-state.yml",
+      "sha256": "d8dd6b87d259725d81a2c9bd82a4a87e70c2a2893b5755cf0e7ce654030f9c36",
+      "events": [
+        "push",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "read"
+      },
+      "jobs": [
+        "state"
+      ],
+      "runBlocks": 1,
+      "expressionsInsideRunBodies": 0,
+      "uses": [
+        "actions/checkout@v4"
+      ],
+      "jobPermissionOverrides": []
+    },
+    {
+      "path": ".github/workflows/review-xctest-evidence.yml",
+      "sha256": "89a101215bb33d38e5928fce4cf6741bc41101f7c85fb217394f516a9dc02a55",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "permissions": {
+        "contents": "read",
+        "actions": "read"
+      },
+      "jobs": [
+        "review"
+      ],
+      "runBlocks": 2,
+      "expressionsInsideRunBodies": 0,
+      "uses": [
+        "actions/checkout@v4",
+        "actions/download-artifact@v4"
+      ],
+      "jobPermissionOverrides": []
+    }
+  ],
+  "artifactBoundaries": {
+    "sameRunReader": "ios-prototype visual-review downloads one named current-run compact artifact; fixed categories/capture names, UUID-like PNG basename regex, unique path, symlink/containment checks, 1 MiB per image and 8 MiB total output.",
+    "crossRunReader": "review-xctest-evidence validates an 8 KiB request, run ID integer, 40-hex revision, artifact/capture allowlists; checks run repository and head SHA and one nonexpired artifact with matching workflow_run head SHA; paths constrained by basename regex, uniqueness, symlink and root containment checks; manifest 512 KiB, PNG 1 MiB/TXT 256 KiB, total 8 MiB.",
+    "limits": "Artifact metadata and downloaded content are transported as evidence, never executed. No privileged follow-on workflow. Cross-run source workflow ID and run attempt are not separately enforced; current policy selects explicit run ID and source SHA. No concrete spoofing route shown."
+  },
+  "residuals": [
+    "Actions use moving major-version tags; XcodeGen can be obtained from Homebrew without a repository lock. These are trust/reproducibility boundaries, not a demonstrated compromise.",
+    "Actual repository Actions settings, organizational policy and runner image integrity were not audited.",
+    "GitHub documents automatic artifact digest validation as warning on mismatch; emitted content SHA-256 values and printed archive metadata should not alone be called an independently verified archive. No observed digest mismatch.",
+    "Same-run visual reader does not impose a manifest size bound before read_text; artifact producers already execute at the same read-only workflow trust level, so no new privilege boundary breach was demonstrated."
+  ],
+  "primarySources": [
+    "https://docs.github.com/en/actions/reference/security/secure-use",
+    "https://docs.github.com/en/actions/concepts/security/script-injections",
+    "https://docs.github.com/en/actions/tutorials/store-and-share-data"
+  ],
+  "repoMutated": false,
+  "testsOrAppleBuildsRun": false
+}

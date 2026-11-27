@@ -1,0 +1,86 @@
+{
+  "worker": "/root/a083_utf8_compatibility_review",
+  "reviewedBaseRevision": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "sourcePath": "Sources/LightingCore/LightingProjectDocument.swift",
+  "sourceSHA256": "f82fa22d3f3018919ddaea22c22de148268b1a3f1bff43d7232c2a58e90481ce",
+  "result": "approve",
+  "change": "Replace iOS18/macOS15-only String(validating:as:) with unconditional Foundation String(bytes:encoding:.utf8) for unescaped nonASCII ignored JSON values.",
+  "preserved": [
+    "iOS17 and macOS14 deployment targets",
+    "ASCII fast path",
+    "escaped-value and object-key JSONDecoder validation",
+    "exact decoded key byte semantics",
+    "8MiB input bound",
+    "all tests and gate thresholds"
+  ],
+  "primaryAPIReference": "https://developer.apple.com/documentation/swift/string/init(bytes:encoding:).md",
+  "documentedAvailability": {
+    "iOS": "8.0",
+    "macOS": "10.10"
+  },
+  "independentProbe": {
+    "compileExitCode": 0,
+    "runExitCode": 0,
+    "sequences": 447404,
+    "validSequences": 30039,
+    "mismatches": 0,
+    "comparison": [
+      "independent scalar-range byte oracle",
+      "prior String(validating:as:)",
+      "Foundation byte-array initializer",
+      "Foundation nonzero-offset ArraySlice initializer"
+    ],
+    "fixtures": [
+      "all one-byte and two-byte sequences",
+      "boundary-value triples and quadruples",
+      "100000 seeded mixed sequences length0...32",
+      "UTF8 BOM",
+      "embedded NUL and invalid suffix after NUL/BOM",
+      "overlong sequences",
+      "truncated sequences",
+      "surrogate encodings",
+      "out-of-range scalar encodings"
+    ]
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "Sources/LightingCore/LightingProjectDocument.swift"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/agent_cycle.py",
+        "check"
+      ],
+      "exitCode": 0,
+      "stdout": "State structure and evidence references valid; this does NOT verify test truth or release readiness.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/agent_cycle.py",
+        "next"
+      ],
+      "exitCode": 0,
+      "stdout": "M01: Foundation and reproducible iOS build\nOutstanding gates: native_build, persistence_smoke\nRead agents/HANDOFF.md and docs/QUALITY.md before implementing.\n",
+      "stderr": ""
+    }
+  ],
+  "limits": [
+    "Probe compiled and ran on Linux Swift6.0.3; not an Apple SDK/runtime check.",
+    "Probe compares validation acceptance only; decoded value is discarded by production scanner.",
+    "Author focused ProjectDocument suite is separate evidence, not rerun by reviewer.",
+    "No new performance result or deployment build pass inferred."
+  ],
+  "repositoryMutation": false
+}

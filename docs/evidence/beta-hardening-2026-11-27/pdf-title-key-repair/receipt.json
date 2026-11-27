@@ -1,0 +1,105 @@
+{
+  "worker": "/root/a098_pdf_title_key_repair",
+  "baseRevision": "af6b7e56bb5d2b550ebefcc5fd7bb2afc4c20867",
+  "task": "Repair observed native PDF test compile failure without changing assertions",
+  "observedFailure": {
+    "source": "Parent-retrieved original Apple native and UI job logs at af6",
+    "file": "NativeTests/LightingPlanPDFTests.swift",
+    "line": 188,
+    "error": "type 'AnyHashable' has no member 'titleAttribute'",
+    "nativeJob": 140628197430,
+    "exampleUIJobs": [
+      140628197690,
+      140628197673
+    ]
+  },
+  "change": {
+    "file": "NativeTests/LightingPlanPDFTests.swift",
+    "before": "pdf.documentAttributes?[.titleAttribute]",
+    "after": "pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute.rawValue]",
+    "exactSingleExpressionReplacement": true,
+    "beforeSHA256": "1e1c797c1790286bebf1bae45abecdc65bb1f2fa8baa23d3d6268e88ce144542",
+    "afterSHA256": "b339d3f0270b2406603d792696577b6a2a6830520b150c6c23c6082144223732",
+    "genericTitleExpectation": "Key & Fill - Lighting plan",
+    "allOtherBytesUnchanged": true,
+    "testMethods": [
+      "testNativePDFOpensAndContainsAllEquipmentInBothPaperSizes",
+      "testPDFRetainsEnteredPrecisionInBothPaperSizesAndUnits",
+      "testMeasuredRoomPDFRetainsEveryRowInBothPaperSizesAndUnits",
+      "testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames",
+      "testEmptySceneStillProducesReadableDiagramAndSchedule"
+    ]
+  },
+  "apiEvidence": [
+    {
+      "url": "https://developer.apple.com/documentation/pdfkit/pdfdocument/documentattributes.md",
+      "declaration": "var documentAttributes: [AnyHashable : Any]? { get set }",
+      "availability": "iOS11+, macOS10.4+"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/pdfkit/pdfdocumentattribute/titleattribute.md",
+      "declaration": "static let titleAttribute: PDFDocumentAttribute"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/pdfkit/pdfdocumentattribute.md",
+      "declaration": "PDFDocumentAttribute conforms to RawRepresentable, Equatable and Hashable"
+    },
+    {
+      "url": "https://developer.apple.com/documentation/pdfkit/pdfdocumentattribute/init(rawvalue:).md",
+      "declaration": "init(rawValue: String)"
+    }
+  ],
+  "exporter": {
+    "file": "App/LightingPlanPDF.swift",
+    "sha256": "6ed5b44341d5ac873f9ac84ff16458527b5b38c2bdb12667d9c860e36b220027",
+    "metadataKey": "kCGPDFContextTitle as String",
+    "metadataValue": "Key & Fill - Lighting plan",
+    "modified": false
+  },
+  "checks": [
+    {
+      "check": "debug_syntax",
+      "command": [
+        "/workspace/scratch/b25ffdc7aed8/toolchains/swift-6.0.3/usr/bin/swiftc",
+        "-frontend",
+        "-parse",
+        "-D",
+        "DEBUG",
+        "NativeTests/LightingPlanPDFTests.swift"
+      ],
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "check": "release_syntax",
+      "command": [
+        "/workspace/scratch/b25ffdc7aed8/toolchains/swift-6.0.3/usr/bin/swiftc",
+        "-frontend",
+        "-parse",
+        "NativeTests/LightingPlanPDFTests.swift"
+      ],
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "check": "diff_check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "NativeTests/LightingPlanPDFTests.swift"
+      ],
+      "exitCode": 0,
+      "output": ""
+    }
+  ],
+  "limits": [
+    "Linux syntax parsing is not Apple SDK type checking.",
+    "No PDFKit runtime, actual metadata lookup, PDF rendering, screenshot or native test execution was performed.",
+    "Fresh Apple compilation and unchanged title assertion still need to execute.",
+    "No core test rerun was needed or claimed for this single native-test-only expression change."
+  ],
+  "commitPerformed": false,
+  "gateChanges": false
+}

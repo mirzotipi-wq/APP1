@@ -1,0 +1,39 @@
+2026-11-27T16:14:45.1291330Z 135d3b4755d97bbb8fcff993d8dfd532a8d48b93
+2026-11-27T16:14:45.2959980Z ProductName:		macOS
+2026-11-27T16:14:45.2967740Z ProductVersion:		26.6.1
+2026-11-27T16:14:45.2970730Z BuildVersion:		25G76
+2026-11-27T16:14:45.3028960Z Darwin sat12-jr325-71f08f50-b544-4607-84ec-fc6080402beb-2A0946B8D826.local 25.6.0 Darwin Kernel Version 25.6.0: Sat Jul 11 15:22:40 PDT 2026; root:xnu-12377.161.13~4/RELEASE_X86_64 x86_64
+2026-11-27T16:14:55.5363760Z Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+2026-11-27T16:14:55.5367290Z Target: x86_64-apple-macosx26.0
+2026-11-27T16:14:55.7491790Z Xcode 26.6
+2026-11-27T16:14:55.7508660Z Build version 17F113
+2026-11-27T16:14:58.0730530Z 135d3b4755d97bbb8fcff993d8dfd532a8d48b93
+
+2026-11-27T16:16:36.5446030Z /Users/runner/work/APP1/APP1/Sources/LightingCore/LightingProjectDocument.swift:116:27: error: 'init(validating:as:)' is only available in macOS 15.0 or newer
+2026-11-27T16:16:36.5459620Z   4 | /// no library identity, active selection, archive state or reference photograph.
+2026-11-27T16:16:36.5533710Z   5 | /// Importers must create a new project rather than replacing an existing ID.
+2026-11-27T16:16:36.5539830Z   6 | public struct LightingProjectDocument: Equatable, Sendable {
+2026-11-27T16:16:36.5543340Z     |               `- note: add '@available' attribute to enclosing struct
+2026-11-27T16:16:36.5544650Z   7 |     public static let currentSchemaVersion = 1
+2026-11-27T16:16:36.5546050Z   8 |     public static let maximumBytes = 8 * 1024 * 1024
+2026-11-27T16:16:36.5547100Z     :
+2026-11-27T16:16:36.5548540Z  69 |     /// This policy applies only to external project documents; legacy stored
+2026-11-27T16:16:36.5554520Z  70 |     /// library decoding and valid unknown scene metadata are unchanged.
+2026-11-27T16:16:36.5557280Z  71 |     private static func requireValidStringsAndUniqueObjectKeys(in data: Data) throws {
+2026-11-27T16:16:36.5561940Z     |                         `- note: add '@available' attribute to enclosing static method
+2026-11-27T16:16:36.5568480Z  72 |         let bytes = try envelopeUTF8(data)
+2026-11-27T16:16:36.5569250Z  73 |         let stringDecoder = JSONDecoder()
+2026-11-27T16:16:36.5569870Z     :
+2026-11-27T16:16:36.5571130Z 114 |                     // a JSON decoder for each ignored metadata value. This strict
+2026-11-27T16:16:36.5572860Z 115 |                     // initializer must not repair invalid byte sequences.
+2026-11-27T16:16:36.5574530Z 116 |                     guard String(validating: bytes[(start + 1)..<index], as: UTF8.self) != nil else {
+2026-11-27T16:16:36.5575850Z     |                           |- error: 'init(validating:as:)' is only available in macOS 15.0 or newer
+2026-11-27T16:16:36.5576980Z     |                           `- note: add 'if #available' version check
+
+2026-11-27T16:16:41.4642810Z error: fatalError
+2026-11-27T16:16:41.4732890Z ##[error]Process completed with exit code 1.
+2026-11-27T16:16:42.5971370Z ##[error]Process completed with exit code 1.
+2026-11-27T16:16:42.6643490Z ##[error]No finalized XCTest result bundle; see native-tests.log and any preserved raw bundle
+2026-11-27T16:16:42.6703860Z ##[error]Process completed with exit code 1.
+2026-11-27T16:16:43.9142320Z Artifact native-unit-and-build-evidence.zip successfully finalized. Artifact ID 15214517988
+2026-11-27T16:16:43.9145780Z Artifact native-unit-and-build-evidence has been successfully uploaded! Final size is 11311 bytes. Artifact ID is 15214517988

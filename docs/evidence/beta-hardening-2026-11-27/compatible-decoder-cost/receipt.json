@@ -1,0 +1,109 @@
+{
+  "worker": "/root/a085_compatible_decoder_cost",
+  "scope": "Matched full-production decode cost of deployment-compatible strict UTF8 initializer",
+  "baseRevision": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "newParserSHA256": "f82fa22d3f3018919ddaea22c22de148268b1a3f1bff43d7232c2a58e90481ce",
+  "oldParserSHA256": "c1bd09b7a11e54bff4ae59b09a6affcd5e550eca4dadc76f92d18cadf2319bea",
+  "binarySHA256": "7e62e7128779478f5b09094875eea716028fb6e38c93aef0de83a42b57215f84",
+  "buildExit": 0,
+  "processSamples": 18,
+  "samplesPerVariantPerFixture": 3,
+  "allChecksPassed": true,
+  "results": [
+    {
+      "id": "ordinary_unicode",
+      "path": "inputs/ordinary_unicode.json",
+      "bytes": 192,
+      "sha256": "3480fcf9050226ef2fef1d5c32b789b5c76f8bfb12799e7b1f3b5263509bc622",
+      "old": {
+        "rawMilliseconds": [
+          0.042244909,
+          0.036001771,
+          0.040321426
+        ],
+        "medianMilliseconds": 0.040321426
+      },
+      "compatible": {
+        "rawMilliseconds": [
+          0.042630582,
+          0.046510315999999996,
+          0.040197369
+        ],
+        "medianMilliseconds": 0.042630582
+      },
+      "compatibleOverOld": 1.0572687087009274,
+      "deltaMilliseconds": 0.0023091559999999997
+    },
+    {
+      "id": "unicode_value_8mib",
+      "path": "inputs/unicode_value_8mib.json",
+      "bytes": 8388608,
+      "sha256": "99ad483a3260425c5903ec0607989f98e478c1a855d6ec7549585c294bfde2be",
+      "old": {
+        "rawMilliseconds": [
+          33.820394,
+          29.897563,
+          28.71839
+        ],
+        "medianMilliseconds": 29.897563
+      },
+      "compatible": {
+        "rawMilliseconds": [
+          33.302675,
+          29.81588,
+          67.55033
+        ],
+        "medianMilliseconds": 33.302675
+      },
+      "compatibleOverOld": 1.1138926273020981,
+      "deltaMilliseconds": 3.405111999999999
+    },
+    {
+      "id": "ascii_value_8mib",
+      "path": "inputs/ascii_value_8mib.json",
+      "bytes": 8388608,
+      "sha256": "43839b6173f20249042cd4aa72f984ef2226569cfdc687fa7d9a30848df8533f",
+      "originalFrozenFixture": "long_string_8mib",
+      "old": {
+        "rawMilliseconds": [
+          25.919119,
+          20.326719,
+          19.697318
+        ],
+        "medianMilliseconds": 20.326719
+      },
+      "compatible": {
+        "rawMilliseconds": [
+          21.862185,
+          20.745752,
+          22.345402
+        ],
+        "medianMilliseconds": 21.862185
+      },
+      "compatibleOverOld": 1.0755392938722672,
+      "deltaMilliseconds": 1.5354659999999996
+    }
+  ],
+  "preliminaryInterpretationCorrection": "Initial message mistook one67.55ms sample for representative cost. Immediately corrected using all three samples:33.30ms compatible median versus29.90ms old. Outlier retained. No further measurement performed.",
+  "limits": [
+    "Only three samples; no statistical equivalence or tail-latency claim",
+    "Whole production full decode, not isolated API timing",
+    "Linux Foundation host only; no Apple runtime or device claim",
+    "Old14.70x dense-array comparison not repeated or transferred",
+    "No source changes or acceptance threshold changes"
+  ],
+  "compactFilesSHA256": {
+    "README.md": "f061392262137c4672eebab031cc6ba8c8b4191c14638d52ad645c9a8b681555",
+    "build.json": "770437086fc117fc6be6b637e801cf3541f17b27d552e1e8e335939ab06d0abf",
+    "source-hashes.json": "7f8eaee4c4d0d32c5b1932248fb6a78335f135697f2a8eac37058b3ea0f3c5c9",
+    "fixtures.json": "ebccf323faa4461c1ff7dfd10f7eefe800b01f3e58bbef19de39a9f01bcf4f37",
+    "raw.jsonl": "6a67a3e3e066027df2dfe5f91a19eacb1722b82913700aad8a9a9a5882272324",
+    "summary.json": "16628f87947ec544e2d9bdd2b67708e27092ef7b6613d2283ef973607f0a3645",
+    "main.swift": "0a4c421517ff0884c1292de9fb5e6f5ff28f9e33de09eb1fb64a35333910f6f9",
+    "run.py": "409875d84875c89e93a811a4a59aff06ff41360310e682fa9f7e831b94634437",
+    "old-original.swift": "c1bd09b7a11e54bff4ae59b09a6affcd5e550eca4dadc76f92d18cadf2319bea",
+    "logs/build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "additionalTaskBytesBeforeReceipt": 18558514
+}

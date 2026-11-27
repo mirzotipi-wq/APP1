@@ -1,0 +1,40 @@
+{
+  "worker": "/root/a073_native_failure_watch",
+  "scope": "Read-only Apple API and source-inclusion review for purchase correlation and PDF Unicode regression",
+  "reviewedSourceCommit": "8badbc5c1bea72e47cf33cd3bc1f97b9a4f5d485",
+  "publishedEquivalentCommit": "33171f910b9f898f6589f45d5755243ba6ff5ac5",
+  "publishedEquivalenceBasis": "Parent publication mapping; this review hashes the listed local source bytes, not an independent remote tree proof.",
+  "sourceHashes": {
+    "App/EntitlementPurchaseAttempt.swift": "7134edfa34a6e0c23eb3301477de46231d764b3c4f2460f0d7ffec0caaaa51d2",
+    "App/EntitlementStore.swift": "fd0e693a959d9d6d22aa91b1fb1a2551ec1469c7d933d3946daaf9c1604d539d",
+    "NativeTests/EntitlementStoreConfigurationTests.swift": "b8d525be1a79b21e70c570c777be19155cf419aff4b431573585cbc73b625b99",
+    "NativeTests/LightingPlanPDFTests.swift": "1e1c797c1790286bebf1bae45abecdc65bb1f2fa8baa23d3d6268e88ce144542",
+    "App/LightingPlanPDF.swift": "6ed5b44341d5ac873f9ac84ff16458527b5b38c2bdb12667d9c860e36b220027",
+    "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+  },
+  "result": "No concrete Apple-only API/type or target inclusion defect identified by source review.",
+  "checks": [
+    "Product.PurchaseOption.appAccountToken accepts UUID and is available from iOS 15; deployment target is iOS 17.",
+    "Transaction.appAccountToken is UUID? and available from iOS 15, matching helper optional-token signature.",
+    "project.yml includes the App directory recursively, so the new Foundation-only helper is an application source; explicit portable exclusion does not exclude it from XcodeGen.",
+    "Entitlement publication precedes matching-token resolution after awaited refresh; stale tokens cannot resolve a replacement helper attempt; no test of live StoreKit behavior performed.",
+    "PDFPage.selection(for: CGRect) returns PDFSelection? using page coordinates; top rectangle conversion matches the exporter zero-origin unrotated PDF page geometry.",
+    "New PDF test uses existing exporter row coordinates and explicit text regions, covers four paper/units combinations and creates PDF attachments. Extraction assertions are not proof against visual clipping.",
+    "PDF page count expectation is consistent with one overview, one equipment page and two room pages for subject, camera and three lights.",
+    "No source or test edits; no Apple compiler, simulator, PDFKit runtime or StoreKit sandbox available locally."
+  ],
+  "primarySources": [
+    "https://developer.apple.com/documentation/storekit/product/purchaseoption/appaccounttoken(_:).md",
+    "https://developer.apple.com/documentation/storekit/transaction/appaccounttoken.md",
+    "https://developer.apple.com/documentation/pdfkit/pdfpage",
+    "https://developer.apple.com/documentation/pdfkit/pdfselection/bounds(for:)"
+  ],
+  "validation": {
+    "agentCycleCheck": "Structure and evidence references valid; does not establish truth or release readiness.",
+    "agentCycleNext": "M01 core_tests, native_build, persistence_smoke outstanding.",
+    "newTestsExecuted": 0,
+    "appleTestsExecuted": 0,
+    "freshNativeInventoryExpected": 335
+  },
+  "followUp": "Inspect the definitive post-DEBUG-timestamp-correction Apple CI run. Reconcile exact 335 native identities, new helper/PDF method results, build exits and finalized xcresult before claiming any native pass."
+}

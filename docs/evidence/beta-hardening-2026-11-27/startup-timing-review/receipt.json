@@ -1,0 +1,105 @@
+{
+  "sourceRevision": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "sourceHashes": {
+    "scripts/boot_simulator.py": "53ed63aa4aa7a643bf6cf3452260d8c987b57afac9d7772f18e466c8edbedaa8",
+    "scripts/tests/test_boot_simulator.py": "a92e6c6a71094330457b8176654e6e1929f594a194f7f7545055a3a895a1df9f"
+  },
+  "CIObservation": {
+    "run": 46030746634,
+    "job": 140613601950,
+    "reportedElapsedSeconds": 3.4117361060000064,
+    "failedAssertion": "report.elapsedSeconds < 3.15",
+    "precedingOuterElapsedAssertionPassed": "< 3.5 seconds",
+    "rawCommandReceiptsUnavailable": true
+  },
+  "budgetSemantics": {
+    "fixtureTotalSeconds": 3,
+    "fixtureCleanupReserveSeconds": 0.3,
+    "fixtureWorkDeadlineSeconds": 2.7,
+    "fixtureFirstAttemptDeadlineSeconds": 1.35,
+    "productionTotalSeconds": 580,
+    "maximumAcceptedSeconds": 600,
+    "productionCleanupReserveSeconds": 5
+  },
+  "runs": [
+    {
+      "kind": "unchanged exact test method",
+      "index": 1,
+      "status": "passed",
+      "failure": null,
+      "reportElapsedSeconds": 2.702611822001927,
+      "outerElapsedSeconds": 2.8011404709977796,
+      "lastCommandFinishedSeconds": 2.701350100000127,
+      "commandDeadlines": [
+        1.3500000000021828,
+        1.3500000000021828,
+        1.3500000000021828,
+        1.3500000000021828,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276
+      ],
+      "directChildrenReaped": true
+    },
+    {
+      "kind": "unchanged exact test method",
+      "index": 2,
+      "status": "passed",
+      "failure": null,
+      "reportElapsedSeconds": 2.7028149540019513,
+      "outerElapsedSeconds": 2.7718413139991753,
+      "lastCommandFinishedSeconds": 2.7013193430029787,
+      "commandDeadlines": [
+        1.3500000000021828,
+        1.3500000000021828,
+        1.3500000000021828,
+        1.3500000000021828,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276
+      ],
+      "directChildrenReaped": true
+    },
+    {
+      "kind": "explicitly injected post-child-cleanup report delay",
+      "notObservedCICause": true,
+      "injections": [
+        {
+          "delaySeconds": 0.65,
+          "where": "10-attempt-2-postflight.result.json",
+          "childReapedBeforeInjection": true,
+          "recordedCommandFinishedSeconds": 2.701316004997352
+        }
+      ],
+      "exitCode": 1,
+      "reportElapsedSeconds": 3.357149928000581,
+      "outerElapsedSeconds": 3.3580970950024494,
+      "lastCommandFinishedSeconds": 2.701316004997352,
+      "commandDeadlines": [
+        1.3499999999985448,
+        1.3499999999985448,
+        1.3499999999985448,
+        1.3499999999985448,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276,
+        2.7000000000007276
+      ],
+      "directChildrenReaped": true
+    }
+  ],
+  "limitations": [
+    "No Apple simulator started; synthetic xcrun only.",
+    "Injected delay demonstrates a possible reporting-time mechanism, not the actual GitHub runner cause.",
+    "CI raw child/command timing receipts were not retained by the failing unit-test temporary directory.",
+    "No repository changes, threshold changes, CI reruns or gate acceptance."
+  ]
+}

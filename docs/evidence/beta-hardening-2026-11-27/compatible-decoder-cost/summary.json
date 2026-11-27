@@ -1,0 +1,81 @@
+{
+  "source": "Current parser plus exact renamed135d parser, same optimized binary and host",
+  "method": "Full production decode. Three independent process samples per variant/fixture; alternate variant order. Input reads outside timer. One warmup plus one timed decode for8MiB; ten warmups and1000 timed decodes for ordinary Unicode. Every decode checks actual name, scene version, subject, camera and empty lights.",
+  "results": [
+    {
+      "id": "ordinary_unicode",
+      "path": "inputs/ordinary_unicode.json",
+      "bytes": 192,
+      "sha256": "3480fcf9050226ef2fef1d5c32b789b5c76f8bfb12799e7b1f3b5263509bc622",
+      "old": {
+        "rawMilliseconds": [
+          0.042244909,
+          0.036001771,
+          0.040321426
+        ],
+        "medianMilliseconds": 0.040321426
+      },
+      "compatible": {
+        "rawMilliseconds": [
+          0.042630582,
+          0.046510315999999996,
+          0.040197369
+        ],
+        "medianMilliseconds": 0.042630582
+      },
+      "compatibleOverOld": 1.0572687087009274,
+      "deltaMilliseconds": 0.0023091559999999997
+    },
+    {
+      "id": "unicode_value_8mib",
+      "path": "inputs/unicode_value_8mib.json",
+      "bytes": 8388608,
+      "sha256": "99ad483a3260425c5903ec0607989f98e478c1a855d6ec7549585c294bfde2be",
+      "old": {
+        "rawMilliseconds": [
+          33.820394,
+          29.897563,
+          28.71839
+        ],
+        "medianMilliseconds": 29.897563
+      },
+      "compatible": {
+        "rawMilliseconds": [
+          33.302675,
+          29.81588,
+          67.55033
+        ],
+        "medianMilliseconds": 33.302675
+      },
+      "compatibleOverOld": 1.1138926273020981,
+      "deltaMilliseconds": 3.405111999999999
+    },
+    {
+      "id": "ascii_value_8mib",
+      "path": "inputs/ascii_value_8mib.json",
+      "bytes": 8388608,
+      "sha256": "43839b6173f20249042cd4aa72f984ef2226569cfdc687fa7d9a30848df8533f",
+      "originalFrozenFixture": "long_string_8mib",
+      "old": {
+        "rawMilliseconds": [
+          25.919119,
+          20.326719,
+          19.697318
+        ],
+        "medianMilliseconds": 20.326719
+      },
+      "compatible": {
+        "rawMilliseconds": [
+          21.862185,
+          20.745752,
+          22.345402
+        ],
+        "medianMilliseconds": 21.862185
+      },
+      "compatibleOverOld": 1.0755392938722672,
+      "deltaMilliseconds": 1.5354659999999996
+    }
+  ],
+  "rawSHA256": "6a67a3e3e066027df2dfe5f91a19eacb1722b82913700aad8a9a9a5882272324",
+  "limits": "Three samples do not establish statistical equivalence or tail latency. Linux Foundation timings are not Apple/device timings. Previous14.7x comparison is not rerun here."
+}

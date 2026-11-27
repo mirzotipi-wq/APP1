@@ -1,4 +1,28 @@
-# Current beta hardening — 27 November 2026
+## Current published candidate — 27 November 2026
+
+Source `9d18d762f204ed060af5309554d97841ea70ea03`, exact tree `960230420018e740f3fd8ff669f6c98104059e60`, is published on main. Local equivalent `488a459` remains on its backup branch. `validation/published-source-05.json` binds all 258 inputs; only the PDF native test metadata-key expression changed from `af6`. All production, package, deployment and portable-test inputs remain identical.
+
+Run [46037214333](https://github.com/mirzotipi-wq/APP1/actions/runs/46037214333) is the active acceptance run. Core is independently reconciled: 594 distinct Debug methods, the same 594 Release methods and 120 tooling tests passed, with verified persistence probes, twelve original rendered fixtures, six parity cases, eight selected precision cases and bounded benchmark workloads. See `published-9d18-core/receipt.json` in the campaign packet. Apple Debug simulator/app and native-test bundle compilation passed; Release build, native runtime and UI outcomes remain in progress and require terminal original evidence. The preceding `af6` run passed 594 Debug, 594 Release, 120 tooling and 597 macOS methods, but build-for-testing failed on the PDF test's inferred dictionary key. All 335 native and 44 UI methods were unstarted; no native PDF or layout capture acceptance may be inferred. The explicit raw string key preserves the exact generic-title assertion, reviewed by A098/A099.
+
+All 100 requested distinct workers are recorded. A095 and A097 are following the latest CI in the same existing contexts; A100 owns final independent acceptance review. Keep their current work unverified until terminal evidence arrives. Original failures, artifacts and source mappings are retained. M01 remains active, M02/M03 use the unchanged code-only contract, and M04–M07 retain their external evidence and owner prerequisites. No signed build, TestFlight distribution or beta acceptance has occurred.
+
+The sections below are historical snapshots, not the current status.
+
+## Historical repair at af6 — 27 November 2026
+
+Source `af6b7e56bb5d2b550ebefcc5fd7bb2afc4c20867`, exact tree `3de272446b3594323485df984408250eff178559`, is on main. Local equivalent `bab46f4` is preserved on a backup branch. `validation/published-source-04.json` binds 258 inputs; only the scanner and two beta UI observers changed since published135d. Local594 Debug,594 Release and120 tooling rerun pass. The byte differential probe found zero disagreements across447404 sequences; deployment targets remain iOS17/macOS14.
+
+Earlier135d core CI passed, but Apple compilation failed before tests because String(validating:as:) requires newer OS versions. All nine UI jobs also failed builds; no test pass may be inferred. The causal compatible initializer repair and independently reviewed Settings/title observers are now in [run46033956426](https://github.com/mirzotipi-wq/APP1/actions/runs/46033956426). Reconcile its actual Apple outcomes and original images before updating gates. Prior failures and original artifacts remain in the beta-hardening packet. The 100-worker ledger remains active; actual current source inventory is335 native/44 required UI, plus2 opt-in diagnostics. No signing, distribution or beta acceptance is claimed.
+
+## Historical publication at 135d — 27 November 2026
+
+Current published source: `135d3b4755d97bbb8fcff993d8dfd532a8d48b93`, exact tree `0efed150e58c36dc2206db77201854a8c25ef6cd`. GitHub API publication preserved concurrent `1a6362b` history. Original local commits remain on backup branches; tree equivalence and independent review are retained under the beta-hardening evidence directory.
+
+The two final changed manifest inputs remove unused raw system uptime from opt-in DEBUG traces and their schema allowlist. No product behavior, test method or gate was removed. `validation/published-source-03.json` binds all 258 inputs and retains the earlier portable results by unchanged source. Fresh Apple run [46031166740](https://github.com/mirzotipi-wq/APP1/actions/runs/46031166740) is in progress; 335 native / 44 required UI are still inventory counts. The earlier published run 46030746634 stopped in a synthetic simulator-startup tooling test (3.411736 seconds versus a 3.15-second assertion), before Apple jobs. Preserve that failure; do not label its skipped tests as passing.
+
+The 100-worker request is still active; use the distinct current worker ledger. M01 and later milestone gates require current-source reconciliation. No signed archive, TestFlight upload, physical AR/device test, StoreKit sandbox purchase or customer validation is claimed.
+
+# Historical beta hardening — 27 November 2026
 
 This new request has a separate [100-worker campaign packet](../docs/evidence/beta-hardening-2026-11-27/README.md) and [actual identity ledger](../docs/evidence/beta-hardening-2026-11-27/worker-ledger.json). Work remains in progress; do not count prior campaigns toward this request. Main advanced concurrently from `9e2313c` to `2fc7647`; the latter was independently reviewed and preserved before integrating this candidate.
 
@@ -8,7 +32,7 @@ The baseline `f94c0e6` run46004241191 is now terminal:22UIpasses,6failed,1interr
 
 Next: publish the reviewed candidate, reconcile fresh Apple builds/tests/finalized results and original images, use actual traces for repeated failures, complete100actual assignments, update exact-source evidence. M01active/M02–M03pending remain; M04–M07, physical devices, held-out inference, commerce/customer validation and owner distribution approval are still unverified. Earlier handoffs below are retained as dated history.
 
-# Current beta campaign — 27 November 2026
+# Historical beta campaign — 27 November 2026
 
 The user requested 100 actual workers and beta engineering. All 100 distinct contexts have been launched; follow-ups reuse those same identities. The [packet](../docs/evidence/beta-campaign-2026-11-27/README.md) and [ledger](../docs/evidence/beta-campaign-2026-11-27/worker-ledger.json) retain actual identities, original implementation commits, follow-up reviews and source-specific evidence.
 
@@ -22,7 +46,7 @@ Next: reconcile the current core originals, then actual 327 native methods/norma
 
 No signed device build, physical trial, TestFlight upload or owner distribution approval is claimed. M04–M07 remain under their existing contracts. Documentation/evidence-only updates must leave current app/test/tooling inputs unchanged so they do not cancel run 46019722045. The sections below retain historical dated handoffs.
 
-# Current handoff
+# Historical handoff
 
 ## Branch consolidation — 27 November 2026
 
@@ -34,7 +58,7 @@ Current milestone statuses reflect revalidation of the combined tree: M01 active
 
 All eight audited branch tips have zero commits missing from published main and are safe to delete at their recorded SHAs. No deletion was performed. Next: reconcile fresh Apple/native/UI outcomes from [run 45979992218](https://github.com/mirzotipi-wq/APP1/actions/runs/45979992218), then revalidate affected acceptance gates. The historical handoffs below retain their original dates and source-specific observations and do not describe current execution.
 
-## Current closeout — 26 November 2026
+## Historical closeout — 26 November 2026
 
 M02 remains accepted under `m02-m03-code-v2`. Integrated source `b0d25eece01a3edb4c46e89cd487105d4d5a8cdd` is published on `main`; [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966) must complete 154 native and 35 required UI methods plus 28 original Default/AXXXL captures. The original 26 captures remain, with Workspace-header added at both sizes. M03 stays active until commands, exact method accounting, finalized results and actual image review pass.
 
@@ -47,7 +71,7 @@ All 100 actual worker contexts completed their initial assignments; followups re
 The prior handoff is retained below for revision-specific history.
 
 
-## Current integrated validation — c118c3f
+## Historical integrated validation — c118c3f
 
 Full integrated [run45778673562](https://github.com/mirzotipi-wq/APP1/actions/runs/45778673562) is running at source `c118c3f2125af23d6ed864cab6dd98adf8c51b59`. Its exact192-input manifest verifies the eight reviewed test/CI changes; App, Sources and portable Tests are unchanged fromcd5. Required inventory is138 native,35 UI and24 original Default/AXXXL PNGs. Runtime acceptance remains pending.
 

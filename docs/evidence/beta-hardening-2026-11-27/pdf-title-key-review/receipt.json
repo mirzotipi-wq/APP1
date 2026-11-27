@@ -1,0 +1,71 @@
+{
+  "worker": "/root/a099_pdf_key_independent_review",
+  "scope": "Independent one-expression PDF metadata test compile repair review",
+  "baseRevision": "af6b7e56bb5d2b550ebefcc5fd7bb2afc4c20867",
+  "decision": "approve_minimal_repair_pending_Apple_execution",
+  "files": {
+    "NativeTests/LightingPlanPDFTests.swift": "b339d3f0270b2406603d792696577b6a2a6830520b150c6c23c6082144223732",
+    "App/LightingPlanPDF.swift": "6ed5b44341d5ac873f9ac84ff16458527b5b38c2bdb12667d9c860e36b220027"
+  },
+  "exactPreservation": {
+    "oldExpression": "pdf.documentAttributes?[.titleAttribute]",
+    "newExpression": "pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute.rawValue]",
+    "onlyOneReplacement": true,
+    "everyOtherByteUnchanged": true,
+    "methodCount": 5,
+    "allMethodIdentitiesRetained": true,
+    "expectedTitle": "Key & Fill - Lighting plan",
+    "expectedTitleUnchanged": true,
+    "exporterUnchanged": true
+  },
+  "reviewFindings": [
+    "Apple declares PDFDocument.documentAttributes as optional [AnyHashable: Any]; the unqualified member has no PDFDocumentAttribute context.",
+    "PDFDocumentAttribute.titleAttribute is the documented typed title constant. PDFDocumentAttribute conforms to RawRepresentable and exposes init(rawValue: String). Its explicit raw String avoids relying on AnyHashable equality with the wrapper.",
+    "The unchanged exporter assigns the same exact generic title under kCGPDFContextTitle; no project title or internal UUID is substituted.",
+    "Optional dictionary access and String cast remain in XCTAssertEqual without a fallback: absent metadata, unmatched key, wrong type or a different title cannot satisfy the expected title.",
+    "This source-level API review does not establish the actual PDFKit metadata lookup or rendered output. Fresh Apple compilation and native execution remain necessary."
+  ],
+  "checks": [
+    {
+      "command": "Exact Git-base byte replacement comparison plus method and exporter checks",
+      "exitCode": 0
+    },
+    {
+      "command": "swiftc -frontend -parse -D DEBUG NativeTests/LightingPlanPDFTests.swift",
+      "exitCode": 0,
+      "limitation": "Syntax only; Linux has no Apple SDK type check."
+    },
+    {
+      "command": "swiftc -frontend -parse NativeTests/LightingPlanPDFTests.swift",
+      "exitCode": 0,
+      "limitation": "Syntax only; Linux has no Apple SDK type check."
+    },
+    {
+      "command": "git diff --check -- NativeTests/LightingPlanPDFTests.swift",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exitCode": 0,
+      "limitation": "State/reference structure only."
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exitCode": 0,
+      "result": "M01 outstanding native_build and persistence_smoke at inspection."
+    }
+  ],
+  "primarySources": [
+    "https://developer.apple.com/documentation/pdfkit/pdfdocument/documentattributes.md",
+    "https://developer.apple.com/documentation/pdfkit/pdfdocumentattribute.md",
+    "https://developer.apple.com/documentation/pdfkit/pdfdocumentattribute/titleattribute.md"
+  ],
+  "notPerformed": [
+    "Repository edits or commits",
+    "Apple SDK compilation",
+    "PDFKit runtime execution",
+    "PDF generation or visual inspection",
+    "Native or UI test execution",
+    "Gate acceptance"
+  ]
+}

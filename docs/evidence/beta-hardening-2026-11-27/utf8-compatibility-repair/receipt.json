@@ -1,0 +1,121 @@
+{
+  "worker": "/root/a082_ios17_utf8_repair",
+  "baseRevision": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "failure": {
+    "run": 46031166740,
+    "iosJob": 140617447890,
+    "macOSJob": 140617447644,
+    "diagnostic": "String.init(validating:as:) requires iOS18/macOS15; supported minima are iOS17/macOS14",
+    "provenance": "Parent supplied original GitHub build diagnostic; this worker reviewed source and primary Apple docs"
+  },
+  "source": "Sources/LightingCore/LightingProjectDocument.swift",
+  "beforeSHA256": "c1bd09b7a11e54bff4ae59b09a6affcd5e550eca4dadc76f92d18cadf2319bea",
+  "afterSHA256": "f82fa22d3f3018919ddaea22c22de148268b1a3f1bff43d7232c2a58e90481ce",
+  "change": "Unconditional failable Foundation String(bytes:encoding:.utf8); no deployment-target change or version branch. ASCII scan and escaped/key decoding remain unchanged.",
+  "primarySource": {
+    "url": "https://developer.apple.com/documentation/swift/string/init(bytes:encoding:).md",
+    "availability": [
+      "iOS8.0+",
+      "macOS10.10+"
+    ],
+    "failableSignature": "init?<S>(bytes: S, encoding: String.Encoding) where S : Sequence, S.Element == UInt8"
+  },
+  "platform": "Linux x86_64 Swift6.0.3; no Apple SDK/runtime",
+  "validation": [
+    {
+      "configuration": "Debug",
+      "command": "swift test --jobs 2 --cache-path /workspace/scratch/b25ffdc7aed8/cache/swiftpm --filter ProjectDocument",
+      "exitCode": 0,
+      "distinctPassed": 30,
+      "failed": 0,
+      "log": "focused-debug.log",
+      "methods": [
+        "LightingProjectDocumentTests.testEditableRoundTripPreservesPreciseSettingsWithoutLibraryOrPhotoMetadata",
+        "LightingProjectDocumentTests.testExactReadLimitAcceptsValidJSONButOneAdditionalByteDoesNot",
+        "LightingProjectDocumentTests.testInvalidNamesScenesDuplicateLightsAndFutureSceneSchemasCannotImport",
+        "LightingProjectDocumentTests.testMalformedMissingAndUnexpectedEnvelopeFieldsAreRejected",
+        "LightingProjectDocumentTests.testOlderSceneMigratesAndLegacyNameRemainsComplete",
+        "LightingProjectDocumentTests.testOversizedDataRejectedBeforeDecodeAndEncodedSizeIsBounded",
+        "LightingProjectDocumentTests.testUnsupportedEnvelopeVersionsAreRejectedBeforeSceneInterpretation",
+        "ProjectDocumentAdversarialTests.testDecodedCopyCannotOverwriteConcurrentChangesAndCanBeImportedAfterReload",
+        "ProjectDocumentAdversarialTests.testFullLibraryRejectsDecodedCopyWithoutChangingMemoryOrSavedBytes",
+        "ProjectDocumentAdversarialTests.testIndividuallyValidCopyCannotGrowLibraryPastItsSeparateByteLimit",
+        "ProjectDocumentAdversarialTests.testInvalidEncodingUnpairedSurrogatesAndExtraRootsCannotImport",
+        "ProjectDocumentAdversarialTests.testRawNumericOverflowAndNonFiniteTokensCannotBecomeSceneValues",
+        "ProjectDocumentAdversarialTests.testSchemaRequiresAnIntegerValueWithoutInventingAnIntegerSpellingRule",
+        "ProjectDocumentEnvelopeIntegrityTests.testDuplicateEnvelopeValuesAreRejectedInEitherOrder",
+        "ProjectDocumentEnvelopeIntegrityTests.testEscapedEquivalentKeysCannotHideDuplicates",
+        "ProjectDocumentEnvelopeIntegrityTests.testEscapedUniqueKeysAndStructuralCharactersInValuesStayReadable",
+        "ProjectDocumentEnvelopeIntegrityTests.testExistingUnicodeEncodingsKeepUniqueKeysAndRejectDuplicateKeys",
+        "ProjectDocumentEnvelopeIntegrityTests.testLargeValidNameAndBoundaryWhitespaceDoNotProduceFalseKeys",
+        "ProjectDocumentIgnoredUnicodeTests.testEscapedQuoteAndBackslashBoundariesCannotHideInvalidValuesOrDuplicateKeys",
+        "ProjectDocumentIgnoredUnicodeTests.testIgnoredUnicodeValidationPreservesSupportedUTF16AndUTF32Inputs",
+        "ProjectDocumentIgnoredUnicodeTests.testMalformedUTF8IsRejectedInConsumedAndIgnoredStrings",
+        "ProjectDocumentIgnoredUnicodeTests.testRawControlBytesAreRejectedInUnescapedStrings",
+        "ProjectDocumentIgnoredUnicodeTests.testUnpairedEscapedSurrogatesAreRejectedInIgnoredObjectsAndArrays",
+        "ProjectDocumentIgnoredUnicodeTests.testValidUnicodeAndEscapesInIgnoredMetadataRemainAccepted",
+        "ProjectDocumentNestedIntegrityTests.testAmbiguousSceneLightPositionAndOpticsFieldsCannotImport",
+        "ProjectDocumentNestedIntegrityTests.testDecodedKeyBytesPreserveUnicodeDistinctionAndEscapeEquivalence",
+        "ProjectDocumentNestedIntegrityTests.testEscapedEquivalentNestedKeysAndUnknownObjectsCannotHideDuplicates",
+        "ProjectDocumentNestedIntegrityTests.testIterativeStateHandlesDeepAndWideUnknownObjects",
+        "ProjectDocumentNestedIntegrityTests.testNestedDuplicatesAreRejectedAcrossSupportedUnicodeEncodings",
+        "ProjectDocumentNestedIntegrityTests.testSiblingObjectsArraysAndQuotedStructuralCharactersRemainValid"
+      ]
+    },
+    {
+      "configuration": "Release",
+      "command": "swift test -c release --jobs 2 --cache-path /workspace/scratch/b25ffdc7aed8/cache/swiftpm --filter ProjectDocument",
+      "exitCode": 0,
+      "distinctPassed": 30,
+      "failed": 0,
+      "log": "focused-release.log",
+      "methods": [
+        "LightingProjectDocumentTests.testEditableRoundTripPreservesPreciseSettingsWithoutLibraryOrPhotoMetadata",
+        "LightingProjectDocumentTests.testExactReadLimitAcceptsValidJSONButOneAdditionalByteDoesNot",
+        "LightingProjectDocumentTests.testInvalidNamesScenesDuplicateLightsAndFutureSceneSchemasCannotImport",
+        "LightingProjectDocumentTests.testMalformedMissingAndUnexpectedEnvelopeFieldsAreRejected",
+        "LightingProjectDocumentTests.testOlderSceneMigratesAndLegacyNameRemainsComplete",
+        "LightingProjectDocumentTests.testOversizedDataRejectedBeforeDecodeAndEncodedSizeIsBounded",
+        "LightingProjectDocumentTests.testUnsupportedEnvelopeVersionsAreRejectedBeforeSceneInterpretation",
+        "ProjectDocumentAdversarialTests.testDecodedCopyCannotOverwriteConcurrentChangesAndCanBeImportedAfterReload",
+        "ProjectDocumentAdversarialTests.testFullLibraryRejectsDecodedCopyWithoutChangingMemoryOrSavedBytes",
+        "ProjectDocumentAdversarialTests.testIndividuallyValidCopyCannotGrowLibraryPastItsSeparateByteLimit",
+        "ProjectDocumentAdversarialTests.testInvalidEncodingUnpairedSurrogatesAndExtraRootsCannotImport",
+        "ProjectDocumentAdversarialTests.testRawNumericOverflowAndNonFiniteTokensCannotBecomeSceneValues",
+        "ProjectDocumentAdversarialTests.testSchemaRequiresAnIntegerValueWithoutInventingAnIntegerSpellingRule",
+        "ProjectDocumentEnvelopeIntegrityTests.testDuplicateEnvelopeValuesAreRejectedInEitherOrder",
+        "ProjectDocumentEnvelopeIntegrityTests.testEscapedEquivalentKeysCannotHideDuplicates",
+        "ProjectDocumentEnvelopeIntegrityTests.testEscapedUniqueKeysAndStructuralCharactersInValuesStayReadable",
+        "ProjectDocumentEnvelopeIntegrityTests.testExistingUnicodeEncodingsKeepUniqueKeysAndRejectDuplicateKeys",
+        "ProjectDocumentEnvelopeIntegrityTests.testLargeValidNameAndBoundaryWhitespaceDoNotProduceFalseKeys",
+        "ProjectDocumentIgnoredUnicodeTests.testEscapedQuoteAndBackslashBoundariesCannotHideInvalidValuesOrDuplicateKeys",
+        "ProjectDocumentIgnoredUnicodeTests.testIgnoredUnicodeValidationPreservesSupportedUTF16AndUTF32Inputs",
+        "ProjectDocumentIgnoredUnicodeTests.testMalformedUTF8IsRejectedInConsumedAndIgnoredStrings",
+        "ProjectDocumentIgnoredUnicodeTests.testRawControlBytesAreRejectedInUnescapedStrings",
+        "ProjectDocumentIgnoredUnicodeTests.testUnpairedEscapedSurrogatesAreRejectedInIgnoredObjectsAndArrays",
+        "ProjectDocumentIgnoredUnicodeTests.testValidUnicodeAndEscapesInIgnoredMetadataRemainAccepted",
+        "ProjectDocumentNestedIntegrityTests.testAmbiguousSceneLightPositionAndOpticsFieldsCannotImport",
+        "ProjectDocumentNestedIntegrityTests.testDecodedKeyBytesPreserveUnicodeDistinctionAndEscapeEquivalence",
+        "ProjectDocumentNestedIntegrityTests.testEscapedEquivalentNestedKeysAndUnknownObjectsCannotHideDuplicates",
+        "ProjectDocumentNestedIntegrityTests.testIterativeStateHandlesDeepAndWideUnknownObjects",
+        "ProjectDocumentNestedIntegrityTests.testNestedDuplicatesAreRejectedAcrossSupportedUnicodeEncodings",
+        "ProjectDocumentNestedIntegrityTests.testSiblingObjectsArraysAndQuotedStructuralCharactersRemainValid"
+      ]
+    },
+    {
+      "command": "git diff --check -- Sources/LightingCore/LightingProjectDocument.swift",
+      "exitCode": 0
+    }
+  ],
+  "limitations": [
+    "Fresh Apple compilation/runtime remains required.",
+    "Old parser benchmark used a different frozen decoder source; those measurements are not transferred to this replacement.",
+    "No tests, workflows, deployment targets or protected gates changed."
+  ],
+  "evidenceSHA256": {
+    "focused-debug.log": "1e22bc3e579e0b685c22a90f1c055a36ffe42492a2ac8d1338202c2b52c8dbf7",
+    "focused-release.log": "656e46cb85ab8c7b20b7223e9f8e67d444e02d5c1a8fa816dc40efd0a2efb82e",
+    "change.patch": "5d67211dbc97484510505a392cd615b3c6b508f2586b78376738c24d2522bfee",
+    "README.md": "ddfbfa0a84f744cae9bfc99776f6f43516c88017f783f9ab2dd855c61ecdee53"
+  }
+}

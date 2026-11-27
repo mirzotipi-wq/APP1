@@ -1,0 +1,47 @@
+diff --git a/App/StudioTextField.swift b/App/StudioTextField.swift
+index 3d49d24..45362a7 100644
+--- a/App/StudioTextField.swift
++++ b/App/StudioTextField.swift
+@@ -560,7 +560,7 @@ final class StudioTextInputTrace {
+         let version = 1
+         let sequence, control: Int
+         let lifecycle: UUID
+-        let uptime, epochSeconds: TimeInterval
++        let epochSeconds: TimeInterval
+         let field: String
+         let event: Event
+         let state: State?
+@@ -598,7 +598,6 @@ final class StudioTextInputTrace {
+         processCount += 1
+         controlCounts[control] = count + 1
+         let record = Record(sequence: processCount, control: control, lifecycle: lifecycle,
+-                            uptime: ProcessInfo.processInfo.systemUptime,
+                             epochSeconds: Date().timeIntervalSince1970,
+                             field: Self.fieldName(identifier), event: emitted,
+                             state: emitted == .processLimit || emitted == .controlLimit ? nil : state())
+diff --git a/NativeTests/StudioTextFieldTests.swift b/NativeTests/StudioTextFieldTests.swift
+index c0bc38e..e97a2dc 100644
+--- a/NativeTests/StudioTextFieldTests.swift
++++ b/NativeTests/StudioTextFieldTests.swift
+@@ -102,7 +102,7 @@ final class StudioTextFieldTests: XCTestCase {
+         XCTAssertFalse(lines.joined().contains("injected=true"))
+         XCTAssertTrue(lines.allSatisfy { !$0.contains("\n") })
+         XCTAssertFalse(lines.joined().contains(oversized))
+-        let allowed = Set(["version", "sequence", "control", "lifecycle", "uptime", "epochSeconds", "field", "event", "state"])
++        let allowed = Set(["version", "sequence", "control", "lifecycle", "epochSeconds", "field", "event", "state"])
+         for record in records {
+             XCTAssertTrue(Set(record.keys).isSubset(of: allowed))
+             XCTAssertEqual(record["field"] as? String, "other")
+diff --git a/docs/PRIVACY.md b/docs/PRIVACY.md
+index 18c52a3..e071fa4 100644
+--- a/docs/PRIVACY.md
++++ b/docs/PRIVACY.md
+@@ -17,6 +17,8 @@
+ - Measurement-unit, appearance and welcome-dismissal preferences persist in the app's `UserDefaults` through `StudioPreferences`. They contain no photo, feedback-note or purchase entitlement data.
+ - Beta feedback contains optional notes entered by the user plus app version/build, OS version and a coarse device family. Drafts and the reviewed report remain in memory while the feedback sheet is open; closing a populated draft asks whether to discard it. The app adds no photographs, project or scene contents, account details, network or hardware identifiers, or logs. User-entered private information is not automatically redacted. Review shows the exact text passed to the user-initiated system share action; the user chooses the destination or cancels. Nothing is sent automatically, and previously shared copies remain under the destination's control.
+ - Optional StoreKit support checks verified transactions for the configured non-consumable product. An absent, blank or unresolved `KEYFILL_PRO_PRODUCT_ID` disables sales; there is no fallback SKU or hardcoded price. Displayed pricing comes from StoreKit. Launch/foreground entitlement refresh does not automatically invoke Restore Purchases; `AppStore.sync()` runs only from an explicit restore action and may require Apple authentication. Product lookup, purchases and restoration can contact Apple services. See `EntitlementStore`; actual product configuration and transaction behavior remain release-review items.
++- Each configured purchase attempt sends a fresh random UUID to Apple as its `appAccountToken`, so a verified transaction can be correlated with that pending attempt. This is an attempt identifier, not an app account or device identifier. StoreKit transactions can contain the token; the app holds its current attempt state only in memory and does not add the token to project files, preferences, feedback or diagnostics. Actual StoreKit transaction and retention behavior remains subject to the configured sandbox/device review.
++- Input diagnostics exist only in `#if DEBUG` builds and require the explicit `KEYFILL_UI_TEXT_INPUT_TRACE=1` launch environment value. The shared recorder emits at most 512 records per process and 256 per control to app stdout and unified logging; developer CI may retain these logs as test artifacts. Records contain event order, wall-clock time, temporary control/lifecycle identifiers, allowlisted field names, bounded lengths and state flags. They contain no raw typed text, arbitrary labels/identifiers or system uptime. Event sequence preserves ordering when the wall clock changes. These diagnostics are separate from the user feedback report and must remain excluded from the signed Release build.
+ 
+ ## Privacy manifest and required reasons
+ 

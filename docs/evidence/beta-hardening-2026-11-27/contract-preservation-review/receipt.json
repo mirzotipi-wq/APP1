@@ -1,0 +1,123 @@
+{
+  "worker": "/root/a096_gate_and_inventory_guard",
+  "reviewType": "Independent static contract, inventory and enforcement comparison; no native execution",
+  "candidate": "af6b7e56bb5d2b550ebefcc5fd7bb2afc4c20867",
+  "baselines": {
+    "campaignStart": "9e2313cbffb01d66249458c64087cb66c7652cca",
+    "concurrentUpstream": "2fc7647314d3ae6fa22d95284e778c6c5badbe4a"
+  },
+  "repositoryMutated": false,
+  "protectedFilesUnchanged": [
+    "AGENTS.md",
+    "agents/OPERATING_PROTOCOL.md",
+    "docs/PRODUCT.md",
+    "docs/ARCHITECTURE.md",
+    "docs/QUALITY.md",
+    "docs/DESIGN.md",
+    "docs/ROADMAP.md",
+    "docs/acceptance/m02-m03-code.md"
+  ],
+  "protectedFileCount": 8,
+  "allProtectedFilesByteIdenticalAcrossBothBaselinesCandidateAndWorking": true,
+  "milestoneGateIdsAndDependenciesUnchanged": true,
+  "currentMilestoneStatuses": {
+    "M01": "active",
+    "M02": "pending",
+    "M03": "pending",
+    "M04": "pending",
+    "M05": "pending",
+    "M06": "pending",
+    "M07": "pending"
+  },
+  "nativeInventory": {
+    "start": 323,
+    "upstream": 327,
+    "candidate": 335,
+    "allUpstreamMethodsRetained": true,
+    "newMethods": [
+      "EntitlementStoreConfigurationTests.testHistoricalCompletionBeforePendingResultStillAllowsPendingState",
+      "EntitlementStoreConfigurationTests.testHistoricalRevocationDoesNotClearNewPendingApproval",
+      "EntitlementStoreConfigurationTests.testMatchingVerifiedCompletionBeforePendingResultCannotReopenApproval",
+      "EntitlementStoreConfigurationTests.testOlderCompletionCannotResolveReplacementAttempt",
+      "EntitlementStoreConfigurationTests.testPendingApprovalThenRevocationResolvesWithoutPurchasedSnapshot",
+      "EntitlementStoreConfigurationTests.testPurchasedEntitlementResolvesPendingWithoutRequestToken",
+      "LightingPlanPDFTests.testCrowdedMeasuredRoomPDFRetainsIdentitiesAndSettingsWithMaximumUnicodeNames",
+      "StudioTextFieldTests.testInputTraceDistinguishesDeliveryRejectionResetAndBlockedEventsWithoutText"
+    ]
+  },
+  "UIInventory": {
+    "required": 44,
+    "diagnostic": 2,
+    "requiredGroups": 9,
+    "diagnosticGroups": 1,
+    "identitiesIdenticalToBothBaselines": true,
+    "partition": {
+      "SHARDS": {
+        "room-precision": 5,
+        "library-reference": 9,
+        "studio-smoke": 9,
+        "lighting-export": 2,
+        "beta-workflow": 4,
+        "plan-gestures": 3,
+        "beta-accessibility": 1,
+        "studio-optics": 10,
+        "app-accessibility": 1
+      },
+      "DIAGNOSTIC_SHARDS": {
+        "platform-audit": 2
+      }
+    }
+  },
+  "assertionTimeoutReview": {
+    "upstreamArgumentsCompared": 189,
+    "removedOrChanged": 0,
+    "startArgumentsPreserved": 188,
+    "additionalFromUpstream": 1,
+    "note": "The additional10-second wait already exists at2fc for actual text-layout readiness. No campaign wait deadline was removed, shortened or enlarged."
+  },
+  "minimumHitTargetPoints": 44,
+  "revealAttemptLimit": 12,
+  "captureRequirements": {
+    "requiredDefaultAndAXXXL": 28,
+    "dedicatedManifestGateRetained": true,
+    "supplementalBeta": 8,
+    "supplementalCallSitesAndCaptureHelperRetained": true,
+    "separateSupplementalNameCompletenessGate": false,
+    "actualSupplementalOriginalsStillRequireIndependentVerification": true
+  },
+  "requiredResultEnforcement": {
+    "exactMethodAccountingASTUnchanged": true,
+    "requiredMetalMethods": 3,
+    "nativeAndUICommandMustExitNormally": true,
+    "requiredCommandContinueOnError": false,
+    "nativeAndUIAccountingContinueOnError": false,
+    "finalizedInfoPlistAndAttachmentExportRequired": true,
+    "diagnosticCollectionCannotReplaceCommandResult": true
+  },
+  "configurationChangeBoundary": "Required classes regrouped from six to nine shards. The former 11-method studio/export and eight-method beta groups are now five separate 40-minute commands, increasing their aggregate possible runtime. Room/library32-minute, optics40-minute and app-accessibility100-minute selected-command caps remain; no individual assertion deadline changes. Outer job allowances increase by2minutes for bounded text-input diagnostics. Maximum parallelism5 and fail-fast false unchanged.",
+  "checksRun": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 scripts/native_test_shards.py check",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": [
+    "static-comparison.json",
+    "inventories.json",
+    "enforcement-review.json"
+  ],
+  "limitations": [
+    "No native, UI, Apple compilation, real-device, signing or distribution result was inferred.",
+    "Source capture call sites are not proof of retained original images; all28 required and8 supplemental originals still need actual retrieval and inspection.",
+    "Only numeric/expression timeout arguments in existing native/UI Swift files were compared; workflow selected-command/job allowances are recorded separately.",
+    "The two exploratory rg invocations included guessed non-existent filenames; corrected discovery used actual tracked paths. Their exit2 is a lookup correction, not a product/test failure."
+  ]
+}

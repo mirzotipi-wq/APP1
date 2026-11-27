@@ -1,0 +1,187 @@
+{
+  "worker": "/root/a093_tester_handoff_review",
+  "sourceRevision": "af6b7e56bb5d2b550ebefcc5fd7bb2afc4c20867",
+  "task": "Practical tester/distribution handoff review",
+  "scope": "Source-to-instruction consistency and three authorized guide improvements; no runtime acceptance",
+  "repositoryEdits": [
+    "docs/BETA_TESTER_GUIDE.md"
+  ],
+  "changes": [
+    {
+      "area": "Unconfigured purchase state",
+      "change": "Added actual Settings \u2192 Purchase options route, unavailable copy, disabled purchase/restore, free feature availability and Done return. A different configured build is explicitly separate from this check.",
+      "source": [
+        "App/StudioSettingsView.swift",
+        "App/ProFeaturesView.swift",
+        "App/EntitlementStore.swift",
+        "project.yml"
+      ]
+    },
+    {
+      "area": "Selected photo cancellation/failure",
+      "change": "Added picker cancellation, visible Cancel replacement and selected-provider failure checks that require the previous photo and guided choices to remain. Broad Photos authorization is not assumed; unavailable branches are recorded.",
+      "source": [
+        "App/ReferenceComparisonView.swift",
+        "App/PhotoComparisonView.swift"
+      ]
+    },
+    {
+      "area": "Camera denial navigation",
+      "change": "Added Done return from nested manual-room fallback before Open Camera Settings. Existing denial, restriction and reauthorization checks retained.",
+      "source": [
+        "App/ARPlacementView.swift",
+        "App/ARPlacementController.swift",
+        "App/ManualRoomPlacementView.swift"
+      ]
+    }
+  ],
+  "routeReview": [
+    {
+      "area": "Exact input / undo",
+      "finding": "Guide names match the actual Horizontal exact editor, Allowed range, Apply value, Cancel, Undo and Redo controls; explicit Save/relaunch remains a requested human check."
+    },
+    {
+      "area": "Editable backup/import/recovery",
+      "finding": "Export snapshot, separate imported project, explicit recovery confirmation and preservation-versus-restore distinction match source."
+    },
+    {
+      "area": "Feedback",
+      "finding": "Review and ShareLink use the same immutable report text; guide Copy/cancel/back/edit/repreview checks are unexecuted system-share checks, and missing Copy is recorded."
+    },
+    {
+      "area": "PDF",
+      "finding": "Paper/units preview and Share PDF exist; Save to Files/open/cancel remain unexecuted system destination actions."
+    },
+    {
+      "area": "Distribution",
+      "finding": "Owner values, clean generated-project/output paths, local package placement, unsigned-only plan, missing signing and separate TestFlight authorization are accurately distinguished. No archive or Apple service workflow was run."
+    }
+  ],
+  "checks": {
+    "gitDiffCheckExit": 0,
+    "sourceFilesBound": 26,
+    "onlyChangedReviewedFile": [
+      "docs/BETA_TESTER_GUIDE.md"
+    ],
+    "existingSectionHeadingsPreserved": true,
+    "localGuideLinksChecked": 19,
+    "missingLocalLinks": [],
+    "humanStepsRemainUnexecuted": true,
+    "nativeTestsExecuted": 0,
+    "deviceTestsExecuted": 0,
+    "archiveCommandsExecuted": 0,
+    "purchaseOrRestorePerformed": false,
+    "signingUploadOrInvitationsPerformed": false
+  },
+  "limits": [
+    "No app build, live navigation, native/UI test, real photo provider, permission transition, clipboard, share sheet, Files/PDF-open, recovery operation, StoreKit transaction, signing or distribution was executed.",
+    "This source review does not establish runtime privacy, legal compliance, device accuracy, beta acceptance or current Apple service eligibility.",
+    "The changed tester guide is an uncommitted doc-only change atop af6 for parent review; source runtime hashes are unchanged."
+  ],
+  "sourceHashes": {
+    "docs/BETA_TESTER_GUIDE.md": {
+      "workingSHA256": "9938074ad75a6923c219fb0088f4dd9bcc764a357b9d5278a57bec64386c9e7d",
+      "committedSHA256": "9b95d16321eb028907001902411c6ba3e04297032db9f9685d5e413467ed0a2e"
+    },
+    "docs/BETA_DISTRIBUTION.md": {
+      "workingSHA256": "783084e6404762a1cf6f335ee291066695d8ad19b7a5a5865de8e7fc40926ec9",
+      "committedSHA256": "783084e6404762a1cf6f335ee291066695d8ad19b7a5a5865de8e7fc40926ec9"
+    },
+    "docs/PRIVACY.md": {
+      "workingSHA256": "067e617518d54a12d67354ecce4d68d96966d10c44b21551015597054bd3e0c2",
+      "committedSHA256": "067e617518d54a12d67354ecce4d68d96966d10c44b21551015597054bd3e0c2"
+    },
+    "project.yml": {
+      "workingSHA256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+      "committedSHA256": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b"
+    },
+    "Package.swift": {
+      "workingSHA256": "b310183d99e93d72892137b32daa94bd18abec76bb8e814a035c067c7e4d1f54",
+      "committedSHA256": "b310183d99e93d72892137b32daa94bd18abec76bb8e814a035c067c7e4d1f54"
+    },
+    "scripts/prepare_beta_archive.py": {
+      "workingSHA256": "9e4244741580a02f63ce12fe9fe0caf4329c03dd6f691b8039355e2b85484005",
+      "committedSHA256": "9e4244741580a02f63ce12fe9fe0caf4329c03dd6f691b8039355e2b85484005"
+    },
+    "App/StudioView.swift": {
+      "workingSHA256": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573",
+      "committedSHA256": "090b4ac96b39b831e0273784685b87c6e27ca74ba181e4f2145b1f51cdc9e573"
+    },
+    "App/StudioSettingsView.swift": {
+      "workingSHA256": "2bdcec7eba5a774fb7b18ed8fbf3ef53085a84d9cdc63461882307359b41bf4a",
+      "committedSHA256": "2bdcec7eba5a774fb7b18ed8fbf3ef53085a84d9cdc63461882307359b41bf4a"
+    },
+    "App/PrecisionValueButton.swift": {
+      "workingSHA256": "21f57df7d2424426e2ce50d3af8627aa54ac32ce6da05c100c043284ec149bc8",
+      "committedSHA256": "21f57df7d2424426e2ce50d3af8627aa54ac32ce6da05c100c043284ec149bc8"
+    },
+    "App/DistanceValueButton.swift": {
+      "workingSHA256": "e342d7887872b89b0d98af9ef89a2a3c4b55105f90f430efea04865213df4d77",
+      "committedSHA256": "e342d7887872b89b0d98af9ef89a2a3c4b55105f90f430efea04865213df4d77"
+    },
+    "App/LightTargetLuxView.swift": {
+      "workingSHA256": "9acf4f118872d639c317dd43bd98b60f9a69d3e812245b31df863bef670d5f99",
+      "committedSHA256": "9acf4f118872d639c317dd43bd98b60f9a69d3e812245b31df863bef670d5f99"
+    },
+    "App/ProjectLibraryView.swift": {
+      "workingSHA256": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe",
+      "committedSHA256": "87ea1364ecc1f821668dbe7f7d3f926d99bdab87069c7832080a0dad8a5820fe"
+    },
+    "App/ProjectLibraryRecoveryView.swift": {
+      "workingSHA256": "c236b15040be4176007d870856b8b55583aac8189bed6f08bd14d8c6122c8a9c",
+      "committedSHA256": "c236b15040be4176007d870856b8b55583aac8189bed6f08bd14d8c6122c8a9c"
+    },
+    "App/ProjectBackupView.swift": {
+      "workingSHA256": "2b46bb6b7b9de27ccaafbf9e69a4d8940af55cb560a7a1ff8b140e1d654a5b81",
+      "committedSHA256": "2b46bb6b7b9de27ccaafbf9e69a4d8940af55cb560a7a1ff8b140e1d654a5b81"
+    },
+    "App/LightingPlanExportView.swift": {
+      "workingSHA256": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c",
+      "committedSHA256": "19ffca95d8d8cec3725bc551575dfbbd6a547184e4bc227c5195d931cec5544c"
+    },
+    "App/BetaFeedbackView.swift": {
+      "workingSHA256": "384875c873724bd881ec18091110347207a5e7407bf0b1a8c68ebed1c1ff64cd",
+      "committedSHA256": "384875c873724bd881ec18091110347207a5e7407bf0b1a8c68ebed1c1ff64cd"
+    },
+    "App/ReferenceComparisonView.swift": {
+      "workingSHA256": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb",
+      "committedSHA256": "e269c3e187b491f76035c8d011864873305b5593fb9a9d6a9b4d1aef3594f5fb"
+    },
+    "App/PhotoComparisonView.swift": {
+      "workingSHA256": "243a57126323fffcd904b18edc413cd31d5b90f0e2494fd388d2766db0588294",
+      "committedSHA256": "243a57126323fffcd904b18edc413cd31d5b90f0e2494fd388d2766db0588294"
+    },
+    "App/ARPlacementView.swift": {
+      "workingSHA256": "e6085889ed25337c729c2dbb7d2b9027e7368e08b8cd3ff46ab980a617979c0a",
+      "committedSHA256": "e6085889ed25337c729c2dbb7d2b9027e7368e08b8cd3ff46ab980a617979c0a"
+    },
+    "App/ARPlacementController.swift": {
+      "workingSHA256": "21843199fc457a6252d00a691381c53568438357b2602a6a073cc494a0e49f4b",
+      "committedSHA256": "21843199fc457a6252d00a691381c53568438357b2602a6a073cc494a0e49f4b"
+    },
+    "App/ManualRoomPlacementView.swift": {
+      "workingSHA256": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211",
+      "committedSHA256": "4c86aa0206370918002875a428caa79dce9a13458fe82144a0ccb287a8dc2211"
+    },
+    "App/ProFeaturesView.swift": {
+      "workingSHA256": "6b43d11bbe4e4badd7762e875509213c1942de32da2075da064469d1029ce532",
+      "committedSHA256": "6b43d11bbe4e4badd7762e875509213c1942de32da2075da064469d1029ce532"
+    },
+    "App/EntitlementStore.swift": {
+      "workingSHA256": "fd0e693a959d9d6d22aa91b1fb1a2551ec1469c7d933d3946daaf9c1604d539d",
+      "committedSHA256": "fd0e693a959d9d6d22aa91b1fb1a2551ec1469c7d933d3946daaf9c1604d539d"
+    },
+    "App/KeyAndFillApp.swift": {
+      "workingSHA256": "40638244f7f65ac622c891ea4e3d2462679975a8f314981d685d64d0d0c61a4e",
+      "committedSHA256": "40638244f7f65ac622c891ea4e3d2462679975a8f314981d685d64d0d0c61a4e"
+    },
+    "App/StudioSession.swift": {
+      "workingSHA256": "132e815d355beb448255af982b0b3b82cbc3a8e3f31815aa7317b35cb9a55363",
+      "committedSHA256": "132e815d355beb448255af982b0b3b82cbc3a8e3f31815aa7317b35cb9a55363"
+    },
+    "Sources/LightingCore/BetaFeedbackReport.swift": {
+      "workingSHA256": "41b92fba0d77d48be12051dc6ce93583528cfef4590e3d09c120e62a40d67331",
+      "committedSHA256": "41b92fba0d77d48be12051dc6ce93583528cfef4590e3d09c120e62a40d67331"
+    }
+  }
+}

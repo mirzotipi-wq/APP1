@@ -1,0 +1,38 @@
+[
+  {
+    "check": "debug_syntax",
+    "command": [
+      "/workspace/scratch/b25ffdc7aed8/toolchains/swift-6.0.3/usr/bin/swiftc",
+      "-frontend",
+      "-parse",
+      "-D",
+      "DEBUG",
+      "NativeTests/LightingPlanPDFTests.swift"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "check": "release_syntax",
+    "command": [
+      "/workspace/scratch/b25ffdc7aed8/toolchains/swift-6.0.3/usr/bin/swiftc",
+      "-frontend",
+      "-parse",
+      "NativeTests/LightingPlanPDFTests.swift"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "check": "diff_check",
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "NativeTests/LightingPlanPDFTests.swift"
+    ],
+    "exitCode": 0,
+    "output": ""
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "worker": "/root/a077_beta_gap_matrix",
+  "date": "2026-11-27",
+  "scope": "Private contract/evidence readiness review; no repository mutation",
+  "localHead": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "localTree": "0efed150e58c36dc2206db77201854a8c25ef6cd",
+  "reportedPublishedCandidate": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+  "publicationVerification": "Reported by integration lead; not independently queried by this worker",
+  "reviewedSources": {
+    "AGENTS.md": "8987c795b12ab6ca4046637662b3d5d2045d486c1342d21b751076fdd999d6b6",
+    "agents/OPERATING_PROTOCOL.md": "cb9bc8b3202380500ec62bdac6e835b1f5b3272c51fef0ed4120ed450b2026c6",
+    "docs/QUALITY.md": "af34e20e378d2ff61602d31f95ea1274698533e4c42f1bc3230d380a7bd99336",
+    "docs/PRODUCT.md": "1df44f80dfc20772c61e3bf26e68c7e174e25b82cb7f8db1da03583debf63628",
+    "docs/ROADMAP.md": "038b760e9388ad5d261ca798639afd492a91b1505d6d963eb03cf6eb77f6a678",
+    "docs/acceptance/m02-m03-code.md": "829fb77720eca498dcefdb8945b62383e9d7e748cf54fa86b7b53c55d0573ba4",
+    "docs/ARCHITECTURE.md": "3eeb594f6854e7697bf601c240b5bb81d2bcf4b5d7564f6a2f9e6df435c20f8a",
+    "docs/DESIGN.md": "ef7ea1c998b581ff29b767dd1350bcca08565acd7f4fe1856a2112d07b9b1117",
+    "agents/state.json": "db453b80c63157d41a00e19f5967e7ac5b35dc1a76e625bccbf86f7cea2944ab",
+    "agents/HANDOFF.md": "c90c6d44e61900367809088000cf054b776324aa99ef70dffba991c23bf88a91",
+    "docs/evidence/beta-hardening-2026-11-27/README.md": "42fa398f62d6c4730ce611683fd501a0ce4f4e545b597daa2713b4342ed97500",
+    "docs/evidence/beta-hardening-2026-11-27/validation/local-checkpoint-02.json": "b40780f190af121c2ee979dd6691c9e54306ecc1bb6ca242c786c37d61dae755",
+    "docs/evidence/beta-hardening-2026-11-27/concurrent-2fc-native/receipt.json": "222774f708c9234805dea187021d97f51d9096768601ef1366ced72640b539fd",
+    "docs/evidence/beta-hardening-2026-11-27/concurrent-2fc-accessibility/artifact-receipt.json": "ece55f2f74b82968b2d264dda00ac3730f60d2e02ca4ab1f5ffeee624d57a90e",
+    "docs/evidence/beta-hardening-2026-11-27/concurrent-2fc-library/receipt.json": "58356f9fd30ed6de64f258b5ac506adafb153aa45c3e4873a6c3dd6d646f19fa",
+    "docs/evidence/beta-hardening-2026-11-27/publication-review/publication-binding-review.json": "98ff5f11340eb6096667cf9795f119a384e2586aaa0d51d544033e62cce95215",
+    "docs/BETA_DISTRIBUTION.md": "783084e6404762a1cf6f335ee291066695d8ad19b7a5a5865de8e7fc40926ec9",
+    "docs/BETA_TESTER_GUIDE.md": "9b95d16321eb028907001902411c6ba3e04297032db9f9685d5e413467ed0a2e",
+    "docs/PRIVACY.md": "067e617518d54a12d67354ecce4d68d96966d10c44b21551015597054bd3e0c2",
+    "project.yml": "3881ba2de3c4b72cbf40ca16c82236312514b2646bef2ede789ea18f952b8d0b",
+    "docs/evidence/beta-hardening-2026-11-27/validation/published-source-03.json": "f2831e4d52519ca5fdbe621e725a12598636a29896776bcf1dd4dc2cebaf55d2",
+    "docs/evidence/beta-hardening-2026-11-27/validation/source-manifest-03.json": "354727358b96c1406acab80d51231f8c9bbd403761d2047ccaf33c7c90cb864a"
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/agent_cycle.py check",
+      "exitCode": 0,
+      "result": "State structure and references valid; no test truth or readiness proof"
+    },
+    {
+      "command": "python3 scripts/agent_cycle.py next",
+      "exitCode": 0,
+      "result": "M01; core_tests, native_build, persistence_smoke outstanding"
+    },
+    {
+      "command": "Compare all 258 manifest SHA-256 values to working files and git show135d3b4:path; compare checkpoint02 differences and manifest self-hash",
+      "exitCode": 0,
+      "result": "All match; only App/StudioTextField.swift and NativeTests/StudioTextFieldTests.swift changed"
+    }
+  ],
+  "actualBuildsOrTestsRun": false,
+  "repositoryMutations": false,
+  "matrixSHA256": "37064224bb0339171e3f10d223ed505abaf97c8c67923dd7173e8647f08f4b75",
+  "candidateManifestVerification": {
+    "manifest": "docs/evidence/beta-hardening-2026-11-27/validation/source-manifest-03.json",
+    "manifestSHA256": "354727358b96c1406acab80d51231f8c9bbd403761d2047ccaf33c7c90cb864a",
+    "verifiedInputs": 258,
+    "matchedWorkingTree": true,
+    "matchedLocalGitCommit": "135d3b4755d97bbb8fcff993d8dfd532a8d48b93",
+    "changedFromCheckpoint02": [
+      "App/StudioTextField.swift",
+      "NativeTests/StudioTextFieldTests.swift"
+    ],
+    "currentAppleRun": 46031166740,
+    "AppleOutcome": "in_progress_unverified"
+  }
+}
