@@ -1,5 +1,15 @@
 # Current handoff
 
+## Branch consolidation — 27 November 2026
+
+All eight published non-main tips are retained by integration commit `660b50a251f662b0207d0e5aab70fda748a77664`: three were already merged and all five finish lanes are now together, preserving 100 previously unmerged commits. Read [the consolidation packet](../docs/evidence/branch-consolidation-2026-11-27/README.md) for pinned heads, changed-file proof, current verification and the successful live remote audit. No branches have been deleted.
+
+The integrated source passes 482 Debug, 482 Release and 100 tooling tests, native syntax and source partition/icon/privacy checks. All twelve CPU images match the retained originals; six canonical/eight strict shared-kernel checks and the bounded 8-frame/12-cancellation/4-visibility benchmark pass. Fresh Apple build/native/UI results are required: source inventory is now 261 native and 36 required UI methods plus two opt-in diagnostics. Original `CGFloat` repairs and every branch's original evidence are preserved.
+
+Current milestone statuses reflect revalidation of the combined tree: M01 active, M02/M03 pending; earlier accepted versions are preserved in the prior state and evidence ledger. The old b0d25ee run is terminal with UI failures, not still running. This consolidation does not assert release readiness or rerun any historical worker campaign.
+
+All eight audited branch tips have zero commits missing from published main and are safe to delete at their recorded SHAs. No deletion was performed. Next: reconcile fresh Apple/native/UI outcomes from [run 45979992218](https://github.com/mirzotipi-wq/APP1/actions/runs/45979992218), then revalidate affected acceptance gates. The historical handoffs below retain their original dates and source-specific observations and do not describe current execution.
+
 ## Current closeout — 26 November 2026
 
 M02 remains accepted under `m02-m03-code-v2`. Integrated source `b0d25eece01a3edb4c46e89cd487105d4d5a8cdd` is published on `main`; [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966) must complete 154 native and 35 required UI methods plus 28 original Default/AXXXL captures. The original 26 captures remain, with Workspace-header added at both sizes. M03 stays active until commands, exact method accounting, finalized results and actual image review pass.

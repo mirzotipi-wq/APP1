@@ -1,0 +1,91 @@
+{
+  "sourceRevision": "660b50a251f662b0207d0e5aab70fda748a77664",
+  "environment": "Debian 13 x86_64 Linux; official Swift 6.0.3 / Clang 17; no Apple SDK",
+  "debug": {
+    "command": [
+      "swift",
+      "test",
+      "--configuration",
+      "debug",
+      "--jobs",
+      "2",
+      "--scratch-path",
+      "/workspace/scratch/985f90e1a42f/validation/swift-build",
+      "--cache-path",
+      "/workspace/scratch/985f90e1a42f/validation/swift-cache"
+    ],
+    "exitCode": 0,
+    "testsPassed": 482,
+    "failures": 0,
+    "log": "published-swift-debug.log",
+    "logSHA256": "4370f97ce5c8b8e0ecd6e692f801b0e3a6665ea77362719c66433448588e8f0a",
+    "sourceRevision": "660b50a251f662b0207d0e5aab70fda748a77664"
+  },
+  "release": {
+    "command": [
+      "swift",
+      "test",
+      "--configuration",
+      "release",
+      "--jobs",
+      "2",
+      "--scratch-path",
+      "/workspace/scratch/985f90e1a42f/validation/swift-build",
+      "--cache-path",
+      "/workspace/scratch/985f90e1a42f/validation/swift-cache"
+    ],
+    "exitCode": 0,
+    "testsPassed": 482,
+    "failures": 0,
+    "log": "published-swift-release.log",
+    "logSHA256": "c6be222b229356d979ee0e2f99a84ccf59e8803e4b355bed9ebd5dd19b7bcf56",
+    "sourceRevision": "660b50a251f662b0207d0e5aab70fda748a77664"
+  },
+  "tooling": {
+    "command": "python3 -m unittest discover -s scripts/tests -p 'test_*.py'",
+    "exitCode": 0,
+    "testsPassed": 100,
+    "failures": 0,
+    "log": "tooling.log",
+    "logSHA256": "7e0452668c4861d81e0088b2cd6d3a728092413e4043fe2e60e223539d164667",
+    "sourceRevision": "eb62da9dc7aee8fe899c8cc27b05adc3c700fb7d",
+    "publishedTreeIdentical": true
+  },
+  "nativeSyntax": {
+    "command": "swiftc -frontend -parse App/*.swift UITests/*.swift NativeTests/*.swift",
+    "exitCode": 0,
+    "meaning": "Syntax parsing only; no Apple API type-check or native runtime",
+    "log": "native-syntax.log",
+    "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sourceRevision": "eb62da9dc7aee8fe899c8cc27b05adc3c700fb7d",
+    "publishedTreeIdentical": true
+  },
+  "sourceChecks": {
+    "agent_cycle.py check": "passed",
+    "native_test_shards.py check": "passed",
+    "verify_app_icon.py": "passed",
+    "verify_privacy_manifest.py": "passed"
+  },
+  "declaredNativeMethods": 261,
+  "declaredRequiredUIMethods": 36,
+  "declaredDiagnosticUIMethods": 2,
+  "appleBuildAndRuntime": "Fresh source workflow 45979992218 running; no local Apple execution",
+  "warning": "Existing LightOutputBoundaryTests subnormal Double literal 1e-320 emits a Swift 6.0.3 precision warning; its tests pass.",
+  "originalLocalRevision": "eb62da9dc7aee8fe899c8cc27b05adc3c700fb7d",
+  "sourceTree": "e55d66056264267ad57aa7a9270ba29783447603",
+  "publicationEquivalence": "publication-equivalence.json",
+  "rendering": {
+    "summary": "rendering/summary.json",
+    "passed": true,
+    "sourceRevision": "eb62da9dc7aee8fe899c8cc27b05adc3c700fb7d",
+    "publishedTreeIdentical": true,
+    "actualGPUExecution": false,
+    "fixtureCount": 12,
+    "baselineIdenticalFixtures": 12,
+    "canonicalParityCount": 6,
+    "strictPrecisionCount": 8,
+    "frames": 8,
+    "cancellations": 12,
+    "visibilityWorkloads": 4
+  }
+}

@@ -4,7 +4,7 @@
 
 Key & Fill is a native iOS lighting workspace for photographers and filmmakers: explore a reference, edit a plausible rig, preview its geometry, place it in a room, and export a practical plan.
 
-**Status: active code development.** M01 and M02 are complete; M03 implementation is in native validation under the owner's [code-only acceptance contract](docs/acceptance/m02-m03-code.md), approved on 25 November 2026. Unavailable physical calibration, human reviews and device measurements are removed from those two development milestones; they remain unperformed and are not claimed. M04–M07 and release acceptance remain separate.
+**Status: active code development.** All five published finish workstreams have been consolidated into `main`, with all eight audited non-main branch tips and their development history retained and remotely verified. The combined source is undergoing fresh native validation; earlier M01/M02 acceptance remains tied to its original revisions. See the [27 November consolidation report](docs/evidence/branch-consolidation-2026-11-27/README.md) and [current handoff](agents/HANDOFF.md). The owner-approved [code-only M02/M03 contract](docs/acceptance/m02-m03-code.md) remains unchanged. M04–M07 and release acceptance remain separate.
 
 ## Current implementation
 
@@ -46,13 +46,9 @@ Run camera, AR and thermal acceptance on supported physical devices. Simulator r
 
 ## Verification and current work
 
-M02 is complete under the code acceptance contract. The reviewed layout and fixture corrections are published at `b0d25eece01a3edb4c46e89cd487105d4d5a8cdd` and are running in [run 45807031966](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966). Required execution is **154 native methods, 35 UI methods and 28 original Default/AXXXL layout captures**. The ten optics methods repeat the same editing workflow. M03 remains active until all required results and image review pass.
+The consolidated source passes **482 portable Debug tests, 482 portable Release tests and 100 Python tooling tests**. All twelve CPU reference images retain their original hashes; six canonical shared-kernel comparisons, eight strict precision cases and the bounded rendering/cancellation benchmark pass. Native Swift syntax and source partition/icon/privacy checks pass. The combined native suite declares **261 methods and 36 required UI methods**; [fresh Apple CI](https://github.com/mirzotipi-wq/APP1/actions/runs/45979992218) is running. Results, logs, branch pins and the independent preservation audit are in the [consolidation packet](docs/evidence/branch-consolidation-2026-11-27/README.md).
 
-The [closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) records exactly 100 completed worker contexts, Unicode and history boundaries, room precision, camera selection/slider contrast, native measurement/focus fixtures and CI ownership/retention repairs. Fresh f150 CI independently verified 366 Debug, 366 Release and 100 tooling tests, twelve original render matches, the numerical and benchmark matrices, and actual ext4 write-failure/interruption probes. Local tmpfs observations remain separately retained; Apple runtime execution remains required.
-
-The preceding 9fa run passed all 366 Debug/366 Release/100 tooling checks, 153/154 native methods and 34/35 UI methods. The native fixture containment and largest-text caption assertions failed; recovered original images also identified a cramped Scene/Meter header. These failures and the preceding 02797 outcomes remain in the packet. The new repair keeps every minimum-fit, containment, growth and hit-target requirement and adds two header captures.
-
-The f150 Apple build exposed ambiguous `greatestFiniteMagnitude` type inference in the new UI measurement. The explicit `CGFloat` correction is published; no native/UI method ran on that failed build. Fresh complete execution remains required.
+The prior [b0d25ee workflow](https://github.com/mirzotipi-wq/APP1/actions/runs/45807031966) completed with core/native success and UI failures. It is no longer running. Those failures and earlier acceptance evidence remain in the [previous closeout packet](docs/evidence/m03-closeout-2026-11-26/README.md) and each [workstream handoff](docs/parallel/). Fresh combined-source native, Metal, UI and image-review evidence is required before acceptance is advanced.
 
 Code changes run the full development workflow. Documentation-only evidence updates run project-state validation and do not cancel unchanged simulator work.
 
