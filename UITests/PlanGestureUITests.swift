@@ -125,12 +125,115 @@ final class PlanGestureUITests: XCTestCase {
 
         // Background the actual process without relaunching or replacing the
         // fixture. Both background states prove that it left the foreground.
+        let observationStarted = ProcessInfo.processInfo.systemUptime
+        var stateObservations: [(started: TimeInterval, finished: TimeInterval, state: XCUIApplication.State)] = []
+        var stateObservationCount = 0
         XCUIDevice.shared.press(.home)
         let backgrounded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let started = ProcessInfo.processInfo.systemUptime - observationStarted
             let state = app.state
+            let finished = ProcessInfo.processInfo.systemUptime - observationStarted
+            stateObservationCount += 1
+            if stateObservations.count == 32 { stateObservations.removeFirst() }
+            stateObservations.append((started: started, finished: finished, state: state))
             return state == .runningBackground || state == .runningBackgroundSuspended
         }, object: app)
-        XCTAssertEqual(XCTWaiter.wait(for: [backgrounded], timeout: 10), .completed)
+        let backgroundResult = XCTWaiter.wait(for: [backgrounded], timeout: 10)
+        if backgroundResult != .completed {
+            let elapsed = ProcessInfo.processInfo.systemUptime - observationStarted
+            let lastState = stateObservations.last?.state
+            let outcome: String
+            if lastState == .notRunning {
+                outcome = "terminated: last state was notRunning; termination cause is unknown"
+            } else if lastState == .runningForeground {
+                outcome = "stillForeground: last state was runningForeground"
+            } else if lastState == .runningBackground || lastState == .runningBackgroundSuspended {
+                outcome = "backgroundObserved: waiter did not complete despite an observed background state"
+            } else {
+                outcome = "noResponse: no usable state response; unknown or absent samples do not prove termination"
+            }
+            let samples = stateObservations.map { sample in
+                "readStarted=\(sample.started)s, readFinished=\(sample.finished)s, " +
+                    "state=\(sample.state) (raw=\(sample.state.rawValue))"
+            }.joined(separator: "\n")
+            let description = "Outcome: \(outcome)\nWaiter result: \(backgroundResult)\n" +
+                "Configured wait: 10s; elapsed since before Home: \(elapsed)s (monotonic uptime)\n" +
+                "Completed state reads: \(stateObservationCount); retained latest \(stateObservations.count) (maximum 32)\n" +
+                samples
+            // Retain actual observations before optional capture requests can
+            // fail. Neither capture participates in the predicate or its wait.
+            print("Plan-background-state-failure:\n\(description)")
+            let observation = XCTAttachment(string: description)
+            observation.name = "Plan-background-state-failure"
+            observation.lifetime = .keepAlways
+            add(observation)
+            let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            screenshot.name = "Plan-background-state-failure-screen"
+            screenshot.lifetime = .keepAlways
+            add(screenshot)
+
+            func boundedDiagnosticText(_ value: String, limit: Int) -> String {
+                // Cap scalars before reflection or materializing a prefix: one
+                // grapheme can contain an arbitrarily large combining cluster.
+                let scalars = Array(value.unicodeScalars.prefix(limit + 1))
+                let marker = " [truncated]"
+                let truncated = scalars.count > limit
+                let contentLimit = truncated ? limit - marker.unicodeScalars.count : limit
+                var text = ""
+                text.unicodeScalars.append(contentsOf: scalars.prefix(contentLimit))
+                return text + (truncated ? marker : "")
+            }
+
+            let hierarchyDescription: String
+            if lastState == .runningForeground {
+                do {
+                    // One throwable snapshot; traverse its immutable children
+                    // locally, with no extra accessibility requests or retries.
+                    let snapshot = try app.snapshot()
+                    var pending = [(snapshot, 0)]
+                    var text = "Single snapshot, capped at 128 nodes, depth 16 and 24,000 Unicode scalars (including header and truncation marker):"
+                    var scalarCount = text.unicodeScalars.count
+                    var nodeCount = 0
+                    let marker = "\n[diagnostic text truncated]"
+                    while let (node, depth) = pending.popLast(), nodeCount < 128 {
+                        nodeCount += 1
+                        let line = String(repeating: "  ", count: depth) +
+                            "type=\(node.elementType.rawValue), " +
+                            "identifier=\(String(reflecting: boundedDiagnosticText(node.identifier, limit: 256))), " +
+                            "label=\(String(reflecting: boundedDiagnosticText(node.label, limit: 512))), frame=\(node.frame)"
+                        // Reserve the marker and accumulate bounded scalars;
+                        // never join an unbounded hierarchy before truncating.
+                        let available = 24_000 - scalarCount - 1 - marker.unicodeScalars.count
+                        guard available >= 0 else {
+                            text += marker
+                            break
+                        }
+                        let scalars = Array(line.unicodeScalars.prefix(available + 1))
+                        text += "\n"
+                        text.unicodeScalars.append(contentsOf: scalars.prefix(available))
+                        scalarCount += 1 + min(scalars.count, available)
+                        if scalars.count > available {
+                            text += marker
+                            break
+                        }
+                        let remaining = 128 - nodeCount - pending.count
+                        if depth < 16 && remaining > 0 {
+                            pending.append(contentsOf: node.children.prefix(remaining).reversed().map { ($0, depth + 1) })
+                        }
+                    }
+                    hierarchyDescription = text
+                } catch {
+                    hierarchyDescription = "Hierarchy unavailable: \(boundedDiagnosticText(error.localizedDescription, limit: 2_000))"
+                }
+            } else {
+                hierarchyDescription = "Hierarchy unavailable: no foreground state was returned by the last observation."
+            }
+            let hierarchy = XCTAttachment(string: hierarchyDescription)
+            hierarchy.name = "Plan-background-state-failure-hierarchy"
+            hierarchy.lifetime = .keepAlways
+            add(hierarchy)
+        }
+        XCTAssertEqual(backgroundResult, .completed)
         app.activate()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10))
         waitForEnabledStudioControl(app.buttons["recipes"])

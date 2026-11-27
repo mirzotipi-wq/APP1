@@ -18,23 +18,173 @@ final class BetaWorkflowUITests: XCTestCase {
         waitForEnabledStudioControl(app.buttons["openProjectLibrary"])
     }
 
-    private func assertLabel(_ expected: String, of element: XCUIElement,
+    private func assertLabel(_ expected: String, of element: XCUIElement, in app: XCUIApplication,
                              file: StaticString = #filePath, line: UInt = #line) {
         // Match the existing readiness pattern: one immutable AX snapshot
         // supplies the label instead of separate presence and value queries.
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             (try? element.snapshot().label) == expected
         }, object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed,
+        let result = XCTWaiter.wait(for: [ready], timeout: 15)
+        if result != .completed {
+            recordAssertionFailure("label", expected: expected, of: element, in: app,
+                                   result: result, file: file, line: line)
+        }
+        XCTAssertEqual(result, .completed,
                        "Expected exact label: \(expected)", file: file, line: line)
     }
 
-    private func assertValue(_ expected: String, of element: XCUIElement,
+    private func assertValue(_ expected: String, of element: XCUIElement, in app: XCUIApplication,
                              file: StaticString = #filePath, line: UInt = #line) {
         let ready = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == true AND value == %@", expected), object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+        let result = XCTWaiter.wait(for: [ready], timeout: 10)
+        if result != .completed {
+            recordAssertionFailure("value", expected: expected, of: element, in: app,
+                                   result: result, file: file, line: line)
+        }
+        XCTAssertEqual(result, .completed,
                        "The real editor must contain the complete entered draft", file: file, line: line)
+    }
+
+    private struct DiagnosticText {
+        let limit: Int
+        private(set) var text = ""
+        private(set) var truncated = false
+        private var scalarCount = 0
+
+        init(limit: Int) { self.limit = limit }
+
+        mutating func append(_ line: @autoclosure () -> String) {
+            guard !truncated else { return }
+            let marker = "\n[diagnostic text truncated]"
+            let separator = text.isEmpty ? "" : "\n"
+            // Reserve the marker before accumulating any content. Scalar limits
+            // also bound bytes, even for a single enormous grapheme cluster.
+            let available = limit - scalarCount - separator.unicodeScalars.count - marker.unicodeScalars.count
+            guard available >= 0 else {
+                text += marker
+                truncated = true
+                return
+            }
+            let scalars = Array(line().unicodeScalars.prefix(available + 1))
+            text += separator
+            text.unicodeScalars.append(contentsOf: scalars.prefix(available))
+            scalarCount += separator.unicodeScalars.count + min(scalars.count, available)
+            if scalars.count > available {
+                text += marker
+                truncated = true
+            }
+        }
+    }
+
+    private func diagnosticField(_ value: String) -> String {
+        // Bound the source before reflection can expand control characters.
+        let scalars = Array(value.unicodeScalars.prefix(513))
+        var prefix = ""
+        prefix.unicodeScalars.append(contentsOf: scalars.prefix(512))
+        return String(reflecting: prefix) + (scalars.count > 512 ? " [field truncated at 512 scalars]" : "")
+    }
+
+    private func diagnosticValue(_ value: Any?) -> String {
+        guard let value else { return "nil" }
+        if let text = value as? String { return diagnosticField(text) }
+        if let number = value as? NSNumber { return diagnosticField(number.stringValue) }
+        return "[non-string, nonnumeric value omitted]"
+    }
+
+    private func diagnosticError(_ error: Error) -> String {
+        let failure = error as NSError
+        return "domain=\(diagnosticField(failure.domain)), code=\(failure.code), " +
+            "description=\(diagnosticField(failure.localizedDescription))"
+    }
+
+    private func snapshotDetails(_ snapshot: XCUIElementSnapshot) -> String {
+        "identifier=\(diagnosticField(snapshot.identifier)), type=\(snapshot.elementType.rawValue), " +
+            "label=\(diagnosticField(snapshot.label)), value=\(diagnosticValue(snapshot.value)), " +
+            "frame=\(snapshot.frame), enabled=\(snapshot.isEnabled)"
+    }
+
+    private func recordAssertionFailure(_ attribute: String, expected: String, of element: XCUIElement,
+                                        in app: XCUIApplication, result: XCTWaiter.Result,
+                                        file: StaticString, line: UInt) {
+        let attachmentName = "Beta-\(attribute)-failure-\(line)"
+        var observations = DiagnosticText(limit: 16_384)
+        observations.append("Test: \(diagnosticField(name))")
+        observations.append("Source: \(diagnosticField(String(describing: file))):\(line)")
+        observations.append("Waiter result: \(result.rawValue)")
+        observations.append("Expected exact \(attribute) (diagnostic display): \(diagnosticField(expected))")
+        observations.append("Application state: \(app.state.rawValue)")
+        // Capture after the original deadline without retrying the expectation.
+        // Every attribute comes from this single actual element snapshot.
+        do {
+            let target = try element.snapshot()
+            observations.append("Target snapshot: \(snapshotDetails(target))")
+            observations.append("Target snapshot error: none")
+        } catch {
+            observations.append("Target snapshot unavailable; error: \(diagnosticError(error))")
+        }
+
+        // Inspect one immutable application snapshot, with bounded traversal and
+        // samples. Missing recovery identities never trigger extra AX queries.
+        var hierarchyText = DiagnosticText(limit: 32_768)
+        do {
+            let nodeLimit = 2_048
+            var pending = [(snapshot: try app.snapshot(), depth: 0)]
+            var snapshots: [(snapshot: XCUIElementSnapshot, depth: Int)] = []
+            var traversalTruncated = false
+            while let entry = pending.popLast() {
+                snapshots.append(entry)
+                let available = nodeLimit - snapshots.count - pending.count
+                let children = entry.snapshot.children
+                if children.count > available { traversalTruncated = true }
+                pending.append(contentsOf: children.prefix(available).reversed().map {
+                    (snapshot: $0, depth: entry.depth + 1)
+                })
+            }
+            let summary = "Application snapshot: \(snapshots.count) nodes inspected; traversal truncated=\(traversalTruncated); error: none"
+            observations.append(summary)
+            hierarchyText.append("\(summary). Hierarchy uses the same snapshot; node limit=\(nodeLimit), field limit=512 scalars.")
+            for entry in snapshots {
+                hierarchyText.append("depth=\(entry.depth): \(snapshotDetails(entry.snapshot))")
+                if hierarchyText.truncated { break }
+            }
+            for identifier in ["libraryRecoverySuccess", "libraryRecoveryProgress",
+                               "libraryRecoveryInspectionProgress", "libraryRecoveryMessage",
+                               "closeLibraryRecovery", "reviewLibraryRecovery",
+                               "libraryRecoveryImportInstructions"] {
+                let matches = snapshots.filter { $0.snapshot.identifier == identifier }
+                observations.append("Recovery identity \(identifier): \(matches.count) matches in inspected nodes; sample truncated=\(matches.count > 4)")
+                for match in matches.prefix(4) { observations.append(snapshotDetails(match.snapshot)) }
+            }
+            let alerts = snapshots.filter { $0.snapshot.elementType == .alert }
+            observations.append("Alerts: \(alerts.count) matches in inspected nodes; sample truncated=\(alerts.count > 4)")
+            for alert in alerts.prefix(4) { observations.append(snapshotDetails(alert.snapshot)) }
+            for label in ["Keep files and start again", "Cancel"] {
+                let actions = snapshots.filter { $0.snapshot.elementType == .button && $0.snapshot.label == label }
+                observations.append("Confirmation action \(diagnosticField(label)): \(actions.count) matches in inspected nodes; sample truncated=\(actions.count > 4)")
+                for action in actions.prefix(4) { observations.append(snapshotDetails(action.snapshot)) }
+            }
+        } catch {
+            let failure = "Application snapshot unavailable; error: \(diagnosticError(error))"
+            observations.append(failure)
+            hierarchyText.append(failure)
+        }
+
+        // Both the interrupted-run log and text attachments have explicit caps.
+        print("\(attachmentName):\n\(observations.text)")
+        let state = XCTAttachment(string: observations.text)
+        state.name = attachmentName
+        state.lifetime = .keepAlways
+        add(state)
+        let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        screenshot.name = "\(attachmentName)-screen"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        let hierarchy = XCTAttachment(string: hierarchyText.text)
+        hierarchy.name = "\(attachmentName)-hierarchy"
+        hierarchy.lifetime = .keepAlways
+        add(hierarchy)
     }
 
     private func waitForDismissal(_ element: XCUIElement,
@@ -88,7 +238,7 @@ final class BetaWorkflowUITests: XCTestCase {
 
     private func assertOnlyProject(_ name: String, in app: XCUIApplication) {
         let active = app.descendants(matching: .any)["activeProjectRow"].firstMatch
-        assertLabel("Current project: \(name)", of: active)
+        assertLabel("Current project: \(name)", of: active, in: app)
         XCTAssertEqual(active.value as? String, "3 lights")
         XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Options for ")).count, 1,
                        "First creation must save only the requested project")
@@ -101,7 +251,7 @@ final class BetaWorkflowUITests: XCTestCase {
     }
 
     private func createInitialProject(named name: String, in app: XCUIApplication) {
-        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"])
+        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"], in: app)
         openProjects(in: app)
         assertEmptyInitialLibrary(in: app)
         tapContent(app.buttons["newProject"], in: app, towardBottom: false)
@@ -115,13 +265,13 @@ final class BetaWorkflowUITests: XCTestCase {
         revealStudioContent(input, in: app, fullyVisible: true)
         input.tap()
         input.typeText(name)
-        assertValue(name, of: input)
+        assertValue(name, of: input, in: app)
         tapContent(app.buttons["confirmProjectName"], in: app, avoidingKeyboard: true)
         waitForDismissal(input)
         assertOnlyProject(name, in: app)
         closeProjects(in: app)
         waitForCommittedProject(in: app)
-        assertLabel(name, of: app.staticTexts["projectName"])
+        assertLabel(name, of: app.staticTexts["projectName"], in: app)
     }
 
     func testWelcomeDismissalPersistsAndInitialActionsNeedNoDefaultSave() throws {
@@ -129,8 +279,8 @@ final class BetaWorkflowUITests: XCTestCase {
         defer { app.terminate() }
         launchHealthyStudio(app)
         let welcome = app.staticTexts["studioWelcomeTitle"]
-        assertLabel("Start your first portrait", of: welcome)
-        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"])
+        assertLabel("Start your first portrait", of: welcome, in: app)
+        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"], in: app)
         waitForEnabledStudioControl(app.buttons["welcomeSaveCurrent"])
 
         // Exercise the welcome's actual Projects route without using Save.
@@ -138,16 +288,16 @@ final class BetaWorkflowUITests: XCTestCase {
         waitForEnabledStudioControl(app.buttons["projectLibraryDone"])
         assertEmptyInitialLibrary(in: app)
         closeProjects(in: app)
-        assertLabel("Start your first portrait", of: welcome)
+        assertLabel("Start your first portrait", of: welcome, in: app)
         tapContent(app.buttons["dismissStudioWelcome"], in: app, towardBottom: false)
         waitForDismissal(welcome)
-        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"])
+        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"], in: app)
 
         app.terminate()
         launchHealthyStudio(app)
         XCTAssertFalse(welcome.exists, "Explicit welcome dismissal must survive the same-UUID relaunch")
         XCTAssertFalse(app.buttons["dismissStudioWelcome"].exists)
-        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"])
+        assertLabel("Unsaved changes", of: app.staticTexts["projectStatus"], in: app)
         openProjects(in: app)
         assertEmptyInitialLibrary(in: app)
         closeProjects(in: app)
@@ -166,7 +316,7 @@ final class BetaWorkflowUITests: XCTestCase {
         app.terminate()
         launchHealthyStudio(app)
         waitForCommittedProject(in: app)
-        assertLabel(name, of: app.staticTexts["projectName"])
+        assertLabel(name, of: app.staticTexts["projectName"], in: app)
         XCTAssertFalse(app.staticTexts["studioWelcomeTitle"].exists)
         openProjects(in: app)
         assertOnlyProject(name, in: app)
@@ -174,8 +324,8 @@ final class BetaWorkflowUITests: XCTestCase {
     }
 
     private func assertProtectedLibrary(in app: XCUIApplication) {
-        assertLabel("Saved data protected", of: app.staticTexts["projectStatus"])
-        assertLabel("Project unavailable", of: app.staticTexts["projectName"])
+        assertLabel("Saved data protected", of: app.staticTexts["projectStatus"], in: app)
+        assertLabel("Project unavailable", of: app.staticTexts["projectName"], in: app)
         for identifier in ["saveProject", "openProjectLibrary", "exportLightingPlan", "recipes"] {
             let action = app.buttons[identifier]
             XCTAssertTrue(action.exists, "Protected storage must retain \(identifier)")
@@ -232,7 +382,7 @@ final class BetaWorkflowUITests: XCTestCase {
         assertProtectedLibrary(in: app)
         reviewRecovery(in: app).buttons["Keep files and start again"].tap()
         let success = app.descendants(matching: .any)["libraryRecoverySuccess"].firstMatch
-        assertLabel("New library is ready", of: success)
+        assertLabel("New library is ready", of: success, in: app)
         XCTAssertTrue(app.staticTexts["libraryRecoveryImportInstructions"].exists,
                       "The committed outcome must remain reviewable until Done")
         closeRecovery(in: app)
@@ -247,7 +397,7 @@ final class BetaWorkflowUITests: XCTestCase {
         launchHealthyStudio(app)
         waitForCommittedProject(in: app)
         waitForEnabledStudioControl(app.buttons["saveProject"])
-        assertLabel("Portrait setup", of: app.staticTexts["projectName"])
+        assertLabel("Portrait setup", of: app.staticTexts["projectName"], in: app)
         XCTAssertFalse(app.buttons["openLibraryRecovery"].exists)
         XCTAssertFalse(app.staticTexts["studioWelcomeTitle"].exists)
         openProjects(in: app)
@@ -272,7 +422,7 @@ final class BetaWorkflowUITests: XCTestCase {
         revealStudioContent(field, in: app, fullyVisible: true)
         field.tap()
         field.typeText(text)
-        assertValue(text, of: field)
+        assertValue(text, of: field, in: app)
     }
 
     private func assertFeedbackReport(problem: String, steps: String, expected: String,
@@ -369,7 +519,7 @@ final class BetaWorkflowUITests: XCTestCase {
         for (identifier, text) in notes {
             let field = app.descendants(matching: .any)[identifier].firstMatch
             revealStudioContent(field, in: app, fullyVisible: true)
-            assertValue(text, of: field)
+            assertValue(text, of: field, in: app)
         }
 
         let close = app.buttons["closeBetaFeedback"]
@@ -380,7 +530,7 @@ final class BetaWorkflowUITests: XCTestCase {
         waitForDismissal(keepEditing)
         let problem = app.descendants(matching: .any)[notes[0].0].firstMatch
         revealStudioContent(problem, in: app, towardBottom: false, fullyVisible: true)
-        assertValue(notes[0].1, of: problem)
+        assertValue(notes[0].1, of: problem, in: app)
         tapContent(close, in: app, towardBottom: false, avoidingKeyboard: true)
         let discard = app.buttons["Discard draft"]
         XCTAssertTrue(discard.waitForExistence(timeout: 10))
@@ -401,6 +551,6 @@ final class BetaWorkflowUITests: XCTestCase {
         settingsDone.tap()
         waitForDismissal(app.navigationBars["Settings"])
         waitForCommittedProject(in: app)
-        assertLabel(privateName, of: app.staticTexts["projectName"])
+        assertLabel(privateName, of: app.staticTexts["projectName"], in: app)
     }
 }

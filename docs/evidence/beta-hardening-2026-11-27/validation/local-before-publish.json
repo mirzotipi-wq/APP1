@@ -1,0 +1,41 @@
+{
+  "integrationBase": "2fc7647314d3ae6fa22d95284e778c6c5badbe4a",
+  "candidateRevision": null,
+  "binding": "Working candidate; source-manifest.json pins test/build inputs. Publication is to be verified separately.",
+  "environment": "Debian13 Linux x86_64; Swift6.0.3; no Apple SDK/runtime",
+  "clockNote": "Host test-log wall timestamps are retained verbatim; external service UTC times are separate clocks.",
+  "checks": [
+    {
+      "name": "portable Debug",
+      "command": "swift test --jobs 2 --cache-path /workspace/scratch/b25ffdc7aed8/cache/swiftpm",
+      "exitCode": 0,
+      "passed": 594,
+      "log": "integrated-swift-debug.log",
+      "logSHA256": "23301d253225c1e2ae2f7e8a15ffd8e3983c9ab1a4c707918de8f6147cfa0189"
+    },
+    {
+      "name": "portable Release",
+      "command": "swift test -c release --jobs 2 --cache-path /workspace/scratch/b25ffdc7aed8/cache/swiftpm",
+      "exitCode": 0,
+      "passed": 594,
+      "log": "integrated-swift-release.log",
+      "logSHA256": "7eb7ac74d2621e3e9878119ffbabc66e18a93b66e24d8b0ba534dbc73d009396"
+    },
+    {
+      "name": "Python tooling",
+      "command": "python3 -m unittest discover -s scripts/tests -v",
+      "exitCode": 0,
+      "passed": 120,
+      "log": "integrated-tooling.log",
+      "logSHA256": "fb12c1306af820ee41ec7ba6349de63273eead9ec2e898514fa213830c400646"
+    }
+  ],
+  "appleSyntax": "integrated-native-syntax.json",
+  "workflowSyntax": "integrated-workflow-syntax.json",
+  "sourceInputs": 257,
+  "sourceManifestSHA256": "033e7b125116953738b1302fba2dfc7eaac8d5745d4e43bb19eeeaded8219708",
+  "requiredUI": 44,
+  "nativeInventory": 329,
+  "appleRuntime": "unverified",
+  "distribution": "unperformed"
+}

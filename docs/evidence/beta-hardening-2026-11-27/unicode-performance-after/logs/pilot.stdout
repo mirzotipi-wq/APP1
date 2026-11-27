@@ -1,0 +1,55 @@
+{"checksum": 14, "command": ["/workspace/scratch/b25ffdc7aed8/a027-evidence/decode-probe", "baseline", "/workspace/scratch/b25ffdc7aed8/a027-evidence/inputs/empty_strings_1mib.json", "0", "1"], "elapsed_nanoseconds": 45177166, "exit_code": 0, "fixture": "empty_strings_1mib", "host_loadavg": [3.966796875, 3.9326171875, 2.55615234375], "input_bytes": 1048576, "iterations": 1, "maximum_rss_kib": 33804, "nanoseconds_per_decode": 45177166, "process_wall_nanoseconds": 66245570, "sample": 1, "stderr": "", "utc": "2026-11-27T15:11:29.985999+00:00", "variant": "baseline", "warmups": 0}
+{"checksum": 14, "command": ["/workspace/scratch/b25ffdc7aed8/a027-evidence/decode-probe", "before", "/workspace/scratch/b25ffdc7aed8/a027-evidence/inputs/empty_strings_1mib.json", "0", "1"], "elapsed_nanoseconds": 314477967, "exit_code": 0, "fixture": "empty_strings_1mib", "host_loadavg": [3.966796875, 3.9326171875, 2.55615234375], "input_bytes": 1048576, "iterations": 1, "maximum_rss_kib": 33808, "nanoseconds_per_decode": 314477967, "process_wall_nanoseconds": 339894113, "sample": 1, "stderr": "", "utc": "2026-11-27T15:11:30.326196+00:00", "variant": "before", "warmups": 0}
+{"checksum": 14, "command": ["/workspace/scratch/b25ffdc7aed8/a027-evidence/decode-probe", "current", "/workspace/scratch/b25ffdc7aed8/a027-evidence/inputs/empty_strings_1mib.json", "0", "1"], "elapsed_nanoseconds": 51771401, "exit_code": 0, "fixture": "empty_strings_1mib", "host_loadavg": [3.966796875, 3.9326171875, 2.55615234375], "input_bytes": 1048576, "iterations": 1, "maximum_rss_kib": 33844, "nanoseconds_per_decode": 51771401, "process_wall_nanoseconds": 76351979, "sample": 1, "stderr": "", "utc": "2026-11-27T15:11:30.403790+00:00", "variant": "current", "warmups": 0}
+{
+  "started": "2026-11-27T15:11:29.916981+00:00",
+  "ended": "2026-11-27T15:11:30.404035+00:00",
+  "phase": "pilot",
+  "method": "Same optimized binary and host; exact production full decode; each full-matrix large-input sample has one untimed warmup and one timed decode in its own process. Three samples per parser/fixture, rotating baseline/before/current parser order by round. Tiny ordinary control uses ten warmups and 1000 timed decodes per process. File reads excluded from decode timer; VmHWM includes process, input read and warmup. No timing threshold or device claim.",
+  "results": [
+    {
+      "id": "empty_strings_1mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "9d177f6d4c9ad38ea31f496903f0540f433d6a494724097840908bbd1108175b",
+      "metadata_members": 349474,
+      "metadata_string_tokens": 349474,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 1,
+        "median_ms": 45.177166,
+        "raw_ms": [
+          45.177166
+        ],
+        "raw_maximum_rss_kib": [
+          33804
+        ]
+      },
+      "before": {
+        "samples": 1,
+        "median_ms": 314.477967,
+        "raw_ms": [
+          314.477967
+        ],
+        "raw_maximum_rss_kib": [
+          33808
+        ]
+      },
+      "current": {
+        "samples": 1,
+        "median_ms": 51.771401,
+        "raw_ms": [
+          51.771401
+        ],
+        "raw_maximum_rss_kib": [
+          33844
+        ]
+      },
+      "current_over_baseline": 1.1459638924672697,
+      "current_over_before": 0.16462648081161121,
+      "before_delta_ms": -262.70656599999995,
+      "median_delta_ms": 6.594234999999998
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 import SwiftUI
 import UIKit
+#if DEBUG
+import OSLog
+#endif
 
 struct StudioTextFieldAccessibility {
     let label: String
@@ -520,8 +523,16 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
 @MainActor
 final class StudioTextInputTrace {
     static let environmentKey = "KEYFILL_UI_TEXT_INPUT_TRACE"
-    static let shared = StudioTextInputTrace(
-        isEnabled: ProcessInfo.processInfo.environment[environmentKey] == "1")
+    static let shared: StudioTextInputTrace = {
+        let logger = Logger(subsystem: "com.example.keyandfill", category: "StudioTextInputTrace")
+        return StudioTextInputTrace(
+            isEnabled: ProcessInfo.processInfo.environment[environmentKey] == "1",
+            sink: { line in
+                // Both destinations receive the same already-sanitized record.
+                print(line)
+                logger.notice("\(line, privacy: .public)")
+            })
+    }()
     static let maximumProcessRecords = 512
     static let maximumControlRecords = 256
     let isEnabled: Bool

@@ -10,8 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 SHARDS = {
     "room-precision": ("ManualRoomPlacementUITests", "PrecisionEditingUITests"),
     "library-reference": ("ProjectLibraryUITests", "ReferenceComparisonUITests"),
-    "studio-export": ("StudioSmokeTests", "LightingPlanExportUITests"),
-    "beta-workflows": ("BetaWorkflowUITests", "PlanGestureUITests", "BetaAccessibilityUITests"),
+    "studio-smoke": ("StudioSmokeTests",),
+    "lighting-export": ("LightingPlanExportUITests",),
+    "beta-workflow": ("BetaWorkflowUITests",),
+    "plan-gestures": ("PlanGestureUITests",),
+    "beta-accessibility": ("BetaAccessibilityUITests",),
     "studio-optics": ("StudioOpticsUITests",),
     "app-accessibility": ("StudioAppAccessibilityUITests",),
 }

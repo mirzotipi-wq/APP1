@@ -396,7 +396,7 @@ class NativeTestShardTests(unittest.TestCase):
 
 
 class RepositoryBetaWorkflowShardTests(unittest.TestCase):
-    """The real beta workflows remain required after splitting their CI job."""
+    """The real beta workflows must be selected and accounted for by existing CI."""
 
     methods = {
         "testWelcomeDismissalPersistsAndInitialActionsNeedNoDefaultSave",
@@ -405,31 +405,17 @@ class RepositoryBetaWorkflowShardTests(unittest.TestCase):
         "testFeedbackExactReviewBackAndDiscardExcludePrivateProjectData",
     }
 
-    def test_beta_workflows_have_a_required_shard_and_preserve_original_export_coverage(self):
+    def test_beta_workflows_are_required_in_their_dedicated_shard(self):
         self.assertIn("BetaWorkflowUITests", native_test_shards.check())
-        self.assertEqual(native_test_shards.SHARDS["studio-export"],
-                         ("StudioSmokeTests", "LightingPlanExportUITests"))
-        self.assertEqual(native_test_shards.SHARDS["beta-workflows"],
-                         ("BetaWorkflowUITests", "PlanGestureUITests", "BetaAccessibilityUITests"))
+        self.assertEqual(native_test_shards.SHARDS["beta-workflow"], ("BetaWorkflowUITests",))
         self.assertEqual(native_test_shards.discover_methods("UITests")["BetaWorkflowUITests"], self.methods)
-        inventory = native_test_shards.discover_methods("UITests")
-        self.assertEqual(sum(len(inventory[name]) for name in native_test_shards.SHARDS["studio-export"]), 11)
-        self.assertEqual(sum(len(inventory[name]) for name in native_test_shards.SHARDS["beta-workflows"]), 8)
         output = io.StringIO()
-        with patch("sys.argv", [str(SCRIPT), "beta-workflows"]), contextlib.redirect_stdout(output):
+        with patch("sys.argv", [str(SCRIPT), "beta-workflow"]), contextlib.redirect_stdout(output):
             native_test_shards.main()
-        self.assertEqual(output.getvalue().splitlines(), [
-            "-only-testing:KeyAndFillUITests/BetaWorkflowUITests",
-            "-only-testing:KeyAndFillUITests/PlanGestureUITests",
-            "-only-testing:KeyAndFillUITests/BetaAccessibilityUITests",
-        ])
+        self.assertEqual(output.getvalue(), "-only-testing:KeyAndFillUITests/BetaWorkflowUITests\n")
 
-    def test_beta_workflow_execution_cannot_omit_the_beta_methods(self):
-        inventory = native_test_shards.discover_methods("UITests")
-        selected = native_test_shards.SHARDS["beta-workflows"]
-        beta = {f"BetaWorkflowUITests.{method}" for method in self.methods}
-        existing = {f"{name}.{method}" for name in selected if name != "BetaWorkflowUITests"
-                    for method in inventory[name]}
+    def test_beta_workflow_execution_cannot_omit_a_beta_method(self):
+        expected = {f"BetaWorkflowUITests.{method}" for method in self.methods}
 
         def events(methods):
             # Synthetic log fixtures test accounting only, never native execution.
@@ -440,21 +426,23 @@ class RepositoryBetaWorkflowShardTests(unittest.TestCase):
             )
 
         with tempfile.TemporaryDirectory() as directory:
-            log = Path(directory) / "synthetic-beta-workflows.log"
+            log = Path(directory) / "synthetic-beta-workflow.log"
             report_path = Path(directory) / "accounting.json"
-            log.write_text(events(existing), encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
-                native_test_shards.verify_log("beta-workflows", log, report_path)
-            report = json.loads(report_path.read_text())
-            self.assertEqual(report["status"], "failed")
-            self.assertEqual(set(report["expected"]), existing | beta)
-            self.assertEqual(set(report["passed"]), existing)
-            self.assertEqual(set(report["unstarted"]), beta)
+            for missing in sorted(expected):
+                with self.subTest(missing=missing):
+                    log.write_text(events(expected - {missing}), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                        native_test_shards.verify_log("beta-workflow", log, report_path)
+                    report = json.loads(report_path.read_text())
+                    self.assertEqual(report["status"], "failed")
+                    self.assertEqual(set(report["expected"]), expected)
+                    self.assertEqual(set(report["passed"]), expected - {missing})
+                    self.assertEqual(report["unstarted"], [missing])
 
-            log.write_text(events(existing | beta), encoding="utf-8")
+            log.write_text(events(expected), encoding="utf-8")
             with contextlib.redirect_stdout(io.StringIO()):
-                verified = native_test_shards.verify_log("beta-workflows", log, report_path)
-            self.assertEqual(verified, existing | beta)
+                verified = native_test_shards.verify_log("beta-workflow", log, report_path)
+            self.assertEqual(verified, expected)
             self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
 
 
@@ -467,14 +455,14 @@ class RepositoryPlanGestureShardTests(unittest.TestCase):
         "testFreshDragAfterBackgroundResumeKeepsPriorPositionAndHistory",
     }
 
-    def test_plan_gestures_are_required_in_the_beta_workflows_shard(self):
+    def test_plan_gestures_are_required_in_their_dedicated_shard(self):
         self.assertIn("PlanGestureUITests", native_test_shards.check())
         self.assertEqual(native_test_shards.discover_methods("UITests")["PlanGestureUITests"], self.methods)
-        self.assertIn("PlanGestureUITests", native_test_shards.SHARDS["beta-workflows"])
+        self.assertEqual(native_test_shards.SHARDS["plan-gestures"], ("PlanGestureUITests",))
 
-    def test_beta_workflow_execution_cannot_omit_a_plan_gesture(self):
+    def test_plan_gestures_execution_cannot_omit_a_plan_gesture(self):
         inventory = native_test_shards.discover_methods("UITests")
-        expected = {f"{name}.{method}" for name in native_test_shards.SHARDS["beta-workflows"]
+        expected = {f"{name}.{method}" for name in native_test_shards.SHARDS["plan-gestures"]
                     for method in inventory[name]}
 
         def events(methods):
@@ -493,7 +481,7 @@ class RepositoryPlanGestureShardTests(unittest.TestCase):
                 with self.subTest(missing=missing):
                     log.write_text(events(expected - {missing}), encoding="utf-8")
                     with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
-                        native_test_shards.verify_log("beta-workflows", log, report_path)
+                        native_test_shards.verify_log("plan-gestures", log, report_path)
                     report = json.loads(report_path.read_text())
                     self.assertEqual(report["status"], "failed")
                     self.assertEqual(set(report["expected"]), expected)
@@ -502,8 +490,143 @@ class RepositoryPlanGestureShardTests(unittest.TestCase):
 
             log.write_text(events(expected), encoding="utf-8")
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(native_test_shards.verify_log("beta-workflows", log, report_path), expected)
+                self.assertEqual(native_test_shards.verify_log("plan-gestures", log, report_path), expected)
             self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
+
+
+class RepositoryRequiredUIShardTests(unittest.TestCase):
+    """Pin all 44 required methods while splitting the overloaded class group."""
+
+    shards = {
+        "room-precision": ("ManualRoomPlacementUITests", "PrecisionEditingUITests"),
+        "library-reference": ("ProjectLibraryUITests", "ReferenceComparisonUITests"),
+        "studio-smoke": ("StudioSmokeTests",),
+        "lighting-export": ("LightingPlanExportUITests",),
+        "beta-workflow": ("BetaWorkflowUITests",),
+        "plan-gestures": ("PlanGestureUITests",),
+        "beta-accessibility": ("BetaAccessibilityUITests",),
+        "studio-optics": ("StudioOpticsUITests",),
+        "app-accessibility": ("StudioAppAccessibilityUITests",),
+    }
+    methods = {
+        "ManualRoomPlacementUITests": {
+            "testManualRoomReportsOutOfBoundsAndRecordsRoomEdit",
+            "testRoomResizeRequiresExplicitSubjectMoveAndPreservesSignedCoordinates",
+        },
+        "PrecisionEditingUITests": {
+            "testExactLightIntensityValidationUndoRedoAndReopen",
+            "testExactCameraFocalLengthUndoRedoAndReopen",
+            "testExactModifierWidthAndRoomCrossingWithInsideCenters",
+        },
+        "ProjectLibraryUITests": {
+            "testCreateDuplicateRenameSwitchAndRelaunch",
+            "testArchivedDeleteRequiresConfirmationAndPersistsOnlyThatRemoval",
+            "testStaleSaveRecoveryPreservesBothProjectsAcrossRelaunch",
+            "testStaleSaveReloadRequiresConfirmation",
+            "testFullLibraryRecoveryRequiresConfirmationAndPersistsEditedSetup",
+            "testUnsavedSetupMustBeSavedBeforeLibraryChanges",
+            "testLargeValidLibraryCanLoadSaveBrowseAndRelaunch",
+        },
+        "ReferenceComparisonUITests": {
+            "testReferenceComparisonOpensWithRealStudyAndNoPhoto",
+            "testGuidedRigAbstainsThenAppliesAndUndoesWithoutSaving",
+        },
+        "StudioSmokeTests": {
+            "testSettingsFeet3DFitAndSimulatorARManualFallback",
+            "testRecipeEditSaveAndReopen",
+            "testCameraFocalLengthUndoAndRelaunch",
+            "testMeterBalanceSaveUndoAndRelaunch",
+            "testStudyRendersActualReferenceFrame",
+            "testStudySwitchesBetweenSphereAndMannequinWithoutEditingScene",
+            "testCorruptProjectBlocksSavingAcrossRelaunch",
+            "testProtectedStorageKeepsSettingsAndPurchaseNavigationAvailable",
+            "testStudioGuideKeepsUnsavedSetupSelectionAndHistory",
+        },
+        "LightingPlanExportUITests": {
+            "testFullLibraryCanPrepareUnsavedEditableCopyWithoutSavingOrChangingHistory",
+            "testExportPreviewOpensWithoutSavingOrChangingScene",
+        },
+        "BetaWorkflowUITests": RepositoryBetaWorkflowShardTests.methods,
+        "PlanGestureUITests": RepositoryPlanGestureShardTests.methods,
+        "BetaAccessibilityUITests": {"testBetaSurfacesAtLargestAccessibilityTextSize"},
+        "StudioOpticsUITests": {"testOpticsEditingUndoRedoAndRelaunch"} | {
+            f"testOpticsRepeatability{number:02d}" for number in range(2, 11)
+        },
+        "StudioAppAccessibilityUITests": {
+            "testEssentialWorkflowAtDefaultAndLargestAccessibilityTextSize",
+        },
+    }
+
+    def test_required_partition_has_every_original_method_exactly_once(self):
+        native_test_shards.check()
+        self.assertEqual(native_test_shards.SHARDS, self.shards)
+        inventory = native_test_shards.discover_methods("UITests")
+        required = {name: inventory[name] for names in native_test_shards.SHARDS.values() for name in names}
+        self.assertEqual(required, self.methods)
+        selected = [f"{name}.{method}" for names in native_test_shards.SHARDS.values()
+                    for name in names for method in inventory[name]]
+        self.assertEqual(len(selected), 44)
+        self.assertEqual(len(set(selected)), 44)
+        diagnostic = {name for names in native_test_shards.DIAGNOSTIC_SHARDS.values() for name in names}
+        self.assertFalse(set(required) & diagnostic)
+        self.assertEqual(set(inventory), set(required) | diagnostic)
+
+    def test_each_shard_selector_is_explicit_and_the_retired_group_is_rejected(self):
+        for shard, names in self.shards.items():
+            output = io.StringIO()
+            with self.subTest(shard=shard), patch("sys.argv", [str(SCRIPT), shard]), \
+                    contextlib.redirect_stdout(output):
+                native_test_shards.main()
+            self.assertEqual(output.getvalue().splitlines(),
+                             [f"-only-testing:KeyAndFillUITests/{name}" for name in names])
+        output = io.StringIO()
+        with patch("sys.argv", [str(SCRIPT), "studio-export"]), contextlib.redirect_stdout(output), \
+                self.assertRaisesRegex(ValueError, "Unknown native test shard"):
+            native_test_shards.main()
+        self.assertEqual(output.getvalue(), "")
+
+    def test_split_groups_require_each_method_once_and_reject_other_groups(self):
+        split = ("studio-smoke", "lighting-export", "beta-workflow", "plan-gestures", "beta-accessibility")
+
+        def events(methods):
+            # Synthetic log fixtures prove accounting only, never native execution.
+            return "\n".join(
+                f"Test Case '-[KeyAndFillUITests.{name} {method}]' {event}."
+                for item in sorted(methods) for name, method in [item.split(".", 1)]
+                for event in ("started", "passed")
+            )
+
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "synthetic-partition.log"
+            report_path = Path(directory) / "accounting.json"
+            for index, shard in enumerate(split):
+                expected = {f"{name}.{method}" for name in self.shards[shard] for method in self.methods[name]}
+                log.write_text(events(expected), encoding="utf-8")
+                with self.subTest(shard=shard), contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(native_test_shards.verify_log(shard, log, report_path), expected)
+                self.assertEqual(json.loads(report_path.read_text())["status"], "passed")
+                for method in sorted(expected):
+                    with self.subTest(shard=shard, missing=method):
+                        log.write_text(events(expected - {method}), encoding="utf-8")
+                        with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                            native_test_shards.verify_log(shard, log, report_path)
+                        report = json.loads(report_path.read_text())
+                        self.assertEqual(report["status"], "failed")
+                        self.assertEqual(set(report["expected"]), expected)
+                        self.assertEqual(set(report["passed"]), expected - {method})
+                        self.assertEqual(report["unstarted"], [method])
+                    with self.subTest(shard=shard, duplicated=method):
+                        log.write_text(events(expected) + "\n" + events({method}), encoding="utf-8")
+                        with self.assertRaisesRegex(ValueError, "Incomplete XCTest execution"):
+                            native_test_shards.verify_log(shard, log, report_path)
+                        self.assertEqual(json.loads(report_path.read_text())["status"], "failed")
+                other_class = self.shards[split[(index + 1) % len(split)]][0]
+                foreign = f"{other_class}.{sorted(self.methods[other_class])[0]}"
+                with self.subTest(shard=shard, foreign=foreign):
+                    log.write_text(events(expected | {foreign}), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "Unexpected XCTest method"):
+                        native_test_shards.verify_log(shard, log, report_path)
+                    self.assertEqual(json.loads(report_path.read_text())["status"], "failed")
 
 
 if __name__ == "__main__":

@@ -48,7 +48,7 @@ public struct LightingProjectDocument: Equatable, Sendable {
         do { envelope = try JSONDecoder().decode(Envelope.self, from: data) }
         catch let error as DocumentError { throw error }
         catch { throw DocumentError.invalidDocument }
-        try requireUniqueObjectKeys(in: data)
+        try requireValidStringsAndUniqueObjectKeys(in: data)
         return try .init(name: envelope.name, scene: envelope.scene)
     }
 
@@ -63,36 +63,59 @@ public struct LightingProjectDocument: Equatable, Sendable {
         }
     }
 
-    /// Foundation has already accepted the JSON and closed envelope. Keyed
-    /// containers collapse duplicates, so require unambiguous names in every
-    /// imported object. This policy applies only to external project documents;
-    /// legacy stored-library decoding and JSON value interpretation are unchanged.
-    private static func requireUniqueObjectKeys(in data: Data) throws {
+    /// Foundation has accepted the JSON structure and closed envelope, but may
+    /// defer decoding ignored string values. Validate every string with the same
+    /// Unicode rules as typed values, and reject duplicate decoded object names.
+    /// This policy applies only to external project documents; legacy stored
+    /// library decoding and valid unknown scene metadata are unchanged.
+    private static func requireValidStringsAndUniqueObjectKeys(in data: Data) throws {
         let bytes = try envelopeUTF8(data)
+        let stringDecoder = JSONDecoder()
         var index = 0
         var scopes: [ObjectKeyScope] = []
         while index < bytes.count {
             switch bytes[index] {
             case 0x22: // String: skip escaped quotes and structural punctuation.
                 let start = index
+                var hasEscape = false
+                var hasNonASCII = false
                 index += 1
                 while index < bytes.count, bytes[index] != 0x22 {
-                    index += bytes[index] == 0x5c ? 2 : 1
+                    let byte = bytes[index]
+                    guard byte >= 0x20 else { throw DocumentError.invalidDocument }
+                    if byte == 0x5c {
+                        hasEscape = true
+                        index += 2
+                    } else {
+                        hasNonASCII = hasNonASCII || byte >= 0x80
+                        index += 1
+                    }
                 }
                 guard index < bytes.count else { throw DocumentError.invalidDocument }
-                if let scope = scopes.indices.last, scopes[scope].expectsKey {
+                let isKey = scopes.indices.last.map { scopes[$0].expectsKey } ?? false
+                if isKey || hasEscape {
                     let token = Data(bytes[start...index])
-                    let key: String
-                    do { key = try JSONDecoder().decode(String.self, from: token) }
+                    let value: String
+                    do { value = try stringDecoder.decode(String.self, from: token) }
                     catch { throw DocumentError.invalidDocument }
-                    // Decode escapes, then compare exact UTF-8 sequences. Swift
-                    // String equality would also merge distinct NFC/NFD names.
-                    // Mutate the stored set in place to avoid copying all earlier
-                    // names for each member of a wide object.
-                    guard scopes[scope].keys.insert(Data(key.utf8)).inserted else {
+                    if let scope = scopes.indices.last, isKey {
+                        // Decode escapes, then compare exact UTF-8 sequences. Swift
+                        // String equality would also merge distinct NFC/NFD names.
+                        // Mutate the stored set in place to avoid copying all earlier
+                        // names for each member of a wide object.
+                        guard scopes[scope].keys.insert(Data(value.utf8)).inserted else {
+                            throw DocumentError.invalidDocument
+                        }
+                        scopes[scope].expectsKey = false
+                    }
+                } else if hasNonASCII {
+                    // Unescaped ASCII was validated during the scan. For other
+                    // unescaped values, reject malformed UTF-8 without invoking
+                    // a JSON decoder for each ignored metadata value. This strict
+                    // initializer must not repair invalid byte sequences.
+                    guard String(validating: bytes[(start + 1)..<index], as: UTF8.self) != nil else {
                         throw DocumentError.invalidDocument
                     }
-                    scopes[scope].expectsKey = false
                 }
             case 0x7b, 0x5b: // Object or array.
                 scopes.append(ObjectKeyScope(isObject: bytes[index] == 0x7b))
@@ -117,8 +140,8 @@ public struct LightingProjectDocument: Equatable, Sendable {
 
     /// Preserve the decoder's Unicode JSON inputs. The first ASCII structural
     /// or whitespace character identifies UTF-16/32 byte order without a BOM;
-    /// UTF-8 stays on the direct bounded-byte path. Full validity is checked by
-    /// JSONDecoder before this helper is reached.
+    /// UTF-8 stays on the direct bounded-byte path. JSON structure has already
+    /// been checked; the token scan also validates ignored string values.
     private static func envelopeUTF8(_ data: Data) throws -> [UInt8] {
         let prefix = Array(data.prefix(4))
         let encoding: String.Encoding

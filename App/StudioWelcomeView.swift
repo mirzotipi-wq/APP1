@@ -19,6 +19,7 @@ struct StudioWelcomeView: View {
                 HStack(alignment: .top, spacing: 8) {
                     Text("Start your first portrait")
                         .font(.title3.weight(.semibold))
+                        .lineSpacing(2)
                         .fixedSize(horizontal: false, vertical: true)
                         .studioTextLayoutProbe("studioWelcomeTitle")
                         .frame(maxWidth: .infinity, alignment: .leading)

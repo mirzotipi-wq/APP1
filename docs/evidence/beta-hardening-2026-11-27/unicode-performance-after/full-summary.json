@@ -1,0 +1,512 @@
+{
+  "started": "2026-11-27T15:11:37.317595+00:00",
+  "ended": "2026-11-27T15:12:25.576228+00:00",
+  "phase": "full",
+  "method": "Same optimized binary and host; exact production full decode; each full-matrix large-input sample has one untimed warmup and one timed decode in its own process. Three samples per parser/fixture, rotating baseline/before/current parser order by round. Tiny ordinary control uses ten warmups and 1000 timed decodes per process. File reads excluded from decode timer; VmHWM includes process, input read and warmup. No timing threshold or device claim.",
+  "results": [
+    {
+      "id": "ordinary",
+      "shape": "ordinary",
+      "path": "inputs/ordinary.json",
+      "bytes": 141,
+      "sha256": "ef13bd4559b4c51e7fb566d12698fe37c038e3e8d90559c3a20cb7c0c3777bc1",
+      "metadata_members": 0,
+      "metadata_string_tokens": 0,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 0.041221165000000004,
+        "raw_ms": [
+          0.041221165000000004,
+          0.038728019,
+          0.041371379
+        ],
+        "raw_maximum_rss_kib": [
+          18732,
+          18664,
+          18664
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 0.036464483,
+        "raw_ms": [
+          0.034227635,
+          0.036464483,
+          0.06479215099999999
+        ],
+        "raw_maximum_rss_kib": [
+          18752,
+          18852,
+          18696
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 0.038443909,
+        "raw_ms": [
+          0.039223331,
+          0.038443909,
+          0.03185387
+        ],
+        "raw_maximum_rss_kib": [
+          18820,
+          18752,
+          18808
+        ]
+      },
+      "current_over_baseline": 0.9326254849905381,
+      "current_over_before": 1.054283671045055,
+      "before_delta_ms": 0.0019794259999999994,
+      "median_delta_ms": -0.0027772560000000057
+    },
+    {
+      "id": "long_string_1mib",
+      "shape": "long_string",
+      "path": "inputs/long_string_1mib.json",
+      "bytes": 1048576,
+      "sha256": "b712c608f350d1273b653c7910e7cae2153b474a779c0427ced432bd8a070417",
+      "metadata_members": 1,
+      "metadata_string_tokens": 1,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 5.527378,
+        "raw_ms": [
+          5.705363,
+          4.666902,
+          5.527378
+        ],
+        "raw_maximum_rss_kib": [
+          20660,
+          20868,
+          20956
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 6.595241,
+        "raw_ms": [
+          6.599189,
+          6.595241,
+          6.220333
+        ],
+        "raw_maximum_rss_kib": [
+          22740,
+          22700,
+          22668
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 2.537733,
+        "raw_ms": [
+          2.537733,
+          2.535291,
+          2.54363
+        ],
+        "raw_maximum_rss_kib": [
+          20980,
+          20736,
+          20908
+        ]
+      },
+      "current_over_baseline": 0.45912058122314053,
+      "current_over_before": 0.3847824514676567,
+      "before_delta_ms": -4.057508,
+      "median_delta_ms": -2.989645
+    },
+    {
+      "id": "empty_strings_1mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "9d177f6d4c9ad38ea31f496903f0540f433d6a494724097840908bbd1108175b",
+      "metadata_members": 349474,
+      "metadata_string_tokens": 349474,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 16.030281,
+        "raw_ms": [
+          16.030281,
+          13.604125,
+          17.054791
+        ],
+        "raw_maximum_rss_kib": [
+          37004,
+          37240,
+          37168
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 277.354985,
+        "raw_ms": [
+          291.586879,
+          268.515985,
+          277.354985
+        ],
+        "raw_maximum_rss_kib": [
+          37144,
+          37084,
+          37164
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 13.292075,
+        "raw_ms": [
+          43.271956,
+          12.857017,
+          13.292075
+        ],
+        "raw_maximum_rss_kib": [
+          37092,
+          37132,
+          37176
+        ]
+      },
+      "current_over_baseline": 0.8291854023020558,
+      "current_over_before": 0.04792441354533433,
+      "before_delta_ms": -264.06291,
+      "median_delta_ms": -2.738205999999998
+    },
+    {
+      "id": "escaped_strings_1mib",
+      "shape": "escaped_strings",
+      "path": "inputs/escaped_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "a86beea81f7bc5a6e8d61ffc1255850aac2672a1f27cab61c9fc0c9abe505082",
+      "metadata_members": 33820,
+      "metadata_string_tokens": 33820,
+      "padding_bytes": 2,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 3.389212,
+        "raw_ms": [
+          3.389212,
+          3.362463,
+          3.444913
+        ],
+        "raw_maximum_rss_kib": [
+          20736,
+          20788,
+          20864
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 45.884356,
+        "raw_ms": [
+          46.658102,
+          45.884356,
+          44.05721
+        ],
+        "raw_maximum_rss_kib": [
+          20740,
+          20792,
+          20936
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 45.282287,
+        "raw_ms": [
+          71.401169,
+          41.509638,
+          45.282287
+        ],
+        "raw_maximum_rss_kib": [
+          20900,
+          20732,
+          20956
+        ]
+      },
+      "current_over_baseline": 13.36071246059556,
+      "current_over_before": 0.9868785561684684,
+      "before_delta_ms": -0.6020690000000002,
+      "median_delta_ms": 41.893074999999996
+    },
+    {
+      "id": "wide_object_1mib",
+      "shape": "wide_object",
+      "path": "inputs/wide_object_1mib.json",
+      "bytes": 1048576,
+      "sha256": "1198cf0cfd6da3b9d411b72609682ebdfdfa43622aa1006e81ad8f7c47e9d4e1",
+      "metadata_members": 69894,
+      "metadata_string_tokens": 139788,
+      "padding_bytes": 12,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 88.22926,
+        "raw_ms": [
+          92.083585,
+          87.617961,
+          88.22926
+        ],
+        "raw_maximum_rss_kib": [
+          25540,
+          25540,
+          25420
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 139.925094,
+        "raw_ms": [
+          148.003788,
+          135.313928,
+          139.925094
+        ],
+        "raw_maximum_rss_kib": [
+          25572,
+          25552,
+          25412
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 99.80515,
+        "raw_ms": [
+          91.949345,
+          110.990669,
+          99.80515
+        ],
+        "raw_maximum_rss_kib": [
+          25528,
+          25448,
+          25332
+        ]
+      },
+      "current_over_baseline": 1.1312023924942813,
+      "current_over_before": 0.713275561565819,
+      "before_delta_ms": -40.119944000000004,
+      "median_delta_ms": 11.575890000000001
+    },
+    {
+      "id": "long_string_8mib",
+      "shape": "long_string",
+      "path": "inputs/long_string_8mib.json",
+      "bytes": 8388608,
+      "sha256": "43839b6173f20249042cd4aa72f984ef2226569cfdc687fa7d9a30848df8533f",
+      "metadata_members": 1,
+      "metadata_string_tokens": 1,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 40.191242,
+        "raw_ms": [
+          38.518582,
+          40.268212,
+          40.191242
+        ],
+        "raw_maximum_rss_kib": [
+          35200,
+          35208,
+          35152
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 54.844175,
+        "raw_ms": [
+          54.844175,
+          56.220072,
+          51.25207
+        ],
+        "raw_maximum_rss_kib": [
+          51272,
+          51272,
+          51348
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 22.680061,
+        "raw_ms": [
+          22.680061,
+          21.113864,
+          47.640336
+        ],
+        "raw_maximum_rss_kib": [
+          35088,
+          35032,
+          35228
+        ]
+      },
+      "current_over_baseline": 0.5643035614574936,
+      "current_over_before": 0.4135363691768542,
+      "before_delta_ms": -32.164114,
+      "median_delta_ms": -17.511181000000004
+    },
+    {
+      "id": "empty_strings_8mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_8mib.json",
+      "bytes": 8388608,
+      "sha256": "f109b82dcec1fe45b95e1b01a0ee50daf7c5f3a4c24e4530b56f4221770fe69d",
+      "metadata_members": 2796151,
+      "metadata_string_tokens": 2796151,
+      "padding_bytes": 1,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 190.061078,
+        "raw_ms": [
+          200.457704,
+          190.061078,
+          128.453983
+        ],
+        "raw_maximum_rss_kib": [
+          156600,
+          156408,
+          156572
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 2361.728842,
+        "raw_ms": [
+          2408.646004,
+          2361.728842,
+          2203.209093
+        ],
+        "raw_maximum_rss_kib": [
+          156388,
+          156480,
+          156512
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 160.633049,
+        "raw_ms": [
+          160.633049,
+          161.773544,
+          127.847062
+        ],
+        "raw_maximum_rss_kib": [
+          156500,
+          156580,
+          156480
+        ]
+      },
+      "current_over_baseline": 0.8451654104582107,
+      "current_over_before": 0.06801502617208585,
+      "before_delta_ms": -2201.095793,
+      "median_delta_ms": -29.42802900000001
+    },
+    {
+      "id": "escaped_strings_8mib",
+      "shape": "escaped_strings",
+      "path": "inputs/escaped_strings_8mib.json",
+      "bytes": 8388608,
+      "sha256": "6a6a45d8ba8c12e3144ff9d7aad7001ccfbad9dc74e134e03c71372fccef7377",
+      "metadata_members": 270595,
+      "metadata_string_tokens": 270595,
+      "padding_bytes": 9,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 27.62895,
+        "raw_ms": [
+          39.190195,
+          27.62895,
+          25.210625
+        ],
+        "raw_maximum_rss_kib": [
+          35044,
+          35060,
+          35228
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 393.215473,
+        "raw_ms": [
+          393.215473,
+          394.554713,
+          373.811398
+        ],
+        "raw_maximum_rss_kib": [
+          35220,
+          35280,
+          35312
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 372.180167,
+        "raw_ms": [
+          372.180167,
+          353.206758,
+          390.455525
+        ],
+        "raw_maximum_rss_kib": [
+          35172,
+          35176,
+          35216
+        ]
+      },
+      "current_over_baseline": 13.470659109376216,
+      "current_over_before": 0.9465043787836904,
+      "before_delta_ms": -21.03530599999999,
+      "median_delta_ms": 344.551217
+    },
+    {
+      "id": "wide_object_8mib",
+      "shape": "wide_object",
+      "path": "inputs/wide_object_8mib.json",
+      "bytes": 8388608,
+      "sha256": "ee4f7912b6553e0ce1be0674f3c979d342d2ee4494546ab393f20e8992f33198",
+      "metadata_members": 559230,
+      "metadata_string_tokens": 1118460,
+      "padding_bytes": 4,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 903.240028,
+        "raw_ms": [
+          903.240028,
+          792.832438,
+          1235.769692
+        ],
+        "raw_maximum_rss_kib": [
+          72108,
+          72304,
+          72248
+        ]
+      },
+      "before": {
+        "samples": 3,
+        "median_ms": 1290.5959,
+        "raw_ms": [
+          1439.654106,
+          1180.707413,
+          1290.5959
+        ],
+        "raw_maximum_rss_kib": [
+          72280,
+          72196,
+          72168
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 796.444203,
+        "raw_ms": [
+          785.621808,
+          814.732241,
+          796.444203
+        ],
+        "raw_maximum_rss_kib": [
+          72344,
+          72184,
+          72148
+        ]
+      },
+      "current_over_baseline": 0.8817636268440485,
+      "current_over_before": 0.6171135387924291,
+      "before_delta_ms": -494.151697,
+      "median_delta_ms": -106.79582500000004
+    }
+  ]
+}

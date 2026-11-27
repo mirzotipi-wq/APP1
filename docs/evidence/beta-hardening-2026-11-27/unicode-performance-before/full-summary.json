@@ -1,0 +1,368 @@
+{
+  "started": "2026-11-27T15:05:16.074668+00:00",
+  "ended": "2026-11-27T15:05:52.779534+00:00",
+  "phase": "full",
+  "method": "Same optimized binary and host; exact production full decode; each full-matrix large-input sample has one untimed warmup and one timed decode in its own process. Three samples per parser/fixture, alternating parser order by round. Tiny ordinary control uses ten warmups and 1000 timed decodes per process. File reads excluded from decode timer; VmHWM includes process, input read and warmup. No timing threshold or device claim.",
+  "results": [
+    {
+      "id": "ordinary",
+      "shape": "ordinary",
+      "path": "inputs/ordinary.json",
+      "bytes": 141,
+      "sha256": "ef13bd4559b4c51e7fb566d12698fe37c038e3e8d90559c3a20cb7c0c3777bc1",
+      "metadata_members": 0,
+      "metadata_string_tokens": 0,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 0.034750787,
+        "raw_ms": [
+          0.034750787,
+          0.032435592,
+          0.035100665999999996
+        ],
+        "raw_maximum_rss_kib": [
+          18660,
+          18860,
+          18884
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 0.035144415,
+        "raw_ms": [
+          0.040375613,
+          0.0324193,
+          0.035144415
+        ],
+        "raw_maximum_rss_kib": [
+          18800,
+          18712,
+          18664
+        ]
+      },
+      "current_over_baseline": 1.0113271679285998,
+      "median_delta_ms": 0.00039362800000000003
+    },
+    {
+      "id": "long_string_1mib",
+      "shape": "long_string",
+      "path": "inputs/long_string_1mib.json",
+      "bytes": 1048576,
+      "sha256": "b712c608f350d1273b653c7910e7cae2153b474a779c0427ced432bd8a070417",
+      "metadata_members": 1,
+      "metadata_string_tokens": 1,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 4.443671,
+        "raw_ms": [
+          4.96744,
+          4.443671,
+          4.365795
+        ],
+        "raw_maximum_rss_kib": [
+          20720,
+          20880,
+          20736
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 7.066208,
+        "raw_ms": [
+          9.14752,
+          5.884689,
+          7.066208
+        ],
+        "raw_maximum_rss_kib": [
+          22808,
+          22724,
+          22788
+        ]
+      },
+      "current_over_baseline": 1.590173529948549,
+      "median_delta_ms": 2.6225369999999995
+    },
+    {
+      "id": "empty_strings_1mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "9d177f6d4c9ad38ea31f496903f0540f433d6a494724097840908bbd1108175b",
+      "metadata_members": 349474,
+      "metadata_string_tokens": 349474,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 15.03732,
+        "raw_ms": [
+          16.726151,
+          13.54839,
+          15.03732
+        ],
+        "raw_maximum_rss_kib": [
+          37148,
+          37024,
+          37184
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 261.269841,
+        "raw_ms": [
+          301.822352,
+          261.269841,
+          246.674029
+        ],
+        "raw_maximum_rss_kib": [
+          37192,
+          37108,
+          37176
+        ]
+      },
+      "current_over_baseline": 17.37476099464532,
+      "median_delta_ms": 246.232521
+    },
+    {
+      "id": "escaped_strings_1mib",
+      "shape": "escaped_strings",
+      "path": "inputs/escaped_strings_1mib.json",
+      "bytes": 1048576,
+      "sha256": "a86beea81f7bc5a6e8d61ffc1255850aac2672a1f27cab61c9fc0c9abe505082",
+      "metadata_members": 33820,
+      "metadata_string_tokens": 33820,
+      "padding_bytes": 2,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 3.341323,
+        "raw_ms": [
+          3.706264,
+          3.341323,
+          3.246886
+        ],
+        "raw_maximum_rss_kib": [
+          20876,
+          20708,
+          20868
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 41.388636,
+        "raw_ms": [
+          40.920631,
+          43.572854,
+          41.388636
+        ],
+        "raw_maximum_rss_kib": [
+          20800,
+          20868,
+          20876
+        ]
+      },
+      "current_over_baseline": 12.38690063786111,
+      "median_delta_ms": 38.047312999999995
+    },
+    {
+      "id": "wide_object_1mib",
+      "shape": "wide_object",
+      "path": "inputs/wide_object_1mib.json",
+      "bytes": 1048576,
+      "sha256": "1198cf0cfd6da3b9d411b72609682ebdfdfa43622aa1006e81ad8f7c47e9d4e1",
+      "metadata_members": 69894,
+      "metadata_string_tokens": 139788,
+      "padding_bytes": 12,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 89.32268,
+        "raw_ms": [
+          95.81882,
+          83.618684,
+          89.32268
+        ],
+        "raw_maximum_rss_kib": [
+          25496,
+          25432,
+          25560
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 138.359457,
+        "raw_ms": [
+          134.825533,
+          138.359457,
+          165.968061
+        ],
+        "raw_maximum_rss_kib": [
+          25392,
+          25356,
+          25476
+        ]
+      },
+      "current_over_baseline": 1.5489846139860557,
+      "median_delta_ms": 49.03677699999999
+    },
+    {
+      "id": "long_string_8mib",
+      "shape": "long_string",
+      "path": "inputs/long_string_8mib.json",
+      "bytes": 8388608,
+      "sha256": "43839b6173f20249042cd4aa72f984ef2226569cfdc687fa7d9a30848df8533f",
+      "metadata_members": 1,
+      "metadata_string_tokens": 1,
+      "padding_bytes": 0,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 35.95287,
+        "raw_ms": [
+          35.95287,
+          35.602138,
+          61.4624
+        ],
+        "raw_maximum_rss_kib": [
+          35288,
+          35164,
+          35052
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 53.479313,
+        "raw_ms": [
+          53.479313,
+          50.021785,
+          54.638305
+        ],
+        "raw_maximum_rss_kib": [
+          51392,
+          51480,
+          51296
+        ]
+      },
+      "current_over_baseline": 1.4874838364781449,
+      "median_delta_ms": 17.526443
+    },
+    {
+      "id": "empty_strings_8mib",
+      "shape": "empty_strings",
+      "path": "inputs/empty_strings_8mib.json",
+      "bytes": 8388608,
+      "sha256": "f109b82dcec1fe45b95e1b01a0ee50daf7c5f3a4c24e4530b56f4221770fe69d",
+      "metadata_members": 2796151,
+      "metadata_string_tokens": 2796151,
+      "padding_bytes": 1,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 127.815397,
+        "raw_ms": [
+          125.763059,
+          127.815397,
+          131.617723
+        ],
+        "raw_maximum_rss_kib": [
+          156576,
+          156480,
+          156680
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 2393.527407,
+        "raw_ms": [
+          2393.527407,
+          2543.18155,
+          2304.481607
+        ],
+        "raw_maximum_rss_kib": [
+          156588,
+          156464,
+          156520
+        ]
+      },
+      "current_over_baseline": 18.72644034427245,
+      "median_delta_ms": 2265.71201
+    },
+    {
+      "id": "escaped_strings_8mib",
+      "shape": "escaped_strings",
+      "path": "inputs/escaped_strings_8mib.json",
+      "bytes": 8388608,
+      "sha256": "6a6a45d8ba8c12e3144ff9d7aad7001ccfbad9dc74e134e03c71372fccef7377",
+      "metadata_members": 270595,
+      "metadata_string_tokens": 270595,
+      "padding_bytes": 9,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 28.543467,
+        "raw_ms": [
+          28.543467,
+          27.759301,
+          29.460893
+        ],
+        "raw_maximum_rss_kib": [
+          35012,
+          35204,
+          35232
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 390.398297,
+        "raw_ms": [
+          386.025919,
+          390.398297,
+          410.40384
+        ],
+        "raw_maximum_rss_kib": [
+          35120,
+          35152,
+          35088
+        ]
+      },
+      "current_over_baseline": 13.677325778259522,
+      "median_delta_ms": 361.85483
+    },
+    {
+      "id": "wide_object_8mib",
+      "shape": "wide_object",
+      "path": "inputs/wide_object_8mib.json",
+      "bytes": 8388608,
+      "sha256": "ee4f7912b6553e0ce1be0674f3c979d342d2ee4494546ab393f20e8992f33198",
+      "metadata_members": 559230,
+      "metadata_string_tokens": 1118460,
+      "padding_bytes": 4,
+      "baseline": {
+        "samples": 3,
+        "median_ms": 863.343717,
+        "raw_ms": [
+          863.343717,
+          915.998939,
+          826.889684
+        ],
+        "raw_maximum_rss_kib": [
+          72252,
+          72168,
+          72176
+        ]
+      },
+      "current": {
+        "samples": 3,
+        "median_ms": 1285.11956,
+        "raw_ms": [
+          1259.761759,
+          1285.11956,
+          1428.81202
+        ],
+        "raw_maximum_rss_kib": [
+          72088,
+          72236,
+          72172
+        ]
+      },
+      "current_over_baseline": 1.4885375716471452,
+      "median_delta_ms": 421.7758430000001
+    }
+  ]
+}

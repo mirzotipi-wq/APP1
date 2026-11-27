@@ -1,0 +1,332 @@
+diff --git a/App/StudioTextField.swift b/App/StudioTextField.swift
+index 876ae05..29544ac 100644
+--- a/App/StudioTextField.swift
++++ b/App/StudioTextField.swift
+@@ -1,5 +1,8 @@
+ import SwiftUI
+ import UIKit
++#if DEBUG
++import OSLog
++#endif
+ 
+ struct StudioTextFieldAccessibility {
+     let label: String
+@@ -172,18 +175,23 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+ 
+         let external = next.text.wrappedValue
+         if initial || changedIdentity {
++            trace(changedIdentity ? "configure-identity" : "configure-initial")
+             modelText = external
+             replaceDisplayedText(with: external)
+         } else if !sameNativeText(external, modelText) {
++            trace("configure-external-reset")
+             modelText = external
+             // An explicit Clear/reset/context change must replace the visible
+             // draft immediately, including an active input-method composition.
+             replaceDisplayedText(with: external)
++        } else {
++            trace("configure-unchanged")
+         }
+         scheduleFocusUpdate()
+     }
+ 
+     func invalidate() {
++        trace("invalidate")
+         lifecycle = UUID()
+         focusUpdate?.cancel()
+         focusUpdate = nil
+@@ -196,23 +204,27 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+ 
+     override func didMoveToWindow() {
+         super.didMoveToWindow()
++        trace("window-changed")
+         if window != nil { scheduleFocusUpdate() }
+     }
+ 
+     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange,
+                    replacementString string: String) -> Bool {
++        trace("should-change")
+         guard acceptsNativeEvents else { return false }
+         selectionBeforeEdit = selectionOffsets()
+         return true
+     }
+ 
+     func textFieldDidBeginEditing(_ textField: UITextField) {
++        trace("editing-began")
+         guard acceptsNativeEvents, !synchronizingFocus, let configuration,
+               !configuration.isFocused.wrappedValue else { return }
+         configuration.isFocused.wrappedValue = true
+     }
+ 
+     func textFieldDidEndEditing(_ textField: UITextField) {
++        trace("editing-ended")
+         guard acceptsNativeEvents, !synchronizingFocus else { return }
+         let token = lifecycle
+         publishNativeText()
+@@ -222,6 +234,7 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+     }
+ 
+     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
++        trace("return")
+         guard acceptsNativeEvents, markedTextRange == nil else { return false }
+         let token = lifecycle
+         publishNativeText()
+@@ -235,12 +248,19 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+         configuration != nil && isEnabled && !applyingConfiguration && !replacingText
+     }
+ 
+-    @objc private func nativeTextChanged() { publishNativeText() }
++    @objc private func nativeTextChanged() {
++        trace("editing-changed")
++        publishNativeText()
++    }
+ 
+     private func publishNativeText() {
+-        guard acceptsNativeEvents, let configuration else { return }
++        guard acceptsNativeEvents, let configuration else {
++            trace("publish-blocked")
++            return
++        }
+         let current = configuration.text.wrappedValue
+         if !sameNativeText(current, modelText) {
++            trace("publish-external-reset")
+             // A clear/reset can reach the binding before updateUIView. Its new
+             // value wins over a late event containing the previous draft.
+             modelText = current
+@@ -249,14 +269,25 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+             return
+         }
+         let replacement = text ?? ""
+-        guard !sameNativeText(replacement, current) else { selectionBeforeEdit = nil; return }
++        guard !sameNativeText(replacement, current) else {
++            trace("publish-unchanged")
++            selectionBeforeEdit = nil
++            return
++        }
+         let token = lifecycle
+         // Keep the caller's raw draft current even while an input method has
+         // marked text, so an explicit Save/Apply cannot read an older value.
+         // An accepted edit never reassigns native text or disrupts composition.
++        trace("binding-write")
+         configuration.text.wrappedValue = replacement
+-        guard token == lifecycle, let currentConfiguration = self.configuration else { return }
++        guard token == lifecycle, let currentConfiguration = self.configuration else {
++            trace("binding-lifecycle-changed")
++            return
++        }
+         let accepted = currentConfiguration.text.wrappedValue
++        #if DEBUG
++        trace(sameNativeText(replacement, accepted) ? "binding-readback-matched" : "binding-readback-differed")
++        #endif
+         modelText = accepted
+         // Read the caller's binding back even when it rejected the change
+         // without changing state. UIKit must not keep displaying that paste.
+@@ -266,6 +297,7 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+ 
+     private func replaceDisplayedText(with replacement: String, selection: NSRange? = nil) {
+         guard !sameNativeText(text, replacement) else { return }
++        trace("replace-text")
+         let offsets = selection ?? selectionOffsets()
+         replacingText = true
+         defer { replacingText = false }
+@@ -320,9 +352,79 @@ final class StudioNativeTextField: UITextField, UITextFieldDelegate {
+         guard let configuration else { return }
+         let shouldFocus = configuration.isFocused.wrappedValue && isEnabled
+         guard shouldFocus != isFirstResponder else { return }
+-        if shouldFocus, window == nil { return }
++        if shouldFocus, window == nil { trace("focus-deferred-no-window"); return }
+         synchronizingFocus = true
+         defer { synchronizingFocus = false }
++        trace(shouldFocus ? "focus-request" : "blur-request")
+         if shouldFocus { becomeFirstResponder() } else { resignFirstResponder() }
++        trace("focus-result")
++    }
++
++    #if DEBUG
++    private static let traceLogger = Logger(subsystem: "com.example.keyandfill", category: "StudioTextFieldTrace")
++    private static let traceEnabled = StudioTextFieldInputTrace.isEnabled(arguments: ProcessInfo.processInfo.arguments)
++    private var inputTrace = StudioTextFieldInputTrace()
++    // Native tests can inspect the exact bounded payload without keyboard
++    // injection, process-wide logging, or changing any input decision.
++    var inputTraceObserver: ((String) -> Void)?
++    #endif
++
++    private func trace(_ event: StaticString) {
++        #if DEBUG
++        guard Self.traceEnabled || inputTraceObserver != nil else { return }
++        let gate: StaticString
++        if configuration == nil { gate = "unconfigured" }
++        else if !isEnabled { gate = "disabled" }
++        else if applyingConfiguration { gate = "configuring" }
++        else if replacingText { gate = "replacing" }
++        else { gate = "open" }
++        guard let message = inputTrace.record(event, identifier: accessibilityIdentifier, lifecycle: lifecycle,
++            gate: gate, firstResponder: isFirstResponder, inWindow: window != nil, enabled: isEnabled,
++            marked: markedTextRange != nil, synchronizingFocus: synchronizingFocus) else { return }
++        if Self.traceEnabled { Self.traceLogger.notice("\(message, privacy: .public)") }
++        inputTraceObserver?(message)
++        #endif
++    }
++}
++
++#if DEBUG
++/// UI-test diagnostics deliberately receive no draft, label, selection, input
++/// fragment, or text length. Unknown identifiers are reduced to a fixed token.
++/// A cap marker makes a truncated trace distinguishable from absent events.
++struct StudioTextFieldInputTrace {
++    static let maximumEvents = 128
++    static func isEnabled(arguments: [String]) -> Bool { arguments.contains("-ui-testing") }
++    private let instance = UUID()
++    private var sequence = 0
++    private var shouldChanges = 0
++    private var editingChanges = 0
++    private var bindingWrites = 0
++    private var replacements = 0
++
++    mutating func record(_ event: StaticString, identifier: String?, lifecycle: UUID,
++                         gate: StaticString, firstResponder: Bool, inWindow: Bool, enabled: Bool,
++                         marked: Bool, synchronizingFocus: Bool) -> String? {
++        guard sequence < Self.maximumEvents else { return nil }
++        sequence += 1
++        switch event.description {
++        case "should-change": shouldChanges += 1
++        case "editing-changed": editingChanges += 1
++        case "binding-write": bindingWrites += 1
++        case "replace-text": replacements += 1
++        default: break
++        }
++        let control: String
++        switch identifier {
++        case "roomWidth", "precisionValue", "projectNameInput": control = identifier ?? "other"
++        default: control = "other"
++        }
++        return "StudioTextFieldTrace instance=\(instance) lifecycle=\(lifecycle) control=\(control) " +
++            "sequence=\(sequence) event=\(event) gate=\(gate) " +
++            "shouldChanges=\(shouldChanges) editingChanges=\(editingChanges) " +
++            "bindingWrites=\(bindingWrites) replacements=\(replacements) " +
++            "firstResponder=\(firstResponder) inWindow=\(inWindow) enabled=\(enabled) " +
++            "marked=\(marked) synchronizingFocus=\(synchronizingFocus) " +
++            "limitReached=\(sequence == Self.maximumEvents)"
+     }
+ }
++#endif
+diff --git a/NativeTests/StudioTextFieldTests.swift b/NativeTests/StudioTextFieldTests.swift
+index 4bda870..e9b6f43 100644
+--- a/NativeTests/StudioTextFieldTests.swift
++++ b/NativeTests/StudioTextFieldTests.swift
+@@ -398,6 +398,10 @@ final class StudioTextFieldTests: XCTestCase {
+     func testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl() {
+         var first = "1", oldSubmits = 0, newSubmits = 0
+         let field = StudioNativeTextField(frame: .zero)
++        #if DEBUG
++        var trace: [String] = []
++        field.inputTraceObserver = { trace.append($0) }
++        #endif
+         let replacement = control(text: .constant("New control"), identifier: "otherField",
+                                   onSubmit: { newSubmits += 1 })
+         let binding = Binding(get: { first }, set: {
+@@ -414,6 +418,11 @@ final class StudioTextFieldTests: XCTestCase {
+         XCTAssertEqual(field.accessibilityIdentifier, "otherField")
+         XCTAssertEqual(oldSubmits, 0)
+         XCTAssertEqual(newSubmits, 0)
++        #if DEBUG
++        XCTAssertTrue(trace.contains { $0.contains("event=configure-identity ") })
++        XCTAssertTrue(trace.contains { $0.contains("event=binding-lifecycle-changed ") })
++        XCTAssertFalse(trace.contains { $0.contains("event=binding-readback-matched ") })
++        #endif
+     }
+ 
+     func testInvalidationCancelsPendingFocusAndIgnoresStaleEvents() async {
+@@ -439,6 +448,92 @@ final class StudioTextFieldTests: XCTestCase {
+         XCTAssertEqual(submits, 0)
+     }
+ 
++    #if DEBUG
++    func testInputTraceDistinguishesDeliveryRejectionResetAndBlockedEventsWithoutText() throws {
++        let original = "PRIVATE_INITIAL_CANARY"
++        let accepted = "PRIVATE_ACCEPTED_CANARY"
++        let rejected = "PRIVATE_REJECTED_CANARY"
++        let external = "PRIVATE_RESET_CANARY"
++        let stale = "PRIVATE_STALE_CANARY"
++        var model = original, reject = false, writes = 0
++        var trace: [String] = []
++        let view = control(text: Binding(get: { model }, set: {
++            writes += 1
++            if !reject { model = $0 }
++        }))
++        let field = StudioNativeTextField(frame: .zero)
++        field.inputTraceObserver = { trace.append($0) }
++        field.configure(view, contentSizeCategory: .large, isEnabled: true)
++        defer { field.invalidate() }
++        XCTAssertTrue(trace.contains { $0.contains("event=configure-initial ") })
++        XCTAssertFalse(trace.contains { $0.contains("event=should-change ") || $0.contains("event=editing-changed ") },
++                       "Configuration alone must not report delivery of an input event")
++
++        XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: original.utf16.count),
++                                      replacementString: accepted))
++        field.text = accepted
++        field.sendActions(for: .editingChanged)
++        XCTAssertEqual(model, accepted)
++        XCTAssertEqual(field.text, accepted)
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("event=binding-readback-matched "))
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("shouldChanges=1 editingChanges=1 bindingWrites=1 replacements=1 "))
++        reject = true
++        field.text = rejected
++        field.sendActions(for: .editingChanged)
++        XCTAssertEqual(model, accepted)
++        XCTAssertEqual(field.text, accepted)
++        XCTAssertTrue(try XCTUnwrap(trace.dropLast().last).contains("event=binding-readback-differed "))
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("event=replace-text "))
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("shouldChanges=1 editingChanges=2 bindingWrites=2 replacements=2 "))
++        model = external
++        field.text = stale
++        field.sendActions(for: .editingChanged)
++        XCTAssertEqual(field.text, external)
++        XCTAssertEqual(model, external)
++        XCTAssertTrue(try XCTUnwrap(trace.dropLast().last).contains("event=publish-external-reset "))
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("event=replace-text "))
++        XCTAssertEqual(writes, 2, "An external reset must not be counted as a binding write")
++        XCTAssertTrue(trace.contains { $0.contains("event=binding-readback-matched ") })
++        XCTAssertTrue(trace.contains { $0.contains("event=binding-readback-differed ") })
++        XCTAssertTrue(trace.contains { $0.contains("event=publish-external-reset ") })
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("shouldChanges=1 editingChanges=3 bindingWrites=2 replacements=3 "))
++
++        field.configure(view, contentSizeCategory: .large, isEnabled: false)
++        XCTAssertFalse(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: 0),
++                                       replacementString: rejected))
++        field.sendActions(for: .editingChanged)
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("event=publish-blocked gate=disabled "))
++        field.invalidate()
++        field.sendActions(for: .editingChanged)
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("event=publish-blocked gate=unconfigured "))
++        XCTAssertEqual(writes, 2)
++        let output = trace.joined(separator: "\n")
++        for privateValue in [original, accepted, rejected, external, stale] {
++            XCTAssertFalse(output.contains(privateValue), "Diagnostic output must never contain a draft")
++        }
++    }
++
++    func testInputTraceRequiresUITestArgumentRedactsIdentifiersAndExplicitlyCapsOutput() throws {
++        XCTAssertFalse(StudioTextFieldInputTrace.isEnabled(arguments: []))
++        XCTAssertFalse(StudioTextFieldInputTrace.isEnabled(arguments: ["-ui-testing-other"]))
++        XCTAssertTrue(StudioTextFieldInputTrace.isEnabled(arguments: ["KeyAndFill", "-ui-testing"]))
++        var recorder = StudioTextFieldInputTrace()
++        var trace: [String] = []
++        let token = UUID()
++        for _ in 0..<(StudioTextFieldInputTrace.maximumEvents + 10) {
++            if let message = recorder.record("editing-changed", identifier: "PRIVATE_IDENTIFIER\ninjected=true",
++                lifecycle: token, gate: "open", firstResponder: true, inWindow: true, enabled: true,
++                marked: false, synchronizingFocus: false) { trace.append(message) }
++        }
++        XCTAssertEqual(trace.count, StudioTextFieldInputTrace.maximumEvents)
++        XCTAssertEqual(trace.filter { $0.contains("limitReached=true") }.count, 1)
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("limitReached=true"))
++        XCTAssertTrue(try XCTUnwrap(trace.last).contains("editingChanges=128 bindingWrites=0 replacements=0 "))
++        XCTAssertTrue(trace.allSatisfy { $0.hasPrefix("StudioTextFieldTrace ") && $0.contains("control=other ") })
++        XCTAssertTrue(trace.allSatisfy { !$0.contains("PRIVATE_IDENTIFIER") && !$0.contains("\n") })
++    }
++    #endif
++
+     /// Exercise the installed @State location used by the naming sheet, not a
+     /// synchronous local-variable Binding. This delivers native editingChanged
+     /// events; it deliberately makes no claim about XCTest keyboard injection.

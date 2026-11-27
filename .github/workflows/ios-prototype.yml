@@ -464,43 +464,59 @@ jobs:
     runs-on: ${{ matrix.runner }}
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
-    # The 16-minute setup/evidence allowance includes the 10-minute boot preflight.
+    # The 18-minute setup/evidence allowance includes the 10-minute boot preflight
+    # and a separate two-minute text-field log collection cap.
     # Each job budgets 12 minutes for Metal, 25 for compilation, its bounded
     # selected UI run, and the setup/evidence allowance.
     timeout-minutes: ${{ matrix.job_minutes }}
     strategy:
       fail-fast: false
       # Each required shard has its own simulator and bounded budget.
-      # Separate hosted runners and per-test stores make all six shards
-      # independent. Start app accessibility alongside the longer workflows.
+      # Separate hosted runners and per-test stores keep the shards independent.
+      # Start app accessibility alongside the longer workflows, at most five at once.
       max-parallel: 5
       matrix:
-        shard: [room-precision, library-reference, studio-export, studio-optics, app-accessibility, beta-workflows]
+        shard: [app-accessibility, room-precision, library-reference, studio-optics, studio-smoke, lighting-export, beta-workflow, plan-gestures, beta-accessibility]
         include:
           - shard: room-precision
             runner: macos-26-intel
             expected_arch: x86_64
             ui_test_minutes: 32
-            job_minutes: 85
+            job_minutes: 87
           - shard: library-reference
             # Required library/reference flows; platform audits have a separate opt-in workflow.
             runner: macos-26-intel
             expected_arch: x86_64
             ui_test_minutes: 32
-            job_minutes: 85
-          - shard: studio-export
+            job_minutes: 87
+          # Run 46004241191 exhausted the former combined 19-method shard's
+          # 40-minute cap without a finalized result. Isolate its five classes
+          # while retaining all methods, assertions and the existing per-run cap.
+          - shard: studio-smoke
             runner: macos-26-intel
             expected_arch: x86_64
             ui_test_minutes: 40
-            job_minutes: 93
-          - shard: beta-workflows
+            job_minutes: 95
+          - shard: lighting-export
             runner: macos-26-intel
             expected_arch: x86_64
-            # The combined 19-method export/beta shard reached its 40-minute
-            # command cap at f94c0e6 after 14 starts. Keep every method and
-            # assertion, with the eight beta/Plan methods in their own shard.
             ui_test_minutes: 40
-            job_minutes: 93
+            job_minutes: 95
+          - shard: beta-workflow
+            runner: macos-26-intel
+            expected_arch: x86_64
+            ui_test_minutes: 40
+            job_minutes: 95
+          - shard: plan-gestures
+            runner: macos-26-intel
+            expected_arch: x86_64
+            ui_test_minutes: 40
+            job_minutes: 95
+          - shard: beta-accessibility
+            runner: macos-26-intel
+            expected_arch: x86_64
+            ui_test_minutes: 40
+            job_minutes: 95
           - shard: studio-optics
             runner: macos-26-intel
             expected_arch: x86_64
@@ -508,7 +524,7 @@ jobs:
             # command completion arrived after the 32-minute step timeout.
             # Keep every method and require normal command/accounting success.
             ui_test_minutes: 40
-            job_minutes: 93
+            job_minutes: 95
           - shard: app-accessibility
             runner: macos-26-intel
             expected_arch: x86_64
@@ -518,7 +534,7 @@ jobs:
             # Budget both full sizes, slower largest-text navigation and startup;
             # individual assertion deadlines and every required check stay intact.
             ui_test_minutes: 100
-            job_minutes: 153
+            job_minutes: 155
     name: ui (${{ matrix.shard }})
     steps:
       - uses: actions/checkout@v4
@@ -634,18 +650,18 @@ jobs:
             tests+=("$selector")
           done <<< "$selectors"
           [ "${#tests[@]}" -gt 0 ]
-          if [ "$TEST_SHARD" = "studio-export" ] || [ "$TEST_SHARD" = "studio-optics" ] || [ "$TEST_SHARD" = "beta-workflows" ]; then
-            printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
-            record_studio_trace_end() {
-              studio_test_exit_code=$?
-              set +e
-              # Include the final fractional second without changing the test exit status.
-              printf 'STUDIO_TRACE_END=%s\nSTUDIO_TRACE_TEST_EXIT_CODE=%s\n' \
-                "$(date -u -v+1S '+%Y-%m-%d %H:%M:%S%z')" "$studio_test_exit_code" >> "$GITHUB_ENV"
-              exit "$studio_test_exit_code"
-            }
-            trap record_studio_trace_end EXIT
-          fi
+          # Every shard retains bounded text-field diagnostics. Collection never
+          # substitutes for command success, method accounting or finalized results.
+          printf 'STUDIO_TRACE_START=%s\n' "$(date -u '+%Y-%m-%d %H:%M:%S%z')" >> "$GITHUB_ENV"
+          record_studio_trace_end() {
+            studio_test_exit_code=$?
+            set +e
+            # Include the final fractional second without changing the test exit status.
+            printf 'STUDIO_TRACE_END=%s\nSTUDIO_TRACE_TEST_EXIT_CODE=%s\n' \
+              "$(date -u -v+1S '+%Y-%m-%d %H:%M:%S%z')" "$studio_test_exit_code" >> "$GITHUB_ENV"
+            exit "$studio_test_exit_code"
+          }
+          trap record_studio_trace_end EXIT
           xcodebuild -project KeyAndFill.xcodeproj -scheme KeyAndFill -configuration Debug \
             -destination "id=$SIMULATOR_ID" -derivedDataPath "$RUNNER_TEMP/keyfill-build" \
             -parallel-testing-enabled NO -resultBundlePath NativeTests.xcresult \
@@ -699,7 +715,7 @@ jobs:
                                 "timeout_seconds": 5, "output_truncated": len(output) > 65536}), flush=True)
           PY
       - name: Export studio slider unified log
-        if: ${{ always() && (matrix.shard == 'studio-export' || matrix.shard == 'studio-optics' || matrix.shard == 'beta-workflows') }}
+        if: ${{ always() && contains(fromJSON('["studio-smoke", "lighting-export", "beta-workflow", "plan-gestures", "beta-accessibility", "studio-optics"]'), matrix.shard) }}
         continue-on-error: true
         timeout-minutes: 2
         env:
@@ -727,6 +743,37 @@ jobs:
             printf 'collection=failed\ncollection_exit_code=%s\n' "$studio_collection_exit_code" >> artifacts/studio-slider-trace-status.txt
             echo "::warning::Studio slider log collection failed; the test outcome is unchanged."
             cat artifacts/studio-slider-trace-stderr.log >&2
+            exit "$studio_collection_exit_code"
+          fi
+      - name: Export studio text field unified log
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 2
+        env:
+          UI_TEST_STEP_OUTCOME: ${{ steps.selected_ui_tests.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          # DEBUG-only metadata is diagnostic; preserve the original test outcome.
+          printf 'simulator=%s\nstart=%s\nend=%s\ngithub_test_step_outcome=%s\nobserved_shell_exit_code=%s\n' \
+            "${SIMULATOR_ID:-}" "${STUDIO_TRACE_START:-}" "${STUDIO_TRACE_END:-}" \
+            "${UI_TEST_STEP_OUTCOME:-unavailable}" \
+            "${STUDIO_TRACE_TEST_EXIT_CODE:-unavailable}" > artifacts/studio-textfield-trace-status.txt
+          if [ -z "${SIMULATOR_ID:-}" ] || [ -z "${STUDIO_TRACE_START:-}" ] || [ -z "${STUDIO_TRACE_END:-}" ]; then
+            printf 'collection=unavailable\n' >> artifacts/studio-textfield-trace-status.txt
+            echo "::warning::Studio text field log collection needs a simulator and both test timestamps."
+            exit 1
+          fi
+          if xcrun simctl spawn "$SIMULATOR_ID" log show \
+            --start "$STUDIO_TRACE_START" --end "$STUDIO_TRACE_END" \
+            --predicate 'process = "KeyAndFill" AND subsystem = "com.example.keyandfill" AND category = "StudioTextInputTrace" AND message CONTAINS "KEYFILL_INPUT_TRACE_V1 "' \
+            > artifacts/studio-textfield-trace.log 2> artifacts/studio-textfield-trace-stderr.log; then
+            printf 'collection=completed\ncollection_exit_code=0\n' >> artifacts/studio-textfield-trace-status.txt
+          else
+            studio_collection_exit_code=$?
+            printf 'collection=failed\ncollection_exit_code=%s\n' "$studio_collection_exit_code" >> artifacts/studio-textfield-trace-status.txt
+            echo "::warning::Studio text field log collection failed; the test outcome is unchanged."
+            cat artifacts/studio-textfield-trace-stderr.log >&2
             exit "$studio_collection_exit_code"
           fi
       - name: Export finalized XCTest result bundle and genuine attachments
@@ -783,6 +830,7 @@ jobs:
             simulator-boot.log
             artifacts/ui-host-*.log
             artifacts/studio-slider-trace*
+            artifacts/studio-textfield-trace*
             artifacts/native-results.zip
             artifacts/native-attachments/
           if-no-files-found: warn
@@ -798,6 +846,7 @@ jobs:
             artifacts/native-attachments/*.ips
             artifacts/native-attachments/*.pdf
             artifacts/studio-slider-trace*
+            artifacts/studio-textfield-trace*
           if-no-files-found: warn
 
   # Retain the original artifact and expose bounded copies for remote review

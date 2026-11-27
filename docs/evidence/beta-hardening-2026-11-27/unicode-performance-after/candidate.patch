@@ -1,0 +1,111 @@
+--- before/Sources/LightingCore/LightingProjectDocument.swift
++++ after/Sources/LightingCore/LightingProjectDocument.swift
+@@ -77,24 +77,45 @@
+             switch bytes[index] {
+             case 0x22: // String: skip escaped quotes and structural punctuation.
+                 let start = index
++                var hasEscape = false
++                var hasNonASCII = false
+                 index += 1
+                 while index < bytes.count, bytes[index] != 0x22 {
+-                    index += bytes[index] == 0x5c ? 2 : 1
++                    let byte = bytes[index]
++                    guard byte >= 0x20 else { throw DocumentError.invalidDocument }
++                    if byte == 0x5c {
++                        hasEscape = true
++                        index += 2
++                    } else {
++                        hasNonASCII = hasNonASCII || byte >= 0x80
++                        index += 1
++                    }
+                 }
+                 guard index < bytes.count else { throw DocumentError.invalidDocument }
+-                let token = Data(bytes[start...index])
+-                let value: String
+-                do { value = try stringDecoder.decode(String.self, from: token) }
+-                catch { throw DocumentError.invalidDocument }
+-                if let scope = scopes.indices.last, scopes[scope].expectsKey {
+-                    // Decode escapes, then compare exact UTF-8 sequences. Swift
+-                    // String equality would also merge distinct NFC/NFD names.
+-                    // Mutate the stored set in place to avoid copying all earlier
+-                    // names for each member of a wide object.
+-                    guard scopes[scope].keys.insert(Data(value.utf8)).inserted else {
++                let isKey = scopes.indices.last.map { scopes[$0].expectsKey } ?? false
++                if isKey || hasEscape {
++                    let token = Data(bytes[start...index])
++                    let value: String
++                    do { value = try stringDecoder.decode(String.self, from: token) }
++                    catch { throw DocumentError.invalidDocument }
++                    if let scope = scopes.indices.last, isKey {
++                        // Decode escapes, then compare exact UTF-8 sequences. Swift
++                        // String equality would also merge distinct NFC/NFD names.
++                        // Mutate the stored set in place to avoid copying all earlier
++                        // names for each member of a wide object.
++                        guard scopes[scope].keys.insert(Data(value.utf8)).inserted else {
++                            throw DocumentError.invalidDocument
++                        }
++                        scopes[scope].expectsKey = false
++                    }
++                } else if hasNonASCII {
++                    // Unescaped ASCII was validated during the scan. For other
++                    // unescaped values, reject malformed UTF-8 without invoking
++                    // a JSON decoder for each ignored metadata value. This strict
++                    // initializer must not repair invalid byte sequences.
++                    guard String(validating: bytes[(start + 1)..<index], as: UTF8.self) != nil else {
+                         throw DocumentError.invalidDocument
+                     }
+-                    scopes[scope].expectsKey = false
+                 }
+             case 0x7b, 0x5b: // Object or array.
+                 scopes.append(ObjectKeyScope(isObject: bytes[index] == 0x7b))
+--- before/Tests/LightingCoreTests/ProjectDocumentIgnoredUnicodeTests.swift
++++ after/Tests/LightingCoreTests/ProjectDocumentIgnoredUnicodeTests.swift
+@@ -62,11 +62,48 @@
+         }
+     }
+ 
++    func testRawControlBytesAreRejectedInUnescapedStrings() throws {
++        let locations = [
++            wire(name: "\"prefix" + marker + "suffix\""),
++            wire(metadata: "\"prefix" + marker + "suffix\""),
++            wire(metadata: #"{"nested":{"value":"prefix__UNICODE_VALUE__suffix"}}"#),
++            wire(metadata: #"["before",["prefix__UNICODE_VALUE__suffix"],"after"]"#)
++        ]
++        for byte in UInt8(0)...UInt8(0x1f) {
++            for (location, data) in locations.enumerated() {
++                assertInvalidDocument(try replacingMarker(in: data, with: [byte]),
++                                      "Raw control byte \(byte), location \(location)")
++            }
++        }
++    }
++
++    func testEscapedQuoteAndBackslashBoundariesCannotHideInvalidValuesOrDuplicateKeys() throws {
++        let expected = try LightingProjectDocument.decode(wire())
++        for count in 0...4 {
++            let slashes = String(repeating: "\\", count: count)
++            for content in [slashes, slashes + #"" } ], { "value": ""#] {
++                let token = String(decoding: try JSONEncoder().encode(content), as: UTF8.self)
++                let valid = "[" + token + #",{"value":"","nested":["after"]},""]"#
++                XCTAssertEqual(try LightingProjectDocument.decode(wire(metadata: valid)), expected)
++
++                let duplicate = "[" + token + #",{"value":"","va\u006cue":"duplicate"}]"#
++                assertInvalidDocument(wire(metadata: duplicate), "Duplicate after \(token)")
++                let invalid = wire(metadata: "[" + token + #",["__UNICODE_VALUE__"]]"#)
++                assertInvalidDocument(try replacingMarker(in: invalid, with: [0x80]),
++                                      "Invalid UTF-8 after \(token)")
++            }
++        }
++    }
++
+     func testValidUnicodeAndEscapesInIgnoredMetadataRemainAccepted() throws {
+         let expected = try LightingProjectDocument.decode(wire())
+         let metadata = #"{"é":"e\u0301","e\u0301":"é","nested":["💡","\uD83D\uDCA1","\uDBFF\uDFFF","\u0000\b\f\n\r\t","quote: \" } ] , \\ \/",{"value":"\uFFFD"}]}"#
+         XCTAssertEqual(try LightingProjectDocument.decode(wire(metadata: metadata)), expected)
+         XCTAssertEqual(try LightingProjectDocument.decode(Data([0xef, 0xbb, 0xbf]) + wire(metadata: metadata)), expected)
++        // Boundary scalars exercise strict, non-repairing UTF-8 validation for
++        // unescaped values, including valid DEL and Unicode noncharacters.
++        let boundaries = "\u{7f}\u{80}\u{7ff}\u{800}\u{d7ff}\u{e000}\u{ffff}\u{10000}\u{10ffff}"
++        XCTAssertEqual(try LightingProjectDocument.decode(wire(metadata: "[\"\",\"" + boundaries + "\"]")), expected)
+     }
+ 
+     func testIgnoredUnicodeValidationPreservesSupportedUTF16AndUTF32Inputs() throws {

@@ -1,3 +1,13 @@
+# Current beta hardening — 27 November 2026
+
+This new request has a separate [100-worker campaign packet](../docs/evidence/beta-hardening-2026-11-27/README.md) and [actual identity ledger](../docs/evidence/beta-hardening-2026-11-27/worker-ledger.json). Work remains in progress; do not count prior campaigns toward this request. Main advanced concurrently from `9e2313c` to `2fc7647`; the latter was independently reviewed and preserved before integrating this candidate.
+
+Integrated local checks pass 594 Debug/594 Release and120 tooling tests. Apple source parses in DEBUG/Release, but current native329/requiredUI44 execution is unverified. The candidate fixes malformed ignored JSON strings, optimizes dense valid metadata, preserves one bounded opt-in input recorder with unified logging, partitions44UI methods into9groups, bounds failure observations, adds real welcome-title line spacing, adds a maximum-Unicode PDF regression and prepares unsigned owner-configured archive commands. No signed archive or upload was performed.
+
+The baseline `f94c0e6` run46004241191 is now terminal:22UIpasses,6failed,1interrupted and15unstarted. Corrupt-file smoke passed inside an incomplete command; optics never started a method. Five required Default originals plus one failure image were recovered and verified; nine Default and all14AXXXL remain missing. The exact-entry screenshot retains900 after4321.5 was attempted; root cause is not established. These terminal observations supersede the old running-status prose below.
+
+Next: publish the reviewed candidate, reconcile fresh Apple builds/tests/finalized results and original images, use actual traces for repeated failures, complete100actual assignments, update exact-source evidence. M01active/M02–M03pending remain; M04–M07, physical devices, held-out inference, commerce/customer validation and owner distribution approval are still unverified. Earlier handoffs below are retained as dated history.
+
 # Current beta campaign — 27 November 2026
 
 The user requested 100 actual workers and beta engineering. All 100 contexts have been created; 98 assignments are complete. Worker 098's runtime reconciliation and worker 100's final-summary follow-up remain pending. The [current packet](../docs/evidence/beta-campaign-2026-11-27/README.md) and [ledger](../docs/evidence/beta-campaign-2026-11-27/worker-ledger.json) retain identities, source hashes, 26 writer commits and original evidence.

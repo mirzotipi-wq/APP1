@@ -72,13 +72,14 @@ final class StudioTextFieldTests: XCTestCase {
 
     func testInputTraceOmitsPrivateDraftsLabelsHintsAndUnknownIdentifiers() throws {
         let secret = "PRIVATE-CANARY-096-e\u{0301}-\u{1F511}"
+        let identifier = "PRIVATE_IDENTIFIER\ninjected=true"
         var model = secret, lines: [String] = []
         let field = StudioNativeTextField(frame: .zero)
         field.inputTrace = StudioTextInputTrace(isEnabled: true, sink: { lines.append($0) })
         let view = StudioTextField(secret, text: Binding(get: { model }, set: { next in
             if StudioNumericInput.isWithinDraftLimit(next) { model = next }
         }), isFocused: .constant(false),
-            accessibility: .init(label: secret, identifier: secret, hint: secret))
+            accessibility: .init(label: secret, identifier: identifier, hint: secret))
         field.configure(view, contentSizeCategory: .large, isEnabled: true)
         XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: 0),
                                       replacementString: secret))
@@ -97,6 +98,9 @@ final class StudioTextFieldTests: XCTestCase {
         let records = try traceRecords(lines)
         XCTAssertFalse(records.isEmpty)
         XCTAssertFalse(lines.joined().contains("PRIVATE-CANARY"))
+        XCTAssertFalse(lines.joined().contains("PRIVATE_IDENTIFIER"))
+        XCTAssertFalse(lines.joined().contains("injected=true"))
+        XCTAssertTrue(lines.allSatisfy { !$0.contains("\n") })
         XCTAssertFalse(lines.joined().contains(oversized))
         let allowed = Set(["version", "sequence", "control", "lifecycle", "uptime", "epochSeconds", "field", "event", "state"])
         for record in records {
@@ -230,6 +234,93 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertTrue(events.contains("bindingReadback"))
         XCTAssertFalse(events.contains("controlLimit"))
         XCTAssertFalse(events.contains("processLimit"))
+    }
+
+    func testInputTraceDistinguishesDeliveryRejectionResetAndBlockedEventsWithoutText() throws {
+        let original = "PRIVATE_INITIAL_CANARY"
+        let accepted = "PRIVATE_ACCEPTED_CANARY"
+        let rejected = "PRIVATE_REJECTED_CANARY"
+        let external = "PRIVATE_RESET_CANARY"
+        let stale = "PRIVATE_STALE_CANARY"
+        var model = original, reject = false, writes = 0
+        var lines: [String] = []
+        let view = control(text: Binding(get: { model }, set: {
+            writes += 1
+            if !reject { model = $0 }
+        }))
+        let field = StudioNativeTextField(frame: .zero)
+        field.inputTrace = StudioTextInputTrace(isEnabled: true, sink: { lines.append($0) })
+        field.configure(view, contentSizeCategory: .large, isEnabled: true)
+        defer { field.invalidate() }
+        let initialEvents = try traceRecords(lines).compactMap { $0["event"] as? String }
+        XCTAssertTrue(initialEvents.contains("configureInitialValue"))
+        XCTAssertFalse(initialEvents.contains("delegateEdit") || initialEvents.contains("editingChanged"),
+                       "Configuration alone must not report delivery of an input event")
+
+        let acceptedStart = lines.count
+        XCTAssertTrue(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: original.utf16.count),
+                                      replacementString: accepted))
+        field.text = accepted
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(model, accepted)
+        XCTAssertEqual(field.text, accepted)
+        let acceptedRecords = try traceRecords(Array(lines.dropFirst(acceptedStart)))
+        let acceptedEvents = acceptedRecords.compactMap { $0["event"] as? String }
+        XCTAssertEqual(acceptedEvents.filter { $0 == "delegateEdit" }.count, 1)
+        XCTAssertEqual(acceptedEvents.filter { $0 == "editingChanged" }.count, 1)
+        XCTAssertEqual(acceptedEvents.filter { $0 == "bindingWrite" }.count, 1)
+        XCTAssertFalse(acceptedEvents.contains("replaceNativeText"))
+        let acceptedReadback = try XCTUnwrap(acceptedRecords.last { $0["event"] as? String == "bindingReadback" })
+        let acceptedState = try XCTUnwrap(acceptedReadback["state"] as? [String: Any])
+        XCTAssertEqual(acceptedState["bindingMatchesNative"] as? Bool, true)
+
+        let rejectedStart = lines.count
+        reject = true
+        field.text = rejected
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(model, accepted)
+        XCTAssertEqual(field.text, accepted)
+        let rejectedRecords = try traceRecords(Array(lines.dropFirst(rejectedStart)))
+        XCTAssertEqual(rejectedRecords.filter { $0["event"] as? String == "bindingWrite" }.count, 1)
+        let rejectedReadback = try XCTUnwrap(rejectedRecords.last { $0["event"] as? String == "bindingReadback" })
+        let rejectedState = try XCTUnwrap(rejectedReadback["state"] as? [String: Any])
+        XCTAssertEqual(rejectedState["bindingMatchesNative"] as? Bool, false)
+        XCTAssertEqual(rejectedRecords.last?["event"] as? String, "replaceNativeText")
+
+        let resetStart = lines.count
+        model = external
+        field.text = stale
+        field.sendActions(for: .editingChanged)
+        XCTAssertEqual(field.text, external)
+        XCTAssertEqual(model, external)
+        XCTAssertEqual(writes, 2, "An external reset must not be counted as a binding write")
+        let resetEvents = try traceRecords(Array(lines.dropFirst(resetStart))).compactMap { $0["event"] as? String }
+        XCTAssertTrue(resetEvents.contains("publishExternalReset"))
+        XCTAssertFalse(resetEvents.contains("bindingWrite"))
+        XCTAssertFalse(resetEvents.contains("bindingReadback"))
+        XCTAssertEqual(resetEvents.last, "replaceNativeText")
+
+        field.configure(view, contentSizeCategory: .large, isEnabled: false)
+        XCTAssertFalse(field.textField(field, shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+                                       replacementString: rejected))
+        field.sendActions(for: .editingChanged)
+        let disabledRecord = try XCTUnwrap(try traceRecords(lines).last)
+        XCTAssertEqual(disabledRecord["event"] as? String, "publishIgnored")
+        let disabledState = try XCTUnwrap(disabledRecord["state"] as? [String: Any])
+        XCTAssertEqual(disabledState["configured"] as? Bool, true)
+        XCTAssertEqual(disabledState["enabled"] as? Bool, false)
+        field.invalidate()
+        field.sendActions(for: .editingChanged)
+        let invalidatedRecord = try XCTUnwrap(try traceRecords(lines).last)
+        XCTAssertEqual(invalidatedRecord["event"] as? String, "publishIgnored")
+        let invalidatedState = try XCTUnwrap(invalidatedRecord["state"] as? [String: Any])
+        XCTAssertEqual(invalidatedState["configured"] as? Bool, false)
+        XCTAssertEqual(invalidatedState["enabled"] as? Bool, false)
+        XCTAssertEqual(writes, 2)
+        let output = lines.joined(separator: "\n")
+        for privateValue in [original, accepted, rejected, external, stale] {
+            XCTAssertFalse(output.contains(privateValue), "Diagnostic output must never contain a draft")
+        }
     }
 #endif
 
@@ -568,9 +659,13 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertEqual(secondSubmits, 1)
     }
 
-    func testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl() {
+    func testIdentityChangeDuringSetterCannotSubmitOrRestoreThePreviousControl() throws {
         var first = "1", oldSubmits = 0, newSubmits = 0
         let field = StudioNativeTextField(frame: .zero)
+        #if DEBUG
+        var lines: [String] = []
+        field.inputTrace = StudioTextInputTrace(isEnabled: true, sink: { lines.append($0) })
+        #endif
         let replacement = control(text: .constant("New control"), identifier: "otherField",
                                   onSubmit: { newSubmits += 1 })
         let binding = Binding(get: { first }, set: {
@@ -587,6 +682,13 @@ final class StudioTextFieldTests: XCTestCase {
         XCTAssertEqual(field.accessibilityIdentifier, "otherField")
         XCTAssertEqual(oldSubmits, 0)
         XCTAssertEqual(newSubmits, 0)
+        #if DEBUG
+        let events = try traceRecords(lines).compactMap { $0["event"] as? String }
+        XCTAssertTrue(events.contains("identityChange"))
+        XCTAssertTrue(events.contains("publishLifecycleChanged"))
+        XCTAssertTrue(events.contains("submitLifecycleChanged"))
+        XCTAssertFalse(events.contains("bindingReadback"))
+        #endif
     }
 
     func testInvalidationCancelsPendingFocusAndIgnoresStaleEvents() async {
